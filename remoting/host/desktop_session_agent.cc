@@ -48,6 +48,8 @@
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "base/memory/writable_shared_memory_region.h"
 #endif
 

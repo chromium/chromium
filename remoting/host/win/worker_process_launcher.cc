@@ -4,6 +4,8 @@
 
 #include "remoting/host/win/worker_process_launcher.h"
 
+#include <Windows.h>
+
 #include <utility>
 
 #include "base/location.h"
