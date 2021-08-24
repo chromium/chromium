@@ -1689,6 +1689,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
       "../browser/performance_manager/frame_node_impl_browsertest.cc",
       "../browser/performance_manager/mechanisms/page_discarder_browsertest.cc",
+      "../browser/performance_manager/observers/page_load_metrics_observer_browsertest.cc",
       "../browser/performance_manager/page_load_tracker_decorator_browsertest.cc",
       "../browser/performance_manager/policies/bfcache_policy_browsertest.cc",
       "../browser/performance_manager/tab_properties_decorator_browsertest.cc",

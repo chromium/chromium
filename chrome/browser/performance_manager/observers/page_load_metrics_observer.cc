@@ -57,38 +57,6 @@ enum class NavigationType {
   kCount,
 };
 
-// This enum matches "StabilityPageLoadType" in enums.xml. The ordering
-// of values must match the ordering of values in the NavigationType enum.
-enum class LoadType {
-  kVisibleTabBase = 0,
-  kVisibleTabMainFrameDifferentDocument = 0,
-  kVisibleTabSubFrameDifferentDocument = 1,
-  kVisibleTabMainFrameSameDocument = 2,
-  kVisibleTabSubFrameSameDocument = 3,
-  kVisibleTabNoCommit = 4,
-
-  kHiddenTabBase = 5,
-  kHiddenTabMainFrameDifferentDocument = 5,
-  kHiddenTabSubFrameDifferentDocument = 6,
-  kHiddenTabMainFrameSameDocument = 7,
-  kHiddenTabSubFrameSameDocument = 8,
-  kHiddenTabNoCommit = 9,
-
-  kPrerenderBase = 10,
-  kPrerenderMainFrameDifferentDocument = 10,
-  kPrerenderSubFrameDifferentDocument = 11,
-  kPrerenderMainFrameSameDocument = 12,
-  kPrerenderSubFrameSameDocument = 13,
-  kPrerenderNoCommit = 14,
-
-  kExtension = 15,
-  kDevTools = 16,
-
-  kUnknown = 17,
-
-  kMaxValue = kUnknown,
-};
-
 // Bucketize |load_count| using an exponential function to minimize bits of data
 // sent through UKM. The bucket spacing is chosen to have exact counts until 20.
 // go/exponential-bucketing-for-ukm-discussion
