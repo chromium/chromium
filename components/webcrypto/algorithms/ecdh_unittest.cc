@@ -126,9 +126,11 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
   for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
     SCOPED_TRACE(test_index);
     EXPECT_TRUE(tests.GetDictionary(test_index, &test));
-    test->GetBoolean("valid_p521_keys", &valid_p521_keys);
-    if (valid_p521_keys)
+    absl::optional<bool> keys = test->FindBoolKey("valid_p521_keys");
+    if (keys && keys.value()) {
+      valid_p521_keys = true;
       break;
+    }
   }
   if (!valid_p521_keys) {
     return ::testing::AssertionFailure()

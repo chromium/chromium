@@ -197,9 +197,9 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
 
     // If no error was expected, the verification's boolean must match
     // "verify_result" for the test.
-    bool expected_result = false;
-    ASSERT_TRUE(test->GetBoolean("verify_result", &expected_result));
-    EXPECT_EQ(expected_result, verify_result);
+    absl::optional<bool> expected_result = test->FindBoolKey("verify_result");
+    ASSERT_TRUE(expected_result);
+    EXPECT_EQ(expected_result.value(), verify_result);
   }
 }
 
