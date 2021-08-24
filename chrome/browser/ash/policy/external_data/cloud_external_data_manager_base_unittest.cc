@@ -47,6 +47,8 @@ const char k10BytePolicy[] = "10BytePolicy";
 const char k20BytePolicy[] = "20BytePolicy";
 // A nonexistent policy.
 const char kUnknownPolicy[] = "UnknownPolicy";
+// WebAppInstallForceList policy that might contain multiple pieces of data
+const char kWebAppPolicy[] = "WebAppInstallForceList";
 
 const char k10BytePolicyURL[] = "http://localhost/10_bytes";
 const char k20BytePolicyURL[] = "http://localhost/20_bytes";
@@ -59,9 +61,13 @@ const PolicyDetails kPolicyDetails[] = {
     {false, false, false, 1, 0},
     {false, false, false, 2, 10},
     {false, false, false, 3, 20},
+    {false, false, false, 4, 20},
 };
 
 const char kCacheKey[] = "data";
+
+const char k10ByteAppURL[] = "http://localhost/app_10_bytes";
+const char k20ByteAppURL[] = "http://localhost/app_20_bytes";
 
 }  // namespace
 
@@ -76,8 +82,12 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
 
   base::Value ConstructMetadata(const std::string& url,
                                 const std::string& hash);
+  void AddMetadataToWebAppPolicyValue(base::Value& value,
+                                      const std::string& app_url,
+                                      const std::string& image_url,
+                                      const std::string& image_hash);
   void SetExternalDataReference(const std::string& policy,
-                                base::Value metadata);
+                                base::Value policy_value);
 
   ExternalDataFetcher::FetchCallback ConstructFetchCallback(int id);
   void ResetCallbackData();
@@ -140,6 +150,7 @@ void CloudExternalDataManagerBaseTest::SetUp() {
   policy_details_.SetDetails(kStringPolicy, &kPolicyDetails[0]);
   policy_details_.SetDetails(k10BytePolicy, &kPolicyDetails[1]);
   policy_details_.SetDetails(k20BytePolicy, &kPolicyDetails[2]);
+  policy_details_.SetDetails(kWebAppPolicy, &kPolicyDetails[3]);
 }
 
 void CloudExternalDataManagerBaseTest::TearDown() {
@@ -168,13 +179,26 @@ base::Value CloudExternalDataManagerBaseTest::ConstructMetadata(
   return metadata;
 }
 
+void CloudExternalDataManagerBaseTest::AddMetadataToWebAppPolicyValue(
+    base::Value& value,
+    const std::string& app_url,
+    const std::string& image_url,
+    const std::string& image_hash) {
+  DCHECK(value.is_list());
+  base::Value app(base::Value::Type::DICTIONARY);
+  app.SetStringKey("url", app_url);
+  app.SetKey("custom_icon", ConstructMetadata(image_url, image_hash));
+  value.Append(std::move(app));
+}
+
 void CloudExternalDataManagerBaseTest::SetExternalDataReference(
     const std::string& policy,
-    base::Value metadata) {
-  DCHECK(metadata.is_dict());
+    base::Value policy_value) {
+  DCHECK(policy_value.is_dict() ||
+         (policy_value.is_list() && policy == kWebAppPolicy));
   cloud_policy_store_.policy_map_.Set(
       policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-      std::move(metadata),
+      std::move(policy_value),
       std::make_unique<ExternalDataFetcher>(
           external_data_manager_->weak_factory_.GetWeakPtr(), policy));
 }
@@ -746,6 +770,37 @@ TEST_F(CloudExternalDataManagerBaseTest, PolicyChangeWhileDownloadPending) {
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[1]);
   EXPECT_EQ(k10ByteData, *callback_data_[1]);
+  ResetCallbackData();
+}
+
+// The WebAppForceInstallList policy includes an arbitrary amount of
+// external data files (every installed app can include one icon).
+TEST_F(CloudExternalDataManagerBaseTest, DownloadMultipleFilesFromPolicy) {
+  // Set up the policy value with 2 apps, one icon each:
+  base::Value web_app_value(base::Value::Type::LIST);
+  AddMetadataToWebAppPolicyValue(web_app_value, k10ByteAppURL, k10BytePolicyURL,
+                                 crypto::SHA256HashString(k10ByteData));
+  AddMetadataToWebAppPolicyValue(web_app_value, k20ByteAppURL, k20BytePolicyURL,
+                                 crypto::SHA256HashString(k20ByteData));
+  SetExternalDataReference(kWebAppPolicy, std::move(web_app_value));
+  cloud_policy_store_.NotifyStoreLoaded();
+
+  // Serve valid external data for both icons.
+  SetFakeResponse(k10BytePolicyURL, k10ByteData, net::HTTP_OK);
+  SetFakeResponse(k20BytePolicyURL, k20ByteData, net::HTTP_OK);
+  external_data_manager_->Connect(url_loader_factory_);
+
+  external_data_manager_->Fetch(kWebAppPolicy, k10ByteAppURL,
+                                ConstructFetchCallback(0));
+  external_data_manager_->Fetch(kWebAppPolicy, k20ByteAppURL,
+                                ConstructFetchCallback(1));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, callback_data_.size());
+  ASSERT_FALSE(callback_data_[0]->empty());
+  EXPECT_EQ(k10ByteData, *callback_data_[0]);
+  ASSERT_FALSE(callback_data_[1]->empty());
+  EXPECT_EQ(k20ByteData, *callback_data_[1]);
   ResetCallbackData();
 }
 

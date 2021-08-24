@@ -33,6 +33,7 @@
 #include "components/policy/core/common/cloud/external_policy_data_updater.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -416,6 +417,28 @@ void CloudExternalDataManagerBase::SetPolicyStore(
     OnPolicyStoreLoaded();
 }
 
+// Extract a url and hash from |value|, and put them into |metadata|.
+void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
+                          const std::string& policy_name,
+                          const std::string& field_name,
+                          const base::Value* const value) {
+  DCHECK(metadata);
+  const base::DictionaryValue* dict = nullptr;
+  if (!value || !value->GetAsDictionary(&dict))
+    return;
+  const std::string* url = dict->FindStringKey("url");
+  const std::string* hex_hash = dict->FindStringKey("hash");
+  std::string hash;
+  if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
+      base::HexStringToString(*hex_hash, &hash)) {
+    // Add the external data reference to |metadata| if it is valid (URL and
+    // hash are not empty, hash can be decoded as a hex string).
+    CloudExternalDataManagerBase::MetadataKey key(policy_name, field_name);
+    CloudExternalDataManagerBase::MetadataEntry entry(*url, hash);
+    (*metadata)[key] = entry;
+  }
+}
+
 void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
   // Collect all external data references made by policies in |policy_store_|
   // and pass them to the |backend_|.
@@ -427,17 +450,22 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       // Skip policies that do not reference external data.
       continue;
     }
-    const base::DictionaryValue* dict = NULL;
-    if (!it.second.value() || !it.second.value()->GetAsDictionary(&dict))
+    if (it.first != key::kWebAppInstallForceList) {
+      AddMetadataFromValue(metadata.get(), it.first, std::string(),
+                           it.second.value());
       continue;
-    const std::string* url = dict->FindStringKey("url");
-    const std::string* hex_hash = dict->FindStringKey("hash");
-    std::string hash;
-    if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
-        base::HexStringToString(*hex_hash, &hash)) {
-      // Add the external data reference to |metadata| if it is valid (URL and
-      // hash are not empty, hash can be decoded as a hex string).
-      (*metadata)[MetadataKey(it.first)] = MetadataEntry(*url, hash);
+    }
+    if (it.second.value() && it.second.value()->is_list()) {
+      for (const auto& app : it.second.value()->GetList()) {
+        const base::DictionaryValue* dict = nullptr;
+        if (app.GetAsDictionary(&dict)) {
+          const base::Value* const icon = dict->FindKey("custom_icon");
+          const std::string* const url = dict->FindStringKey("url");
+          if (icon && url) {
+            AddMetadataFromValue(metadata.get(), it.first, *url, icon);
+          }
+        }
+      }
     }
   }
 
