@@ -963,12 +963,6 @@
       <intent-filter>  # DIFF-ANCHOR: d3e4f3ee
         <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME"/>
       </intent-filter>  # DIFF-ANCHOR: d3e4f3ee
-      <intent-filter>  # DIFF-ANCHOR: b2859f10
-        <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY"/>
-      </intent-filter>  # DIFF-ANCHOR: b2859f10
-      <intent-filter>  # DIFF-ANCHOR: 22a1258b
-        <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_VOICE_QUERY"/>
-      </intent-filter>  # DIFF-ANCHOR: 22a1258b
     </receiver>  # DIFF-ANCHOR: 585b7cc1
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"

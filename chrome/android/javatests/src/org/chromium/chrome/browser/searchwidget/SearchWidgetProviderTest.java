@@ -10,6 +10,7 @@ import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -285,8 +286,8 @@ public class SearchWidgetProviderTest {
         if (isFirstRunComplete) {
             // Check that the Activity was launched in the right mode.
             Intent intent = activity.getIntent();
-            boolean microphoneState = IntentUtils.safeGetBooleanExtra(
-                    intent, SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, false);
+            boolean microphoneState = TextUtils.equals(
+                    intent.getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
             Assert.assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
             boolean fromWidget = IntentUtils.safeGetBooleanExtra(
                     intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);

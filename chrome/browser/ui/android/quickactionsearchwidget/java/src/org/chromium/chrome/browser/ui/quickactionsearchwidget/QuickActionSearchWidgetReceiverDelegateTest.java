@@ -71,30 +71,6 @@ public class QuickActionSearchWidgetReceiverDelegateTest {
 
     @Test
     @SmallTest
-    public void testHandleStartTextQueryAction() {
-        Intent startTextQueryIntent =
-                new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY);
-
-        QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(
-                mActivityTestRule, () -> {
-                    mDelegate.handleAction(mContext, startTextQueryIntent);
-                }, /*shouldActivityLaunchVoiceMode=*/false);
-    }
-
-    @Test
-    @SmallTest
-    public void testHandleStartVoiceQueryAction() {
-        Intent startVoiceQueryIntent =
-                new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY);
-
-        QuickActionSearchWidgetTestUtils.assertSearchActivityLaunchedAfterAction(
-                mActivityTestRule, () -> {
-                    mDelegate.handleAction(mContext, startVoiceQueryIntent);
-                }, /*shouldActivityLaunchVoiceMode=*/true);
-    }
-
-    @Test
-    @SmallTest
     public void testHandleStartDinoGameAction() {
         Intent startDinoGameIntent =
                 new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME);

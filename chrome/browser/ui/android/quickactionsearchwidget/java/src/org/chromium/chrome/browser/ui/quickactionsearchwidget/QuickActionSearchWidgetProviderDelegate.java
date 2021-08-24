@@ -13,6 +13,7 @@ import android.support.annotation.CallSuper;
 import android.widget.RemoteViews;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 
 /**
  * This class serves as the delegate for the {@link QuickActionSearchWidgetProvider}. This class
@@ -20,6 +21,7 @@ import org.chromium.base.IntentUtils;
  */
 public class QuickActionSearchWidgetProviderDelegate {
     private final @QuickActionSearchWidgetType int mWidgetType;
+    private final ComponentName mSearchActivityComponent;
     private final ComponentName mWidgetReceiverComponent;
     private final Intent mStartIncognitoTabIntent;
 
@@ -31,11 +33,15 @@ public class QuickActionSearchWidgetProviderDelegate {
      *         android.content.BroadcastReceiver} that will receive the intents that are broadcast
      *         when the user interacts with the widget. Generally this component is {@link
      *         QuickActionSearchWidgetReceiver}.
+     * @param searchActivityComponent Component linking to SearchActivity where all Search related
+     *          events will be propagated.
      * @param startIncognitoIntent A trusted intent starting a new Incognito tab.
      */
     public QuickActionSearchWidgetProviderDelegate(@QuickActionSearchWidgetType int widgetType,
-            ComponentName widgetReceiverComponent, Intent startIncognitoTabIntent) {
+            ComponentName widgetReceiverComponent, ComponentName searchActivityComponent,
+            Intent startIncognitoTabIntent) {
         mWidgetType = widgetType;
+        mSearchActivityComponent = searchActivityComponent;
         mWidgetReceiverComponent = widgetReceiverComponent;
         mStartIncognitoTabIntent = startIncognitoTabIntent;
         mStartIncognitoTabIntent.addFlags(
@@ -100,13 +106,13 @@ public class QuickActionSearchWidgetProviderDelegate {
 
         // Search Bar Intent
         PendingIntent textSearchPendingIntent = createPendingIntentForAction(
-                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY);
+                context, SearchActivityConstants.ACTION_START_TEXT_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.quick_action_search_widget_search_bar_container, textSearchPendingIntent);
 
         // Voice Search Intent
         PendingIntent voiceSearchPendingIntent = createPendingIntentForAction(
-                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY);
+                context, SearchActivityConstants.ACTION_START_VOICE_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.voice_search_quick_action_button, voiceSearchPendingIntent);
 
@@ -116,9 +122,18 @@ public class QuickActionSearchWidgetProviderDelegate {
         remoteViews.setOnClickPendingIntent(
                 R.id.incognito_quick_action_button, incognitoTabPendingIntent);
 
+        // Lens Search Intent
+        PendingIntent lensSearchPendingIntent = createPendingIntentForAction(
+                context, SearchActivityConstants.ACTION_START_LENS_SEARCH);
+        remoteViews.setOnClickPendingIntent(R.id.lens_quick_action_button, lensSearchPendingIntent);
+
         // Dino Game intent
-        PendingIntent dinoGamePendingIntent = createPendingIntentForAction(
-                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME);
+        // TODO(crbug/1213541): Drop broadcast/intent trampoline and use direct launch intent.
+        PendingIntent dinoGamePendingIntent = PendingIntent.getBroadcast(context, 0,
+                createTrustedIntentForAction(mWidgetReceiverComponent,
+                        QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME),
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
         remoteViews.setOnClickPendingIntent(R.id.dino_quick_action_button, dinoGamePendingIntent);
 
         return remoteViews;
@@ -133,8 +148,8 @@ public class QuickActionSearchWidgetProviderDelegate {
      *         action.
      */
     private PendingIntent createPendingIntentForAction(final Context context, final String action) {
-        Intent intent = createTrustedIntentForAction(action);
-        return PendingIntent.getBroadcast(context, /*requestCode=*/0, intent,
+        Intent intent = createTrustedIntentForAction(mSearchActivityComponent, action);
+        return PendingIntent.getActivity(context, /*requestCode=*/0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
@@ -156,12 +171,14 @@ public class QuickActionSearchWidgetProviderDelegate {
     /**
      * Creates a trusted intent corresponding to a specified action.
      *
+     * @param component The target component that will handle the action.
      * @param action a String specifying the action for the trusted intent.
      * @return A trusted intent corresponding to the specified action.
      */
-    private Intent createTrustedIntentForAction(final String action) {
+    private Intent createTrustedIntentForAction(
+            final ComponentName component, final String action) {
         Intent intent = new Intent(action);
-        intent.setComponent(mWidgetReceiverComponent);
+        intent.setComponent(component);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;

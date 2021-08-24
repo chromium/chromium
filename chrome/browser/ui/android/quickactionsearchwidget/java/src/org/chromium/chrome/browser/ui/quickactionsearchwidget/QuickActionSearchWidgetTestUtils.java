@@ -8,11 +8,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
+import android.text.TextUtils;
 import android.view.View;
 
 import org.junit.Assert;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
@@ -85,8 +85,8 @@ class QuickActionSearchWidgetTestUtils {
     private static void assertSearchActivityLaunchedWithCorrectVoiceExtras(
             final Activity activity, final boolean shouldActivityLaunchVoiceMode) {
         Intent intent = activity.getIntent();
-        boolean isVoiceMode = IntentUtils.safeGetBooleanExtra(
-                intent, SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, false);
+        boolean isVoiceMode = TextUtils.equals(
+                intent.getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
         Assert.assertEquals(shouldActivityLaunchVoiceMode, isVoiceMode);
     }
 

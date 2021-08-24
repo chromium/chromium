@@ -973,12 +973,6 @@ by a child template that "extends" this file.
             android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_VOICE_QUERY" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME" />
             </intent-filter>
         </receiver>

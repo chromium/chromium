@@ -87,14 +87,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    // The following actions are used to uniquely tag intents so that installing a new PendingIntent
-    // does not override previously installed ones.
-    // These strings serve no other purpose.
-    private static final String ACTION_START_TEXT_QUERY =
-            "org.chromium.chrome.browser.searchwidget.START_TEXT_QUERY";
-    private static final String ACTION_START_VOICE_QUERY =
-            "org.chromium.chrome.browser.searchwidget.START_VOICE_QUERY";
-
     public static final String EXTRA_FROM_SEARCH_WIDGET =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
@@ -123,13 +115,12 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
         // Launch the SearchActivity.
         Intent searchIntent =
-                new Intent(startVoiceSearch ? ACTION_START_VOICE_QUERY : ACTION_START_TEXT_QUERY);
+                new Intent(startVoiceSearch ? SearchActivityConstants.ACTION_START_VOICE_SEARCH
+                                            : SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+
         searchIntent.setClass(context, SearchActivity.class);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        searchIntent.putExtra(
-                SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, startVoiceSearch);
-
         searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =

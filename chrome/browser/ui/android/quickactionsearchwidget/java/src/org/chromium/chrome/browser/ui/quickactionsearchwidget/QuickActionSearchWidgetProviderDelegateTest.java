@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver;
+import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -54,8 +55,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     private static final class TestDelegate extends QuickActionSearchWidgetProviderDelegate {
         public TestDelegate(@QuickActionSearchWidgetType int widgetType,
-                ComponentName widgetReceiverComponent, Intent startIncognitoTab) {
-            super(widgetType, widgetReceiverComponent, startIncognitoTab);
+                ComponentName widgetReceiverComponent, ComponentName searchActivityComponent,
+                Intent startIncognitoTab) {
+            super(widgetType, widgetReceiverComponent, searchActivityComponent, startIncognitoTab);
         }
 
         public final List<RemoteViews> mRemoteViews = new ArrayList<>();
@@ -89,8 +91,10 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         ComponentName widgetReceiverComponent =
                 new ComponentName(mContext, QuickActionSearchWidgetReceiver.class);
+        ComponentName searchActivityComponent = new ComponentName(mContext, SearchActivity.class);
 
         mDelegate = new TestDelegate(QuickActionSearchWidgetType.SMALL, widgetReceiverComponent,
+                searchActivityComponent,
                 IntentHandler.createTrustedOpenNewTabIntent(mContext, /*incognito=*/true));
 
         setUpViews();

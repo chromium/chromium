@@ -343,8 +343,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private boolean isVoiceSearchIntent() {
-        return IntentUtils.safeGetBooleanExtra(
-                getIntent(), SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, false);
+        return TextUtils.equals(
+                getIntent().getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
     }
 
     private boolean isFromSearchWidget() {

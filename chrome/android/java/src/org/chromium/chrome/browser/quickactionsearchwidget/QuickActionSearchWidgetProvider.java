@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
 
@@ -82,9 +83,11 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
 
             ComponentName widgetReceiverComponent =
                     new ComponentName(context, QuickActionSearchWidgetReceiver.class);
+            ComponentName searchActivityComponent =
+                    new ComponentName(context, SearchActivity.class);
 
             mDelegate = new QuickActionSearchWidgetProviderDelegate(widgetType,
-                    widgetReceiverComponent,
+                    widgetReceiverComponent, searchActivityComponent,
                     IntentHandler.createTrustedOpenNewTabIntent(context, /*incognito=*/true));
         }
         return mDelegate;
