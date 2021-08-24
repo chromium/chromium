@@ -337,21 +337,28 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
 
 void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
+  const apps::Instance::InstanceKey& instance_key = update.InstanceKey();
   if (update.IsDestruction()) {
     // For Chrome apps edge case, it could be added for the inactive users, and
     // then removed. Since it is not registered we don't need to do anything
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
+    if (instance_key.IsForWebBasedApp())
+      return;
     WindowList::iterator it =
-        std::find(window_list_.begin(), window_list_.end(), update.Window());
+        std::find(window_list_.begin(), window_list_.end(),
+                  instance_key.GetEnclosingAppWindow());
     if (it != window_list_.end())
       window_list_.erase(it);
     return;
   }
 
-  aura::Window* window = update.Window();
-  if (!observed_windows_.IsObservingSource(window))
+  aura::Window* window = instance_key.GetEnclosingAppWindow();
+  // Only deal with window based app instances past here.
+  if (instance_key.IsForWebBasedApp() ||
+      !observed_windows_.IsObservingSource(window)) {
     return;
+  }
 
   ash::ShelfID shelf_id(update.AppId(), update.LaunchId());
 
@@ -698,6 +705,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     aura::Window* window,
     const ash::ShelfID& shelf_id,
     content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
   // If the window was created for the active user, register it to show an item
   // on the shelf.
   if (proxy_->InstanceRegistry().Exists(
@@ -720,12 +728,15 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     proxy->InstanceRegistry().ForEachInstance(
         [&other_window, &window, &shelf_id, &browser_context, &helper,
          &current_account_id](const apps::InstanceUpdate& update) {
-          if (helper->IsWindowOnDesktopOfUser(update.Window(),
-                                              current_account_id) &&
+          const apps::Instance::InstanceKey& instance_key =
+              update.InstanceKey();
+          if (helper->IsWindowOnDesktopOfUser(
+                  instance_key.GetEnclosingAppWindow(), current_account_id) &&
               (update.AppId() == shelf_id.app_id) &&
               (update.BrowserContext() == browser_context) &&
-              update.Window() != window) {
-            other_window = update.Window();
+              instance_key.GetEnclosingAppWindow() != window) {
+            DCHECK(!instance_key.IsForWebBasedApp());
+            other_window = instance_key.GetEnclosingAppWindow();
           }
         });
     if (other_window)

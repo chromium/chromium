@@ -162,11 +162,12 @@ void AppServiceInstanceRegistryHelper::OnTabClosing(
 void AppServiceInstanceRegistryHelper::OnBrowserRemoved() {
   auto instance_keys = GetInstanceKeys(extension_misc::kChromeAppId);
   for (const apps::Instance::InstanceKey& instance_key : instance_keys) {
-    if (!chrome::FindBrowserWithWindow(instance_key.Window())) {
+    DCHECK(!instance_key.IsForWebBasedApp());
+    if (!chrome::FindBrowserWithWindow(instance_key.GetEnclosingAppWindow())) {
       // The tabs in the browser should be closed, and tab windows have been
       // removed from |browser_window_to_tab_window_|.
       DCHECK(!base::Contains(browser_window_to_tab_instances_,
-                             instance_key.Window()));
+                             instance_key.GetEnclosingAppWindow()));
 
       // The browser is removed if the window can't be found, so update the
       // Chrome window instance as destroyed.
@@ -306,8 +307,10 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     // state for the tab window to keep one instance for the Web app.
     auto instance_keys = GetInstanceKeys(shelf_id.app_id);
     for (const apps::Instance::InstanceKey& instance_key_it : instance_keys) {
-      if (instance_key_it.Window()->GetToplevelWindow() != window)
+      if (instance_key_it.GetEnclosingAppWindow()->GetToplevelWindow() !=
+          window) {
         continue;
+      }
 
       // When the user drags a tab to a new browser, or to an other browser, the
       // top window could be changed, so the relation for the tab window and the
@@ -521,7 +524,8 @@ void AppServiceInstanceRegistryHelper::AddTabInstance(
   if (app_id == extension_misc::kChromeAppId)
     return;
 
-  aura::Window* top_level_window = instance_key.Window()->GetToplevelWindow();
+  aura::Window* top_level_window =
+      instance_key.GetEnclosingAppWindow()->GetToplevelWindow();
   browser_window_to_tab_instances_[top_level_window].insert(instance_key);
   tab_instance_to_browser_window_[instance_key] = top_level_window;
 }

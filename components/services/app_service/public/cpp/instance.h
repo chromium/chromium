@@ -51,6 +51,8 @@ class Instance {
     bool operator!=(const InstanceKey& other) const;
     InstanceKey& operator=(InstanceKey&&) = default;
 
+    bool IsForWebBasedApp() const { return is_web_contents_backed_; }
+
    private:
     explicit InstanceKey(aura::Window* window, bool is_web_contents_backed);
 

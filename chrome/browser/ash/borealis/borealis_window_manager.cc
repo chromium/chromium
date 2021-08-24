@@ -123,12 +123,13 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
 
 void BorealisWindowManager::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  if (!IsBorealisWindow(update.Window()))
+  aura::Window* window = update.InstanceKey().GetEnclosingAppWindow();
+  if (!IsBorealisWindow(window))
     return;
   if (update.IsCreation()) {
-    HandleWindowCreation(update.Window(), update.AppId());
+    HandleWindowCreation(window, update.AppId());
   } else if (update.IsDestruction()) {
-    HandleWindowDestruction(update.Window(), update.AppId());
+    HandleWindowDestruction(window, update.AppId());
   }
 }
 
