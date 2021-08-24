@@ -13,6 +13,7 @@
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
+#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -22,7 +23,9 @@
 namespace ash {
 namespace quick_pair {
 
-ScannerBrokerImpl::ScannerBrokerImpl() {
+ScannerBrokerImpl::ScannerBrokerImpl(QuickPairProcessManager* process_manager)
+    : process_manager_(process_manager) {
+  DCHECK(process_manager_);
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &ScannerBrokerImpl::OnGetAdapter, weak_pointer_factory_.GetWeakPtr()));
 }

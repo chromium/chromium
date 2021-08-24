@@ -19,6 +19,7 @@
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,7 +56,8 @@ class MediatorTest : public testing::Test {
 
     mediator_ = std::make_unique<Mediator>(
         std::move(tracker), std::move(scanner_broker), std::move(pairer_broker),
-        std::move(ui_broker), std::unique_ptr<FastPairRepository>());
+        std::move(ui_broker), std::unique_ptr<FastPairRepository>(),
+        std::make_unique<QuickPairProcessManagerImpl>());
 
     device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
                                            Protocol::kFastPair);

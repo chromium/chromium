@@ -41,6 +41,7 @@ class QuickPairProcessManagerImpl : public QuickPairProcessManager {
     base::OnceClosure destructor_callback_;
   };
 
+  QuickPairProcessManagerImpl();
   explicit QuickPairProcessManagerImpl(
       std::unique_ptr<QuickPairProcessShutdownController> shutdown_controller);
   QuickPairProcessManagerImpl(const QuickPairProcessManagerImpl&) = delete;

@@ -39,6 +39,10 @@ QuickPairProcessManagerImpl::ProcessReferenceImpl::GetFastPairDataParser()
   return fast_pair_data_parser_;
 }
 
+QuickPairProcessManagerImpl::QuickPairProcessManagerImpl()
+    : QuickPairProcessManagerImpl(
+          std::make_unique<QuickPairProcessShutdownController>()) {}
+
 QuickPairProcessManagerImpl::QuickPairProcessManagerImpl(
     std::unique_ptr<QuickPairProcessShutdownController> shutdown_controller)
     : process_shutdown_controller_(std::move(shutdown_controller)) {}

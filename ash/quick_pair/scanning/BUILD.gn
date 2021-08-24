@@ -26,6 +26,7 @@ source_set("scanning") {
   deps = [
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
+    "//ash/services/quick_pair",
     "//base",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",

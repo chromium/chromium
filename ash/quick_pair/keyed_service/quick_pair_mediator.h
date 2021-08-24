@@ -19,6 +19,7 @@ namespace quick_pair {
 
 class FastPairRepository;
 struct Device;
+class QuickPairProcessManager;
 
 // Implements the Mediator design pattern for the components in the Quick Pair
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
@@ -41,7 +42,8 @@ class Mediator final : public FeatureStatusTracker::Observer,
            std::unique_ptr<ScannerBroker> scanner_broker,
            std::unique_ptr<PairerBroker> pairer_broker,
            std::unique_ptr<UIBroker> ui_broker,
-           std::unique_ptr<FastPairRepository> fast_pair_repository);
+           std::unique_ptr<FastPairRepository> fast_pair_repository,
+           std::unique_ptr<QuickPairProcessManager> process_manager);
   Mediator(const Mediator&) = delete;
   Mediator& operator=(const Mediator&) = delete;
   ~Mediator() override;
@@ -78,6 +80,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
   std::unique_ptr<PairerBroker> pairer_broker_;
   std::unique_ptr<UIBroker> ui_broker_;
   std::unique_ptr<FastPairRepository> fast_pair_repository_;
+  std::unique_ptr<QuickPairProcessManager> process_manager_;
 
   base::ScopedObservation<FeatureStatusTracker, FeatureStatusTracker::Observer>
       feature_status_tracker_observation_{this};
