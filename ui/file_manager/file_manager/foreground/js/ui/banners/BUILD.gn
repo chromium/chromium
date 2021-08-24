@@ -1,0 +1,68 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+
+visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
+
+group("closure_compile") {
+  testonly = true
+  visibility += [ "//ui/file_manager:closure_compile" ]
+  deps = [
+    ":closure_compile_jsmodules",
+    ":js_test_gen_html_modules_type_check_auto",
+  ]
+}
+
+html_to_js("web_components") {
+  visibility += [ "//ui/file_manager/*" ]
+  js_files = [ "warning_banner.js" ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
+
+  deps = [ ":warning_banner" ]
+}
+
+js_library("warning_banner") {
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_unittest("warning_banner_unittest.m") {
+  deps = [
+    ":warning_banner",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util",
+  ]
+}
+
+js_test_gen_html("js_test_gen_html_modules") {
+  deps = [ ":warning_banner_unittest.m" ]
+  is_polymer3 = true
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "generate_exports=false",
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=./gen/ui/file_manager/",
+                    "jscomp_off=duplicate",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=third_party/",
+                  ]
+}

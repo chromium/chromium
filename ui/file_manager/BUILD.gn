@@ -44,6 +44,7 @@ group("closure_compile") {
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",
+    "file_manager/foreground/js/ui/banners:closure_compile",
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
@@ -60,6 +61,7 @@ group("unit_test_data") {
     "file_manager/foreground/js:js_test_gen_html_modules",
     "file_manager/foreground/js/metadata:js_test_gen_html_modules",
     "file_manager/foreground/js/ui:js_test_gen_html_modules",
+    "file_manager/foreground/js/ui/banners:js_test_gen_html_modules",
     "image_loader:js_test_gen_html_modules",
     "video_player/js:js_test_gen_html_modules",
   ]
@@ -381,6 +383,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/elements/xf_circular_progress.js",
     "file_manager/foreground/elements/xf_display_panel.js",
     "file_manager/foreground/elements/xf_panel_item.js",
+    "file_manager/foreground/js/ui/banners/warning_banner.js",
     "file_manager/foreground/js/ui/breadcrumb.js",
   ]
 
@@ -389,6 +392,7 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui:web_components",
+    "//ui/file_manager/file_manager/foreground/js/ui/banners:web_components",
   ]
 }
 
@@ -423,6 +427,7 @@ generate_grd("build_grd") {
 
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
+    "file_manager/images/files/ui/warning_banner_icon.svg",
     "file_manager/images/files/ui/menu_ng.svg",
   ]
 

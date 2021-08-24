@@ -1,0 +1,85 @@
+<style>
+  :host {
+    align-items: center;
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 1px var(--cros-separator-color);
+    display: flex !important;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  :host(:not([hidden])) {
+    height: auto;
+    margin: 16px 16px 4px 0;
+    max-height: 300px;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .warning-banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 32px;
+    padding: 20px 8px 12px 0;
+    width: 100%;
+  }
+
+  .warning-text-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 0 0 8px 16px;
+  }
+
+  .warning-icon {
+    background-image: url(../../../images/files/ui/warning_banner_icon.svg);
+    background-size: 32px 32px;
+    flex: none;
+    height: 32px;
+    margin-inline-end: 20px;
+    width: 32px;
+  }
+
+  .warning-message {
+    color: var(--cros-text-color-primary);
+  }
+
+  .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 40px;
+  }
+
+  ::slotted(cr-button),
+  .dismiss-button {
+    border: 0;
+    box-shadow: none;
+    height: 32px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+    position: relative;
+  }
+</style>
+<div class="warning-banner">
+  <div class="warning-text-group">
+    <div class="warning-icon"></div>
+    <div class="warning-message body2-primary">
+      <slot name="text" tabindex="0"></slot>
+    </div>
+  </div>
+  <div class="button-group">
+    <slot name="extra-button"></slot>
+    <slot name="dismiss-button">
+      <cr-button class="dismiss-button">
+        $i18n{DRIVE_WELCOME_DISMISS}
+      </cr-button>
+    </slot>
+  </div>
+</div>

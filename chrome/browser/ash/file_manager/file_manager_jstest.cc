@@ -40,6 +40,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerUtil) {
   RunTestURL("foreground/js/banner_util_unittest.m_gen.html");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerWarning) {
+  RunTestURL("foreground/js/ui/banners/warning_banner_unittest.m_gen.html");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
   RunTestURL(
       "foreground/js/metadata/content_metadata_provider_unittest.m_gen.html");

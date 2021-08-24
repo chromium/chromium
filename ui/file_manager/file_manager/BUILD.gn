@@ -9,6 +9,7 @@ copy("fix_broken_images") {
   sources = [
     "foreground/images/files/ui/arrow_right.svg",
     "foreground/images/files/ui/menu_ng.svg",
+    "foreground/images/files/ui/warning_banner_icon.svg",
   ]
   outputs = [ "$target_gen_dir/images/files/ui/{{source_file_part}}" ]
 }
@@ -77,6 +78,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/arrow_right_white.png",
     "foreground/images/files/ui/2x/arrow_right_white.png",
     "foreground/images/files/ui/back.svg",
+    "foreground/images/files/ui/warning_banner_icon.svg",
     "foreground/images/files/ui/cloud_import_syncing.png",
     "foreground/images/files/ui/2x/cloud_import_syncing.png",
     "foreground/images/files/ui/delete.svg",
