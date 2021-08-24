@@ -12,6 +12,10 @@ crbug.com/1197454 external/wpt/document-policy/experimental-features/unsized-med
 
 # Basic card is not supported in WebLayer.
 crbug.com/1213456 external/wpt/payment-method-basic-card/payment-request-canmakepayment-method.https.html [ Skip ]
+crbug.com/1213456 external/wpt/payment-request/payment-request-abort-method.https.html [ Skip ]
+crbug.com/1213456 external/wpt/payment-request/payment-request-canmakepayment-method.https.html [ Skip ]
+crbug.com/1213456 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Skip ]
+crbug.com/1213456 external/wpt/payment-request/rejects_if_not_active.https.html [ Skip ]
 
 # Periodic background sync is not supported in WebLayer.
 crbug.com/1091211 external/wpt/periodic-background-sync/periodicsync.https.window.html [ Skip ]
@@ -1282,12 +1286,8 @@ crbug.com/1050754 external/wpt/paint-timing/with-first-paint/sibling-painting-fi
 crbug.com/1050754 external/wpt/payment-handler/can-make-payment-event.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-handler/respond-with-minimal-ui.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-request/constructor_convert_method_data.https.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/payment-request/payment-request-abort-method.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/payment-request/payment-request-canmakepayment-method.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/payment-request/payment-request-hasenrolledinstrument-method-protection.tentative.https.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-request/payment-request-show-method.https.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/payment-request/rejects_if_not_active.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/payment-request/show-consume-activation.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-request/show-method-optional-promise-rejects.https.html [ Pass ]
 crbug.com/1050754 external/wpt/performance-timeline/idlharness.any.sharedworker.html [ Failure ]
