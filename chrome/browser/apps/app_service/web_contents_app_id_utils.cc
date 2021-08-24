@@ -79,7 +79,8 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
 
   // Use the Browser's app name to determine the web app for app windows and use
   // the tab's url for app tabs.
-  if (auto* provider = web_app::WebAppProvider::Get(profile)) {
+  if (auto* provider =
+          web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
     if (browser) {
       web_app::AppBrowserController* app_controller = browser->app_controller();
       if (app_controller) {
