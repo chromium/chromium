@@ -152,8 +152,6 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RegisterApp(app_id);
   }
 
-  void RegisterTestApp() { test_commands_->RegisterTestApp(); }
-
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
 
   base::FilePath GetDifferentUserPath() {
@@ -225,8 +223,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
-// TODO(crbug.com/1222073): Flaky.
-TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
+TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
@@ -294,14 +291,6 @@ TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
 }
 #endif  // defined(OS_MAC)
 
-TEST_F(IntegrationTest, RegisterTestApp) {
-  RegisterTestApp();
-  ExpectInstalled();
-  ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
-  Uninstall();
-}
-
 TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
@@ -341,25 +330,21 @@ TEST_F(IntegrationTest, ReportsActive) {
 }
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
-  RegisterTestApp();
+  Install();
   ExpectInstalled();
-  ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
-
   RegisterApp("test1");
   RegisterApp("test2");
 
   WaitForServerExit();
-
-  SetExistenceCheckerPath(kTestAppId,
-                          base::FilePath(FILE_PATH_LITERAL("NONE")));
+  ExpectVersionActive(kUpdaterVersion);
+  ExpectActiveUpdater();
+  SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
 
   RunWake(0);
 
   WaitForServerExit();
   ExpectInstalled();
-
-  ExpectAppUnregisteredExistenceCheckerPath(kTestAppId);
+  ExpectAppUnregisteredExistenceCheckerPath("test1");
 
   Uninstall();
 }
@@ -376,17 +361,17 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
-  RegisterTestApp();
-  WaitForServerExit();
+  Install();
+  RegisterApp("test1");
   ExpectInstalled();
+  WaitForServerExit();
   SetServerStarts(24);
   RunWake(0);
   WaitForServerExit();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
-  SetExistenceCheckerPath(kTestAppId,
-                          base::FilePath(FILE_PATH_LITERAL("NONE")));
+  SetExistenceCheckerPath("test1", base::FilePath(FILE_PATH_LITERAL("NONE")));
   RunWake(0);
   WaitForServerExit();
   SleepFor(2);
@@ -395,9 +380,8 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
 
 // Windows does not currently have a concept of app ownership, so this
 // test need not run on Windows.
-// TODO(crbug.com/1222073): Flaky.
 #if defined(OS_MAC)
-TEST_F(IntegrationTest, DISABLED_UnregisterUnownedApp) {
+TEST_F(IntegrationTest, UnregisterUnownedApp) {
   Install();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
