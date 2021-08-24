@@ -751,16 +751,10 @@ void ArcSessionManager::OnProvisioningFinished(
 
   VLOG(1) << "ARC provisioning failed: " << result << ".";
 
-  // When ARC provisioning fails due to Chrome failing to talk to server, we
-  // don't need to keep the ARC session running as the logs necessary to
-  // investigate are already present. ARC session will not provide any useful
-  // context.
-  if (result.stop_reason() ||
-      result.general_error() ==
-          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR) {
+  if (result.stop_reason()) {
     if (profile_->GetPrefs()->HasPrefPath(prefs::kArcSignedIn))
       profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
-    VLOG(1) << "Stopping ARC due to provisioning failure";
+    VLOG(1) << "ARC stopped unexpectedly";
     ShutdownSession();
   }
 

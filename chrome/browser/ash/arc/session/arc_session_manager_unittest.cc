@@ -1521,7 +1521,7 @@ TEST_F(ArcSessionManagerPublicSessionTest, AuthFailure) {
   arc_session_manager()->OnProvisioningFinished(
       ArcProvisioningResult(std::move(result)));
   EXPECT_FALSE(terminated);
-  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
 class ArcSessionOobeOptInNegotiatorTest
@@ -1727,7 +1727,7 @@ ArcSessionRetryTestParam kRetryTestCases[] = {
      ArcStopReason::CRASH},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, true,
      ChromeProvisioningTimeout{}},
-    {ArcSessionRetryTestParam::Negotiation::REQUIRED, false, false,
+    {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
      arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
      arc::mojom::GeneralSignInError::NO_NETWORK_CONNECTION},
