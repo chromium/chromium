@@ -38,9 +38,6 @@
 #if defined(OS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #endif
-#if defined(OS_ANDROID)
-#include "chrome/browser/password_manager/android/password_store_android_backend_bridge_impl.h"
-#endif
 
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
