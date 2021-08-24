@@ -15,6 +15,9 @@ namespace features {
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kOpenscreenCastStreamingSession;
 
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+extern const base::Feature kCastStreamingVp9;
+
 }  // namespace features
 }  // namespace mirroring
 

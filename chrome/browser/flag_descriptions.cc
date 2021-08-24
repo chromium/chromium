@@ -1357,10 +1357,16 @@ const char kGlobalMediaControlsOverlayControlsDescription[] =
 
 const char kOpenscreenCastStreamingSessionName[] =
     "Enable Open Screen Library (libcast) as the Mirroring Service's Cast "
-    "Streaming implementation.";
+    "Streaming implementation";
 const char kOpenscreenCastStreamingSessionDescription[] =
     "Enables Open Screen Library's (libcast) Cast Streaming implementation to "
-    "be used for negotiating and executing mirroring and remoting sessions";
+    "be used for negotiating and executing mirroring and remoting sessions.";
+
+const char kCastStreamingVp9Name[] =
+    "Enable VP9 codec video encoding in Cast mirroring sessions";
+const char kCastStreamingVp9Description[] =
+    "Enables the inclusion of VP9 codec video encoding in Cast mirroring "
+    "session negotiations.";
 
 const char kGoogleLensSdkIntentName[] =
     "Enable the use of the Lens SDK when starting intent into Lens.";

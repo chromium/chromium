@@ -12,5 +12,11 @@ namespace features {
 const base::Feature kOpenscreenCastStreamingSession{
     "OpenscreenCastStreamingSession", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether offers using the VP9 codec for video encoding are included
+// in mirroring negotiations in addition to the VP8 codec, or offers only
+// include VP8.
+const base::Feature kCastStreamingVp9{"CastStreamingVp9",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace mirroring

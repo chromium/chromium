@@ -778,6 +778,9 @@ extern const char kGlobalMediaControlsOverlayControlsDescription[];
 extern const char kOpenscreenCastStreamingSessionName[];
 extern const char kOpenscreenCastStreamingSessionDescription[];
 
+extern const char kCastStreamingVp9Name[];
+extern const char kCastStreamingVp9Description[];
+
 extern const char kGoogleLensSdkIntentName[];
 extern const char kGoogleLensSdkIntentDescription[];
 

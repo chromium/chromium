@@ -3679,6 +3679,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOpenscreenCastStreamingSessionName,
      flag_descriptions::kOpenscreenCastStreamingSessionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kOpenscreenCastStreamingSession)},
+
+    {"enable-cast-streaming-vp9", flag_descriptions::kCastStreamingVp9Name,
+     flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingVp9)},
+
 #endif  // !OS_ANDROID
 
 #if defined(OS_ANDROID)
