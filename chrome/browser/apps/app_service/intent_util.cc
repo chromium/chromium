@@ -28,9 +28,10 @@ namespace {
 
 constexpr char kTextPlain[] = "text/plain";
 
-apps::mojom::IntentFilterPtr CreateShareFileFilter(
+apps::mojom::IntentFilterPtr CreateMimeTypeFilter(
     const std::vector<std::string>& intent_actions,
-    const std::vector<std::string>& content_types) {
+    const std::vector<std::string>& content_types,
+    const std::string& activity_name = "") {
   DCHECK(!content_types.empty());
   auto intent_filter = apps::mojom::IntentFilter::New();
 
@@ -58,6 +59,46 @@ apps::mojom::IntentFilterPtr CreateShareFileFilter(
     intent_filter->conditions.push_back(std::move(mime_type_condition));
   }
 
+  if (!activity_name.empty()) {
+    intent_filter->activity_name = activity_name;
+  }
+  return intent_filter;
+}
+
+apps::mojom::IntentFilterPtr CreateFileExtensionFilter(
+    const std::vector<std::string>& intent_actions,
+    const std::vector<std::string>& file_extensions,
+    const std::string& activity_name = "") {
+  DCHECK(!file_extensions.empty());
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  for (auto& action : intent_actions) {
+    action_condition_values.push_back(apps_util::MakeConditionValue(
+        action, apps::mojom::PatternMatchType::kNone));
+  }
+  if (!action_condition_values.empty()) {
+    auto action_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
+                                 std::move(action_condition_values));
+    intent_filter->conditions.push_back(std::move(action_condition));
+  }
+
+  std::vector<apps::mojom::ConditionValuePtr> extension_condition_values;
+  for (const std::string& extension : file_extensions) {
+    extension_condition_values.push_back(apps_util::MakeConditionValue(
+        extension, apps::mojom::PatternMatchType::kFileExtension));
+  }
+  if (!extension_condition_values.empty()) {
+    auto url_extension_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kFileExtension,
+                                 std::move(extension_condition_values));
+    intent_filter->conditions.push_back(std::move(url_extension_condition));
+  }
+
+  if (!activity_name.empty()) {
+    intent_filter->activity_name = activity_name;
+  }
   return intent_filter;
 }
 
@@ -73,7 +114,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
   if (!share_target.params.text.empty()) {
     // The share target accepts navigator.share() calls with text.
     filters.push_back(
-        CreateShareFileFilter({apps_util::kIntentActionSend}, {kTextPlain}));
+        CreateMimeTypeFilter({apps_util::kIntentActionSend}, {kTextPlain}));
   }
 
   std::vector<std::string> content_types;
@@ -92,7 +133,31 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
   if (!content_types.empty()) {
     const std::vector<std::string> intent_actions(
         {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
-    filters.push_back(CreateShareFileFilter(intent_actions, content_types));
+    filters.push_back(CreateMimeTypeFilter(intent_actions, content_types));
+  }
+
+  return filters;
+}
+
+std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
+    const web_app::WebApp& web_app) {
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+  for (const apps::FileHandler& handler : web_app.file_handlers()) {
+    std::vector<std::string> mime_types;
+    std::vector<std::string> file_extensions;
+    std::string action_url = handler.action.spec();
+    // TODO(petermarshall): Use GetFileExtensionsFromFileHandlers /
+    // GetMimeTypesFromFileHandlers?
+    for (const apps::FileHandler::AcceptEntry& accept_entry : handler.accept) {
+      mime_types.push_back(accept_entry.mime_type);
+      for (const std::string& extension : accept_entry.file_extensions) {
+        file_extensions.push_back(extension);
+      }
+    }
+    filters.push_back(CreateMimeTypeFilter({apps_util::kIntentActionView},
+                                           mime_types, action_url));
+    filters.push_back(CreateFileExtensionFilter({apps_util::kIntentActionView},
+                                                file_extensions, action_url));
   }
 
   return filters;
@@ -157,6 +222,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
   filters.push_back(apps_util::CreateIntentFilterForUrlScope(web_app.scope()));
 
   base::Extend(filters, CreateWebAppShareIntentFilters(web_app));
+  base::Extend(filters, CreateWebAppFileHandlerIntentFilters(web_app));
 
   if (IsNoteTakingWebApp(web_app))
     filters.push_back(CreateNoteTakingIntentFilter(web_app));
@@ -394,6 +460,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
               break;
             case apps::mojom::PatternMatchType::kNone:
             case apps::mojom::PatternMatchType::kMimeType:
+            case apps::mojom::PatternMatchType::kFileExtension:
               NOTREACHED();
               return arc::IntentFilter();
           }
@@ -412,6 +479,9 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
           mime_types.push_back(condition_value->value);
         }
         break;
+      case apps::mojom::ConditionType::kFileExtension:
+        NOTREACHED();
+        return arc::IntentFilter();
     }
   }
   // TODO(crbug.com/853604): Add support for other category types.

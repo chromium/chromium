@@ -28,6 +28,14 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
     const std::string& mime_types,
     const std::string& activity_label = "");
 
+apps::mojom::IntentFilterPtr CreateMimeTypeIntentFilterForView(
+    const std::string& mime_type,
+    const std::string& activity_label);
+
+apps::mojom::IntentFilterPtr CreateFileExtensionIntentFilterForView(
+    const std::string& file_extension,
+    const std::string& activity_label);
+
 // Add a condition value to the |intent_filter|. If the |condition_type|
 // exists, add the condition value to the existing condition, otherwise
 // create new condition.

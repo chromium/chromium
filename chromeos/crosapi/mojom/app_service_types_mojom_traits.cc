@@ -403,6 +403,8 @@ EnumTraits<crosapi::mojom::ConditionType, apps::mojom::ConditionType>::ToMojom(
       return crosapi::mojom::ConditionType::kAction;
     case apps::mojom::ConditionType::kMimeType:
       return crosapi::mojom::ConditionType::kMimeType;
+    case apps::mojom::ConditionType::kFileExtension:
+      return crosapi::mojom::ConditionType::kFileExtension;
   }
 
   NOTREACHED();
@@ -446,6 +448,9 @@ bool EnumTraits<crosapi::mojom::ConditionType, apps::mojom::ConditionType>::
     case crosapi::mojom::ConditionType::kMimeType:
       *output = apps::mojom::ConditionType::kMimeType;
       return true;
+    case crosapi::mojom::ConditionType::kFileExtension:
+      *output = apps::mojom::ConditionType::kFileExtension;
+      return true;
   }
 
   NOTREACHED();
@@ -466,6 +471,8 @@ EnumTraits<crosapi::mojom::PatternMatchType, apps::mojom::PatternMatchType>::
       return crosapi::mojom::PatternMatchType::kGlob;
     case apps::mojom::PatternMatchType::kMimeType:
       return crosapi::mojom::PatternMatchType::kMimeType;
+    case apps::mojom::PatternMatchType::kFileExtension:
+      return crosapi::mojom::PatternMatchType::kFileExtension;
   }
 
   NOTREACHED();
@@ -490,6 +497,9 @@ bool EnumTraits<crosapi::mojom::PatternMatchType,
       return true;
     case crosapi::mojom::PatternMatchType::kMimeType:
       *output = apps::mojom::PatternMatchType::kMimeType;
+      return true;
+    case crosapi::mojom::PatternMatchType::kFileExtension:
+      *output = apps::mojom::PatternMatchType::kFileExtension;
       return true;
   }
 

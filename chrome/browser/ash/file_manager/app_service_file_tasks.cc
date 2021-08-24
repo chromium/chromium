@@ -9,8 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -21,12 +23,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/entry_info.h"
@@ -69,9 +74,33 @@ void FindAppServiceTasks(Profile* profile,
                          std::vector<FullTaskDescriptor>* result_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(entries.size(), file_urls.size());
+  // App Service uses the file extension in the URL for file_handlers for Web
+  // Apps.
+#if DCHECK_IS_ON()
+  for (const GURL& url : file_urls)
+    DCHECK(url.is_valid());
+#endif  // DCHECK_IS_ON()
 
+  // WebApps only have full support for files backed by inodes, so tasks
+  // provided by most Web Apps will be skipped if any non-native files are
+  // present. "System" Web Apps are an exception: we have more control over what
+  // they can do, so tasks provided by System Web Apps are the only ones
+  // permitted at present. See https://crbug.com/1079065.
+  bool has_non_native_file = false;
+  bool has_pdf_file = false;
+  for (const auto& entry : entries) {
+    if (!has_non_native_file &&
+        util::IsUnderNonNativeLocalPath(profile, entry.path))
+      has_non_native_file = true;
+    if (!has_pdf_file && entry.path.Extension() == ".pdf")
+      has_pdf_file = true;
+  }
+
+  // App Service doesn't exist in Incognito mode but we still want to find
+  // handlers to open a download from its notification from Incognito mode. Use
+  // the base profile in these cases (see crbug.com/1111695).
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    return;
+    profile = profile->GetOriginalProfile();
 
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -82,29 +111,39 @@ void FindAppServiceTasks(Profile* profile,
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       proxy->GetAppsForFiles(file_urls, mime_types);
 
-  std::string task_action_id =
-      entries.size() == 1 ? kActionIdSend : kActionIdSendMultiple;
   using extensions::api::file_manager_private::Verb;
-  // TODO(crbug/1092784): Support file open with in the future.
   for (auto& launch_entry : intent_launch_info) {
     apps::mojom::AppType app_type =
         proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
-    // TODO(crbug/1092784): Only going to support ARC app and web app.
+    // TODO(crbug/1092784): Only going to support ARC app and web apps.
     if (!(app_type == apps::mojom::AppType::kArc ||
-          app_type == apps::mojom::AppType::kWeb)) {
+          app_type == apps::mojom::AppType::kWeb ||
+          app_type == apps::mojom::AppType::kSystemWeb))
       continue;
-    }
+
+    // Media app and other SWAs can handle "non-native" files.
+    if (has_non_native_file && launch_entry.app_id != web_app::kMediaAppId)
+      continue;
+
+    // "Hide" the media app task (i.e. skip the rest of this loop which would
+    // add it as a handler) when the flag to handle PDF is off.
+    if (launch_entry.app_id == web_app::kMediaAppId &&
+        !base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
+        has_pdf_file)
+      continue;
 
     constexpr int kIconSize = 32;
     GURL icon_url =
         apps::AppIconSource::GetIconURL(launch_entry.app_id, kIconSize);
     result_list->push_back(FullTaskDescriptor(
         TaskDescriptor(launch_entry.app_id, GetTaskType(app_type),
-                       task_action_id),
-        launch_entry.activity_label, Verb::VERB_SHARE_WITH, icon_url,
+                       launch_entry.activity_name),
+        launch_entry.activity_label, Verb::VERB_OPEN_WITH, icon_url,
         /* is_default=*/false,
-        /* is_generic=*/true,
-        /* is_file_extension_match=*/false));
+        // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
+        // e.g. IsGoodMatchAppsFileHandler().
+        /* is_generic=*/launch_entry.app_id != web_app::kMediaAppId,
+        /* is_file_extension_match=*/launch_entry.is_file_extension_match));
   }
 }
 

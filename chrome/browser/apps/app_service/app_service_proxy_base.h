@@ -33,9 +33,14 @@ namespace apps {
 class AppServiceImpl;
 
 struct IntentLaunchInfo {
+  IntentLaunchInfo();
+  ~IntentLaunchInfo();
+  IntentLaunchInfo(const IntentLaunchInfo& other);
+
   std::string app_id;
   std::string activity_name;
   std::string activity_label;
+  bool is_file_extension_match;
 };
 
 // Singleton (per Profile) proxy and cache of an App Service's apps.

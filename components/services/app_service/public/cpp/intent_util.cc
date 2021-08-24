@@ -80,6 +80,18 @@ std::vector<std::string> GetIntentConditionValuesByType(
         return {intent->mime_type.value()};
       return {};
     }
+    case apps::mojom::ConditionType::kFileExtension: {
+      if (!intent->files.has_value())
+        return {};
+
+      std::vector<std::string> paths;
+      std::transform(intent->files->begin(), intent->files->end(),
+                     std::back_inserter(paths),
+                     [](const apps::mojom::IntentFilePtr& file) {
+                       return file->url.path();
+                     });
+      return paths;
+    }
   }
 }
 
@@ -157,13 +169,13 @@ apps::mojom::IntentPtr CreateCreateNoteIntent() {
   return intent;
 }
 
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
+namespace {
+
+apps::mojom::IntentPtr CreateIntentFromFiles(
     const std::vector<GURL>& filesystem_urls,
     const std::vector<std::string>& mime_types) {
   DCHECK_EQ(filesystem_urls.size(), mime_types.size());
   auto intent = apps::mojom::Intent::New();
-  intent->action = filesystem_urls.size() == 1 ? kIntentActionSend
-                                               : kIntentActionSendMultiple;
   intent->mime_type = CalculateCommonMimeType(mime_types);
   intent->files = std::vector<apps::mojom::IntentFilePtr>{};
   for (size_t i = 0; i < filesystem_urls.size(); i++) {
@@ -172,6 +184,25 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     file->mime_type = mime_types.at(i);
     intent->files->push_back(std::move(file));
   }
+  return intent;
+}
+
+}  // namespace
+
+apps::mojom::IntentPtr CreateViewIntentFromFiles(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types) {
+  auto intent = CreateIntentFromFiles(filesystem_urls, mime_types);
+  intent->action = kIntentActionView;
+  return intent;
+}
+
+apps::mojom::IntentPtr CreateShareIntentFromFiles(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types) {
+  auto intent = CreateIntentFromFiles(filesystem_urls, mime_types);
+  intent->action = filesystem_urls.size() == 1 ? kIntentActionSend
+                                               : kIntentActionSendMultiple;
   return intent;
 }
 
@@ -246,6 +277,9 @@ bool ConditionValueMatches(
       return MatchGlob(value, condition_value->value);
     case apps::mojom::PatternMatchType::kMimeType:
       return MimeTypeMatched(value, condition_value->value);
+    case apps::mojom::PatternMatchType::kFileExtension:
+      return base::EndsWith(value, condition_value->value,
+                            base::CompareCase::INSENSITIVE_ASCII);
   }
 }
 
@@ -278,6 +312,22 @@ bool IntentMatchesFilter(const apps::mojom::IntentPtr& intent,
   for (const auto& condition : filter->conditions) {
     if (!IntentMatchesCondition(intent, condition)) {
       return false;
+    }
+  }
+  return true;
+}
+
+bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter) {
+  for (const auto& condition : filter->conditions) {
+    if (condition->condition_type !=
+        apps::mojom::ConditionType::kFileExtension) {
+      return false;
+    }
+    for (const auto& condition_value : condition->condition_values) {
+      if (condition_value->match_type !=
+          apps::mojom::PatternMatchType::kFileExtension) {
+        return false;
+      }
     }
   }
   return true;

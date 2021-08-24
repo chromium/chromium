@@ -154,6 +154,7 @@ enum ConditionType {
   kPattern,           // Matches the URL pattern (e.g. /abc/*).
   kAction,            // Matches the action type (e.g. view, send).
   kMimeType,          // Matches the data mime type (e.g. image/jpeg).
+  [MinVersion=1] kFileExtension  // Matches the file extension of all files.
 };
 
 // The pattern match type for intent filter pattern condition.
@@ -164,6 +165,7 @@ enum PatternMatchType {
   kPrefix,
   kGlob,
   kMimeType,
+  [MinVersion=1] kFileExtension,
 };
 
 // For pattern type of condition, the value match will be based on the pattern

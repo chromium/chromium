@@ -557,6 +557,9 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
   apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kMimeType, "5",
                                      apps::mojom::PatternMatchType::kMimeType,
                                      intent_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kFileExtension, "6",
+      apps::mojom::PatternMatchType::kFileExtension, intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
 
   apps::mojom::AppPtr output;
@@ -565,7 +568,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
 
   ASSERT_EQ(output->intent_filters.size(), 1U);
   auto& filter = output->intent_filters[0];
-  ASSERT_EQ(filter->conditions.size(), 5U);
+  ASSERT_EQ(filter->conditions.size(), 6U);
   {
     auto& condition = filter->conditions[0];
     EXPECT_EQ(condition->condition_type, apps::mojom::ConditionType::kScheme);
@@ -605,6 +608,15 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::mojom::PatternMatchType::kMimeType);
     EXPECT_EQ(condition->condition_values[0]->value, "5");
+  }
+  {
+    auto& condition = filter->conditions[5];
+    EXPECT_EQ(condition->condition_type,
+              apps::mojom::ConditionType::kFileExtension);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::mojom::PatternMatchType::kFileExtension);
+    EXPECT_EQ(condition->condition_values[0]->value, "6");
   }
 }
 

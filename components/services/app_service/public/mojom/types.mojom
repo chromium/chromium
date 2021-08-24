@@ -300,11 +300,12 @@ enum MenuType {
 
 // The intent filter matching condition types.
 enum ConditionType {
-  kScheme,    // Matches the URL scheme (e.g. https, tel).
-  kHost,      // Matches the URL host (e.g. www.google.com).
-  kPattern,   // Matches the URL pattern (e.g. /abc/*).
-  kAction,    // Matches the action type (e.g. view, send).
-  kMimeType,  // Matches the data mime type (e.g. image/jpeg).
+  kScheme,         // Matches the URL scheme (e.g. https, tel).
+  kHost,           // Matches the URL host (e.g. www.google.com).
+  kPattern,        // Matches the URL pattern (e.g. /abc/*).
+  kAction,         // Matches the action type (e.g. view, send).
+  kMimeType,       // Matches the data mime type (e.g. image/jpeg).
+  kFileExtension,  // Matches the file extension of all files.
 };
 
 // The pattern match type for intent filter pattern condition.
@@ -314,6 +315,7 @@ enum PatternMatchType {
   kPrefix,
   kGlob,
   kMimeType,
+  kFileExtension,
 };
 
 // For pattern type of condition, the value match will be based on the pattern
@@ -339,7 +341,7 @@ struct IntentFilter {
   array<Condition> conditions;
 
   // Activity which registered this filter. We only fill this field for ARC
-  // share intent filters.
+  // share intent filters and Web App file_handlers.
   string? activity_name;
 
   // The label shown to the user for this activity.

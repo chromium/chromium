@@ -100,6 +100,7 @@ int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
         match_level += IntentFilterMatchLevel::kPattern;
         break;
       case apps::mojom::ConditionType::kMimeType:
+      case apps::mojom::ConditionType::kFileExtension:
         match_level += IntentFilterMatchLevel::kMimeType;
         break;
     }

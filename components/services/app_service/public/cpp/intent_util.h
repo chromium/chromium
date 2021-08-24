@@ -34,7 +34,13 @@ apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
 apps::mojom::IntentPtr CreateCreateNoteIntent();
 
 // Create an intent struct from the filesystem urls and mime types
-// of a list of files.
+// of a list of files with action kIntentActionView.
+apps::mojom::IntentPtr CreateViewIntentFromFiles(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types);
+
+// Create an intent struct from the filesystem urls and mime types
+// of a list of files with action kIntentActionSend{Multiple}.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::vector<GURL>& filesystem_urls,
     const std::vector<std::string>& mime_types);
@@ -79,6 +85,9 @@ bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
 // matches all existing conditions in the filter.
 bool IntentMatchesFilter(const apps::mojom::IntentPtr& intent,
                          const apps::mojom::IntentFilterPtr& filter);
+
+// Return true if |filter| only contains file extension pattern matches.
+bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter);
 
 // Return true if |value| matches |pattern| with simple glob syntax.
 // In this syntax, you can use the '*' character to match against zero or

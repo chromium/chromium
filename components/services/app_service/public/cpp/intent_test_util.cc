@@ -84,6 +84,31 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
                                     activity_label);
 }
 
+apps::mojom::IntentFilterPtr CreateMimeTypeIntentFilterForView(
+    const std::string& mime_type,
+    const std::string& activity_label) {
+  return CreateIntentFilterForShare(kIntentActionView, mime_type,
+                                    activity_label);
+}
+
+apps::mojom::IntentFilterPtr CreateFileExtensionIntentFilterForView(
+    const std::string& file_extension,
+    const std::string& activity_label) {
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, kIntentActionView,
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kFileExtension, file_extension,
+      apps::mojom::PatternMatchType::kFileExtension, intent_filter);
+
+  intent_filter->activity_label = activity_label;
+
+  return intent_filter;
+}
+
 void AddConditionValue(apps::mojom::ConditionType condition_type,
                        const std::string& value,
                        apps::mojom::PatternMatchType pattern_match_type,

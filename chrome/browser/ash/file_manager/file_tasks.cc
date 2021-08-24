@@ -832,23 +832,16 @@ void FindExtensionAndAppTasks(
     std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
   std::vector<FullTaskDescriptor>* result_list_ptr = result_list.get();
 
-  // 2. Find and append Web tasks.
-  FindWebTasks(profile, entries, result_list_ptr);
-
-  // 3. Continues from FindAllTypesOfTasks. Find and append file handler tasks.
+  // 2. Continues from FindAllTypesOfTasks. Find and append file handler tasks.
   FindFileHandlerTasks(profile, entries, result_list_ptr);
 
-  // 4. Find and append file browser handler tasks. We know there aren't
+  // 3. Find and append file browser handler tasks. We know there aren't
   // duplicates because "file_browser_handlers" and "file_handlers" shouldn't
   // be used in the same manifest.json.
   FindFileBrowserHandlerTasks(profile, file_urls, result_list_ptr);
 
-  // TODO(crbug/1092784): Link app service task finder here to test the intent
-  // handling backend. This is not fully completed and only support sharing for
-  // now. When the unified sharesheet UI is completed, this should be removed.
-  if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
-    FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
-  }
+  // 4. Web tasks file_handlers (View/Open With).
+  FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
 
   // 5. Find and append Guest OS tasks.
   FindGuestOsTasks(profile, entries, file_urls, result_list_ptr,

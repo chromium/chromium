@@ -210,10 +210,13 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
   std::vector<extensions::EntryInfo> entries;
   entries.emplace_back(file, mime_type, false);
 
-  // Use empty URLs in this helper (i.e. only support files backed by volumes).
-  // FindExtensionAndAppTasks() does not pass them to FindWebTasks() or
-  // FindFileHandlerTasks() in any case.
-  std::vector<GURL> file_urls(entries.size(), GURL());
+  // Use fake URLs in this helper. This is needed because FindAppServiceTasks
+  // uses the file extension found in the URL to do file extension matching.
+  std::vector<GURL> file_urls;
+  GURL url = GURL(base::JoinString(
+      {"filesystem:https://site.com/isolated/foo", file.Extension()}, ""));
+  CHECK(url.is_valid());
+  file_urls.emplace_back(url);
 
   std::vector<file_tasks::FullTaskDescriptor> result;
   bool invoked_synchronously = false;

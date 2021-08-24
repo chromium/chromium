@@ -109,6 +109,7 @@ class FileTasksBrowserTestBase
 
     for (const Expectation& test : expectations) {
       std::vector<extensions::EntryInfo> entries;
+      std::vector<GURL> file_urls;
       std::vector<base::StringPiece> all_extensions =
           base::SplitStringPiece(test.file_extensions, "/",
                                  base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -125,8 +126,11 @@ class FileTasksBrowserTestBase
           EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
         }
         entries.push_back({path, mime_type, false});
+        GURL url = GURL(base::JoinString(
+            {"filesystem:https://site.com/isolated/foo.", extension}, ""));
+        ASSERT_TRUE(url.is_valid());
+        file_urls.push_back(url);
       }
-      std::vector<GURL> file_urls{entries.size(), GURL()};
 
       // task_verifier callback is invoked synchronously from
       // FindAllTypesOfTasks.
