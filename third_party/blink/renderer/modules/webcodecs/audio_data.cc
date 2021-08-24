@@ -195,6 +195,7 @@ AudioData* AudioData::clone(ExceptionState& exception_state) {
 
 void AudioData::close() {
   data_.reset();
+  temp_bus_.reset();
   format_ = absl::nullopt;
 }
 
@@ -232,16 +233,6 @@ uint64_t AudioData::duration() const {
     return 0;
 
   return data_->duration().InMicroseconds();
-}
-
-bool AudioData::IsInterleaved() {
-  return media::IsInterleaved(
-      static_cast<media::SampleFormat>(data_->sample_format()));
-}
-
-uint32_t AudioData::BytesPerSample() {
-  return media::SampleFormatToBytesPerChannel(
-      static_cast<media::SampleFormat>(data_->sample_format()));
 }
 
 uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
@@ -283,18 +274,34 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
     return 0;
   }
 
+  auto format = data_->sample_format();
+  if (copy_to_options->hasFormat()) {
+    auto dest_format = BlinkFormatToMediaFormat(copy_to_options->format());
+    if (dest_format != data_->sample_format() &&
+        dest_format != media::SampleFormat::kSampleFormatPlanarF32) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "AudioData currently only supports copy conversion to f32-planar.");
+      return 0;
+    }
+
+    format = dest_format;
+  }
+
   uint32_t sample_count = frame_count;
 
   // For interleaved formats, frames are stored as blocks of samples. Each block
   // has 1 sample per channel, and |sample_count| needs to be adjusted.
   bool overflow = false;
-  if (IsInterleaved() && !base::CheckMul(frame_count, data_->channel_count())
-                              .AssignIfValid(&sample_count)) {
+  if (media::IsInterleaved(format) &&
+      !base::CheckMul(frame_count, data_->channel_count())
+           .AssignIfValid(&sample_count)) {
     overflow = true;
   }
 
   uint32_t allocation_size;
-  if (overflow || !base::CheckMul(sample_count, BytesPerSample())
+  if (overflow || !base::CheckMul(sample_count,
+                                  media::SampleFormatToBytesPerChannel(format))
                        .AssignIfValid(&allocation_size)) {
     exception_state.ThrowTypeError(String::Format(
         "Provided options cause overflow when calculating allocation size."));
@@ -332,28 +339,48 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
     return;
   }
 
+  auto dest_format = copy_to_options->hasFormat()
+                         ? BlinkFormatToMediaFormat(copy_to_options->format())
+                         : data_->sample_format();
+
+  const uint8_t* src_data = nullptr;
+  if (dest_format != data_->sample_format()) {
+    // NOTE: The call to allocationSize() above ensures only passthrough or
+    // f32-planar are possible by this point.
+    DCHECK_EQ(dest_format, media::SampleFormat::kSampleFormatPlanarF32);
+
+    // In case of format conversion to float32, convert the entire AudioBuffer
+    // at once and save it for future copy calls.
+    if (!temp_bus_)
+      temp_bus_ = media::AudioBuffer::WrapOrCopyToAudioBus(data_);
+    src_data = reinterpret_cast<const uint8_t*>(
+        temp_bus_->channel(copy_to_options->planeIndex()));
+  } else {
+    src_data = data_->channel_data()[copy_to_options->planeIndex()];
+  }
+
   // Copy data.
   uint32_t offset_in_samples = copy_to_options->frameOffset();
 
   bool overflow = false;
   // Interleaved frames have 1 sample per channel for each block of samples.
-  if (IsInterleaved() &&
+  if (media::IsInterleaved(dest_format) &&
       !base::CheckMul(copy_to_options->frameOffset(), data_->channel_count())
            .AssignIfValid(&offset_in_samples)) {
     overflow = true;
   }
 
   uint32_t offset_in_bytes = 0;
-  if (overflow || !base::CheckMul(offset_in_samples, BytesPerSample())
-                       .AssignIfValid(&offset_in_bytes)) {
+  if (overflow ||
+      !base::CheckMul(offset_in_samples,
+                      media::SampleFormatToBytesPerChannel(dest_format))
+           .AssignIfValid(&offset_in_bytes)) {
     exception_state.ThrowTypeError(String::Format(
         "Provided options cause overflow when calculating offset."));
     return;
   }
 
-  const uint32_t channel = copy_to_options->planeIndex();
-
-  uint8_t* data_start = data_->channel_data()[channel] + offset_in_bytes;
+  const uint8_t* data_start = src_data + offset_in_bytes;
   memcpy(dest_wrapper.data(), data_start, copy_size_in_bytes);
 }
 
