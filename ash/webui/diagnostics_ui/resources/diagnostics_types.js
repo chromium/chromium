@@ -358,9 +358,22 @@ export let WiFiStateProperties = ash.diagnostics.mojom.WiFiStateProperties;
 export let SecurityType = ash.diagnostics.mojom.SecurityType;
 
 /**
+ * Radio band related to channel frequency.
+ * @enum {number}
+ */
+export const ChannelBand = {
+  UNKNOWN: 0,
+  /** 5Ghz radio band. */
+  FIVE_GHZ: 1,
+  /** 2.4Ghz radio band. */
+  TWO_DOT_FOUR_GHZ: 2,
+};
+
+/**
  * Struct for holding data related to WiFi network channel.
  * @typedef {{
  *   channel: number,
+ *   band: !ChannelBand,
  * }}
  */
 export let ChannelProperties;
