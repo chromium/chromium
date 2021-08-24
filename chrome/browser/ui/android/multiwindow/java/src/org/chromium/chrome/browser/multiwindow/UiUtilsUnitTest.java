@@ -72,6 +72,9 @@ public class UiUtilsUnitTest {
         assertEquals("Instance with no tabs has a wrong title", EMPTY_WINDOW,
                 mUiUtils.getItemTitle(mockInstance(57, 0, 0, false)));
 
+        assertEquals("Instance should be empty if not initialized yet", EMPTY_WINDOW,
+                mUiUtils.getItemTitle(mockInstanceBeforeLoadingTab(57)));
+
         // Normal tabs only -> TITLE
         assertEquals("Instance with normal tabs has a wrong title", TITLE,
                 mUiUtils.getItemTitle(mockInstance(57, 1, 0, false)));
@@ -232,5 +235,9 @@ public class UiUtilsUnitTest {
 
     private InstanceInfo mockInstance(int type) {
         return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true);
+    }
+
+    private InstanceInfo mockInstanceBeforeLoadingTab(int type) {
+        return new InstanceInfo(1, 57, type, null, null, 1, 0, false);
     }
 }

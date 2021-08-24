@@ -395,13 +395,21 @@ public class MultiInstanceManagerApi31UnitTest {
     @SmallTest
     @UiThreadTest
     public void testGetInstanceInfo_currentInfoAtTop() {
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-
+        // Ensure the single instance at non-zero position is handled okay.
+        assertEquals(2, allocInstanceIndex(2, mActivityTask56));
         List<InstanceInfo> info = mMultiInstanceManager.getInstanceInfo();
-        assertEquals(3, info.size());
+        assertEquals(1, info.size());
+        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
+
+        assertEquals(1, allocInstanceIndex(1, mActivityTask58));
+        info = mMultiInstanceManager.getInstanceInfo();
+        assertEquals(2, info.size());
         // Current instance (56) is always positioned at the top of the list.
+        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
+
+        assertEquals(0, allocInstanceIndex(0, mActivityTask57));
+        info = mMultiInstanceManager.getInstanceInfo();
+        assertEquals(3, info.size());
         assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
     }
 
