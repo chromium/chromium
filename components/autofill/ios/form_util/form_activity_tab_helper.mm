@@ -85,16 +85,32 @@ void FormActivityTabHelper::HandleFormActivity(
     return;
   }
 
-  std::string unique_field_id;
-  if (!message_body->GetString("fieldIdentifier", &params.field_identifier) ||
-      !message_body->GetString("uniqueFieldID", &unique_field_id) ||
-      !message_body->GetString("fieldType", &params.field_type) ||
-      !message_body->GetString("type", &params.type) ||
-      !message_body->GetString("value", &params.value) ||
-      !message_body->GetBoolean("hasUserGesture", &params.has_user_gesture)) {
+  const std::string* field_identifier =
+      message_body->FindStringKey("fieldIdentifier");
+  const std::string* unique_field_id =
+      message_body->FindStringKey("uniqueFieldID");
+  const std::string* field_type = message_body->FindStringKey("fieldType");
+  const std::string* type = message_body->FindStringKey("type");
+  const std::string* value = message_body->FindStringKey("value");
+  absl::optional<bool> has_user_gesture =
+      message_body->FindBoolKey("hasUserGesture");
+  if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
+      !has_user_gesture) {
     params.input_missing = true;
   }
-  StringToUint(unique_field_id, &params.unique_field_id.value());
+
+  if (field_identifier)
+    params.field_identifier = *field_identifier;
+  if (unique_field_id)
+    StringToUint(*unique_field_id, &params.unique_field_id.value());
+  if (field_type)
+    params.field_type = *field_type;
+  if (type)
+    params.type = *type;
+  if (value)
+    params.value = *value;
+  if (has_user_gesture)
+    params.has_user_gesture = *has_user_gesture;
 
   for (auto& observer : observers_)
     observer.FormActivityRegistered(web_state, sender_frame, params);

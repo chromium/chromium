@@ -158,7 +158,8 @@ bool ExtractFormData(const base::Value& form_value,
   // Optional fields.
   form_dictionary->GetString("name_attribute", &form_data->name_attribute);
   form_dictionary->GetString("id_attribute", &form_data->id_attribute);
-  form_dictionary->GetBoolean("is_form_tag", &form_data->is_form_tag);
+  form_data->is_form_tag = form_dictionary->FindBoolKey("is_form_tag")
+                               .value_or(form_data->is_form_tag);
   form_dictionary->GetString("frame_id", &form_data->frame_id);
 
   // Field list (mandatory) is extracted.
@@ -201,19 +202,22 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   field.GetString("value", &field_data->value);
   field.GetString("autocomplete_attribute",
                   &field_data->autocomplete_attribute);
-  field.GetBoolean("is_autofilled", &field_data->is_autofilled);
+  field_data->is_autofilled =
+      field.FindBoolKey("is_autofilled").value_or(field_data->is_autofilled);
 
   int max_length = 0;
   if (field.GetInteger("max_length", &max_length))
     field_data->max_length = max_length;
 
   // TODO(crbug.com/427614): Extract |is_checked|.
-  bool is_checkable = false;
-  field.GetBoolean("is_checkable", &is_checkable);
+  bool is_checkable = field.FindBoolKey("is_checkable").value_or(false);
   autofill::SetCheckStatus(field_data, is_checkable, false);
 
-  field.GetBoolean("is_focusable", &field_data->is_focusable);
-  field.GetBoolean("should_autocomplete", &field_data->should_autocomplete);
+  field_data->is_focusable =
+      field.FindBoolKey("is_focusable").value_or(field_data->is_focusable);
+  field_data->should_autocomplete =
+      field.FindBoolKey("should_autocomplete")
+          .value_or(field_data->should_autocomplete);
 
   // RoleAttribute::kOther is the default value. The only other value as of this
   // writing is RoleAttribute::kPresentation.
