@@ -82,6 +82,10 @@ extern const char kCrashpadIOSDescription[];
 extern const char kCollectionsCardPresentationStyleName[];
 extern const char kCollectionsCardPresentationStyleDescription[];
 
+// Title and description for the flag to enable context menu actions refresh.
+extern const char kContextMenuActionsRefreshName[];
+extern const char kContextMenuActionsRefreshDescription[];
+
 #if defined(DCHECK_IS_CONFIGURABLE)
 // Title and description for the flag to enable configurable DCHECKs.
 extern const char kDcheckIsFatalName[];

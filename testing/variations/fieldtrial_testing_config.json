@@ -2362,6 +2362,21 @@
             ]
         }
     ],
+    "ContextMenuActionsRefresh": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "ContextMenuActionsRefresh",
+                    "enable_features": [
+                        "ContextMenuActionsRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [

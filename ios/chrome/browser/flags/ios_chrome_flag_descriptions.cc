@@ -85,6 +85,10 @@ const char kCollectionsCardPresentationStyleDescription[] =
     "When enabled collections are presented using the new iOS13 card "
     "style.";
 
+const char kContextMenuActionsRefreshName[] = "Context menu actions refresh";
+const char kContextMenuActionsRefreshDescription[] =
+    "When enabled, context menu actions are updated";
+
 const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
 const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "

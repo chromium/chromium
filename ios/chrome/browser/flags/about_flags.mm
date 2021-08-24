@@ -779,6 +779,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
+    {"context-menu-actions-refresh",
+     flag_descriptions::kContextMenuActionsRefreshName,
+     flag_descriptions::kContextMenuActionsRefreshDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContextMenuActionsRefresh)},
     {"context-menu-phase2",
      flag_descriptions::kWebViewNativeContextMenuPhase2Name,
      flag_descriptions::kWebViewNativeContextMenuPhase2Description,

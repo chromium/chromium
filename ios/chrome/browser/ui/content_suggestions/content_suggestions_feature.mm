@@ -16,6 +16,14 @@ const base::Feature kDiscoverFeedInNtp{"DiscoverFeedInNtp",
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
 
+// Feature disabled by default that update context menu actions.
+const base::Feature kContextMenuActionsRefresh{
+    "ContextMenuActionsRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
+}
+
+bool IsContextMenuActionsRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
 }
