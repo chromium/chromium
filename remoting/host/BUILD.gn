@@ -626,7 +626,10 @@ static_library("common") {
       "user_settings_win.cc",
       "user_settings_win.h",
     ]
-    libs += [ "crypt32.lib" ]
+    libs += [
+      "crypt32.lib",
+      "Wintrust.lib",
+    ]
     deps += [
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
