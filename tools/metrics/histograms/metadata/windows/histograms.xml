@@ -22,8 +22,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="FileOperations">
-  <variant name=".DeleteFile.NonRecursive" summary=""/>
-  <variant name=".DeleteFile.Recursive" summary=""/>
+  <variant name=".DeleteFile.NonRecursive" summary="">
+    <obsolete>
+      Removed in M95.
+    </obsolete>
+  </variant>
+  <variant name=".DeleteFile.Recursive" summary="">
+    <obsolete>
+      Removed in M95.
+    </obsolete>
+  </variant>
 </variants>
 
 <histogram name="Windows.ApplockerRunning" enum="Boolean" expires_after="M83">
@@ -104,6 +112,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.FilesystemError{FileOperations}"
     enum="WinGetLastError" expires_after="M81">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     The Windows error code relating to a failed attempt to operate on a file or
@@ -329,6 +340,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.PostOperationState{FileOperations}"
     enum="PostOperationState" expires_after="M81">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     The state of an item in the filesystem following an operation on it.

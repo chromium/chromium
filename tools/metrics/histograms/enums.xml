@@ -65987,6 +65987,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PostOperationState">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <int value="0" label="Succeeded">The operation succeeded</int>
   <int value="1" label="Failed: file not found">
     The operation failed and the file operated on is not found.
