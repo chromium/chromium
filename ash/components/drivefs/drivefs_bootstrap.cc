@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_bootstrap.h"
+#include "ash/components/drivefs/drivefs_bootstrap.h"
 
 #include <utility>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/bind.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

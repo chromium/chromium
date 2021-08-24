@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

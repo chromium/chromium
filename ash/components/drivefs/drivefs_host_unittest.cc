@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_host.h"
+#include "ash/components/drivefs/drivefs_host.h"
 
 #include <set>
 #include <type_traits>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_host_observer.h"
+#include "ash/components/drivefs/fake_drivefs.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
@@ -20,10 +24,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/drivefs/drivefs_host_observer.h"
-#include "chromeos/components/drivefs/fake_drivefs.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/drive/drive_notification_manager.h"

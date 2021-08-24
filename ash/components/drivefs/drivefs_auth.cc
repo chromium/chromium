@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_auth.h"
+#include "ash/components/drivefs/drivefs_auth.h"
 
 #include "base/bind.h"
 #include "components/account_id/account_id.h"

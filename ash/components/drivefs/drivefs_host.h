@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_
+#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/drivefs_auth.h"
+#include "ash/components/drivefs/drivefs_session.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -16,9 +19,6 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/drivefs/drivefs_auth.h"
-#include "chromeos/components/drivefs/drivefs_session.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -143,4 +143,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
 
 }  // namespace drivefs
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_
+#define ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_
 
+#include "ash/components/drivefs/mojom/fake_drivefs_launcher.mojom.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "chromeos/components/drivefs/mojom/fake_drivefs_launcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace drivefs {
@@ -41,4 +41,4 @@ class FakeDriveFsLauncherClient {
 
 }  // namespace drivefs
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_LAUNCHER_CLIENT_H_

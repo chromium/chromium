@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_
+#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_
 
 #include <vector>
 
@@ -27,4 +27,4 @@ class DriveFsHostObserver {
 
 }  // namespace drivefs
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_HOST_OBSERVER_H_

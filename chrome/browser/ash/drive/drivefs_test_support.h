@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/components/drivefs/drivefs_host.h"
+#include "ash/components/drivefs/fake_drivefs.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "chromeos/components/drivefs/drivefs_host.h"
-#include "chromeos/components/drivefs/fake_drivefs.h"
 
 class Profile;
 

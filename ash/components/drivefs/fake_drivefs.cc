@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/fake_drivefs.h"
+#include "ash/components/drivefs/fake_drivefs.h"
 
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "ash/components/drivefs/drivefs_util.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -21,8 +23,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

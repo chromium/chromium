@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

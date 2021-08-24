@@ -24,7 +24,6 @@ test("chromeos_components_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chromeos/components/cdm_factory_daemon:unit_tests",
-    "//chromeos/components/drivefs:unit_tests",
     "//chromeos/components/eche_app_ui:unit_tests",
     "//chromeos/components/feature_usage:unit_tests",
     "//chromeos/components/help_app_ui:unit_tests",

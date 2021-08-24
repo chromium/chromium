@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_search.h"
+#include "ash/components/drivefs/drivefs_search.h"
 
 #include <utility>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/test/test_network_connection_tracker.h"

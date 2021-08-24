@@ -10,6 +10,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_host.h"
+#include "ash/components/drivefs/fake_drivefs.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -78,9 +81,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_switches.h"
-#include "chromeos/components/drivefs/drivefs_host.h"
-#include "chromeos/components/drivefs/fake_drivefs.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"

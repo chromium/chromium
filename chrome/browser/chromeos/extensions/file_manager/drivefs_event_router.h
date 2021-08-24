@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/drivefs_host_observer.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
-#include "chromeos/components/drivefs/drivefs_host_observer.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "url/gurl.h"
 

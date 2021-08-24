@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_
+#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_
 
 #include <memory>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -65,4 +65,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsConnection {
 
 }  // namespace drivefs
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_BOOTSTRAP_H_

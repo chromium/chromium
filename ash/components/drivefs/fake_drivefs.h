@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_
+#define ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/drivefs_bootstrap.h"
+#include "ash/components/drivefs/drivefs_host.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/drivefs/drivefs_bootstrap.h"
-#include "chromeos/components/drivefs/drivefs_host.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -153,4 +153,4 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
 }  // namespace drivefs
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_FAKE_DRIVEFS_H_

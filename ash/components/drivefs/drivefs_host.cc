@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_host.h"
+#include "ash/components/drivefs/drivefs_host.h"
 
 #include <map>
 #include <set>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_bootstrap.h"
+#include "ash/components/drivefs/drivefs_host_observer.h"
+#include "ash/components/drivefs/drivefs_search.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/drivefs/drivefs_bootstrap.h"
-#include "chromeos/components/drivefs/drivefs_host_observer.h"
-#include "chromeos/components/drivefs/drivefs_search.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

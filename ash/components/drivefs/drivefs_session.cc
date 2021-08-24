@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/drivefs/drivefs_session.h"
+#include "ash/components/drivefs/drivefs_session.h"
 
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_bootstrap.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chromeos/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/disks/mount_point.h"
 
 namespace drivefs {

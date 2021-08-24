@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
-#define CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-shared.h"
 #include "base/component_export.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-shared.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
@@ -23,4 +23,4 @@ struct COMPONENT_EXPORT(DRIVEFS_MOJOM)
 
 }  // namespace mojo
 
-#endif  // CHROMEOS_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_MOJOM_TRAITS_H_
