@@ -98,6 +98,31 @@ TEST_F(CachedTextInputInfoTest, RelayoutBoundary) {
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
 }
 
+// http://crbug.com/1228373
+TEST_F(CachedTextInputInfoTest, ShadowTree) {
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SetSelectionTextToBody("<div id=host><template data-mode=open>"
+                             "<a>012</a><b>3^45</b>67|8"
+                             "</template></div>"));
+
+  EXPECT_EQ(PlainTextRange(4, 8),
+            GetInputMethodController().GetSelectionOffsets());
+
+  // Change shadow tree to "XYZ<a>012</a><b>345</b>678"
+  auto& shadow_root = *GetElementById("host")->GetShadowRoot();
+  shadow_root.insertBefore(Text::Create(GetDocument(), "XYZ"),
+                           shadow_root.firstChild());
+
+  // Ask |CachedTextInputInfo| to compute |PlainTextRange| for selection.
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(*To<Text>(shadow_root.lastChild()), 0))
+          .Build());
+
+  EXPECT_EQ(PlainTextRange(9, 9),
+            GetInputMethodController().GetSelectionOffsets());
+}
+
 // http://crbug.com/1228635
 TEST_F(CachedTextInputInfoTest, VisibilityHiddenToVisible) {
   GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(

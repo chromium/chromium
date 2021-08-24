@@ -40,6 +40,17 @@ EphemeralRange ComputeWholeContentRange(const ContainerNode& container) {
                         Position::AfterNode(*before_placeholder));
 }
 
+LayoutObject* FindLayoutObject(const ContainerNode& container) {
+  for (const Node& node : FlatTreeTraversal::InclusiveAncestorsOf(container)) {
+    if (auto* layout_object = node.GetLayoutObject())
+      return layout_object;
+  }
+  // Because |LayoutView| is derived from |LayoutBlockFlow|, |layout_object_|
+  // should not be null.
+  NOTREACHED() << container;
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -50,15 +61,19 @@ TextIteratorBehavior CachedTextInputInfo::Behavior() {
       .Build();
 }
 
-void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
-  if (layout_object_ != &layout_object)
-    return;
+void CachedTextInputInfo::Clear() const {
   container_ = nullptr;
   layout_object_ = nullptr;
   text_ = g_empty_string;
   composition_.Clear();
   selection_.Clear();
   offset_map_.clear();
+}
+
+void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
+  if (layout_object_ != &layout_object)
+    return;
+  Clear();
 }
 
 void CachedTextInputInfo::DidChangeVisibility(
@@ -75,9 +90,9 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
     return;
   const ContainerNode* const container =
       RootEditableElementOrTreeScopeRootNodeOf(Position(node, 0));
-  if (!container || !container->GetLayoutObject())
+  if (container != container_)
     return;
-  ClearIfNeeded(*container->GetLayoutObject());
+  Clear();
 }
 
 void CachedTextInputInfo::DidUpdateLayout(const LayoutObject& layout_object) {
@@ -87,12 +102,21 @@ void CachedTextInputInfo::DidUpdateLayout(const LayoutObject& layout_object) {
 void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
   if (IsValidFor(container))
     return;
-  offset_map_.clear();
+  Clear();
   container_ = &container;
   layout_object_ = container.GetLayoutObject();
-  composition_.Clear();
-  selection_.Clear();
-  text_ = g_empty_string;
+
+  if (!layout_object_) {
+    if (auto* shadow_root = DynamicTo<ShadowRoot>(container)) {
+      // See http://crbug.com/1228373
+      layout_object_ = FindLayoutObject(shadow_root->host());
+    } else {
+      layout_object_ = FindLayoutObject(container);
+    }
+    // Because we use |layout_object_| as a cache key, |layout_object_| can
+    // not be null.
+    DCHECK(layout_object_) << container;
+  }
 
   TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),
                                             Behavior());

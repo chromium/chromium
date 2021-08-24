@@ -67,6 +67,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   };
 
   static TextIteratorBehavior Behavior();
+  void Clear() const;
   void ClearIfNeeded(const LayoutObject& layout_object);
   PlainTextRange GetPlainTextRangeWithCache(
       const EphemeralRange& range,
