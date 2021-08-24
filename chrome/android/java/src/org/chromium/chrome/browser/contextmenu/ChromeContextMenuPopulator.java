@@ -408,8 +408,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     public List<Pair<Integer, ModelList>> buildContextMenu() {
         boolean hasSaveImage = false;
         mShowEphemeralTabNewLabel = null;
-        boolean isNotMailOrTel = !MailTo.isMailTo(mParams.getLinkUrl().getSpec())
-                && !UrlUtilities.isTelScheme(mParams.getLinkUrl());
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
@@ -445,7 +443,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
                 }
             }
-            if (isNotMailOrTel) {
+            if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())
+                    && !UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 linkGroup.add(createListItem(Item.COPY_LINK_ADDRESS));
                 if (!mParams.getLinkText().trim().isEmpty() && !mParams.isImage()) {
                     linkGroup.add(createListItem(Item.COPY_LINK_TEXT));
@@ -590,7 +589,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                               .get(mMode == ContextMenuMode.CUSTOM_TAB ? 0
                                                                        : groupedItems.size() - 1)
                               .second;
-            if (mMode == ContextMenuMode.WEB_APP && isNotMailOrTel) {
+            if (mMode == ContextMenuMode.WEB_APP
+                    && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 items.add(createListItem(Item.OPEN_IN_CHROME));
             } else if (mMode == ContextMenuMode.CUSTOM_TAB && !mItemDelegate.isIncognito()) {
                 boolean addNewEntries = !UrlUtilities.isInternalScheme(mParams.getUrl())
@@ -602,7 +602,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         items.add(0, createListItem(Item.OPEN_IN_CHROME_INCOGNITO_TAB));
                     }
                     items.add(0, createListItem(Item.OPEN_IN_NEW_CHROME_TAB));
-                } else if (addNewEntries && isNotMailOrTel) {
+                } else if (addNewEntries && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                     items.add(0, createListItem(Item.OPEN_IN_BROWSER_ID));
                 }
             }
