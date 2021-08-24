@@ -198,6 +198,72 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
 
     self.assertEqual(actual_tests, expected_tests)
 
+  def testGetTests_simpleGtestPositiveAndNegativeFilter(self):
+    o = self.createTestInstance()
+    raw_tests = [{
+        'annotations': {
+            'Feature': {
+                'value': ['Foo']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest',
+        'superclass':
+        'java.lang.Object',
+        'methods': [
+            {
+                'annotations': {
+                    'SmallTest': None
+                },
+                'method': 'testMethod1',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None
+                },
+                'method': 'testMethod2',
+            },
+        ],
+    }, {
+        'annotations': {
+            'Feature': {
+                'value': ['Foo']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest2',
+        'superclass':
+        'java.lang.Object',
+        'methods': [{
+            'annotations': {
+                'SmallTest': None
+            },
+            'method': 'testMethod1',
+        }],
+    }]
+
+    expected_tests = [
+        {
+            'annotations': {
+                'Feature': {
+                    'value': ['Foo']
+                },
+                'SmallTest': None,
+            },
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod1',
+        },
+    ]
+
+    o._test_filter = \
+      'org.chromium.test.SampleTest.*-org.chromium.test.SampleTest.testMethod2'
+    o._test_jar = 'path/to/test.jar'
+    o._junit4_runner_class = 'J4Runner'
+    actual_tests = o.ProcessRawTests(raw_tests)
+
+    self.assertEqual(actual_tests, expected_tests)
+
   def testGetTests_simpleGtestUnqualifiedNameFilter(self):
     o = self.createTestInstance()
     raw_tests = [
