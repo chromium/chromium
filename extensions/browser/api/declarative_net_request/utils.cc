@@ -45,12 +45,12 @@ namespace dnr_api = api::declarative_net_request;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 23;
+constexpr int kIndexedRulesetFormatVersion = 24;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating kIndexedRulesetFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 10,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 11,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated kIndexedRulesetFormatVersion above.");
 
@@ -216,6 +216,8 @@ dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
       return dnr_api::RESOURCE_TYPE_FONT;
     case WebRequestResourceType::WEB_SOCKET:
       return dnr_api::RESOURCE_TYPE_WEBSOCKET;
+    case WebRequestResourceType::WEB_TRANSPORT:
+      return dnr_api::RESOURCE_TYPE_WEBTRANSPORT;
   }
   NOTREACHED();
   return dnr_api::RESOURCE_TYPE_OTHER;

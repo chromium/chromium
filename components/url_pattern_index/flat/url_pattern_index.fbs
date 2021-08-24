@@ -55,6 +55,7 @@ enum ElementType : ushort (bit_flags) {
   MEDIA,
   FONT,
   WEBSOCKET,
+  WEBTRANSPORT,
   CSP_REPORT,
   MAIN_FRAME,
   // Note: Update the default value for |element_types| field in UrlRule, on
@@ -85,7 +86,7 @@ table UrlRule {
   // by default for compactness. We expect most rules to not use
   // ElementType_MAIN_FRAME. Keep this in sync with
   // url_pattern_index::kDefaultFlatElementTypesMask.
-  element_types : ushort = 8191;
+  element_types : ushort = 16383;
 
   // A bitmask of RequestMethod. Equals RequestMethod_ANY by default.
   request_methods : ushort = 255;

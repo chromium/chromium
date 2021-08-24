@@ -111,6 +111,8 @@ std::string TypeOptionsToString(
     out += options_printer->PrintOption("font");
   if (types & url_pattern_index::flat::ElementType_WEBSOCKET)
     out += options_printer->PrintOption("websocket");
+  if (types & url_pattern_index::flat::ElementType_WEBTRANSPORT)
+    out += options_printer->PrintOption("webtransport");
 
   return out;
 }

@@ -202,7 +202,7 @@ TEST_F(UrlRuleUtilTest, ElementType) {
   std::string expected =
       "example.com/"
       "$script,image,stylesheet,object,xmlhttprequest,object-subrequest,"
-      "subdocument,ping,media,font,websocket";
+      "subdocument,ping,media,font,websocket,webtransport";
 
   EXPECT_EQ(expected, FlatUrlRuleToFilterlistString(flat_rule));
 }

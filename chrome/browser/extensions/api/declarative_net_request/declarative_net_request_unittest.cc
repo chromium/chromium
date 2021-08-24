@@ -581,7 +581,7 @@ TEST_P(SingleRulesetTest, NoApplicableResourceTypes) {
   rule.condition->excluded_resource_types = std::vector<std::string>(
       {"main_frame", "sub_frame", "stylesheet", "script", "image", "font",
        "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket",
-       "other"});
+       "webtransport", "other"});
   AddRule(rule);
   LoadAndExpectParseFailure(ParseResult::ERROR_NO_APPLICABLE_RESOURCE_TYPES,
                             *rule.id);

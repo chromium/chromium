@@ -22,6 +22,7 @@ namespace declarativeNetRequest {
     csp_report,
     media,
     websocket,
+    webtransport,
     other
   };
 

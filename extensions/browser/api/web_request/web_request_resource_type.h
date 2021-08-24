@@ -27,6 +27,7 @@ enum class WebRequestResourceType : uint8_t {
   CSP_REPORT,
   MEDIA,
   WEB_SOCKET,
+  WEB_TRANSPORT,
 
   OTHER,  // The type is unknown, or differs from all the above.
 };

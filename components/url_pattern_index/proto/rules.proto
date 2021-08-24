@@ -66,10 +66,11 @@ enum ElementType {
   ELEMENT_TYPE_FONT = 1024;
   ELEMENT_TYPE_POPUP = 2048;
   ELEMENT_TYPE_WEBSOCKET = 4096;
+  ELEMENT_TYPE_WEBTRANSPORT = 8192;
 
   // NOTE: Keep these two values consistent with the values above.
-  ELEMENT_TYPE_MAX = 4096;
-  ELEMENT_TYPE_ALL = 8191;
+  ELEMENT_TYPE_MAX = 8192;
+  ELEMENT_TYPE_ALL = 16383;
 };
 
 // The options controlling whether or not to activate filtering for subresources

@@ -32,6 +32,7 @@ constexpr struct {
     {"csp_report", WebRequestResourceType::CSP_REPORT},
     {"media", WebRequestResourceType::MEDIA},
     {"websocket", WebRequestResourceType::WEB_SOCKET},
+    {"webtransport", WebRequestResourceType::WEB_TRANSPORT},
     {"other", WebRequestResourceType::OTHER},
 };
 

@@ -104,7 +104,7 @@ TEST_P(FilterListConverterTest, Convert) {
        "condition": {
           "resourceTypes": [ "other", "script", "stylesheet", "object",
               "xmlhttprequest", "sub_frame", "ping", "media", "font",
-              "websocket" ],
+              "websocket", "webtransport"],
           "urlFilter": "|https://*.abc.com|",
           "domainType": "thirdParty"
        },

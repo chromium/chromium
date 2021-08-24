@@ -74,6 +74,7 @@ const ElementTypeMap& GetElementTypeMap() {
           // Filtering popups is not supported.
           {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
           {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
+          {proto::ELEMENT_TYPE_WEBTRANSPORT, flat::ElementType_WEBTRANSPORT},
       });
   return *element_type_map;
 }

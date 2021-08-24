@@ -65,6 +65,9 @@ const struct {
     {url_pattern_index::proto::ELEMENT_TYPE_FONT, "font"},
     {url_pattern_index::proto::ELEMENT_TYPE_POPUP, "popup"},
     {url_pattern_index::proto::ELEMENT_TYPE_WEBSOCKET, "websocket"},
+    // This is currently not used by EasyList. If EasyList adds blocking support
+    // for webtransport, make sure it is compatible with this spelling.
+    {url_pattern_index::proto::ELEMENT_TYPE_WEBTRANSPORT, "webtransport"},
 };
 
 // A mapping from deprecated element type names to active element types.

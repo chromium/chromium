@@ -309,6 +309,9 @@ class ProtoToJSONRuleConverter {
         case proto::ELEMENT_TYPE_WEBSOCKET:
           resource_type = dnr_api::RESOURCE_TYPE_WEBSOCKET;
           break;
+        case proto::ELEMENT_TYPE_WEBTRANSPORT:
+          resource_type = dnr_api::RESOURCE_TYPE_WEBTRANSPORT;
+          break;
         case proto::ELEMENT_TYPE_ALL:
           CHECK(false);
           break;
