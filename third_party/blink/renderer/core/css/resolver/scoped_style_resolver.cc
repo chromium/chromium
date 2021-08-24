@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -155,6 +156,7 @@ void ScopedStyleResolver::ResetStyle() {
   if (counter_style_map_)
     counter_style_map_->Dispose();
   slotted_rule_set_ = nullptr;
+  cascade_layer_map_ = nullptr;
   needs_append_all_sheets_ = false;
 }
 
@@ -287,11 +289,17 @@ void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
     collector.MatchPageRules(&sheet->Contents()->GetRuleSet());
 }
 
+void ScopedStyleResolver::RebuildCascadeLayerMap(
+    const ActiveStyleSheetVector& sheets) {
+  cascade_layer_map_ = MakeGarbageCollected<CascadeLayerMap>(sheets);
+}
+
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(counter_style_map_);
+  visitor->Trace(cascade_layer_map_);
   visitor->Trace(slotted_rule_set_);
 }
 

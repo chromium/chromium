@@ -75,6 +75,7 @@ class Node;
 class RuleFeatureSet;
 class ShadowTreeStyleSheetCollection;
 class DocumentStyleEnvironmentVariables;
+class CascadeLayerMap;
 class StyleRuleFontFace;
 class StyleRuleUsageTracker;
 class StyleSheetContents;
@@ -418,6 +419,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
                                                    const TreeScope*) const;
 
+  const CascadeLayerMap* GetUserCascadeLayerMap() const {
+    return user_cascade_layer_map_;
+  }
+
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();
 
   scoped_refptr<StyleInitialData> MaybeCreateAndGetInitialData();
@@ -689,6 +694,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   HeapHashMap<AtomicString, Member<StyleRuleScrollTimeline>>
       scroll_timeline_rule_map_;
   HeapHashMap<AtomicString, Member<CSSScrollTimeline>> scroll_timeline_map_;
+
+  Member<CascadeLayerMap> user_cascade_layer_map_;
 
   scoped_refptr<DocumentStyleEnvironmentVariables> environment_variables_;
 

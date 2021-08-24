@@ -41,6 +41,7 @@ namespace blink {
 class CounterStyleMap;
 class PageRuleCollector;
 class PartNames;
+class CascadeLayerMap;
 class StyleSheetContents;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
@@ -62,6 +63,11 @@ class CORE_EXPORT ScopedStyleResolver final
 
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
   static void CounterStyleRulesChanged(TreeScope& scope);
+
+  void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
+  const CascadeLayerMap* GetCascadeLayerMap() const {
+    return cascade_layer_map_;
+  }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&);
@@ -105,6 +111,7 @@ class CORE_EXPORT ScopedStyleResolver final
   KeyframesRuleMap keyframes_rule_map_;
 
   Member<CounterStyleMap> counter_style_map_;
+  Member<CascadeLayerMap> cascade_layer_map_;
 
   class RuleSubSet final : public GarbageCollected<RuleSubSet> {
    public:

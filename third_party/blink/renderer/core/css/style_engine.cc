@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
@@ -1424,6 +1425,7 @@ enum RuleSetFlags {
   kPropertyRules = 1 << 3,
   kScrollTimelineRules = 1 << 4,
   kCounterStyleRules = 1 << 5,
+  kLayerRules = 1 << 6,
 };
 
 unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
@@ -1442,6 +1444,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kCounterStyleRules;
     if (!rule_set->ScrollTimelineRules().IsEmpty())
       flags |= kScrollTimelineRules;
+    if (rule_set->HasCascadeLayers())
+      flags |= kLayerRules;
   }
   return flags;
 }
@@ -1539,6 +1543,15 @@ void StyleEngine::ApplyUserRuleSetChanges(
     }
 
     MarkCounterStylesNeedUpdate();
+  }
+
+  if (changed_rule_flags & kLayerRules) {
+    // Rebuild cascade layer map in all cases, because a newly inserted
+    // sub-layer can precede an original layer in the final ordering.
+    user_cascade_layer_map_ =
+        MakeGarbageCollected<CascadeLayerMap>(new_style_sheets);
+
+    // TODO(crbug.com/1095765): Invalidate user style.
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
@@ -1649,8 +1662,16 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   if (!new_style_sheets.IsEmpty()) {
-    tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
-        append_start_index, new_style_sheets);
+    ScopedStyleResolver& resolver = tree_scope.EnsureScopedStyleResolver();
+    if (changed_rule_flags & kLayerRules) {
+      // Rebuild cascade layer map in all cases, because a newly inserted
+      // sub-layer can precede an original layer in the final ordering.
+      resolver.RebuildCascadeLayerMap(new_style_sheets);
+
+      // TODO(crbug.com/1095765): Invalidate style.
+    }
+
+    resolver.AppendActiveStyleSheets(append_start_index, new_style_sheets);
   }
 
   if (tree_scope.RootNode().IsDocumentNode()) {
@@ -2548,6 +2569,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(user_counter_style_map_);
   visitor->Trace(scroll_timeline_rule_map_);
   visitor->Trace(scroll_timeline_map_);
+  visitor->Trace(user_cascade_layer_map_);
   visitor->Trace(inspector_style_sheet_);
   visitor->Trace(document_style_sheet_collection_);
   visitor->Trace(style_sheet_collection_map_);

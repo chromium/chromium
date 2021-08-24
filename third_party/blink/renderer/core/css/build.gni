@@ -537,6 +537,8 @@ blink_core_sources_css = [
   "resolver/matched_properties_cache.cc",
   "resolver/matched_properties_cache.h",
   "resolver/media_query_result.h",
+  "cascade_layer_map.cc",
+  "cascade_layer_map.h",
   "resolver/scoped_style_resolver.cc",
   "resolver/scoped_style_resolver.h",
   "resolver/selector_filter_parent_scope.cc",

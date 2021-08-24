@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
@@ -4038,6 +4041,224 @@ TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
   UpdateAllLifecyclePhases();
   EXPECT_EQ(10000, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(10000, input->GetComputedStyle()->FontSize());
+}
+
+TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  // Verifies that user layers and author layers in each tree scope are managed
+  // separately. Each have their own layer ordering.
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString("@layer foo, bar;");
+  StyleSheetKey user_key("user_layers");
+  GetStyleEngine().InjectSheet(user_key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <style>
+      @layer bar, foo;
+    </style>
+    <div id="host">
+      <template shadowroot="open">
+        <style>
+          @layer foo, bar, foo.baz;
+        </style>
+      </template>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // User layer order: (implicit outer layer), foo, bar
+  auto* user_layer_map = GetStyleEngine().GetUserCascadeLayerMap();
+  ASSERT_TRUE(user_layer_map);
+
+  const CascadeLayer& user_outer_layer =
+      user_sheet->GetRuleSet().CascadeLayers();
+  EXPECT_EQ("", user_outer_layer.GetName());
+  EXPECT_EQ(0u, user_layer_map->GetLayerOrder(user_outer_layer));
+
+  const CascadeLayer& user_foo = *user_outer_layer.GetDirectSubLayers()[0];
+  EXPECT_EQ("foo", user_foo.GetName());
+  EXPECT_EQ(1u, user_layer_map->GetLayerOrder(user_foo));
+
+  const CascadeLayer& user_bar = *user_outer_layer.GetDirectSubLayers()[1];
+  EXPECT_EQ("bar", user_bar.GetName());
+  EXPECT_EQ(2u, user_layer_map->GetLayerOrder(user_bar));
+
+  // Document scope author layer order: (implicit outer layer), bar, foo
+  auto* document_layer_map =
+      GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap();
+  ASSERT_TRUE(document_layer_map);
+
+  const CascadeLayer& document_outer_layer =
+      To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+          ->sheet()
+          ->Contents()
+          ->GetRuleSet()
+          .CascadeLayers();
+  EXPECT_EQ("", document_outer_layer.GetName());
+  EXPECT_EQ(0u, document_layer_map->GetLayerOrder(document_outer_layer));
+
+  const CascadeLayer& document_bar =
+      *document_outer_layer.GetDirectSubLayers()[0];
+  EXPECT_EQ("bar", document_bar.GetName());
+  EXPECT_EQ(1u, document_layer_map->GetLayerOrder(document_bar));
+
+  const CascadeLayer& document_foo =
+      *document_outer_layer.GetDirectSubLayers()[1];
+  EXPECT_EQ("foo", document_foo.GetName());
+  EXPECT_EQ(2u, document_layer_map->GetLayerOrder(document_foo));
+
+  // Shadow scope author layer order: (implicit outer layer), foo, foo.baz, bar
+  ShadowRoot* shadow = GetDocument().getElementById("host")->GetShadowRoot();
+  auto* shadow_layer_map =
+      shadow->GetScopedStyleResolver()->GetCascadeLayerMap();
+  ASSERT_TRUE(shadow_layer_map);
+
+  const CascadeLayer& shadow_outer_layer =
+      To<HTMLStyleElement>(shadow->QuerySelector("style"))
+          ->sheet()
+          ->Contents()
+          ->GetRuleSet()
+          .CascadeLayers();
+  EXPECT_EQ("", shadow_outer_layer.GetName());
+  EXPECT_EQ(0u, shadow_layer_map->GetLayerOrder(shadow_outer_layer));
+
+  const CascadeLayer& shadow_foo = *shadow_outer_layer.GetDirectSubLayers()[0];
+  EXPECT_EQ("foo", shadow_foo.GetName());
+  EXPECT_EQ(1u, shadow_layer_map->GetLayerOrder(shadow_foo));
+
+  const CascadeLayer& shadow_foo_baz = *shadow_foo.GetDirectSubLayers()[0];
+  EXPECT_EQ("baz", shadow_foo_baz.GetName());
+  EXPECT_EQ(2u, shadow_layer_map->GetLayerOrder(shadow_foo_baz));
+
+  const CascadeLayer& shadow_bar = *shadow_outer_layer.GetDirectSubLayers()[1];
+  EXPECT_EQ("bar", shadow_bar.GetName());
+  EXPECT_EQ(3u, shadow_layer_map->GetLayerOrder(shadow_bar));
+}
+
+TEST_F(StyleEngineTest, CascadeLayersFromMultipleSheets) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  // The layer ordering in sheet2 is different from the final ordering.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id="sheet1">
+      @layer foo, bar;
+    </style>
+    <style id="sheet2">
+      @layer baz, bar.qux, foo.quux;
+    </style>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // Final layer ordering:
+  // (implicit outer layer), foo, foo.quux, bar, bar.qux, baz
+  auto* layer_map =
+      GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap();
+  ASSERT_TRUE(layer_map);
+
+  const CascadeLayer& sheet1_outer_layer =
+      To<HTMLStyleElement>(GetDocument().getElementById("sheet1"))
+          ->sheet()
+          ->Contents()
+          ->GetRuleSet()
+          .CascadeLayers();
+  EXPECT_EQ("", sheet1_outer_layer.GetName());
+  EXPECT_EQ(0u, layer_map->GetLayerOrder(sheet1_outer_layer));
+
+  const CascadeLayer& sheet1_foo = *sheet1_outer_layer.GetDirectSubLayers()[0];
+  EXPECT_EQ("foo", sheet1_foo.GetName());
+  EXPECT_EQ(1u, layer_map->GetLayerOrder(sheet1_foo));
+
+  const CascadeLayer& sheet1_bar = *sheet1_outer_layer.GetDirectSubLayers()[1];
+  EXPECT_EQ("bar", sheet1_bar.GetName());
+  EXPECT_EQ(3u, layer_map->GetLayerOrder(sheet1_bar));
+
+  const CascadeLayer& sheet2_outer_layer =
+      To<HTMLStyleElement>(GetDocument().getElementById("sheet2"))
+          ->sheet()
+          ->Contents()
+          ->GetRuleSet()
+          .CascadeLayers();
+  EXPECT_EQ("", sheet2_outer_layer.GetName());
+  EXPECT_EQ(0u, layer_map->GetLayerOrder(sheet2_outer_layer));
+
+  const CascadeLayer& sheet2_baz = *sheet2_outer_layer.GetDirectSubLayers()[0];
+  EXPECT_EQ("baz", sheet2_baz.GetName());
+  EXPECT_EQ(5u, layer_map->GetLayerOrder(sheet2_baz));
+
+  const CascadeLayer& sheet2_bar = *sheet2_outer_layer.GetDirectSubLayers()[1];
+  EXPECT_EQ("bar", sheet2_bar.GetName());
+  EXPECT_EQ(3u, layer_map->GetLayerOrder(sheet2_bar));
+
+  const CascadeLayer& sheet2_bar_qux = *sheet2_bar.GetDirectSubLayers()[0];
+  EXPECT_EQ("qux", sheet2_bar_qux.GetName());
+  EXPECT_EQ(4u, layer_map->GetLayerOrder(sheet2_bar_qux));
+
+  const CascadeLayer& sheet2_foo = *sheet2_outer_layer.GetDirectSubLayers()[2];
+  EXPECT_EQ("foo", sheet2_foo.GetName());
+  EXPECT_EQ(1u, layer_map->GetLayerOrder(sheet2_foo));
+
+  const CascadeLayer& sheet2_foo_quux = *sheet2_foo.GetDirectSubLayers()[0];
+  EXPECT_EQ("quux", sheet2_foo_quux.GetName());
+  EXPECT_EQ(2u, layer_map->GetLayerOrder(sheet2_foo_quux));
+}
+
+TEST_F(StyleEngineTest, CascadeLayersNotExplicitlyDeclared) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #no-layers { }
+    </style>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // We don't create CascadeLayerMap if no layers are explicitly declared.
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver());
+  ASSERT_FALSE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+}
+
+TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <style>
+      @layer bar, foo;
+    </style>
+    <div id="host">
+      <template shadowroot="open">
+        <style>
+          @layer foo, bar, foo.baz;
+        </style>
+      </template>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver());
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+
+  ShadowRoot* shadow = GetDocument().getElementById("host")->GetShadowRoot();
+  ASSERT_TRUE(shadow->GetScopedStyleResolver());
+  ASSERT_TRUE(shadow->GetScopedStyleResolver()->GetCascadeLayerMap());
+
+  GetDocument().QuerySelector("style")->remove();
+  shadow->QuerySelector("style")->remove();
+  UpdateAllLifecyclePhases();
+
+  // When all sheets are removed, document ScopedStyleResolver is not cleared
+  // but the CascadeLayerMap should be cleared.
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver());
+  ASSERT_FALSE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+
+  // When all sheets are removed, shadow tree ScopedStyleResolver is cleared.
+  ASSERT_FALSE(shadow->GetScopedStyleResolver());
 }
 
 }  // namespace blink
