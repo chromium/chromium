@@ -669,6 +669,8 @@ const char kLacrosPrimaryInternalName[] = "lacros-primary";
 const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kWebAppsCrosapiInternalName[] = "web-apps-crosapi";
+const char kArcVmBalloonPolicyInternalName[] =
+    "arc-use-limit-cache-balloon-policy";
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -4140,6 +4142,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcUseHighMemoryDalvikProfileName,
      flag_descriptions::kArcUseHighMemoryDalvikProfileDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUseHighMemoryDalvikProfile)},
+    {kArcVmBalloonPolicyInternalName,
+     flag_descriptions::kArcVmBalloonPolicyName,
+     flag_descriptions::kArcVmBalloonPolicyDesc, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kVmBalloonPolicy)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-generic-sensor-extra-classes",
      flag_descriptions::kEnableGenericSensorExtraClassesName,
@@ -7627,6 +7633,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Leave the feature only for ARCVM.
   if (!strcmp(kArcUseHighMemoryDalvikProfileInternalName,
               entry.internal_name)) {
+    return !arc::IsArcVmEnabled();
+  }
+
+  if (!strcmp(kArcVmBalloonPolicyInternalName, entry.internal_name)) {
     return !arc::IsArcVmEnabled();
   }
 

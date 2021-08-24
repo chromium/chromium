@@ -248,6 +248,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "arc-use-limit-cache-balloon-policy",
+    "owners": [ "cwd" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "arc-web-app-share",
     "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 95

@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/arc/appfuse/arc_appfuse_bridge.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/audio/arc_audio_bridge.h"
@@ -73,6 +74,7 @@
 #include "components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "components/arc/lock_screen/arc_lock_screen_bridge.h"
 #include "components/arc/media_session/arc_media_session_bridge.h"
+#include "components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/midis/arc_midis_bridge.h"
 #include "components/arc/net/arc_net_host_impl.h"
@@ -255,8 +257,12 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ash::ApkWebAppService::Get(profile);
   ash::full_restore::FullRestoreArcTaskHandler::GetForProfile(profile);
 
-  // ARC Container-only services.
-  if (!arc::IsArcVmEnabled()) {
+  if (arc::IsArcVmEnabled()) {
+    // ARCVM-only services.
+    if (base::FeatureList::IsEnabled(kVmBalloonPolicy))
+      ArcMemoryPressureBridge::GetForBrowserContext(profile);
+  } else {
+    // ARC Container-only services.
     ArcAppfuseBridge::GetForBrowserContext(profile);
     ArcObbMounterBridge::GetForBrowserContext(profile);
   }
