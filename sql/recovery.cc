@@ -112,7 +112,7 @@ bool Recovery::Init(const base::FilePath& db_path) {
   // might be reasonable to close then re-open the handle.
   ignore_result(db_->Execute("PRAGMA writable_schema=1"));
   ignore_result(db_->Execute("PRAGMA locking_mode=NORMAL"));
-  ignore_result(db_->Execute("SELECT COUNT(*) FROM sqlite_master"));
+  ignore_result(db_->Execute("SELECT COUNT(*) FROM sqlite_schema"));
 
   // TODO(shess): If this is a common failure case, it might be
   // possible to fall back to a memory database.  But it probably
@@ -321,7 +321,7 @@ bool Recovery::AutoRecoverTable(const char* table_name,
       insert_columns.push_back(column_name);
     } else {
       // The default value appears to be pre-quoted, as if it is
-      // literally from the sqlite_master CREATE statement.
+      // literally from the sqlite_schema CREATE statement.
       std::string default_value = s.ColumnString(4);
       insert_columns.push_back(base::StringPrintf(
           "IFNULL(%s,%s)", column_name.c_str(), default_value.c_str()));
@@ -383,7 +383,7 @@ bool Recovery::SetupMeta() {
 bool Recovery::GetMetaVersionNumber(int* version) {
   DCHECK(version);
   // TODO(shess): DCHECK(db()->DoesTableExist("temp.recover_meta"));
-  // Unfortunately, DoesTableExist() queries sqlite_master, not
+  // Unfortunately, DoesTableExist() queries sqlite_schema, not
   // sqlite_temp_master.
 
   static const char kVersionSql[] =
@@ -398,7 +398,7 @@ bool Recovery::GetMetaVersionNumber(int* version) {
 
 namespace {
 
-// Collect statements from [corrupt.sqlite_master.sql] which start with |prefix|
+// Collect statements from [corrupt.sqlite_schema.sql] which start with |prefix|
 // (which should be a valid SQL string ending with the space before a table
 // name), then apply the statements to [main].  Skip any table named
 // 'sqlite_sequence', as that table is created on demand by SQLite if any tables
@@ -412,7 +412,7 @@ bool SchemaCopyHelper(Database* db, const char* prefix) {
   DCHECK_EQ(' ', prefix[prefix_len-1]);
 
   sql::Statement s(db->GetUniqueStatement(
-      "SELECT DISTINCT sql FROM corrupt.sqlite_master "
+      "SELECT DISTINCT sql FROM corrupt.sqlite_schema "
       "WHERE name<>'sqlite_sequence'"));
   while (s.Step()) {
     std::string sql = s.ColumnString(0);
@@ -498,7 +498,7 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
   // that column to ANY may work.
   if (db->is_open()) {
     sql::Statement s(db->GetUniqueStatement(
-        "SELECT 1 FROM sqlite_master WHERE sql LIKE 'CREATE VIRTUAL TABLE %'"));
+        "SELECT 1 FROM sqlite_schema WHERE sql LIKE 'CREATE VIRTUAL TABLE %'"));
     DCHECK(!s.Step()) << "Recovery of virtual tables not supported";
   }
 #endif
@@ -523,7 +523,7 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
   // effect, so recovering that table inline could lead to duplicate data.
   {
     sql::Statement s(recovery->db()->GetUniqueStatement(
-        "SELECT name FROM sqlite_master WHERE sql LIKE 'CREATE TABLE %' "
+        "SELECT name FROM sqlite_schema WHERE sql LIKE 'CREATE TABLE %' "
         "AND name!='sqlite_sequence'"));
     while (s.Step()) {
       const std::string name = s.ColumnString(0);
@@ -549,12 +549,12 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
     }
   }
 
-  // Copy triggers and views directly to sqlite_master.  Any tables they refer
+  // Copy triggers and views directly to sqlite_schema.  Any tables they refer
   // to should already exist.
   static const char kCreateMetaItemsSql[] =
-      "INSERT INTO main.sqlite_master "
+      "INSERT INTO main.sqlite_schema "
       "SELECT type, name, tbl_name, rootpage, sql "
-      "FROM corrupt.sqlite_master WHERE type='view' OR type='trigger'";
+      "FROM corrupt.sqlite_schema WHERE type='view' OR type='trigger'";
   if (!recovery->db()->Execute(kCreateMetaItemsSql)) {
     Recovery::Rollback(std::move(recovery));
     return nullptr;

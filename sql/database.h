@@ -515,7 +515,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Return a reproducible representation of the schema equivalent to
   // running the following statement at a sqlite3 command-line:
-  //   SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY 1, 2, 3, 4;
+  //   SELECT type, name, tbl_name, sql FROM sqlite_schema ORDER BY 1, 2, 3, 4;
   std::string GetSchema();
 
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and

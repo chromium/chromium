@@ -442,7 +442,7 @@ mojom::MediaHistoryStatsPtr MediaHistoryStore::GetMediaHistoryStats() {
     return stats;
 
   sql::Statement statement(DB()->GetUniqueStatement(
-      "SELECT name FROM sqlite_master WHERE type='table' "
+      "SELECT name FROM sqlite_schema WHERE type='table' "
       "AND name NOT LIKE 'sqlite_%';"));
 
   std::vector<std::string> table_names;

@@ -2096,7 +2096,7 @@ TEST_F(HistoryBackendTest, MigrationVisitSource) {
 
   // Check visit_source table is created and empty.
   s.Assign(db.GetUniqueStatement(
-      "SELECT name FROM sqlite_master WHERE name='visit_source'"));
+      "SELECT name FROM sqlite_schema WHERE name='visit_source'"));
   ASSERT_TRUE(s.Step());
   s.Assign(db.GetUniqueStatement("SELECT * FROM visit_source LIMIT 10"));
   EXPECT_FALSE(s.Step());

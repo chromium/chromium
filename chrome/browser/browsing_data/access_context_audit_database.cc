@@ -55,7 +55,7 @@ void DatabaseErrorCallback(sql::Database* db,
 // is_persistent field.
 bool CookieTableMissingIsPersistent(sql::Database* db) {
   const char kSelectCookieTable[] =
-      "SELECT sql FROM sqlite_master WHERE name = 'cookies' AND type = 'table'";
+      "SELECT sql FROM sqlite_schema WHERE name = 'cookies' AND type = 'table'";
   sql::Statement statement(db->GetUniqueStatement(kSelectCookieTable));
 
   // Unable to step implies cookies table does not exist.

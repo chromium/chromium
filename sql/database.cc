@@ -72,7 +72,7 @@ class ScopedBusyTimeout {
 // If turning it on fails, then most likely nothing will work, whereas
 // if turning it off fails, it only matters if some code attempts to
 // continue working with the database and tries to modify the
-// sqlite_master table (none of our code does this).
+// sqlite_schema table (none of our code does this).
 class ScopedWritableSchema {
  public:
   explicit ScopedWritableSchema(sqlite3* db) : db_(db) {
@@ -518,7 +518,7 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
 
     debug_info += "schema:\n";
 
-    // sqlite_master has columns:
+    // sqlite_schema has columns:
     //   type - "index" or "table".
     //   name - name of created element.
     //   tbl_name - name of element, or target table in case of index.
@@ -529,7 +529,7 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
     // database.  The COALESCE is because certain automatic elements will have a
     // |name| but no |sql|,
     static constexpr char kSchemaSql[] =
-        "SELECT COALESCE(sql,name) FROM sqlite_master";
+        "SELECT COALESCE(sql,name) FROM sqlite_schema";
     rc = sqlite3_prepare_v3(db_, kSchemaSql, sizeof(kSchemaSql),
                             SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
                             /* pzTail= */ nullptr);
@@ -1344,7 +1344,7 @@ std::string Database::GetSchema() {
   // order for something like this is questionable.
   static const char kSql[] =
       "SELECT type, name, tbl_name, sql "
-      "FROM sqlite_master ORDER BY 1, 2, 3, 4";
+      "FROM sqlite_schema ORDER BY 1, 2, 3, 4";
   Statement statement(GetUniqueStatement(kSql));
 
   std::string schema;
@@ -1410,7 +1410,7 @@ bool Database::DoesViewExist(base::StringPiece view_name) {
 bool Database::DoesSchemaItemExist(base::StringPiece name,
                                    base::StringPiece type) {
   static const char kSql[] =
-      "SELECT 1 FROM sqlite_master WHERE type=? AND name=?";
+      "SELECT 1 FROM sqlite_schema WHERE type=? AND name=?";
   Statement statement(GetUniqueStatement(kSql));
 
   if (!statement.is_valid()) {
@@ -1806,8 +1806,8 @@ std::string Database::GetDiagnosticInfo(int extended_error,
   // if they result in their own errors, they don't interfere with
   // CollectErrorInfo().
   const bool has_valid_header = Execute("PRAGMA auto_vacuum");
-  const bool select_sqlite_master_result =
-      Execute("SELECT COUNT(*) FROM sqlite_master");
+  const bool select_sqlite_schema_result =
+      Execute("SELECT COUNT(*) FROM sqlite_schema");
 
   // Restore the original error callback.
   error_callback_ = std::move(original_callback);
@@ -1815,7 +1815,7 @@ std::string Database::GetDiagnosticInfo(int extended_error,
   base::StringAppendF(&result, "Has valid header: %s\n",
                       (has_valid_header ? "Yes" : "No"));
   base::StringAppendF(&result, "Has valid schema: %s\n",
-                      (select_sqlite_master_result ? "Yes" : "No"));
+                      (select_sqlite_schema_result ? "Yes" : "No"));
 
   return result;
 }

@@ -49,10 +49,10 @@ DETACH DATABASE recovery;
 The feature invoking the recovery virtual table must know the schema of the
 database being recovered. A generic high-level recovery layer should first
 recover
-[the `sqlite_master` table](https://www.sqlite.org/fileformat.html#storage_of_the_sql_database_schema),
+[the `sqlite_schema` table](https://www.sqlite.org/fileformat.html#storage_of_the_sql_database_schema),
 which has a well known format, then use its contents to recover the schema of
 any other table. This recovery module already relies on the integrity of the
-`sqlite_master` table.
+`sqlite_schema` table.
 
 The column definitions in the virtual table creation statement must follow
 the syntax _column\_name_ _type\_name_ [`STRICT`] [`NOT NULL`]. _type\_name_ is

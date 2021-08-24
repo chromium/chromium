@@ -71,10 +71,10 @@ bool CorruptTableOrIndex(const base::FilePath& db_path,
                          const char* tree_name,
                          const char* update_sql) WARN_UNUSED_RESULT;
 
-// Return the number of tables in sqlite_master.
+// Return the number of tables in sqlite_schema.
 size_t CountSQLTables(sql::Database* db) WARN_UNUSED_RESULT;
 
-// Return the number of indices in sqlite_master.
+// Return the number of indices in sqlite_schema.
 size_t CountSQLIndices(sql::Database* db) WARN_UNUSED_RESULT;
 
 // Returns the number of columns in the named table.  0 indicates an
