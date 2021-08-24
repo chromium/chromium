@@ -1373,7 +1373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse.Count" units="units"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -2340,7 +2340,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2021-12-19">
+    units="ms" expires_after="2022-02-20">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 

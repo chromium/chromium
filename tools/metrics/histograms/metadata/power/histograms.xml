@@ -58,7 +58,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </variants>
 
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
-    units="50 MHz" expires_after="2021-12-19">
+    units="50 MHz" expires_after="2022-02-20">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -125,7 +125,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2022-02-13">
+    expires_after="2022-02-20">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1404,7 +1404,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
-    expires_after="2021-10-24">
+    expires_after="2022-02-20">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1428,7 +1428,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2021-12-19">
+    enum="PowerMLSmartDimModelResult" expires_after="2022-02-20">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

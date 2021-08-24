@@ -902,7 +902,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MemoryPressureLevel" enum="MemoryPressureLevel"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>xdai@chromium.org</owner>
   <summary>
     The memory pressure level in Chrome OS, which is recorded periodically (once

@@ -2112,7 +2112,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrotliFilter.CompressionPercent" units="%"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>eustas@chromium.org</owner>
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
@@ -4176,7 +4176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.AllServicesKB" enum="DataUseServicesHash"
-    expires_after="2021-12-20">
+    expires_after="2022-02-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -4191,7 +4191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.AppTabState" units="bytes" expires_after="2021-12-20">
+<histogram name="DataUse.AppTabState" units="bytes" expires_after="2022-02-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -4246,7 +4246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DataUse.BytesSent" units="bytes" expires_after="2021-12-20">
+<histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-02-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -4256,7 +4256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
-    expires_after="2021-12-20">
+    expires_after="2022-02-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -4297,7 +4297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataUse.TrafficSize.User" units="bytes"
-    expires_after="2021-12-20">
+    expires_after="2022-02-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -10875,7 +10875,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchSubsequent" units="units"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>ppi@chromium.org</owner>
   <summary>
     The time it takes to spawn child sub processes not counting the first one.
@@ -11204,7 +11204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NQE.EffectiveConnectionType.OnECTComputation"
-    enum="NQEEffectiveConnectionType" expires_after="2021-12-19">
+    enum="NQEEffectiveConnectionType" expires_after="2022-02-20">
   <owner>tbansal@chromium.org</owner>
   <owner>src/net/nqe/OWNERS</owner>
   <summary>
@@ -11283,7 +11283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NQE.RTT.ObservationSource" enum="NQEObservationSource"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>tbansal@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -13971,7 +13971,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.WebUI.InitialEntriesRenderTime" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -13982,7 +13982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -13993,7 +13993,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -17013,7 +17013,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Action"
-    enum="ParentAccessCodeAction" expires_after="2021-12-19">
+    enum="ParentAccessCodeAction" expires_after="2022-02-20">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -19759,7 +19759,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.BlankTextShownTime" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -20195,7 +20195,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>dbeam@chromium.org</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>

@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.GL.DrawFrameUs"
-    units="microseconds" expires_after="2021-12-19">
+    units="microseconds" expires_after="2022-02-20">
   <owner>weiliangc@chromium.org</owner>
   <summary>
     Time spent drawing of composited layers by GLRenderer, in microseconds. This

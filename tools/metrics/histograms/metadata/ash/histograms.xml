@@ -2813,7 +2813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.TabletMode" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>Presentation time while dragging a tab in tablet mode.</summary>

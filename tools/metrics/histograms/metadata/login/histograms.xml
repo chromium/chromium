@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>achuith@chromium.org</owner>
   <summary>Chrome OS login failure reason.</summary>
 </histogram>

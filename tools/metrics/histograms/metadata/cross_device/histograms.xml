@@ -1779,7 +1779,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-12-19">
+    enum="BooleanSuccess" expires_after="2022-02-20">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

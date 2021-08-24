@@ -1911,7 +1911,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.SystemLogUploadResult"
-    enum="EnterpriseSystemLogUploadResult" expires_after="2021-12-19">
+    enum="EnterpriseSystemLogUploadResult" expires_after="2022-02-20">
   <owner>bmalcolm@chromium.org</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>Result of a single attempt to upload system logs.</summary>
@@ -2048,7 +2048,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2021-12-19">
+    enum="GoogleServiceAuthError" expires_after="2022-02-20">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <summary>Failure reason for OAuth token fetch for child user.</summary>

@@ -447,7 +447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AverageExcessBufferDelayMs" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the average waiting time in the buffer for each packet. The waiting
@@ -541,7 +541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.EchoPathDelay" units="Blocks"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -914,14 +914,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitiallyLostPackets" units="packets"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>holmer@chromium.org</owner>
   <summary>
     The number of video packets lost durig the first 2 seconds in a WebRTC call.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2021-12-19">
+<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2022-02-20">
   <owner>holmer@chromium.org</owner>
   <summary>
     The round-trip time as measured 2 seconds into a WebRTC call.

@@ -832,7 +832,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2021-12-19">
+    enum="PasswordCheckResolutionAction" expires_after="2022-02-20">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
