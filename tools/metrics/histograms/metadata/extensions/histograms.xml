@@ -1777,7 +1777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2022-02-01">
   <owner>snijhara@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
@@ -1806,7 +1806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledStage2"
-    enum="ExtensionInstallationStage" expires_after="2021-10-04">
+    enum="ExtensionInstallationStage" expires_after="2022-02-01">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1897,7 +1897,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}FetchTries"
-    units="retries" expires_after="2021-10-04">
+    units="retries" expires_after="2022-02-01">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1919,7 +1919,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2021-10-04">
+    enum="NetErrorCodes" expires_after="2022-02-01">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
