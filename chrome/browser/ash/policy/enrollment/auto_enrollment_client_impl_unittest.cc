@@ -51,7 +51,7 @@ namespace em = enterprise_management;
 namespace psm_rlwe = private_membership::rlwe;
 
 // An enum for PSM execution result values.
-using PsmExecutionResult = em::DeviceRegisterRequest_PsmExecutionResult;
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
@@ -1590,7 +1590,7 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     const base::Value* psm_execution_result =
         local_state_->GetUserPref(prefs::kEnrollmentPsmResult);
     if (!psm_execution_result ||
-        !em::DeviceRegisterRequest_PsmExecutionResult_IsValid(
+        !em::DeviceRegisterRequest::PsmExecutionResult_IsValid(
             psm_execution_result->GetInt()))
       return em::DeviceRegisterRequest::PSM_RESULT_UNKNOWN;
     return static_cast<PsmExecutionResult>(psm_execution_result->GetInt());
