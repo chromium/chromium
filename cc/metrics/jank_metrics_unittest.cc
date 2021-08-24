@@ -503,14 +503,9 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 
   // Test all-sequence metrics.
-  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 1u);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kAllSequencesMetricName),
-              testing::ElementsAre(base::Bucket(6, 1)));
-
-  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 1u);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kAllAnimationsMetricName),
-              testing::ElementsAre(base::Bucket(6, 1)));
-
+  // RAF is not included in AllSequences/AllAnimations metrics.
+  histogram_tester.ExpectTotalCount(kAllSequencesMetricName, 0u);
+  histogram_tester.ExpectTotalCount(kAllAnimationsMetricName, 0u);
   histogram_tester.ExpectTotalCount(kAllInteractionsMetricName, 0u);
 
   // Stale-frame metrics
