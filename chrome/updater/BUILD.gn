@@ -315,6 +315,7 @@ if (is_win || is_mac) {
     deps = [
       ":base",
       ":constants_header",
+      "//base",
     ]
   }
 

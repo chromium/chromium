@@ -8,7 +8,8 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
-#include "chrome/updater/configurator.h"
+#include "chrome/updater/external_constants.h"
+#include "chrome/updater/prefs.h"
 
 namespace updater {
 
@@ -28,7 +29,9 @@ class AppServer : public App {
  protected:
   ~AppServer() override;
 
-  scoped_refptr<const Configurator> config() const { return config_; }
+  scoped_refptr<const ExternalConstants> external_constants() const {
+    return external_constants_;
+  }
 
   // Overrides of App.
   void Uninitialize() override;
@@ -68,7 +71,8 @@ class AppServer : public App {
   void MaybeUninstall();
 
   base::OnceClosure first_task_;
-  scoped_refptr<Configurator> config_;
+  scoped_refptr<ExternalConstants> external_constants_;
+  scoped_refptr<UpdaterPrefs> prefs_;
 
   // If true, this version of the updater should uninstall itself during
   // shutdown.

@@ -5,8 +5,10 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 
-#include <memory>
 #include <vector>
+
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 class GURL;
 
@@ -14,12 +16,11 @@ namespace updater {
 
 // Several constants controlling the program's behavior can come from stateful
 // external providers, such as dev-mode overrides or enterprise policies.
-class ExternalConstants {
+class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
  public:
-  explicit ExternalConstants(std::unique_ptr<ExternalConstants> next_provider);
+  explicit ExternalConstants(scoped_refptr<ExternalConstants> next_provider);
   ExternalConstants(const ExternalConstants&) = delete;
   ExternalConstants& operator=(const ExternalConstants&) = delete;
-  virtual ~ExternalConstants();
 
   // The URL to send update checks to.
   virtual std::vector<GURL> UpdateURL() const = 0;
@@ -35,15 +36,17 @@ class ExternalConstants {
   virtual int ServerKeepAliveSeconds() const = 0;
 
  protected:
-  std::unique_ptr<ExternalConstants> next_provider_;
+  friend class base::RefCountedThreadSafe<ExternalConstants>;
+  scoped_refptr<ExternalConstants> next_provider_;
+  virtual ~ExternalConstants();
 };
 
 // Sets up an external constants chain of responsibility. May block.
-std::unique_ptr<ExternalConstants> CreateExternalConstants();
+scoped_refptr<ExternalConstants> CreateExternalConstants();
 
 // Sets up an external constants provider yielding only default values.
 // Intended only for testing of other constants providers.
-std::unique_ptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
+scoped_refptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
 
 }  // namespace updater
 

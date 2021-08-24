@@ -5,6 +5,7 @@
 #include "chrome/updater/configurator.h"
 
 #include "base/cxx17_backports.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -43,10 +44,11 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 
 namespace updater {
 
-Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs)
+Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
+                           scoped_refptr<ExternalConstants> external_constants)
     : prefs_(prefs),
       policy_service_(PolicyService::Create()),
-      external_constants_(CreateExternalConstants()),
+      external_constants_(external_constants),
       activity_data_service_(
           std::make_unique<ActivityDataService>(GetUpdaterScope())),
       unzip_factory_(

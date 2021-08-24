@@ -100,8 +100,7 @@ void AppServerMac::MarkTaskStarted() {
 }
 
 base::TimeDelta AppServerMac::ServerKeepAlive() {
-  int seconds =
-      config() ? config()->ServerKeepAliveSeconds() : kServerKeepAliveSeconds;
+  int seconds = external_constants()->ServerKeepAliveSeconds();
   DVLOG(2) << "ServerKeepAliveSeconds: " << seconds;
   return base::TimeDelta::FromSeconds(seconds);
 }
