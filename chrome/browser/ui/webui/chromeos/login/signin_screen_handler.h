@@ -208,11 +208,6 @@ class SigninScreenHandler
                                 const std::string& password,
                                 bool authenticated_by_pin);
 
-  // Returns true iff
-  // (i)   log in is restricted to some user list,
-  // (ii)  all users in the restricted list are present.
-  bool AllAllowlistedUsersPresent();
-
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();
 

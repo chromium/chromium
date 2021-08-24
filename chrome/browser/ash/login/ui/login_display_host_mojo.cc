@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -60,6 +59,44 @@ CertificateProviderService* GetLoginScreenCertProviderService() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
   return CertificateProviderServiceFactory::GetForBrowserContext(
       ProfileHelper::GetSigninProfile());
+}
+
+// Returns true iff
+// (i)   log in is restricted to some user list,
+// (ii)  all users in the restricted list are present.
+bool AllAllowlistedUsersPresent() {
+  CrosSettings* cros_settings = CrosSettings::Get();
+  bool allow_new_user = false;
+  cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
+  if (allow_new_user)
+    return false;
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::UserList& users = user_manager->GetUsers();
+
+  // Max number of users to show.
+  const size_t kMaxUsers = 18;
+  if (users.size() > kMaxUsers)
+    return false;
+
+  bool allow_family_link = false;
+  cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
+                            &allow_family_link);
+  if (allow_family_link)
+    return false;
+
+  const base::ListValue* allowlist = nullptr;
+  if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
+    return false;
+  for (size_t i = 0; i < allowlist->GetSize(); ++i) {
+    std::string allowlisted_user;
+    // NB: Wildcards in the allowlist are also detected as not present here.
+    if (!allowlist->GetString(i, &allowlisted_user) ||
+        !user_manager->IsKnownUser(
+            AccountId::FromUserEmail(allowlisted_user))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -359,8 +396,7 @@ void LoginDisplayHostMojo::UpdateOobeDialogState(OobeDialogState state) {
 
 void LoginDisplayHostMojo::UpdateAddUserButtonStatus() {
   DCHECK(GetOobeUI());
-  LoginScreen::Get()->EnableAddUserButton(
-      !GetOobeUI()->signin_screen_handler()->AllAllowlistedUsersPresent());
+  LoginScreen::Get()->EnableAddUserButton(!AllAllowlistedUsersPresent());
 }
 
 void LoginDisplayHostMojo::RequestSystemInfoUpdate() {
