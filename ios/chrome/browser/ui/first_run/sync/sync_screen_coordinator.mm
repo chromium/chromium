@@ -156,6 +156,20 @@
 - (void)didTapSecondaryActionButton {
   base::UmaHistogramEnumeration("FirstRun.Stage",
                                 first_run::kSyncScreenCompletionWithoutSync);
+  // The sync view will only be displayed if the user accepted sign in
+  // previously in the flow. If the "Don't turn on sync" button is tapped, the
+  // user will be reverted to the signed in not syncing state, since this is the
+  // only possible previous state.
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  ChromeIdentity* syncingIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (syncingIdentity) {
+    authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                   /*force_clear_browsing_data=*/false, nil);
+    authenticationService->SignIn(syncingIdentity);
+  }
   [self.delegate willFinishPresenting];
 }
 
