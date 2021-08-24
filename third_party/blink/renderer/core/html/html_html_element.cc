@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -173,10 +174,18 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     for (Node* node = firstChild(); node; node = node->nextSibling()) {
       if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
         continue;
-      if (LayoutObject* layout_text = node->GetLayoutObject())
-        layout_text->SetStyle(new_style);
+      LayoutObject* const layout_text = node->GetLayoutObject();
+      if (!layout_text)
+        continue;
+      auto* const text_combine =
+          DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
+      if (UNLIKELY(text_combine)) {
+        layout_text->SetStyle(text_combine->Style());
+        continue;
+      }
+      layout_text->SetStyle(new_style);
+    }
     }
   }
-}
 
 }  // namespace blink

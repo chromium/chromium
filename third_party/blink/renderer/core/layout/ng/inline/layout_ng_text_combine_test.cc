@@ -166,6 +166,32 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1241194
+TEST_F(LayoutNGTextCombineTest, HtmlElement) {
+  InsertStyleElement(
+      "html {"
+      "text-combine-upright: all;"
+      "writing-mode: vertical-lr;"
+      "}");
+
+  // Make |Text| node child in <html> element to call
+  // |HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody()|
+  GetDocument().documentElement()->appendChild(
+      Text::Create(GetDocument(), "X"));
+
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(
+      R"DUMP(
+LayoutNGBlockFlow HTML
+  +--LayoutNGBlockFlow BODY
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "X"
+)DUMP",
+      ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
+}
+
 TEST_F(LayoutNGTextCombineTest, InkOverflow) {
   LoadAhem();
   InsertStyleElement(
