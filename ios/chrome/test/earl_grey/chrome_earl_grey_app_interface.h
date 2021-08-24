@@ -534,6 +534,11 @@
 // returns a Value of type NONE.
 + (NSString*)localStatePrefValue:(NSString*)prefName;
 
+// Sets the integer values for the local state pref with |prefName|. |value|
+// can be either a casted enum or any other numerical value. Local State
+// contains the preferences that are shared between all browser states.
++ (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName;
+
 // Gets the value of a user pref in the original browser state. Returns a
 // base::Value encoded as a JSON string. If the pref was not registered,
 // returns a Value of type NONE.

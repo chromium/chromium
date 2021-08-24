@@ -1276,6 +1276,13 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return success ? value->GetString() : "";
 }
 
+- (void)setIntegerValue:(int)value
+      forLocalStatePref:(const std::string&)prefName {
+  [ChromeEarlGreyAppInterface
+        setIntegerValue:value
+      forLocalStatePref:base::SysUTF8ToNSString(prefName)];
+}
+
 // Returns a base::Value representation of the requested pref.
 - (std::unique_ptr<base::Value>)userPrefValue:(const std::string&)prefName {
   std::string jsonRepresentation =

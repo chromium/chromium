@@ -39,7 +39,7 @@ void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
 bool IsSigninAllowed(const PrefService* prefs);
 
 // Returns a boolean indicating whether policy allows browser sign-in.
-bool IsSigninAllowedByPolicy(const PrefService* prefs);
+bool IsSigninAllowedByPolicy();
 
 // Returns the current sign-in state of primary identity.
 IdentitySigninState GetPrimaryIdentitySigninState(

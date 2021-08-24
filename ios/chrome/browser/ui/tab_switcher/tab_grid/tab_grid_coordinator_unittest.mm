@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
@@ -146,6 +147,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
   // Model for bookmarks.

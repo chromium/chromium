@@ -90,8 +90,7 @@
 }
 
 - (void)start {
-  if (!signin::IsSigninAllowedByPolicy(
-          self.browser->GetBrowserState()->GetPrefs())) {
+  if (!signin::IsSigninAllowedByPolicy()) {
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
     return;

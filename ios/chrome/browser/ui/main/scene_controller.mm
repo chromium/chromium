@@ -2754,8 +2754,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)startSigninCoordinatorWithCompletion:
     (signin_ui::CompletionCallback)completion {
   DCHECK(self.signinCoordinator);
-  if (!signin::IsSigninAllowedByPolicy(
-          self.signinCoordinator.browser->GetBrowserState()->GetPrefs())) {
+  if (!signin::IsSigninAllowedByPolicy()) {
     completion(/*success=*/NO);
     [self.signinCoordinator stop];
     id<PolicySignoutPromptCommands> handler = HandlerForProtocol(

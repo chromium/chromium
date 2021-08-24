@@ -146,4 +146,8 @@ const char kPrintingEnabled[] = "printing.enabled";
 const char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
 
+// Integer that represents the value of BrowserSigninPolicy. Values are defined
+// in ios/chrome/browser/policy/policy_util.h.
+const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
+
 }  // namespace prefs

@@ -42,8 +42,31 @@
           "BrowserSignin": 0
         },
         "prefs": {
-          "signin.allowed_by_policy": {
-            "value": false
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 1
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 1
           }
         }
       }

@@ -8,13 +8,14 @@
 #include "build/build_config.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -51,8 +53,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     chrome_browser_state_ = builder.Build();
 
     // Set the initial pref value.
-    chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                  true);
+    GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                                static_cast<int>(BrowserSigninMode::kEnabled));
 
     // Set up the test browser and attach the browser agents.
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -90,7 +92,10 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
         ->SignIn(identity);
   }
 
+  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   PolicyWatcherBrowserAgent* agent_;
   std::unique_ptr<Browser> browser_;
@@ -105,8 +110,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 // been called.
 TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   // Set the initial pref value.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                true);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kEnabled));
 
   // Set up the test browser and attach the browser agent under test.
   std::unique_ptr<Browser> browser =
@@ -121,18 +126,18 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   agent_->AddObserver(&bridge);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   agent_->RemoveObserver(&bridge);
 }
 
-// Tests that the browser agent monitors the kSigninAllowedByPolicy pref and
+// Tests that the browser agent monitors the kBrowserSigninPolicy pref and
 // notifies its observers when it changes.
 TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
   // Set the initial pref value.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                true);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kEnabled));
   // Set up the mock observer handler.
   id mockObserver =
       OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
@@ -147,8 +152,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
       [mockObserver policyWatcherBrowserAgentNotifySignInDisabled:agent_]);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockObserver);
@@ -172,8 +177,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotSignedIn) {
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 }
 
 // Tests that the pref change triggers a command if the user is signed
@@ -194,8 +199,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   OCMExpect([mockHandler showPolicySignoutPrompt]);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockHandler);
@@ -223,8 +228,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
@@ -238,8 +243,9 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   // pref changed in background.
 
   // Update the pref and Sign in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
+
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
@@ -279,8 +285,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
 // Tests that the command to show the UI isn't sent if the authentication
 // service is still signing out the user.
 TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   AuthenticationService* authentication_service =
       static_cast<AuthenticationServiceFake*>(
@@ -320,8 +326,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
 // Tests that the command to show the UI is sent when the Browser Agent is
 // notified of the UI being dismissed.
 TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
   SignIn();
 
   // Strict protocol: method calls will fail until the method is stubbed.

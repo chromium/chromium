@@ -503,8 +503,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // section. However, if sign-in is disabled by policy Chrome will
   // continue to show the Other Devices section with a specialized message.
   const PrefService* prefs = self.browserState->GetPrefs();
-  if (!signin::IsSigninAllowed(prefs) &&
-      signin::IsSigninAllowedByPolicy(prefs)) {
+  if (!signin::IsSigninAllowed(prefs) && signin::IsSigninAllowedByPolicy()) {
     return;
   }
 

@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/common",
+    "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

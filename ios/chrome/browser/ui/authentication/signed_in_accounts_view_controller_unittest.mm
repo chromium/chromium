@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #include "ios/chrome/test/block_cleanup_test.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -61,6 +62,7 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
+  IOSChromeScopedTestingLocalState local_state_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

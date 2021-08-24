@@ -14,9 +14,11 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/app/tests_hook.h"
+#include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -176,12 +178,21 @@ void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
 }
 
 bool IsSigninAllowed(const PrefService* prefs) {
-  return prefs->GetBoolean(prefs::kSigninAllowed) &&
-         prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
+  return prefs->GetBoolean(prefs::kSigninAllowed) && IsSigninAllowedByPolicy();
 }
 
-bool IsSigninAllowedByPolicy(const PrefService* prefs) {
-  return prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
+bool IsSigninAllowedByPolicy() {
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      GetApplicationContext()->GetLocalState()->GetInteger(
+          prefs::kBrowserSigninPolicy));
+
+  switch (policy_mode) {
+    case BrowserSigninMode::kDisabled:
+      return false;
+    case BrowserSigninMode::kEnabled:
+    case BrowserSigninMode::kForced:
+      return true;
+  }
 }
 
 IdentitySigninState GetPrimaryIdentitySigninState(

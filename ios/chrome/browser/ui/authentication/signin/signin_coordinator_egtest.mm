@@ -8,8 +8,9 @@
 #import "base/test/ios/wait_util.h"
 #import "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
@@ -627,7 +628,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Disable browser sign-in only after the "Sign in to Chrome" button is
   // visible.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowedByPolicy];
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kDisabled)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
 
   // Verify the sign-in view isn't showing.
   id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
@@ -636,7 +638,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       assertWithMatcher:grey_notVisible()];
 
   // Prefs clean-up.
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowedByPolicy];
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kEnabled)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
 }
 
 // Tests that a signed-in user can open "Settings" screen from the NTP.

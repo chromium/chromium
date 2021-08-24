@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 
 namespace policy {
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
@@ -73,10 +74,12 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       // sign-in enabled.
       FALLTHROUGH;
     case BrowserSigninMode::kEnabled:
-      prefs->SetBoolean(prefs::kSigninAllowedByPolicy, true);
+      prefs->SetInteger(prefs::kBrowserSigninPolicy,
+                        static_cast<int>(BrowserSigninMode::kEnabled));
       break;
     case BrowserSigninMode::kDisabled:
-      prefs->SetBoolean(prefs::kSigninAllowedByPolicy, false);
+      prefs->SetInteger(prefs::kBrowserSigninPolicy,
+                        static_cast<int>(BrowserSigninMode::kDisabled));
       break;
   }
 }

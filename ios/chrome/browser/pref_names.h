@@ -48,6 +48,8 @@ extern const char kIosUserZoomMultipliers[];
 
 extern const char kIncognitoAuthenticationSetting[];
 
+extern const char kBrowserSigninPolicy[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREF_NAMES_H_

@@ -197,7 +197,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewItem*)allowChromeSigninItem {
-  if (signin::IsSigninAllowedByPolicy(self.userPrefService)) {
+  if (signin::IsSigninAllowedByPolicy()) {
     return
         [self switchItemWithItemType:AllowChromeSigninItemType
                         textStringID:
@@ -239,7 +239,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
             base::mac::ObjCCast<SyncSwitchItem>(item);
-        if (signin::IsSigninAllowedByPolicy(self.userPrefService)) {
+        if (signin::IsSigninAllowedByPolicy()) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
           signinDisabledItem.on = NO;

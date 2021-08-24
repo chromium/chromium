@@ -202,6 +202,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/chrome/test:block_cleanup_test",
+    "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

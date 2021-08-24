@@ -13,6 +13,8 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -47,6 +49,8 @@ class BrowserSigninPolicyHandlerTest : public PlatformTest {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
   }
+
+  IOSChromeScopedTestingLocalState local_state_;
 };
 
 const char* BrowserSigninModeToString(BrowserSigninMode mode) {
@@ -67,13 +71,19 @@ const char* BrowserSigninModeToString(BrowserSigninMode mode) {
 TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
   struct TestCase {
     BrowserSigninMode mode;
-    bool expected_pref_value;
+    int expected_pref_value;
   };
 
   const TestCase test_cases[] = {
-      {BrowserSigninMode::kDisabled, false},
-      {BrowserSigninMode::kEnabled, true},
-      {BrowserSigninMode::kForced, true},
+      {BrowserSigninMode::kDisabled,
+       static_cast<int>(BrowserSigninMode::kDisabled)},
+      {BrowserSigninMode::kEnabled,
+       static_cast<int>(BrowserSigninMode::kEnabled)},
+      // TODO(crbug.com/1237165): Change the integer output to
+      // static_cast<int>(BrowserSigninMode::kForced) when the
+      // policy is introduced.
+      {BrowserSigninMode::kForced,
+       static_cast<int>(BrowserSigninMode::kEnabled)},
   };
 
   std::string error;
@@ -89,10 +99,10 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
     entry.set_value(base::Value(static_cast<int>(test_case.mode)));
     policies.Set("BrowserSignin", std::move(entry));
 
-    bool value = false;
+    int value = -1;
     PrefValueMap prefs;
     handler.ApplyPolicySettings(policies, &prefs);
-    EXPECT_TRUE(prefs.GetBoolean(prefs::kSigninAllowedByPolicy, &value));
+    EXPECT_TRUE(prefs.GetInteger(prefs::kBrowserSigninPolicy, &value));
     EXPECT_EQ(test_case.expected_pref_value, value)
         << "For test case: mode = "
         << BrowserSigninModeToString(test_case.mode);

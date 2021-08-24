@@ -124,6 +124,9 @@ const char kMetricsReportingWifiOnly[] =
 // Deprecated 07/2021
 const char kLastSessionExitedCleanly[] =
     "ios.user_experience_metrics.last_session_exited_cleanly";
+
+// Deprecated 08/2021
+const char kSigninAllowedByPolicy[] = "signin.allowed_by_policy";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -183,6 +186,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                "");
 
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
+  registry->RegisterIntegerPref(prefs::kBrowserSigninPolicy,
+                                static_cast<int>(BrowserSigninMode::kEnabled));
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -279,6 +284,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   if (IsReadingListMessagesEnabled()) {
     registry->RegisterBooleanPref(kPrefReadingListMessagesNeverShow, false);
   }
+
+  // Preference related to the browser sign-in policy that is being deprecated.
+  registry->RegisterBooleanPref(kSigninAllowedByPolicy, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -338,4 +346,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 2/2021.
   syncer::ClearObsoletePassphrasePromptPrefs(prefs);
+
+  // Added 8/2021.
+  prefs->ClearPref(kSigninAllowedByPolicy);
 }

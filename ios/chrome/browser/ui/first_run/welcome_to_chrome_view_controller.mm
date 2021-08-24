@@ -229,8 +229,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
           self.mainBrowser->GetBrowserState());
   self.firstRunConfig.hasSSOAccount = accountManagerService->HasIdentities();
 
-  if (!signin::IsSigninAllowedByPolicy(
-          self.mainBrowser->GetBrowserState()->GetPrefs())) {
+  if (!signin::IsSigninAllowedByPolicy()) {
     // Sign-in is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;

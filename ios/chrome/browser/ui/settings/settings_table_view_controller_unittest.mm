@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -158,10 +160,12 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
            forKey:kPolicyLoaderIOSConfigurationKey];
   }
 
+  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   FakeChromeIdentity* fake_identity_ = nullptr;
   AuthenticationServiceFake* auth_service_ = nullptr;
@@ -330,8 +334,8 @@ TEST_F(SettingsTableViewControllerTest, SyncSetupNotComplete) {
 // item if sign-in is disabled by policy.
 TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
   AddSigninDisabledEnterprisePolicy();
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
   CreateController();
   CheckController();
 

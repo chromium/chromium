@@ -16,11 +16,14 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -69,8 +72,11 @@ class SigninUtilsTest : public PlatformTest {
     return prefs;
   }
 
+  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   ChromeAccountManagerService* account_manager_service_;
 };
@@ -240,8 +246,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
   const base::Version version_1_0("1.0");
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
 
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
@@ -260,20 +266,18 @@ TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }
 
-// signin::IsSigninAllowedByPolicy should respect the kSigninAllowedByPolicy
+// signin::IsSigninAllowedByPolicy should respect the kBrowserSigninPolicy
 // pref.
 TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   // Sign-in is allowed by default.
-  EXPECT_TRUE(
-      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
+  EXPECT_TRUE(signin::IsSigninAllowedByPolicy());
 
   // When sign-in is disabled by policy, the accessor should return false.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
-                                                false);
-  EXPECT_FALSE(
-      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kDisabled));
+  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
   EXPECT_FALSE(
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 
@@ -281,8 +285,7 @@ TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
   // changed the accessor should return false.
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
 
-  EXPECT_FALSE(
-      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
+  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
   EXPECT_FALSE(
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }

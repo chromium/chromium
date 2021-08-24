@@ -126,6 +126,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",

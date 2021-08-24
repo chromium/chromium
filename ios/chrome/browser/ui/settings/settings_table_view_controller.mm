@@ -541,7 +541,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // If sign-in is disabled by policy there should not be a sign-in promo.
-  if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs()) ||
+  if (!signin::IsSigninAllowedByPolicy() ||
       ([self isSyncDisabledByPolicy] &&
        !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
     item = [self signinDisabledByPolicyTextItem];
