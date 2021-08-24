@@ -265,7 +265,6 @@ preprocess_if_expr("preprocess_generated") {
     "privacy_page/privacy_review/privacy_review_msbb_fragment.js",
     "privacy_page/privacy_review/privacy_review_page.js",
     "privacy_page/privacy_review/privacy_review_shared_css.js",
-    "privacy_page/privacy_review/step_indicator.js",
     "privacy_page/security_keys_bio_enroll_dialog.js",
     "privacy_page/security_keys_credential_management_dialog.js",
     "privacy_page/security_keys_pin_field.js",
