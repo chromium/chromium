@@ -73,7 +73,7 @@ ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   session_map_.clear();
 }
 
-void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
+void ArcNearbyShareBridge::OnNearbyShareSessionFinished(uint32_t task_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!session_map_.erase(task_id)) {
     VLOG(1) << "No share session found for " << task_id;

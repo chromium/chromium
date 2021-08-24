@@ -31,7 +31,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
                                public aura::WindowObserver,
                                public aura::EnvObserver {
  public:
-  using SessionFinishedCallback = base::OnceCallback<void(int32_t)>;
+  using SessionFinishedCallback = base::OnceCallback<void(uint32_t)>;
 
   NearbyShareSessionImpl(
       Profile* profile,

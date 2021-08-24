@@ -54,7 +54,7 @@ class ArcNearbyShareBridge : public KeyedService,
  private:
   // Called by NearbyShareSessionImpl when the session is finished and can be
   // cleaned up.
-  void OnNearbyShareSessionFinished(int32_t task_id);
+  void OnNearbyShareSessionFinished(uint32_t task_id);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
