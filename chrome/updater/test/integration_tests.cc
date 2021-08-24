@@ -186,8 +186,6 @@ class IntegrationTest : public ::testing::Test {
 // See crbug.com/1112527.
 #if defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
-// Flaky on Mac. crbug.com/1242349.
-#if !defined(OS_MAC)
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
   ExpectInstalled();
@@ -201,7 +199,6 @@ TEST_F(IntegrationTest, InstallUninstall) {
 #endif  // OS_WIN
   Uninstall();
 }
-#endif  // OS_MAC
 
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
