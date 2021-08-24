@@ -11,6 +11,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_AUTOGEN_H_
 
+ValueValidator<MailboxFlags> mailbox_flags;
 ValueValidator<PowerPreference> power_preference;
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_AUTOGEN_H_

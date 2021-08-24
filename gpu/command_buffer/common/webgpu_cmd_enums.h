@@ -24,6 +24,11 @@ enum class DawnReturnDataType : uint32_t {
   kNumDawnReturnDataType
 };
 
+enum MailboxFlags : uint32_t {
+  WEBGPU_MAILBOX_NONE = 0,
+  WEBGPU_MAILBOX_DISCARD = 1 << 0,
+};
+
 }  // namespace webgpu
 }  // namespace gpu
 #endif  // GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_ENUMS_H_

@@ -1052,6 +1052,7 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   uint32_t id = static_cast<uint32_t>(c.id);
   uint32_t generation = static_cast<uint32_t>(c.generation);
   WGPUTextureUsage usage = static_cast<WGPUTextureUsage>(c.usage);
+  MailboxFlags flags = static_cast<MailboxFlags>(c.flags);
 
   // Unpack the mailbox
   if (sizeof(Mailbox) > immediate_data_size) {
@@ -1090,9 +1091,11 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
     return error::kInvalidArguments;
   }
 
-  // TODO(cwallez@chromium.org): Handle texture clearing. We should either
-  // pre-clear textures, or implement a way to detect whether DAWN has cleared
-  // a texture. crbug.com/1036080
+  if (flags & WEBGPU_MAILBOX_DISCARD) {
+    // Set contents to uncleared.
+    shared_image->SetClearedRect(gfx::Rect());
+  }
+
   std::unique_ptr<SharedImageRepresentationDawn::ScopedAccess>
       shared_image_access = shared_image->BeginScopedAccess(
           usage, SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -1139,6 +1142,71 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailbox(
   if (it == associated_shared_image_map_.end()) {
     DLOG(ERROR) << "DissociateMailbox: Invalid texture ID";
     return error::kInvalidArguments;
+  }
+
+  associated_shared_image_map_.erase(it);
+  return error::kNoError;
+}
+
+error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::DissociateMailboxForPresent& c =
+      *static_cast<const volatile webgpu::cmds::DissociateMailboxForPresent*>(
+          cmd_data);
+  uint32_t device_id = static_cast<uint32_t>(c.device_id);
+  uint32_t device_generation = static_cast<uint32_t>(c.device_generation);
+  uint32_t texture_id = static_cast<uint32_t>(c.texture_id);
+  uint32_t texture_generation = static_cast<uint32_t>(c.texture_generation);
+
+  std::tuple<uint32_t, uint32_t> id_and_generation{texture_id,
+                                                   texture_generation};
+  auto it = associated_shared_image_map_.find(id_and_generation);
+  if (it == associated_shared_image_map_.end()) {
+    DLOG(ERROR) << "DissociateMailbox: Invalid texture ID";
+    return error::kInvalidArguments;
+  }
+
+  WGPUDevice device = wire_server_->GetDevice(device_id, device_generation);
+  if (device == nullptr) {
+    return error::kInvalidArguments;
+  }
+
+  WGPUTexture texture = it->second->access->texture();
+  DCHECK(texture);
+  if (!dawn_native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1)) {
+    // The compositor renders uninitialized textures as red. If the texture is
+    // not initialized, we need to explicitly clear its contents to black.
+    // TODO(crbug.com/1242712): Use the C++ WebGPU API.
+    const auto& procs = dawn_native::GetProcs();
+    WGPUTextureView view = procs.textureCreateView(texture, nullptr);
+
+    WGPURenderPassColorAttachment color_attachment = {};
+    color_attachment.view = view;
+    color_attachment.loadOp = WGPULoadOp_Clear;
+    color_attachment.storeOp = WGPUStoreOp_Store;
+    color_attachment.clearColor = {0.0, 0.0, 0.0, 0.0};
+
+    WGPURenderPassDescriptor render_pass_descriptor = {};
+    render_pass_descriptor.colorAttachmentCount = 1;
+    render_pass_descriptor.colorAttachments = &color_attachment;
+
+    WGPUCommandEncoder encoder =
+        procs.deviceCreateCommandEncoder(device, nullptr);
+    WGPURenderPassEncoder pass =
+        procs.commandEncoderBeginRenderPass(encoder, &render_pass_descriptor);
+    procs.renderPassEncoderEndPass(pass);
+    WGPUCommandBuffer command_buffer =
+        procs.commandEncoderFinish(encoder, nullptr);
+    WGPUQueue queue = procs.deviceGetQueue(device);
+    procs.queueSubmit(queue, 1, &command_buffer);
+    procs.queueRelease(queue);
+    procs.commandBufferRelease(command_buffer);
+    procs.renderPassEncoderRelease(pass);
+    procs.commandEncoderRelease(encoder);
+    procs.textureViewRelease(view);
+
+    DCHECK(dawn_native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1));
   }
 
   associated_shared_image_map_.erase(it);

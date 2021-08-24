@@ -107,6 +107,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
 
+  uint32_t wire_device_id_ = 0;
+  uint32_t wire_device_generation_ = 0;
   uint32_t wire_texture_id_ = 0;
   uint32_t wire_texture_generation_ = 0;
   std::unique_ptr<SwapBuffer> current_swap_buffer_;

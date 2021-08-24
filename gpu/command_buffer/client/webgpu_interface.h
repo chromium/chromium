@@ -83,6 +83,16 @@ class WebGPUInterface : public InterfaceBase {
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_autogen.h"
+
+  void AssociateMailbox(GLuint device_id,
+                        GLuint device_generation,
+                        GLuint id,
+                        GLuint generation,
+                        GLuint usage,
+                        const GLbyte* mailbox) {
+    AssociateMailbox(device_id, device_generation, id, generation, usage,
+                     WEBGPU_MAILBOX_NONE, mailbox);
+  }
 };
 
 }  // namespace webgpu

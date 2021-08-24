@@ -65,9 +65,9 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
         return null;
       }
 
-      const context = gpuCanvas.getContext('gpupresent');
+      const context = gpuCanvas.getContext('webgpu');
       if (!context) {
-        console.error('getContext(gpupresent) failed');
+        console.error('getContext(webgpu) failed');
         return null;
       }
 

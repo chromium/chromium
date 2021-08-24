@@ -134,17 +134,17 @@ TEST_F(WebGPUSwapBufferProviderTest,
 
   viz::TransferableResource resource1;
   gpu::webgpu::ReservedTexture reservation1 = {
-      reinterpret_cast<WGPUTexture>(&resource1), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource1), 1, 1, 1, 1};
   viz::ReleaseCallback release_callback1;
 
   viz::TransferableResource resource2;
   gpu::webgpu::ReservedTexture reservation2 = {
-      reinterpret_cast<WGPUTexture>(&resource2), 2, 2};
+      reinterpret_cast<WGPUTexture>(&resource2), 2, 2, 1, 1};
   viz::ReleaseCallback release_callback2;
 
   viz::TransferableResource resource3;
   gpu::webgpu::ReservedTexture reservation3 = {
-      reinterpret_cast<WGPUTexture>(&resource3), 3, 3};
+      reinterpret_cast<WGPUTexture>(&resource3), 3, 3, 1, 1};
   viz::ReleaseCallback release_callback3;
 
   // Produce resources.
@@ -185,7 +185,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
 
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, 1, 1};
   viz::ReleaseCallback release_callback;
 
   // Produce one resource of size kSize.
@@ -221,7 +221,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
 
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, 1, 1};
   viz::ReleaseCallback release_callback;
 
   // Produce the first resource, check that WebGPU will wait for the creation of
@@ -260,7 +260,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
 
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, 1, 1};
 
   // Produce swap buffers
   viz::ReleaseCallback release_callback_1;
@@ -319,7 +319,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
 
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, 1, 1};
 
   // Create swap buffers
   const IntSize kSize(10, 10);
@@ -383,7 +383,7 @@ TEST_F(WebGPUSwapBufferProviderTest,
        PrepareTransferableResourceTwiceAfterDestroy) {
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, 1, 1};
 
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));

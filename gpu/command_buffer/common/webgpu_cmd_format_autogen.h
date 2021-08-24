@@ -80,6 +80,7 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            MailboxFlags _flags,
             const GLbyte* _mailbox) {
     SetHeader();
     device_id = _device_id;
@@ -87,6 +88,7 @@ struct AssociateMailboxImmediate {
     id = _id;
     generation = _generation;
     usage = _usage;
+    flags = _flags;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -96,9 +98,10 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            MailboxFlags _flags,
             const GLbyte* _mailbox) {
     static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation, _id,
-                                       _generation, _usage, _mailbox);
+                                       _generation, _usage, _flags, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -109,10 +112,11 @@ struct AssociateMailboxImmediate {
   uint32_t id;
   uint32_t generation;
   uint32_t usage;
+  uint32_t flags;
 };
 
-static_assert(sizeof(AssociateMailboxImmediate) == 24,
-              "size of AssociateMailboxImmediate should be 24");
+static_assert(sizeof(AssociateMailboxImmediate) == 28,
+              "size of AssociateMailboxImmediate should be 28");
 static_assert(offsetof(AssociateMailboxImmediate, header) == 0,
               "offset of AssociateMailboxImmediate header should be 0");
 static_assert(offsetof(AssociateMailboxImmediate, device_id) == 4,
@@ -126,6 +130,8 @@ static_assert(offsetof(AssociateMailboxImmediate, generation) == 16,
               "offset of AssociateMailboxImmediate generation should be 16");
 static_assert(offsetof(AssociateMailboxImmediate, usage) == 20,
               "offset of AssociateMailboxImmediate usage should be 20");
+static_assert(offsetof(AssociateMailboxImmediate, flags) == 24,
+              "offset of AssociateMailboxImmediate flags should be 24");
 
 struct DissociateMailbox {
   typedef DissociateMailbox ValueType;
@@ -163,6 +169,61 @@ static_assert(offsetof(DissociateMailbox, texture_id) == 4,
               "offset of DissociateMailbox texture_id should be 4");
 static_assert(offsetof(DissociateMailbox, texture_generation) == 8,
               "offset of DissociateMailbox texture_generation should be 8");
+
+struct DissociateMailboxForPresent {
+  typedef DissociateMailboxForPresent ValueType;
+  static const CommandId kCmdId = kDissociateMailboxForPresent;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _texture_id,
+            GLuint _texture_generation) {
+    SetHeader();
+    device_id = _device_id;
+    device_generation = _device_generation;
+    texture_id = _texture_id;
+    texture_generation = _texture_generation;
+  }
+
+  void* Set(void* cmd,
+            GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _texture_id,
+            GLuint _texture_generation) {
+    static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation,
+                                       _texture_id, _texture_generation);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t device_id;
+  uint32_t device_generation;
+  uint32_t texture_id;
+  uint32_t texture_generation;
+};
+
+static_assert(sizeof(DissociateMailboxForPresent) == 20,
+              "size of DissociateMailboxForPresent should be 20");
+static_assert(offsetof(DissociateMailboxForPresent, header) == 0,
+              "offset of DissociateMailboxForPresent header should be 0");
+static_assert(offsetof(DissociateMailboxForPresent, device_id) == 4,
+              "offset of DissociateMailboxForPresent device_id should be 4");
+static_assert(
+    offsetof(DissociateMailboxForPresent, device_generation) == 8,
+    "offset of DissociateMailboxForPresent device_generation should be 8");
+static_assert(offsetof(DissociateMailboxForPresent, texture_id) == 12,
+              "offset of DissociateMailboxForPresent texture_id should be 12");
+static_assert(
+    offsetof(DissociateMailboxForPresent, texture_generation) == 16,
+    "offset of DissociateMailboxForPresent texture_generation should be 16");
 
 struct RequestAdapter {
   typedef RequestAdapter ValueType;

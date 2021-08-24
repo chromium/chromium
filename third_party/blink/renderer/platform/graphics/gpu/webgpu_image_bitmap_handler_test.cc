@@ -76,6 +76,7 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
                GLuint id,
                GLuint generation,
                GLuint usage,
+               gpu::webgpu::MailboxFlags flags,
                const GLbyte* mailbox));
   MOCK_METHOD(void,
               DissociateMailbox,
@@ -396,9 +397,9 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
       .WillOnce(Return(reservation));
   EXPECT_CALL(*webgpu_,
               AssociateMailbox(2, 3, reservation.id, reservation.generation,
-                               WGPUTextureUsage_CopySrc, _))
+                               WGPUTextureUsage_CopySrc, _, _))
       .WillOnce(
-          testing::Invoke(testing::WithArg<5>([&](const GLbyte* mailbox_bytes) {
+          testing::Invoke(testing::WithArg<6>([&](const GLbyte* mailbox_bytes) {
             mailbox = gpu::Mailbox::FromVolatile(
                 *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
           })));

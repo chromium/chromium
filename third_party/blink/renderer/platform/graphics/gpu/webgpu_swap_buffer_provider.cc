@@ -173,12 +173,14 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   // Associate the mailbox to a dawn_wire client DawnTexture object
   gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
   DCHECK(reservation.texture);
+  wire_device_id_ = reservation.deviceId;
+  wire_device_generation_ = reservation.deviceGeneration;
   wire_texture_id_ = reservation.id;
   wire_texture_generation_ = reservation.generation;
 
   webgpu->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, usage_,
+      wire_device_id_, wire_device_generation_, wire_texture_id_,
+      wire_texture_generation_, usage_, gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
       reinterpret_cast<GLbyte*>(&current_swap_buffer_->mailbox));
 
   // When the page request a texture it means we'll need to present it on the
@@ -210,8 +212,11 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // to the texture are errors.
   gpu::webgpu::WebGPUInterface* webgpu =
       GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
+  DCHECK_NE(wire_device_id_, 0u);
   DCHECK_NE(wire_texture_id_, 0u);
-  webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
+  webgpu->DissociateMailboxForPresent(wire_device_id_, wire_device_generation_,
+                                      wire_texture_id_,
+                                      wire_texture_generation_);
 
   // Make the compositor wait on previous Dawn commands.
   webgpu->GenUnverifiedSyncTokenCHROMIUM(
@@ -244,6 +249,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
                 scoped_refptr<WebGPUSwapBufferProvider>(this),
                 std::move(current_swap_buffer_));
 
+  wire_device_id_ = 0;
+  wire_device_generation_ = 0;
   wire_texture_id_ = 0;
   wire_texture_generation_ = 0;
 

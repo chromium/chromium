@@ -641,6 +641,7 @@ void WebGPUImplementation::AssociateMailbox(GLuint device_id,
                                             GLuint texture_id,
                                             GLuint texture_generation,
                                             GLuint usage,
+                                            MailboxFlags flags,
                                             const GLbyte* mailbox) {
 #if BUILDFLAG(USE_DAWN)
   // Commit previous Dawn commands as they may manipulate texture object IDs
@@ -649,7 +650,7 @@ void WebGPUImplementation::AssociateMailbox(GLuint device_id,
   // using that ID has been released.
   dawn_wire_->serializer()->Commit();
   helper_->AssociateMailboxImmediate(device_id, device_generation, texture_id,
-                                     texture_generation, usage, mailbox);
+                                     texture_generation, usage, flags, mailbox);
 #endif
 }
 
@@ -660,6 +661,20 @@ void WebGPUImplementation::DissociateMailbox(GLuint texture_id,
   // to Dissociating the shared image from that texture.
   dawn_wire_->serializer()->Commit();
   helper_->DissociateMailbox(texture_id, texture_generation);
+#endif
+}
+
+void WebGPUImplementation::DissociateMailboxForPresent(
+    GLuint device_id,
+    GLuint device_generation,
+    GLuint texture_id,
+    GLuint texture_generation) {
+#if BUILDFLAG(USE_DAWN)
+  // Commit previous Dawn commands that might be rendering to the texture, prior
+  // to Dissociating the shared image from that texture.
+  dawn_wire_->serializer()->Commit();
+  helper_->DissociateMailboxForPresent(device_id, device_generation, texture_id,
+                                       texture_generation);
 #endif
 }
 

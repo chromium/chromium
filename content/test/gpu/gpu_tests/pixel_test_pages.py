@@ -369,6 +369,11 @@ class PixelTestPages(object):
                       base_name + '_WebGPUToDataURL',
                       test_rect=[0, 0, 400, 300],
                       browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_cached_swap_buffer_invalidated.html',
+                      base_name +
+                      '_WebGPUCachedSwapBufferInvalidatedShouldBeBlank',
+                      test_rect=[0, 0, 300, 300],
+                      browser_args=webgpu_args),
     ]
 
   # Pages that should be run with GPU rasterization enabled.
