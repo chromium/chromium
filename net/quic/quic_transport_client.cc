@@ -77,7 +77,7 @@ QuicTransportClient::QuicTransportClient(
       client_socket_factory_(ClientSocketFactory::GetDefaultFactory()),
       quic_context_(context->quic_context()),
       net_log_(NetLogWithSource::Make(context->net_log(),
-                                      NetLogSourceType::QUIC_TRANSPORT_CLIENT)),
+                                      NetLogSourceType::WEB_TRANSPORT_CLIENT)),
       task_runner_(base::ThreadTaskRunnerHandle::Get().get()),
       alarm_factory_(
           std::make_unique<QuicChromiumAlarmFactory>(task_runner_,
