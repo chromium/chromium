@@ -46,4 +46,16 @@ config("compiler") {
     "-maix64",
     "-Wl,-bbigtoc",
   ]
+
+  if (is_component_build) {
+    cflags += [
+      "-fpic",
+    ]
+    ldflags += [
+      "-Wl,-brtl",
+      # -bnoipath so that only names of .so objects are stored in loader
+      # section, excluding leading "./"
+      "-Wl,-bnoipath",
+    ]
+  }
 }
