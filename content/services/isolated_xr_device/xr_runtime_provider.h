@@ -20,7 +20,6 @@
 
 namespace device {
 class OpenXrDevice;
-class OpenXrStatics;
 }  // namespace device
 
 namespace viz {
@@ -55,17 +54,6 @@ class IsolatedXRRuntimeProvider final
 
   bool should_check_openxr_ = false;
 
-  // We need to make sure openxr_device is destroyed before openxr_statics
-  // because there might be an active render-loop thread that is owned by
-  // openxr_device that has an active xr session,
-  // which get into a race condition if:
-  // - openxr_statics is destroyed due to a tab closing (or refresh),
-  //     triggering xrDestroyInstance on the XrInstance owned by OpenXRStatics
-  // - At the same time, the session is being ended on the renderloop thread,
-  //     and xrDestroySession could be running at the same time.
-  // Note that: Destructors for nonstatic member objects are called in the
-  // reverse order in which they appear in the class declaration.
-  std::unique_ptr<device::OpenXrStatics> openxr_statics_;
   std::unique_ptr<device::OpenXrDevice> openxr_device_;
 
   std::unique_ptr<viz::Gpu> viz_gpu_;

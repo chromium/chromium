@@ -22,15 +22,13 @@
 namespace device {
 
 class OpenXrRenderLoop;
-class OpenXrStatics;
 
 class DEVICE_VR_EXPORT OpenXrDevice
     : public VRDeviceBase,
       public mojom::XRSessionController,
       public mojom::XRCompositorHost {
  public:
-  OpenXrDevice(OpenXrStatics* openxr_statics,
-               VizContextProviderFactoryAsync context_provider_factory_async);
+  OpenXrDevice(VizContextProviderFactoryAsync context_provider_factory_async);
   ~OpenXrDevice() override;
 
   // VRDeviceBase
@@ -52,7 +50,7 @@ class DEVICE_VR_EXPORT OpenXrDevice
 
   void OnRequestSessionResult(bool result, mojom::XRSessionPtr session);
   void OnPresentingControllerMojoConnectionError();
-  bool IsArBlendModeSupported(OpenXrStatics* openxr_statics);
+  bool IsArBlendModeSupported();
 
   XrInstance instance_;
   OpenXrExtensionHelper extension_helper_;

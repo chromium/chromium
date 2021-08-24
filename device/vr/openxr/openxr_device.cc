@@ -70,19 +70,20 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
 // OpenXrDevice must not take ownership of the OpenXrStatics passed in.
 // The OpenXrStatics object is owned by IsolatedXRRuntimeProvider.
 OpenXrDevice::OpenXrDevice(
-    OpenXrStatics* openxr_statics,
     VizContextProviderFactoryAsync context_provider_factory_async)
     : VRDeviceBase(device::mojom::XRDeviceId::OPENXR_DEVICE_ID),
-      instance_(openxr_statics->GetXrInstance()),
-      extension_helper_(instance_, openxr_statics->GetExtensionEnumeration()),
+      instance_(OpenXrStatics::GetInstance()->GetXrInstance()),
+      extension_helper_(
+          instance_,
+          OpenXrStatics::GetInstance()->GetExtensionEnumeration()),
       context_provider_factory_async_(
           std::move(context_provider_factory_async)),
       weak_ptr_factory_(this) {
   mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo();
   SetVRDisplayInfo(std::move(display_info));
-  SetArBlendModeSupported(IsArBlendModeSupported(openxr_statics));
+  SetArBlendModeSupported(IsArBlendModeSupported());
 #if defined(OS_WIN)
-  SetLuid(openxr_statics->GetLuid(extension_helper_));
+  SetLuid(OpenXrStatics::GetInstance()->GetLuid(extension_helper_));
 #endif
 
   std::vector<mojom::XRSessionFeature> device_features(
@@ -260,13 +261,15 @@ void OpenXrDevice::CreateImmersiveOverlay(
   }
 }
 
-bool OpenXrDevice::IsArBlendModeSupported(OpenXrStatics* openxr_statics) {
+bool OpenXrDevice::IsArBlendModeSupported() {
   XrSystemId system;
-  if (XR_FAILED(GetSystem(openxr_statics->GetXrInstance(), &system)))
+  if (XR_FAILED(
+          GetSystem(OpenXrStatics::GetInstance()->GetXrInstance(), &system)))
     return false;
 
   std::vector<XrEnvironmentBlendMode> environment_blend_modes =
-      GetSupportedBlendModes(openxr_statics->GetXrInstance(), system);
+      GetSupportedBlendModes(OpenXrStatics::GetInstance()->GetXrInstance(),
+                             system);
 
   return base::Contains(environment_blend_modes,
                         XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||

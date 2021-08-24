@@ -7,14 +7,12 @@
 
 namespace device {
 
-OpenXrStatics::OpenXrStatics() : instance_(XR_NULL_HANDLE) {}
-
-OpenXrStatics::~OpenXrStatics() {
-  if (instance_ != XR_NULL_HANDLE) {
-    xrDestroyInstance(instance_);
-    instance_ = XR_NULL_HANDLE;
-  }
+OpenXrStatics* OpenXrStatics::GetInstance() {
+  return base::Singleton<OpenXrStatics,
+                         base::LeakySingletonTraits<OpenXrStatics>>::get();
 }
+
+OpenXrStatics::OpenXrStatics() : instance_(XR_NULL_HANDLE) {}
 
 XrInstance OpenXrStatics::GetXrInstance() {
   if (instance_ == XR_NULL_HANDLE &&
