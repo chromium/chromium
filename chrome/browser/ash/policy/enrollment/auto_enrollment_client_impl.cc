@@ -343,7 +343,7 @@ class PsmHelper {
     base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
 
     // Records the PSM execution as an error in local_state, so that value will
-    // be used in the DeviceRegisterRequest while performing manual enrollment.
+    // be used in the DeviceRegisterRequest during the enrollment flow.
     local_state_->SetInteger(prefs::kEnrollmentPsmResult,
                              em::DeviceRegisterRequest::PSM_RESULT_ERROR);
     local_state_->CommitPendingWrite();
@@ -551,7 +551,7 @@ class PsmHelper {
         // the device reboots before completing OOBE.
         // Also, record the PSM determination timestamp and its execution
         // result in local state. Because both values will be used in the
-        // DeviceRegisterRequest while performing manual enrollment.
+        // DeviceRegisterRequest during the enrollment flow.
         local_state_->SetBoolean(prefs::kShouldRetrieveDeviceState,
                                  membership_result);
         local_state_->SetTime(prefs::kEnrollmentPsmDeterminationTime,
