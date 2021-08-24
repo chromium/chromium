@@ -162,9 +162,6 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantOptinAgreeButton", IDS_ASSISTANT_AGREE_BUTTON);
   builder->Add("assistantOptinSaveButton", IDS_ASSISTANT_SAVE_BUTTON);
   builder->Add("assistantOptinWaitMessage", IDS_ASSISTANT_WAIT_MESSAGE);
-  builder->Add("assistantReadyTitle", IDS_ASSISTANT_READY_SCREEN_TITLE);
-  builder->AddF("assistantReadyMessage", IDS_ASSISTANT_READY_SCREEN_MESSAGE,
-                ui::GetChromeOSDeviceName());
   builder->Add("assistantReadyButton", IDS_ASSISTANT_DONE_BUTTON);
   builder->Add("back", IDS_EULA_BACK_BUTTON);
   builder->Add("next", IDS_EULA_NEXT_BUTTON);
@@ -180,23 +177,14 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
       "login.AssistantOptInFlowScreen.RelatedInfoScreen.userActed",
       &AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenUserAction);
   AddCallback(
-      "login.AssistantOptInFlowScreen.ThirdPartyScreen.userActed",
-      &AssistantOptInFlowScreenHandler::HandleThirdPartyScreenUserAction);
-  AddCallback(
       "login.AssistantOptInFlowScreen.VoiceMatchScreen.userActed",
       &AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction);
-  AddCallback("login.AssistantOptInFlowScreen.GetMoreScreen.userActed",
-              &AssistantOptInFlowScreenHandler::HandleGetMoreScreenUserAction);
   AddCallback("login.AssistantOptInFlowScreen.ValuePropScreen.screenShown",
               &AssistantOptInFlowScreenHandler::HandleValuePropScreenShown);
   AddCallback("login.AssistantOptInFlowScreen.RelatedInfoScreen.screenShown",
               &AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenShown);
-  AddCallback("login.AssistantOptInFlowScreen.ThirdPartyScreen.screenShown",
-              &AssistantOptInFlowScreenHandler::HandleThirdPartyScreenShown);
   AddCallback("login.AssistantOptInFlowScreen.VoiceMatchScreen.screenShown",
               &AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenShown);
-  AddCallback("login.AssistantOptInFlowScreen.GetMoreScreen.screenShown",
-              &AssistantOptInFlowScreenHandler::HandleGetMoreScreenShown);
   AddCallback("login.AssistantOptInFlowScreen.timeout",
               &AssistantOptInFlowScreenHandler::HandleLoadingTimeout);
   AddCallback("login.AssistantOptInFlowScreen.flowFinished",
@@ -209,8 +197,6 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
   dict->SetBoolean("voiceMatchDisabled",
                    chromeos::assistant::features::IsVoiceMatchDisabled());
-  dict->SetBoolean("betterAssistantEnabled",
-                   chromeos::assistant::features::IsBetterAssistantEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
@@ -335,23 +321,6 @@ void AssistantOptInFlowScreenHandler::OnScreenContextOptInResult(
   prefs->SetBoolean(assistant::prefs::kAssistantContextEnabled, opted_in);
 }
 
-void AssistantOptInFlowScreenHandler::OnEmailOptInResult(bool opted_in) {
-  if (!email_optin_needed_) {
-    DCHECK(!opted_in);
-    HandleFlowFinished();
-    return;
-  }
-
-  // TODO(b/159363597): Handle network disconnect when sending email opt-in
-  // result.
-  RecordAssistantOptInStatus(opted_in ? EMAIL_OPTED_IN : EMAIL_OPTED_OUT);
-  assistant::AssistantSettings::Get()->UpdateSettings(
-      GetEmailOptInUpdate(opted_in).SerializeAsString(),
-      base::BindOnce(&AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse,
-                     weak_factory_.GetWeakPtr()));
-  HandleFlowFinished();
-}
-
 void AssistantOptInFlowScreenHandler::OnDialogClosed() {
   // Disable hotword for user if voice match enrollment has not completed.
   if (!voice_match_enrollment_done_ &&
@@ -464,8 +433,6 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   DCHECK(settings_ui.has_consent_flow_ui());
 
   RecordAssistantOptInStatus(FLOW_STARTED);
-  auto third_party_disclosure_ui =
-      settings_ui.consent_flow_ui().consent_ui().third_party_disclosure_ui();
 
   base::Value zippy_data(base::Value::Type::LIST);
   bool skip_activity_control = true;
@@ -525,37 +492,6 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
     AddSettingZippy("settings", zippy_data);
   }
 
-  // Process third party disclosure data.
-  bool skip_third_party_disclosure =
-      skip_activity_control && !third_party_disclosure_ui.disclosures().size();
-  if (third_party_disclosure_ui.disclosures().size()) {
-    AddSettingZippy("disclosure", CreateDisclosureData(
-                                      third_party_disclosure_ui.disclosures()));
-  } else if (!skip_third_party_disclosure) {
-    // TODO(llin): Show an error message and log it properly.
-    LOG(ERROR) << "Missing third Party disclosure data.";
-    return;
-  }
-
-  // Process get more data.
-  email_optin_needed_ = settings_ui.has_email_opt_in_ui() &&
-                        settings_ui.email_opt_in_ui().has_title();
-  auto* profile_helper = ProfileHelper::Get();
-  const auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  auto get_more_data =
-      CreateGetMoreData(email_optin_needed_, settings_ui.email_opt_in_ui(),
-                        profile_helper->GetProfileByUser(user)->GetPrefs());
-
-  bool skip_get_more =
-      skip_third_party_disclosure && !get_more_data.GetList().size();
-  if (get_more_data.GetList().size()) {
-    AddSettingZippy("get-more", get_more_data);
-  } else if (!skip_get_more) {
-    // TODO(llin): Show an error message and log it properly.
-    LOG(ERROR) << "Missing get more data.";
-    return;
-  }
-
   const bool is_oobe_in_progress =
       session_manager::SessionManager::Get()->session_state() !=
       session_manager::SessionState::ACTIVE;
@@ -569,22 +505,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
   ReloadContent(dictionary);
 
-  // Now that screen's content has been reloaded, skip screens that can be
-  // skipped - if this is done before content reload, internal screen
-  // transitions might be based on incorrect data. For example, if both activity
-  // control and third party disclosure are skipped, opt in flow might skip
-  // voice match enrollment, thinking that voice match is not enabled.
-
   // Skip activity control and users will be in opted out mode.
   if (skip_activity_control)
-    ShowNextScreen();
-
-  if (skip_third_party_disclosure)
-    ShowNextScreen();
-
-  // If voice match is enabled, the screen that follows third party disclosure
-  // is the "voice match" screen, not "get more" screen.
-  if (skip_get_more && IsVoiceMatchEnforcedOff(prefs, is_oobe_in_progress))
     ShowNextScreen();
 }
 
@@ -646,14 +568,6 @@ void AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenUserAction(
   }
 }
 
-void AssistantOptInFlowScreenHandler::HandleThirdPartyScreenUserAction(
-    const std::string& action) {
-  if (action == kNextPressed) {
-    RecordAssistantOptInStatus(THIRD_PARTY_CONTINUED);
-    ShowNextScreen();
-  }
-}
-
 void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
     const std::string& action) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -687,15 +601,6 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
   }
 }
 
-void AssistantOptInFlowScreenHandler::HandleGetMoreScreenUserAction(
-    const bool screen_context,
-    const bool email_opted_in) {
-  RecordAssistantOptInStatus(GET_MORE_CONTINUED);
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetBoolean(assistant::prefs::kAssistantContextEnabled, screen_context);
-  OnEmailOptInResult(email_opted_in);
-}
-
 void AssistantOptInFlowScreenHandler::HandleValuePropScreenShown() {
   RecordAssistantOptInStatus(ACTIVITY_CONTROL_SHOWN);
 }
@@ -704,16 +609,8 @@ void AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenShown() {
   RecordAssistantOptInStatus(RELATED_INFO_SHOWN);
 }
 
-void AssistantOptInFlowScreenHandler::HandleThirdPartyScreenShown() {
-  RecordAssistantOptInStatus(THIRD_PARTY_SHOWN);
-}
-
 void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenShown() {
   RecordAssistantOptInStatus(VOICE_MATCH_SHOWN);
-}
-
-void AssistantOptInFlowScreenHandler::HandleGetMoreScreenShown() {
-  RecordAssistantOptInStatus(GET_MORE_SHOWN);
 }
 
 void AssistantOptInFlowScreenHandler::HandleLoadingTimeout() {

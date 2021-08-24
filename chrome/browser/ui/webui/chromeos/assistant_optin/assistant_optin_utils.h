@@ -62,9 +62,6 @@ assistant::SettingsUiSelector GetSettingsUiSelector();
 assistant::SettingsUiUpdate GetSettingsUiUpdate(
     const std::string& consent_token);
 
-// Construct SettingsUiUpdate for email opt-in.
-assistant::SettingsUiUpdate GetEmailOptInUpdate(bool opted_in);
-
 using SettingZippyList = google::protobuf::RepeatedPtrField<
     assistant::ClassicActivityControlUiTexts::SettingZippy>;
 using ActivityControlUi =
@@ -75,11 +72,6 @@ base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
 
 // Helper method to create disclosure data.
 base::Value CreateDisclosureData(const SettingZippyList& disclosure_list);
-
-// Helper method to create get more screen data.
-base::Value CreateGetMoreData(bool email_optin_needed,
-                              const assistant::EmailOptInUi& email_optin_ui,
-                              PrefService* prefs);
 
 // Get string constants for settings ui.
 base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,

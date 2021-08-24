@@ -6,10 +6,8 @@
 // <include src="setting_zippy.js">
 // <include src="voice_match_entry.js">
 // <include src="browser_proxy.js">
-// <include src="assistant_get_more.js">
 // <include src="assistant_loading.js">
 // <include src="assistant_related_info.js">
-// <include src="assistant_third_party.js">
 // <include src="assistant_value_prop.js">
 // <include src="assistant_voice_match.js">
 
@@ -31,9 +29,7 @@ const UIState = {
   LOADING: 'loading',
   VALUE_PROP: 'value-prop',
   RELATED_INFO: 'related-info',
-  THIRD_PARTY: 'third-party',
   VOICE_MATCH: 'voice-match',
-  GET_MORE: 'get-more',
 };
 
 Polymer({
@@ -131,14 +127,10 @@ Polymer({
   reloadContent(data) {
     this.voiceMatchEnforcedOff = data['voiceMatchEnforcedOff'];
     this.voiceMatchDisabled = loadTimeData.getBoolean('voiceMatchDisabled');
-    this.betterAssistantEnabled =
-        loadTimeData.getBoolean('betterAssistantEnabled');
     data['flowType'] = this.flowType;
     this.$.valueProp.reloadContent(data);
     this.$.relatedInfo.reloadContent(data);
     this.$.voiceMatch.reloadContent(data);
-    this.$.thirdParty.reloadContent(data);
-    this.$.getMore.reloadContent(data);
   },
 
   /**
@@ -151,12 +143,6 @@ Polymer({
       case 'settings':
         this.$.valueProp.addSettingZippy(data);
         break;
-      case 'disclosure':
-        this.$.thirdParty.addSettingZippy(data);
-        break;
-      case 'get-more':
-        this.$.getMore.addSettingZippy(data);
-        break;
       default:
         console.error('Undefined zippy data type: ' + type);
     }
@@ -168,11 +154,7 @@ Polymer({
   showNextScreen() {
     switch (this.currentStep) {
       case UIState.VALUE_PROP:
-        if (this.betterAssistantEnabled) {
-          this.showStep(UIState.RELATED_INFO);
-        } else {
-          this.showStep(UIState.THIRD_PARTY);
-        }
+        this.showStep(UIState.RELATED_INFO);
         break;
       case UIState.RELATED_INFO:
         if (this.voiceMatchEnforcedOff || this.voiceMatchDisabled) {
@@ -181,23 +163,7 @@ Polymer({
           this.showStep(UIState.VOICE_MATCH);
         }
         break;
-      case UIState.THIRD_PARTY:
-        if (this.voiceMatchEnforcedOff || this.voiceMatchDisabled) {
-          this.showStep(UIState.GET_MORE);
-        } else {
-          this.showStep(UIState.VOICE_MATCH);
-        }
-        break;
       case UIState.VOICE_MATCH:
-        if (this.flowType == this.FlowType.SPEAKER_ID_ENROLLMENT ||
-            this.flowType == this.FlowType.SPEAKER_ID_RETRAIN ||
-            this.betterAssistantEnabled) {
-          this.browserProxy_.flowFinished();
-        } else {
-          this.showStep(UIState.GET_MORE);
-        }
-        break;
-      case UIState.GET_MORE:
         this.browserProxy_.flowFinished();
         break;
       default:

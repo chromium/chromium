@@ -28,33 +28,6 @@
 using AssistantActivityControlConsent =
     sync_pb::UserConsentTypes::AssistantActivityControlConsent;
 
-namespace {
-
-bool IsPreferenceDefaultEnabled(const PrefService* prefs,
-                                const std::string& path) {
-  const PrefService::Preference* pref = prefs->FindPreference(path);
-
-  if (pref->IsManaged())
-    return pref->GetValue()->GetBool();
-
-  if (pref->GetRecommendedValue())
-    return pref->GetRecommendedValue()->GetBool();
-
-  return true;
-}
-
-bool IsScreenContextDefaultEnabled(PrefService* prefs) {
-  return IsPreferenceDefaultEnabled(
-      prefs, chromeos::assistant::prefs::kAssistantContextEnabled);
-}
-
-bool IsScreenContextToggleDisabled(PrefService* prefs) {
-  return prefs->IsManagedPreference(
-      chromeos::assistant::prefs::kAssistantContextEnabled);
-}
-
-}  // namespace
-
 namespace chromeos {
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus status) {
@@ -105,18 +78,6 @@ assistant::SettingsUiUpdate GetSettingsUiUpdate(
       assistant::ActivityControlSettingsUiSelector::
           ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS);
   consent_flow_update->set_consent_token(consent_token);
-
-  return update;
-}
-
-// Construct SettingsUiUpdate for email opt-in.
-assistant::SettingsUiUpdate GetEmailOptInUpdate(bool opted_in) {
-  assistant::SettingsUiUpdate update;
-  assistant::EmailOptInUpdate* email_optin_update =
-      update.mutable_email_opt_in_update();
-  email_optin_update->set_email_opt_in_update_state(
-      opted_in ? assistant::EmailOptInUpdate::OPT_IN
-               : assistant::EmailOptInUpdate::OPT_OUT);
 
   return update;
 }
@@ -189,52 +150,12 @@ base::Value CreateDisclosureData(const SettingZippyList& disclosure_list) {
   return disclosure_data;
 }
 
-// Helper method to create get more screen data.
-base::Value CreateGetMoreData(bool email_optin_needed,
-                              const assistant::EmailOptInUi& email_optin_ui,
-                              PrefService* prefs) {
-  base::Value get_more_data(base::Value::Type::LIST);
-
-  // Process screen context data.
-  base::Value context_data(base::Value::Type::DICTIONARY);
-  context_data.SetKey("id", base::Value("context"));
-  context_data.SetKey("title", base::Value(l10n_util::GetStringUTF16(
-                                   IDS_ASSISTANT_SCREEN_CONTEXT_TITLE)));
-  context_data.SetKey("description", base::Value(l10n_util::GetStringUTF16(
-                                         IDS_ASSISTANT_SCREEN_CONTEXT_DESC)));
-  context_data.SetKey("defaultEnabled",
-                      base::Value(IsScreenContextDefaultEnabled(prefs)));
-  context_data.SetKey("toggleDisabled",
-                      base::Value(IsScreenContextToggleDisabled(prefs)));
-  context_data.SetKey(
-      "iconUri",
-      base::Value("https://www.gstatic.com/images/icons/material/system/"
-                  "2x/screen_search_desktop_grey600_24dp.png"));
-  get_more_data.Append(std::move(context_data));
-
-  // Process email optin data.
-  if (email_optin_needed) {
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetKey("id", base::Value("email"));
-    data.SetKey("title", base::Value(email_optin_ui.title()));
-    data.SetKey("description", base::Value(email_optin_ui.description()));
-    data.SetKey("defaultEnabled",
-                base::Value(email_optin_ui.default_enabled()));
-    data.SetKey("iconUri", base::Value(email_optin_ui.icon_uri()));
-    data.SetKey("legalText", base::Value(email_optin_ui.legal_text()));
-    get_more_data.Append(std::move(data));
-  }
-
-  return get_more_data;
-}
-
 // Get string constants for settings ui.
 base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
                                  bool activity_control_needed,
                                  bool equal_weight_buttons) {
   auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
   auto activity_control_ui = consent_ui.activity_control_ui();
-  auto third_party_disclosure_ui = consent_ui.third_party_disclosure_ui();
   base::Value dictionary(base::Value::Type::DICTIONARY);
 
   dictionary.SetKey("activityControlNeeded",
@@ -262,13 +183,6 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
     dictionary.SetKey("valuePropSkipButton",
                       base::Value(consent_ui.reject_button_text()));
   }
-
-  // Add third party string constants.
-  dictionary.SetKey("thirdPartyTitle",
-                    base::Value(third_party_disclosure_ui.title()));
-  dictionary.SetKey("thirdPartyContinueButton",
-                    base::Value(third_party_disclosure_ui.button_continue()));
-  dictionary.SetKey("thirdPartyFooter", base::Value(consent_ui.tos_pp_links()));
 
   return dictionary;
 }
