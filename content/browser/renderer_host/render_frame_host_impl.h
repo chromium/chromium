@@ -1787,6 +1787,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   int virtual_browsing_context_group() const {
     return virtual_browsing_context_group_;
   }
+  int soap_by_default_virtual_browsing_context_group() const {
+    return soap_by_default_virtual_browsing_context_group_;
+  }
 
   const network::mojom::ContentSecurityPolicy* required_csp() {
     return required_csp_.get();
@@ -3832,6 +3835,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // have resulted in a BrowsingInstance switch, we assign a new virtual
   // browsing context group ID to the RenderFrameHostImpl that has navigated.
   int virtual_browsing_context_group_;
+
+  // Used to track browsing context group switches that would happen if COOP
+  // had a value of same-origin-allow-popups by default.
+  int soap_by_default_virtual_browsing_context_group_;
 
   // Navigation ID for the last committed cross-document non-bfcached navigation
   // in this RenderFrameHost.

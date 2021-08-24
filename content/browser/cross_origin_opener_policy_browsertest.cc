@@ -205,11 +205,19 @@ class NoCoepCredentialless : public CrossOriginOpenerPolicyBrowserTest {
 };
 
 using VirtualBrowsingContextGroupTest = CrossOriginOpenerPolicyBrowserTest;
+using SoapByDefaultVirtualBrowsingContextGroupTest =
+    CrossOriginOpenerPolicyBrowserTest;
 
 int VirtualBrowsingContextGroup(WebContents* wc) {
   return static_cast<WebContentsImpl*>(wc)
       ->GetMainFrame()
       ->virtual_browsing_context_group();
+}
+
+int SoapByDefaultVirtualBrowsingContextGroup(WebContents* wc) {
+  return static_cast<WebContentsImpl*>(wc)
+      ->GetMainFrame()
+      ->soap_by_default_virtual_browsing_context_group();
 }
 
 }  // namespace
@@ -1738,7 +1746,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest, WindowOpen) {
 namespace {
 // Use two URLs, |url_a| and |url_b|. One of them at least uses
 // COOP:same-origin-allow-popups, or COOP-Report-Only:same-origin-allow-popups,
-// or both.
+// or both (unless soap_by_default is true).
 //
 // Test two scenario:
 // 1. From |url_a|, opens |url_b|
@@ -1746,11 +1754,15 @@ namespace {
 //
 // In both cases, check whether a new virtual browsing context group has been
 // used or not.
+//
+// If soap_by_default is true, then the test will check the soap by default
+// virtual browsing context group.
 struct VirtualBcgAllowPopupTestCase {
   GURL url_a;
   GURL url_b;
   bool expect_different_group_window_open;
   bool expect_different_group_navigation;
+  int (*get_virtual_browsing_context_group)(WebContents*);
 };
 
 void RunTest(const VirtualBcgAllowPopupTestCase& test_case, Shell* shell) {
@@ -1759,17 +1771,19 @@ void RunTest(const VirtualBcgAllowPopupTestCase& test_case, Shell* shell) {
                << "url_a = " << test_case.url_a << std::endl
                << "url_b = " << test_case.url_b << std::endl);
   ASSERT_TRUE(NavigateToURL(shell, test_case.url_a));
-  int group_initial = VirtualBrowsingContextGroup(shell->web_contents());
+  int group_initial =
+      test_case.get_virtual_browsing_context_group(shell->web_contents());
 
   ShellAddedObserver shell_observer;
   EXPECT_TRUE(ExecJs(shell->web_contents()->GetMainFrame(),
                      JsReplace("window.open($1)", test_case.url_b)));
   WebContents* popup = shell_observer.GetShell()->web_contents();
   WaitForLoadStop(popup);
-  int group_openee = VirtualBrowsingContextGroup(popup);
+  int group_openee = test_case.get_virtual_browsing_context_group(popup);
 
   ASSERT_TRUE(NavigateToURL(shell, test_case.url_b));
-  int group_navigate = VirtualBrowsingContextGroup(shell->web_contents());
+  int group_navigate =
+      test_case.get_virtual_browsing_context_group(shell->web_contents());
 
   if (test_case.expect_different_group_window_open)
     EXPECT_NE(group_initial, group_openee);
@@ -1799,6 +1813,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -1810,6 +1825,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -1821,6 +1837,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
   for (const auto& test : kTestCases)
@@ -1838,8 +1855,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "/set-header?"
               "Cross-Origin-Opener-Policy: same-origin-allow-popups&"
               "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.com", "/title1.html"), false,
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -1848,8 +1867,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "/set-header?"
               "Cross-Origin-Opener-Policy: same-origin-allow-popups&"
               "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.a.com", "/title1.html"), false,
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -1858,8 +1879,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "/set-header?"
               "Cross-Origin-Opener-Policy: same-origin-allow-popups&"
               "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.com", "/title1.html"), false,
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
   for (const auto& test : kTestCases)
@@ -1877,8 +1900,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Opener-Policy-Report-Only: "
                                  "same-origin-allow-popups&"
                                  "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.com", "/title1.html"), false,
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -1887,8 +1912,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Opener-Policy-Report-Only: "
                                  "same-origin-allow-popups&"
                                  "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.a.com", "/title1.html"), false,
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -1897,8 +1924,10 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Opener-Policy-Report-Only: "
                                  "same-origin-allow-popups&"
                                  "Cross-Origin-Embedder-Policy: require-corp"),
-          https_server()->GetURL("a.com", "/title1.html"), false,
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
   for (const auto& test : kTestCases)
@@ -1923,6 +1952,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           false,
           false,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -1938,6 +1968,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -1953,6 +1984,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
 
   };
@@ -1978,6 +2010,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Embedder-Policy: require-corp"),
           false,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -1993,6 +2026,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -2008,6 +2042,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
   for (const auto& test : kTestCases)
@@ -2032,6 +2067,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
                                  "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -2047,6 +2083,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -2062,6 +2099,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
 
@@ -2085,6 +2123,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
           https_server()->GetURL("a.com", "/title1.html"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-origin.
@@ -2097,6 +2136,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
           https_server()->GetURL("b.a.com", "/title1.html"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
       {
           // cross-site.
@@ -2109,6 +2149,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
           https_server()->GetURL("b.com", "/title1.html"),
           true,
           true,
+          VirtualBrowsingContextGroup,
       },
   };
 
@@ -2837,6 +2878,9 @@ INSTANTIATE_TEST_SUITE_P(All, CrossOriginOpenerPolicyBrowserTest, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, VirtualBrowsingContextGroupTest, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, NoSharedArrayBufferByDefault, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, NoCoepCredentialless, kTestParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         SoapByDefaultVirtualBrowsingContextGroupTest,
+                         kTestParams);
 
 namespace {
 
@@ -3588,6 +3632,355 @@ IN_PROC_BROWSER_TEST_P(NoCoepCredentialless, Regression1238282) {
             CoopSameOrigin());
   EXPECT_EQ(current_frame_host()->cross_origin_embedder_policy(),
             CoepUnsafeNone());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest, NoHeader) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
+          false,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          https_server()->GetURL("b.a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("b.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       ToUnsafeNone) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          false,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          https_server()->GetURL("b.a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          false,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("b.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          false,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       FromUnsafeNone) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          https_server()->GetURL("a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          https_server()->GetURL("b.a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          https_server()->GetURL("b.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       ToSameOriginAllowPopups) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL(
+              "a.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          false,
+          false,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          https_server()->GetURL(
+              "b.a.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL(
+              "b.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       FromSameOriginAllowPopus) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL(
+              "a.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          https_server()->GetURL("a.com", "/title1.html"),
+          false,
+          false,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL(
+              "a.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          https_server()->GetURL("b.a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL(
+              "a.com",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          https_server()->GetURL("b.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       ToSameOrigin) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.a.com", "/title1.html"),
+          https_server()->GetURL("b.a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com", "/title1.html"),
+          https_server()->GetURL("b.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       FromSameOrigin) {
+  const VirtualBcgAllowPopupTestCase kTestCases[] = {
+      {
+          // same-origin.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          https_server()->GetURL("a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-origin.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          https_server()->GetURL("b.a.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+      {
+          // cross-site.
+          https_server()->GetURL("a.com",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          https_server()->GetURL("b.com", "/title1.html"),
+          true,
+          true,
+          SoapByDefaultVirtualBrowsingContextGroup,
+      },
+  };
+  for (const auto& test : kTestCases)
+    RunTest(test, shell());
+}
+
+// Navigates in between two pages from a different browsing context group. Then
+// use the history API to navigate back and forth. Check their virtual browsing
+// context group isn't restored.
+// The goal is to spot differences when the BackForwardCache is enabled. See
+// https://crbug.com/1109648.
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       HistoryNavigation) {
+  GURL url_a = https_server()->GetURL("a.com", "/title1.html");
+  GURL url_b = https_server()->GetURL("b.com", "/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  int group_1 = SoapByDefaultVirtualBrowsingContextGroup(web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  int group_2 = SoapByDefaultVirtualBrowsingContextGroup(web_contents());
+
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  int group_3 = SoapByDefaultVirtualBrowsingContextGroup(web_contents());
+
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  int group_4 = SoapByDefaultVirtualBrowsingContextGroup(web_contents());
+
+  // No matter whether the BackForwardCache is enabled or not, the navigation in
+  // between the two URLs must always cross a virtual browsing context group.
+  EXPECT_NE(group_1, group_2);
+  EXPECT_NE(group_2, group_3);
+  EXPECT_NE(group_3, group_4);
+  EXPECT_NE(group_1, group_4);
+
+  // TODO(https://crbug.com/1112256) During history navigation, the virtual
+  // browsing context group must be restored whenever the SiteInstance is
+  // restored. Currently, the SiteInstance is restored, but the virtual browsing
+  // context group is new.
+
+  if (IsBackForwardCacheEnabled()) {
+    EXPECT_EQ(group_1, group_3);
+    EXPECT_EQ(group_2, group_4);
+  } else {
+    EXPECT_NE(group_1, group_3);
+    EXPECT_NE(group_2, group_4);
+  }
+}
+
+// 1. A1 opens A2 (same virtual browsing context group).
+// 2. A2 navigates to B3 (different virtual browsing context group).
+// 3. B3 navigates back to A4 using the history (different virtual browsing
+//    context group).
+//
+// A1 and A4 must not be in the same browsing context group.
+IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
+                       HistoryNavigationWithPopup) {
+  GURL url_a = https_server()->GetURL("a.com", "/title1.html");
+  GURL url_b = https_server()->GetURL("b.com", "/title1.html");
+
+  // Navigate to A1.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  int group_1 = SoapByDefaultVirtualBrowsingContextGroup(web_contents());
+
+  // A1 opens A2.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(
+      ExecJs(current_frame_host(), JsReplace("window.open($1)", url_a)));
+  WebContents* popup = shell_observer.GetShell()->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(popup));
+  int group_2 = SoapByDefaultVirtualBrowsingContextGroup(popup);
+
+  // A2 navigates to B3.
+  EXPECT_TRUE(ExecJs(popup, JsReplace("location.href = $1;", url_b)));
+  EXPECT_TRUE(WaitForLoadStop(popup));
+  int group_3 = SoapByDefaultVirtualBrowsingContextGroup(popup);
+
+  // B3 navigates back to A4.
+  EXPECT_TRUE(ExecJs(popup, JsReplace("history.back()")));
+  EXPECT_TRUE(WaitForLoadStop(popup));
+  int group_4 = SoapByDefaultVirtualBrowsingContextGroup(popup);
+
+  EXPECT_EQ(group_1, group_2);
+  EXPECT_NE(group_2, group_3);
+  EXPECT_NE(group_3, group_4);
+  EXPECT_NE(group_4, group_1);
 }
 
 }  // namespace content

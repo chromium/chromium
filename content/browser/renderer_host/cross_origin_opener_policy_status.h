@@ -60,6 +60,12 @@ class CrossOriginOpenerPolicyStatus {
     return virtual_browsing_context_group_;
   }
 
+  // Used to keep track of browsing context group swaps that would happen if
+  // COOP had a value of same-origin-allow-popups by default.
+  int soap_by_default_virtual_browsing_context_group() const {
+    return soap_by_default_virtual_browsing_context_group_;
+  }
+
   // The COOP used when comparing to the COOP and origin of a response. At the
   // beginning of the navigation, it is the COOP of the current document. After
   // receiving any kind of response, including redirects, it is the COOP of the
@@ -90,6 +96,10 @@ class CrossOriginOpenerPolicyStatus {
   bool require_browsing_instance_swap_ = false;
 
   int virtual_browsing_context_group_;
+
+  // Keeps track of browsing context group switches that would happen if COOP
+  // had a value of same-origin-allow-popups-by-default.
+  int soap_by_default_virtual_browsing_context_group_;
 
   // Whether this is the first navigation happening in the browsing context.
   // TODO(https://crbug.com/1216244): This should be set to whether this

@@ -87,6 +87,9 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
       frame_tree_node_(navigation_request->frame_tree_node()),
       virtual_browsing_context_group_(frame_tree_node_->current_frame_host()
                                           ->virtual_browsing_context_group()),
+      soap_by_default_virtual_browsing_context_group_(
+          frame_tree_node_->current_frame_host()
+              ->soap_by_default_virtual_browsing_context_group()),
       is_initial_navigation_(!frame_tree_node_->has_committed_real_load()),
       current_coop_(
           frame_tree_node_->current_frame_host()->cross_origin_opener_policy()),
@@ -248,6 +251,16 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
 
   if (require_browsing_instance_swap_ || virtual_browsing_instance_swap) {
     virtual_browsing_context_group_ =
+        CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
+  }
+
+  // Check if a COOP of same-origin-allow-popups by default would result in a
+  // browsing context group switch.
+  if (ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
+          current_coop_.soap_by_default_value, current_origin_,
+          is_initial_navigation_, response_coop.soap_by_default_value,
+          response_origin)) {
+    soap_by_default_virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
   }
 
