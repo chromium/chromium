@@ -1408,6 +1408,7 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
     deps = [
       "//chrome:chrome",
       "//content/shell:content_shell",
+      "//third_party/dawn/third_party/tint/samples:tint",
       "//v8:d8",
     ]
     if (!is_win) {
