@@ -51,7 +51,6 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/ios/browser/features.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/pref_names.h"
@@ -555,10 +554,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"mice-web-signin", flag_descriptions::kMICEWebSignInName,
      flag_descriptions::kMICEWebSignInDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(signin::kMICEWebSignIn)},
-    {"mobile-identity-consistency",
-     flag_descriptions::kMobileIdentityConsistencyName,
-     flag_descriptions::kMobileIdentityConsistencyDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistency)},
     {"modern-tab-strip", flag_descriptions::kModernTabStripName,
      flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kModernTabStrip)},

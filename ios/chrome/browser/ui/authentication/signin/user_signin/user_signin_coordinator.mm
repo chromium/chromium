@@ -5,7 +5,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
-#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -127,12 +126,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  // The user should be signed out before triggering sign-in or upgrade states.
-  // Users are allowed to be signed-in during FirstRun for testing purposes.
-  DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) ||
-         !authenticationService->HasPrimaryIdentity(
-             signin::ConsentLevel::kSignin) ||
-         self.signinIntent == UserSigninIntentFirstRun);
   [super start];
 
   self.signinStateOnStart =

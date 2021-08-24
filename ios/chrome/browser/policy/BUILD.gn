@@ -185,7 +185,6 @@ source_set("unit_tests") {
     "//components/policy/core/browser:test_support",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/signin/public/base",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/application_delegate:app_state_header",

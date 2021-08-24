@@ -40,7 +40,6 @@ source_set("flags") {
     "//components/shared_highlighting/core/common",
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
-    "//components/signin/public/base",
     "//components/strings:components_strings",
     "//components/sync/driver",
     "//components/translate/core/browser",

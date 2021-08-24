@@ -347,10 +347,6 @@ const char kMobileGoogleSRPDescription[] =
     "Request the Mobile version of Google SRP by default when the desktop mode "
     "is requested by default.";
 
-const char kMobileIdentityConsistencyName[] = "Mobile identity consistency";
-const char kMobileIdentityConsistencyDescription[] =
-    "Enables identity consistency on mobile by decoupling sync and sign-in.";
-
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
