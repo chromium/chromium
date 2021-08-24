@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -16,12 +18,15 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
  */
 public class CustomTabHeightStrategy {
     public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            CustomTabsConnection connection, @Nullable CustomTabsSessionToken session,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
-        return new PartialCustomTabHeightStrategy(
-                activity, initialHeight, lifecycleDispatcher, multiWindowModeStateDispatcher);
+
+        return new PartialCustomTabHeightStrategy(activity, initialHeight,
+                multiWindowModeStateDispatcher,
+                size -> connection.onResized(session, size), lifecycleDispatcher);
     }
 }

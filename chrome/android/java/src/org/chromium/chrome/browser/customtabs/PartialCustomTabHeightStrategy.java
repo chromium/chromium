@@ -82,6 +82,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private int mOrientation;
     private boolean mIsInMultiWindowMode;
 
+    private final OnResizedCallback mOnResizedCallback;
+
+    /** A callback to be called once the Custom Tab has been resized. */
+    interface OnResizedCallback {
+        /** The Custom Tab has been resized. */
+        void onResized(int size);
+    }
+
     /**
      * Handling touch events for resizing the Window.
      */
@@ -193,12 +201,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mMaxHeight = getMaximumPossibleHeight();
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
+        mOnResizedCallback = onResizedCallback;
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
         mFullyExpandedAdjustmentHeight =
@@ -345,6 +354,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         attributes.y = 0;
         attributes.gravity = Gravity.BOTTOM;
         mActivity.getWindow().setAttributes(attributes);
+
+        mOnResizedCallback.onResized(attributes.height);
     }
 
     private @Px int getMaximumPossibleHeight() {
