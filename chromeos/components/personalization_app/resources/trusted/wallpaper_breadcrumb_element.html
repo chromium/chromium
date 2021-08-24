@@ -47,10 +47,10 @@
       class="icon-arrow-back" role="button" on-click="onBackClick_">
     </cr-icon-button>
   </template>
-  <div id="textContainer" aria-hidden="true">
+  <div id="textContainer">
     <p on-click="onBackClick_" id="wallpaperLabel">[[i18n('title')]]</p>
     <template is="dom-if" if="[[pageLabel_]]">
-      <iron-icon icon="cr:chevron-right"></iron-icon>
+      <iron-icon icon="cr:chevron-right" aria-hidden$="true"></iron-icon>
       <p id="pageLabel">[[pageLabel_]]</span>
     </template>
   </div>

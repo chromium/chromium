@@ -109,9 +109,9 @@ export function WallpaperSelectedTest() {
 
     const textContainerElements =
         wallpaperSelectedElement.shadowRoot.querySelectorAll(
-            '#textContainer p');
+            '#textContainer span');
 
-    // First p tag is 'Currently Set' text.
+    // First span tag is 'Currently Set' text.
     assertEquals('currentlySet', textContainerElements[0].id);
     assertEquals(
         wallpaperSelectedElement.i18n('currentlySet'),

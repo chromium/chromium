@@ -29,7 +29,7 @@ export function LocalImagesTest() {
     }
     const selectors = [
       '.photo-container:not([hidden])',
-      '.photo-loading-placeholder:not([style*="display: none"])',
+      '.photo-inner-container.placeholder:not([style*="display: none"])',
     ];
     return Array.from(
         localImagesElement.shadowRoot.querySelectorAll(selectors.join(' ')));
