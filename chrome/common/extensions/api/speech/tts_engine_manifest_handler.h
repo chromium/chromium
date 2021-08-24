@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -32,7 +33,7 @@ struct TtsVoice {
 struct TtsVoices : public Extension::ManifestData {
   TtsVoices();
   ~TtsVoices() override;
-  static bool Parse(const base::ListValue* tts_voices,
+  static bool Parse(base::Value::ConstListView tts_voices,
                     TtsVoices* out_voices,
                     std::u16string* error,
                     Extension* extension);
