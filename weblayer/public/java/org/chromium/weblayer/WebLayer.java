@@ -556,7 +556,8 @@ public class WebLayer {
             args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.getPersistenceId());
         }
         args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
-        BrowserFragment fragment = new BrowserFragment(params.getUseViewModel());
+        args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, params.getUseViewModel());
+        BrowserFragment fragment = new BrowserFragment();
         fragment.setArguments(args);
         return fragment;
     }
