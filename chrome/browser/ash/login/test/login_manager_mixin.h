@@ -13,11 +13,9 @@
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,6 +25,7 @@ constexpr char kTestGaiaId[] = "111111111";
 }  // namespace test
 
 class StubAuthenticatorBuilder;
+class UserContext;
 
 // Mixin browser tests can use for setting up test login manager environment.
 // It sets up command line so test starts on the login screen UI, and
@@ -132,9 +131,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Logs in as a regular user with default user context. Should be used for
   // proceeding into the session from the login screen.
-  // If |user_context| is not set, built-in default will be used.
-  void LoginAsNewRegularUser(
-      absl::optional<UserContext> user_context = absl::nullopt);
+  void LoginAsNewRegularUser();
 
   // Logs in as a child user with default user context.Should be used for
   // proceeding into the session from the login screen.

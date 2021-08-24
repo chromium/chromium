@@ -231,10 +231,6 @@ class LoginDisplayHost {
   // TODO (crbug.com/1168114): Double check if this method belongs here.
   virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                             int* value) const = 0;
-  // Allows tests to wait for WebUI to start.
-  // RepeatingClosure type matches base::RunLoop::QuitClosure result type.
-  virtual void AddWizardCreatedObserverForTests(
-      base::RepeatingClosure on_created) = 0;
 
  protected:
   LoginDisplayHost();

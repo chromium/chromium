@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 
 #include "base/run_loop.h"
-#include "components/user_manager/user_manager.h"
 
 namespace chromeos {
 
@@ -25,16 +24,8 @@ SessionStateWaiter::SessionStateWaiter(
 SessionStateWaiter::~SessionStateWaiter() = default;
 
 void SessionStateWaiter::Wait() {
-  if (done_)
-    return;
-
   if (session_manager::SessionManager::Get()->session_state() ==
       target_state_) {
-    return;
-  }
-  if (!target_state_ &&
-      user_manager::UserManager::Get()->GetLoggedInUsers().size() > 0) {
-    // Session is already active.
     return;
   }
 
@@ -49,22 +40,14 @@ void SessionStateWaiter::OnSessionStateChanged() {
   if (session_manager::SessionManager::Get()->session_state() ==
       target_state_) {
     session_observation_.Reset();
-    done_ = true;
-    // This may happen before Wait() was called. See
-    // UserFlagsLoginTest.PRE_RestartToApplyFlags for example.
-    if (session_state_callback_)
-      std::move(session_state_callback_).Run();
+    std::move(session_state_callback_).Run();
   }
 }
 
 void SessionStateWaiter::OnUserSessionStarted(bool is_primary_user) {
   if (!target_state_) {
     session_observation_.Reset();
-    done_ = true;
-    // This may happen before Wait() was called. See
-    // UserFlagsLoginTest.PRE_RestartToApplyFlags for example.
-    if (session_state_callback_)
-      std::move(session_state_callback_).Run();
+    std::move(session_state_callback_).Run();
   }
 }
 

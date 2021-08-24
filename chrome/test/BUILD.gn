@@ -3110,6 +3110,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/test/offline_login_test_mixin.h",
         "../browser/ash/login/test/oobe_base_test.cc",
         "../browser/ash/login/test/oobe_base_test.h",
+        "../browser/ash/login/test/oobe_screens_utils.cc",
+        "../browser/ash/login/test/oobe_screens_utils.h",
         "../browser/ash/login/test/oobe_window_visibility_waiter.cc",
         "../browser/ash/login/test/oobe_window_visibility_waiter.h",
         "../browser/ash/login/test/user_adding_screen_utils.cc",

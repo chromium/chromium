@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 
-#include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -152,11 +151,6 @@ void FakeLoginDisplayHost::RemoveObserver(
 
 SigninUI* FakeLoginDisplayHost::GetSigninUI() {
   return nullptr;
-}
-
-void FakeLoginDisplayHost::AddWizardCreatedObserverForTests(
-    base::RepeatingClosure on_created) {
-  NOTREACHED();
 }
 
 bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(

@@ -63,8 +63,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   bool HandleAccelerator(LoginAcceleratorAction action) final;
   SigninUI* GetSigninUI() final;
   void ShowOsInstallScreen() final;
-  void AddWizardCreatedObserverForTests(
-      base::RepeatingClosure on_created) final;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
@@ -110,9 +108,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   WizardContext* wizard_context() { return wizard_context_.get(); }
 
-  // Triggers |on_wizard_controller_created_for_tests_| callback.
-  void NotifyWizardCreated();
-
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;
 
@@ -145,9 +140,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   std::unique_ptr<LoginFeedback> login_feedback_;
 
   std::unique_ptr<WizardContext> wizard_context_;
-
-  // Callback to be executed when WebUI is started.
-  base::RepeatingClosure on_wizard_controller_created_for_tests_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 
