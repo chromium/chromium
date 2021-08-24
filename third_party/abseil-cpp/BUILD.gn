@@ -71,6 +71,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/status:statusor",
