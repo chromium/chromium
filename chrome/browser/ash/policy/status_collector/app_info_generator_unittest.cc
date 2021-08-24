@@ -115,6 +115,20 @@ auto MakeActivity(const base::Time& start_time, const base::Time& end_time) {
   return time_period;
 }
 
+apps::mojom::AppPtr MakeApp(const std::string& app_id,
+                            const std::string& name,
+                            apps::mojom::Readiness readiness,
+                            const std::string& version,
+                            apps::mojom::AppType app_type) {
+  auto app = apps::mojom::App::New();
+  app->app_id = app_id;
+  app->name = name;
+  app->readiness = readiness;
+  app->version = version;
+  app->app_type = app_type;
+  return app;
+}
+
 }  // namespace
 
 namespace policy {
@@ -124,21 +138,20 @@ class AppInfoGeneratorTest : public ::testing::Test {
   AppInfoGeneratorTest() = default;
 
  protected:
-  void PushApp(const std::string& app_id,
-               const std::string& name,
-               const apps::mojom::Readiness readiness,
-               const std::string& version,
-               const apps::mojom::AppType app_type) {
+  void PushApp(apps::mojom::AppPtr app) {
+    apps::mojom::AppType app_type = app->app_type;
     std::vector<apps::mojom::AppPtr> deltas;
-    auto app = apps::mojom::App::New();
-    app->app_id = app_id;
-    app->name = name;
-    app->readiness = readiness;
-    app->version = version;
-    app->app_type = app_type;
     deltas.push_back(std::move(app));
     GetCache().OnApps(std::move(deltas), app_type,
                       false /* should_notify_initialized */);
+  }
+
+  void PushApp(const std::string& app_id,
+               const std::string& name,
+               apps::mojom::Readiness readiness,
+               const std::string& version,
+               apps::mojom::AppType app_type) {
+    PushApp(MakeApp(app_id, name, readiness, version, app_type));
   }
 
   class Instance {
@@ -320,10 +333,17 @@ TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
 TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("c", "App", apps::mojom::Readiness::kUninstalledByUser, "",
-          apps::mojom::AppType::kWeb);
-  auto web_app = CreateWebApp();
-  RegisterApp(std::move(web_app));
+  {
+    auto web_app = CreateWebApp();
+    auto app = MakeApp(web_app->app_id(), "App",
+                       apps::mojom::Readiness::kUninstalledByUser, "",
+                       apps::mojom::AppType::kWeb);
+    // For web apps, |publisher_id| is set to the start URL.
+    app->publisher_id = web_app->start_url().spec();
+    PushApp(std::move(app));
+    RegisterApp(std::move(web_app));
+  }
+
   Instance app_instance("c");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
@@ -345,10 +365,17 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
 TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("c", "App", apps::mojom::Readiness::kUninstalledByUser, "",
-          apps::mojom::AppType::kSystemWeb);
-  auto web_app = CreateWebApp();
-  RegisterApp(std::move(web_app));
+  {
+    auto web_app = CreateWebApp();
+    auto app = MakeApp(web_app->app_id(), "App",
+                       apps::mojom::Readiness::kUninstalledByUser, "",
+                       apps::mojom::AppType::kSystemWeb);
+    // For system web apps, |publisher_id| is set to the start URL.
+    app->publisher_id = web_app->start_url().spec();
+    PushApp(std::move(app));
+    RegisterApp(std::move(web_app));
+  }
+
   Instance app_instance("c");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
