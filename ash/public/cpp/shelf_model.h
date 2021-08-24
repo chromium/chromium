@@ -103,14 +103,10 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   void DestroyItemDelegates();
 
   // Adds a new item to the model. Returns the resulting index.
-  // DEPRECATED. Use Add() with |delegate| instead.
-  int Add(const ShelfItem& item);
   int Add(const ShelfItem& item, std::unique_ptr<ShelfItemDelegate> delegate);
 
   // Adds the item. |index| is the requested insertion index, which may be
   // modified to meet type-based ordering. Returns the actual insertion index.
-  // DEPRECATED. Use AddAt() with |delegate| instead.
-  int AddAt(int index, const ShelfItem& item);
   int AddAt(int index,
             const ShelfItem& item,
             std::unique_ptr<ShelfItemDelegate> delegate);
