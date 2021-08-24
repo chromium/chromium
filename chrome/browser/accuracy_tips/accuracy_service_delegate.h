@@ -39,6 +39,8 @@ class AccuracyServiceDelegate
                   const std::map<std::string, std::string>&
                       product_specific_string_data) override;
 
+  bool IsSecureConnection(content::WebContents* web_contents) override;
+
  private:
   Profile* profile_;
 };

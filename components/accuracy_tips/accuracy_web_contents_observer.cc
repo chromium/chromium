@@ -62,6 +62,10 @@ void AccuracyWebContentsObserver::DidFinishNavigation(
 void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
     const GURL& url,
     AccuracyTipStatus result) {
+  if (!accuracy_service_->IsSecureConnection(web_contents())) {
+    result = AccuracyTipStatus::kNotSecure;
+  }
+
   UMA_HISTOGRAM_ENUMERATION("Privacy.AccuracyTip.PageStatus", result);
   ukm::builders::AccuracyTipStatus(
       ukm::GetSourceIdForWebContentsDocument(web_contents()))

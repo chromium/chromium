@@ -23,8 +23,11 @@ enum class AccuracyTipStatus {
   // The site is eligible for showing an accuracy tip but the tip wasn't shown
   // as the site previously had high engagement from the user.
   kHighEnagagement = 4,
+  // The site is eligible for showing an accuracy tip but the tip wasn't shown
+  // as the site security state wasn't secure.
+  kNotSecure = 5,
 
-  kMaxValue = kHighEnagagement,
+  kMaxValue = kNotSecure,
 };
 
 }  // namespace accuracy_tips
