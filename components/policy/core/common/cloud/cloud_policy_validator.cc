@@ -644,7 +644,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDomain() {
   }
 
   if (domain_ != policy_domain) {
-    LOG(ERROR) << "Invalid user name " << policy_data_->username();
+    LOG(ERROR) << "Invalid domain name " << policy_domain << " - " << domain_;
     return VALIDATION_BAD_USER;
   }
 
