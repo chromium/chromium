@@ -24,7 +24,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/switches.h"
+#include "remoting/host/win/wts_session_change_observer.h"
 
 namespace remoting {
 
@@ -48,13 +51,11 @@ base::win::ScopedHandle GetCurrentUserToken() {
 
 // If |switch_name| is empty, the process will be launched with no extra
 // switches.
-bool LaunchConfiguratorProcess(const std::string& switch_name = std::string()) {
+bool LaunchConfiguratorProcess(const std::string& switch_name,
+                               base::win::ScopedHandle user_token) {
+  DCHECK(user_token.IsValid());
   base::LaunchOptions launch_options;
-  auto current_user = GetCurrentUserToken();
-  if (!current_user.IsValid()) {
-    return false;
-  }
-  launch_options.as_user = current_user.Get();
+  launch_options.as_user = user_token.Get();
   // The remoting_desktop.exe binary (where this code runs) has extra manifest
   // flags (uiAccess and requireAdministrator) that are undesirable for the
   // url_forwarder_configurator child process, so remoting_host.exe is used
@@ -90,9 +91,38 @@ void UrlForwarderConfiguratorWin::IsUrlForwarderSetUp(
     IsUrlForwarderSetUpCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LaunchConfiguratorProcess, std::string()),
-      std::move(callback));
+  auto user_token = GetCurrentUserToken();
+  if (user_token.IsValid()) {
+    io_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&LaunchConfiguratorProcess, std::string(),
+                       std::move(user_token)),
+        std::move(callback));
+    return;
+  }
+
+  if (GetLastError() != ERROR_NO_TOKEN) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (is_url_forwarder_set_up_callback_) {
+    LOG(ERROR) << "Query is already in progress.";
+    std::move(callback).Run(false);
+    return;
+  }
+  DCHECK(!wts_session_change_observer_);
+
+  HOST_LOG << "Can't determine URL Forwarder state as no user is signed in. "
+           << "Will check again after user signs in.";
+  is_url_forwarder_set_up_callback_ = std::move(callback);
+  wts_session_change_observer_ = std::make_unique<WtsSessionChangeObserver>();
+  bool start_success = wts_session_change_observer_->Start(
+      base::BindRepeating(&UrlForwarderConfiguratorWin::OnWtsSessionChange,
+                          base::Unretained(this)));
+  if (!start_success) {
+    std::move(is_url_forwarder_set_up_callback_).Run(false);
+  }
 }
 
 void UrlForwarderConfiguratorWin::SetUpUrlForwarder(
@@ -109,9 +139,15 @@ void UrlForwarderConfiguratorWin::SetUpUrlForwarder(
   report_user_intervention_required_timer_.Start(
       FROM_HERE, kReportUserInterventionRequiredDelay, this,
       &UrlForwarderConfiguratorWin::OnReportUserInterventionRequired);
+  auto user_token = GetCurrentUserToken();
+  if (!user_token.IsValid()) {
+    OnSetUpResponse(false);
+    return;
+  }
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&LaunchConfiguratorProcess, kSetUpUrlForwarderSwitchName),
+      base::BindOnce(&LaunchConfiguratorProcess, kSetUpUrlForwarderSwitchName,
+                     std::move(user_token)),
       base::BindOnce(&UrlForwarderConfiguratorWin::OnSetUpResponse,
                      weak_factory_.GetWeakPtr()));
 }
@@ -131,6 +167,30 @@ void UrlForwarderConfiguratorWin::OnReportUserInterventionRequired() {
 
   set_up_url_forwarder_callback_.Run(
       SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED);
+}
+
+void UrlForwarderConfiguratorWin::OnWtsSessionChange(uint32_t event,
+                                                     uint32_t session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (event != WTS_SESSION_LOGON) {
+    return;
+  }
+
+  DCHECK(is_url_forwarder_set_up_callback_);
+
+  HOST_LOG << "User logged in. Checking URL forwarder setup state now.";
+  auto user_token = GetCurrentUserToken();
+  if (!user_token.IsValid()) {
+    std::move(is_url_forwarder_set_up_callback_).Run(false);
+    return;
+  }
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&LaunchConfiguratorProcess, std::string(),
+                     std::move(user_token)),
+      std::move(is_url_forwarder_set_up_callback_));
+  wts_session_change_observer_.reset();
 }
 
 // static

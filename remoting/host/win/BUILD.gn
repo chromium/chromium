@@ -133,6 +133,8 @@ source_set("win") {
     "windows_event_logger.h",
     "worker_process_launcher.cc",
     "worker_process_launcher.h",
+    "wts_session_change_observer.cc",
+    "wts_session_change_observer.h",
     "wts_session_process_delegate.h",
     "wts_terminal_monitor.cc",
     "wts_terminal_monitor.h",
