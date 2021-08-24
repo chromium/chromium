@@ -49,10 +49,7 @@ TEST(HardeningTest, PartialCorruption) {
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
 }
 
-// When DCHECK_IS_ON(), the freelist entries are checked, making this test
-// crash earlier.
-#if !DCHECK_IS_ON()
-TEST(HardeningTest, CorruptionStillCrashing) {
+TEST(HardeningTest, OffHeapPointerCrashing) {
   std::string important_data("very important");
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
@@ -76,30 +73,53 @@ TEST(HardeningTest, CorruptionStillCrashing) {
   // This time, make the second pointer consistent.
   *(data_ptr + 1) = ~(*data_ptr);
 
-  void* new_data = root.Alloc(kAllocSize, "");
-  ASSERT_EQ(new_data, data);
-
-  // This is still crashing, because |*to_corrupt| is not properly formatted as
-  // a freelist entry, in particular its second pointer is invalid.
+  // Crashes, because |to_corrupt| is not on the same superpage as data.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
-
-  root.Free(new_data);
 }
-#endif  // !DCHECK_IS_ON()
-#endif  // !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
-        // defined(PA_HAS_FREELIST_HARDENING)
 
-#if !DCHECK_IS_ON()
-TEST(HardeningTest, SuccessfulCorruption) {
-  std::vector<char> v(100);
-  char* to_corrupt = const_cast<char*>(&v[0]);
-
+TEST(HardeningTest, MetadataPointerCrashing) {
   PartitionRoot<base::internal::ThreadSafe> root{
       PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookies::kDisallowed,
                        PartitionOptions::RefCount::kDisallowed}};
+
+  const size_t kAllocSize = 100;
+  void* data = root.Alloc(kAllocSize, "");
+  void* data2 = root.Alloc(kAllocSize, "");
+  root.Free(data2);
+  root.Free(data);
+
+  uintptr_t data_address = reinterpret_cast<uintptr_t>(data);
+  uintptr_t metadata_address =
+      data_address & kSuperPageBaseMask + SystemPageSize();
+
+  uintptr_t* data_ptr = reinterpret_cast<uintptr_t*>(data);
+  *data_ptr = reinterpret_cast<uintptr_t>(PartitionFreelistEntry::Encode(
+      reinterpret_cast<PartitionFreelistEntry*>(metadata_address)));
+  // This time, make the second pointer consistent.
+  *(data_ptr + 1) = ~(*data_ptr);
+
+  // Crashes, because |metadata_address| points inside the metadata area.
+  EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
+}
+#endif  // !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
+        // defined(PA_HAS_FREELIST_HARDENING)
+
+TEST(HardeningTest, SuccessfulCorruption) {
+  PartitionRoot<base::internal::ThreadSafe> root{
+      PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
+                       PartitionOptions::ThreadCache::kDisabled,
+                       PartitionOptions::Quarantine::kDisallowed,
+                       PartitionOptions::Cookies::kDisallowed,
+                       PartitionOptions::RefCount::kDisallowed}};
+
+  uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(
+      root.AllocFlags(PartitionAllocZeroFill, 100 * sizeof(uintptr_t), ""));
+  ASSERT_TRUE(zero_vector);
+  // Pointer to the middle of an existing allocation.
+  uintptr_t* to_corrupt = zero_vector + 20;
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -121,10 +141,9 @@ TEST(HardeningTest, SuccessfulCorruption) {
 
   // Not crashing, because a zeroed area is a "valid" freelist entry.
   void* new_data2 = root.Alloc(kAllocSize, "");
-  // Now we have an off-heap pointer returned by a heap allocation.
+  // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
 }
-#endif  // !DCHECK_IS_ON()
 
 }  // namespace internal
 }  // namespace base

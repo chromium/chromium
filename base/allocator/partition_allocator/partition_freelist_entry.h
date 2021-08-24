@@ -101,11 +101,23 @@ class PartitionFreelistEntry {
 
   // Puts |extra| on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
+  ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
+      size_t extra) const;
   ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
+
   NOINLINE void CheckFreeList(size_t extra) const {
 #if defined(PA_HAS_FREELIST_HARDENING)
     for (auto* entry = this; entry; entry = entry->GetNext(extra)) {
       // |GetNext()| checks freelist integrity.
+    }
+#endif
+  }
+
+  NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
+#if defined(PA_HAS_FREELIST_HARDENING)
+    for (auto* entry = this; entry;
+         entry = entry->GetNextForThreadCache(extra)) {
+      // |GetNextForThreadCache()| checks freelist integrity.
     }
 #endif
   }
@@ -162,6 +174,42 @@ class PartitionFreelistEntry {
 #endif
   }
 
+  ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
+      size_t extra,
+      bool for_thread_cache) const;
+#if defined(PA_HAS_FREELIST_HARDENING)
+  static ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
+                                   const PartitionFreelistEntry* next,
+                                   bool for_thread_cache) {
+    // Don't allow the freelist to be blindly followed to any location.
+    // Checks two constraints:
+    // - here and next must belong to the same superpage, unless this is in the
+    //   thread cache (they even always belong to the same slot span).
+    // - next cannot point inside the metadata area.
+    //
+    // Also, the lightweight UaF detection (pointer shadow) is checked.
+
+    uintptr_t here_address = reinterpret_cast<uintptr_t>(here);
+    uintptr_t next_address = reinterpret_cast<uintptr_t>(next);
+
+    bool shadow_ptr_ok =
+        ~reinterpret_cast<uintptr_t>(here->next_) == here->inverted_next_;
+
+    bool same_superpage = (here_address & kSuperPageBaseMask) ==
+                          (next_address & kSuperPageBaseMask);
+    // This is necessary but not sufficient when quarantine is enabled, see
+    // SuperPagePayloadBegin() in partition_page.h. However we don't want to
+    // fetch anything from the root in this function.
+    bool not_in_metadata =
+        (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
+
+    if (for_thread_cache)
+      return shadow_ptr_ok & not_in_metadata;
+    else
+      return shadow_ptr_ok & same_superpage & not_in_metadata;
+  }
+#endif  // defined(PA_HAS_FREELIST_HARDENING)
+
   EncodedPartitionFreelistEntry* next_;
   // This is intended to detect unintentional corruptions of the freelist.
   // These can happen due to a Use-after-Free, or overflow of the previous
@@ -191,27 +239,41 @@ static_assert(sizeof(PartitionFreelistEntry) ==
                   sizeof(EncodedPartitionFreelistEntry),
               "Should not have padding");
 
-ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
-    size_t extra) const {
-#if defined(PA_HAS_FREELIST_HARDENING)
-  // GetNext() can be called on decommitted memory, which is full of
-  // zeroes. This is not a corruption issue, so only check integrity when we
-  // have a non-nullptr |next_| pointer.
-  if (UNLIKELY(next_ && ~reinterpret_cast<uintptr_t>(next_) != inverted_next_))
-    FreelistCorruptionDetected(extra);
-#endif  // defined(PA_HAS_FREELIST_HARDENING)
+ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
+    size_t extra,
+    bool for_thread_cache) const {
   auto* ret = EncodedPartitionFreelistEntry::Decode(next_);
+  // GetNext() can be called on decommitted memory, in which case |next| is
+  // nullptr, and none of the checks apply. Don't prefetch nullptr either.
+  if (!ret)
+    return nullptr;
+
+#if defined(PA_HAS_FREELIST_HARDENING)
+  // We rely on constant propagation to remove the branches coming from
+  // |for_thread_cache|, since the argument is always a compile-time constant.
+  if (UNLIKELY(!IsSane(this, ret, for_thread_cache)))
+    FreelistCorruptionDetected(extra);
+#endif
+
   // In real-world profiles, the load of |next_| above is responsible for a
   // large fraction of the allocation cost. However, we cannot anticipate it
   // enough since it is accessed right after we know its address.
   //
   // In the case of repeated allocations, we can prefetch the access that will
-  // be done at the *next* allocation, which will touch *ret, prefetch it. There
-  // is no harm in prefetching nullptr, but on some architectures, it causes a
-  // needless dTLB miss.
-  if (ret)
-    PA_PREFETCH(ret);
+  // be done at the *next* allocation, which will touch *ret, prefetch it.
+  PA_PREFETCH(ret);
+
   return ret;
+}
+
+ALWAYS_INLINE PartitionFreelistEntry*
+PartitionFreelistEntry::GetNextForThreadCache(size_t extra) const {
+  return GetNextInternal(extra, true);
+}
+
+ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
+    size_t extra) const {
+  return GetNextInternal(extra, false);
 }
 
 }  // namespace internal

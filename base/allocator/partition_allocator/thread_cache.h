@@ -458,7 +458,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  auto* next = result->GetNext(bucket.slot_size);
+  auto* next = result->GetNextForThreadCache(bucket.slot_size);
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);

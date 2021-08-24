@@ -591,7 +591,7 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   //    triggers a major page fault, and we are running on a low-priority
   //    thread, we don't want the thread to be blocked while holding the lock,
   //    causing a priority inversion.
-  bucket.freelist_head->CheckFreeList(bucket.slot_size);
+  bucket.freelist_head->CheckFreeListForThreadCache(bucket.slot_size);
 
   uint8_t count_before = bucket.count;
   if (limit == 0) {
@@ -603,10 +603,10 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-      head = head->GetNext(bucket.slot_size);
+      head = head->GetNextForThreadCache(bucket.slot_size);
       items++;
     }
-    FreeAfter(head->GetNext(bucket.slot_size), bucket.slot_size);
+    FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -625,7 +625,7 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   while (head) {
     void* ptr = head;
-    head = head->GetNext(slot_size);
+    head = head->GetNextForThreadCache(slot_size);
     root_->RawFreeLocked(ptr);
   }
 }

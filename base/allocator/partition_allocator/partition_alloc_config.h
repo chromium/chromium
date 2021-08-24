@@ -96,7 +96,12 @@ static_assert(sizeof(void*) != 8, "");
 // Disabled when putting refcount in the previous slot, which is what
 // PUT_REF_COUNT_IN_PREVIOUS_SLOT does. In this case the refcount overlaps with
 // the next pointer shadow for the smallest bucket.
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+//
+// Only for Little endian CPUs, as the freelist encoding used on big endian
+// platforms complicates things. Note that Chromium is not officially supported
+// on any big endian architecture as well.
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
+    defined(ARCH_CPU_LITTLE_ENDIAN)
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
