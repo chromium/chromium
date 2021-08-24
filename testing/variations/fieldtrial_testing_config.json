@@ -41,7 +41,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledTextBubble",
+                    "name": "EnabledTextBubble_20210819",
                     "params": {
                         "availability": ">=0",
                         "event_1": "name:add_to_homescreen_text_bubble_iph_trigger;comparator:==0;window:15;storage:90",
