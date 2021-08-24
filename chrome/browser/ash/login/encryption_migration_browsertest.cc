@@ -60,7 +60,9 @@ const test::UIPath kInsufficientSpaceRestartButton = {
 
 // Base class for testing encryption migration during sign-in.
 // The test user account will be specified by the base class.
-class EncryptionMigrationTestBase : public OobeBaseTest {
+class EncryptionMigrationTestBase
+    : public OobeBaseTest,
+      public EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate {
  public:
   explicit EncryptionMigrationTestBase(
       const LoginManagerMixin::TestUserInfo& test_user)
@@ -82,11 +84,12 @@ class EncryptionMigrationTestBase : public OobeBaseTest {
     FakeUserDataAuthClient::Get()->set_run_default_dircrypto_migration(false);
 
     // Configure encryption migration screen for test.
-    EncryptionMigrationScreen* screen =
-        WizardController::default_controller()
-            ->GetScreen<EncryptionMigrationScreen>();
-    screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
-        &EncryptionMigrationTestBase::GetFreeSpace, base::Unretained(this)));
+    EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(this);
+  }
+  void TearDownOnMainThread() override {
+    EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(
+        nullptr);
+    OobeBaseTest::TearDownOnMainThread();
   }
 
  protected:
@@ -171,7 +174,8 @@ class EncryptionMigrationTestBase : public OobeBaseTest {
   void set_free_space(int64_t free_space) { free_space_ = free_space; }
 
  private:
-  int64_t GetFreeSpace() const { return free_space_; }
+  // EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate
+  int64_t GetFreeSpace() const override { return free_space_; }
 
   // Encryption migration requires at least 50 MB - set the default reported
   // free space to an arbitrary amount above that limit.

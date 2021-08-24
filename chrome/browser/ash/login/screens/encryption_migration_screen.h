@@ -36,8 +36,13 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   using SkipMigrationCallback = base::OnceCallback<void(const UserContext&)>;
 
-  // Callback that can be used to check free disk space.
-  using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
+  class EncryptionMigrationScreenTestDelegate {
+   public:
+    virtual ~EncryptionMigrationScreenTestDelegate() = default;
+
+    // Returns free disk space for testing.
+    virtual int64_t GetFreeSpace() const = 0;
+  };
 
   explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
   ~EncryptionMigrationScreen() override;
@@ -61,11 +66,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   // This should be called after other state like UserContext, etc... are set.
   void SetupInitialView();
 
-  // Testing only: Sets the free disk space fetcher.
-  void set_free_disk_space_fetcher_for_testing(
-      FreeDiskSpaceFetcher free_disk_space_fetcher) {
-    free_disk_space_fetcher_ = std::move(free_disk_space_fetcher);
-  }
+  static void SetEncryptionMigrationScreenTestDelegate(
+      EncryptionMigrationScreenTestDelegate* test_delegate);
 
  protected:
   virtual device::mojom::WakeLock* GetWakeLock();
@@ -154,8 +156,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   std::unique_ptr<LoginFeedback> login_feedback_;
-
-  FreeDiskSpaceFetcher free_disk_space_fetcher_;
 
   std::unique_ptr<
       base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
