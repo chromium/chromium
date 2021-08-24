@@ -858,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeTimeUntilEncryptionKeyFound"
-    units="GetUpdatesResponses" expires_after="2021-10-06">
+    units="GetUpdatesResponses" expires_after="2022-02-06">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -920,7 +920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"
-    units="SyncEntity" expires_after="2021-10-06">
+    units="SyncEntity" expires_after="2022-02-06">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
