@@ -161,6 +161,10 @@ crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_VP9
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
+# Videos with rounded corners don't get promoted to overlays on Intel Coffee Lake.
+crbug.com/1183090 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Skip ]
+crbug.com/1183090 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Skip ]
+
 # WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
 crbug.com/1213170 [ mac ] TraceTest_WebGPU* [ Skip ]
 

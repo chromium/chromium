@@ -157,6 +157,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   // Reference to the global viz singleton.
   const DebugRendererSettings* const debug_settings_;
 
+  bool previous_frame_underlay_is_opaque_ = true;
   gfx::RectF previous_display_rect_;
   std::vector<size_t> damages_to_be_removed_;
 
