@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests the matching performed in AnimationModel of groups composed of transitions, which are applied through a variety of selectors.\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('animation');
+  await TestRunner.loadLegacyModule('animation');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
