@@ -167,12 +167,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
-        if (mShareSheetLinkToggleCoordinator != null) {
+        if (!shouldShowPreemptiveLinkToText(chromeShareExtras)) {
             mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
-            int linkToggleState = mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()
-                    ? LinkToggleState.LINK
-                    : LinkToggleState.NO_LINK;
-            mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(linkToggleState);
+            mShareParams = mShareSheetLinkToggleCoordinator.getDefaultShareParams();
         }
         if (mActivity == null) return;
 
@@ -256,9 +253,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      */
     public void showInitialShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && chromeShareExtras.getDetailedContentType()
-                        == DetailedContentType.HIGHLIGHTED_TEXT) {
+        if (shouldShowPreemptiveLinkToText(chromeShareExtras)) {
             if (!chromeShareExtras.isReshareHighlightedText()) {
                 LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
                         LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
@@ -270,9 +265,13 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                     chromeShareExtras, shareStartTime,
                     getUrlToShare(params, chromeShareExtras, tabUrl), params.getText());
         }
-        mShareSheetLinkToggleCoordinator =
-                new ShareSheetLinkToggleCoordinator(params, chromeShareExtras, shareStartTime,
-                        mLinkToTextCoordinator, /*chromeOptionShareCallback=*/this);
+        mShareSheetLinkToggleCoordinator = new ShareSheetLinkToggleCoordinator(
+                params, chromeShareExtras, mLinkToTextCoordinator);
+        if (shouldShowPreemptiveLinkToText(chromeShareExtras)) {
+            mLinkToTextCoordinator.shareLinkToText();
+        } else {
+            showShareSheet(params, chromeShareExtras, shareStartTime);
+        }
     }
 
     private Profile getCurrentProfile() {
@@ -309,6 +308,12 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
                 contentTypes, mIsMultiWindow);
+    }
+
+    private boolean shouldShowPreemptiveLinkToText(ChromeShareExtras chromeShareExtras) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                && chromeShareExtras.getDetailedContentType()
+                == DetailedContentType.HIGHLIGHTED_TEXT;
     }
 
     private PropertyModel createMorePropertyModel(

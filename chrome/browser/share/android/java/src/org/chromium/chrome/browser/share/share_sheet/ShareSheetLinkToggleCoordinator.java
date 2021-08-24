@@ -24,9 +24,7 @@ public class ShareSheetLinkToggleCoordinator {
         int MAX = 2;
     }
 
-    private final long mShareStartTime;
     private final LinkToTextCoordinator mLinkToTextCoordinator;
-    private final ChromeOptionShareCallback mChromeOptionShareCallback;
 
     private ShareParams mShareParams;
     private ChromeShareExtras mChromeShareExtras;
@@ -39,20 +37,12 @@ public class ShareSheetLinkToggleCoordinator {
      *
      * @param shareParams The original {@link ShareParams} for the current share.
      * @param chromeShareExtras The {@link ChromeShareExtras} for the current share.
-     * @param shareStartTime The start time for the current share.
      * @param linkToTextCoordinator The {@link LinkToTextCoordinator} to share highlighted text.
-     * @param chromeOptionShareCallback The {@link ChromeOptionShareCallback} to open the share
-     *         sheet.
      */
     ShareSheetLinkToggleCoordinator(ShareParams shareParams, ChromeShareExtras chromeShareExtras,
-            long shareStartTime, LinkToTextCoordinator linkToTextCoordinator,
-            ChromeOptionShareCallback chromeOptionShareCallback) {
-        mShareStartTime = shareStartTime;
+            LinkToTextCoordinator linkToTextCoordinator) {
         mLinkToTextCoordinator = linkToTextCoordinator;
-        mChromeOptionShareCallback = chromeOptionShareCallback;
         setShareParamsAndExtras(shareParams, chromeShareExtras);
-
-        showShareSheet();
     }
 
     /**
@@ -63,8 +53,7 @@ public class ShareSheetLinkToggleCoordinator {
         mChromeShareExtras = chromeShareExtras;
         mUrl = chromeShareExtras.getContentUrl();
         mShouldEnableLinkToTextToggle =
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE))
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                 && mLinkToTextCoordinator != null
                 && chromeShareExtras.getDetailedContentType()
                         == DetailedContentType.HIGHLIGHTED_TEXT;
@@ -91,6 +80,14 @@ public class ShareSheetLinkToggleCoordinator {
         return mShareParams;
     }
 
+    /**
+     * Returns the {@link ShareParams} associated with the default toggle status.
+     */
+    ShareParams getDefaultShareParams() {
+        return getShareParams(
+                shouldEnableToggleByDefault() ? LinkToggleState.LINK : LinkToggleState.NO_LINK);
+    }
+
     boolean shouldShowToggle() {
         return mShouldEnableLinkToTextToggle || mShouldEnableGenericToggle;
     }
@@ -110,14 +107,5 @@ public class ShareSheetLinkToggleCoordinator {
                 break;
         }
         return enableToggleByDefault;
-    }
-
-    private void showShareSheet() {
-        if (mShouldEnableLinkToTextToggle) {
-            mLinkToTextCoordinator.shareLinkToText();
-        } else {
-            mChromeOptionShareCallback.showShareSheet(
-                    mShareParams, mChromeShareExtras, mShareStartTime);
-        }
     }
 }
