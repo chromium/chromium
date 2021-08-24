@@ -50,13 +50,13 @@ SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
     SendTabToSelfBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
+  DCHECK(controller_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  DCHECK(controller);
 }
 
-SendTabToSelfBubbleViewImpl::~SendTabToSelfBubbleViewImpl() {}
+SendTabToSelfBubbleViewImpl::~SendTabToSelfBubbleViewImpl() = default;
 
 void SendTabToSelfBubbleViewImpl::Hide() {
   if (controller_) {
@@ -71,7 +71,7 @@ bool SendTabToSelfBubbleViewImpl::ShouldShowCloseButton() const {
 }
 
 std::u16string SendTabToSelfBubbleViewImpl::GetWindowTitle() const {
-  return controller_->GetWindowTitle();
+  return l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
 }
 
 void SendTabToSelfBubbleViewImpl::WindowClosing() {
@@ -123,15 +123,7 @@ void SendTabToSelfBubbleViewImpl::Init() {
     CreateHintTextLabel(layout);
   }
 
-  CreateScrollView(layout);
-
-  PopulateScrollView(controller_->GetValidDevices());
-}
-
-void SendTabToSelfBubbleViewImpl::CreateScrollView(views::GridLayout* layout) {
-  layout->StartRow(1.0f, 0);
-  scroll_view_ = layout->AddView(std::make_unique<views::ScrollView>());
-  scroll_view_->ClipHeightTo(0, kDeviceButtonHeight * kMaximumButtons);
+  CreateDevicesScrollView(layout);
 }
 
 void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
@@ -163,13 +155,17 @@ void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
   layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_distance);
 }
 
-void SendTabToSelfBubbleViewImpl::PopulateScrollView(
-    const std::vector<TargetDeviceInfo>& devices) {
+void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView(
+    views::GridLayout* layout) {
+  layout->StartRow(1.0f, 0);
+  scroll_view_ = layout->AddView(std::make_unique<views::ScrollView>());
+  scroll_view_->ClipHeightTo(0, kDeviceButtonHeight * kMaximumButtons);
+
   auto* device_list_view =
       scroll_view_->SetContents(std::make_unique<views::View>());
   device_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  for (const auto& device : devices) {
+  for (const auto& device : controller_->GetValidDevices()) {
     auto* view = device_list_view->AddChildView(
         std::make_unique<SendTabToSelfBubbleDeviceButton>(this, device));
     view->SetGroup(kDeviceButtonGroup);
@@ -178,14 +174,11 @@ void SendTabToSelfBubbleViewImpl::PopulateScrollView(
   if (!device_list_view->children().empty())
     SetInitiallyFocusedView(device_list_view->children()[0]);
 
-  MaybeSizeToContents();
-  Layout();
-}
-
-void SendTabToSelfBubbleViewImpl::MaybeSizeToContents() {
-  // The widget may be null if this is called while the dialog is opening.
+  // May be null if the dialog is opening.
   if (GetWidget())
     SizeToContents();
+
+  Layout();
 }
 
 }  // namespace send_tab_to_self

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -27,7 +26,6 @@ namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleDeviceButton;
-struct TargetDeviceInfo;
 
 // View component of the send tab to self bubble that allows users to choose
 // target device to send tab to.
@@ -57,31 +55,17 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // views::BubbleDialogDelegateView:
   void Init() override;
 
-  // Creates the scroll view.
-  void CreateScrollView(views::GridLayout* layout);
-
   // Creates the subtitle / hint text used in V2.
   void CreateHintTextLabel(views::GridLayout* layout);
 
-  // Populates the scroll view containing valid devices.
-  void PopulateScrollView(const std::vector<TargetDeviceInfo>& devices);
-
-  // Resizes and potentially moves the bubble to fit the content's preferred
-  // size.
-  void MaybeSizeToContents();
+  // Creates the scroll view containing target devices.
+  void CreateDevicesScrollView(views::GridLayout* layout);
 
   SendTabToSelfBubbleController* controller_;  // Weak reference.
 
-  // Title shown at the top of the bubble.
-  std::u16string bubble_title_;
-
   // ScrollView containing the list of device buttons.
+  // Only kept for GetButtonContainerForTesting().
   views::ScrollView* scroll_view_ = nullptr;
-
-  // The device that the user has selected to share tab to.
-  absl::optional<size_t> selected_device_index_;
-
-  base::WeakPtrFactory<SendTabToSelfBubbleViewImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBubbleViewImpl);
 };

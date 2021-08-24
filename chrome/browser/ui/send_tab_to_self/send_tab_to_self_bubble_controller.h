@@ -41,15 +41,12 @@ class SendTabToSelfBubbleController
 
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
-  // Returns the title of send tab to self bubble.
-  std::u16string GetWindowTitle() const;
   // Returns the valid devices info map.
   virtual std::vector<TargetDeviceInfo> GetValidDevices() const;
-  // Returns current profile.
-  Profile* GetProfile() const;
 
   // Handles the action when the user click on one valid device. Sends tab to
   // the target device; closes the button and hides the omnibox icon.
+  // Virtual for testing.
   virtual void OnDeviceSelected(const std::string& target_device_name,
                                 const std::string& target_device_guid);
   // Close the bubble when the user click on the close button.
@@ -81,6 +78,8 @@ class SendTabToSelfBubbleController
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, DevicePressed);
 
   void UpdateIcon();
+
+  Profile* GetProfile() const;
 
   // The web_contents associated with this controller.
   content::WebContents* web_contents_;

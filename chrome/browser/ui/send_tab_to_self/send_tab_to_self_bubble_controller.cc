@@ -21,7 +21,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace send_tab_to_self {
 
@@ -57,10 +56,6 @@ void SendTabToSelfBubbleController::ShowBubble() {
 SendTabToSelfBubbleView*
 SendTabToSelfBubbleController::send_tab_to_self_bubble_view() const {
   return send_tab_to_self_bubble_view_;
-}
-
-std::u16string SendTabToSelfBubbleController::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
 }
 
 std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
