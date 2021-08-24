@@ -99,10 +99,6 @@ class MEDIA_EXPORT SysmemAllocatorClient {
   std::unique_ptr<SysmemCollectionClient> BindSharedCollection(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
 
-  // TODO(crbug.com/1131183): Update FuchsiaVideoDecoder to use
-  // SysmemCollectionClient and remove this function.
-  fuchsia::sysmem::Allocator* raw() { return allocator_.get(); }
-
  private:
   friend SysmemCollectionClient;
 
