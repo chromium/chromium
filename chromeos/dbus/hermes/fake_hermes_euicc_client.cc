@@ -480,9 +480,9 @@ void FakeHermesEuiccClient::DoResetMemory(
     hermes::euicc::ResetOptions reset_option,
     HermesResponseCallback callback) {
   HermesEuiccClient::Properties* properties = GetProperties(euicc_path);
-  const std::vector<dbus::ObjectPath>& installed_carrier_profiles =
-      properties->installed_carrier_profiles().value();
-  for (auto& profile_path : installed_carrier_profiles) {
+  while (properties->installed_carrier_profiles().value().size()) {
+    const dbus::ObjectPath& profile_path =
+        properties->installed_carrier_profiles().value().front();
     bool remove_success = RemoveCarrierProfile(euicc_path, profile_path);
     DCHECK(remove_success);
   }

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_refresh_machine_certificate_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_remote_powerwash_job.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
@@ -64,6 +65,8 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandRunRoutineJob>();
     case em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE:
       return std::make_unique<DeviceCommandGetRoutineUpdateJob>();
+    case em::RemoteCommand_Type_DEVICE_RESET_EUICC:
+      return std::make_unique<DeviceCommandResetEuiccJob>();
     default:
       // Other types of commands should be sent to UserCommandsFactoryAsh
       // instead of here.
