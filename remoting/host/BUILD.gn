@@ -223,6 +223,7 @@ source_set("host_settings") {
     deps += [ "//remoting/host/mac:constants" ]
   }
 }
+
 source_set("host_extension") {
   sources = [
     "client_session_details.h",
@@ -399,6 +400,9 @@ static_library("common") {
     "url_forwarder_control_message_handler.cc",
     "url_forwarder_control_message_handler.h",
     "usage_stats_consent.h",
+    "user_setting_keys.h",
+    "user_settings.cc",
+    "user_settings.h",
     "xmpp_register_support_host_request.cc",
     "xmpp_register_support_host_request.h",
     "xsession_chooser_ui.inc",
@@ -619,6 +623,8 @@ static_library("common") {
       "url_forwarder_configurator_win.cc",
       "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
+      "user_settings_win.cc",
+      "user_settings_win.h",
     ]
     libs += [ "crypt32.lib" ]
     deps += [
