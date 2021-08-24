@@ -79303,41 +79303,41 @@ would be helpful to identify which type is being sent.
   <int value="299" label="OTHER_ALLOWED_UNKNOWN">
     Other navigation; Allowed by default (safety state unknown)
   </int>
-  <int value="300" label="LINK_BLOCKED_BLACKLIST">
-    Link; Blocked by static blacklist
+  <int value="300" label="LINK_BLOCKED_DENYLIST">
+    Link; Blocked by static denylist
   </int>
-  <int value="301" label="TYPED_BLOCKED_BLACKLIST">
-    Typed URL; Blocked by static blacklist
+  <int value="301" label="TYPED_BLOCKED_DENYLIST">
+    Typed URL; Blocked by static denylist
   </int>
-  <int value="302" label="AUTO_BOOKMARK_BLOCKED_BLACKLIST">
-    Bookmark; Blocked by static blacklist
+  <int value="302" label="AUTO_BOOKMARK_BLOCKED_DENYLIST">
+    Bookmark; Blocked by static denylist
   </int>
-  <int value="303" label="AUTO_SUBFRAME_BLOCKED_BLACKLIST">
-    Subframe navigation; Blocked by static blacklist
+  <int value="303" label="AUTO_SUBFRAME_BLOCKED_DENYLIST">
+    Subframe navigation; Blocked by static denylist
   </int>
-  <int value="304" label="MANUAL_SUBFRAME_BLOCKED_BLACKLIST">
-    Manual subframe navigation; Blocked by static blacklist
+  <int value="304" label="MANUAL_SUBFRAME_BLOCKED_DENYLIST">
+    Manual subframe navigation; Blocked by static denylist
   </int>
-  <int value="305" label="GENERATED_BLOCKED_BLACKLIST">
-    Generated from Omnibox; Blocked by static blacklist
+  <int value="305" label="GENERATED_BLOCKED_DENYLIST">
+    Generated from Omnibox; Blocked by static denylist
   </int>
-  <int value="306" label="AUTO_TOPLEVEL_BLOCKED_BLACKLIST">
-    Automatic toplevel navigation; Blocked by static blacklist
+  <int value="306" label="AUTO_TOPLEVEL_BLOCKED_DENYLIST">
+    Automatic toplevel navigation; Blocked by static denylist
   </int>
-  <int value="307" label="FORM_SUBMIT_BLOCKED_BLACKLIST">
-    Form submission; Blocked by static blacklist
+  <int value="307" label="FORM_SUBMIT_BLOCKED_DENYLIST">
+    Form submission; Blocked by static denylist
   </int>
-  <int value="308" label="RELOAD_BLOCKED_BLACKLIST">
-    Reload; Blocked by static blacklist
+  <int value="308" label="RELOAD_BLOCKED_DENYLIST">
+    Reload; Blocked by static denylist
   </int>
-  <int value="309" label="KEYWORD_BLOCKED_BLACKLIST">
-    Omnibox keyword; Blocked by static blacklist
+  <int value="309" label="KEYWORD_BLOCKED_DENYLIST">
+    Omnibox keyword; Blocked by static denylist
   </int>
-  <int value="310" label="KEYWORD_GENERATED_BLOCKED_BLACKLIST">
-    URL generated from Omnibox keyword; Blocked by static blacklist
+  <int value="310" label="KEYWORD_GENERATED_BLOCKED_DENYLIST">
+    URL generated from Omnibox keyword; Blocked by static denylist
   </int>
-  <int value="399" label="OTHER_BLOCKED_BLACKLIST">
-    Other navigation; Blocked by static blacklist
+  <int value="399" label="OTHER_BLOCKED_DENYLIST">
+    Other navigation; Blocked by static denylist
   </int>
   <int value="400" label="LINK_BLOCKED_SAFESITES">
     Link; Blocked by SafeSites
@@ -79447,41 +79447,41 @@ would be helpful to identify which type is being sent.
   <int value="699" label="OTHER_BLOCKED_DEFAULT">
     Other navigation; Blocked by global settings
   </int>
-  <int value="700" label="LINK_ALLOWED_WHITELIST">
-    Link; Allowed by whitelist
+  <int value="700" label="LINK_ALLOWED_ALLOWLIST">
+    Link; Allowed by allowlist
   </int>
-  <int value="701" label="TYPED_ALLOWED_WHITELIST">
-    Typed URL; Allowed by whitelist
+  <int value="701" label="TYPED_ALLOWED_ALLOWLIST">
+    Typed URL; Allowed by allowlist
   </int>
-  <int value="702" label="AUTO_BOOKMARK_ALLOWED_WHITELIST">
-    Bookmark; Allowed by whitelist
+  <int value="702" label="AUTO_BOOKMARK_ALLOWED_ALLOWLIST">
+    Bookmark; Allowed by allowlist
   </int>
-  <int value="703" label="AUTO_SUBFRAME_ALLOWED_WHITELIST">
-    Subframe navigation; Allowed by whitelist
+  <int value="703" label="AUTO_SUBFRAME_ALLOWED_ALLOWLIST">
+    Subframe navigation; Allowed by allowlist
   </int>
-  <int value="704" label="MANUAL_SUBFRAME_ALLOWED_WHITELIST">
-    Manual subframe navigation; Allowed by whitelist
+  <int value="704" label="MANUAL_SUBFRAME_ALLOWED_ALLOWLIST">
+    Manual subframe navigation; Allowed by allowlist
   </int>
-  <int value="705" label="GENERATED_ALLOWED_WHITELIST">
-    Generated from Omnibox; Allowed by whitelist
+  <int value="705" label="GENERATED_ALLOWED_ALLOWLIST">
+    Generated from Omnibox; Allowed by allowlist
   </int>
-  <int value="706" label="AUTO_TOPLEVEL_ALLOWED_WHITELIST">
-    Automatic toplevel navigation; Allowed by whitelist
+  <int value="706" label="AUTO_TOPLEVEL_ALLOWED_ALLOWLIST">
+    Automatic toplevel navigation; Allowed by allowlist
   </int>
-  <int value="707" label="FORM_SUBMIT_ALLOWED_WHITELIST">
-    Form submission; Allowed by whitelist
+  <int value="707" label="FORM_SUBMIT_ALLOWED_ALLOWLIST">
+    Form submission; Allowed by allowlist
   </int>
-  <int value="708" label="RELOAD_ALLOWED_WHITELIST">
-    Reload; Allowed by whitelist
+  <int value="708" label="RELOAD_ALLOWED_ALLOWLIST">
+    Reload; Allowed by allowlist
   </int>
-  <int value="709" label="KEYWORD_ALLOWED_WHITELIST">
-    Omnibox keyword; Allowed by whitelist
+  <int value="709" label="KEYWORD_ALLOWED_ALLOWLIST">
+    Omnibox keyword; Allowed by allowlist
   </int>
-  <int value="710" label="KEYWORD_GENERATED_ALLOWED_WHITELIST">
-    URL generated from Omnibox keyword; Allowed by whitelist
+  <int value="710" label="KEYWORD_GENERATED_ALLOWED_ALLOWLIST">
+    URL generated from Omnibox keyword; Allowed by allowlist
   </int>
-  <int value="799" label="OTHER_ALLOWED_WHITELIST">
-    Other navigation; Allowed by whitelist
+  <int value="799" label="OTHER_ALLOWED_ALLOWLIST">
+    Other navigation; Allowed by allowlist
   </int>
 </enum>
 
