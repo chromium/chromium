@@ -16438,7 +16438,8 @@ bool GLES2DecoderImpl::GetUniformSetup(GLuint program_id,
   }
   uint32_t checked_size = 0;
   if (!SizedResult<T>::ComputeSize(num_elements).AssignIfValid(&checked_size)) {
-    return error::kOutOfBounds;
+    *error = error::kOutOfBounds;
+    return false;
   }
   result = GetSharedMemoryAs<SizedResult<T>*>(shm_id, shm_offset, checked_size);
   if (!result) {
