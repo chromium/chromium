@@ -34,6 +34,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/base/net_errors.h"
@@ -454,6 +455,44 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   EXPECT_EQ(form2.main_frame_origin, form.main_frame_origin);
   ASSERT_EQ(form2.fields.size(), 1u);
   EXPECT_EQ(form2.fields.front().host_frame, form2.fields.front().host_frame);
+}
+
+// Test that forms in "about:" without parents have an empty FormData::url.
+TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
+  NavigateAndCommit(GURL("about:blank"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
+
+  FormData form;
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form, nullptr);
+
+  EXPECT_TRUE(form.url.is_empty());
+}
+
+// Test that forms in "about:" subframes inherit the URL of their next
+// non-"about:" ancestor in FormData::url.
+TEST_P(ContentAutofillDriverTest,
+       SetFrameAndFormMetaDataOfForm_AboutSchemeInheritsFromGrandParent) {
+  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  content::RenderFrameHost* child_rfh =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("about:blank"), content::RenderFrameHostTester::For(main_rfh())
+                                   ->AppendChild("child"));
+  content::RenderFrameHost* grandchild_rfh =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("about:blank"),
+          content::RenderFrameHostTester::For(child_rfh)->AppendChild(
+              "grandchild"));
+  auto grandchild_driver = std::make_unique<TestContentAutofillDriver>(
+      grandchild_rfh, test_autofill_client_.get(), router_.get());
+  ASSERT_TRUE(child_rfh->GetLastCommittedURL().IsAboutBlank());
+  ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
+
+  FormData form;
+  ContentAutofillDriverTestApi(grandchild_driver.get())
+      .SetFrameAndFormMetaData(form, nullptr);
+
+  EXPECT_EQ(form.url, GURL("https://hostname"));
 }
 
 TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
