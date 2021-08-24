@@ -287,7 +287,7 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
     return;
   }
 
-  std::vector<int64_t> conversion_ids;
+  std::vector<ConversionReport::Id> conversion_ids;
   conversion_ids.reserve(reports.size());
   // All reports should be sent immediately.
   for (ConversionReport& report : reports) {
@@ -300,7 +300,7 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
   // deduplicated by `ConversionReporterImpl::AddReportsToQueue()`. In that
   // case, the callback will be invoked as a result of the in-process reports.
   pending_conversion_ids_for_internals_ui_ =
-      base::flat_set<int64_t>(std::move(conversion_ids));
+      base::flat_set<ConversionReport::Id>(std::move(conversion_ids));
   send_reports_for_web_ui_callback_ = std::move(done);
 
   reporter_->AddReportsToQueue(std::move(reports));

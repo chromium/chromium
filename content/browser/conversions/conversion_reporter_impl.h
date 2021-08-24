@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -25,7 +26,6 @@ namespace content {
 
 class StoragePartitionImpl;
 
-struct ConversionReport;
 struct SentReportInfo;
 
 // This class is responsible for managing the dispatch of conversion reports to
@@ -92,7 +92,7 @@ class CONTENT_EXPORT ConversionReporterImpl
   // being sent by |network_sender_|. The number of concurrent conversion
   // reports being sent at any time is expected to be small, so a `flat_set` is
   // used.
-  base::flat_set<int64_t> pending_reports_;
+  base::flat_set<ConversionReport::Id> pending_reports_;
 
   const base::Clock* clock_;
 

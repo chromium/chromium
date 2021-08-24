@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,12 +19,14 @@ namespace content {
 // report. This represents the report for a conversion event and its associated
 // impression.
 struct CONTENT_EXPORT ConversionReport {
+  using Id = base::StrongAlias<ConversionReport, int64_t>;
+
   // The conversion_id may not be set for a conversion report.
   ConversionReport(StorableImpression impression,
                    uint64_t conversion_data,
                    base::Time conversion_time,
                    base::Time report_time,
-                   absl::optional<int64_t> conversion_id);
+                   absl::optional<Id> conversion_id);
   ConversionReport(const ConversionReport& other);
   ConversionReport& operator=(const ConversionReport& other);
   ConversionReport(ConversionReport&& other);
@@ -50,7 +53,7 @@ struct CONTENT_EXPORT ConversionReport {
 
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
-  absl::optional<int64_t> conversion_id;
+  absl::optional<Id> conversion_id;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `conversion_test_utils.h` should also be updated.

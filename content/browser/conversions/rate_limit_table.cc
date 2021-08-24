@@ -100,7 +100,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, static_cast<int>(report.impression.source_type()));
-  statement.BindInt64(1, *report.impression.impression_id());
+  statement.BindInt64(1, *report.impression.impression_id().value());
   statement.BindString(
       2, net::SchemefulSite(report.impression.impression_origin()).Serialize());
   statement.BindString(3, report.impression.impression_origin().Serialize());
@@ -240,7 +240,7 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
 
 bool RateLimitTable::ClearDataForImpressionIds(
     sql::Database* db,
-    const std::vector<int64_t>& impression_ids) {
+    const std::vector<StorableImpression::Id>& impression_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
@@ -252,9 +252,9 @@ bool RateLimitTable::ClearDataForImpressionIds(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
 
-  for (int64_t id : impression_ids) {
+  for (StorableImpression::Id id : impression_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
-    statement.BindInt64(0, id);
+    statement.BindInt64(0, *id);
     if (!statement.Run())
       return false;
   }

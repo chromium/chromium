@@ -47,8 +47,7 @@ ConversionReport GetReport(int64_t conversion_id) {
       ImpressionBuilder(base::Time()).SetData(conversion_id).Build(),
       /*conversion_data=*/conversion_id,
       /*conversion_time=*/base::Time(),
-      /*report_time=*/base::Time(),
-      /*conversion_id=*/conversion_id);
+      /*report_time=*/base::Time(), ConversionReport::Id(conversion_id));
 }
 
 }  // namespace
@@ -116,7 +115,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
                           /*conversion_data=*/5,
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
-                          /*conversion_id=*/1);
+                          ConversionReport::Id(1));
   network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;
@@ -138,7 +137,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
                           /*conversion_data=*/1,
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
-                          /*conversion_id=*/1);
+                          ConversionReport::Id(1));
   network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;

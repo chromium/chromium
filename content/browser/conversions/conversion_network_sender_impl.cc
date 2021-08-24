@@ -195,7 +195,7 @@ void ConversionNetworkSenderImpl::OnReportSent(
     GURL report_url,
     std::string report_body,
     ReportSentCallback sent_callback,
-    int64_t conversion_id,
+    ConversionReport::Id conversion_id,
     base::Time original_report_time,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();

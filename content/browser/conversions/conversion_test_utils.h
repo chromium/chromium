@@ -263,8 +263,8 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionId(absl::optional<int64_t> impression_id)
-      WARN_UNUSED_RESULT;
+  ImpressionBuilder& SetImpressionId(
+      absl::optional<StorableImpression::Id> impression_id) WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
       WARN_UNUSED_RESULT;
@@ -280,7 +280,7 @@ class ImpressionBuilder {
   url::Origin reporting_origin_;
   StorableImpression::SourceType source_type_;
   int64_t priority_;
-  absl::optional<int64_t> impression_id_;
+  absl::optional<StorableImpression::Id> impression_id_;
   std::vector<int64_t> dedup_keys_;
 };
 

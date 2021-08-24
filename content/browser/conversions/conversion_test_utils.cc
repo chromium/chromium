@@ -267,7 +267,7 @@ ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
 }
 
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
-    absl::optional<int64_t> impression_id) {
+    absl::optional<StorableImpression::Id> impression_id) {
   impression_id_ = impression_id;
   return *this;
 }
@@ -425,7 +425,7 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
 }
 
 SentReportInfo GetBlankSentReportInfo() {
-  return SentReportInfo(/*conversion_id=*/0,
+  return SentReportInfo(ConversionReport::Id(0),
                         /*original_report_time=*/base::Time(),
                         /*report_url=*/GURL(),
                         /*report_body=*/"",

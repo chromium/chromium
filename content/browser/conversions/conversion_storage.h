@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/storable_impression.h"
 
 namespace base {
@@ -23,8 +24,6 @@ class Origin;
 namespace content {
 
 class StorableConversion;
-
-struct ConversionReport;
 
 // This class provides an interface for persisting impression/conversion data to
 // disk, and performing queries on it. ConversionStorage should initialize
@@ -164,7 +163,7 @@ class ConversionStorage {
 
   // Deletes the conversion report with the given |conversion_id|. Returns
   // whether the deletion was successful.
-  virtual bool DeleteConversion(int64_t conversion_id) = 0;
+  virtual bool DeleteConversion(ConversionReport::Id conversion_id) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time. More specifically, this:

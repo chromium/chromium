@@ -60,7 +60,6 @@ class TestConversionReporter
   // ConversionManagerImpl::ConversionReporter
   void AddReportsToQueue(std::vector<ConversionReport> reports) override {
     num_reports_ += reports.size();
-    last_conversion_id_ = *reports.back().conversion_id;
     last_report_time_ = reports.back().report_time;
 
     if (should_run_report_sent_callbacks_) {
@@ -88,8 +87,6 @@ class TestConversionReporter
 
   size_t num_reports() { return num_reports_; }
 
-  int64_t last_conversion_id() { return last_conversion_id_; }
-
   base::Time last_report_time() { return last_report_time_; }
 
   void WaitForNumReports(size_t expected_num_reports) {
@@ -113,7 +110,6 @@ class TestConversionReporter
   absl::optional<SentReportInfo> sent_report_info_ = absl::nullopt;
   size_t expected_num_reports_ = 0u;
   size_t num_reports_ = 0u;
-  int64_t last_conversion_id_ = 0;
   base::Time last_report_time_;
   base::OnceClosure quit_closure_;
 };
@@ -405,7 +401,7 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   conversion_manager_->HandleConversion(DefaultConversion());
   sent_report_info_1.original_report_time =
       clock().Now() + kFirstReportingWindow;
-  sent_report_info_1.conversion_id = 1;
+  sent_report_info_1.conversion_id = ConversionReport::Id(1);
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
@@ -424,7 +420,7 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
       clock().Now() + kFirstReportingWindow;
 
   // The other report is deleted, so id 1 is reused.
-  sent_report_info_2.conversion_id = 1;
+  sent_report_info_2.conversion_id = ConversionReport::Id(1);
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
@@ -455,7 +451,7 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {
         ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
     conversion_manager_->HandleConversion(DefaultConversion());
     info.original_report_time = clock().Now() + kFirstReportingWindow;
-    info.conversion_id = 1;
+    info.conversion_id = ConversionReport::Id(1);
     task_environment_.FastForwardBy(kFirstReportingWindow -
                                     kConversionManagerQueueReportsInterval);
   }

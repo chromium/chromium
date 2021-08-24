@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_reporter_impl.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -28,8 +29,6 @@ class SimpleURLLoader;
 namespace content {
 
 class StoragePartition;
-
-struct ConversionReport;
 
 // Implemented a NetworkSender capable of issuing POST requests for complete
 // conversions. Maintains a set of all ongoing UrlLoaders used for posting
@@ -67,7 +66,7 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
                     GURL report_url,
                     std::string report_body,
                     ReportSentCallback sent_callback,
-                    int64_t conversion_id,
+                    ConversionReport::Id conversion_id,
                     base::Time original_report_time,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 

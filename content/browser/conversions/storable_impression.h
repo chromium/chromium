@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -23,6 +24,8 @@ namespace content {
 // should be sanitized before creating this object.
 class CONTENT_EXPORT StorableImpression {
  public:
+  using Id = base::StrongAlias<StorableImpression, int64_t>;
+
   // Denotes the type of source for this impression. This allows different types
   // of impressions to be processed differently by storage and attribution
   // logic.
@@ -56,7 +59,7 @@ class CONTENT_EXPORT StorableImpression {
                      base::Time expiry_time,
                      SourceType source_type,
                      int64_t priority,
-                     absl::optional<int64_t> impression_id);
+                     absl::optional<Id> impression_id);
   StorableImpression(const StorableImpression& other);
   StorableImpression& operator=(const StorableImpression& other);
   StorableImpression(StorableImpression&& other);
@@ -85,7 +88,7 @@ class CONTENT_EXPORT StorableImpression {
 
   base::Time expiry_time() const WARN_UNUSED_RESULT { return expiry_time_; }
 
-  absl::optional<int64_t> impression_id() const WARN_UNUSED_RESULT {
+  absl::optional<Id> impression_id() const WARN_UNUSED_RESULT {
     return impression_id_;
   }
 
@@ -124,7 +127,7 @@ class CONTENT_EXPORT StorableImpression {
   int64_t priority_;
 
   // If null, an ID has not been assigned yet.
-  absl::optional<int64_t> impression_id_;
+  absl::optional<Id> impression_id_;
 
   // Dedup keys associated with the impression. Only set in values returned from
   // `ConversionStorage::GetActiveImpressions()`.

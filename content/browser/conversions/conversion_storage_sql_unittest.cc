@@ -379,7 +379,7 @@ TEST_F(ConversionStorageSqlTest,
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_TRUE(storage()->DeleteConversion(1));
+  EXPECT_TRUE(storage()->DeleteConversion(ConversionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), impression_origin));
@@ -439,7 +439,7 @@ TEST_F(ConversionStorageSqlTest,
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  EXPECT_TRUE(storage()->DeleteConversion(1));
+  EXPECT_TRUE(storage()->DeleteConversion(ConversionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), conversion_origin));

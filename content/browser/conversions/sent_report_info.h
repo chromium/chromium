@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 #define CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 
-#include <stdint.h>
 #include <string>
 
 #include "base/time/time.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
@@ -17,7 +17,7 @@ namespace content {
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
 struct CONTENT_EXPORT SentReportInfo {
-  SentReportInfo(int64_t conversion_id,
+  SentReportInfo(ConversionReport::Id conversion_id,
                  base::Time original_report_time,
                  GURL report_url,
                  std::string report_body,
@@ -30,7 +30,7 @@ struct CONTENT_EXPORT SentReportInfo {
   ~SentReportInfo();
 
   // Information from the `ConversionReport` that was sent.
-  int64_t conversion_id;
+  ConversionReport::Id conversion_id;
   base::Time original_report_time;
 
   // Information on the network request that was sent.

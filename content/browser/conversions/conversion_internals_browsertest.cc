@@ -258,13 +258,13 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   manager.SetSentReportsForWebUI(
-      {SentReportInfo(/*conversion_id=*/0,
+      {SentReportInfo(ConversionReport::Id(0),
                       /*original_report_time=*/base::Time(),
                       /*report_url=*/GURL("https://example.com/1"),
                       /*report_body=*/"a",
                       /*http_response_code=*/200,
                       /*should_retry*/ false),
-       SentReportInfo(/*conversion_id=*/0,
+       SentReportInfo(ConversionReport::Id(0),
                       /*original_report_time=*/base::Time(),
                       /*report_url=*/GURL("https://example.com/2"),
                       /*report_body=*/"b",
@@ -359,14 +359,14 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/std::numeric_limits<uint64_t>::max(),
       /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
+      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
   ConversionReport report2(
       ImpressionBuilder(base::Time::Now())
           .SetData(200)
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
+      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
   manager.SetReportsForWebUI({report, report2});
   OverrideWebUIConversionManager(&manager);
 
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
+      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
+      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 

@@ -6,7 +6,7 @@
 
 namespace content {
 
-SentReportInfo::SentReportInfo(int64_t conversion_id,
+SentReportInfo::SentReportInfo(ConversionReport::Id conversion_id,
                                base::Time original_report_time,
                                GURL report_url,
                                std::string report_body,

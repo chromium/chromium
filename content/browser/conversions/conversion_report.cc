@@ -10,7 +10,7 @@ ConversionReport::ConversionReport(StorableImpression impression,
                                    uint64_t conversion_data,
                                    base::Time conversion_time,
                                    base::Time report_time,
-                                   absl::optional<int64_t> conversion_id)
+                                   absl::optional<Id> conversion_id)
     : impression(std::move(impression)),
       conversion_data(conversion_data),
       conversion_time(conversion_time),

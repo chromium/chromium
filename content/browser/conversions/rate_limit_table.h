@@ -13,6 +13,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -81,8 +82,8 @@ class CONTENT_EXPORT RateLimitTable {
       base::RepeatingCallback<bool(const url::Origin&)> filter)
       WARN_UNUSED_RESULT;
   bool ClearDataForImpressionIds(sql::Database* db,
-                                 const std::vector<int64_t>& impression_ids)
-      WARN_UNUSED_RESULT;
+                                 const std::vector<StorableImpression::Id>&
+                                     impression_ids) WARN_UNUSED_RESULT;
 
  private:
   // Deletes data in the table older than the window determined by |clock_| and

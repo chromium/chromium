@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -171,7 +172,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // Stores the set of conversion IDs whose reports are being sent by
   // `SendReportsForWebUI()`. Once empty, `send_reports_for_web_ui_callback_` is
   // invoked if non-null.
-  base::flat_set<int64_t> pending_conversion_ids_for_internals_ui_;
+  base::flat_set<ConversionReport::Id> pending_conversion_ids_for_internals_ui_;
   base::OnceClosure send_reports_for_web_ui_callback_;
 
   // This is needed to avoid leaking memory.

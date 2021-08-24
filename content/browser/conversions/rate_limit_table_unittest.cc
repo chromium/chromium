@@ -41,7 +41,7 @@ class RateLimitTableTest : public testing::Test {
   ConversionReport NewConversionReport(
       const url::Origin& impression_origin,
       const url::Origin& conversion_origin,
-      int64_t impression_id = 0,
+      StorableImpression::Id impression_id = StorableImpression::Id(0),
       StorableImpression::SourceType source_type =
           StorableImpression::SourceType::kNavigation) {
     return ConversionReport(ImpressionBuilder(clock()->Now())
@@ -224,10 +224,10 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
   const url::Origin example_c = url::Origin::Create(GURL("https://c.example/"));
 
   const auto report_navigation =
-      NewConversionReport(example_a, example_c, /*impression_id=*/0,
+      NewConversionReport(example_a, example_c, StorableImpression::Id(0),
                           StorableImpression::SourceType::kNavigation);
   const auto report_event =
-      NewConversionReport(example_a, example_c, /*impression_id=*/0,
+      NewConversionReport(example_a, example_c, StorableImpression::Id(0),
                           StorableImpression::SourceType::kEvent);
 
   // Add distinct source types on the same origin to ensure independence.
@@ -534,13 +534,17 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
   base::Time now = clock()->Now();
 
   EXPECT_TRUE(table()->AddRateLimit(
-      &db, NewConversionReport(example_a, example_b, /*impression_id=*/1)));
+      &db,
+      NewConversionReport(example_a, example_b, StorableImpression::Id(1))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db, NewConversionReport(example_a, example_b, /*impression_id=*/2)));
+      &db,
+      NewConversionReport(example_a, example_b, StorableImpression::Id(2))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db, NewConversionReport(example_c, example_d, /*impression_id=*/3)));
+      &db,
+      NewConversionReport(example_c, example_d, StorableImpression::Id(3))));
   EXPECT_TRUE(table()->AddRateLimit(
-      &db, NewConversionReport(example_c, example_d, /*impression_id=*/4)));
+      &db,
+      NewConversionReport(example_c, example_d, StorableImpression::Id(4))));
   EXPECT_EQ(4u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
             table()->AttributionAllowed(
@@ -549,7 +553,8 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
             table()->AttributionAllowed(
                 &db, NewConversionReport(example_c, example_d), now));
 
-  EXPECT_TRUE(table()->ClearDataForImpressionIds(&db, {1, 4}));
+  EXPECT_TRUE(table()->ClearDataForImpressionIds(
+      &db, {StorableImpression::Id(1), StorableImpression::Id(4)}));
   EXPECT_EQ(2u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(
