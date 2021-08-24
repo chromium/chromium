@@ -76,10 +76,8 @@ class ServiceWorkerAutoAttacher
       public ServiceWorkerDevToolsManager::Observer {
  public:
   ServiceWorkerAutoAttacher(DevToolsRendererChannel* renderer_channel,
-                            ServiceWorkerVersion* version)
-      : RendererAutoAttacherBase(renderer_channel), version_(version) {
-    DCHECK(version_);
-  }
+                            ServiceWorkerDevToolsAgentHost* host)
+      : RendererAutoAttacherBase(renderer_channel), host_(host) {}
   ~ServiceWorkerAutoAttacher() override {
     if (have_observer_)
       ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
@@ -99,10 +97,7 @@ class ServiceWorkerAutoAttacher
     // Report an auto-detached service worker for any host with same
     // registration, to provide for the case where its older version that could
     // have had it auto-attached may have been shut down at this point.
-    ServiceWorkerVersion* their_version =
-        host->context_wrapper()->GetLiveVersion(host->version_id());
-    DCHECK(their_version);
-    if (their_version->registration_id() == version_->registration_id())
+    if (MatchRegistration(host))
       DispatchAutoDetach(host);
   }
 
@@ -126,16 +121,19 @@ class ServiceWorkerAutoAttacher
     RendererAutoAttacherBase::UpdateAutoAttach(std::move(callback));
   }
 
-  bool IsNewerVersion(ServiceWorkerDevToolsAgentHost* host) {
-    ServiceWorkerVersion* their_version =
-        host->context_wrapper()->GetLiveVersion(host->version_id());
-    DCHECK(their_version);
-    return their_version->registration_id() == version_->registration_id() &&
-           their_version->version_id() > version_->version_id();
+  bool MatchRegistration(ServiceWorkerDevToolsAgentHost* their_host) const {
+    return host_->context_wrapper() == their_host->context_wrapper() &&
+           host_->scope() == their_host->scope() &&
+           host_->GetURL() == their_host->GetURL();
+  }
+
+  bool IsNewerVersion(ServiceWorkerDevToolsAgentHost* their_host) {
+    return MatchRegistration(their_host) &&
+           their_host->version_id() > host_->version_id();
   }
 
   bool have_observer_ = false;
-  ServiceWorkerVersion* const version_;
+  ServiceWorkerDevToolsAgentHost* host_;
 };
 
 }  // namespace
@@ -154,9 +152,9 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
         coep_reporter,
     const base::UnguessableToken& devtools_worker_token)
     : DevToolsAgentHostImpl(devtools_worker_token.ToString()),
-      auto_attacher_(std::make_unique<ServiceWorkerAutoAttacher>(
-          GetRendererChannel(),
-          context_wrapper->GetLiveVersion(version_id))),
+      auto_attacher_(
+          std::make_unique<ServiceWorkerAutoAttacher>(GetRendererChannel(),
+                                                      this)),
       state_(WORKER_NOT_READY),
       devtools_worker_token_(devtools_worker_token),
       worker_process_id_(worker_process_id),
