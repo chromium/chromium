@@ -612,6 +612,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
       },
+      # TODO(crbug.com/1232535) Remove once the bug is resolved.
+      'Mac10.11 Tests': {
+        'args': [
+          '--test-launcher-print-timestamps',
+        ],
+      },
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
