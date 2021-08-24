@@ -40,6 +40,20 @@ base::FilePath GetCdmPath(const base::FilePath& install_dir) {
       base::GetNativeLibraryName(kMediaFoundationWidevineCdmLibraryName));
 }
 
+// Name of the Widevine CDM architecture to avoid registering the wrong CDM.
+const char kWidevineCdmArch[] =
+#if defined(ARCH_CPU_X86)
+    "x86";
+#elif defined(ARCH_CPU_X86_64)
+    "x64";
+#elif defined(ARCH_CPU_ARMEL)
+    "arm";
+#elif defined(ARCH_CPU_ARM64)
+    "arm64";
+#else
+#error This file should only be included for supported architecture.
+#endif
+
 }  // namespace
 
 namespace component_updater {
@@ -102,11 +116,14 @@ bool MediaFoundationWidevineCdmComponentInstallerPolicy::VerifyInstallation(
   return base::PathExists(GetCdmPath(install_dir));
 }
 
+// The relative install directory looks like:
+// <user-data-dir>\MediaFoundationWidevineCdm\<arch>.
 base::FilePath
 MediaFoundationWidevineCdmComponentInstallerPolicy::GetRelativeInstallDir()
     const {
   return base::FilePath::FromUTF8Unsafe(
-      kMediaFoundationWidevineCdmBaseDirection);
+             kMediaFoundationWidevineCdmBaseDirection)
+      .AppendASCII(kWidevineCdmArch);
 }
 
 void MediaFoundationWidevineCdmComponentInstallerPolicy::GetHash(
