@@ -74697,6 +74697,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Brightness"/>
 </enum>
 
+<enum name="SettingsInputsShortcutReminderState">
+  <int value="0" label="No shortcuts"/>
+  <int value="1" label="Last used IME shortcut"/>
+  <int value="2" label="Next IME shortcut"/>
+  <int value="3" label="Last used IME shortcut and next IME shortcut"/>
+</enum>
+
 <enum name="SettingsInteractionConcludeReason">
   <int value="0" label="Registry watcher">
     A change to the protocol registry key was detected.

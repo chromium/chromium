@@ -615,6 +615,19 @@ Polymer({
 
   /** @private */
   onShortcutReminderDismiss_() {
+    // Record the metric - assume that both reminders were dismissed unless one
+    // of them wasn't shown.
+    assert(
+        this.showLastUsedIMEShortcutReminder_ ||
+        this.showNextIMEShortcutReminder_);
+    let dismissedState = InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME;
+    if (!this.showLastUsedIMEShortcutReminder_) {
+      dismissedState = InputsShortcutReminderState.NEXT_IME;
+    } else if (!this.showNextIMEShortcutReminder_) {
+      dismissedState = InputsShortcutReminderState.LAST_USED_IME;
+    }
+    this.languagesMetricsProxy_.recordShortcutReminderDismissed(dismissedState);
+
     if (this.showLastUsedIMEShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.last_used_ime_dismissed', true);
     }
