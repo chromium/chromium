@@ -119,40 +119,56 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
-  // Create an accelerated SkImage for the source.
-  auto scoped_sk_image = ScopedAcceleratedSkImage::Create(
-      provider, src_format, src_size, src_color_space, src_surface_origin,
-      src_mailbox_holder);
-  if (!scoped_sk_image) {
-    DLOG(ERROR)
-        << "Failed to create accelerated SkImage for RGBA to YUVA conversion.";
-    return false;
-  }
+  if (!provider->GrContext()) {
+    SkYUVAInfo yuva_info =
+        VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
+    gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
+    ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
+    for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+      gpu::MailboxHolder dst_mailbox_holder =
+          dst_video_frame->mailbox_holder(plane);
+      ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
+      yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
+    }
+    ri->ConvertRGBAToYUVAMailboxes(
+        yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
+        yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
+  } else {
+    // Create an accelerated SkImage for the source.
+    auto scoped_sk_image = ScopedAcceleratedSkImage::Create(
+        provider, src_format, src_size, src_color_space, src_surface_origin,
+        src_mailbox_holder);
+    if (!scoped_sk_image) {
+      DLOG(ERROR) << "Failed to create accelerated SkImage for RGBA to YUVA "
+                     "conversion.";
+      return false;
+    }
 
-  // Create SkSurfaces for the destination planes.
-  sk_sp<SkSurface> sk_surfaces[SkYUVAInfo::kMaxPlanes];
-  SkSurface* sk_surface_ptrs[SkYUVAInfo::kMaxPlanes] = {nullptr};
-  VideoFrameYUVMailboxesHolder holder;
-  if (!holder.VideoFrameToPlaneSkSurfaces(dst_video_frame, provider,
-                                          sk_surfaces)) {
-    DLOG(ERROR) << "Failed to create SkSurfaces for VideoFrame.";
-    return false;
-  }
+    // Create SkSurfaces for the destination planes.
+    sk_sp<SkSurface> sk_surfaces[SkYUVAInfo::kMaxPlanes];
+    SkSurface* sk_surface_ptrs[SkYUVAInfo::kMaxPlanes] = {nullptr};
+    VideoFrameYUVMailboxesHolder holder;
+    if (!holder.VideoFrameToPlaneSkSurfaces(dst_video_frame, provider,
+                                            sk_surfaces)) {
+      DLOG(ERROR) << "Failed to create SkSurfaces for VideoFrame.";
+      return false;
+    }
 
-  // Make GrContext wait for `dst_video_frame`. Waiting on the mailbox tokens
-  // here ensures that all writes are completed in cases where the underlying
-  // GpuMemoryBuffer and SharedImage resources have been reused.
-  ri->Flush();
-  WaitAndReplaceSyncTokenClient client(ri);
-  for (int plane = 0; plane < holder.yuva_info().numPlanes(); ++plane) {
-    sk_surface_ptrs[plane] = sk_surfaces[plane].get();
-    dst_video_frame->UpdateMailboxHolderSyncToken(plane, &client);
-  }
+    // Make GrContext wait for `dst_video_frame`. Waiting on the mailbox tokens
+    // here ensures that all writes are completed in cases where the underlying
+    // GpuMemoryBuffer and SharedImage resources have been reused.
+    ri->Flush();
+    WaitAndReplaceSyncTokenClient client(ri);
+    for (int plane = 0; plane < holder.yuva_info().numPlanes(); ++plane) {
+      sk_surface_ptrs[plane] = sk_surfaces[plane].get();
+      dst_video_frame->UpdateMailboxHolderSyncToken(plane, &client);
+    }
 
-  // Do the blit.
-  skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
-                       holder.yuva_info());
-  provider->GrContext()->flushAndSubmit(false);
+    // Do the blit.
+    skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
+                         holder.yuva_info());
+    provider->GrContext()->flushAndSubmit(false);
+  }
   ri->Flush();
 
   // Set `completion_sync_token` to mark the completion of the copy.

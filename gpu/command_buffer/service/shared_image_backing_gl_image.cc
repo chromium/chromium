@@ -190,6 +190,9 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaImpl::BeginWriteAccess(
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
+  // Gray is not a renderable single channel format, but alpha is.
+  if (sk_color_type == kGray_8_SkColorType)
+    sk_color_type = kAlpha_8_SkColorType;
   auto surface = SkSurface::MakeFromBackendTexture(
       context_state_->gr_context(), promise_texture_->backendTexture(),
       surface_origin(), final_msaa_count, sk_color_type,

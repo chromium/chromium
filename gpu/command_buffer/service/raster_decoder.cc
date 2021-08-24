@@ -63,6 +63,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
@@ -3302,8 +3303,77 @@ void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
-  // TODO(https://crbug.com/1206168): Implement this.
-  NOTIMPLEMENTED();
+  SkYUVColorSpace dst_color_space;
+  SkYUVAInfo::PlaneConfig dst_plane_config;
+  SkYUVAInfo::Subsampling dst_subsampling;
+  std::unique_ptr<SharedImageRepresentationSkia> rgba_image;
+  int num_yuva_planes;
+  std::array<std::unique_ptr<SharedImageRepresentationSkia>,
+             SkYUVAInfo::kMaxPlanes>
+      yuva_images;
+  if (!ConvertYUVACommon("ConvertYUVAMailboxesToRGB", yuv_color_space,
+                         plane_config, subsampling, mailboxes_in,
+                         dst_color_space, dst_plane_config, dst_subsampling,
+                         rgba_image, num_yuva_planes, yuva_images)) {
+    return;
+  }
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  auto rgba_scoped_access =
+      rgba_image->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+  if (!rgba_scoped_access) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
+                       "RGBA shared image is not readable");
+    DCHECK(begin_semaphores.empty());
+    return;
+  }
+  auto rgba_sk_image =
+      rgba_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+  if (!rgba_sk_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Couldn't create SkImage for reading.");
+    return;
+  }
+
+  std::array<std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>,
+             SkYUVAInfo::kMaxPlanes>
+      yuva_scoped_access;
+  for (int i = 0; i < num_yuva_planes; ++i) {
+    yuva_scoped_access[i] = yuva_images[i]->BeginScopedWriteAccess(
+        &begin_semaphores, &end_semaphores,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    if (!yuva_scoped_access[i]) {
+      LOCAL_SET_GL_ERROR(
+          GL_INVALID_OPERATION, "glConvertRGBAToYUVAMailboxes",
+          ("Couldn't write shared image for mailbox of plane index " +
+           base::NumberToString(i) + " using plane config " +
+           base::NumberToString(plane_config) + ".")
+              .c_str());
+      return;
+    }
+  }
+  SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes];
+  for (int i = 0; i < num_yuva_planes; ++i) {
+    yuva_sk_surfaces[i] = yuva_scoped_access[i]->surface();
+    if (!begin_semaphores.empty()) {
+      bool result = yuva_sk_surfaces[i]->wait(
+          begin_semaphores.size(), begin_semaphores.data(),
+          /*deleteSemaphoresAfterWait=*/false);
+      DCHECK(result);
+    }
+  }
+
+  SkYUVAInfo yuva_info(rgba_sk_image->dimensions(), dst_plane_config,
+                       dst_subsampling, dst_color_space);
+  skia::BlitRGBAToYUVA(rgba_sk_image.get(), yuva_sk_surfaces, yuva_info);
+
+  for (int i = 0; i < num_yuva_planes; ++i) {
+    FlushAndSubmitIfNecessary(yuva_scoped_access[i]->surface(), end_semaphores);
+    if (!yuva_images[i]->IsCleared())
+      yuva_images[i]->SetCleared();
+  }
 }
 
 void RasterDecoderImpl::DoLoseContextCHROMIUM(GLenum current, GLenum other) {
