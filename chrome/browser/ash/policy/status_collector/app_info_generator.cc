@@ -7,14 +7,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/session_manager/core/session_manager.h"
+#include "url/gurl.h"
 
 namespace em = enterprise_management;
 
@@ -84,9 +83,8 @@ AppInfoGenerator::AppInfoProvider::AppInfoProvider(Profile* profile)
     : activity_storage(profile->GetPrefs(),
                        prefs::kAppActivityTimes,
                        /*day_start_offset=*/base::TimeDelta::FromSeconds(0)),
-      app_service_proxy(*apps::AppServiceProxyFactory::GetForProfile(profile)),
-      web_app_provider(
-          *web_app::WebAppProviderFactory::GetForProfile(profile)) {}
+      app_service_proxy(*apps::AppServiceProxyFactory::GetForProfile(profile)) {
+}
 
 AppInfoGenerator::AppInfoProvider::~AppInfoProvider() = default;
 
@@ -226,12 +224,12 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     info.set_app_id(update.AppId());
     info.set_app_name(update.Name());
   } else {
-    const std::string launch_url = provider_->web_app_provider.registrar()
-                                       .GetAppStartUrl(update.AppId())
-                                       .GetOrigin()
-                                       .spec();
-    info.set_app_id(launch_url);
-    info.set_app_name(launch_url);
+    // For web apps, publisher id is the start url.
+    GURL start_url(update.PublisherId());
+    DCHECK(start_url.is_valid());
+    const std::string launch_origin = start_url.GetOrigin().spec();
+    info.set_app_id(launch_origin);
+    info.set_app_name(launch_origin);
   }
   info.set_status(ExtractStatus(update.Readiness()));
   info.set_version(update.Version());

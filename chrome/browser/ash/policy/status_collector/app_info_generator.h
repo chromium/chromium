@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,7 +92,6 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
 
     ActivityStorage activity_storage;
     apps::AppServiceProxyChromeOs& app_service_proxy;
-    web_app::WebAppProvider& web_app_provider;
   };
 
   const enterprise_management::AppInfo ConvertToAppInfo(
