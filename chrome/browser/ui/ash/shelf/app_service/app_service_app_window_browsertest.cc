@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/arc_util_test_support.h"
@@ -314,6 +315,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id1);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key1 = *instance_keys.begin();
+  EXPECT_TRUE(instance_key1.IsForWebBasedApp());
 
   // The window1 is active.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
@@ -330,6 +332,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id2);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key2 = *instance_keys.begin();
+  EXPECT_FALSE(instance_key2.IsForWebBasedApp());
 
   // The window1 is inactive.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
@@ -362,6 +365,16 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
   EXPECT_EQ(0u, instance_keys.size());
 }
 
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, AshBrowserWindow) {
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank"));
+
+  auto instance_keys = app_service_proxy_->InstanceRegistry().GetInstanceKeys(
+      extension_misc::kChromeAppId);
+  EXPECT_EQ(1u, instance_keys.size());
+  auto instance_key = *instance_keys.begin();
+  EXPECT_FALSE(instance_key.IsForWebBasedApp());
+}
+
 class AppServiceAppWindowLacrosBrowserTest
     : public AppServiceAppWindowBrowserTest {
  public:
@@ -387,6 +400,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
             GetAppInstanceState(kLacrosAppId,
                                 apps::Instance::InstanceKey::ForWindowBasedApp(
                                     *windows.begin())));
+
+  auto instance_keys = app_service_proxy_->InstanceRegistry().GetInstanceKeys(
+      extension_misc::kLacrosAppId);
+  EXPECT_EQ(1u, instance_keys.size());
+  auto instance_key = *instance_keys.begin();
+  EXPECT_FALSE(instance_key.IsForWebBasedApp());
 
   // Find the Lacros shelf item.
   int lacros_index = shelf_model()->ItemIndexByAppID(kLacrosAppId);
@@ -566,6 +585,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
   auto instance_keys =
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id);
   EXPECT_EQ(1u, instance_keys.size());
+  EXPECT_TRUE(instance_keys.begin()->IsForWebBasedApp());
   apps::Instance::InstanceKey instance_key = *instance_keys.begin();
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
