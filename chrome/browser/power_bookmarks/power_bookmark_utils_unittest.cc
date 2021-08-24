@@ -65,5 +65,227 @@ TEST_F(PowerBookmarkUtilsTest, TestAddAndDelete) {
   EXPECT_EQ(nullptr, fetched_meta.get());
 }
 
+TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesFilterTags) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const bookmarks::BookmarkNode* node1 = model->AddURL(
+      model->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta1 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta1->add_tags()->set_display_name("search");
+  SetNodePowerBookmarkMeta(model.get(), node1, std::move(meta1));
+
+  const bookmarks::BookmarkNode* node2 = model->AddURL(
+      model->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta2 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta2->add_tags()->set_display_name("news");
+  SetNodePowerBookmarkMeta(model.get(), node2, std::move(meta2));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+  query.word_phrase_query = std::make_unique<std::u16string>();
+
+  // Test that the correct bookmark is returned for the "search" tag.
+  query.tags.push_back(u"search");
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node1 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that the correct bookmark is returned for the "news" tag.
+  query.tags.push_back(u"news");
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node2 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that there are no results when valid but mutually exclusive tags are
+  // specified.
+  query.tags.push_back(u"news");
+  query.tags.push_back(u"search");
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(0U, nodes.size());
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that no bookmarks are returned for unknown tag.
+  query.tags.push_back(u"foo");
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  EXPECT_TRUE(nodes.empty());
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that no bookmarks are returned for a totally empty query.
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_TRUE(nodes.empty());
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that a query plus tag returns the correct bookmark.
+  query.tags.push_back(u"news");
+  *query.word_phrase_query = u"baz";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node2 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that a mismatched query and tag returns nothing.
+  query.tags.push_back(u"search");
+  *query.word_phrase_query = u"baz";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  EXPECT_TRUE(nodes.empty());
+  nodes.clear();
+  query.tags.clear();
+}
+
+TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesSearchTags) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const bookmarks::BookmarkNode* node1 = model->AddURL(
+      model->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta1 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta1->add_tags()->set_display_name("search");
+  SetNodePowerBookmarkMeta(model.get(), node1, std::move(meta1));
+
+  const bookmarks::BookmarkNode* node2 = model->AddURL(
+      model->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta2 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta2->add_tags()->set_display_name("news");
+  SetNodePowerBookmarkMeta(model.get(), node2, std::move(meta2));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+  query.word_phrase_query = std::make_unique<std::u16string>();
+
+  // Test that a query for a substring in a tag and having a specified tag
+  // finds the correct node.
+  query.tags.push_back(u"news");
+  *query.word_phrase_query = u"ews";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node2 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that a query for a substring in a tag finds the correct node.
+  *query.word_phrase_query = u"ews";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node2 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Test that a query for the start of a tag finds the correct node.
+  *query.word_phrase_query = u"sea";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node1 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+}
+
+TEST_F(PowerBookmarkUtilsTest,
+       GetBookmarksMatchingPropertiesSearchMultipleTags) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const bookmarks::BookmarkNode* node1 = model->AddURL(
+      model->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta1 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta1->add_tags()->set_display_name("search");
+  meta1->add_tags()->set_display_name("news");
+  SetNodePowerBookmarkMeta(model.get(), node1, std::move(meta1));
+
+  const bookmarks::BookmarkNode* node2 = model->AddURL(
+      model->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta2 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta2->add_tags()->set_display_name("news");
+  SetNodePowerBookmarkMeta(model.get(), node2, std::move(meta2));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+  query.word_phrase_query = std::make_unique<std::u16string>();
+
+  // Test that a query that contains multiple tags finds results that have all
+  // of those tags.
+  *query.word_phrase_query = u"news search";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node1 == nodes[0]);
+  nodes.clear();
+  query.tags.clear();
+
+  // Make sure searching for one tag finds both bookmarks.
+  *query.word_phrase_query = u"news";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(2U, nodes.size());
+  nodes.clear();
+  query.tags.clear();
+}
+
+TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesStringSearch) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const bookmarks::BookmarkNode* node1 = model->AddURL(
+      model->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
+
+  const bookmarks::BookmarkNode* node2 = model->AddURL(
+      model->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+  query.word_phrase_query = std::make_unique<std::u16string>();
+
+  *query.word_phrase_query = u"bar";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node1 == nodes[0]);
+  nodes.clear();
+
+  *query.word_phrase_query = u"baz";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node2 == nodes[0]);
+  nodes.clear();
+
+  // A string search for "ba" should find both nodes.
+  *query.word_phrase_query = u"ba";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(2U, nodes.size());
+  nodes.clear();
+
+  // Ensure a search checks the URL.
+  *query.word_phrase_query = u"goog";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node1 == nodes[0]);
+  nodes.clear();
+
+  // Ensure a string that doesn't exist in the bookmarks returns nothing.
+  *query.word_phrase_query = u"zzz";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(0U, nodes.size());
+  nodes.clear();
+
+  // Check that two strings from different bookmarks returns nothing.
+  *query.word_phrase_query = u"foo buz";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(0U, nodes.size());
+  nodes.clear();
+
+  // Ensure an empty string returns no bookmarks.
+  *query.word_phrase_query = u"";
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(0U, nodes.size());
+  nodes.clear();
+}
+
 }  // namespace
 }  // namespace power_bookmarks

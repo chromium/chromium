@@ -14,7 +14,10 @@ static_library("power_bookmarks") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/bookmarks/browser",
+    "//ui/base",
+    "//url",
   ]
 }
 

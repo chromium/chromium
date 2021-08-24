@@ -153,24 +153,6 @@ GURL GetUrlFromClipboard(bool notify_if_restricted) {
   return GURL(url_text);
 }
 
-class VectorIterator {
- public:
-  explicit VectorIterator(std::vector<const BookmarkNode*>* nodes)
-      : nodes_(nodes), current_(nodes->begin()) {}
-  bool has_next() { return (current_ != nodes_->end()); }
-  const BookmarkNode* Next() {
-    const BookmarkNode* result = *current_;
-    ++current_;
-    return result;
-  }
-
- private:
-  std::vector<const BookmarkNode*>* nodes_;
-  std::vector<const BookmarkNode*>::iterator current_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorIterator);
-};
-
 template <class type>
 void GetBookmarksMatchingPropertiesImpl(
     type& iterator,
@@ -212,6 +194,19 @@ bool HasUserCreatedBookmarks(BookmarkModel* model) {
 
 QueryFields::QueryFields() {}
 QueryFields::~QueryFields() {}
+
+VectorIterator::VectorIterator(std::vector<const BookmarkNode*>* nodes)
+    : nodes_(nodes), current_(nodes->begin()) {}
+
+bool VectorIterator::has_next() {
+  return (current_ != nodes_->end());
+}
+
+const BookmarkNode* VectorIterator::Next() {
+  const BookmarkNode* result = *current_;
+  ++current_;
+  return result;
+}
 
 void CloneBookmarkNode(BookmarkModel* model,
                        const std::vector<BookmarkNodeData::Element>& elements,
