@@ -17,8 +17,8 @@ _SSH_KEY_DIR = os.path.expanduser('~/.ssh')
 _DEFAULT_SSH_PORT = 22
 _DEVICE_PROTO_TEMPLATE = """
 device_spec:  {{
-  horizontal_resolution:  1280
-  vertical_resolution:  800
+  horizontal_resolution:  1024
+  vertical_resolution:  600
   vm_heap:  192
   ram:  {ramsize}
   cache:  32
