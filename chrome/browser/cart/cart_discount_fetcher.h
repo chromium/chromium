@@ -21,6 +21,7 @@ struct MerchantIdAndDiscounts {
   std::string merchant_id;
   std::vector<cart_db::DiscountInfoProto> discount_list;
   std::string highest_discount_string;
+  // TODO(crbug.com/1240341): Include a list of coupon info.
 
   explicit MerchantIdAndDiscounts(
       std::string merchant_id,

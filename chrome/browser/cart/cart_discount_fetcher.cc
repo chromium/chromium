@@ -52,7 +52,7 @@ struct DiscountInfo {
 std::string GetMerchantUrl(const base::Value* merchant_identifier) {
   DCHECK(merchant_identifier->is_dict());
 
-  // TODO(crbug.com/1207197): Use a constant instead.
+  // TODO(crbug.com/1207197): Use a static constant for "cartUrl" instead.
   const base::Value* value = merchant_identifier->FindKey("cartUrl");
   if (!value || !value->is_string()) {
     NOTREACHED() << "Missing cart_url or it is not a string";
@@ -74,12 +74,28 @@ std::string GetMerchantId(const base::Value* merchant_identifier) {
   return value->GetString();
 }
 
-DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
+std::string GetStringFromDict(const base::Value* dict,
+                              const std::string key,
+                              bool is_required) {
+  DCHECK(dict->is_dict());
+
+  const base::Value* value = dict->FindKey(key);
+  if (!value || !value->is_string()) {
+    if (is_required) {
+      NOTREACHED() << "Missing " << key << " or it is not a string";
+    }
+    return "";
+  }
+
+  return value->GetString();
+}
+
+DiscountInfo CovertToRuleDiscountInfo(const base::Value* rule_discount_list) {
   std::vector<cart_db::DiscountInfoProto> cart_discounts;
 
   if (!rule_discount_list || !rule_discount_list->is_list()) {
-    NOTREACHED() << "Missing rule_Discounts or it is not a list";
-    return DiscountInfo(cart_discounts, 0, 0);
+    return DiscountInfo(cart_discounts, 0 /*highest_amount_off*/,
+                        0 /*highest_percent_off*/);
   }
 
   cart_discounts.reserve(rule_discount_list->GetList().size());
@@ -390,37 +406,56 @@ void CartDiscountFetcher::OnDiscountsAvailable(
       continue;
     }
 
-    // Parse rule discounts
-    auto cart_discounts_info =
-        CovertToDiscountInfo(merchant_discount.FindKey("ruleDiscounts"));
-    if (!cart_discounts_info.discount_list.size()) {
-      continue;
-    }
-    std::string discount_string_param;
-    if (cart_discounts_info.highest_amount_off) {
-      // TODO(meiliang): Use icu_formatter or
-      // components/payments/core/currency_formatter to set the amount off.
-      discount_string_param =
-          "$" + base::NumberToString(cart_discounts_info.highest_amount_off);
-    } else if (cart_discounts_info.highest_percent_off) {
-      discount_string_param =
-          base::NumberToString(cart_discounts_info.highest_percent_off) + "%";
-    } else {
-      NOTREACHED() << "Missing hightest discount info";
-      continue;
+    std::string discount_string = "";
+
+    // Parse overallDiscountInfo, which is an optional field.
+    const base::Value* overall_discount_info =
+        merchant_discount.FindKey("overallDiscountInfo");
+    if (overall_discount_info) {
+      discount_string = GetStringFromDict(overall_discount_info, "text",
+                                          true /*is_required*/);
     }
 
-    std::string discount_string =
-        cart_discounts_info.discount_list.size() > 1
-            ? l10n_util::GetStringFUTF8(
-                  IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT,
-                  base::UTF8ToUTF16(discount_string_param))
-            : l10n_util::GetStringFUTF8(
-                  IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
-                  base::UTF8ToUTF16(discount_string_param));
+    // Parse rule discounts, which is an optional field.
+    auto cart_rule_based_discounts_info =
+        CovertToRuleDiscountInfo(merchant_discount.FindKey("ruleDiscounts"));
+
+    if (cart_rule_based_discounts_info.discount_list.size() > 0) {
+      std::string discount_string_param;
+      if (cart_rule_based_discounts_info.highest_amount_off) {
+        // TODO(meiliang): Use icu_formatter or
+        // components/payments/core/currency_formatter to set the amount off.
+        discount_string_param =
+            "$" + base::NumberToString(
+                      cart_rule_based_discounts_info.highest_amount_off);
+      } else if (cart_rule_based_discounts_info.highest_percent_off) {
+        discount_string_param =
+            base::NumberToString(
+                cart_rule_based_discounts_info.highest_percent_off) +
+            "%";
+      } else {
+        NOTREACHED() << "Missing hightest discount info";
+        continue;
+      }
+
+      if (discount_string.empty()) {
+        discount_string =
+            cart_rule_based_discounts_info.discount_list.size() > 1
+                ? l10n_util::GetStringFUTF8(
+                      IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT,
+                      base::UTF8ToUTF16(discount_string_param))
+                : l10n_util::GetStringFUTF8(
+                      IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
+                      base::UTF8ToUTF16(discount_string_param));
+      }
+    }
+
+    // TODO(crbug.com/1240341): Parse couponDiscounts, which is an optional
+    // field.
 
     MerchantIdAndDiscounts merchant_id_and_discounts(
-        std::move(merchant_id), std::move(cart_discounts_info.discount_list),
+        std::move(merchant_id),
+        std::move(cart_rule_based_discounts_info.discount_list),
         std::move(discount_string));
     cart_discount_map.emplace(merchant_url,
                               std::move(merchant_id_and_discounts));

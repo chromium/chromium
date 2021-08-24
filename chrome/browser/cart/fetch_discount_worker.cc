@@ -253,6 +253,8 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     updater->update(cart_url, std::move(cart_proto), is_tester);
   }
 
+  // TODO(crbug.com/1240341): Update the coupon proto.
+
   if (base::GetFieldTrialParamByFeatureAsBool(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
