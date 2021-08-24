@@ -225,4 +225,21 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
   }
 }
 
+// Test that a 'csp' attribute longer than 4096 bytes is ignored.
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
+  std::string long_csp_attribute = "script-src 'none' ";
+  long_csp_attribute.resize(4097, 'a');
+  std::string page = "data:text/html,<body><iframe csp=\"" +
+                     long_csp_attribute + "\"></iframe></body>";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("'csp' attribute too long*");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  console_observer.Wait();
+
+  EXPECT_EQ(current_frame_host()->child_count(), 1u);
+  EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
+}
+
 }  // namespace content
