@@ -4292,21 +4292,6 @@
             ]
         }
     ],
-    "IOSFullPageScreenshot": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFullPageScreenshot"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMetrickitCrashReport": [
         {
             "platforms": [
