@@ -73,7 +73,7 @@ Size GpuMemoryBuffer::GetSizeOfPlane(gfx::BufferPlane plane) const {
     case gfx::BufferPlane::UV:
     case gfx::BufferPlane::U:
     case gfx::BufferPlane::V:
-      return ScaleToFlooredSize(GetSize(), 0.5);
+      return ScaleToCeiledSize(GetSize(), 0.5);
   }
 }
 
