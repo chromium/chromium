@@ -177,6 +177,7 @@ class ArcFileSystemBridge
   // Called when FileStreamForwarder completes read request.
   void OnReadRequestCompleted(const std::string& id,
                               std::list<FileStreamForwarderPtr>::iterator it,
+                              const std::string& file_system_id,
                               bool result);
 
   Profile* const profile_;

@@ -258,12 +258,20 @@ void ArcFileSystemBridge::GetMetadata(
   file_manager::util::FileSystemURLAndHandle file_system_url_and_handle =
       GetFileSystemURL(*context, url_decoded);
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&GetMetadataOnIOThread, std::move(context),
-                                file_system_url_and_handle.url, flags,
-                                std::move(callback)));
-  // TODO(https://crbug.com/963027): This is currently leaking the isolated
-  // file system, the file system should somehow be revoked when the url
-  // returned by GetFileSystemURL is no longer needed.
+      FROM_HERE,
+      base::BindOnce(
+          &GetMetadataOnIOThread, std::move(context),
+          file_system_url_and_handle.url, flags,
+          base::BindOnce(
+              [](const std::string& file_system_id,
+                 storage::FileSystemOperation::GetMetadataCallback callback,
+                 base::File::Error result, const base::File::Info& file_info) {
+                storage::IsolatedContext::GetInstance()->RemoveReference(
+                    file_system_id);
+                std::move(callback).Run(result, file_info);
+              },
+              file_system_url_and_handle.handle.id(), std::move(callback))));
+
   storage::IsolatedContext::GetInstance()->AddReference(
       file_system_url_and_handle.handle.id());
 }
@@ -483,10 +491,8 @@ bool ArcFileSystemBridge::HandleReadRequest(const std::string& id,
       std::move(context), file_system_url_and_handle.url, offset, size,
       std::move(pipe_write_end),
       base::BindOnce(&ArcFileSystemBridge::OnReadRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), id, it_forwarder)));
-  // TODO(https://crbug.com/963027): This is currently leaking the isolated
-  // file system, the file system should somehow be revoked when the url
-  // returned by GetFileSystemURL is no longer needed.
+                     weak_ptr_factory_.GetWeakPtr(), id, it_forwarder,
+                     file_system_url_and_handle.handle.id())));
   storage::IsolatedContext::GetInstance()->AddReference(
       file_system_url_and_handle.handle.id());
   return true;
@@ -499,9 +505,11 @@ bool ArcFileSystemBridge::HandleIdReleased(const std::string& id) {
 void ArcFileSystemBridge::OnReadRequestCompleted(
     const std::string& id,
     std::list<FileStreamForwarderPtr>::iterator it,
+    const std::string& file_system_id,
     bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LOG_IF(ERROR, !result) << "Failed to read " << id;
+  storage::IsolatedContext::GetInstance()->RemoveReference(file_system_id);
   file_stream_forwarders_.erase(it);
 }
 
