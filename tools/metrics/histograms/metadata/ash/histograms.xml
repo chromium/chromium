@@ -312,7 +312,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
-    enum="CaptureModeBarButtonType" expires_after="2021-09-29">
+    enum="CaptureModeBarButtonType" expires_after="2022-09-29">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -325,7 +325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
-    enum="CaptureModeConfiguration" expires_after="2021-11-13">
+    enum="CaptureModeConfiguration" expires_after="2022-09-29">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
-    units="adjustments" expires_after="2021-11-06">
+    units="adjustments" expires_after="2022-09-29">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
-    units="consecutive screenshots" expires_after="2022-01-09">
+    units="consecutive screenshots" expires_after="2022-09-09">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -363,7 +363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshell}"
-    enum="EndRecordingReason" expires_after="2021-11-23">
+    enum="EndRecordingReason" expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -375,7 +375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
-    enum="CaptureModeEntryType" expires_after="2021-09-29">
+    enum="CaptureModeEntryType" expires_after="2022-09-09">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -386,7 +386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.QuickAction"
-    enum="CaptureQuickAction" expires_after="2021-11-19">
+    enum="CaptureQuickAction" expires_after="2022-09-09">
   <owner>shidi@chromium.org</owner>
   <owner>chinsenj@chromium.org</owner>
   <summary>
@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenRecordingLength"
-    units="seconds" expires_after="2022-01-09">
+    units="seconds" expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -408,7 +408,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
-    expires_after="2022-01-30">
+    expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -420,7 +420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2022-01-30">
+    expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -433,7 +433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
-    enum="Boolean" expires_after="2022-01-16">
+    enum="Boolean" expires_after="2022-09-09">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
