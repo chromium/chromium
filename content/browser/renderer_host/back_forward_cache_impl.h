@@ -150,10 +150,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
     kOptInHeaderRequired,
   };
 
-  // Returns whether MediaSessionImpl::OnServiceCreated is allowed for the
-  // BackForwardCache.
-  static bool IsMediaSessionImplOnServiceCreatedAllowed();
-
   BackForwardCacheImpl();
   ~BackForwardCacheImpl() override;
 

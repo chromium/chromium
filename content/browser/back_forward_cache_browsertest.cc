@@ -10824,16 +10824,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(rfh_b->GetIsolationInfoForSubresources().IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoNotCacheIfMediaSessionExists) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithMediaSession) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page using MediaSession.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
     navigator.mediaSession.metadata = new MediaMetadata({
       artwork: [
         {src: "test_image.jpg", sizes: "1x1", type: "image/jpeg"},
@@ -10845,20 +10843,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // The page should not have been cached in the back forward cache.
-  delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  auto reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::
-          kMediaSessionImplOnServiceCreated);
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
+  // Check the media session state is reserved.
+  EXPECT_EQ("10x10", EvalJs(rfh_a.get(), R"(
+    navigator.mediaSession.metadata.artwork[1].sizes;
+  )"));
 }
 
 class BackForwardCacheBrowserTestWithSupportedFeatures
@@ -11255,17 +11250,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   shell->Close();
 }
 
-class BackForwardCacheBrowserTestWithMediaSession
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache, "supported_features",
-                              "MediaSessionImplOnServiceCreated");
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoNotCacheIfMediaSessionPlaybackStateChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

@@ -1355,13 +1355,6 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
 void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
   const auto rfh_id = service->GetRenderFrameHostId();
 
-  if (!BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed()) {
-    BackForwardCache::DisableForRenderFrameHost(
-        rfh_id, BackForwardCacheDisable::DisabledReason(
-                    BackForwardCacheDisable::DisabledReasonId::
-                        kMediaSessionImplOnServiceCreated));
-  }
-
   services_[rfh_id] = service;
   UpdateRoutedService();
 }

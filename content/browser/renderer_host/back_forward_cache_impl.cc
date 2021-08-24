@@ -238,8 +238,7 @@ BlockListedFeatures GetDisallowedFeatures(
       WebSchedulerTrackedFeature::kWebShare,
       WebSchedulerTrackedFeature::kWebSocket,
       WebSchedulerTrackedFeature::kWebTransport,
-      WebSchedulerTrackedFeature::kWebXR,
-      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
+      WebSchedulerTrackedFeature::kWebXR);
 
   WebSchedulerTrackedFeatures result = kAlwaysDisallowedFeatures;
 
@@ -1125,11 +1124,6 @@ bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
       return false;
   }
   return true;
-}
-
-bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {
-  return SupportedFeatures().Has(
-      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 }
 
 void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(

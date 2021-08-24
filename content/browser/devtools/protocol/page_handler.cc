@@ -1520,9 +1520,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::IsolatedWorldScript;
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          MediaSessionImplOnServiceCreated;
   }
 }
 
@@ -1541,10 +1538,6 @@ DisableForRenderFrameHostReasonToProtocol(
           static_cast<BackForwardCacheDisable::DisabledReasonId>(reason.id)) {
         case BackForwardCacheDisable::DisabledReasonId::kUnknown:
           return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
-        case BackForwardCacheDisable::DisabledReasonId::
-            kMediaSessionImplOnServiceCreated:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              ContentMediaSessionImplOnServiceCreated;
         case BackForwardCacheDisable::DisabledReasonId::kSecurityHandler:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentSecurityHandler;
@@ -1729,7 +1722,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebOTPService:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
     case WebSchedulerTrackedFeature::kWebTransport:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kAppBanner:

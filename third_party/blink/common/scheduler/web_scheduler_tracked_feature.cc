@@ -120,9 +120,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"IsolatedWorldScript", "Isolated world ran script"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"InjectedStyleSheet", "External systesheet injected"};
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
-      return {"MediaSessionImplOnServiceCreated",
-              "MediaSessionImplOnServiceCreated"};
   }
   return {};
 }

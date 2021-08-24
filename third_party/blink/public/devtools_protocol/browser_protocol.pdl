@@ -7903,9 +7903,7 @@ domain Page
       OutstandingNetworkRequestDirectSocket
       IsolatedWorldScript
       InjectedStyleSheet
-      MediaSessionImplOnServiceCreated
       # Disabled for render frame host reasons
-      ContentMediaSessionImplOnServiceCreated
       ContentSecurityHandler
       ContentWebAuthenticationAPI
       ContentFileChooser

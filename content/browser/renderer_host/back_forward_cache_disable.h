@@ -20,7 +20,8 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     // this enum is not logged directly as an enum (see
     // BackForwardCache::DisabledSource).
     kUnknown = 0,
-    kMediaSessionImplOnServiceCreated = 1,
+    // kMediaSessionImplOnServiceCreated = 1, Removed after implementing
+    // MediaSessionImplOnServiceCreated support in back/forward cache.
     kSecurityHandler = 2,
     kWebAuthenticationAPI = 3,
     kFileChooser = 4,
