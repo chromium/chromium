@@ -33,7 +33,6 @@ group("all") {
       ":updater",
       ":updater_tests",
       ":updater_tests_system",
-      "//chrome/updater/test/test_app",
     ]
   }
 }
@@ -468,8 +467,6 @@ if (is_win || is_mac) {
       "//base/test:test_support",
       "//chrome/common:constants",
       "//chrome/updater/protos:omaha_proto",
-      "//chrome/updater/test/test_app:constants",
-      "//chrome/updater/test/test_app:version_header",
       "//chrome/updater/tools:unittest",
       "//components/policy/proto",
       "//components/prefs:test_support",
@@ -547,10 +544,7 @@ if (is_win || is_mac) {
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
       ]
 
-      data_deps = [
-        "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/test/test_app",
-      ]
+      data_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
     }
   }
 
@@ -584,12 +578,11 @@ if (is_win || is_mac) {
       deps += [ ":base" ]
     }
 
-    data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
-      data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
+      data_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
     }
     if (is_win) {
-      data_deps += [ ":test_service_files" ]
+      data_deps = [ ":test_service_files" ]
     }
   }
 
@@ -611,10 +604,7 @@ if (is_win || is_mac) {
       deps += [ ":base" ]
     }
 
-    data_deps = [
-      ":updater_integration_tests_helper",
-      "//chrome/updater/test/test_app",
-    ]
+    data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
       data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
     }

@@ -74,10 +74,6 @@ void Uninstall(UpdaterScope scope);
 // `exit_code`. The server should exit a few seconds after.
 void RunWake(UpdaterScope scope, int exit_code);
 
-// Registers the test app. As a result, the bundled updater is installed,
-// promoted and registered.
-void RegisterTestApp(UpdaterScope scope);
-
 // Runs the command and waits for it to exit or time out.
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 

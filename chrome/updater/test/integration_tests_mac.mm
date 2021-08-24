@@ -28,8 +28,6 @@
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test/test_app/constants.h"
-#include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -64,17 +62,6 @@ base::FilePath GetExecutablePath() {
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
   return test_executable.DirName().Append(GetExecutableRelativePath());
-}
-
-base::FilePath GetTestAppExecutablePath() {
-  base::FilePath test_executable;
-  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
-    return base::FilePath();
-  return test_executable.DirName()
-      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING ".app"))
-      .Append(FILE_PATH_LITERAL("Contents"))
-      .Append(FILE_PATH_LITERAL("MacOS"))
-      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING));
 }
 
 absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
@@ -236,16 +223,6 @@ void ExpectActiveUpdater(UpdaterScope scope) {
 
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
       launchd_domain, launchd_type, CopyUpdateServiceLaunchdName()));
-}
-
-void RegisterTestApp(UpdaterScope scope) {
-  const base::FilePath path = GetTestAppExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitch(kRegisterUpdaterSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, 0);
 }
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {

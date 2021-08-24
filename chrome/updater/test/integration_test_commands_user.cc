@@ -111,10 +111,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RegisterApp(app_id);
   }
 
-  void RegisterTestApp() const override {
-    updater::test::RegisterTestApp(kUpdaterScope);
-  }
-
   void WaitForServerExit() const override {
     updater::test::WaitForServerExit(kUpdaterScope);
   }

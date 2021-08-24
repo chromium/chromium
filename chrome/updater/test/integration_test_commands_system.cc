@@ -123,8 +123,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("register_app", {Param("app_id", app_id)});
   }
 
-  void RegisterTestApp() const override { RunCommand("register_test_app"); }
-
   void WaitForServerExit() const override {
     updater::test::WaitForServerExit(kUpdaterScope);
   }
