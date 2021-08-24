@@ -119,11 +119,56 @@
        googleclient/chrome/transconsole_resources/BUILD should be updated
        before changing this list or another phase of TC pipeline breaks. -->
   <translations>
+    <file path="translations/omnibox_pedal_synonyms_am.xtb" lang="am" />
     <file path="translations/omnibox_pedal_synonyms_ar.xtb" lang="ar" />
+    <file path="translations/omnibox_pedal_synonyms_bg.xtb" lang="bg" />
+    <file path="translations/omnibox_pedal_synonyms_bn.xtb" lang="bn" />
+    <file path="translations/omnibox_pedal_synonyms_ca.xtb" lang="ca" />
+    <file path="translations/omnibox_pedal_synonyms_cs.xtb" lang="cs" />
+    <file path="translations/omnibox_pedal_synonyms_da.xtb" lang="da" />
     <file path="translations/omnibox_pedal_synonyms_de.xtb" lang="de" />
+    <file path="translations/omnibox_pedal_synonyms_el.xtb" lang="el" />
+    <file path="translations/omnibox_pedal_synonyms_en.xtb" lang="en" />
+    <file path="translations/omnibox_pedal_synonyms_en-GB.xtb" lang="en-GB" />
+    <file path="translations/omnibox_pedal_synonyms_es.xtb" lang="es" />
     <file path="translations/omnibox_pedal_synonyms_es-419.xtb" lang="es-419" />
+    <file path="translations/omnibox_pedal_synonyms_et.xtb" lang="et" />
+    <file path="translations/omnibox_pedal_synonyms_fa.xtb" lang="fa" />
+    <file path="translations/omnibox_pedal_synonyms_fi.xtb" lang="fi" />
+    <file path="translations/omnibox_pedal_synonyms_fil.xtb" lang="fil" />
     <file path="translations/omnibox_pedal_synonyms_fr.xtb" lang="fr" />
+    <file path="translations/omnibox_pedal_synonyms_gu.xtb" lang="gu" />
+    <file path="translations/omnibox_pedal_synonyms_he.xtb" lang="he" />
+    <file path="translations/omnibox_pedal_synonyms_hi.xtb" lang="hi" />
+    <file path="translations/omnibox_pedal_synonyms_hr.xtb" lang="hr" />
+    <file path="translations/omnibox_pedal_synonyms_hu.xtb" lang="hu" />
+    <file path="translations/omnibox_pedal_synonyms_id.xtb" lang="id" />
+    <file path="translations/omnibox_pedal_synonyms_it.xtb" lang="it" />
     <file path="translations/omnibox_pedal_synonyms_ja.xtb" lang="ja" />
+    <file path="translations/omnibox_pedal_synonyms_kn.xtb" lang="kn" />
+    <file path="translations/omnibox_pedal_synonyms_ko.xtb" lang="ko" />
+    <file path="translations/omnibox_pedal_synonyms_lt.xtb" lang="lt" />
+    <file path="translations/omnibox_pedal_synonyms_lv.xtb" lang="lv" />
+    <file path="translations/omnibox_pedal_synonyms_ml.xtb" lang="ml" />
+    <file path="translations/omnibox_pedal_synonyms_mr.xtb" lang="mr" />
+    <file path="translations/omnibox_pedal_synonyms_ms.xtb" lang="ms" />
+    <file path="translations/omnibox_pedal_synonyms_nl.xtb" lang="nl" />
+    <file path="translations/omnibox_pedal_synonyms_pl.xtb" lang="pl" />
+    <file path="translations/omnibox_pedal_synonyms_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/omnibox_pedal_synonyms_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/omnibox_pedal_synonyms_ro.xtb" lang="ro" />
+    <file path="translations/omnibox_pedal_synonyms_ru.xtb" lang="ru" />
+    <file path="translations/omnibox_pedal_synonyms_sk.xtb" lang="sk" />
+    <file path="translations/omnibox_pedal_synonyms_sl.xtb" lang="sl" />
+    <file path="translations/omnibox_pedal_synonyms_sr.xtb" lang="sr" />
+    <file path="translations/omnibox_pedal_synonyms_sv.xtb" lang="sv" />
+    <file path="translations/omnibox_pedal_synonyms_sw.xtb" lang="sw" />
+    <file path="translations/omnibox_pedal_synonyms_ta.xtb" lang="ta" />
+    <file path="translations/omnibox_pedal_synonyms_te.xtb" lang="te" />
+    <file path="translations/omnibox_pedal_synonyms_th.xtb" lang="th" />
+    <file path="translations/omnibox_pedal_synonyms_tr.xtb" lang="tr" />
+    <file path="translations/omnibox_pedal_synonyms_uk.xtb" lang="uk" />
+    <file path="translations/omnibox_pedal_synonyms_vi.xtb" lang="vi" />
     <file path="translations/omnibox_pedal_synonyms_zh-CN.xtb" lang="zh-CN" />
     <file path="translations/omnibox_pedal_synonyms_zh-TW.xtb" lang="zh-TW" />
   </translations>
