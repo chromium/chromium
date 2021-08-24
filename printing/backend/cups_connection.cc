@@ -14,6 +14,10 @@
 #include "printing/backend/cups_helper.h"
 #include "printing/backend/cups_jobs.h"
 
+#if defined(OS_CHROMEOS)
+#include "printing/backend/cups_connection_pool.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -77,7 +81,19 @@ class CupsConnectionImpl : public CupsConnection {
         blocking_(connection.blocking_),
         cups_http_(std::move(connection.cups_http_)) {}
 
-  ~CupsConnectionImpl() override {}
+  ~CupsConnectionImpl() override {
+#if defined(OS_CHROMEOS)
+    if (cups_http_) {
+      // If there is a connection pool, then the connection we have came from
+      // it.  We must add the connection back to the pool for possible reuse
+      // rather than letting it be automatically closed, since we can never get
+      // it back after closing it.
+      CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
+      if (connection_pool)
+        connection_pool->AddConnection(std::move(cups_http_));
+    }
+#endif  // defined(OS_CHROMEOS)
+  }
 
   bool GetDests(std::vector<std::unique_ptr<CupsPrinter>>& printers) override {
     printers.clear();
@@ -177,6 +193,18 @@ class CupsConnectionImpl : public CupsConnection {
   bool Connect() {
     if (cups_http_)
       return true;  // we're already connected
+
+#if defined(OS_CHROMEOS)
+    // If a connection pool has been created for this process then we must
+    // allocate a connection from that, and not try to create a new one now.
+    CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
+    if (connection_pool) {
+      cups_http_ = connection_pool->TakeConnection();
+      if (!cups_http_)
+        LOG(WARNING) << "No available connections in the CUPS connection pool";
+      return !!cups_http_;
+    }
+#endif  // defined(OS_CHROMEOS)
 
     std::string host;
     int port;

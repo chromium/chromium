@@ -77,6 +77,14 @@ if (is_linux || is_chromeos) {
       "//sandbox/policy",
       "//services/network:network_sandbox_hook",
     ]
+
+    if (use_cups) {
+      configs += [ ":cups" ]
+    }
+
+    if (is_chromeos && use_cups) {
+      deps += [ "//printing/backend" ]
+    }
   }
 }
 
