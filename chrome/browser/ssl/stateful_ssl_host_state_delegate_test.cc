@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -577,8 +578,17 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
                                          incognito_tab));
 }
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1243074): Disabled for brokenness.
+#define MAYBE_PRE_AfterRestartHttp DISABLED_PRE_AfterRestartHttp
+#define MAYBE_AfterRestartHttp DISABLED_AfterRestartHttp
+#else // OS_MAC
+#define MAYBE_PRE_AfterRestartHttp PRE_AfterRestartHttp
+#define MAYBE_AfterRestartHttp AfterRestartHttp
+#endif  // !OS_MAC
+
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
-                       PRE_AfterRestartHttp) {
+                       MAYBE_PRE_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
@@ -606,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
 
 // AfterRestartHttp ensures that any HTTP decisions made in an incognito profile
 // are forgetten after a session restart.
-IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestartHttp) {
+IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
+                       MAYBE_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
