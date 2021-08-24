@@ -18,14 +18,18 @@
         icon="[[getBluetoothStateIcon_(device_.*)]]">
     </iron-icon>
     <div id="bluetoothStateText"
-        class="middle settings-box-text"
-        aria-hidden="true">
-      [[getBluetoothStateTextLabel_(device_.*)]]
+        class="middle settings-box-text">
+      <div aria-live="polite"
+          aria-label$="[[getDeviceStatusA11yLabel_(device_.*)]]">
+        [[getBluetoothStateTextLabel_(device_.*)]]
+      </div>
       <template is="dom-if" if="[[shouldShowBatteryInfo_(device_.*)]]" restamp>
         <os-settings-bluetooth-device-battery-info
+            aria-label$="[[getBatteryInfoA11yLabel_(device_.*)]]"
             id="batteryInfo"
             class="secondary"
-            device="[[device_]]">
+            device="[[device_]]"
+            aria-live="polite">
         </os-settings-bluetooth-device-battery-info>
       </template>
     </div>
@@ -51,6 +55,7 @@
     </div>
     <cr-button id="changeNameBtn"
         on-click="onChangeNameClick_"
+        aria-label$="[[getChangeDeviceNameBtnA11yLabel_(device_.*)]]"
         class="layout end cancel-button">
       $i18n{bluetoothDeviceDetailChangeDeviceName}
     </cr-button>

@@ -202,6 +202,55 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   /**
+   * @return {string}
+   * @private
+   */
+  getChangeDeviceNameBtnA11yLabel_() {
+    if (!this.device_) {
+      return '';
+    }
+
+    return this.i18n(
+        'bluetoothDeviceDetailChangeDeviceNameBtnA11yLabel',
+        this.getDeviceName_());
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getBatteryInfoA11yLabel_() {
+    if (!this.device_) {
+      return '';
+    }
+
+    const batteryPercentage = getBatteryPercentage(this.device_);
+    if (batteryPercentage === undefined) {
+      return '';
+    }
+    return this.i18n(
+        'bluetoothDeviceDetailBatteryPercentageA11yLabel', batteryPercentage);
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDeviceStatusA11yLabel_() {
+    if (!this.device_) {
+      return '';
+    }
+
+    if (this.isDeviceConnected_) {
+      return this.i18n(
+          'bluetoothDeviceDetailConnectedA11yLabel', this.getDeviceName_());
+    }
+
+    return this.i18n(
+        'bluetoothDeviceDetailDisconnectedA11yLabel', this.getDeviceName_());
+  }
+
+  /**
    * @return {boolean}
    * @private
    */

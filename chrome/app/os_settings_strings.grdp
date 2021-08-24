@@ -2019,6 +2019,18 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME" desc="Bluetooth device details page: button label for button that prompts user to change the Bluetooth device's name when clicked.">
     Change device name
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME_BTN_A11Y_LABEL" desc="Bluetooth device details page: a11y label for button that prompts user to change the Bluetooth device's name when clicked.">
+    Change device name for <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage.">
+    Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
+    Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is disconnected.">
+    Disconnected from <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_NEW_NAME" desc="Bluetooth device details page > Change name dialog: label informing user to enter a new device name in input below.">
     New device name
   </message>
