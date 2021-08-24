@@ -1296,6 +1296,7 @@ try_.chromium_linux_builder(
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     properties = {
         "compilator": "linux-rel-compilator",
     },
@@ -1314,6 +1315,7 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     properties = {
         "orchestrator": {
             "builder_name": "linux-rel-orchestrator",
