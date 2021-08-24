@@ -125,6 +125,16 @@ class HeadlessClipboard : public ui::Clipboard {
   DataStore& GetStore(ui::ClipboardBuffer buffer);
   DataStore& GetDefaultStore();
 
+  // Returns all the standard MIME types if it's present in the clipboard.
+  // The standard MIME types are the formats that are well defined by the OS.
+  // Currently we support text/html, text/plain, text/rtf, image/png &
+  // text/uri-list.
+  // TODO(snianu): Create a more generalized function for standard formats that
+  // can be shared by all platforms.
+  std::vector<std::u16string> GetStandardFormats(
+      ui::ClipboardBuffer buffer,
+      const ui::DataTransferEndpoint* data_dst) const;
+
   ui::ClipboardBuffer default_store_buffer_;
   mutable std::map<ui::ClipboardBuffer, DataStore> stores_;
 };

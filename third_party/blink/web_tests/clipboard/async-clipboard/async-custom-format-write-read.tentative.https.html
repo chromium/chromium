@@ -30,8 +30,6 @@ promise_test(async t => {
                                         'granted');
   // This extra custom format write is used to create consistency in the error
   // message when the ClipboardCustomFormats flag isn't enabled.
-  // TODO(https://crbug.com/106449): Remove this after ClipboardCustomFormats
-  // is enabled by default.
   await customFormatWriteBeforeTest();
   const dataToWrite = 'Test text.';
   const format = 'text/plain';

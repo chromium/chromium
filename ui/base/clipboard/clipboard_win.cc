@@ -282,6 +282,29 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
   ::EmptyClipboard();
 }
 
+std::vector<std::u16string> ClipboardWin::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  if (::IsClipboardFormatAvailable(CF_DIB))
+    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (ReadFilenamesAvailable())
+    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadAvailableTypes(
@@ -291,22 +314,7 @@ void ClipboardWin::ReadAvailableTypes(
   DCHECK(types);
 
   types->clear();
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (::IsClipboardFormatAvailable(CF_DIB))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  if (ReadFilenamesAvailable())
-    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  *types = GetStandardFormats(buffer, data_dst);
 
   // Acquire the clipboard to read WebCustomDataType types.
   ScopedClipboard clipboard;
@@ -335,24 +343,13 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
   std::vector<std::u16string> types;
   types.reserve(count);
 
-  ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return {};
-
   // Check if we have any custom formats in the clipboard.
   std::map<std::string, std::string> custom_format_names =
       ExtractCustomPlatformNames(buffer, data_dst);
-  for (const auto& items : custom_format_names) {
-    types.push_back(base::ASCIIToUTF16(items.first));
-  }
-  UINT cf_format = 0;
-  cf_format = ::EnumClipboardFormats(cf_format);
-  while (cf_format) {
-    std::string type_name = ClipboardFormatType(cf_format).GetName();
-    if (!type_name.empty())
-      types.push_back(base::ASCIIToUTF16(type_name));
-    cf_format = ::EnumClipboardFormats(cf_format);
-  }
+  for (const auto& item : custom_format_names)
+    types.push_back(base::ASCIIToUTF16(item.first));
+  for (const auto& item : GetStandardFormats(buffer, data_dst))
+    types.push_back(item);
   return types;
 }
 

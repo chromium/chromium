@@ -349,6 +349,16 @@ void ClipboardOzone::Clear(ClipboardBuffer buffer) {
   data_src_[buffer].reset();
 }
 
+std::vector<std::u16string> ClipboardOzone::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
+  for (auto& mime_type : available_types)
+    types.push_back(base::UTF8ToUTF16(mime_type));
+  return types;
+}
+
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadAvailableTypes(
     ClipboardBuffer buffer,
@@ -359,17 +369,18 @@ void ClipboardOzone::ReadAvailableTypes(
 
   types->clear();
 
-  auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
-  for (auto& mime_type : available_types) {
+  std::u16string web_custom_data_type =
+      base::UTF8ToUTF16(ClipboardFormatType::WebCustomDataType().GetName());
+  for (auto& mime_type : GetStandardFormats(buffer, data_dst)) {
     // Special handling for chromium/x-web-custom-data.
     // We must read the data and deserialize it to find the list
     // of mime types to report.
-    if (mime_type == ClipboardFormatType::WebCustomDataType().GetName()) {
+    if (mime_type == web_custom_data_type) {
       auto data = async_clipboard_ozone_->ReadClipboardDataAndWait(
           buffer, ClipboardFormatType::WebCustomDataType().GetName());
       ReadCustomDataTypes(data.data(), data.size(), types);
     } else {
-      types->push_back(base::UTF8ToUTF16(mime_type));
+      types->push_back(mime_type);
     }
   }
 }

@@ -87,29 +87,7 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
 }
 
 std::string ClipboardFormatType::GetName() const {
-  if (ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat ==
-      data_.cfFormat) {
-    return kMimeTypeText;
-  }
-  if (ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat ==
-      data_.cfFormat) {
-    return kMimeTypeHTML;
-  }
-  if (ClipboardFormatType::RtfType().ToFormatEtc().cfFormat == data_.cfFormat) {
-    return kMimeTypeRTF;
-  }
-  if (CF_DIB == data_.cfFormat)
-    return kMimeTypePNG;
-  if (ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat ==
-          data_.cfFormat ||
-      ClipboardFormatType::FilenameType().ToFormatEtc().cfFormat ==
-          data_.cfFormat ||
-      ClipboardFormatType::FilenameAType().ToFormatEtc().cfFormat ==
-          data_.cfFormat) {
-    return kMimeTypeURIList;
-  }
-  // Not a standard format type.
-  return std::string();
+  return Serialize();
 }
 
 bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {

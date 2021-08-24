@@ -144,8 +144,26 @@ void ClipboardPromise::WriteNextRepresentation() {
       clipboard_item_data_[clipboard_representation_index_].second;
 
   DCHECK(!clipboard_writer_);
-  clipboard_writer_ =
-      ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
+  wtf_size_t item_index = custom_format_items_.Find(type);
+  if (item_index != kNotFound) {
+    clipboard_writer_ =
+        ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this,
+                                /*is_custom_format_type*/ true);
+    if (ClipboardWriter::IsValidType(type, /*is_custom_format_type*/ false)) {
+      // Decrement `clipboard_representation_index_` & remove the format from
+      // the `custom_format_items_` so we can redo the write, but this time, it
+      // will write a sanitized version of the format using the "standard"
+      // format writer. Standard formats include text/html, text/plain,
+      // text/rtf, image/png, text/uri-list & image/svg+xml.
+      // https://github.com/w3c/editing/blob/gh-pages/docs/clipboard-pickling/explainer.md#pickled-version-for-sanitized-formats
+      custom_format_items_.EraseAt(item_index);
+      clipboard_representation_index_--;
+    }
+  } else {
+    clipboard_writer_ =
+        ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this,
+                                /*is_custom_format_type*/ false);
+  }
   clipboard_writer_->WriteToSystem(blob);
 }
 
@@ -202,7 +220,7 @@ void ClipboardPromise::HandleWrite(
   ClipboardItem* clipboard_item = (*clipboard_items)[0];
   clipboard_item_data_ = clipboard_item->GetItems();
   custom_format_items_ = clipboard_item->CustomFormats();
-  DCHECK(base::FeatureList::IsEnabled(features::kClipboardCustomFormats) ||
+  DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
          custom_format_items_.IsEmpty());
 
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
@@ -230,6 +248,11 @@ void ClipboardPromise::HandleReadWithPermission(PermissionStatus status) {
   }
 
   SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
+  if (!custom_format_items_.IsEmpty()) {
+    system_clipboard->ReadAvailableCustomAndStandardFormats(WTF::Bind(
+        &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
+    return;
+  }
   Vector<String> available_types = system_clipboard->ReadAvailableTypes();
   OnReadAvailableFormatNames(available_types);
 }
@@ -260,8 +283,8 @@ void ClipboardPromise::OnReadAvailableFormatNames(
 
   clipboard_item_data_.ReserveInitialCapacity(format_names.size());
   for (const String& format_name : format_names) {
-    if (ClipboardWriter::IsValidType(format_name,
-                                     /*is_custom_format_type=*/false)) {
+    if (ClipboardWriter::IsValidType(
+            format_name, base::Contains(custom_format_items_, format_name))) {
       clipboard_item_data_.emplace_back(format_name,
                                         /* Placeholder value. */ nullptr);
     }
@@ -282,7 +305,8 @@ void ClipboardPromise::ReadNextRepresentation() {
       clipboard_item_data_[clipboard_representation_index_].first;
 
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
-      GetLocalFrame()->GetSystemClipboard(), format_name, this);
+      GetLocalFrame()->GetSystemClipboard(), format_name, this,
+      base::Contains(custom_format_items_, format_name));
   if (!clipboard_reader) {
     OnRead(nullptr);
     return;

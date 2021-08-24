@@ -329,6 +329,37 @@ class ClipboardSvgReader final : public ClipboardReader {
     promise_->OnRead(blob);
   }
 };
+
+// Reads unsanitized custom formats from the System Clipboard as a Blob with
+// custom MIME type content.
+class ClipboardCustomFormatReader final : public ClipboardReader {
+ public:
+  explicit ClipboardCustomFormatReader(SystemClipboard* system_clipboard,
+                                       ClipboardPromise* promise,
+                                       const String& mime_type)
+      : ClipboardReader(system_clipboard, promise), mime_type_(mime_type) {}
+  ~ClipboardCustomFormatReader() override = default;
+
+  void Read() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    system_clipboard()->ReadUnsanitizedCustomFormat(
+        mime_type_, WTF::Bind(&ClipboardCustomFormatReader::OnCustomFormatRead,
+                              WrapPersistent(this)));
+  }
+
+  void OnCustomFormatRead(mojo_base::BigBuffer data) {
+    Blob* blob = Blob::Create(reinterpret_cast<const uint8_t*>(data.data()),
+                              data.size(), mime_type_);
+    promise_->OnRead(blob);
+  }
+
+ private:
+  void NextRead(Vector<uint8_t> utf8_bytes) override {}
+
+  String mime_type_;
+};
+
 }  // anonymous namespace
 
 // ClipboardReader functions.
@@ -336,9 +367,15 @@ class ClipboardSvgReader final : public ClipboardReader {
 // static
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
-                                         ClipboardPromise* promise) {
-  DCHECK(
-      ClipboardWriter::IsValidType(mime_type, /*is_custom_format_type=*/false));
+                                         ClipboardPromise* promise,
+                                         bool is_custom_format_type) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type, is_custom_format_type));
+  // If this is a custom format then read the unsanitized version.
+  if (is_custom_format_type &&
+      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled()) {
+    return MakeGarbageCollected<ClipboardCustomFormatReader>(
+        system_clipboard, promise, mime_type);
+  }
   if (mime_type == kMimeTypeImagePng) {
     // TODO(crbug.com/1223849): Use `ClipboardPngReader` once `ReadImage()` path
     // is removed.

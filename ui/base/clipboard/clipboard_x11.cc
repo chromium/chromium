@@ -76,6 +76,17 @@ void ClipboardX11::Clear(ClipboardBuffer buffer) {
   data_src_[buffer].reset();
 }
 
+std::vector<std::u16string> ClipboardX11::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  auto available_types = x_clipboard_helper_->GetAvailableTypes(buffer);
+  for (const auto& mime_type : available_types) {
+    types.push_back(base::UTF8ToUTF16(mime_type));
+  }
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardX11::ReadAvailableTypes(
@@ -86,18 +97,19 @@ void ClipboardX11::ReadAvailableTypes(
   DCHECK(types);
 
   types->clear();
-  auto available_types = x_clipboard_helper_->GetAvailableTypes(buffer);
-  for (const auto& mime_type : available_types) {
+  std::u16string web_custom_data_type =
+      base::UTF8ToUTF16(ClipboardFormatType::WebCustomDataType().GetName());
+  for (const auto& mime_type : GetStandardFormats(buffer, data_dst)) {
     // Special handling for chromium/x-web-custom-data. We must read the data
     // and deserialize it to find the list of mime types to report.
-    if (mime_type == ClipboardFormatType::WebCustomDataType().GetName()) {
+    if (mime_type == web_custom_data_type) {
       auto data(x_clipboard_helper_->Read(
           buffer, x_clipboard_helper_->GetAtomsForFormat(
                       ClipboardFormatType::WebCustomDataType())));
       if (data.IsValid())
         ReadCustomDataTypes(data.GetData(), data.GetSize(), types);
     } else {
-      types->push_back(base::UTF8ToUTF16(mime_type));
+      types->push_back(mime_type);
     }
   }
 }

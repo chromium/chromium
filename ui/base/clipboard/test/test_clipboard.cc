@@ -95,18 +95,16 @@ void TestClipboard::Clear(ClipboardBuffer buffer) {
   GetStore(buffer).Clear();
 }
 
-void TestClipboard::ReadAvailableTypes(
+std::vector<std::u16string> TestClipboard::GetStandardFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<std::u16string>* types) const {
-  DCHECK(types);
-  types->clear();
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
   if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
-    return;
+    return types;
 
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     // This additional mime type is required as both Ozone/X11 and Ozone/Wayland
@@ -116,20 +114,33 @@ void TestClipboard::ReadAvailableTypes(
     // TODO(https://crbug.com/1096425): remove this if condition once Ozone is
     // the only path in Linux builds.
     if (features::IsUsingOzonePlatform())
-      types->push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
+      types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
 #endif
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
   if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst) ||
       IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  return types;
+}
+
+void TestClipboard::ReadAvailableTypes(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst,
+    std::vector<std::u16string>* types) const {
+  DCHECK(types);
+  types->clear();
+  if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
+    return;
+
+  *types = GetStandardFormats(buffer, data_dst);
 }
 
 std::vector<std::u16string>
@@ -147,12 +158,8 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
       ExtractCustomPlatformNames(buffer, data_dst);
   for (const auto& item : custom_format_names)
     types.push_back(base::UTF8ToUTF16(item.first));
-  for (const auto& it : data) {
-    std::string format_type = it.first.GetName();
-    if (!format_type.empty()) {
-      types.push_back(base::UTF8ToUTF16(format_type));
-    }
-  }
+  for (const auto& item : GetStandardFormats(buffer, data_dst))
+    types.push_back(item);
 
   return types;
 }

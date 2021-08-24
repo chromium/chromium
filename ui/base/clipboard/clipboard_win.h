@@ -120,6 +120,16 @@ class ClipboardWin : public Clipboard {
   // if necessary.  Marked const for lazily initialization by const methods.
   HWND GetClipboardWindow() const;
 
+  // Returns all the standard MIME types if it's present in the clipboard.
+  // The standard MIME types are the formats that are well defined by the OS.
+  // Currently we support text/html, text/plain, text/rtf, image/png &
+  // text/uri-list.
+  // TODO(snianu): Create a more generalized function for standard formats that
+  // can be shared by all platforms.
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
   // Mark this as mutable so const methods can still do lazy initialization.
   mutable std::unique_ptr<base::win::MessageWindow> clipboard_owner_;
 

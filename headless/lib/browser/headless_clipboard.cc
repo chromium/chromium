@@ -46,6 +46,26 @@ void HeadlessClipboard::Clear(ui::ClipboardBuffer buffer) {
   GetStore(buffer).Clear();
 }
 
+std::vector<std::u16string> HeadlessClipboard::GetStandardFormats(
+    ui::ClipboardBuffer buffer,
+    const ui::DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  if (IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
+  }
+  if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
+  if (IsFormatAvailable(ui::ClipboardFormatType::SvgType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeSvg));
+  if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
+  if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
+
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void HeadlessClipboard::ReadAvailableTypes(
@@ -54,18 +74,7 @@ void HeadlessClipboard::ReadAvailableTypes(
     std::vector<std::u16string>* types) const {
   DCHECK(types);
   types->clear();
-
-  if (IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(), buffer,
-                        data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
-  if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
-  if (IsFormatAvailable(ui::ClipboardFormatType::SvgType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeSvg));
-  if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
-  if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
+  *types = GetStandardFormats(buffer, data_dst);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -81,9 +90,8 @@ HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
       ExtractCustomPlatformNames(buffer, data_dst);
   for (const auto& item : custom_format_names)
     types.push_back(base::UTF8ToUTF16(item.first));
-  for (const auto& it : data) {
-    std::u16string type = base::UTF8ToUTF16(it.first.GetName());
-    types.push_back(type);
+  for (const auto& item : GetStandardFormats(buffer, data_dst)) {
+    types.push_back(item);
   }
 
   return types;

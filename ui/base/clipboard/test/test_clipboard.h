@@ -139,6 +139,14 @@ class TestClipboard : public Clipboard {
   DataStore& GetStore(ClipboardBuffer buffer);
   DataStore& GetDefaultStore();
 
+  // Returns all the standard MIME types if it's present in the clipboard.
+  // The standard MIME types are the formats that are well defined by the OS.
+  // Currently we support text/html, text/plain, text/rtf, image/png &
+  // text/uri-list.
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
   ClipboardBuffer default_store_buffer_;
   mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;

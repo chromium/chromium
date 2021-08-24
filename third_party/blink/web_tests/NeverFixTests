@@ -1904,6 +1904,3 @@ crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
 wpt_internal/document-transition/* [ Skip ]
 virtual/document-transition/wpt_internal/document-transition/* [ Pass ]
 
-# Clipboard custom format tests that is still in-progress.
-crbug.com/106449 clipboard/async-clipboard/async-custom-format-write-read.tentative.https.html [ Skip ]
-crbug.com/106449 clipboard/async-clipboard/async-custom-formats-write-read.tentative.https.html [ Skip ]

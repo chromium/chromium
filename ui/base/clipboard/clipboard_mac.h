@@ -122,6 +122,14 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   SkBitmap ReadImageInternal(ClipboardBuffer buffer,
                              NSPasteboard* pasteboard) const;
 
+  // Returns all the standard MIME types if it's present in the clipboard.
+  // The standard MIME types are the formats that are well defined by the OS.
+  // Currently we support text/html, text/plain, text/rtf, image/png &
+  // text/uri-list.
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {
     NSInteger sequence_number;

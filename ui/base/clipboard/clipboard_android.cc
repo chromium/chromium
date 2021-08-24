@@ -543,6 +543,32 @@ void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
   g_map.Get().Clear();
 }
 
+std::vector<std::u16string> ClipboardAndroid::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  // would be nice to ask the ClipboardMap to enumerate the types it supports,
+  // rather than hardcode the list here.
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  // We can read images from either the Android clipboard or the local map.
+  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
+      IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeImageURI));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  }
+
+  // these formats aren't supported by the ClipboardMap currently, but might
+  // be one day?
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardAndroid::ReadAvailableTypes(
@@ -554,26 +580,7 @@ void ClipboardAndroid::ReadAvailableTypes(
   DCHECK(types);
 
   types->clear();
-
-  // would be nice to ask the ClipboardMap to enumerate the types it supports,
-  // rather than hardcode the list here.
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  // We can read images from either the Android clipboard or the local map.
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
-      IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {
-    types->push_back(base::UTF8ToUTF16(kMimeTypeImageURI));
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  }
-
-  // these formats aren't supported by the ClipboardMap currently, but might
-  // be one day?
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  *types = GetStandardFormats(buffer, data_dst);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
