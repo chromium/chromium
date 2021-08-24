@@ -3735,12 +3735,6 @@ const char kCalculateNativeWinOcclusionDescription[] =
     "Calculate window occlusion on Windows will be used in the future "
     "to throttle and potentially unload foreground tabs in occluded windows";
 
-const char kChromeCleanupScanCompletedNotificationName[] =
-    "Chrome cleanup scan completion notification";
-const char kChromeCleanupScanCompletedNotificationDescription[] =
-    "Allows you to be notified when a Chrome cleaner scan you started "
-    "completes.";
-
 const char kD3D11VideoDecoderName[] = "D3D11 Video Decoder";
 const char kD3D11VideoDecoderDescription[] =
     "Enables D3D11VideoDecoder for hardware accelerated video decoding.";
@@ -3767,11 +3761,6 @@ const char kRunVideoCaptureServiceInBrowserProcessName[] =
     "Run video capture service in browser";
 const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
     "Run the video capture service in the browser process.";
-
-const char kSafetyCheckChromeCleanerChildName[] =
-    "Chrome Cleanup Tool in safety check";
-const char kSafetyCheckChromeCleanerChildDescription[] =
-    "Enables the Chrome Cleanup Tool child in safety check.";
 
 const char kUseAngleName[] = "Choose ANGLE graphics backend";
 const char kUseAngleDescription[] =

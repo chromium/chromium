@@ -6534,21 +6534,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClientStorageAccessContextAuditingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kClientStorageAccessContextAuditing)},
 
-#if defined(OS_WIN)
-    {"safety-check-chrome-cleaner-child",
-     flag_descriptions::kSafetyCheckChromeCleanerChildName,
-     flag_descriptions::kSafetyCheckChromeCleanerChildDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckChromeCleanerChild)},
-#endif  // !defined(OS_WIN)
-
-#if defined(OS_WIN)
-    {"chrome-cleanup-scan-completed-notification",
-     flag_descriptions::kChromeCleanupScanCompletedNotificationName,
-     flag_descriptions::kChromeCleanupScanCompletedNotificationDescription,
-     kOsWin,
-     FEATURE_VALUE_TYPE(features::kChromeCleanupScanCompletedNotification)},
-#endif  // !defined(OS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kAppListBubbleName,
      flag_descriptions::kAppListBubbleDescription, kOsCrOS,

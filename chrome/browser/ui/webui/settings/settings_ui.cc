@@ -289,17 +289,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           password_manager::features::kEnableMovingMultiplePasswordsToAccount));
 
-#if defined(OS_WIN)
-  html_source->AddBoolean(
-      "safetyCheckChromeCleanerChildEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckChromeCleanerChild));
-
-  html_source->AddBoolean(
-      "chromeCleanupScanCompletedNotificationEnabled",
-      base::FeatureList::IsEnabled(
-          features::kChromeCleanupScanCompletedNotification));
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
                           base::FeatureList::IsEnabled(
