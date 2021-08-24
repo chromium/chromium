@@ -714,12 +714,13 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
 
   SetRunRoutineResponse(/*id=*/1,
                         healthd::DiagnosticRoutineStatusEnum::kRunning);
+  task_environment_.RunUntilIdle();
 
   FakeRoutineRunner routine_runner;
   system_routine_controller_->RunRoutine(
       mojom::RoutineType::kCpuStress,
       routine_runner.receiver.BindNewPipeAndPassRemote());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Assert that the first routine is not complete.
   EXPECT_TRUE(routine_runner.result.is_null());
@@ -759,7 +760,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
   system_routine_controller_->RunRoutine(
       mojom::RoutineType::kCpuPrime,
       routine_runner_2->receiver.BindNewPipeAndPassRemote());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   SetNonInteractiveRoutineUpdateResponse(
       /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
@@ -767,7 +768,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
 
   // Close the routine_runner
   routine_runner_2.reset();
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   log_lines = GetLogLines(log.GetContents());
   EXPECT_EQ(4u, log_lines.size());

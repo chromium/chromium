@@ -183,7 +183,9 @@ class SessionLogHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   content::TestWebUI web_ui_;
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   TelemetryLog* telemetry_log_;
@@ -194,8 +196,10 @@ class SessionLogHandlerTest : public testing::Test {
 };
 
 TEST_F(SessionLogHandlerTest, SaveSessionLog) {
+  base::RunLoop run_loop;
   // Populate routine log
   routine_log_->LogRoutineStarted(mojom::RoutineType::kCpuStress);
+  task_environment_.RunUntilIdle();
 
   // Populate telemetry log
   const std::string expected_board_name = "board_name";
@@ -220,7 +224,6 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
   base::ListValue args;
   args.Append(kHandlerFunctionName);
-  base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
   run_loop.Run();
