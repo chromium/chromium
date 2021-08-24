@@ -149,7 +149,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           input_block.data(), input_block.size())) {
     return false;
   }
-  if (!context->first_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->first_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   // Second stage: Re-encode the decoded header block. This must succeed.
@@ -164,7 +164,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           second_stage_out.data(), second_stage_out.length())) {
     return false;
   }
-  if (!context->third_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->third_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   return true;

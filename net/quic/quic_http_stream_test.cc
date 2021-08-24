@@ -2154,6 +2154,10 @@ TEST_P(QuicHttpStreamTest, ServerPushGetRequest) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
 
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
+
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
   request_.url = GURL("https://www.example.org/");
@@ -2220,6 +2224,10 @@ TEST_P(QuicHttpStreamTest, ServerPushGetRequest) {
 TEST_P(QuicHttpStreamTest, ServerPushGetRequestSlowResponse) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
+
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
 
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
@@ -2296,6 +2304,10 @@ TEST_P(QuicHttpStreamTest, ServerPushCancelHttpStreamBeforeResponse) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
 
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
+
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
   request_.url = GURL("https://www.example.org/");
@@ -2339,6 +2351,10 @@ TEST_P(QuicHttpStreamTest, ServerPushCancelHttpStreamBeforeResponse) {
 TEST_P(QuicHttpStreamTest, ServerPushCrossOriginOK) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
+
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
 
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
@@ -2412,6 +2428,10 @@ TEST_P(QuicHttpStreamTest, ServerPushCrossOriginFail) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
 
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
+
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
   request_.url = GURL("https://www.example.org/");
@@ -2437,6 +2457,10 @@ TEST_P(QuicHttpStreamTest, ServerPushCrossOriginFail) {
 TEST_P(QuicHttpStreamTest, ServerPushVaryCheckOK) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   Initialize();
+
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
 
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
@@ -2520,6 +2544,10 @@ TEST_P(QuicHttpStreamTest, ServerPushVaryCheckFail) {
   request_headers_["accept-encoding"] = "sdch";
 
   Initialize();
+
+  // Server push is not supported in HTTP/3.
+  if (version_.UsesHttp3())
+    return;
 
   // Initialize the first stream, for receiving the promise on.
   request_.method = "GET";
