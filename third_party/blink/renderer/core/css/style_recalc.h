@@ -42,9 +42,6 @@ class CORE_EXPORT StyleRecalcChange {
   enum Propagate {
     // No need to update style of any children.
     kNo,
-    // Need to traverse children in display:none or non-slotted/distributed
-    // children of shadow hosts to clear ensured computed styles.
-    kClearEnsured,
     // Need to update existence and style for pseudo elements.
     kUpdatePseudoElements,
     // Need to recalculate style for children for inheritance. All changed

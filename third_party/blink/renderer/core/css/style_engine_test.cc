@@ -4261,4 +4261,49 @@ TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
   ASSERT_FALSE(shadow->GetScopedStyleResolver());
 }
 
+TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
+  GetDocument().body()->setInnerHTML("<div id=host></div>");
+  auto* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  UpdateAllLifecyclePhases();
+
+  // Add a child element to a shadow host with no slots. The inserted element is
+  // not marked for style recalc because the GetStyleRecalcParent() returns
+  // nullptr.
+  auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
+  host->appendChild(span);
+  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(span->NeedsStyleRecalc());
+
+  UpdateAllLifecyclePhases();
+
+  // Set a style on the inserted child outside the flat tree.
+  // GetStyleRecalcParent() still returns nullptr, and the ComputedStyle of the
+  // child outside the flat tree is still null. No need to mark dirty.
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(span->NeedsStyleRecalc());
+
+  // Ensure the ComputedStyle for the child and then change the style.
+  // GetStyleRecalcParent() is still null, which means the host is not marked
+  // with ChildNeedsStyleRecalc(), but the child needs to be marked dirty to
+  // make sure the next EnsureComputedStyle updates the style to reflect the
+  // changes.
+  scoped_refptr<const ComputedStyle> old_style = span->EnsureComputedStyle();
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(span->NeedsStyleRecalc());
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(span->GetComputedStyle(), old_style);
+  scoped_refptr<const ComputedStyle> new_style = span->EnsureComputedStyle();
+  EXPECT_NE(new_style, old_style);
+
+  EXPECT_EQ(MakeRGB(255, 0, 0),
+            old_style->VisitedDependentColor(GetCSSPropertyColor()));
+  EXPECT_EQ(MakeRGB(0, 128, 0),
+            new_style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
 }  // namespace blink

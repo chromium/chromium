@@ -37,18 +37,13 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
   if (node.NeedsStyleRecalc())
     return true;
   // Early exit before getting the computed style.
-  if (propagate_ != kClearEnsured && !RecalcContainerQueryDependent())
+  if (!RecalcContainerQueryDependent())
     return false;
-  if (const ComputedStyle* old_style = node.GetComputedStyle()) {
-    return (propagate_ == kClearEnsured &&
-            old_style->IsEnsuredInDisplayNone()) ||
-           (RecalcContainerQueryDependent() &&
-            old_style->DependsOnContainerQueries());
-  }
+  const ComputedStyle* old_style = node.GetComputedStyle();
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
   // subtree roots.
-  return RecalcContainerQueryDependent();
+  return !old_style || old_style->DependsOnContainerQueries();
 }
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(

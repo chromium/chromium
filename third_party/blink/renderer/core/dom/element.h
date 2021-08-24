@@ -1116,6 +1116,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool SkipStyleRecalcForContainer(const ComputedStyle& style,
                                    const StyleRecalcChange& child_change);
 
+  void MarkNonSlottedHostChildrenForStyleRecalc();
+
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
   void RebuildMarkerLayoutTree(WhitespaceAttacher&);

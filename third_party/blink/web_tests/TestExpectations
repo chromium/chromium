@@ -1173,7 +1173,6 @@ virtual/layout_ng_block_frag/external/wpt/css/css-break/trailing-child-margin-00
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-006.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-008.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-monolithic-002.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-contain/content-visibility/slot-content-visibility-2-crash.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-position/multicol/static-position/vlr-ltr-rtl-in-multicol.tentative.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-position/multicol/static-position/vlr-rtl-ltr-in-multicol.tentative.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-position/multicol/static-position/vlr-rtl-rtl-in-multicol.html [ Pass ]
@@ -6908,10 +6907,7 @@ crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pa
 crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Timeout ]
 
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-1-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-2-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-4-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-5-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-8-crash.html [ Crash ]
 
 # Sheriff 2021-08-10
 crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Pass Timeout ]
