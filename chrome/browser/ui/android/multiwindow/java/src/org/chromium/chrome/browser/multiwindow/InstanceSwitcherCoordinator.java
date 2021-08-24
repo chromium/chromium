@@ -139,7 +139,6 @@ public class InstanceSwitcherCoordinator {
                             assert mItemToDelete != null;
                             hideConfirmationMessage();
                             removeInstance(mItemToDelete);
-                            mCloseCallback.onResult(mItemToDelete);
                         } else {
                             dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         }

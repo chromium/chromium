@@ -166,8 +166,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
         for (int i = 0; i < mMaxInstances; ++i) {
-            String url = readUrl(i);
-            if (url == null) continue;
+            if (!instanceEntryExists(i)) continue;
             @InstanceInfo.Type
             int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
@@ -183,7 +182,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             }
 
             int taskId = getTaskFromMap(i);
-            result.add(new InstanceInfo(i, taskId, type, url, readTitle(i), readTabCount(i),
+            result.add(new InstanceInfo(i, taskId, type, readUrl(i), readTitle(i), readTabCount(i),
                     readIncognitoTabCount(i), readIncognitoSelected(i)));
         }
 
@@ -222,7 +221,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         // If asked to always create a fresh new instance, not from persistent state, do it here.
         if (preferNew) {
             for (int i = 0; i < mMaxInstances; ++i) {
-                if (readUrl(i) == null) return i;
+                if (!instanceEntryExists(i)) return i;
             }
             return INVALID_INSTANCE_ID;
         }
@@ -321,7 +320,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
         // Remove persistent data for unrecoverable instances.
         for (int i = 0; i < mMaxInstances; ++i) {
-            if (readUrl(i) != null && !MultiWindowUtils.isRestorableInstance(i)) {
+            if (instanceEntryExists(i) && !MultiWindowUtils.isRestorableInstance(i)) {
                 removeInstanceInfo(i);
             }
         }
@@ -446,6 +445,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             writeUrl(index, EMPTY_DATA);
             writeTitle(index, EMPTY_DATA);
         }
+    }
+
+    static boolean instanceEntryExists(int index) {
+        return readLastAccessedTime(index) != 0;
     }
 
     private static String lastAccessedTimeKey(int index) {
