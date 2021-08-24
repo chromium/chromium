@@ -81,7 +81,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
     ~AppInstances();
 
     const base::Time start_time;
-    std::unordered_set<apps::Instance::InstanceKey, InstanceKeyHash>
+    std::unordered_set<apps::Instance::InstanceKey, apps::InstanceKeyHash>
         running_instances;
   };
   struct AppInfoProvider {

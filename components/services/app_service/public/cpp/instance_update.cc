@@ -102,10 +102,6 @@ const std::string& InstanceUpdate::AppId() const {
   return delta_ ? delta_->AppId() : state_->AppId();
 }
 
-aura::Window* InstanceUpdate::Window() const {
-  return InstanceKey().Window();
-}
-
 const Instance::InstanceKey& InstanceUpdate::InstanceKey() const {
   return delta_ ? delta_->GetInstanceKey() : state_->GetInstanceKey();
 }

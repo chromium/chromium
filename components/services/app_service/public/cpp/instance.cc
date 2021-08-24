@@ -34,15 +34,25 @@ aura::Window* Instance::InstanceKey::GetEnclosingAppWindow() const {
 }
 
 bool Instance::InstanceKey::operator<(const InstanceKey& other) const {
-  return Window() < other.Window();
+  return window_ < other.window_;
 }
 
 bool Instance::InstanceKey::operator==(const InstanceKey& other) const {
-  return Window() == other.Window();
+  // TODO(crbug.com/1203992): This explicitly excludes is_web_contents_backed
+  // from the equality checks for now as there are some cases where
+  // AppServiceInstanceRegistryHelper will create an InstanceKey with and
+  // without is_web_contents_backed set for the same aura::Window object,
+  // resulting in assertion failures in the InstanceRegistry. When the
+  // BrowserAppWindowTracker is hooked up to this class (which will replace the
+  // instance tracking logic in the AppServiceInstanceRegistryHelper) and
+  // BrowserAppInstanceTracker::kEnabled is set to true, we should incorporate
+  // the WebContents ID of the instance into the equality checks and hash
+  // operator.
+  return window_ == other.window_;
 }
 
 bool Instance::InstanceKey::operator!=(const InstanceKey& other) const {
-  return Window() != other.Window();
+  return window_ != other.window_;
 }
 
 Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
@@ -71,14 +81,16 @@ void Instance::SetBrowserContext(content::BrowserContext* browser_context) {
   browser_context_ = browser_context;
 }
 
-}  // namespace apps
-
 std::ostream& operator<<(std::ostream& os,
                          const apps::Instance::InstanceKey& instance_key) {
-  return os << "InstanceKey {Window: " << instance_key.Window() << "}";
+  return os << "InstanceKey {window: " << instance_key.window_
+            << ", is_web_contents_backed: "
+            << instance_key.is_web_contents_backed_ << "}";
 }
 
 size_t InstanceKeyHash::operator()(
     const apps::Instance::InstanceKey& key) const {
-  return std::hash<aura::Window*>()(key.Window());
+  return std::hash<aura::Window*>()(key.window_);
 }
+
+}  // namespace apps

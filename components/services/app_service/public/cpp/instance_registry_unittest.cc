@@ -68,7 +68,8 @@ class InstanceRegistryTest : public testing::Test,
       num_running_apps_++;
     }
     updated_ids_.insert(update.AppId());
-    updated_windows_.insert(update.Window());
+    updated_enclosing_windows_.insert(
+        update.InstanceKey().GetEnclosingAppWindow());
   }
 
   void OnInstanceRegistryWillBeDestroyed(
@@ -79,7 +80,7 @@ class InstanceRegistryTest : public testing::Test,
 
   int num_running_apps_ = 0;
   std::set<std::string> updated_ids_;
-  std::set<const aura::Window*> updated_windows_;
+  std::set<const aura::Window*> updated_enclosing_windows_;
 };
 
 // In the tests below, just "recursive" means that instance_registry.OnInstances
@@ -117,15 +118,14 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
     int num_instance = 0;
     instance_registry_->ForEachInstance(
         [&outer, &num_instance](const apps::InstanceUpdate& inner) {
-          if (outer.Window() == inner.Window()) {
+          if (outer.InstanceKey() == inner.InstanceKey()) {
             ExpectEq(outer, inner);
           }
           num_instance++;
         });
 
     EXPECT_TRUE(instance_registry_->ForOneInstance(
-        apps::Instance::InstanceKey::ForWindowBasedApp(outer.Window()),
-        [&outer](const apps::InstanceUpdate& inner) {
+        outer.InstanceKey(), [&outer](const apps::InstanceUpdate& inner) {
           ExpectEq(outer, inner);
         }));
 
@@ -160,7 +160,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
   static void ExpectEq(const apps::InstanceUpdate& outer,
                        const apps::InstanceUpdate& inner) {
     EXPECT_EQ(outer.AppId(), inner.AppId());
-    EXPECT_EQ(outer.Window(), inner.Window());
+    EXPECT_EQ(outer.InstanceKey(), inner.InstanceKey());
     EXPECT_EQ(outer.LaunchId(), inner.LaunchId());
     EXPECT_EQ(outer.State(), inner.State());
     EXPECT_EQ(outer.LastUpdatedTime(), inner.LastUpdatedTime());
@@ -185,12 +185,12 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   std::vector<std::unique_ptr<apps::Instance>> deltas;
   apps::InstanceRegistry instance_registry;
 
-  updated_windows_.clear();
+  updated_enclosing_windows_.clear();
   updated_ids_.clear();
 
   CallForEachInstance(instance_registry);
 
-  EXPECT_EQ(0u, updated_windows_.size());
+  EXPECT_EQ(0u, updated_enclosing_windows_.size());
   EXPECT_EQ(0u, updated_ids_.size());
 
   deltas.clear();
@@ -211,15 +211,18 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
               std::set<aura::Window*>{&window3});
 
-  updated_windows_.clear();
+  updated_enclosing_windows_.clear();
   updated_ids_.clear();
   CallForEachInstance(instance_registry);
 
-  EXPECT_EQ(3u, updated_windows_.size());
+  EXPECT_EQ(3u, updated_enclosing_windows_.size());
   EXPECT_EQ(3u, updated_ids_.size());
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window1));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window2));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window3));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window1));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window2));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window3));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
@@ -236,16 +239,20 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
               (std::set<aura::Window*>{&window3, &window4}));
 
-  updated_windows_.clear();
+  updated_enclosing_windows_.clear();
   updated_ids_.clear();
   CallForEachInstance(instance_registry);
 
-  EXPECT_EQ(4u, updated_windows_.size());
+  EXPECT_EQ(4u, updated_enclosing_windows_.size());
   EXPECT_EQ(3u, updated_ids_.size());
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window1));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window2));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window3));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window4));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window1));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window2));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window3));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window4));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
@@ -279,7 +286,7 @@ TEST_F(InstanceRegistryTest, Observer) {
   instance_registry.AddObserver(this);
 
   num_running_apps_ = 0;
-  updated_windows_.clear();
+  updated_enclosing_windows_.clear();
   updated_ids_.clear();
   deltas.clear();
 
@@ -296,11 +303,14 @@ TEST_F(InstanceRegistryTest, Observer) {
   instance_registry.OnInstances(std::move(deltas));
 
   EXPECT_EQ(0, num_running_apps_);
-  EXPECT_EQ(3u, updated_windows_.size());
+  EXPECT_EQ(3u, updated_enclosing_windows_.size());
   EXPECT_EQ(2u, updated_ids_.size());
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window1));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window2));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window3));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window1));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window2));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window3));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
 
@@ -318,15 +328,17 @@ TEST_F(InstanceRegistryTest, Observer) {
 
   EXPECT_EQ(1, num_running_apps_);
   EXPECT_EQ(2u, updated_ids_.size());
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window2));
-  EXPECT_NE(updated_windows_.end(), updated_windows_.find(&window4));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window2));
+  EXPECT_NE(updated_enclosing_windows_.end(),
+            updated_enclosing_windows_.find(&window4));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
 
   instance_registry.RemoveObserver(this);
 
   num_running_apps_ = 0;
-  updated_windows_.clear();
+  updated_enclosing_windows_.clear();
   updated_ids_.clear();
   deltas.clear();
 
@@ -337,7 +349,7 @@ TEST_F(InstanceRegistryTest, Observer) {
   instance_registry.OnInstances(std::move(deltas));
 
   EXPECT_EQ(0, num_running_apps_);
-  EXPECT_EQ(0u, updated_windows_.size());
+  EXPECT_EQ(0u, updated_enclosing_windows_.size());
   EXPECT_EQ(0u, updated_ids_.size());
 }
 

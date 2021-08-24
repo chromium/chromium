@@ -41,7 +41,6 @@ class Instance {
     InstanceKey(InstanceKey&& instance_key) = default;
     ~InstanceKey() = default;
 
-    aura::Window* Window() const { return window_; }
     // Return enclosing app windows for the |app_id|. If the app is in a browser
     // tab, the window returned will be the window of the browser.
     aura::Window* GetEnclosingAppWindow() const;
@@ -52,6 +51,11 @@ class Instance {
     InstanceKey& operator=(InstanceKey&&) = default;
 
     bool IsForWebBasedApp() const { return is_web_contents_backed_; }
+
+    friend struct InstanceKeyHash;
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const apps::Instance::InstanceKey& instance_key);
 
    private:
     explicit InstanceKey(aura::Window* window, bool is_web_contents_backed);
@@ -81,7 +85,6 @@ class Instance {
 
   const std::string& AppId() const { return app_id_; }
   const InstanceKey& GetInstanceKey() const { return instance_key_; }
-  aura::Window* Window() const { return instance_key_.Window(); }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
   const base::Time& LastUpdatedTime() const { return last_updated_time_; }
@@ -96,13 +99,13 @@ class Instance {
   content::BrowserContext* browser_context_ = nullptr;
 };
 
-}  // namespace apps
-
 std::ostream& operator<<(std::ostream& os,
                          const apps::Instance::InstanceKey& instance_key);
 
 struct InstanceKeyHash {
   size_t operator()(const apps::Instance::InstanceKey& key) const;
 };
+
+}  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_H_
