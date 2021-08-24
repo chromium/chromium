@@ -22,13 +22,24 @@
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||    \
     defined(UNDEFINED_SANITIZER)
-#define SANITIZER_ENABLED
+#define SANITIZER_ENABLED 1
+#endif
+
+// TODO(crbug.com/1217783, crbug.com/1216715): Time check is flaky on fuchia and
+// lacros, linux ozone and sanitizer build.
+#if defined(OS_FUCHSIA) || defined(OS_LINUX) ||                    \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||      \
+    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER)
+#define TIME_CHECK_ENABLED 0
+#else
+#define TIME_CHECK_ENABLED 1
 #endif
 
 namespace ui {
 namespace {
 
-#if !defined(SANITIZER_ENABLED)
+#if TIME_CHECK_ENABLED
 // Returns the delta from current time to the (start + duration) time.
 // This is used to compute how long it should wait from now to reach
 // the `start + duration` time.
@@ -86,13 +97,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
 }
 
 // Tests the longest animation will trigger the report.
-// TODO(crbug.com/1217783): Test is flaky on fuchia and lacros.
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
-#define MAYBE_MultipleAnimations DISABLED_MultipleAnimations
-#else
-#define MAYBE_MultipleAnimations MultipleAnimations
-#endif
-TEST_F(TotalAnimationThroughputReporterTest, MAYBE_MultipleAnimations) {
+TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimations) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
@@ -118,7 +123,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MAYBE_MultipleAnimations) {
     settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(96));
     layer2.SetOpacity(1.0f);
   }
-#if !defined(SANITIZER_ENABLED)
+#if TIME_CHECK_ENABLED
   auto start = base::TimeTicks::Now();
 #endif
   Advance(base::TimeDelta::FromMilliseconds(32));
@@ -126,7 +131,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MAYBE_MultipleAnimations) {
 
   // The following check may fail on sanitizer builds which
   // runs slwer.
-#if !defined(SANITIZER_ENABLED)
+#if TIME_CHECK_ENABLED
   auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
   ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
   Advance(sixty_four_ms_from_start);
@@ -166,13 +171,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
 }
 
 // Tests adding new animation will extends the duration.
-// TODO(crbug.com/1216715): Test is flaky on fuchia and lacros.
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
-#define MAYBE_AddAnimationWhileAnimating DISABLED_AddAnimationWhileAnimating
-#else
-#define MAYBE_AddAnimationWhileAnimating AddAnimationWhileAnimating
-#endif
-TEST_F(TotalAnimationThroughputReporterTest, MAYBE_AddAnimationWhileAnimating) {
+TEST_F(TotalAnimationThroughputReporterTest, AddAnimationWhileAnimating) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
@@ -187,7 +186,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MAYBE_AddAnimationWhileAnimating) {
     settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer1.SetOpacity(1.0f);
   }
-#if !defined(SANITIZER_ENABLED)
+#if TIME_CHECK_ENABLED
   base::TimeTicks start = base::TimeTicks::Now();
 #endif
   Advance(base::TimeDelta::FromMilliseconds(32));
@@ -208,7 +207,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MAYBE_AddAnimationWhileAnimating) {
 
   // The following check may fail on sanitizer builds which
   // runs slwer.
-#if !defined(SANITIZER_ENABLED)
+#if TIME_CHECK_ENABLED
   // The animation time is extended by 32ms.
   auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
   ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
