@@ -689,8 +689,16 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 
 // Ensures both the "audio" and "gallery" flavours of the MediaApp can be
 // launched at the same time when launched via the files app.
+// Fails on ChromeOS. See https://crbug.com/1242867
+#if defined(OS_CHROMEOS)
+#define MAYBE_FileOpenCanLaunchBothAudioAndImages \
+  DISABLED_FileOpenCanLaunchBothAudioAndImages
+#else
+#define MAYBE_FileOpenCanLaunchBothAudioAndImages \
+  FileOpenCanLaunchBothAudioAndImages
+#endif
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       FileOpenCanLaunchBothAudioAndImages) {
+                       MAYBE_FileOpenCanLaunchBothAudioAndImages) {
   base::HistogramTester histograms;
 
   WaitForTestSystemAppInstall();
