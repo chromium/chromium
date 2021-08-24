@@ -20,18 +20,9 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ozone.gni")
 
 declare_args() {
-  # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux
-  # that does not require X11.
-  use_ozone =
-      is_chromeos || (is_chromecast && !is_android) || is_fuchsia || is_linux
-
-  # Indicates if the UI toolkit depends on X11.
-  # Enabled by default. Can be disabled if Ozone only build is required and
-  # vice-versa.
-  use_x11 = is_linux && !is_chromecast && !is_chromeos_lacros
-
   # Indicates if Aura is enabled. Aura is a low-level windowing library, sort
   # of a replacement for GDI or GTK.
   use_aura = is_win || is_linux || is_chromeos || is_fuchsia
@@ -46,7 +37,8 @@ declare_args() {
 
 assert(!use_glib || (is_linux && !is_chromecast))
 
-use_atk = is_linux && !is_chromecast && use_glib && current_toolchain == default_toolchain
+use_atk = is_linux && !is_chromecast && use_glib &&
+          current_toolchain == default_toolchain
 
 # Whether using Xvfb to provide a display server for a test might be
 # necessary.
