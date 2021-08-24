@@ -204,6 +204,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "arc-input-overlay",
+    "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "arc-keyboard-shortcut-helper-integration",
     "owners": [ "tetsui" ],
     "expiry_milestone": 97

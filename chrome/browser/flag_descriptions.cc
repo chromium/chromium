@@ -4813,10 +4813,16 @@ const char kArcGhostWindowDescription[] =
     "Enables the pre-load app window for "
     "ARC++ app during ARCVM booting stage on full restore process";
 
+const char kArcInputOverlayName[] = "Enable ARC Input Overlay";
+const char kArcInputOverlayDescription[] =
+    "Enables the input overlay feature for some Android game apps, "
+    "so it can play with a keyboard and a mouse instead of touch screen";
+
 const char kArcResizeLockName[] = "Resize Lock for Android apps";
 const char kArcResizeLockDescription[] =
-    "Enable compatibility mode for Android apps that are not optimized for "
-    "large screens, and impose restrictions on resizing the apps";
+    "Enable keyboard and mouse input compatibility mode for Android games "
+    "that are designed to only support touch input. This mode is only "
+    "available on games for which there is an input overlay configuration.";
 
 const char kScanAppMediaLinkName[] = "Show Media app link in Scan app";
 const char kScanAppMediaLinkDescription[] =

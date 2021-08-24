@@ -99,6 +99,10 @@ const base::Feature kAppListBubble{"AppListBubble",
 const base::Feature kArcAdbSideloadingFeature{
     "ArcAdbSideloading", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable support for ARC Input Overlay.
+const base::Feature kArcInputOverlay{"ArcInputOverlay",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
 const base::Feature kArcManagedAdbSideloadingSupport{
@@ -1205,6 +1209,10 @@ bool IsAppListBubbleEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
+}
+
+bool IsArcInputOverlayEnabled() {
+  return base::FeatureList::IsEnabled(kArcInputOverlay);
 }
 
 bool IsArcResizeLockEnabled() {

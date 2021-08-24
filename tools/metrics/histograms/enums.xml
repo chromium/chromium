@@ -49297,6 +49297,7 @@ from previous Chrome versions.
   <int value="-152439608" label="download-later-debug-on-wifi"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
+  <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
@@ -50105,6 +50106,7 @@ from previous Chrome versions.
   <int value="493903641" label="disable-appcontainer"/>
   <int value="494733611" label="disable-drop-sync-credential"/>
   <int value="494939785" label="InsecureFormSubmissionInterstitial:disabled"/>
+  <int value="496667708" label="ArcInputOverlay:disabled"/>
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
   <int value="497150691" label="AssistEmojiEnhanced:disabled"/>
   <int value="500177932" label="ArcSmartTextSelection:disabled"/>
