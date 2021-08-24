@@ -501,6 +501,27 @@ TEST_F(WebTransportTest, SendConnectWithFingerprint) {
             "C0:84:39:D6:64:FA:08:B9:77:37");
 }
 
+// Regression test for https://crbug.com/1242185.
+TEST_F(WebTransportTest, SendConnectWithInvalidFingerprint) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto* fingerprints = MakeGarbageCollected<RTCDtlsFingerprint>();
+  // "algorithm" is unset.
+  fingerprints->setValue(
+      "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:A2:63:3E:94:94:C0:84:"
+      "39:D6:64:FA:08:B9:77:37");
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setServerCertificateFingerprints({fingerprints});
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(0u, args[0].fingerprints.size());
+}
+
 TEST_F(WebTransportTest, CloseDuringConnect) {
   V8TestingScope scope;
   AddBinder(scope);

@@ -958,6 +958,8 @@ void WebTransport::Init(const String& url,
       fingerprints;
   if (options.hasServerCertificateFingerprints()) {
     for (const auto& fingerprint : options.serverCertificateFingerprints()) {
+      if (!fingerprint->hasAlgorithm() || !fingerprint->hasValue())
+        continue;
       fingerprints.push_back(
           network::mojom::blink::WebTransportCertificateFingerprint::New(
               fingerprint->algorithm(), fingerprint->value()));
