@@ -462,14 +462,14 @@ events from Blink to the embedding content layer.
 ## The content layer
 
 The content layer lives on both sides of the renderer/browser split. The content
-layer translates WebAXObjects into [AXContentNodeData], which is a subclass of
-[ui::AXNodeData]. The ui::AXNodeData class and related classes are Chromium's
-cross-platform accessibility tree. The translation is implemented in
-[BlinkAXTreeSource]. This translation happens on the renderer side, so the
-ui::AXNodeData tree now needs to be sent to the browser, which is done by
-calling the remote method [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]
-with the payload being serialized delta-updates to the tree, so that changes
-that happen on the renderer side can be reflected on the browser side.
+layer translates WebAXObjects into [ui::AXNodeData]. The ui::AXNodeData class
+and related classes are Chromium's cross-platform accessibility tree. The
+translation is implemented in [BlinkAXTreeSource]. This translation happens on
+the renderer side, so the ui::AXNodeData tree now needs to be sent to the
+browser, which is done by calling the remote method
+[ax.mojom.RenderAccessibilityHost::HandleAXEvents()] with the payload being
+serialized delta-updates to the tree, so that changes that happen on the
+renderer side can be reflected on the browser side.
 
 On the browser side, these IPCs are received by [RenderFrameHostImpl], and then
 usually forwarded to [BrowserAccessibilityManager] which is responsible for:
@@ -522,7 +522,6 @@ is defined by [automation.idl], which must be kept synchronized with
 [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=47
 [ax.mojom.RenderAccessibility.PerformAction()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=86
 [AutomationInternalCustomBindings]: https://cs.chromium.org/chromium/src/extensions/renderer/api/automation/automation_internal_custom_bindings.h
-[AXContentNodeData]: https://cs.chromium.org/chromium/src/content/common/ax_content_node_data.h
 [AXLayoutObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_layout_object.h
 [AXNodeObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_node_object.h
 [AXObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_object.h
