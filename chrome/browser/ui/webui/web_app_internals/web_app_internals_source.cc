@@ -204,7 +204,7 @@ base::Value BuildAppShimRegistryLocalStorageJson() {
 #endif
 
 base::Value BuildWebAppInternalsJson(Profile* profile) {
-  auto* provider = web_app::WebAppProvider::GetForLocalApps(profile);
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return base::Value("Web app system not enabled for profile.");
 

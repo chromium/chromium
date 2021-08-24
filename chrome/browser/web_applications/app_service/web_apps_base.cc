@@ -70,7 +70,7 @@ WebAppsBase::WebAppsBase(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     Profile* profile)
     : profile_(profile),
-      provider_(WebAppProvider::GetForLocalApps(profile_)),
+      provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       app_service_(nullptr),
       app_type_(GetWebAppType()),
       publisher_helper_(profile_,

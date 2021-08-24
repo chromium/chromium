@@ -1447,7 +1447,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(context);
   web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetForLocalApps(
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(
           Profile::FromBrowserContext(context));
 
   DCHECK(web_app_provider);

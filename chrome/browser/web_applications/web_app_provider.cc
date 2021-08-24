@@ -80,13 +80,13 @@ WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
 }
 
 // static
-WebAppProvider* WebAppProvider::GetForLocalApps(Profile* profile) {
+WebAppProvider* WebAppProvider::GetForLocalAppsUnchecked(Profile* profile) {
   return WebAppProviderFactory::GetForProfile(profile);
 }
 
 // static
 WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
-  return GetForLocalApps(profile);
+  return GetForLocalAppsUnchecked(profile);
 }
 
 // static
@@ -95,7 +95,7 @@ WebAppProvider* WebAppProvider::GetForWebContents(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
-  return WebAppProvider::GetForLocalApps(profile);
+  return WebAppProvider::GetForLocalAppsUnchecked(profile);
 }
 
 // static

@@ -3293,7 +3293,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       if (browser && browser->app_controller()) {
         web_app::WebAppProvider* const web_app_provider =
-            web_app::WebAppProvider::GetForLocalApps(profile);
+            web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
         const web_app::AppId& app_id = browser->app_controller()->app_id();
         const web_app::WebAppRegistrar& registrar =
             web_app_provider->registrar();

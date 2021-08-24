@@ -181,7 +181,8 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   std::unique_ptr<AppBrowserController> controller;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
-  auto* const provider = WebAppProvider::GetForLocalApps(browser->profile());
+  auto* const provider =
+      WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id)) {
     auto system_app_type =
         GetSystemWebAppTypeForAppId(browser->profile(), app_id);

@@ -44,9 +44,10 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
                              const web_app::AppId& app_id,
                              const base::Clock* clock,
                              Profile* profile) {
-  const base::Time last_badging_time = WebAppProvider::GetForLocalApps(profile)
-                                           ->registrar()
-                                           .GetAppLastBadgingTime(app_id);
+  const base::Time last_badging_time =
+      WebAppProvider::GetForLocalAppsUnchecked(profile)
+          ->registrar()
+          .GetAppLastBadgingTime(app_id);
   return clock->Now() < last_badging_time + time_frame;
 }
 
@@ -58,7 +59,7 @@ void UpdateBadgingTime(const base::Clock* clock,
     return;
   }
 
-  WebAppProvider::GetForLocalApps(profile)
+  WebAppProvider::GetForLocalAppsUnchecked(profile)
       ->registry_controller()
       .SetAppLastBadgingTime(app_id, clock->Now());
 }
@@ -253,7 +254,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!contents)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = WebAppProvider::GetForLocalApps(
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
@@ -276,7 +277,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!render_process_host)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = WebAppProvider::GetForLocalApps(
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(
       Profile::FromBrowserContext(render_process_host->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};

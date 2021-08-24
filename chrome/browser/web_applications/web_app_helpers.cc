@@ -100,7 +100,7 @@ bool IsValidExtensionUrl(const GURL& app_url) {
 absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only) {
-  auto* provider = WebAppProvider::GetForLocalApps(profile);
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   return provider ? provider->registrar().FindInstalledAppWithUrlInScope(
                         url, window_only)
                   : absl::nullopt;

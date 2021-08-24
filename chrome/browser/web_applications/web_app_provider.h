@@ -70,12 +70,17 @@ class WebAppProvider : public KeyedService {
   // On other platforms, always returns a WebAppProvider.
   static WebAppProvider* GetForSystemWebApps(Profile* profile);
 
-  // Always returns a WebAppProvider.
+  // Return the WebAppProvider for the current process. In particular:
   // In Ash: Returns the WebAppProvider that hosts System Web Apps.
-  // In Lacros: Returns the WebAppProvider that hosts non-system Web Apps.
-  // This function should only be used in code that is shared between system and
+  // In Lacros and other platforms: Returns the WebAppProvider that hosts
   // non-system Web Apps.
-  static WebAppProvider* GetForLocalApps(Profile* profile);
+  //
+  // Avoid using this function where possible and prefer GetForWebApps or
+  // GetForSystemWebApps which provide a guarantee they are being called from
+  // the correct process. Only use this if the calling code is shared between
+  // Ash and Lacros and expects the PWA WebAppProvider in Lacros and the SWA
+  // WebAppProvider in Ash.
+  static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running
   // in Lacros/Ash.

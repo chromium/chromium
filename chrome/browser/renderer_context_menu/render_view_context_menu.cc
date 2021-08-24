@@ -1483,7 +1483,8 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
-  auto* const provider = web_app::WebAppProvider::GetForLocalApps(profile);
+  auto* const provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return;
 
