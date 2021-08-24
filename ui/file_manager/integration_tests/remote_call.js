@@ -473,7 +473,12 @@ export class RemoteCallFilesApp extends RemoteCall {
         if (response === '"@undefined@"') {
           fulfill(undefined);
         } else {
-          fulfill(JSON.parse(response));
+          try {
+            fulfill(response == '' ? true : JSON.parse(response));
+          } catch (e) {
+            console.error(`Failed to parse "${response}" due to ${e}`);
+            fulfill(false);
+          }
         }
       });
     });

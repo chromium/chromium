@@ -605,7 +605,11 @@
   }, {
     "channel": "stable",
     "contexts": ["webui"],
-    "matches": ["chrome://extensions/*"]
+    "matches": [
+      "chrome://extensions/*",
+      // System Web App version of File Manager.
+      "chrome://file-manager/*"
+    ]
   }, {
     "channel": "stable",
     "contexts": [ "webui_untrusted" ],
