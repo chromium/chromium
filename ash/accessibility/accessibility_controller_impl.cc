@@ -320,6 +320,7 @@ void ShowAccessibilityNotification(
 
   std::u16string text;
   std::u16string title;
+  bool pinned = true;
   message_center::SystemNotificationWarningLevel warning =
       message_center::SystemNotificationWarningLevel::NORMAL;
   std::u16string display_source;
@@ -338,6 +339,7 @@ void ShowAccessibilityNotification(
         replacements, nullptr);
     text = l10n_util::GetStringUTF16(
         IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_DESC);
+    pinned = false;
   } else if (type == A11yNotificationType::kSpeechRecognitionFilesFailed) {
     display_source =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
@@ -348,6 +350,7 @@ void ShowAccessibilityNotification(
         IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_DESC);
     // Use CRITICAL_WARNING to force the notification color to red.
     warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+    pinned = false;
   } else {
     bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
 
@@ -369,7 +372,7 @@ void ShowAccessibilityNotification(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierAccessibility),
           options, nullptr, GetNotificationIcon(type), warning);
-  notification->set_pinned(true);
+  notification->set_pinned(pinned);
   message_center->AddNotification(std::move(notification));
 }
 
