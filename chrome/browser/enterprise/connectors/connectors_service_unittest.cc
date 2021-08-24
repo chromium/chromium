@@ -17,6 +17,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/strings/strcat.h"
+#include "extensions/common/constants.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
@@ -38,6 +43,15 @@ constexpr char kNormalAnalysisSettingsPref[] = R"([
     "block_password_protected": true,
     "block_large_files": true,
     "block_unsupported_file_types": true
+  }
+])";
+
+constexpr char kWildcardAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp", "malware"]}
+    ]
   }
 ])";
 
@@ -76,6 +90,7 @@ constexpr char kOnlyMalwareUrl[] = "https://no.dlp.com";
 constexpr char kNoTagsUrl[] = "https://no.dlp.or.malware.ca";
 
 }  // namespace
+
 class ConnectorsServiceTest : public testing::Test {
  public:
   ConnectorsServiceTest()
@@ -311,5 +326,65 @@ TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
                        ->GetDMTokenForRealTimeUrlCheck();
   EXPECT_FALSE(maybe_dm_token.has_value());
 }
+
+class ConnectorsServiceExemptURLsTest
+    : public ConnectorsServiceTest,
+      public testing::WithParamInterface<AnalysisConnector> {
+ public:
+  ConnectorsServiceExemptURLsTest() = default;
+
+  void SetUp() override {
+    profile_->GetPrefs()->Set(
+        ConnectorPref(connector()),
+        *base::JSONReader::Read(kWildcardAnalysisSettingsPref));
+    profile_->GetPrefs()->SetInteger(ConnectorScopePref(connector()),
+                                     policy::POLICY_SCOPE_MACHINE);
+  }
+
+  AnalysisConnector connector() { return GetParam(); }
+};
+
+TEST_P(ConnectorsServiceExemptURLsTest, WebUI) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+  for (const char* url :
+       {"chrome://settings", "chrome://help-app/background",
+        "chrome://foo/bar/baz.html", "chrome://foo/bar/baz.html?param=value"}) {
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
+}
+
+TEST_P(ConnectorsServiceExemptURLsTest, ThirdPartyExtensions) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  for (const char* url :
+       {"chrome-extension://fake_id", "chrome-extension://fake_id/background",
+        "chrome-extension://fake_id/main.html",
+        "chrome-extension://fake_id/main.html?param=value"}) {
+    ASSERT_TRUE(GURL(url).is_valid());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(ConnectorsServiceExemptURLsTest, FirstPartyExtensions) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  for (const std::string& suffix :
+       {"/", "/background", "/main.html", "/main.html?param=value"}) {
+    std::string url = base::StrCat(
+        {"chrome-extension://", extension_misc::kFilesManagerAppId, suffix});
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+INSTANTIATE_TEST_CASE_P(,
+                        ConnectorsServiceExemptURLsTest,
+                        testing::Values(FILE_ATTACHED,
+                                        FILE_DOWNLOADED,
+                                        BULK_DATA_ENTRY));
 
 }  // namespace enterprise_connectors

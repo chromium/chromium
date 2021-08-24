@@ -403,7 +403,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
               "url_list": [
                 "http://example.com/",
                 "https://*",
-                "chrome://*",
                 "devtools://*",
                 "*/a/specific/path/",
                 "*:1234",
@@ -419,7 +418,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
   ValidateIsEnabled("http://google.com", /*dlp*/ true, /*malware*/ false);
   ValidateIsEnabled("https://google.com", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("custom://google.com", /*dlp*/ true, /*malware*/ false);
-  ValidateIsEnabled("chrome://version/", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("custom://version", /*dlp*/ true, /*malware*/ false);
   ValidateIsEnabled("devtools://devtools/bundled/inspector.html", /*dlp*/ false,
                     /*malware*/ false);
@@ -539,7 +537,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
               "url_list": [
                 "http://example.com/",
                 "https://*",
-                "chrome://*",
                 "devtools://*",
                 "*/a/specific/path/",
                 "*:1234",
@@ -557,7 +554,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
   ValidateIsEnabled("http://google.com", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("https://google.com", /*dlp*/ false, /*malware*/ true);
   ValidateIsEnabled("custom://google.com", /*dlp*/ false, /*malware*/ false);
-  ValidateIsEnabled("chrome://version/", /*dlp*/ false, /*malware*/ true);
   ValidateIsEnabled("custom://version", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("devtools://devtools/bundled/inspector.html", /*dlp*/ false,
                     /*malware*/ true);

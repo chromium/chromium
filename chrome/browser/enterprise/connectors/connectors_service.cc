@@ -41,11 +41,13 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/url_constants.h"
 #include "device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "extensions/common/constants.h"
 #endif
 
 namespace enterprise_connectors {
@@ -124,6 +126,20 @@ void PopulateProfileMetadata(const ReportingSettings& reporting_settings,
     if (profile_policy->has_device_id())
       profile_proto->set_client_id(profile_policy->device_id());
   }
+}
+
+bool IsURLExemptFromAnalysis(const GURL& url) {
+  if (url.SchemeIs(content::kChromeUIScheme))
+    return true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (url.SchemeIs(extensions::kExtensionScheme) &&
+      extension_misc::IsSystemUIApp(url.host_piece())) {
+    return true;
+  }
+#endif
+
+  return false;
 }
 
 }  // namespace
@@ -261,6 +277,9 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   if (!ConnectorsEnabled())
+    return absl::nullopt;
+
+  if (IsURLExemptFromAnalysis(url))
     return absl::nullopt;
 
   absl::optional<AnalysisSettings> settings =
