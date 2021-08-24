@@ -32,6 +32,23 @@ source_set("quick_pair") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_quick_pair_process_manager.cc",
+    "mock_quick_pair_process_manager.h",
+    "quick_pair_process_manager.h",
+  ]
+
+  deps = [
+    "//ash/services/quick_pair/public/cpp",
+    "//ash/services/quick_pair/public/mojom",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
