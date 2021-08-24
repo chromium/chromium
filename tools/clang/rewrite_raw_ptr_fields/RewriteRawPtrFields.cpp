@@ -1255,37 +1255,6 @@ int main(int argc, const char* argv[]) {
   FilteredExprWriter global_destructor_writer(&output_helper, "global-scope");
   match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
 
-  // Matches CXXRecordDecls with a deleted operator new - e.g.
-  // StructWithNoOperatorNew below:
-  //     struct StructWithNoOperatorNew {
-  //       void* operator new(size_t) = delete;
-  //     };
-  auto record_with_deleted_allocation_operator_type_matcher = cxxRecordDecl(
-      hasMethod(allOf(hasOverloadedOperatorName("new"), isDeleted())));
-  // Matches rewritable fields inside structs with no operator new.  See the
-  // testcase in tests/gen-deleted-operator-new-test.cc
-  auto field_in_record_with_deleted_operator_new_matcher = fieldDecl(
-      allOf(field_decl_matcher,
-            hasParent(record_with_deleted_allocation_operator_type_matcher)));
-  FilteredExprWriter field_in_record_with_deleted_operator_new_writer(
-      &output_helper, "embedder-has-no-operator-new");
-  match_finder.addMatcher(field_in_record_with_deleted_operator_new_matcher,
-                          &field_in_record_with_deleted_operator_new_writer);
-  // Matches rewritable fields that contain a pointer, pointing to a pointee
-  // with no operator new.  See the testcase in
-  // tests/gen-deleted-operator-new-test.cc
-  auto field_pointing_to_record_with_deleted_operator_new_matcher =
-      fieldDecl(allOf(
-          field_decl_matcher,
-          hasType(pointerType(
-              pointee(hasUnqualifiedDesugaredType(recordType(hasDeclaration(
-                  record_with_deleted_allocation_operator_type_matcher))))))));
-  FilteredExprWriter field_pointing_to_record_with_deleted_operator_new_writer(
-      &output_helper, "pointee-has-no-operator-new");
-  match_finder.addMatcher(
-      field_pointing_to_record_with_deleted_operator_new_matcher,
-      &field_pointing_to_record_with_deleted_operator_new_writer);
-
   // Matches fields in unions (both directly rewritable fields as well as union
   // fields that embed a struct that contains a rewritable field).  See also the
   // testcases in tests/gen-unions-test.cc.
