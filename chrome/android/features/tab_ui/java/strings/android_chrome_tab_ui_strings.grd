@@ -387,6 +387,9 @@
       <message name="IDS_PRICE_DROP_SPOTTED_LOWER_PRICE" desc="This text shows on the blue tooltip that appears on a tab where we have detected a price drop in that tab. 'Lower' is an adjective.">
         Lower price
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_PRICE_CARD" desc="This accessibility text is read when the Tab with a price drop annotation is selected." is_accessibility_with_no_ui="true">
+        The price of this item recently dropped from <ph name="PREVIOUS_PRICE">%1$s<ex>$42</ex></ph> to <ph name="NEW_PRICE">%2$s<ex>$30</ex></ph>
+      </message>
 
       <!-- Price Alerts Card strings -->
       <message name="IDS_PRICE_DROP_ALERTS_CARD_TITLE" desc="This text shows on the price drop alerts message card if any item in the open tabs has a price drop. It familiarizes users with the feature getting price drop alerts.">

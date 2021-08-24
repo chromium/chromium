@@ -134,6 +134,8 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
     private static final String USD_CURRENCY_SYMBOL = "$";
     private static final String EXPECTED_PRICE = "$5.00";
     private static final String EXPECTED_PREVIOUS_PRICE = "$10";
+    private static final String EXPECTED_CONTENT_DESCRIPTION =
+            "The price of this item recently dropped from $10 to $5.00";
     private static final GURL TEST_GURL = new GURL("https://www.google.com");
 
     private ViewGroup mTabGridView;
@@ -889,6 +891,7 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
         TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
         Assert.assertEquals(EXPECTED_PRICE, currentPrice.getText());
         Assert.assertEquals(EXPECTED_PREVIOUS_PRICE, previousPrice.getText());
+        Assert.assertEquals(EXPECTED_CONTENT_DESCRIPTION, priceCardView.getContentDescription());
     }
 
     private void mockCurrencyFormatter() {

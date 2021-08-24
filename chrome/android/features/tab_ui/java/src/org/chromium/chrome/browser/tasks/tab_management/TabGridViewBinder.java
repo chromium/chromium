@@ -240,6 +240,10 @@ class TabGridViewBinder {
                                         shoppingPersistedTabData.getPriceDrop().price,
                                         shoppingPersistedTabData.getPriceDrop().previousPrice);
                                 priceCardView.setVisibility(View.VISIBLE);
+                                priceCardView.setContentDescription(view.getResources().getString(
+                                        R.string.accessibility_tab_price_card,
+                                        shoppingPersistedTabData.getPriceDrop().previousPrice,
+                                        shoppingPersistedTabData.getPriceDrop().price));
                             }
                             if (shoppingPersistedTabData != null) {
                                 shoppingPersistedTabData.logPriceDropMetrics(
