@@ -2022,7 +2022,9 @@ ci.cipd_builder(
         short_name = "avd",
     ),
     executable = "recipe:android/avd_packager",
-    schedule = "0 7 * * 0 *",
+    # Triggered manually through the scheduler UI
+    # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
+    schedule = "triggered",
     triggered_by = [],
     os = os.LINUX_BIONIC_REMOVE,
     properties = {
