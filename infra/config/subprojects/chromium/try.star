@@ -1881,9 +1881,8 @@ try_.chromium_win_builder(
     cores = 2,
     os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
-    # TODO (kimstephanie): turn coverage back on when crbug.com/1233609 is done
-    # use_clang_coverage = True,
-    # coverage_test_types = ["unit", "overall"],
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     properties = {
         "compilator": "win10-rel-compilator",
     },
@@ -1901,6 +1900,8 @@ try_.chromium_win_builder(
     ssd = True,
     goma_jobs = goma.jobs.J300,
     executable = "recipe:chromium/compilator",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     properties = {
         "orchestrator": {
             "builder_name": "win10-rel-orchestrator",
