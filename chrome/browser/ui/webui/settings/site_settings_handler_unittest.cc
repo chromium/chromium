@@ -21,6 +21,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -32,8 +34,6 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -53,6 +53,9 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
@@ -70,6 +73,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/webui_allowlist.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
@@ -107,6 +111,32 @@ const struct PatternContentTypeTestCase {
     {{"http://google.com", "location"}, {false, "Origin must be secure"}},
     {{"http://127.0.0.1", "location"}, {true, ""}},  // Localhost is secure.
     {{"http://[::1]", "location"}, {true, ""}}};
+
+apps::mojom::AppPtr MakeApp(const std::string& app_id,
+                            apps::mojom::AppType app_type,
+                            const std::string& publisher_id,
+                            apps::mojom::Readiness readiness,
+                            apps::mojom::InstallSource install_source) {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_id = app_id;
+  app->app_type = app_type;
+  app->publisher_id = publisher_id;
+  app->readiness = readiness;
+  app->install_source = install_source;
+  return app;
+}
+
+void InstallWebApp(Profile* profile, const GURL& start_url) {
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  std::vector<apps::mojom::AppPtr> deltas;
+  deltas.push_back(MakeApp(
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+      apps::mojom::AppType::kWeb, start_url.spec(),
+      apps::mojom::Readiness::kReady, apps::mojom::InstallSource::kSync));
+  cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
+               /*should_notify_initialized=*/true);
+}
 
 }  // namespace
 
@@ -169,13 +199,7 @@ class SiteSettingsHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
-    controller().Init();
-
-    handler_ =
-        std::make_unique<SiteSettingsHandler>(profile_.get(), app_registrar());
+    handler_ = std::make_unique<SiteSettingsHandler>(profile_.get());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
     // AllowJavascript() adds a callback to create leveldb_env::ChromiumEnv
@@ -193,25 +217,6 @@ class SiteSettingsHandlerTest : public testing::Test {
     }
   }
 
-  std::unique_ptr<web_app::WebApp> CreateWebApp() {
-    const GURL app_url = GURL("http://abc.example.com/path");
-    const web_app::AppId app_id =
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
-
-    auto web_app = std::make_unique<web_app::WebApp>(app_id);
-    web_app->AddSource(web_app::Source::kSync);
-    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetName("Name");
-    web_app->SetStartUrl(app_url);
-
-    return web_app;
-  }
-
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
-  }
-  web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
   TestingProfile* profile() { return profile_.get(); }
   TestingProfile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -500,8 +505,6 @@ class SiteSettingsHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   TestingProfile* incognito_profile_;
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -914,8 +917,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 }
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
-  auto web_app = CreateWebApp();
-  controller().RegisterApp(std::move(web_app));
+  InstallWebApp(profile(), GURL("http://abc.example.com/path"));
 
   SetUpCookiesTreeModel();
 
@@ -1557,12 +1559,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
-
-    handler_ =
-        std::make_unique<SiteSettingsHandler>(profile(), app_registrar());
+    handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
     web_ui()->ClearTrackedCalls();
@@ -1576,9 +1573,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
             extensions::ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-
-    // Wait for the sync bridge to be ready synchronously.
-    controller().Init();
   }
 
   void TearDown() override {
@@ -1609,17 +1603,9 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
 
   Browser* browser2() { return browser2_.get(); }
 
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
-  }
-
-  web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
-
   const std::string kNotifications;
 
  private:
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
   std::unique_ptr<BrowserWindow> window2_;

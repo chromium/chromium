@@ -60,8 +60,6 @@
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -142,6 +140,8 @@
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/ui/webui/settings/url_handlers_handler.h"
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
 namespace settings {
@@ -154,10 +154,6 @@ void SettingsUI::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kImportDialogHistory, true);
   registry->RegisterBooleanPref(prefs::kImportDialogSavedPasswords, true);
   registry->RegisterBooleanPref(prefs::kImportDialogSearchEngine, true);
-}
-
-web_app::WebAppRegistrar& GetRegistrarForProfile(Profile* profile) {
-  return web_app::WebAppProvider::Get(profile)->registrar();
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
@@ -226,8 +222,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<PrivacySandboxHandler>());
   AddSettingsPageUIHandler(std::make_unique<SearchEnginesHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SecureDnsHandler>());
-  AddSettingsPageUIHandler(std::make_unique<SiteSettingsHandler>(
-      profile, GetRegistrarForProfile(profile)));
+  AddSettingsPageUIHandler(std::make_unique<SiteSettingsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<StartupPagesHandler>(web_ui));
   AddSettingsPageUIHandler(std::make_unique<SecurityKeysPINHandler>());
   AddSettingsPageUIHandler(std::make_unique<SecurityKeysResetHandler>());
@@ -253,7 +248,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   AddSettingsPageUIHandler(std::make_unique<UrlHandlersHandler>(
       g_browser_process->local_state(), profile,
-      &GetRegistrarForProfile(profile)));
+      &web_app::WebAppProvider::GetForWebApps(profile)->registrar()));
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

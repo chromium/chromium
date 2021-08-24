@@ -5218,6 +5218,7 @@ test("unit_tests") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
+    "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/paint_preview_compositor/public/mojom",
