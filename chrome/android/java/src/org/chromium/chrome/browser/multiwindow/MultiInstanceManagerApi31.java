@@ -19,6 +19,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -249,6 +250,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         mInstanceId = instanceId;
         updateTaskMap(instanceId, taskId);
         installTabModelObserver();
+        recordInstanceCountHistogram();
+        recordActivityCountHistogram();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -366,6 +369,24 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     @Override
     public boolean isTabModelMergingEnabled() {
         return false;
+    }
+
+    private void recordActivityCountHistogram() {
+        int numActivities = 0;
+        List<Activity> activities = getAllRunningActivities();
+        for (Activity activity : activities) {
+            if (activity instanceof ChromeTabbedActivity) numActivities++;
+        }
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.MultiInstance.NumActivities", numActivities, mMaxInstances + 1);
+    }
+
+    private void recordInstanceCountHistogram() {
+        // Ensure we have instance info entry for the current one.
+        writeLastAccessedTime(mInstanceId);
+
+        RecordHistogram.recordExactLinearHistogram("Android.MultiInstance.NumInstances",
+                MultiWindowUtils.getInstanceCount(), mMaxInstances + 1);
     }
 
     private static String incognitoSelectedKey(int index) {
