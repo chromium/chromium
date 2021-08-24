@@ -89,6 +89,8 @@ void DeviceCacheImpl::DeviceBatteryChanged(
 void DeviceCacheImpl::FetchInitialPairedDeviceList() {
   for (const device::BluetoothDevice* device :
        bluetooth_adapter_->GetDevices()) {
+    if (!device->IsPaired())
+      continue;
     paired_devices_.push_back(GeneratePairedBluetoothDeviceProperties(device));
   }
 
