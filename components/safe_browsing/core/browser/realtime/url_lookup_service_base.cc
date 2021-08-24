@@ -286,9 +286,6 @@ RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
   std::unique_ptr<RTLookupResponse::ThreatInfo> cached_threat_info =
       std::make_unique<RTLookupResponse::ThreatInfo>();
 
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasValidCacheManager",
-                                    GetMetricSuffix(), !!cache_manager_);
-
   base::TimeTicks get_cache_start_time = base::TimeTicks::Now();
 
   RTLookupResponse::ThreatInfo::VerdictType verdict_type =
