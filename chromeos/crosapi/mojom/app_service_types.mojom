@@ -283,6 +283,6 @@ struct Intent {
   string action@0; // Intent action. e.g. view, send.
   url.mojom.Url? url@1; // The URL of the intent. e.g. https://www.google.com/.
   string? mime_type@2; // MIME type. e.g. text/plain, image/*.
-  string? share_text@4; // Text to share. e.g. Share link to other app.
-  string? share_title@5; // Title for the share.
+  string? share_text@3; // Text to share. e.g. Share link to other app.
+  string? share_title@4; // Title for the share.
 };
