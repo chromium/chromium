@@ -160,6 +160,14 @@ export class FeedbackUiElement extends PolymerElement {
       },
 
       /** @private */
+      categoryTag_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('categoryTag');
+        }
+      },
+
+      /** @private */
       projectedContentUrl_: String,
 
       /** @private */
@@ -281,7 +289,7 @@ export class FeedbackUiElement extends PolymerElement {
       description: parts.join('\n'),
       email: this.userEmail_,
       flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
-      categoryTag: 'dev',
+      categoryTag: this.categoryTag_,
       systemInformation: this.getProductSpecificData_(),
     };
     if (this.attachLogs_) {
