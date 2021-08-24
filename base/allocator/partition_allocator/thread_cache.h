@@ -471,7 +471,8 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
 }
 
 ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
-#if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) && \
+    defined(PA_HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
   // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
   // somewhere in the code.
@@ -513,7 +514,8 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
     memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));
     address_aligned += 4;
   }
-#endif  // defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+#endif  // defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) &&
+        // defined(PA_HAS_64_BITS_POINTERS)
 
   auto* entry = PartitionFreelistEntry::InitForThreadCache(
       slot_start, bucket.freelist_head);
