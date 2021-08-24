@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -742,6 +743,13 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
         launch_bucket < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
 
   Profile* profile = extension_service_->profile();
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id)) {
+    // TODO(crbug.com/1225779): Show the deprecated apps dialog.
+    return;
+  }
+#endif
 
   extensions::Manifest::Type type;
   GURL full_launch_url;
