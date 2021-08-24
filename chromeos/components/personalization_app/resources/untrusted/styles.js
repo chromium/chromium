@@ -10,10 +10,11 @@ styles.innerHTML = `
 <template>
   <style>
     /* Different breakpoint for inside the iframe. Use !important to make sure
-     * there are no css ordering issues. */
+     * there are no css ordering issues.
+     * Subtract 0.1px to fix subpixel rounding issues with iron-list. */
     @media (min-width: 688px) {
       .photo-container {
-        width: 25% !important;
+        width: calc(25% - 0.1px) !important;
       }
     }
   </style>

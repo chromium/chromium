@@ -44,8 +44,9 @@ styles.innerHTML = `
       overflow: hidden;
       padding: 8px;
       /* Media queries in trusted and untrusted code will resize to 25% at
-         correct widths */
-      width: calc(100% / 3);
+       * correct widths.
+       * Subtract 0.1px to fix subpixel rounding issue with iron-list. */
+      width: calc(100% / 3 - 0.1px);
     }
     .photo-container:focus-visible {
       outline: none;
