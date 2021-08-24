@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 
 #include "base/unguessable_token.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Network.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 
 namespace blink {
 
@@ -268,6 +270,28 @@ SharedArrayBufferIssueTypeToProtocol(SharedArrayBufferIssueType issue_type) {
   }
 }
 
+protocol::Audits::BlockedByResponseReason BlockedByResponseReasonToProtocol(
+    network::mojom::BlockedByResponseReason reason) {
+  switch (reason) {
+    case network::mojom::BlockedByResponseReason::
+        kCoepFrameResourceNeedsCoepHeader:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          CoepFrameResourceNeedsCoepHeader;
+    case network::mojom::BlockedByResponseReason::
+        kCoopSandboxedIFrameCannotNavigateToCoopPage:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          CoopSandboxedIFrameCannotNavigateToCoopPage;
+    case network::mojom::BlockedByResponseReason::kCorpNotSameOrigin:
+      return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameOrigin;
+    case network::mojom::BlockedByResponseReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+    case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
+      return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
+  }
+}
+
 }  // namespace
 
 void AuditsIssue::ReportSharedArrayBufferIssue(
@@ -293,4 +317,43 @@ void AuditsIssue::ReportSharedArrayBufferIssue(
           .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
+
+AuditsIssue AuditsIssue::CreateBlockedByResponseIssue(
+    network::mojom::BlockedByResponseReason reason,
+    uint64_t identifier,
+    DocumentLoader* loader,
+    const ResourceError& error,
+    const base::UnguessableToken& token) {
+  auto affected_request =
+      protocol::Audits::AffectedRequest::create()
+          .setRequestId(IdentifiersFactory::RequestId(loader, identifier))
+          .setUrl(error.FailingURL())
+          .build();
+
+  auto affected_frame = protocol::Audits::AffectedFrame::create()
+                            .setFrameId(IdentifiersFactory::IdFromToken(token))
+                            .build();
+
+  auto blocked_by_response_details =
+      protocol::Audits::BlockedByResponseIssueDetails::create()
+          .setReason(BlockedByResponseReasonToProtocol(reason))
+          .setRequest(std::move(affected_request))
+          .setParentFrame(std::move(affected_frame))
+          .build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setBlockedByResponseIssueDetails(
+                         std::move(blocked_by_response_details))
+                     .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::BlockedByResponseIssue)
+          .setDetails(std::move(details))
+          .build();
+
+  return AuditsIssue(std::move(issue));
+}
+
 }  // namespace blink

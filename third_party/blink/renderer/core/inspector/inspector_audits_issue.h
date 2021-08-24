@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/unguessable_token.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -17,8 +18,10 @@ class String;
 
 namespace blink {
 
+class DocumentLoader;
 class Element;
 class ExecutionContext;
+class ResourceError;
 
 namespace protocol {
 namespace Audits {
@@ -116,6 +119,13 @@ class CORE_EXPORT AuditsIssue {
       ExecutionContext* execution_context,
       bool shared_buffer_transfer_allowed,
       SharedArrayBufferIssueType issue_type);
+
+  static AuditsIssue CreateBlockedByResponseIssue(
+      network::mojom::BlockedByResponseReason reason,
+      uint64_t identifier,
+      DocumentLoader* loader,
+      const ResourceError& error,
+      const base::UnguessableToken& token);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

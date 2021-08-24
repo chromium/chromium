@@ -38,27 +38,10 @@ void InspectorIssueReporter::DidFailLoading(
       blocked_by_response_reason = error.GetBlockedByResponseReason();
   if (!blocked_by_response_reason)
     return;
-  auto blocked_by_response_details =
-      mojom::blink::BlockedByResponseIssueDetails::New();
-  blocked_by_response_details->reason = *blocked_by_response_reason;
-  auto affected_request = mojom::blink::AffectedRequest::New();
-  affected_request->request_id =
-      IdentifiersFactory::RequestId(loader, identifier);
-  affected_request->url = error.FailingURL();
-  blocked_by_response_details->request = std::move(affected_request);
 
-  auto affected_frame = mojom::blink::AffectedFrame::New();
-  affected_frame->frame_id = IdentifiersFactory::IdFromToken(token);
-  blocked_by_response_details->parentFrame = std::move(affected_frame);
-
-  auto details = mojom::blink::InspectorIssueDetails::New();
-  details->blocked_by_response_issue_details =
-      std::move(blocked_by_response_details);
-
-  storage_->AddInspectorIssue(
-      sink, mojom::blink::InspectorIssueInfo::New(
-                mojom::blink::InspectorIssueCode::kBlockedByResponseIssue,
-                std::move(details)));
+  auto issue = AuditsIssue::CreateBlockedByResponseIssue(
+      *blocked_by_response_reason, identifier, loader, error, token);
+  storage_->AddInspectorIssue(sink, std::move(issue));
 }
 
 void InspectorIssueReporter::DomContentLoadedEventFired(LocalFrame* frame) {
