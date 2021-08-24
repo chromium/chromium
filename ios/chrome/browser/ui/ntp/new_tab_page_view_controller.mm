@@ -184,13 +184,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
             constraintEqualToConstant:self.contentSuggestionsViewController
                                           .collectionView.contentSize.height];
 
-    // TODO(crbug.com/1241934): Remove width constraints since it causes
-    // warnings.
     [NSLayoutConstraint activateConstraints:@[
       [self.collectionView.topAnchor
           constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
-      [self.collectionView.widthAnchor
-          constraintEqualToAnchor:self.view.widthAnchor],
       [containerView.safeAreaLayoutGuide.leadingAnchor
           constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
       [containerView.safeAreaLayoutGuide.trailingAnchor
