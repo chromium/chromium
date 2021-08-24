@@ -7,8 +7,8 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # This enables build with TFLite library.
   # Currently only available for Desktop and Android.
-  build_with_tflite_lib =
-      is_android || is_win || is_linux || is_mac || is_chromeos || is_fuchsia
+  build_with_tflite_lib = is_android || (is_win && target_cpu != "arm64") ||
+                          is_linux || is_mac || is_chromeos || is_fuchsia
 
   # You can set the variable 'build_with_internal_optimization_guide' to true
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
