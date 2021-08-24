@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/local_search_service/search_utils.h"
-
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -48,15 +46,12 @@ float BlockMatchScore(const std::u16string& query, const std::u16string& text) {
       .Ratio();
 }
 
-float RelevanceCoefficient(const std::u16string& query,
-                           const std::u16string& text,
-                           float prefix_threshold,
-                           float block_threshold) {
-  const float prefix_score = ExactPrefixMatchScore(query, text);
-  const float block_score = BlockMatchScore(query, text);
-  bool is_relevant =
-      prefix_score >= prefix_threshold || block_score >= block_threshold;
-  return is_relevant ? std::max(prefix_score, block_score) : 0;
+bool IsRelevantApproximately(const std::u16string& query,
+                             const std::u16string& text,
+                             float prefix_threshold,
+                             float block_threshold) {
+  return (ExactPrefixMatchScore(query, text) >= prefix_threshold ||
+          BlockMatchScore(query, text) >= block_threshold);
 }
 
 bool CompareResults(const Result& r1, const Result& r2) {
