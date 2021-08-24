@@ -484,10 +484,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesDaily" units="count per day"
-    expires_after="2022-01-09">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of kernel crashes during the previous day, or the most recent day the
     device was in use. Reported at most once a day.
@@ -495,10 +498,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesPerActiveYear" units="count per year"
-    expires_after="2022-01-09">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, normalized as number of
     crashes per year of active use (active use = device is ON and not asleep).
@@ -507,10 +513,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesPerCpuYear" units="count per CPU year"
-    expires_after="2021-07-02">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, normalized as number
     crashes per year of CPU time. Reported daily.
@@ -518,20 +527,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesSinceUpdate" units="count"
-    expires_after="2021-07-02">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, reported daily.
   </summary>
 </histogram>
 
 <histogram name="Platform.KernelCrashesWeekly" units="count per week"
-    expires_after="2022-01-09">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of kernel crashes during the previous epoch-week, or the most recent
     epoch-week the device was in use. Reported at most once a week. Epoch-weeks
@@ -540,10 +555,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashInterval" units="seconds"
-    expires_after="2022-01-09">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Time elapsed between the last two kernel crashes. Sent after every kernel
     crash.
