@@ -340,6 +340,14 @@ bool ChromePermissionsClient::IsPermissionControlledByDse(
          search_helper->IsPermissionControlledByDSE(type, origin);
 }
 
+bool ChromePermissionsClient::IsDseOrigin(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  SearchPermissionsService* search_helper =
+      SearchPermissionsService::Factory::GetForBrowserContext(browser_context);
+  return search_helper && search_helper->IsDseOrigin(origin);
+}
+
 bool ChromePermissionsClient::ResetPermissionIfControlledByDse(
     content::BrowserContext* browser_context,
     ContentSettingsType type,

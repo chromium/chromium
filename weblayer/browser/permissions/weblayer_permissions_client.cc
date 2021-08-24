@@ -74,6 +74,12 @@ bool WebLayerPermissionsClient::IsPermissionControlledByDse(
   return weblayer::IsPermissionControlledByDse(type, origin);
 }
 
+bool WebLayerPermissionsClient::IsDseOrigin(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  return weblayer::IsDseOrigin(origin);
+}
+
 bool WebLayerPermissionsClient::ResetPermissionIfControlledByDse(
     content::BrowserContext* browser_context,
     ContentSettingsType type,
