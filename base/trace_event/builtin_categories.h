@@ -294,6 +294,7 @@
   X("cc,benchmark")                                                           \
   X("cc,input")                                                               \
   X("cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                     \
+  X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("content,navigation")                                                     \
   X("devtools.timeline,rail")                                                 \
   X("drm,hwoverlays")                                                         \
