@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
                  UINT message,
                  WPARAM wparam,
                  LPARAM lparam,
-                 const MSG& event,
+                 const CHROME_MSG& event,
                  BOOL* handled);
 
   // Some IMEs rely on WM_IME_REQUEST message even when TSF is enabled. So
@@ -53,12 +53,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
 
   // Callback function for IMEEngineHandlerInterface::ProcessKeyEvent.
   void ProcessKeyEventDone(ui::KeyEvent* event,
-                           const std::vector<MSG>* char_msgs,
+                           const std::vector<CHROME_MSG>* char_msgs,
                            bool is_handled);
 
   ui::EventDispatchDetails ProcessUnhandledKeyEvent(
       ui::KeyEvent* event,
-      const std::vector<MSG>* char_msgs);
+      const std::vector<CHROME_MSG>* char_msgs);
 
   // The toplevel window handle.
   const HWND toplevel_window_handle_;
@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
   bool HandlePeekMessage(HWND hwnd,
                          UINT msg_filter_min,
                          UINT msg_filter_max,
-                         std::vector<MSG>* char_msgs);
+                         std::vector<CHROME_MSG>* char_msgs);
 
   DISALLOW_COPY_AND_ASSIGN(InputMethodWinBase);
 };

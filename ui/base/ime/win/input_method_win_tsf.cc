@@ -62,7 +62,7 @@ void InputMethodWinTSF::OnBlur() {
 }
 
 bool InputMethodWinTSF::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   LRESULT original_result = 0;
   BOOL handled = FALSE;

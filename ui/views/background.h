@@ -17,10 +17,6 @@
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/views_export.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif  // defined(OS_WIN)
-
 namespace gfx {
 class Canvas;
 }

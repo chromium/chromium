@@ -90,6 +90,7 @@ CHROME_DECLARE_HANDLE(HKL);
 CHROME_DECLARE_HANDLE(HMENU);
 CHROME_DECLARE_HANDLE(HWINSTA);
 CHROME_DECLARE_HANDLE(HWND);
+CHROME_DECLARE_HANDLE(HMONITOR);
 #undef CHROME_DECLARE_HANDLE
 
 typedef LPVOID HINTERNET;
@@ -168,6 +169,20 @@ struct CHROME_FORMATETC {
   DWORD dwAspect;
   LONG lindex;
   DWORD tymed;
+};
+
+struct CHROME_POINT {
+  LONG x;
+  LONG y;
+};
+
+struct CHROME_MSG {
+  HWND hwnd;
+  UINT message;
+  WPARAM wParam;
+  LPARAM lParam;
+  DWORD time;
+  CHROME_POINT pt;
 };
 
 // Define some commonly used Windows constants. Note that the layout of these
@@ -311,6 +326,10 @@ inline FORMATETC* ChromeToWindowsType(CHROME_FORMATETC* p) {
 
 inline const FORMATETC* ChromeToWindowsType(const CHROME_FORMATETC* p) {
   return reinterpret_cast<const FORMATETC*>(p);
+}
+
+inline MSG* ChromeToWindowsType(CHROME_MSG* p) {
+  return reinterpret_cast<MSG*>(p);
 }
 
 #endif

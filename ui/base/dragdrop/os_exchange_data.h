@@ -13,10 +13,6 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"

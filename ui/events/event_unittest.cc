@@ -43,7 +43,7 @@ TEST(EventTest, NoNativeEvent) {
 
 TEST(EventTest, NativeEvent) {
 #if defined(OS_WIN)
-  MSG native_event = {nullptr, WM_KEYUP, VKEY_A, 0};
+  CHROME_MSG native_event = {nullptr, WM_KEYUP, VKEY_A, 0};
   KeyEvent keyev(native_event);
   EXPECT_TRUE(keyev.HasNativeEvent());
 #endif
@@ -407,7 +407,7 @@ TEST(EventTest, KeyEventCode) {
     ASSERT_EQ((kNativeCodeSpace & 0xFF), kNativeCodeSpace);
 
     const LPARAM lParam = GetLParamFromScanCode(kNativeCodeSpace);
-    MSG native_event = {nullptr, WM_KEYUP, VKEY_SPACE, lParam};
+    CHROME_MSG native_event = {nullptr, WM_KEYUP, VKEY_SPACE, lParam};
     KeyEvent key(native_event);
 
     // KeyEvent converts from the native keycode (scan code) to the code.
@@ -421,7 +421,7 @@ TEST(EventTest, KeyEventCode) {
     ASSERT_NE((kNativeCodeHome & 0xFF), kNativeCodeHome);
     const LPARAM lParam = GetLParamFromScanCode(kNativeCodeHome);
 
-    MSG native_event = {nullptr, WM_KEYUP, VKEY_HOME, lParam};
+    CHROME_MSG native_event = {nullptr, WM_KEYUP, VKEY_HOME, lParam};
     KeyEvent key(native_event);
 
     // KeyEvent converts from the native keycode (scan code) to the code.
@@ -695,7 +695,7 @@ TEST(EventTest, OrdinalMotionConversion) {
 TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
 #if defined(OS_WIN)
   base::HistogramTester histogram_tester;
-  MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
+  CHROME_MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.MOUSE_WHEEL", 1);
@@ -914,7 +914,7 @@ class AltGraphEventTest
     return std::get<1>(GetParam());
   }
 
-  const MSG msg_;
+  const CHROME_MSG msg_;
   BYTE original_keyboard_state_[256] = {};
   HKL original_keyboard_layout_ = nullptr;
 };

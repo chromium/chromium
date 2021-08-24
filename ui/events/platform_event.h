@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #elif defined(OS_APPLE)
 #if defined(__OBJC__)
 @class NSEvent;
@@ -27,7 +27,7 @@ namespace ui {
 #if defined(USE_OZONE) || defined(USE_X11)
 using PlatformEvent = ui::Event*;
 #elif defined(OS_WIN)
-using PlatformEvent = MSG;
+using PlatformEvent = CHROME_MSG;
 #elif defined(OS_APPLE)
 using PlatformEvent = NSEvent*;
 #else

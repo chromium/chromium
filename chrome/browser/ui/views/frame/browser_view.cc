@@ -257,6 +257,9 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme_win.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef LoadAccelerators
 #endif
 
 #if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)

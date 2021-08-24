@@ -72,7 +72,7 @@ class InputMethod {
   // Called when the focused window receives native IME messages that are not
   // translated into other predefined event callbacks. Currently this method is
   // used only for IME functionalities specific to Windows.
-  virtual bool OnUntranslatedIMEMessage(const MSG event,
+  virtual bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                         NativeEventResult* result) = 0;
 
   // Called by the focused client whenever its input locale is changed.

@@ -11,10 +11,6 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "ui/base/clipboard/clipboard_format_type.h"

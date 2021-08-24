@@ -90,6 +90,8 @@ source_set("event_constants") {
 
 source_set("platform_event") {
   sources = [ "platform_event.h" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("events_base") {

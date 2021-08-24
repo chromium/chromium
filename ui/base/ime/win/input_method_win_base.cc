@@ -173,7 +173,7 @@ void InputMethodWinBase::OnDidChangeFocusedClient(
 
 ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  MSG native_key_event = MSGFromKeyEvent(event);
+  CHROME_MSG native_key_event = MSGFromKeyEvent(event);
   if (native_key_event.message == WM_CHAR) {
     auto ref = weak_ptr_factory_.GetWeakPtr();
     BOOL handled = FALSE;
@@ -187,7 +187,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
     return ui::EventDispatchDetails();
   }
 
-  std::vector<MSG> char_msgs;
+  std::vector<CHROME_MSG> char_msgs;
   // Combines the WM_KEY* and WM_CHAR messages in the event processing flow
   // which is necessary to let Chrome IME extension to process the key event
   // and perform corresponding IME actions.
@@ -237,12 +237,13 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
 bool InputMethodWinBase::HandlePeekMessage(HWND hwnd,
                                            UINT msg_filter_min,
                                            UINT msg_filter_max,
-                                           std::vector<MSG>* char_msgs) {
+                                           std::vector<CHROME_MSG>* char_msgs) {
   auto ref = weak_ptr_factory_.GetWeakPtr();
   while (true) {
-    MSG msg_found;
-    const bool result = !!::PeekMessage(&msg_found, hwnd, msg_filter_min,
-                                        msg_filter_max, PM_REMOVE);
+    CHROME_MSG msg_found;
+    const bool result =
+        !!::PeekMessage(ChromeToWindowsType(&msg_found), hwnd, msg_filter_min,
+                        msg_filter_max, PM_REMOVE);
     // PeekMessage may result in WM_NCDESTROY which will cause deletion of
     // |this|. We should use WeakPtr to check whether |this| is destroyed.
     if (!ref)
@@ -270,7 +271,7 @@ LRESULT InputMethodWinBase::OnChar(HWND window_handle,
                                    UINT message,
                                    WPARAM wparam,
                                    LPARAM lparam,
-                                   const MSG& event,
+                                   const CHROME_MSG& event,
                                    BOOL* handled) {
   *handled = TRUE;
 
@@ -477,9 +478,10 @@ LRESULT InputMethodWinBase::OnQueryCharPosition(IMECHARPOSITION* char_positon) {
   return 1;  // returns non-zero value when succeeded.
 }
 
-void InputMethodWinBase::ProcessKeyEventDone(ui::KeyEvent* event,
-                                             const std::vector<MSG>* char_msgs,
-                                             bool is_handled) {
+void InputMethodWinBase::ProcessKeyEventDone(
+    ui::KeyEvent* event,
+    const std::vector<CHROME_MSG>* char_msgs,
+    bool is_handled) {
   if (is_handled)
     return;
   ProcessUnhandledKeyEvent(event, char_msgs);
@@ -487,7 +489,7 @@ void InputMethodWinBase::ProcessKeyEventDone(ui::KeyEvent* event,
 
 ui::EventDispatchDetails InputMethodWinBase::ProcessUnhandledKeyEvent(
     ui::KeyEvent* event,
-    const std::vector<MSG>* char_msgs) {
+    const std::vector<CHROME_MSG>* char_msgs) {
   DCHECK(event);
   ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
   if (details.dispatcher_destroyed || details.target_destroyed ||

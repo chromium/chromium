@@ -479,7 +479,7 @@ TEST(WebInputEventTest, MousePointerEvent) {
 
 #if defined(OS_WIN)
 TEST(WebInputEventTest, MouseLeaveScreenCoordinate) {
-  MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
+  CHROME_MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
   ::SetCursorPos(250, 350);
   ui::MouseEvent ui_event(msg_event);
 

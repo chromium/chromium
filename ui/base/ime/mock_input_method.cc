@@ -11,6 +11,10 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace ui {
 
 MockInputMethod::MockInputMethod(internal::InputMethodDelegate* delegate)
@@ -64,7 +68,7 @@ void MockInputMethod::OnBlur() {
 }
 
 #if defined(OS_WIN)
-bool MockInputMethod::OnUntranslatedIMEMessage(const MSG event,
+bool MockInputMethod::OnUntranslatedIMEMessage(const CHROME_MSG event,
                                                NativeEventResult* result) {
   if (result)
     *result = NativeEventResult();

@@ -43,7 +43,7 @@ void InputMethodBase::OnBlur() {
 
 #if defined(OS_WIN)
 bool InputMethodBase::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   return false;
 }
