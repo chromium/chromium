@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
+
+const base::Feature kReclaimInactiveWebCodecs{"ReclaimInactiveWebCodecs",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 constexpr base::TimeDelta kInactivityReclamationThreshold =
@@ -22,7 +26,8 @@ ReclaimableCodec::ReclaimableCodec()
       activity_timer_(Thread::Current()->GetTaskRunner(),
                       this,
                       &ReclaimableCodec::ActivityTimerFired) {
-  activity_timer_.StartRepeating(kTimerPeriod, FROM_HERE);
+  if (base::FeatureList::IsEnabled(kReclaimInactiveWebCodecs))
+    activity_timer_.StartRepeating(kTimerPeriod, FROM_HERE);
 }
 
 void ReclaimableCodec::MarkCodecActive() {
@@ -31,6 +36,8 @@ void ReclaimableCodec::MarkCodecActive() {
 }
 
 void ReclaimableCodec::ActivityTimerFired(TimerBase*) {
+  DCHECK(base::FeatureList::IsEnabled(kReclaimInactiveWebCodecs));
+
   auto time_inactive = base::TimeTicks::Now() - last_activity_;
 
   bool is_inactive = time_inactive < kInactivityReclamationThreshold;
