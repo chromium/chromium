@@ -119,9 +119,9 @@ bool JsonToCategories(const base::Value& parsed,
     } else {
       // TODO(tschumann): Right now, the backend does not yet populate this
       // field. Make it mandatory once the backends provide it.
-      bool allow_fetching_more_results = false;
-      category_value->GetBoolean("allowFetchingMoreResults",
-                                 &allow_fetching_more_results);
+      bool allow_fetching_more_results =
+          category_value->FindBoolKey("allowFetchingMoreResults")
+              .value_or(false);
       categories->push_back(FetchedCategory(
           category, BuildRemoteCategoryInfo(base::UTF8ToUTF16(utf8_title),
                                             allow_fetching_more_results)));

@@ -124,12 +124,15 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
 
   const base::DictionaryValue* notification_info = nullptr;
   if (dict.GetDictionary("notificationInfo", &notification_info)) {
-    if (notification_info->GetBoolean("shouldNotify",
-                                      &snippet->should_notify_) &&
-        snippet->should_notify_) {
-      if (!GetTimeValue(*notification_info, "deadline",
-                        &snippet->notification_deadline_)) {
-        snippet->notification_deadline_ = base::Time::Max();
+    absl::optional<bool> should_notify =
+        notification_info->FindBoolKey("shouldNotify");
+    if (should_notify) {
+      snippet->should_notify_ = should_notify.value();
+      if (snippet->should_notify_) {
+        if (!GetTimeValue(*notification_info, "deadline",
+                          &snippet->notification_deadline_)) {
+          snippet->notification_deadline_ = base::Time::Max();
+        }
       }
     }
   }
