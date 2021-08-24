@@ -324,9 +324,9 @@ void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
     const std::string& key_name,
     const TpmChallengeKeyResult& public_key) {
   CallbackObserver callback_observer;
-  challenge_key_subtle_->StartPrepareKeyStep(key_type, will_register_key,
-                                             key_name, GetProfile(),
-                                             callback_observer.GetCallback());
+  challenge_key_subtle_->StartPrepareKeyStep(
+      key_type, will_register_key, key_name, GetProfile(),
+      callback_observer.GetCallback(), /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(), public_key);
@@ -782,7 +782,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
       KEY_DEVICE, /*will_register_key=*/true, key_name, GetProfile(),
-      callback_observer.GetCallback());
+      callback_observer.GetCallback(), /*signals=*/absl::nullopt);
 
   // |challenge_key_subtle_| should wait until the certificate is uploaded.
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));

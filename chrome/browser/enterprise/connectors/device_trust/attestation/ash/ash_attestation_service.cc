@@ -34,7 +34,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,
-      /*key_name_for_spkac=*/std::string());
+      /*key_name_for_spkac=*/std::string(), /*signals=*/absl::nullopt);
 }
 
 void AshAttestationService::ReturnResult(

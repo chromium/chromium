@@ -709,7 +709,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -736,7 +737,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -763,7 +765,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -791,7 +794,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
           chromeos::attestation::AttestationKeyType::KEY_DEVICE,
           /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
           /*register_key=*/true,
-          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-keystore-")))
+          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-keystore-"),
+          /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -818,7 +822,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(challenge_result));
 
   CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
@@ -1070,7 +1075,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyNoMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1097,7 +1103,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1124,7 +1131,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1152,7 +1160,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
           chromeos::attestation::AttestationKeyType::KEY_DEVICE,
           /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
           /*register_key=*/true,
-          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-lacros-")))
+          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-lacros-"),
+          /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1179,7 +1188,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
       BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string()))
+                    /*key_name_for_spkac=*/std::string(),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(challenge_result));
 
   CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;

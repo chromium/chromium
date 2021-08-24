@@ -171,7 +171,8 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     bool will_register_key,
     const std::string& key_name,
     Profile* profile,
-    TpmChallengeKeyCallback callback) {
+    TpmChallengeKeyCallback callback,
+    const absl::optional<::attestation::DeviceTrustSignals>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
   // For device key: if |will_register_key| is true, |key_name| should not be
@@ -187,6 +188,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
   key_name_ = GetKeyNameWithDefault(key_type, key_name);
   profile_ = profile;
   callback_ = std::move(callback);
+  signals_ = signals;
 
   switch (key_type_) {
     case KEY_DEVICE:
@@ -585,6 +587,8 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
+  if (signals_.has_value())
+    *request.mutable_device_trust_signals() = signals_.value();
   AttestationClient::Get()->SignEnterpriseChallenge(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
                               weak_factory_.GetWeakPtr()));

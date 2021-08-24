@@ -533,7 +533,7 @@ TEST_F(CertProvisioningWorkerTest, Success) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_START_CSR_OK(
@@ -688,7 +688,7 @@ TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_START_CSR_OK(
@@ -770,7 +770,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
                             /*will_register_key=*/true,
                             /*key_name=*/GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_TRY_LATER(
         ClientCertProvisioningStartCsr(kCertScopeStrDevice, kCertProfileId,
@@ -886,7 +886,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_TRY_LATER(
         ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
@@ -1008,7 +1008,7 @@ TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_SERVICE_ACTIVATION_PENDING(ClientCertProvisioningStartCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -1135,7 +1135,7 @@ TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_TRY_LATER(
         ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
@@ -1254,7 +1254,7 @@ TEST_F(CertProvisioningWorkerTest, StatusErrorHandling) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_INVALID_REQUEST(ClientCertProvisioningStartCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -1298,7 +1298,7 @@ TEST_F(CertProvisioningWorkerTest, ResponseErrorHandling) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_CA_ERROR(ClientCertProvisioningStartCsr);
 
@@ -1343,7 +1343,7 @@ TEST_F(CertProvisioningWorkerTest, InconsistentDataErrorHandling) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_INCONSISTENT_DATA(ClientCertProvisioningStartCsr);
 
@@ -1386,7 +1386,7 @@ TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_TEMPORARY_UNAVAILABLE(ClientCertProvisioningStartCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -1451,7 +1451,7 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_OK(
         ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
@@ -1560,7 +1560,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJson(base::StringPrintf(
         R"({
@@ -1744,7 +1744,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
                             /*will_register_key=*/true,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJson(base::StringPrintf(
         R"({
@@ -1864,7 +1864,7 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
                             /*will_register_key=*/true,
                             /*key_name=*/GetKeyName(kCertProfileId),
                             /*profile=*/_,
-                            /*callback=*/_));
+                            /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJson(base::StringPrintf(
         R"({

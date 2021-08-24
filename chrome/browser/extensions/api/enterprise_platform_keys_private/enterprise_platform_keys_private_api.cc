@@ -61,7 +61,8 @@ void EPKPChallengeKey::Run(chromeos::attestation::AttestationKeyType type,
 
   impl_ = ash::attestation::TpmChallengeKeyFactory::Create();
   impl_->BuildResponse(type, profile, std::move(callback), challenge,
-                       register_key, key_name_for_spkac);
+                       register_key, key_name_for_spkac,
+                       /*signals=*/absl::nullopt);
 }
 
 EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::

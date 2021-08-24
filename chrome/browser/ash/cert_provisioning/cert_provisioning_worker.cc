@@ -417,7 +417,8 @@ void CertProvisioningWorkerImpl::GenerateKeyForVa() {
       /*will_register_key=*/true, GetKeyName(cert_profile_.profile_id),
       profile_,
       base::BindOnce(&CertProvisioningWorkerImpl::OnGenerateKeyForVaDone,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+      /*signals=*/absl::nullopt);
 }
 
 void CertProvisioningWorkerImpl::OnGenerateKeyForVaDone(

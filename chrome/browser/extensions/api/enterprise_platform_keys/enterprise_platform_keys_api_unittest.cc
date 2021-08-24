@@ -39,12 +39,14 @@ namespace {
 
 const char kUserEmail[] = "test@google.com";
 
-void FakeRunCheckNotRegister(chromeos::attestation::AttestationKeyType key_type,
-                             Profile* profile,
-                             ash::attestation::TpmChallengeKeyCallback callback,
-                             const std::string& challenge,
-                             bool register_key,
-                             const std::string& key_name_for_spkac) {
+void FakeRunCheckNotRegister(
+    chromeos::attestation::AttestationKeyType key_type,
+    Profile* profile,
+    ash::attestation::TpmChallengeKeyCallback callback,
+    const std::string& challenge,
+    bool register_key,
+    const std::string& key_name_for_spkac,
+    const absl::optional<::attestation::DeviceTrustSignals>& signals) {
   EXPECT_FALSE(register_key);
   std::move(callback).Run(
       ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(

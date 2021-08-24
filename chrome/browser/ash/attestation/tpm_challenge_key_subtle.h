@@ -15,12 +15,14 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -88,11 +90,13 @@ class TpmChallengeKeySubtle {
   // success |TpmChallengeKeyResult::public_key| will be filled. If
   // |will_register_key| is true, challenge response will contain SPKAC and the
   // key can be registered using StartRegisterKeyStep method.
-  virtual void StartPrepareKeyStep(AttestationKeyType key_type,
-                                   bool will_register_key,
-                                   const std::string& key_name,
-                                   Profile* profile,
-                                   TpmChallengeKeyCallback callback) = 0;
+  virtual void StartPrepareKeyStep(
+      AttestationKeyType key_type,
+      bool will_register_key,
+      const std::string& key_name,
+      Profile* profile,
+      TpmChallengeKeyCallback callback,
+      const absl::optional<::attestation::DeviceTrustSignals>& signals) = 0;
 
   // Generates a VA challenge response using the key pair prepared by
   // |PrepareKey| method. Returns VA challenge response via |callback|. In case
@@ -138,11 +142,14 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   ~TpmChallengeKeySubtleImpl() override;
 
   // TpmChallengeKeySubtle
-  void StartPrepareKeyStep(AttestationKeyType key_type,
-                           bool will_register_key,
-                           const std::string& key_name,
-                           Profile* profile,
-                           TpmChallengeKeyCallback callback) override;
+  void StartPrepareKeyStep(
+      AttestationKeyType key_type,
+      bool will_register_key,
+      const std::string& key_name,
+      Profile* profile,
+      TpmChallengeKeyCallback callback,
+      const absl::optional<::attestation::DeviceTrustSignals>& signals)
+      override;
   void StartSignChallengeStep(const std::string& challenge,
                               TpmChallengeKeyCallback callback) override;
   void StartRegisterKeyStep(TpmChallengeKeyCallback callback) override;
@@ -236,6 +243,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // (after PrepareKeyFinished method is finished). It is used to mark the key
   // as corporate.
   std::string public_key_;
+  // Signals from Context Aware Access.
+  absl::optional<::attestation::DeviceTrustSignals> signals_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

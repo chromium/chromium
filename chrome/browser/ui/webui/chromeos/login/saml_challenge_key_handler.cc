@@ -132,7 +132,8 @@ void SamlChallengeKeyHandler::BuildChallengeResponse() {
       GetTpmResponseTimeout(), attestation::KEY_DEVICE, profile_,
       base::BindOnce(&SamlChallengeKeyHandler::ReturnResult,
                      weak_factory_.GetWeakPtr()),
-      decoded_challenge_, /*register_key=*/false, /*key_name_for_spkac=*/"");
+      decoded_challenge_, /*register_key=*/false, /*key_name_for_spkac=*/"",
+      /*signals=*/absl::nullopt);
 }
 
 base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {
