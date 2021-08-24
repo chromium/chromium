@@ -1252,16 +1252,16 @@ bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
 }
 
 // static
-bool ContentSecurityPolicy::ShouldBypassMainWorld(
+bool ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
     const ExecutionContext* context) {
   if (!context)
     return false;
 
-  return ShouldBypassMainWorld(context->GetCurrentWorld().get());
+  return ShouldBypassMainWorldDeprecated(context->GetCurrentWorld().get());
 }
 
 // static
-bool ContentSecurityPolicy::ShouldBypassMainWorld(
+bool ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
     const DOMWrapperWorld* world) {
   if (!world || !world->IsIsolatedWorld())
     return false;

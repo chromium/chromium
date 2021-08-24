@@ -772,7 +772,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // plumbing the correct CSP to the browser.
   using CSPDisposition = network::mojom::CSPDisposition;
   CSPDisposition should_check_main_world_csp =
-      ContentSecurityPolicy::ShouldBypassMainWorld(
+      ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
           request.JavascriptWorld().get())
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;

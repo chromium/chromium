@@ -310,7 +310,8 @@ String GetStringFromScriptHelper(
 
 bool RequireTrustedTypesCheck(const ExecutionContext* execution_context) {
   return execution_context && execution_context->RequireTrustedTypes() &&
-         !ContentSecurityPolicy::ShouldBypassMainWorld(execution_context);
+         !ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
+             execution_context);
 }
 
 String TrustedTypesCheckForHTML(String html,

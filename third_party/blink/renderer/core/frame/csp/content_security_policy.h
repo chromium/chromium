@@ -376,16 +376,14 @@ class CORE_EXPORT ContentSecurityPolicy final
   // isolated world should use the isolated world CSP instead of bypassing the
   // main world CSP. See
   // ExecutionContext::GetContentSecurityPolicyForCurrentWorld.
-  // TODO(karandeepb): Rename to ShouldBypassMainWorldDeprecated.
-  static bool ShouldBypassMainWorld(const ExecutionContext*);
+  static bool ShouldBypassMainWorldDeprecated(const ExecutionContext*);
 
   // Whether the main world's CSP should be bypassed for operations in the given
   // |world|.
   // Note: This is deprecated. New usages should not be added. Operations in an
   // isolated world should use the isolated world CSP instead of bypassing the
   // main world CSP. See ExecutionContext::GetContentSecurityPolicyForWorld.
-  // TODO(karandeepb): Rename to ShouldBypassMainWorldDeprecated.
-  static bool ShouldBypassMainWorld(const DOMWrapperWorld* world);
+  static bool ShouldBypassMainWorldDeprecated(const DOMWrapperWorld* world);
 
   static bool IsNonceableElement(const Element*);
 

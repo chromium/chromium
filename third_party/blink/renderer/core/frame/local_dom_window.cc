@@ -360,7 +360,7 @@ bool LocalDOMWindow::CanExecuteScripts(
   // main world's CSP (such as for privileged isolated worlds). See
   // https://crbug.com/811528.
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kScripts) &&
-      !ContentSecurityPolicy::ShouldBypassMainWorld(this)) {
+      !ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(this)) {
     // FIXME: This message should be moved off the console once a solution to
     // https://bugs.webkit.org/show_bug.cgi?id=103274 exists.
     if (reason == kAboutToExecuteScript) {
