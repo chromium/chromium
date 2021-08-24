@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -165,6 +166,22 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
             throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.performAction(viewId, action, args));
+    }
+
+    /**
+     * Helper method to perform an action on the UI, then poll for a given criteria to verify
+     * the action was completed.
+     *
+     * @param viewId int                   virtualViewId of the given node
+     * @param action int                   desired AccessibilityNodeInfo action
+     * @param args Bundle                  action bundle
+     * @param criteria Callable<Boolean>   criteria to poll against to verify completion
+     * @throws ExecutionException          Error
+     */
+    public void performActionOnUiThread(int viewId, int action, Bundle args,
+            Callable<Boolean> criteria) throws ExecutionException, Throwable {
+        performActionOnUiThread(viewId, action, args);
+        CriteriaHelper.pollUiThread(criteria, NODE_TIMEOUT_ERROR);
     }
 
     /**

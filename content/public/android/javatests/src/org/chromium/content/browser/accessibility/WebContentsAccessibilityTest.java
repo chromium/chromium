@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_ACCESSIBILITY_FOCUS;
@@ -67,6 +68,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -116,6 +118,8 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object has incorrect visibleToUser value";
     private static final String OFFSCREEN_BUNDLE_EXTRA_ERROR =
             "AccessibilityNodeInfo object has incorrect Bundle extras for offscreen boolean.";
+    private static final String PERFORM_ACTION_ERROR =
+            "performAction did not update node as expected.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -175,6 +179,11 @@ public class WebContentsAccessibilityTest {
     private boolean performActionOnUiThread(int viewId, int action, Bundle args)
             throws ExecutionException {
         return mActivityTestRule.performActionOnUiThread(viewId, action, args);
+    }
+
+    private void performActionOnUiThread(int viewId, int action, Bundle args,
+            Callable<Boolean> criteria) throws ExecutionException, Throwable {
+        mActivityTestRule.performActionOnUiThread(viewId, action, args, criteria);
     }
 
     private void executeJS(String method) {
@@ -1504,6 +1513,79 @@ public class WebContentsAccessibilityTest {
                 mNodeInfo3.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
         Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
+    }
+
+    @Test
+    @SmallTest
+    public void testPerformAction_setText() throws Throwable {
+        // Build a simple web page with an input node to interact with.
+        setupTestWithHTML("<input type='text'><button>Button</button>");
+
+        // Find input node and button node.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        int vvidButton = waitForNodeMatching(sTextMatcher, "Button");
+        AccessibilityNodeInfo buttonNodeInfo = createAccessibilityNodeInfo(vvidButton);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, buttonNodeInfo);
+
+        // Verify that bad requests have no effect.
+        Assert.assertFalse(
+                performActionOnUiThread(vvidButton, AccessibilityNodeInfo.ACTION_SET_TEXT, null));
+        Assert.assertFalse(
+                performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, null));
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, null);
+        Assert.assertFalse(
+                performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, bundle));
+
+        // Send a proper action and poll for update.
+        bundle.putString(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
+        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, bundle,
+                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty());
+
+        // Send of test signal and update node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify results.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "new text", mNodeInfo.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testPerformAction_setSelection() throws Throwable {
+        // Build a simple web page with an input node to interact with.
+        setupTestWithHTML("<input type='text' value='test text'><button>Button</button>");
+
+        // Find input node and button node.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        int vvidButton = waitForNodeMatching(sTextMatcher, "Button");
+        AccessibilityNodeInfo buttonNodeInfo = createAccessibilityNodeInfo(vvidButton);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, buttonNodeInfo);
+
+        // Verify that a bad request has no effect.
+        Assert.assertFalse(performActionOnUiThread(
+                vvidButton, AccessibilityNodeInfo.ACTION_SET_SELECTION, null));
+
+        // Send a proper action and poll for update.
+        Bundle bundle = new Bundle();
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 5);
+        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+        });
+
+        // Send of test signal and update node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify results.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 2, mNodeInfo.getTextSelectionStart());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, mNodeInfo.getTextSelectionEnd());
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)

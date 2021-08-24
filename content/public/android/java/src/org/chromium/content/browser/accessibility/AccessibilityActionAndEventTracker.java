@@ -85,7 +85,12 @@ public class AccessibilityActionAndEventTracker {
             for (String key : arguments.keySet()) {
                 argsBuilder.append(" {");
                 argsBuilder.append(key);
-                argsBuilder.append(arguments.get(key).toString());
+                // In case of null values, check what the key returns.
+                if (arguments.get(key) != null) {
+                    argsBuilder.append(arguments.get(key).toString());
+                } else {
+                    argsBuilder.append("null");
+                }
                 argsBuilder.append("},");
             }
             argsBuilder.append(" ]");
