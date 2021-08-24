@@ -314,4 +314,20 @@ using l10n_util::GetNSString;
   return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
 }
 
+- (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  switch (self.signinStateForCancel) {
+    case IdentitySigninStateSignedOut:
+      // AdvancedSettingsSigninCoordinator will be interrupted to open the
+      // Chrome Sync webpage URL.
+      // We need to leave the user signed in so they can open this web page.
+      self.signinStateForCancel = IdentitySigninStateSignedInWithSyncDisabled;
+      break;
+    case IdentitySigninStateSignedInWithSyncDisabled:
+    case IdentitySigninStateSignedInWithSyncEnabled:
+      // Nothing to do.
+      break;
+  }
+}
+
 @end

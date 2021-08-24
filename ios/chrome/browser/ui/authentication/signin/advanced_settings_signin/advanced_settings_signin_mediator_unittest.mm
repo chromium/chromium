@@ -199,12 +199,26 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
 // Tests that a user's authentication does not change when sign-in is
 // interrupted.
 TEST_F(AdvancedSettingsSigninMediatorTest,
-       saveUserPreferenceSigninInterrupted) {
+       saveUserPreferenceSigninInterruptedWithSyncDisabled) {
+  authentication_service_fake_->SignIn(identity_);
+  [mediator_
+      saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
+                    originalSigninState:
+                        IdentitySigninStateSignedInWithSyncDisabled];
+
+  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+}
+
+// Tests that a user's authentication reverted when sign-in is
+// interrupted with IdentitySigninStateSignedOut.
+TEST_F(AdvancedSettingsSigninMediatorTest,
+       saveUserPreferenceSigninInterruptedWithSignout) {
   authentication_service_fake_->SignIn(identity_);
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
                     originalSigninState:IdentitySigninStateSignedOut];
 
-  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
+  ASSERT_FALSE(authentication_service_fake_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }

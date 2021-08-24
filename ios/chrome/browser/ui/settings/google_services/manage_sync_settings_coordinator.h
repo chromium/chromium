@@ -22,6 +22,12 @@
 // TODO(crbug.com/1222632): Remove property following the MICE Settings launch.
 @property(nonatomic, readonly) NSString* manageSyncSettingsCoordinatorTitle;
 
+@optional
+// Called when the view controller is about to open the Chrome Sync web page
+// URL.
+- (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
+    (ManageSyncSettingsCoordinator*)coordinator;
+
 @end
 
 // Coordinator for the Manage Sync Settings TableView Controller.

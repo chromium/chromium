@@ -218,6 +218,12 @@ using signin_metrics::PromoAction;
 }
 
 - (void)openDataFromChromeSyncWebPage {
+  if ([self.delegate
+          respondsToSelector:@selector
+          (manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:)]) {
+    [self.delegate
+        manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:self];
+  }
   GURL url = google_util::AppendGoogleLocaleParam(
       GURL(kSyncGoogleDashboardURL),
       GetApplicationContext()->GetApplicationLocale());

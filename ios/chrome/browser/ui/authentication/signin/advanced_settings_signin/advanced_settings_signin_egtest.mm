@@ -268,7 +268,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -287,7 +287,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -303,7 +303,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -319,7 +319,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests that canceling sign-in from advanced sign-in settings will
