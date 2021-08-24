@@ -141,7 +141,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The buffer size (in audio frames) for WebAudio rendering recommended by the

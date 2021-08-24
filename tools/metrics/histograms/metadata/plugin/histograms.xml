@@ -28,7 +28,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Plugin.FlashUsage" enum="FlashUsage"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>yzshen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Collects Flash usage data.</summary>

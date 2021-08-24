@@ -133,14 +133,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.DriveHostedFilePinSuccess" enum="BooleanSuccess"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning hosted files in Drive.</summary>
 </histogram>
 
 <histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning files in Drive.</summary>

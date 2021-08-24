@@ -350,7 +350,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1451,7 +1451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.PinAction" enum="BooleanPinned"
-    expires_after="2021-12-12">
+    expires_after="2022-02-20">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1460,7 +1460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.QuickSettingUserAction"
-    enum="MediaSessionAction" expires_after="2021-12-12">
+    enum="MediaSessionAction" expires_after="2022-02-20">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1469,7 +1469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting"
-    enum="BooleanIsRepeat" expires_after="2021-12-12">
+    enum="BooleanIsRepeat" expires_after="2022-02-20">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1479,7 +1479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageOnShelf"
-    enum="BooleanIsRepeat" expires_after="2021-12-12">
+    enum="BooleanIsRepeat" expires_after="2022-02-20">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1499,7 +1499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.DecoderLifetimeProgression"
-    enum="D3D11LifetimeProgression" expires_after="2021-12-19">
+    enum="D3D11LifetimeProgression" expires_after="2022-02-20">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1653,7 +1653,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.DXVAVDA.UseD3D11" enum="DXVADXVersion"
-    expires_after="2021-12-19">
+    expires_after="2022-02-20">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
