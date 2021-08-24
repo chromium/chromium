@@ -2577,6 +2577,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.CrossSiteSubFrame"
+    units="ms" expires_after="2022-02-23">
+  <owner>sisidovski@google.com</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Similar to PaintTiming.NavigationToLargestContentfulPaint2, this measures
+    the time in milliseconds from navigation timing's navigation start to the
+    time when the page first paints the largest content (text or image) in the
+    cross-site subframe which is the top candidate of largest contentful paint.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
     units="ms" expires_after="2021-12-26">
   <owner>npm@chromium.org</owner>
