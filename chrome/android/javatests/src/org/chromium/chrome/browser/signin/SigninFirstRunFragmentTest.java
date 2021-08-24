@@ -11,6 +11,9 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
+
+import android.accounts.Account;
 import android.support.test.runner.lifecycle.Stage;
 
 import androidx.test.filters.MediumTest;
@@ -29,7 +32,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -42,10 +47,23 @@ public class SigninFirstRunFragmentTest {
     private static final String FULL_NAME1 = "Test Account1";
     private static final String GIVEN_NAME1 = "Account1";
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
+    private static final String CHILD_EMAIL = "child.account@gmail.com";
+    private static final String CHILD_FULL_NAME = "Test Child";
+
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            new FakeAccountManagerFacade() {
+                @Override
+                public void checkChildAccountStatus(
+                        Account account, ChildAccountStatusListener listener) {
+                    listener.onStatusReady(account.name.equals(CHILD_EMAIL)
+                                    ? ChildAccountStatus.REGULAR_CHILD
+                                    : ChildAccountStatus.NOT_CHILD);
+                }
+            };
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountInfoService());
+            new AccountManagerTestRule(mFakeAccountManagerFacade, new FakeAccountInfoService());
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -113,6 +131,25 @@ public class SigninFirstRunFragmentTest {
                 R.string.signin_promo_continue_as, TEST_EMAIL2);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWithSupervisedAccount() {
+        mAccountManagerTestRule.addAccount(
+                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+
+        launchActivityWithFragment();
+
+        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        Assert.assertFalse(
+                mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
+        onView(withText(CHILD_EMAIL)).check(matches(isDisplayed()));
+        onView(withText(CHILD_FULL_NAME)).check(matches(isDisplayed()));
+        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
+                R.string.signin_promo_continue_as, CHILD_FULL_NAME);
+        onView(withText(continueAsText)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     private void launchActivityWithFragment() {

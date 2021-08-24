@@ -18,6 +18,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -129,6 +130,18 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         } else if (mSelectedAccountName == null
                 || AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
             setSelectedAccountName(accounts.get(0).name);
+        }
+
+        if (accounts.size() == 1) {
+            mAccountManagerFacade.checkChildAccountStatus(accounts.get(0), status -> {
+                final boolean isChild = ChildAccountStatus.isChild(status);
+                mModel.set(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
+                if (isChild && mDialogCoordinator != null) {
+                    mDialogCoordinator.dismissDialog();
+                }
+            });
+        } else {
+            mModel.set(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED, false);
         }
     }
 }

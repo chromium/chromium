@@ -45,6 +45,13 @@ class FREBottomGroupViewBinder {
                 button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenNameOrFullNameOrEmail()));
             }
+        } else if (propertyKey == FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
+            final boolean isSelectedAccountSupervised =
+                    model.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+            view.findViewById(R.id.signin_fre_selected_account)
+                    .setEnabled(!isSelectedAccountSupervised);
+            view.findViewById(R.id.signin_fre_dismiss_button)
+                    .setVisibility(isSelectedAccountSupervised ? View.GONE : View.VISIBLE);
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }
