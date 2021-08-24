@@ -734,7 +734,7 @@ static TextBreakIterator* GetNonSharedCharacterBreakIterator() {
     ICUError error_code;
     iterator = base::WrapUnique(icu::BreakIterator::createCharacterInstance(
         icu::Locale(CurrentTextBreakLocaleID()), error_code));
-    CHECK(U_SUCCESS(error_code) && iterator)
+    DCHECK(U_SUCCESS(error_code) && iterator)
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
   }
