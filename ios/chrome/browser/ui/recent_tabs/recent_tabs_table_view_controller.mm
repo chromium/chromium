@@ -797,6 +797,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 - (void)dismissModals {
   [self.contextMenuCoordinator stop];
+  [self.signinPromoViewMediator disconnect];
+  self.signinPromoViewMediator = nil;
   ios::provider::DismissModalsForTableView(self.tableView);
 }
 

@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -446,12 +446,12 @@ TEST_F(SigninPromoViewMediatorTest,
                                     completion:completion_arg]);
   // Starts sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
-  EXPECT_TRUE(
-      [mediator_ conformsToProtocol:@protocol(ChromeIdentityServiceObserver)]);
-  id<ChromeIdentityServiceObserver> chromeIdentityServiceObserver =
-      (id<ChromeIdentityServiceObserver>)mediator_;
+  EXPECT_TRUE([mediator_
+      conformsToProtocol:@protocol(ChromeAccountManagerServiceObserver)]);
+  id<ChromeAccountManagerServiceObserver> accountManagerServiceObserver =
+      (id<ChromeAccountManagerServiceObserver>)mediator_;
   // Simulates an identity update.
-  [chromeIdentityServiceObserver profileUpdate:expected_default_identity_];
+  [accountManagerServiceObserver identityChanged:expected_default_identity_];
   // Spins the run loop to wait for the profile image update.
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());
