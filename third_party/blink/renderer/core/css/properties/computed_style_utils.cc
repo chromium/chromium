@@ -764,6 +764,9 @@ CSSValueID IdentifierForFamily(const AtomicString& family) {
     return CSSValueID::kSerif;
   if (family == font_family_names::kSystemUi)
     return CSSValueID::kSystemUi;
+  if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
+      family == font_family_names::kMath)
+    return CSSValueID::kMath;
   // If family does not correspond to any of the above, then it was actually
   // converted from -webkit-body by FontBuilder, so put this value back.
   // TODO(crbug.com/1065468): This trick does not work if

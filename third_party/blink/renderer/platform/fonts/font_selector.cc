@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -27,6 +28,8 @@ AtomicString FontSelector::FamilyNameFromSettings(
       generic_family_name != font_family_names::kWebkitStandard)
     return g_empty_atom;
 #if defined(OS_ANDROID)
+  // TODO(crbug.com/1228189): Android does not have pre-installed math font.
+  // https://github.com/googlefonts/noto-fonts/issues/330
   if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
     return FontCache::GetGenericFamilyNameForScript(
         font_family_names::kWebkitStandard, font_description);
@@ -59,6 +62,11 @@ AtomicString FontSelector::FamilyNameFromSettings(
     return settings.Pictograph(script);
   if (generic_family_name == font_family_names::kWebkitStandard)
     return settings.Standard(script);
+  // TODO(crbug.com/1228189): Add preference with per-OS default values instead
+  // of hardcoding this string.
+  if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
+      generic_family_name == font_family_names::kMath)
+    return "Latin Modern Math";
 #endif  // !defined(OS_ANDROID)
   return g_empty_atom;
 }

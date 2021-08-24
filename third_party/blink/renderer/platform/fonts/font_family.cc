@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 
 #include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -72,7 +73,9 @@ String FontFamily::ToString() const {
           family_name == font_family_names::kMonospace ||
           family_name == font_family_names::kSansSerif ||
           family_name == font_family_names::kSerif ||
-          family_name == font_family_names::kSystemUi)
+          family_name == font_family_names::kSystemUi ||
+          (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
+           family_name == font_family_names::kMath))
              ? Type::kGenericFamily
              : Type::kFamilyName;
 }

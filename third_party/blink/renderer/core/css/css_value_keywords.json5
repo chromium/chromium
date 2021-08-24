@@ -150,6 +150,7 @@
     "monospace",
     "system-ui",
     "-webkit-body",
+    "math",
 
     //
     // font-display
@@ -451,7 +452,7 @@
     "table",
     "flex",
     "grid",
-    "math",
+    //"math",
     // The order must match the order found in IsDisplayBox().
     "contents",
     //none

@@ -217,6 +217,9 @@ static bool ConvertFontFamilyName(
       family_name = font_builder->GenericFontFamilyName(generic_family);
     else if (cssValueID == CSSValueID::kSystemUi)
       family_name = font_family_names::kSystemUi;
+    else if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
+             cssValueID == CSSValueID::kMath)
+      family_name = font_family_names::kMath;
   }
 
   return !family_name.IsEmpty();

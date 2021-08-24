@@ -610,6 +610,11 @@
       status: "stable",
     },
     {
+      name: "CSSFontFamilyMath",
+      status: "experimental",
+      implied_by: ["MathMLCore"],
+    },
+    {
       name: "CSSFontSizeAdjust",
       status: "test",
     },
