@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Resolution of width is correct for ::before and ::after pseudo-elements
+PASS Resolution of width is correct for ::before and ::after pseudo-elements of display: contents elements
+PASS Resolution of nonexistent pseudo-element styles
+PASS Resolution of pseudo-element styles in display: none elements
+PASS Item-based blockification of pseudo-elements
+PASS Item-based blockification of nonexistent pseudo-elements
+PASS display: contents on pseudo-elements
+PASS Dynamically change to display: contents on pseudo-elements
+FAIL Unknown pseudo-elements throw assert_throws_js: getComputedStyle with an unknown pseudo-element throws function "() => getComputedStyle(div, "totallynotapseudo")" did not throw
+Harness: the test ran to completion.
+

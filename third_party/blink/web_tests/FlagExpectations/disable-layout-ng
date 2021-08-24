@@ -1256,7 +1256,7 @@ crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.h
 crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_avc [ Failure Timeout ]
 
 # Flaky only in legacy layout
-crbug.com/1231658 transforms/transformed-caret.html [ Pass Failure ]
+crbug.com/1231658 transforms/transformed-caret.html [ Failure Pass ]
 
 crbug.com/591099 fast/forms/time/time-appearance-basic.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ Failure ]

@@ -7,7 +7,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="support.js"></script>
-
+<body></body>
 <script>
   promise_test(async function () {
     await test_driver.set_permission({ name: "geolocation" }, "granted");
@@ -76,7 +76,7 @@
     document.body.appendChild(iframe);
     iframe.contentWindow.opener = window;
     await new Promise((resolve) =>
-      window.addEventListener("load", resolve, { once: true })
+      iframe.addEventListener("load", resolve, { once: true })
     );
 
     // And we are back to fully active.
@@ -88,7 +88,7 @@
       );
     });
     assert_true(Number.isInteger(watchId), "Expected some number for watchId");
-    assert_true(position, "Expected a position");
+    assert_true(Boolean(position), "Expected a position");
 
     // Finally, let's get the position from the reattached document.
     position = await new Promise((resolve, reject) => {

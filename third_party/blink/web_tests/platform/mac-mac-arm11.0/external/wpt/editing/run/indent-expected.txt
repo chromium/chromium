@@ -1,0 +1,1305 @@
+This is a testharness.js-based test.
+Found 1301 tests; 1175 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS [["indent",""]] "foo[]bar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[]bar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[]bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[]bar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><span>foo</span><span>bar</span></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><span>foo</span><span>bar</span></blockquote><p>extra</p>"
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<span>foo</span>{}<span>bar</span><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><span>foo</span><span>bar</span></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><span>foo</span><span>bar</span></blockquote><p>extra</p>"
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<span>foo[</span><span>]bar</span><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[bar]baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[bar]baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[bar]baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobarbaz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobarbaz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[bar]baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p dir=\"rtl\">פוברבז</p></blockquote><p dir=\"rtl\">נוםף</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p dir=\"rtl\">פוברבז</p></blockquote><p dir=\"rtl\">נוםף</p>"
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandState("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandValue("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandState("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף" queryCommandValue("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p dir=\"rtl\">פוברבז</p><p>Foobarbaz</p></blockquote><p>Extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p dir=\"rtl\">פוברבז</p><p>Foobarbaz</p></blockquote><p>Extra</p>"
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>Foobarbaz</p><p dir=\"rtl\">פוברבז</p></blockquote><p>Extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>Foobarbaz</p><p dir=\"rtl\">פוברבז</p></blockquote><p>Extra</p>"
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><div><p>Foobarbaz</p><p dir=\"rtl\">פוברבז</p></div></blockquote><p>Extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><div><p>Foobarbaz</p></div><div><p dir=\"rtl\">פוברבז</p></div></blockquote><p>Extra</p>"
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandState("indent") before
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandState("indent") after
+PASS [["indent",""]] "<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo]bar[baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo]bar[baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo]bar[baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobarbaz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobarbaz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo]bar[baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p></p><p> </p><p>foo</p></blockquote><p>extra</p>" but got "<p></p><p> </p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "{<p><p> <p>foo</p>}<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar<i>bazqoz</i>quz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar<i>bazqoz</i>quz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[bar<i>baz]qoz</i>quz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "[]foo<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "[]foo<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "[]foo<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote><p>extra</p>"
+PASS [["indent",""]] "[]foo<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "[]foo<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "[]foo<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "[]foo<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "[]foo<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "[]foo<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo[]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[]foo<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[]foo<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[]foo<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[]foo<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo[]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo[]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo[]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo[]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>{}<br>foo</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><br></blockquote><p>foo</p><p>extra</p>" but got "<p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p><br></p></blockquote>foo</p><p>extra</p>"
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>{}<br>foo</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<br>{}</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<br>{}</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><br></blockquote><span>foo</span>bar<p>extra</p>" but got "<span><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><span><br></span></blockquote>foo</span>bar<p>extra</p>"
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<span>{}<br>foo</span>bar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><blockquote>bar</blockquote><p>extra</p>" but got "<span>foo<br></span><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote><p>extra</p>"
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<span>foo<br>{}</span>bar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo</p>{}<p>bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "<p>foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote>"
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo</p>{}<p>bar</p>" queryCommandValue("indent") after
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td><blockquote>bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>" but got "<table><tbody><tr><td>foo</td><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>"
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td><blockquote>bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>" but got "<table><tbody><tr><td>foo</td><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>"
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><blockquote>foo</blockquote></td><td><blockquote>bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>" but got "<table><tbody><tr><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote></td><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote></td><td>baz</td></tr></tbody></table><p>extra</p>"
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></blockquote><p>extra</p>" but got "<table><tbody><tr><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote></td><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote></td><td><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">baz</blockquote></td></tr></tbody></table><p>extra</p>"
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></blockquote><p>extra</p>"
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><table><tbody><tr><td>foo</td><td>bar</td><td>baz</td></tr></tbody></table></blockquote><p>extra</p>"
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foobar</p></blockquote><p>baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote><p>baz</p><p>extra</p>"
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo[bar]</p><p>baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foobar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foobar</p><p>ba]z</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[bar]<br>baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>baz<p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>baz<p>extra</p>"
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[bar]<br>baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote><br><br><br>baz<p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote><br><br><br>baz<p>extra</p>"
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[bar]<br><br><br><br>baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foobar<br>[ba]z<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar<blockquote>baz</blockquote><p>extra</p>" but got "foobar<br><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foobar<br>[ba]z<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar<br><br><br><br><blockquote>baz</blockquote><p>extra</p>" but got "foobar<br><br><br><br><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foobar<br><br><br><br>[ba]z<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo[bar<br>ba]z<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar<br>baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar<br>baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo[bar<br>ba]z<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<blockquote><p>bar</p></blockquote>baz</div><p>extra</p>" but got "<div>foo</div><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><div><p>bar</p></div></blockquote><div>baz</div><p>extra</p>"
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<div>foo<p>[bar]</p>baz</div><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>foobar</p></blockquote></blockquote><blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote><p>foobar</p><p>baz</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>foobar</p></blockquote><blockquote><p>baz</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>"
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><p>bar</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><blockquote><p>bar</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote><p>bar</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote><p>bar</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>b]ar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><p>bar</p><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote><p>bar</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><blockquote><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><p>bar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote><p>foo</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote>foobar</blockquote>baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote>foobar</blockquote></blockquote><blockquote>baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]<br>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote>foobar<br>baz</blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote>foobar</blockquote><blockquote>baz</blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar<br>b]az</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote>foobar</blockquote></blockquote>baz<p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote>foobar</blockquote></blockquote>baz<p>extra</p>"
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar]</blockquote>baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote>foobar</blockquote>baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote>foobar</blockquote>baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>foo[bar</blockquote>b]az<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<br>bar</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote><blockquote>bar</blockquote><p>extra</p>"
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<blockquote>bar</blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<blockquote>bar</blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "[foo<blockquote>b]ar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<blockquote>bar<br>baz</blockquote><p>extra</p>" but got "foo<blockquote>bar</blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo<blockquote>bar</blockquote>[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<blockquote>bar</blockquote>baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<blockquote>bar</blockquote>baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "[foo<blockquote>bar</blockquote>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<br>bar<br>baz</blockquote><p>extra</p>" but got "<blockquote>foo</blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote><blockquote>baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote style=\"margin-right:0\" dir=\"ltr\"><blockquote><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote></blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p><p>baz</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>baz</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>"
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foo</p><p>bar</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>b]ar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foo</p><p>bar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foo</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("stylewithcss") before
+FAIL [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("stylewithcss") before assert_equals: Wrong result returned expected false but got true
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foo</p><p>bar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin-right:0\" dir=\"ltr\"><p>foo</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote style=\"margin-right:0\" dir=\"ltr\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("stylewithcss") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("stylewithcss") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["stylewithcss","false"],["indent",""]] "<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>foo</blockquote><p>[bar]<blockquote style=\"margin-right: 0\" dir=\"ltr\"><p>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p style=\"margin-left:40px\">foobar</p></blockquote><p style=\"margin-left:40px\">baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p style=\"margin-left:40px\">foobar</p></blockquote><p style=\"margin-left:40px\">baz</p><p>extra</p>"
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p style=\"margin-left: 40px\">baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p style=\"margin-left:40px\">foobar</p><p style=\"margin-left:40px\">baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p style=\"margin-left:40px\">foobar</p><p style=\"margin-left:40px\">baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p style=\"margin-left: 40px\">b]az</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p style=\"margin-left:40px\">foobar</p></blockquote><p>baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p style=\"margin-left:40px\">foobar</p></blockquote><p>baz</p><p>extra</p>"
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar]</p><p>baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p style=\"margin-left:40px\">foobar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p style=\"margin-left:40px\">foobar</p><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo[bar</p><p>b]az</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p></blockquote><p style=\"margin-left:40px\">bar</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p style=\"margin-left:40px\">bar</p><p>extra</p>"
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo]<p style=\"margin-left: 40px\">bar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><p style=\"margin-left:40px\">bar</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><p style=\"margin-left:40px\">bar</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">b]ar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p style=\"margin-left:40px\">bar</p><blockquote><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><p style=\"margin-left:40px\">bar</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">bar<p>[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><p style=\"margin-left:40px\">bar</p><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p style=\"margin-left:40px\">bar</p><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<p style=\"margin-left: 40px\">[bar<p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><p style=\"margin-left:40px\">bar</p><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><p style=\"margin-left:40px\">bar</p><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<p style=\"margin-left: 40px\">bar<p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\"margin-left:40px\">foo</p><blockquote><p>bar</p></blockquote><p style=\"margin-left:40px\">baz</p><p>extra</p>" but got "<p style=\"margin-left:40px\">foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p style=\"margin-left:40px\">baz</p><p>extra</p>"
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p style=\"margin-left: 40px\">foo<p>[bar]<p style=\"margin-left: 40px\">baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p><p>baz</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p><p>baz</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p><p>b]az</p></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote></blockquote><p>baz</p><p>extra</p>"
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar]</p></blockquote><p>baz</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foobar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo[bar</p></blockquote><p>b]az</p><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>b]ar</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<p>foo</p><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>[bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>bar</blockquote><p>baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><blockquote><p>bar</p></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>" but got "<blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><blockquote class=\"webkit-indent-blockquote\" style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>baz</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>foo</blockquote><p>[bar]<blockquote class=\"webkit-indent-blockquote\" style=\"margin: 0 0 0 40px; border: none; padding: 0px\"><p>baz</blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><blockquote>foo<blockquote>bar</blockquote></blockquote></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><blockquote>foo</blockquote><blockquote><blockquote>bar</blockquote></blockquote></blockquote><p>extra</p>"
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo</ol>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote>bar</blockquote>" but got "<ol><li>foo</li></ol><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">bar</blockquote>"
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</ol>[bar]" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo<br>bar</li></ol><li>baz</li></ol>" but got "<ol><ol><li>bar</li></ol><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li><div>foo</div>bar</li></ol><li>baz</li></ol>" but got "<ol><li><div><blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo</blockquote></div>bar</li><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol><li>baz</li></ol></li><li>quz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><ol><li>baz</li></ol></ol><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li><ol><li>baz</li></ol></ol></li><li>quz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol></ol></li><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li></ol><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><li>bar</li></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li></ol><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li><ol><li>bar<ol><li>baz</li></ol></li></ol><li>quz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li><li>quz</li></ol></ol>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li><ol><li>quz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol id=\"u1\"><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>" but got "<ol><ol id=\"u3\"><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>" but got "<ol><ol id=\"u3\"><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol id=\"u1\"><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>" but got "<ol><ol><li id=\"i1\">foo</li><li id=\"i2\">bar</li><li id=\"i3\">baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol id=\"u1\"><li id=\"i1\">foo</li><li id=\"i2\">bar</li></ol></ol>" but got "<ol><ol><li id=\"i1\">foo</li><li id=\"i2\">bar</li></ol></ol>"
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>b[ar<li>baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li></ol><li>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol><li>baz</li></ol></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol></ol></li><ol><li>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></blockquote><p>extra</p>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li></ol><li>baz</li></ol><p>extra</p>"
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></blockquote><p>extra</p>" but got "<ol><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></ol><p>extra</p>"
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><li>bar</li></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol></ol>baz</li></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>" but got "<ol><ol><li>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li><ol><li>bar</li></ol></ol><li>baz</li></ol>" but got "<ol><ol><li>foo<ol><li>bar</li></ol>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "foo<!--bar-->[baz]<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<!--bar-->baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<!--bar-->baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "foo<!--bar-->[baz]<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "[foo]<!--bar-->baz<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<!--bar-->baz</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foo<!--bar-->baz</blockquote><p>extra</p>"
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "[foo]<!--bar-->baz<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>foo<!--bar-->{}<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo<!--bar--></p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>foo<!--bar-->{}<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>{}<!--foo-->bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p><!--foo-->bar</p></blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote><p>extra</p>"
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandState("indent") before
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandState("indent") after
+PASS [["indent",""]] "<p>{}<!--foo-->bar<p>extra" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p> <p>bar</p></blockquote>" but got "<blockquote><p>foo</p></blockquote> <blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote>"
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]" queryCommandValue("indent") after
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p> <p>bar</p></blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>foo</p></blockquote> <blockquote><p>bar</p></blockquote>"
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandState("indent") before
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandValue("indent") before
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandState("indent") after
+PASS [["indent",""]] "<p>[foo]</p> <blockquote><p>bar</blockquote>" queryCommandValue("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><p>foo</p> <p>bar</p> <p>baz</p></blockquote>" but got "<blockquote><p>foo</p></blockquote> <blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\"><p>bar</p></blockquote> <blockquote><p>baz</p></blockquote>"
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandState("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandValue("indent") before
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandState("indent") after
+PASS [["indent",""]] "<blockquote><p>foo</blockquote> <p>[bar]</p> <blockquote><p>baz</blockquote>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol><li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol> </ol>"
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li></ol> <li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li>  <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol> </ol>"
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo</li><ol><li>bar</li> </ol> <li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol></ol>" but got "<ol><li>foo<ol><li>bar</li> </ol></li><ol><li>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li><li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol></ol>" but got "<ol><li>foo<ol><li>bar</li></ol></li> <ol><li>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li></ol></li> <li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li>  <li>baz</li></ol></ol>" but got "<ol><li>foo<ol><li>bar</li> </ol></li> <ol><li>baz</li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<ol><li>bar</li> </ol></li> <li>[baz]</ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol> </ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol><li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" checks for modifications to non-editable content
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" compare innerHTML
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li><ol> <li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li>  <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol> </ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]</li> <ol> <li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar </li><li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar <ol><li>baz</li></ol></li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol><li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li> <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar<ol> <li>baz</li></ol></li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar]<ol> <li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar </li> <li>baz</li></ol></ol>" but got "<ol><li>foo</li><ol><li>bar <ol> <li>baz</li></ol></li></ol></ol>"
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandState("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandState("indent") after
+PASS [["indent",""]] "<ol><li>foo<li>[bar] <ol> <li>baz</ol></ol>" queryCommandValue("indent") after
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>": execCommand("indent", false, "") return value
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" checks for modifications to non-editable content
+FAIL [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><ul><li>a<br><br></li></ul><li>b</li></ul>" but got "<ul><ul><li><br></li></ul><li>b</li></ul>"
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandIndeterm("indent") before
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandState("indent") before
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandValue("indent") before
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandIndeterm("indent") after
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandState("indent") after
+PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandValue("indent") after
+Harness: the test ran to completion.
+
