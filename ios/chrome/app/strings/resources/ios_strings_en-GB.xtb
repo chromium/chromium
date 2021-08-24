@@ -28,7 +28,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
 <translation id="1176932207622159128">Cannot Save Image</translation>
-<translation id="1180526666083833456">Sync and personalise across devices.</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1207113853726624428">New Search</translation>
 <translation id="1209206284964581585">Hide for now</translation>
@@ -135,7 +134,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2302742851632557585">Change password on website</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
-<translation id="2339560363438331454">Sync and Google Services</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359043044084662842">Translate</translation>
@@ -185,7 +183,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2820289420301699633">Your administrator has control over Chrome and can access its data</translation>
 <translation id="2830972654601096923">Manage Addresses…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
-<translation id="2840687315230832938">Initial Sync Setup Not Finished</translation>
 <translation id="2843803966603263712">Reset Translate settings</translation>
 <translation id="2848086008667475748">Make default in settings…</translation>
 <translation id="2858204748079866344">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
@@ -582,7 +579,6 @@ Try to use a unique password for every site.</translation>
 <translation id="6628106477656132239">Invalid Expiry Date</translation>
 <translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
 <translation id="6638511529934826365">Zoom text…</translation>
-<translation id="6639730758971422557">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Sync and Google Services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>

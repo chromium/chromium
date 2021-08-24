@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資料…</translation>
+<translation id="1834290891154666894">無效的主體替代名稱相符項目</translation>
 <translation id="1838709767668011582">Google 網站</translation>
 <translation id="1844692022597038441">這個檔案無法離線瀏覽。</translation>
 <translation id="1853795129690976061">此資料夾已經與 Linux 共用</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">已限制存取權</translation>
 <translation id="6356685157277930264">檔案意見視窗</translation>
 <translation id="6358884629796491903">龍</translation>
+<translation id="636254897931573416">無效的域名尾碼相符數值</translation>
 <translation id="6367976544441405720">客貨車</translation>
 <translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 檢視。</translation>
 <translation id="6394388407447716302">唯讀</translation>

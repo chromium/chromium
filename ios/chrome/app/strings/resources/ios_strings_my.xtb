@@ -28,7 +28,6 @@
 <translation id="1165039591588034296">အမှား</translation>
 <translation id="1172898394251786223">ရှေ့ အကွက်</translation>
 <translation id="1176932207622159128">ရုပ်ပုံကို မသိမ်းဆည်းနိုင်ပါ။</translation>
-<translation id="1180526666083833456">ကိရိယာများတွင် စင့်ခ်လုပ်ပြီး ပုဂ္ဂိုလ်ရေးသီးသန့် ပြင်ဆင်ပါ။</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1207113853726624428">ရှာဖွေမှု အသစ်</translation>
 <translation id="1209206284964581585">ယခု ဖျောက်ထားပါ</translation>
@@ -135,7 +134,6 @@
 <translation id="2302742851632557585">ဝဘ်ဆိုက်ပေါ်ရှိ စကားဝှက်ပြောင်းရန်</translation>
 <translation id="2316709634732130529">အကြံပြုထားသည့် စကားဝှက်ကို သုံးရန်</translation>
 <translation id="2320166752086256636">ကီးဘုတ် ဝှက်ထားရန်</translation>
-<translation id="2339560363438331454">စင့်ခ်နှင့် Google ဝန်ဆောင်မှု</translation>
 <translation id="2351097562818989364">သင်၏ ဘာသာပြန်ရေး ဆက်တင်များကို ပြန်သတ်မှတ်ခဲ့သည်။</translation>
 <translation id="235789365079050412">Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ</translation>
 <translation id="2359043044084662842">ဘာသာပြန်ရန်</translation>
@@ -185,7 +183,6 @@
 <translation id="2820289420301699633">သင့်စီမံခန့်ခွဲသူက Chrome ကို ထိန်းချုပ်ခွင့်ရှိပြီး ၎င်း၏ဒေတာများကို ဝင်ကြည့်နိုင်သည်</translation>
 <translation id="2830972654601096923">လိပ်စာများ စီမံရန်...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />၊ <ph name="STATE" />၊ <ph name="URL" /></translation>
-<translation id="2840687315230832938">စင့်ခ် စတင်လုပ်ရန် စီစဉ်သတ်မှတ်ခြင်းကို အပြီးသတ်၍ မရပါ</translation>
 <translation id="2843803966603263712">ဘာသာပြန် ဆက်တင်များ ပြန်လည်သတ်မှတ်မည်</translation>
 <translation id="2848086008667475748">ဆက်တင်များထဲတွင် ပုံသေသတ်မှတ်ရန်…</translation>
 <translation id="2858204748079866344">သင်၏ ပုဂ္ဂိုလ်ရေးကို ကာကွယ်ရန် Chrome သည် ဤအကွက်အတွက် သင်၏ စကားဝှက်ကို အော်တိုဖြည့်မည် မဟုတ်ပါ။</translation>
@@ -581,7 +578,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6628106477656132239">ကုန်ဆုံးရက် မမှန်ကန်ပါ</translation>
 <translation id="6634432609054530164">သင့်အဖွဲ့အစည်းက ‘ရုပ်ဖျက်မုဒ်’ ကို ပိတ်ထားသည်</translation>
 <translation id="6638511529934826365">စာသားကို ဇူးမ်လုပ်ရန်…</translation>
-<translation id="6639730758971422557">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကိုဖွင့်ရန် <ph name="BEGIN_LINK" />စင်ခ့်နှင့် Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> တွင် 'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကို တို့ပါ။</translation>
 <translation id="6642362222295953972">ရှိပြီးသား တဘ်သို့ ပြောင်းမည်</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6645899968535965230">QR ကုဒ်- <ph name="PAGE_TITLE" /></translation>

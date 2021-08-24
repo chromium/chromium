@@ -28,7 +28,6 @@
 <translation id="1165039591588034296">Ката</translation>
 <translation id="1172898394251786223">Кийинки талаа</translation>
 <translation id="1176932207622159128">Сүрөт сакталбайт</translation>
-<translation id="1180526666083833456">Бардык түзмөктөрдө шайкештирүү жана жекечелештирүү.</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1207113853726624428">Жаңы издөө</translation>
 <translation id="1209206284964581585">Азырынча жашыруу</translation>
@@ -135,7 +134,6 @@
 <translation id="2302742851632557585">Вебсайттагы сырсөзүңүздү өзгөртүңүз</translation>
 <translation id="2316709634732130529">Сунушталган сырсөздү колдонуу</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
-<translation id="2339560363438331454">Google кызматтарын шайкештирүү</translation>
 <translation id="2351097562818989364">Которуу жөндөөлөрүңүз баштапкы абалга келтирилди.</translation>
 <translation id="235789365079050412">Google Купуялык саясаты</translation>
 <translation id="2359043044084662842">Которуу</translation>
@@ -185,7 +183,6 @@
 <translation id="2820289420301699633">Администраторуңуз Chrome'ду көзөмөлдөп, андагы маалыматты колдоно алат.</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
-<translation id="2840687315230832938">Баштапкы шайкештирүү жөндөөсү аяктаган жок</translation>
 <translation id="2843803966603263712">Котор жөндөөлрн кайр кюу</translation>
 <translation id="2848086008667475748">Жөндөөлөрдө демейки катары коюу…</translation>
 <translation id="2858204748079866344">Купуялыгыңызды коргоо максатында, Chrome бул талаага сырсөзүңүздү автоматтык түрдө киргизбейт.</translation>
@@ -582,7 +579,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6628106477656132239">Мөөнөтү аяктай турган күн жараксыз</translation>
 <translation id="6634432609054530164">Уюмуңуз жашыруун режимди өчүрүп койду</translation>
 <translation id="6638511529934826365">Текстти чоңойтуп/кичирейтүү…</translation>
-<translation id="6639730758971422557">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645899968535965230">QR коду: <ph name="PAGE_TITLE" /></translation>

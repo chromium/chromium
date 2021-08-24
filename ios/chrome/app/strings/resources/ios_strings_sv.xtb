@@ -28,7 +28,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1172898394251786223">Nästa fält</translation>
 <translation id="1176932207622159128">Bilden sparades inte</translation>
-<translation id="1180526666083833456">Synkronisera och anpassa på alla enheter.</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1207113853726624428">Ny sökning</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
@@ -135,7 +134,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2302742851632557585">Ändra lösenordet på webbplatsen</translation>
 <translation id="2316709634732130529">Använd det föreslagna lösenordet</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
-<translation id="2339560363438331454">Synk och Googles tjänster</translation>
 <translation id="2351097562818989364">Översättningsinställningarna har återställts.</translation>
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359043044084662842">Översätt</translation>
@@ -185,7 +183,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2820289420301699633">Administratören har kontroll över Chrome och kan få åtkomst till dess data</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
-<translation id="2840687315230832938">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="2843803966603263712">Återställ översättningsinställningar</translation>
 <translation id="2848086008667475748">Använd som standard i Inställningar …</translation>
 <translation id="2858204748079866344">Av sekretesskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
@@ -582,7 +579,6 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6628106477656132239">Ogiltigt sista giltighetsdatum</translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
-<translation id="6639730758971422557">Aktivera Säker webbsökning genom att öppna <ph name="BEGIN_LINK" />Synk och Googles tjänster<ph name="END_LINK" /> och trycka på Säker webbsökning.</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>

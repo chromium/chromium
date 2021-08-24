@@ -459,7 +459,6 @@
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
 <translation id="1489664337021920575">選擇其他選項</translation>
-<translation id="1490491397986065675">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」。</translation>
 <translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
@@ -2131,7 +2130,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。</translation>
 <translation id="3216825226035747725">G Suite 教育版的系統管理員可決定使用者登入 G Suite 教育版帳戶後，可以存取哪些 Google 服務。這可能會包含子女先前無法透過這個受監督帳戶存取的某些功能或服務。學校的系統管理員必須提供或取得家長的同意聲明，才能讓未成年使用者使用這些服務。</translation>
 <translation id="3217843140356091325">要建立捷徑嗎？</translation>
-<translation id="321799795901478485">Zip Archiver</translation>
 <translation id="321834671654278338">Linux 解除安裝程式</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 連接器處理程序當掉了，你要重新啟動嗎？</translation>
 <translation id="3220943972464248773">如要同步處理密碼，請驗證你的身分</translation>
@@ -2676,7 +2674,6 @@
 <translation id="3789841737615482174">安裝</translation>
 <translation id="379082410132524484">你的卡片已過期</translation>
 <translation id="3792890930871100565">中斷印表機連線</translation>
-<translation id="3793395331556663376">已開啟的檔案系統過多。</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：1 天前}other{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：{NUM_DAYS} 天前}}</translation>
 <translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
@@ -3793,7 +3790,6 @@
 <translation id="5009463889040999939">正在重新命名設定檔。請稍候片刻。</translation>
 <translation id="5010043101506446253">憑證授權單位</translation>
 <translation id="5015344424288992913">正在解析 proxy...</translation>
-<translation id="5017633213534173756">記住</translation>
 <translation id="5017643436812738274">你可以透過文字游標瀏覽頁面。按下 Ctrl 鍵 + 搜尋鍵 + 7 即可關閉這項功能。</translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5018207570537526145">開啟擴充功能網站</translation>
@@ -3979,7 +3975,6 @@
 <translation id="521582610500777512">已捨棄相片</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
-<translation id="52232769093306234">封裝失敗。</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前尚未設定瀏覽權限</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
@@ -4091,7 +4086,6 @@
 <translation id="5338503421962489998">本機儲存空間</translation>
 <translation id="5340638867532133571">允許網站安裝付款處理常式 (建議)</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會遭到封鎖)</translation>
-<translation id="5341980496415249280">封裝中，請稍候...</translation>
 <translation id="5342091991439452114">PIN 至少需有 <ph name="MINIMUM" /> 碼</translation>
 <translation id="5344036115151554031">正在還原 Linux</translation>
 <translation id="5345916423802287046">當你登入時啟動應用程式</translation>
@@ -4436,7 +4430,6 @@
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
-<translation id="5722930212736070253">糟糕！Zip 封存工具發生錯誤。</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
@@ -5274,7 +5267,6 @@
 <translation id="6647838571840953560">目前使用<ph name="CHANNEL_NAME" /></translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
-<translation id="6649563841575838401">封存格式不受支援或檔案已毀損。</translation>
 <translation id="6650234781371031356">你已將 <ph name="WEBSITE" /> 的密碼儲存在這部裝置上和 Google 帳戶中。你要從哪個位置刪除密碼？</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
 <translation id="6651237644330755633">信任這個用於識別網站的憑證</translation>
@@ -5690,7 +5682,6 @@
 <translation id="7085389578340536476">要允許 Chrome 錄音嗎？</translation>
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
-<translation id="7088561041432335295">Zip 封存工具 - 在「檔案」應用程式中開啟及封裝 ZIP 檔案。</translation>
 <translation id="7088674813905715446">管理員已將這個裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求你的管理員將裝置設為待處理狀態。</translation>
 <translation id="7093416310351037609">為了維護資料安全，貴機構規定所有符合資格的下載內容都必須儲存至機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6516,7 +6507,6 @@
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
-<translation id="7949924743070109245">「<ph name="FILE_NAME" />」含有機密或危險的資料。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」。</translation>
 <translation id="7951265006188088697">如要新增或管理 Google Pay 付款方式，請前往你的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="795282463722894016">還原完成</translation>
@@ -7318,7 +7308,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">系統會根據你的語言偏好設定，提供可使用拼字檢查的語言</translation>
 <translation id="8814644416678422095">硬碟</translation>
-<translation id="8814687660896548945">系統正在掃描封存檔案，請稍候...</translation>
 <translation id="881782782501875829">新增連接埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>

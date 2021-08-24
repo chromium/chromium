@@ -462,7 +462,6 @@
 <translation id="1486096554574027028">비밀번호 검색</translation>
 <translation id="1487335504823219454">사용 - 맞춤 설정</translation>
 <translation id="1489664337021920575">다른 옵션 선택</translation>
-<translation id="1490491397986065675">관리자가 ‘<ph name="CUSTOM_MESSAGE" />’라고 말합니다.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />을(를) 기다리는 중...</translation>
 <translation id="1494349716233667318">사이트에서 기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
@@ -2146,7 +2145,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다.</translation>
 <translation id="3216825226035747725">G Suite for Education 관리자는 사용자가 G Suite for Education 계정에 로그인되어 있는 동안 액세스할 수 있는 Google 서비스를 결정합니다. 여기에는 자녀가 이전에 이 감독 대상 계정을 사용하여 액세스할 수 없었던 일부 기능 또는 서비스가 포함될 수 있습니다. 학교 관리자는 미성년 사용자의 서비스 사용에 관한 동의를 제공하거나 얻어야 합니다.</translation>
 <translation id="3217843140356091325">바로가기를 만드시겠습니까?</translation>
-<translation id="321799795901478485">Zip Archiver</translation>
 <translation id="321834671654278338">Linux 제거 프로그램</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 커넥터 프로세스가 중단되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="3220943972464248773">비밀번호를 동기화하려면 본인 여부를 인증하세요.</translation>
@@ -2691,7 +2689,6 @@
 <translation id="3789841737615482174">설치</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
 <translation id="3792890930871100565">프린터 연결 해제</translation>
-<translation id="3793395331556663376">파일 시스템이 너무 많이 열려 있습니다.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • 1일 전 확인}other{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • {NUM_DAYS}일 전 확인}}</translation>
 <translation id="379500251094592809">Nearby Share를 사용하려면 두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하려면 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 시간을 선택하여 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">사용 안함</translation>
@@ -3807,7 +3804,6 @@
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5010043101506446253">인증 기관</translation>
 <translation id="5015344424288992913">프록시 알아내는 중...</translation>
-<translation id="5017633213534173756">저장</translation>
 <translation id="5017643436812738274">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 Ctrl+Search+7을 누르세요.</translation>
 <translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
@@ -3993,7 +3989,6 @@
 <translation id="521582610500777512">사진이 삭제되었습니다.</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
-<translation id="52232769093306234">압축에 실패했습니다.</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
@@ -4105,7 +4100,6 @@
 <translation id="5338503421962489998">로컬 저장소</translation>
 <translation id="5340638867532133571">사이트에서 결제 핸들러를 설치하도록 허용(권장)</translation>
 <translation id="5341793073192892252">다음 쿠키가 차단됨(타사 쿠키는 예외 없이 차단됨)</translation>
-<translation id="5341980496415249280">잠시 기다려 주세요. 압축 중입니다...</translation>
 <translation id="5342091991439452114">PIN은 <ph name="MINIMUM" />자리 이상이어야 합니다.</translation>
 <translation id="5344036115151554031">Linux 복원 중</translation>
 <translation id="5345916423802287046">로그인 시 앱 실행</translation>
@@ -4450,7 +4444,6 @@
 <translation id="5719854774000914513">사이트에서 HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="572155275267014074">Android 설정</translation>
 <translation id="5722086096420375088">초록색 및 흰색</translation>
-<translation id="5722930212736070253">죄송합니다. Zip Archiver에 오류가 발생했습니다.</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723508132121499792">실행 중인 백그라운드 앱 없음</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
@@ -5288,7 +5281,6 @@
 <translation id="6647838571840953560">현재 <ph name="CHANNEL_NAME" /> 사용 중</translation>
 <translation id="6648911618876616409">중요 업데이트를 설치할 준비가 되었습니다. 시작하려면 로그인하세요.</translation>
 <translation id="6649018507441623493">잠시 기다려 주세요.</translation>
-<translation id="6649563841575838401">보관 파일 형식이 지원되지 않거나 파일이 손상되었습니다.</translation>
 <translation id="6650234781371031356"><ph name="WEBSITE" />의 비밀번호가 이 기기와 Google 계정에 저장되어 있습니다. 어디에서 삭제하시겠습니까?</translation>
 <translation id="665061930738760572">새 창에서 열기(&amp;N)</translation>
 <translation id="6651237644330755633">웹사이트를 식별하기 위해 이 인증서 신뢰</translation>
@@ -5704,7 +5696,6 @@
 <translation id="7085389578340536476">Chrome에서 오디오를 녹음하도록 허용하시겠습니까?</translation>
 <translation id="7086672505018440886">보관 파일에 Chrome 로그 파일을 포함합니다.</translation>
 <translation id="7088434364990739311">업데이트 확인을 시작하지 못했습니다(오류 코드: <ph name="ERROR" />).</translation>
-<translation id="7088561041432335295">Zip Archiver - 파일 앱에서 ZIP 파일을 열고 압축합니다.</translation>
 <translation id="7088674813905715446">이 기기는 관리자에 의해 사용 중단 상태로 설정되었습니다. 기기를 등록에 사용하려면 관리자에게 기기를 대기 상태로 전환해 달라고 요청해야 합니다.</translation>
 <translation id="7093416310351037609">조직에서 데이터 안전 및 보안을 위해 조건을 충족하는 다운로드 항목을 모두 조직의 <ph name="WEB_DRIVE" /> 계정에 저장할 것을 요구합니다.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6530,7 +6521,6 @@
 <translation id="7946586320617670168">출처가 안전해야 합니다.</translation>
 <translation id="794676567536738329">권한 확인</translation>
 <translation id="7947962633355574091">동영상 주소 복사(&amp;O)</translation>
-<translation id="7949924743070109245"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 데이터가 포함되어 있습니다. 관리자가 전달한 메시지는 "<ph name="CUSTOM_MESSAGE" />"입니다.</translation>
 <translation id="7951265006188088697">Google Pay 결제 수단을 추가하거나 관리하려면 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />을 방문하세요.</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
 <translation id="795282463722894016">복원 완료</translation>
@@ -7332,7 +7322,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">맞춤법 검사 언어는 사용자의 언어 환경설정에 따라 지정됩니다.</translation>
 <translation id="8814644416678422095">하드 드라이브</translation>
-<translation id="8814687660896548945">잠시 기다려 주세요. 보관 파일을 검사하는 중입니다.</translation>
 <translation id="881782782501875829">포트 번호 추가</translation>
 <translation id="881799181680267069">기타 숨기기</translation>
 <translation id="8818152010000655963">배경화면</translation>
