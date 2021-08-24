@@ -2360,7 +2360,7 @@
       'id': 263,
       'caption': '''Enable the use of relay servers by the remote access host''',
       'tags': [],
-      'desc': '''If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is set to Enabled, setting <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME">RemoteAccessHostAllowRelayedConnection</ph>to Enabled or leaving it unset allows the use of remote clients to use relay servers to connect to this machine when a direct connection is not available, for example, because of firewall restrictions.
+      'desc': '''If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is set to Enabled, setting <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME">RemoteAccessHostAllowRelayedConnection</ph> to Enabled or leaving it unset allows the use of remote clients to use relay servers to connect to this machine when a direct connection is not available, for example, because of firewall restrictions.
 
       Setting the policy to Disabled doesn't turn remote access off, but only allows connections from the same network (not NAT traversal or relay).''',
     },
@@ -2660,7 +2660,7 @@
       'id': 13,
       'caption': '''Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> act as a proxy between <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>and legacy printers connected to the machine. Using their Google Account, users may turn on the cloud print proxy by authentication.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> act as a proxy between <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> and legacy printers connected to the machine. Using their Google Account, users may turn on the cloud print proxy by authentication.
 
       Setting the policy to Disabled means users can't turn on the proxy, and the machine can't share its printers with <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.''',
     },
@@ -3814,12 +3814,12 @@
       'id': 20,
       'caption': '''Disable synchronization of data with Google''',
       'tags': ['filtering', 'google-sharing'],
-      'desc': '''"Setting the policy to Enabled turns off data synchronization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> using Google-hosted synchronization services.
+      'desc': '''Setting the policy to Enabled turns off data synchronization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> using Google-hosted synchronization services.
       To fully turn off <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> services, we recommend that you turn off the service in the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
       If the policy is set to Disabled or not set, users are allowed to choose whether to use <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>.
 
-      Note: Do not turn on this policy when <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph> is Enabled, because that feature shares the same client-side functionality. The Google-hosted synchronization is off completely in this case."''',
+      Note: Do not turn on this policy when <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph> is Enabled, because that feature shares the same client-side functionality. The Google-hosted synchronization is off completely in this case.''',
       'arc_support': 'Disabling <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> will cause Android Backup and Restore to not function properly.',
     },
     {
@@ -3907,7 +3907,7 @@
 
       Allows the user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-      If you set this policy, you can configure whether a user is allowed to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Setting this policy to 'False' will prevent apps and extensions that use the chrome.identity API from functioning, so you may want to use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph>t  instead.''',
+      If you set this policy, you can configure whether a user is allowed to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Setting this policy to 'False' will prevent apps and extensions that use the chrome.identity API from functioning, so you may want to use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> instead.''',
     },
     {
       'name': 'EnableDeprecatedWebBasedSignin',
@@ -17072,7 +17072,7 @@
       'tags': [],
       'desc': '''If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, then setting <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME">DeviceNativePrintersWhitelist</ph> specifies which printers users can use. Only the printers with IDs matching the values in this policy are available to users. The IDs must correspond to the <ph name="ID_FIELD">"id"</ph> or <ph name="GUID_FIELD">"guid"</ph> fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
 
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>instead.''',
+      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> instead.''',
     },
     {
       'name': 'DevicePrinters',
