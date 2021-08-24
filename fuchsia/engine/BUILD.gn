@@ -555,8 +555,6 @@ test("web_engine_unittests") {
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
   ]
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/access_test_data_dir.test-cmx",
-
     # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
     "//build/config/fuchsia/test/jit_capabilities.test-cmx",
 

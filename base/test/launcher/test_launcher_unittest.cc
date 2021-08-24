@@ -719,6 +719,15 @@ TEST_F(TestLauncherTest, TestChildTempDir) {
   EXPECT_FALSE(DirectoryExists(task_temp));
 }
 
+#if defined(OS_FUCHSIA)
+// Verifies that test processes have /data, /cache and /tmp available.
+TEST_F(TestLauncherTest, ProvidesDataCacheAndTmpDirs) {
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/data")));
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/cache")));
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/tmp")));
+}
+#endif  // defined(OS_FUCHSIA)
+
 // Unit tests to validate UnitTestLauncherDelegate implementation.
 class UnitTestLauncherDelegateTester : public testing::Test {
  protected:

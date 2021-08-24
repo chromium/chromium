@@ -355,15 +355,16 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   new_options.spawn_flags = FDIO_SPAWN_CLONE_STDIO | FDIO_SPAWN_CLONE_JOB;
 
   const base::FilePath kDataPath(base::kPersistedDataDirectoryPath);
+  const base::FilePath kCachePath(base::kPersistedCacheDirectoryPath);
 
-  // Clone all namespace entries from the current process, except /data, which
-  // is overridden below.
+  // Clone all namespace entries from the current process, except /data and
+  // /cache, which are overridden below.
   fdio_flat_namespace_t* flat_namespace = nullptr;
   zx_status_t result = fdio_ns_export_root(&flat_namespace);
   ZX_CHECK(ZX_OK == result, result) << "fdio_ns_export_root";
   for (size_t i = 0; i < flat_namespace->count; ++i) {
     base::FilePath path(flat_namespace->path[i]);
-    if (path == kDataPath) {
+    if (path == kDataPath || path == kCachePath) {
       result = zx_handle_close(flat_namespace->handle[i]);
       ZX_CHECK(ZX_OK == result, result) << "zx_handle_close";
     } else {
@@ -379,25 +380,36 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   new_options.job_handle = job_handle.get();
 
   // Give this test its own isolated /data directory by creating a new temporary
-  // subdirectory under data (/data/test-$PID) and binding that to /data on the
-  // child process.
+  // subdirectory under data (/data/test-$PID) and binding paths under that to
+  // /data and /cache in the child process.
+  // Persistent data storage is mapped to /cache rather than system-provided
+  // cache storage, to avoid unexpected purges (see crbug.com/1242170).
   CHECK(base::PathExists(kDataPath));
 
   // Create the test subdirectory with a name that is unique to the child test
   // process (qualified by parent PID and an autoincrementing test process
   // index).
   static base::AtomicSequenceNumber child_launch_index;
-  base::FilePath nested_data_path = kDataPath.AppendASCII(
+  const base::FilePath child_data_path = kDataPath.AppendASCII(
       base::StringPrintf("test-%zu-%d", base::Process::Current().Pid(),
                          child_launch_index.GetNext()));
-  CHECK(!base::DirectoryExists(nested_data_path));
-  CHECK(base::CreateDirectory(nested_data_path));
-  DCHECK(base::DirectoryExists(nested_data_path));
+  CHECK(!base::DirectoryExists(child_data_path));
+  CHECK(base::CreateDirectory(child_data_path));
+  DCHECK(base::DirectoryExists(child_data_path));
 
-  // Bind the new test subdirectory to /data in the child process' namespace.
+  const base::FilePath test_data_dir(child_data_path.AppendASCII("data"));
+  CHECK(base::CreateDirectory(test_data_dir));
+  const base::FilePath test_cache_dir(child_data_path.AppendASCII("cache"));
+  CHECK(base::CreateDirectory(test_cache_dir));
+
+  // Transfer handles to the new directories as /data and /cache in the child
+  // process' namespace.
   new_options.paths_to_transfer.push_back(
       {kDataPath,
-       base::OpenDirectoryHandle(nested_data_path).TakeChannel().release()});
+       base::OpenDirectoryHandle(test_data_dir).TakeChannel().release()});
+  new_options.paths_to_transfer.push_back(
+      {kCachePath,
+       base::OpenDirectoryHandle(test_cache_dir).TakeChannel().release()});
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -483,7 +495,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     ZX_CHECK(status == ZX_OK, status);
 
     // Cleanup the data directory.
-    CHECK(DeletePathRecursively(nested_data_path));
+    CHECK(DeletePathRecursively(child_data_path));
 #elif defined(OS_POSIX)
     // It is not possible to waitpid() on any leaked sub-processes of the test
     // batch process, since those are not direct children of this process.
