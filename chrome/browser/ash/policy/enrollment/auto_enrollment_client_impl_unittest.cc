@@ -602,7 +602,8 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
-  ServerWillReply(-1, false, false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -615,7 +616,8 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
-  ServerWillReply(-1, false, false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -639,7 +641,8 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
   InSequence sequence;
-  ServerWillReply(32, false, false);
+  ServerWillReply(/*modulus=*/32, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -658,8 +661,10 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   InSequence sequence;
-  ServerWillReply(32, false, false);
-  ServerWillReply(64, false, false);
+  ServerWillReply(/*modulus=*/32, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/64, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -673,8 +678,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
   InSequence sequence;
-  ServerWillReply(8, false, false);
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/8, /*with_hashes=*/false, /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -696,8 +701,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
   InSequence sequence;
-  ServerWillReply(16, false, false);
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/16, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -719,8 +725,10 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
   InSequence sequence;
-  ServerWillReply(16, false, false);
-  ServerWillReply(16, false, false);
+  ServerWillReply(/*modulus=*/16, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/16, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -733,7 +741,8 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
-  ServerWillReply(512, false, false);
+  ServerWillReply(/*modulus=*/512, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -748,8 +757,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
 TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
   CreateClient(0, kInitialEnrollmentModulusPowerOutdatedServer + 1);
   InSequence sequence;
-  ServerWillReply(1 << kInitialEnrollmentModulusPowerOutdatedServer, false,
-                  false);
+  ServerWillReply(/*modulus=*/1 << kInitialEnrollmentModulusPowerOutdatedServer,
+                  /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
 
   if (GetAutoEnrollmentProtocol() ==
       AutoEnrollmentProtocol::kInitialEnrollment) {
@@ -768,7 +778,8 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
   } else {
     // For FRE, such a detection does not exist. The client will do the second
     // round and upload bits of its device identifier hash.
-    ServerWillReply(-1, false, false);
+    ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                    /*with_id_hash=*/false);
     client()->Start();
     base::RunLoop().RunUntilIdle();
     ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -783,8 +794,10 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
 
 TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   InSequence sequence;
-  ServerWillReply(100, false, false);
-  ServerWillReply(-1, false, false);
+  ServerWillReply(/*modulus=*/100, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -806,7 +819,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
-  ServerWillReply(-1, true, false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -826,7 +839,7 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
 
 TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -854,7 +867,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
 
 TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ZERO_TOUCH,
@@ -887,7 +900,7 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
     return;
 
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_REQUESTED,
@@ -909,7 +922,7 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
 
 TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState("example.com",
                       em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED,
                       kDisabledMessage, kNotWithLicense,
@@ -929,7 +942,7 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
 
 TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(std::string(),
                       em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
                       std::string(), kNotWithLicense,
@@ -955,7 +968,8 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
 
 TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   CreateClient(0, 0);
-  ServerWillReply(-1, false, false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -977,7 +991,8 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
                          : INT64_C(0x3018b70f7609c5c7);
   for (int i = 0; i <= 62; ++i) {
     CreateClient(i, i);
-    ServerWillReply(-1, false, false);
+    ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                    /*with_id_hash=*/false);
     client()->Start();
     base::RunLoop().RunUntilIdle();
     ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1004,8 +1019,9 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
 
   CreateClient(10, 37);
   InSequence sequence;
-  ServerWillReply(INT64_C(1) << 37, false, false);
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/INT64_C(1) << 37, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1061,7 +1077,7 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
   CreateClient(5, 10);
 
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1103,7 +1119,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
 
   // Retry once the network is back.
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1200,7 +1216,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
 
 TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterCompletion) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
@@ -1261,9 +1277,10 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
 
   InSequence sequence;
   // The default client uploads 4 bits. Make the server ask for 5.
-  ServerWillReply(1 << 5, false, false);
+  ServerWillReply(/*modulus=*/1 << 5, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
   // Then reply with a valid response and include the hash.
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   // State download triggers.
   ServerWillSendState(
       "example.com",
@@ -1307,7 +1324,7 @@ using AutoEnrollmentClientImplFREToInitialEnrollmentTest =
 TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentLicensePackaging) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   em::DeviceInitialEnrollmentStateResponse initial_state_response;
   initial_state_response.set_is_license_packaged_with_device(kWithLicense);
   initial_state_response.set_license_packaging_sku(
@@ -1340,7 +1357,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
 TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentZeroTouch) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   em::DeviceInitialEnrollmentStateResponse initial_state_response;
   initial_state_response.set_initial_enrollment_mode(
       em::DeviceInitialEnrollmentStateResponse::
@@ -1377,7 +1394,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
 TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentGuaranteed) {
   InSequence sequence;
-  ServerWillReply(-1, true, true);
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   em::DeviceInitialEnrollmentStateResponse initial_state_response;
   initial_state_response.set_initial_enrollment_mode(
       em::DeviceInitialEnrollmentStateResponse::
