@@ -11,6 +11,7 @@
 #include "base/base_jni_headers/EarlyTraceEvent_jni.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
 
 namespace base {
 namespace android {
@@ -21,6 +22,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(
     jlong time_ns,
     jint thread_id,
     jlong thread_time_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   static const unsigned char* category_group_enabled =
@@ -31,6 +33,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(
       TimeTicks() + TimeDelta::FromNanoseconds(time_ns),
       ThreadTicks() + TimeDelta::FromMilliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(
@@ -39,6 +42,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(
     jlong time_ns,
     jint thread_id,
     jlong thread_time_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   static const unsigned char* category_group_enabled =
@@ -49,6 +53,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(
       TimeTicks() + TimeDelta::FromNanoseconds(time_ns),
       ThreadTicks() + TimeDelta::FromMilliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
@@ -57,6 +62,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
     jlong time_ns,
     jint thread_id,
     jlong thread_time_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   static const unsigned char* category_group_enabled =
@@ -68,6 +74,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
       TimeTicks() + TimeDelta::FromNanoseconds(time_ns),
       ThreadTicks() + TimeDelta::FromMilliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
@@ -76,6 +83,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
     jlong time_ns,
     jint thread_id,
     jlong thread_time_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   static const unsigned char* category_group_enabled =
@@ -87,6 +95,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
       TimeTicks() + TimeDelta::FromNanoseconds(time_ns),
       ThreadTicks() + TimeDelta::FromMilliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(

@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
 
 namespace base {
 namespace android {
@@ -21,6 +22,7 @@ namespace android {
 namespace {
 
 void AddFrameToTrace(int64_t timestamp_ns, int64_t durations_ns) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   auto t = perfetto::Track(timestamp_ns);
   TRACE_EVENT_BEGIN(
       "ui", "AndroidFrameVsync", t, [&](perfetto::EventContext ctx) {
@@ -30,6 +32,7 @@ void AddFrameToTrace(int64_t timestamp_ns, int64_t durations_ns) {
     ctx.event()->set_timestamp_absolute_us((timestamp_ns + durations_ns) /
                                            1000);
   });
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 }  // namespace
