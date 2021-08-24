@@ -585,6 +585,7 @@ struct BrowserInitParams {
   [MinVersion=17]
   bool web_apps_enabled@17;
 
+  // TODO(crbug/1198528): remove use_new_account_manager parameter.
   // Specifies whether lacros-chrome should use new account manager logic.
   [MinVersion=18]
   bool use_new_account_manager@18;

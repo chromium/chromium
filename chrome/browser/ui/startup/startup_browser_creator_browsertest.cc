@@ -155,11 +155,6 @@ using testing::Return;
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #endif
@@ -2814,16 +2809,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (init_params->use_new_account_manager) {
-    // Welcome page should not be shown for the first/main profile on Lacros.
-    // (about:blank or new tab page will be shown instead)
-    TabStripModel* tab_strip = browser()->tab_strip_model();
-    ASSERT_EQ(1, tab_strip->count());
-    EXPECT_NE(chrome::kChromeUIWelcomeURL,
-              tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
-  }
+  // Welcome page should not be shown on Lacros.
+  // (about:blank or new tab page will be shown instead)
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_NE(chrome::kChromeUIWelcomeURL,
+            tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
 #endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();

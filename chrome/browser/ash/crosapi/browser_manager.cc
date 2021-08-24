@@ -138,6 +138,7 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     bool cleared_user_data_dir) {
   LaunchParamsFromBackground params;
 
+  // TODO(crbug/1198528): remove use_new_account_manager parameter.
   // This code wipes the Lacros --user-data-dir exactly once due to an
   // incompatible account_manager change. This code can be removed when ash is
   // newer than M92, as we can then assume that all relevant users have been

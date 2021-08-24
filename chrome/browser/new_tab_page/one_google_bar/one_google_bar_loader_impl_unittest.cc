@@ -29,8 +29,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
@@ -325,13 +323,8 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
 
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
   bool check_x_chrome_connected_header = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   check_x_chrome_connected_header = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (init_params->use_new_account_manager)
-    check_x_chrome_connected_header = true;
 #endif
 
   if (check_x_chrome_connected_header) {
@@ -373,13 +366,8 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
 
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
   bool check_x_chrome_connected_header = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   check_x_chrome_connected_header = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (init_params->use_new_account_manager)
-    check_x_chrome_connected_header = true;
 #endif
 
   // Make sure mirror account consistency is requested.

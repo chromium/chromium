@@ -37,11 +37,6 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace {
 
 const char kNewTabOgbApiPath[] = "/async/newtab_ogb";
@@ -199,14 +194,6 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
   variations::AppendVariationsHeaderUnknownSignedIn(
       api_url_, variations::InIncognito::kNo, request);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (!init_params->use_new_account_manager)
-    return;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   signin::ChromeConnectedHeaderHelper chrome_connected_header_helper(
       account_consistency_mirror_required_
           ? signin::AccountConsistencyMethod::kMirror

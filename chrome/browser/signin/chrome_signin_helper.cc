@@ -72,11 +72,6 @@
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace signin {
 
 const void* const kManageAccountsHeaderReceivedUserDataKey =
@@ -308,12 +303,6 @@ void ProcessMirrorHeader(
                                   manage_accounts_params.email);
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  DCHECK(init_params->use_new_account_manager);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
