@@ -461,9 +461,9 @@ TEST_F(RTCPeerConnectionTest, GetAudioTrack) {
       MediaStream::Create(scope.GetExecutionContext(), tracks);
   ASSERT_TRUE(stream);
 
-  EXPECT_FALSE(pc->GetTrack(track->Component()));
+  EXPECT_FALSE(pc->GetTrackForTesting(track->Component()));
   AddStream(scope, pc, stream);
-  EXPECT_TRUE(pc->GetTrack(track->Component()));
+  EXPECT_TRUE(pc->GetTrackForTesting(track->Component()));
 }
 
 TEST_F(RTCPeerConnectionTest, GetVideoTrack) {
@@ -480,9 +480,9 @@ TEST_F(RTCPeerConnectionTest, GetVideoTrack) {
       MediaStream::Create(scope.GetExecutionContext(), tracks);
   ASSERT_TRUE(stream);
 
-  EXPECT_FALSE(pc->GetTrack(track->Component()));
+  EXPECT_FALSE(pc->GetTrackForTesting(track->Component()));
   AddStream(scope, pc, stream);
-  EXPECT_TRUE(pc->GetTrack(track->Component()));
+  EXPECT_TRUE(pc->GetTrackForTesting(track->Component()));
 }
 
 TEST_F(RTCPeerConnectionTest, GetAudioAndVideoTrack) {
@@ -503,11 +503,11 @@ TEST_F(RTCPeerConnectionTest, GetAudioAndVideoTrack) {
       MediaStream::Create(scope.GetExecutionContext(), tracks);
   ASSERT_TRUE(stream);
 
-  EXPECT_FALSE(pc->GetTrack(audio_track->Component()));
-  EXPECT_FALSE(pc->GetTrack(video_track->Component()));
+  EXPECT_FALSE(pc->GetTrackForTesting(audio_track->Component()));
+  EXPECT_FALSE(pc->GetTrackForTesting(video_track->Component()));
   AddStream(scope, pc, stream);
-  EXPECT_TRUE(pc->GetTrack(audio_track->Component()));
-  EXPECT_TRUE(pc->GetTrack(video_track->Component()));
+  EXPECT_TRUE(pc->GetTrackForTesting(audio_track->Component()));
+  EXPECT_TRUE(pc->GetTrackForTesting(video_track->Component()));
 }
 
 TEST_F(RTCPeerConnectionTest, GetTrackRemoveStreamAndGCAll) {
@@ -527,9 +527,9 @@ TEST_F(RTCPeerConnectionTest, GetTrackRemoveStreamAndGCAll) {
         MediaStream::Create(scope.GetExecutionContext(), tracks);
     ASSERT_TRUE(stream);
 
-    EXPECT_FALSE(pc->GetTrack(track_component));
+    EXPECT_FALSE(pc->GetTrackForTesting(track_component));
     AddStream(scope, pc, stream);
-    EXPECT_TRUE(pc->GetTrack(track_component));
+    EXPECT_TRUE(pc->GetTrackForTesting(track_component));
 
     RemoveStream(scope, pc, stream);
     // In Unified Plan, transceivers will still reference the stream even after
@@ -543,7 +543,7 @@ TEST_F(RTCPeerConnectionTest, GetTrackRemoveStreamAndGCAll) {
   // |MediaStreamComponent|, which will remove its mapping from the peer
   // connection.
   WebHeap::CollectAllGarbageForTesting();
-  EXPECT_FALSE(pc->GetTrack(track_component));
+  EXPECT_FALSE(pc->GetTrackForTesting(track_component));
 }
 
 TEST_F(RTCPeerConnectionTest,
@@ -564,9 +564,9 @@ TEST_F(RTCPeerConnectionTest,
         MediaStream::Create(scope.GetExecutionContext(), tracks);
     ASSERT_TRUE(stream);
 
-    EXPECT_FALSE(pc->GetTrack(track_component.Get()));
+    EXPECT_FALSE(pc->GetTrackForTesting(track_component.Get()));
     AddStream(scope, pc, stream);
-    EXPECT_TRUE(pc->GetTrack(track_component.Get()));
+    EXPECT_TRUE(pc->GetTrackForTesting(track_component.Get()));
 
     RemoveStream(scope, pc, stream);
     // In Unified Plan, transceivers will still reference the stream even after
@@ -580,7 +580,7 @@ TEST_F(RTCPeerConnectionTest,
   // |MediaStreamComponent|), which will remove its mapping from the peer
   // connection.
   WebHeap::CollectAllGarbageForTesting();
-  EXPECT_FALSE(pc->GetTrack(track_component.Get()));
+  EXPECT_FALSE(pc->GetTrackForTesting(track_component.Get()));
 }
 
 TEST_F(RTCPeerConnectionTest, CheckForComplexSdpWithSdpSemanticsPlanB) {

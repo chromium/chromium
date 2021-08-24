@@ -2666,9 +2666,14 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
   return channel;
 }
 
-MediaStreamTrack* RTCPeerConnection::GetTrack(
+MediaStreamTrack* RTCPeerConnection::GetTrackForTesting(
     MediaStreamComponent* component) const {
-  return tracks_.DeprecatedAtOrEmptyValue(component);
+  auto it = tracks_.find(component);
+  if (it != tracks_.end()) {
+    return it->value;
+  } else {
+    return nullptr;
+  }
 }
 
 RTCRtpSender* RTCPeerConnection::FindSenderForTrackAndStream(
