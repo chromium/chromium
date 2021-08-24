@@ -57,10 +57,11 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     private final AnchoredPopupWindow mPopupWindow;
 
     /** The {@link Drawable} that is responsible for drawing the bubble and the arrow. */
-    private final ArrowBubbleDrawable mBubbleDrawable;
+    @Nullable
+    private ArrowBubbleDrawable mBubbleDrawable;
 
     /** The {@link Drawable} that precedes the text in the bubble. */
-    private final Drawable mImageDrawable;
+    protected final Drawable mImageDrawable;
 
     private final Runnable mDismissRunnable = new Runnable() {
         @Override
@@ -253,8 +254,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mInverseColor = inverseColor;
         mIsAccessibilityEnabled = isAccessibilityEnabled;
 
-        mBubbleDrawable = new ArrowBubbleDrawable(context, isRoundBubble);
-        mBubbleDrawable.setShowArrow(showArrow);
+        // For round, arrowless bubbles, we use a specialized background instead of the
+        // ArrowBubbleDrawable.
+        Drawable backgroundDrawable = getBackground(mContext, showArrow, isRoundBubble);
 
         mContentView = createContentView();
         // On some versions of Android, the LayoutParams aren't set until after the popup window
@@ -264,7 +266,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                 new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         mPopupWindow = new AnchoredPopupWindow(
-                context, rootView, mBubbleDrawable, mContentView, anchorRectProvider);
+                context, rootView, backgroundDrawable, mContentView, anchorRectProvider);
         mPopupWindow.setMargin(
                 context.getResources().getDimensionPixelSize(R.dimen.text_bubble_margin));
         mPopupWindow.setPreferredHorizontalOrientation(
@@ -277,15 +279,21 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
         addOnDismissListener(mDismissListener);
         if (mIsAccessibilityEnabled) setDismissOnTouchInteraction(true);
+    }
 
+    /** Get the background to use. May be overridden by subclasses. */
+    protected Drawable getBackground(Context context, boolean showArrow, boolean isRoundBubble) {
+        mBubbleDrawable = new ArrowBubbleDrawable(mContext, isRoundBubble);
+        mBubbleDrawable.setShowArrow(showArrow);
         // Set predefined styles for the TextBubble.
-        if (inverseColor) {
+        if (mInverseColor) {
             mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
                     mContext.getResources(), R.color.default_bg_color));
         } else {
             mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
                     mContext.getResources(), R.color.default_control_color_active));
         }
+        return mBubbleDrawable;
     }
 
     /** Shows the bubble. Will have no effect if the bubble is already showing. */
@@ -399,6 +407,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
+        // mBubbleDrawable might not be in use if a subclass replaces the drawable.
+        if (mBubbleDrawable == null) return;
+
         int arrowXOffset = 0;
         if (mBubbleDrawable.isShowingArrow()) {
             arrowXOffset = anchorRect.centerX() - x;
