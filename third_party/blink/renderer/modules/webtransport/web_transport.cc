@@ -784,9 +784,12 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
-  // TODO(ricea): Will this crash if we are not connected yet?
-  transport_remote_->SetOutgoingDatagramExpirationDuration(
-      base::TimeDelta::FromMillisecondsD(duration));
+  outgoing_datagram_expiration_duration_ =
+      base::TimeDelta::FromMillisecondsD(duration);
+  if (transport_remote_.is_bound()) {
+    transport_remote_->SetOutgoingDatagramExpirationDuration(
+        outgoing_datagram_expiration_duration_);
+  }
 }
 
 void WebTransport::OnConnectionEstablished(
@@ -809,6 +812,11 @@ void WebTransport::OnConnectionEstablished(
 
   DCHECK(!transport_remote_.is_bound());
   transport_remote_.Bind(std::move(web_transport), task_runner);
+
+  if (outgoing_datagram_expiration_duration_ != base::TimeDelta()) {
+    transport_remote_->SetOutgoingDatagramExpirationDuration(
+        outgoing_datagram_expiration_duration_);
+  }
 
   received_streams_underlying_source_->NotifyOpened();
   received_bidirectional_streams_underlying_source_->NotifyOpened();

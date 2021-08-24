@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -172,7 +173,10 @@ class WebTransportTest : public ::testing::Test {
   }
 
   // Connects a WebTransport object. Runs the event loop.
-  void ConnectSuccessfully(WebTransport* web_transport) {
+  void ConnectSuccessfully(
+      WebTransport* web_transport,
+      base::TimeDelta expected_outgoing_datagram_expiration_duration =
+          base::TimeDelta()) {
     DCHECK(!mock_web_transport_) << "Only one connection supported, sorry";
 
     test::RunPendingTasks();
@@ -206,6 +210,12 @@ class WebTransportTest : public ::testing::Test {
           pending_bidirectional_accept_callbacks_.push_back(
               std::move(callback));
         });
+
+    if (expected_outgoing_datagram_expiration_duration != base::TimeDelta()) {
+      EXPECT_CALL(*mock_web_transport_,
+                  SetOutgoingDatagramExpirationDuration(
+                      expected_outgoing_datagram_expiration_duration));
+    }
 
     handshake_client->OnConnectionEstablished(
         std::move(web_transport_to_pass),
@@ -1650,6 +1660,21 @@ TEST_F(WebTransportTest, SetDatagramWritableQueueExpirationDuration) {
   web_transport->setDatagramWritableQueueExpirationDuration(kDuration);
 
   test::RunPendingTasks();
+}
+
+// Regression test for https://crbug.com/1241489.
+TEST_F(WebTransportTest, SetOutgoingMaxAgeBeforeConnectComplete) {
+  V8TestingScope scope;
+
+  auto* web_transport = Create(scope, "https://example.com/", EmptyOptions());
+
+  constexpr double kDuration = 1000;
+  constexpr base::TimeDelta kDurationDelta =
+      base::TimeDelta::FromMillisecondsD(kDuration);
+
+  web_transport->datagrams()->setOutgoingMaxAge(kDuration);
+
+  ConnectSuccessfully(web_transport, kDurationDelta);
 }
 
 }  // namespace

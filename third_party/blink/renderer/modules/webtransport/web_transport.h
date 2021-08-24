@@ -141,6 +141,8 @@ class MODULES_EXPORT WebTransport final
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.
   Member<WritableStream> outgoing_datagrams_;
 
+  base::TimeDelta outgoing_datagram_expiration_duration_;
+
   const Member<ScriptState> script_state_;
 
   const KURL url_;
