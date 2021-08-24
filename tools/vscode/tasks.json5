@@ -148,6 +148,11 @@
       "label": "10-build_test_debug",
       "type": "shell",
       "command": "autoninja -C ${workspaceFolder}/out/Debug unit_tests components_unittests browser_tests"
+    },
+    {
+      "label": "11-generate_compile_commands",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/clang/scripts/generate_compdb.py -p ${config:chrome.outputDir} > ${workspaceFolder}/compile_commands.json"
     }
   ]
 }
