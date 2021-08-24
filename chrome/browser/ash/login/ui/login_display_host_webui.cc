@@ -1085,7 +1085,6 @@ void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
 bool LoginDisplayHostWebUI::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
-  NOTIMPLEMENTED();
   return false;
 }
 
