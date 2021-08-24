@@ -9427,21 +9427,6 @@
             ]
         }
     ],
-    "WebNotesStylize": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebNotesStylize"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
@@ -9963,6 +9948,21 @@
                     },
                     "enable_features": [
                         "WebViewZeroCopyVideo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebnotesStylize": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebNotesStylize"
                     ]
                 }
             ]
