@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -24,50 +25,51 @@
 namespace chromeos {
 namespace libassistant {
 
-using SpeakerIdEnrollmentEvent =
-    ::assistant::api::events::SpeakerIdEnrollmentEvent;
-using SpeakerIdEnrollmentUpdate = assistant_client::SpeakerIdEnrollmentUpdate;
+using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
+using ::assistant::api::events::SpeakerIdEnrollmentEvent;
+using assistant_client::SpeakerIdEnrollmentUpdate;
 
 namespace {
 
-SpeakerIdEnrollmentEvent ConvertToGrpcEvent(
+OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
     const ::assistant_client::SpeakerIdEnrollmentUpdate::State& state) {
-  SpeakerIdEnrollmentEvent event;
+  OnSpeakerIdEnrollmentEventRequest request;
+  SpeakerIdEnrollmentEvent* event = request.mutable_event();
   switch (state) {
     case SpeakerIdEnrollmentUpdate::State::INIT: {
-      event.mutable_init_state();
+      event->mutable_init_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::CHECK: {
-      event.mutable_check_state();
+      event->mutable_check_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::LISTEN: {
-      event.mutable_listen_state();
+      event->mutable_listen_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::PROCESS: {
-      event.mutable_process_state();
+      event->mutable_process_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::UPLOAD: {
-      event.mutable_upload_state();
+      event->mutable_upload_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::FETCH: {
-      event.mutable_fetch_state();
+      event->mutable_fetch_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::DONE: {
-      event.mutable_done_state();
+      event->mutable_done_state();
       break;
     }
     case SpeakerIdEnrollmentUpdate::State::FAILURE: {
-      event.mutable_failure_state();
+      event->mutable_failure_state();
       break;
     }
   }
-  return event;
+  return request;
 }
 
 }  // namespace
@@ -169,20 +171,25 @@ void AssistantClientV1::SendVoicelessInteraction(
       });
 }
 
+void AssistantClientV1::AddSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
+  speaker_event_observer_list_.AddObserver(observer);
+}
+
+void AssistantClientV1::RemoveSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
+  speaker_event_observer_list_.RemoveObserver(observer);
+}
+
 void AssistantClientV1::StartSpeakerIdEnrollment(
-    const StartSpeakerIdEnrollmentRequest& request,
-    base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done) {
+    const StartSpeakerIdEnrollmentRequest& request) {
   assistant_client::SpeakerIdEnrollmentConfig client_config;
   client_config.user_id = request.user_id();
   client_config.skip_cloud_enrollment = request.skip_cloud_enrollment();
 
-  auto callback = base::BindRepeating(
-      [](base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)>
-             callback,
-         const SpeakerIdEnrollmentUpdate& update) {
-        callback.Run(ConvertToGrpcEvent(update.state));
-      },
-      std::move(on_done));
+  auto callback =
+      base::BindRepeating(&AssistantClientV1::OnSpeakerIdEnrollmentUpdate,
+                          weak_factory_.GetWeakPtr());
 
   assistant_manager_internal()->StartSpeakerIdEnrollment(
       client_config,
@@ -222,6 +229,14 @@ void AssistantClientV1::AddDisplayEventObserver(
     GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
   display_connection_->SetObserver(observer);
   assistant_manager_internal()->SetDisplayConnection(display_connection_.get());
+}
+
+void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
+    const SpeakerIdEnrollmentUpdate& update) {
+  auto event_request = ConvertToGrpcEventRequest(update.state);
+  for (auto& observer : speaker_event_observer_list_) {
+    observer.OnGrpcMessage(event_request);
+  }
 }
 
 }  // namespace libassistant

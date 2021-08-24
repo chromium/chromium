@@ -39,10 +39,14 @@ class FakeAssistantClient : public AssistantClient {
       const std::string& description,
       const ::assistant::api::VoicelessOptions& options,
       base::OnceCallback<void(bool)> on_done) override;
-  void StartSpeakerIdEnrollment(
-      const StartSpeakerIdEnrollmentRequest& request,
-      base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done)
+  void AddSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
       override;
+  void RemoveSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
+      override;
+  void StartSpeakerIdEnrollment(
+      const StartSpeakerIdEnrollmentRequest& request) override;
   void CancelSpeakerIdEnrollment(
       const CancelSpeakerIdEnrollmentRequest& request) override;
   void GetSpeakerIdEnrollmentInfo(

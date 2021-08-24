@@ -35,9 +35,14 @@ void FakeAssistantClient::SendVoicelessInteraction(
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {}
 
+void FakeAssistantClient::AddSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {}
+
+void FakeAssistantClient::RemoveSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {}
+
 void FakeAssistantClient::StartSpeakerIdEnrollment(
-    const StartSpeakerIdEnrollmentRequest& request,
-    base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done) {}
+    const StartSpeakerIdEnrollmentRequest& request) {}
 
 void FakeAssistantClient::CancelSpeakerIdEnrollment(
     const CancelSpeakerIdEnrollmentRequest& request) {}

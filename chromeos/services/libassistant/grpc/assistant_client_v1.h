@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
@@ -29,10 +31,14 @@ class AssistantClientV1 : public AssistantClient {
       const std::string& description,
       const ::assistant::api::VoicelessOptions& options,
       base::OnceCallback<void(bool)> on_done) override;
-  void StartSpeakerIdEnrollment(
-      const StartSpeakerIdEnrollmentRequest& request,
-      base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done)
+  void AddSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
       override;
+  void RemoveSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
+      override;
+  void StartSpeakerIdEnrollment(
+      const StartSpeakerIdEnrollmentRequest& request) override;
   void CancelSpeakerIdEnrollment(
       const CancelSpeakerIdEnrollmentRequest& request) override;
   void GetSpeakerIdEnrollmentInfo(
@@ -46,7 +52,15 @@ class AssistantClientV1 : public AssistantClient {
  private:
   class DisplayConnectionImpl;
 
+  void OnSpeakerIdEnrollmentUpdate(
+      const assistant_client::SpeakerIdEnrollmentUpdate& update);
+
   std::unique_ptr<DisplayConnectionImpl> display_connection_;
+
+  base::ObserverList<GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
+      speaker_event_observer_list_;
+
+  base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };
 
 }  // namespace libassistant

@@ -5,17 +5,20 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_GRPC_SERVICES_OBSERVER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_GRPC_SERVICES_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 namespace chromeos {
 namespace libassistant {
 
 // Observer class registered to event handler drivers.
 template <class TRequest>
-class GrpcServicesObserver {
+class GrpcServicesObserver : public base::CheckedObserver {
  public:
-  virtual ~GrpcServicesObserver() = default;
-
   // Called when a new event of type |TRequest| has delivered.
   virtual void OnGrpcMessage(const TRequest& request) = 0;
+
+ protected:
+  ~GrpcServicesObserver() override = default;
 };
 
 }  // namespace libassistant

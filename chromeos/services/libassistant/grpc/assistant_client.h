@@ -17,6 +17,7 @@ class GetSpeakerIdEnrollmentInfoRequest;
 class Interaction;
 class OnAssistantDisplayEventRequest;
 class OnDisplayRequestRequest;
+class OnSpeakerIdEnrollmentEventRequest;
 class StartSpeakerIdEnrollmentRequest;
 class VoicelessOptions;
 
@@ -50,6 +51,8 @@ class AssistantClient {
       ::assistant::api::StartSpeakerIdEnrollmentRequest;
   using SpeakerIdEnrollmentEvent =
       ::assistant::api::events::SpeakerIdEnrollmentEvent;
+  using OnSpeakerIdEnrollmentEventRequest =
+      ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
 
   // Display:
   using OnAssistantDisplayEventRequest =
@@ -84,10 +87,12 @@ class AssistantClient {
       base::OnceCallback<void(bool)> on_done) = 0;
 
   // Speaker Id Enrollment methods.
+  virtual void AddSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) = 0;
+  virtual void RemoveSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) = 0;
   virtual void StartSpeakerIdEnrollment(
-      const StartSpeakerIdEnrollmentRequest& request,
-      base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)>
-          on_done) = 0;
+      const StartSpeakerIdEnrollmentRequest& request) = 0;
   virtual void CancelSpeakerIdEnrollment(
       const CancelSpeakerIdEnrollmentRequest& request) = 0;
   virtual void GetSpeakerIdEnrollmentInfo(
