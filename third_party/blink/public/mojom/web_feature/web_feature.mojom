@@ -3295,6 +3295,7 @@ enum WebFeature {
   kTableCollapsedBorderDifferentToVisual = 3983,
   kHighlightAPIRegisterHighlight = 3984,
   kReadOrWriteWebDatabaseThirdPartyContext = 3985,
+  kFontSelectorCSSFontFamilyWebKitPrefixPictograph = 3986,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

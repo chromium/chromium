@@ -113,7 +113,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
   AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, font_family);
+      generic_font_family_settings_, font_description, font_family, &document);
   if (settings_family_name.IsEmpty())
     return nullptr;
 
@@ -150,8 +150,9 @@ void CSSFontSelector::WillUseRange(const FontDescription& font_description,
 bool CSSFontSelector::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
     const FontFamily& passed_family) {
-  AtomicString family = FamilyNameFromSettings(generic_font_family_settings_,
-                                               font_description, passed_family);
+  AtomicString family =
+      FamilyNameFromSettings(generic_font_family_settings_, font_description,
+                             passed_family, &GetTreeScope()->GetDocument());
   if (family.IsEmpty())
     family = passed_family.FamilyName();
   return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(

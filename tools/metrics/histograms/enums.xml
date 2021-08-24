@@ -34220,6 +34220,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3983" label="TableCollapsedBorderDifferentToVisual"/>
   <int value="3984" label="HighlightAPIRegisterHighlight"/>
   <int value="3985" label="ReadOrWriteWebDatabaseThirdPartyContext"/>
+  <int value="3986" label="FontSelectorCSSFontFamilyWebKitPrefixPictograph"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

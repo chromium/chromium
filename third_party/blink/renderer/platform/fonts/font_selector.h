@@ -46,6 +46,7 @@ class FontFallbackMap;
 class FontFamily;
 class FontSelectorClient;
 class GenericFontFamilySettings;
+class UseCounter;
 
 class PLATFORM_EXPORT FontSelector : public FontCacheClient {
  public:
@@ -142,7 +143,8 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   static AtomicString FamilyNameFromSettings(
       const GenericFontFamilySettings&,
       const FontDescription&,
-      const FontFamily& generic_family_name);
+      const FontFamily& generic_family_name,
+      UseCounter*);
 
  private:
   Member<FontFallbackMap> font_fallback_map_;

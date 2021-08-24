@@ -53,8 +53,9 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
 
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
-  AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, font_family);
+  AtomicString settings_family_name =
+      FamilyNameFromSettings(generic_font_family_settings_, font_description,
+                             font_family, GetExecutionContext());
   if (settings_family_name.IsEmpty())
     return nullptr;
 
@@ -92,8 +93,9 @@ void OffscreenFontSelector::WillUseRange(
 bool OffscreenFontSelector::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
     const FontFamily& passed_family) {
-  AtomicString family = FamilyNameFromSettings(generic_font_family_settings_,
-                                               font_description, passed_family);
+  AtomicString family =
+      FamilyNameFromSettings(generic_font_family_settings_, font_description,
+                             passed_family, GetExecutionContext());
   if (family.IsEmpty())
     family = passed_family.FamilyName();
   return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
