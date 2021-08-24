@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
@@ -238,6 +239,16 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
       const std::string& title,
       const GURL& launch_url,
       const favicon_base::FaviconImageResult& image_result) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Avoid accessing the WebAppProvider when web apps are enabled in Lacros
+    // (and thus disabled in Ash).
+    if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+      function->FinishCreateWebApp(std::string(),
+                                   /*install_success=*/false);
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
@@ -249,9 +260,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
           image_result.image.AsBitmap();
     }
 
-    auto* provider =
-        web_app::WebAppProvider::Get(Profile::FromBrowserContext(context));
-    DCHECK(provider);
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
+        Profile::FromBrowserContext(context));
 
     provider->install_manager().InstallWebAppFromInfo(
         std::move(web_app_info), web_app::ForInstallableSite::kNo,
@@ -263,8 +273,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(
       const std::string& app_id,
       content::BrowserContext* context) override {
-    auto* provider =
-        web_app::WebAppProvider::Get(Profile::FromBrowserContext(context));
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
+        Profile::FromBrowserContext(context));
     DCHECK(provider);
     const web_app::WebAppRegistrar& registrar = provider->registrar();
 
@@ -329,7 +339,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   // preference, the default launch value will be returned.
   // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   blink::mojom::DisplayMode display_mode =
       provider->registrar().GetAppUserDisplayMode(app_id);
@@ -531,8 +541,17 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     content::BrowserContext* context,
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Avoid accessing the WebAppProvider when web apps are enabled in Lacros (and
+  // thus disabled in Ash).
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+    std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
   // Launch the app if web_app_url happens to match start_url. If not, the app

@@ -5,6 +5,7 @@
 #include <map>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -152,6 +154,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, GenerateAppForLink) {
   ASSERT_TRUE(RunExtensionTest("management/test",
                                {.page_url = "generateAppForLink.html"}));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class GenerateAppForLinkWithLacrosWebAppsApiTest
+    : public ExtensionManagementApiTest {
+ public:
+  GenerateAppForLinkWithLacrosWebAppsApiTest() {
+    features_.InitAndEnableFeature(features::kWebAppsCrosapi);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GenerateAppForLinkWithLacrosWebAppsApiTest,
+                       GenerateAppForLink) {
+  ASSERT_TRUE(RunExtensionTest("management/test",
+                               {.page_url = "generateAppForLinkLacros.html"}));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
@@ -302,6 +323,35 @@ IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest, InstallableWebApp) {
 
   RunInstallableWebAppTest(kManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class InstallReplacementWebAppWithLacrosWebAppsApiTest
+    : public InstallReplacementWebAppApiTest {
+ public:
+  InstallReplacementWebAppWithLacrosWebAppsApiTest() {
+    features_.InitAndEnableFeature(features::kWebAppsCrosapi);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppWithLacrosWebAppsApiTest,
+                       InstallableWebApp) {
+  static constexpr char kGoodWebAppURL[] =
+      "/management/install_replacement_web_app/acceptable_web_app/index.html";
+  static constexpr char kBackground[] =
+      R"(chrome.test.runWithUserGesture(function() {
+           chrome.management.installReplacementWebApp(function() {
+             chrome.test.assertLastError(
+                 'Web apps can\'t be installed in the current user profile.');
+             chrome.test.notifyPass();
+           });
+         });)";
+
+  RunTest(kManifest, kGoodWebAppURL, kBackground, true /* from_webstore */);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Check that web app still installs and launches correctly when start_url does
 // not match replacement_web_app_url.
