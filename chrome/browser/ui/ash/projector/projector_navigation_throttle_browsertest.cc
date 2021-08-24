@@ -1,0 +1,146 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/ash/projector/projector_navigation_throttle.h"
+
+#include <string>
+
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/common/page_type.h"
+#include "content/public/test/browser_test.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
+
+namespace ash {
+
+namespace {
+
+constexpr char kUntrustedGalleryView[] = "gallery/gallery_view.html";
+constexpr char kTrustedGalleryView[] = "gallery/gallery_embedder.html";
+constexpr char kFilePath[] = "xyz";
+
+}  // namespace
+
+// Summary of expected behavior on ChromeOS:
+// ____________________________|_SWA_launches_|_URL_redirection
+// projector.apps.chrome       | Yes          | Yes
+// chrome://projector          | Yes          | No
+// chrome-untrusted://projector| No           | No
+
+class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
+ public:
+  ProjectorNavigationThrottleTest()
+      : scoped_feature_list_(features::kProjector) {}
+
+  void SetUpOnMainThread() override {
+    web_app::WebAppProvider::Get(profile())
+        ->system_web_app_manager()
+        .InstallSystemAppsForTesting();
+  }
+
+  ~ProjectorNavigationThrottleTest() override = default;
+
+ protected:
+  Profile* profile() { return browser()->profile(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that navigating to https://projector.apps.chrome/xyz redirects to
+// chrome://projector/gallery/gallery_embedder.html/?file=xyz and launches the
+// SWA.
+IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+                       PwaNavigationRedirects) {
+  std::string url = chromeos::kChromeUIUntrustedProjectorPwaUrl;
+  url += "/";
+  url += kFilePath;
+  GURL gurl(url);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), gurl, WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  // Projector SWA is now open.
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  // Construct the new redirected URL.
+  std::string expected_url = chromeos::kChromeUITrustedProjectorGalleryUrl;
+  expected_url += "?file=";
+  expected_url += kFilePath;
+  EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
+}
+
+// Verifies that navigating to chrome-untrusted://projector does not redirect.
+IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+                       UntrustedNavigationNoRedirect) {
+  std::string url = chromeos::kChromeUIUntrustedProjectorAppUrl;
+  url += kUntrustedGalleryView;
+  GURL gurl(url);
+
+  ui_test_utils::NavigateToURL(browser(), gurl);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  // Projector SWA is not open. We don't capture navigations to
+  // chrome-untrusted://projector.
+  EXPECT_FALSE(app_browser);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  // URL remains unchanged.
+  EXPECT_EQ(tab->GetVisibleURL().spec(), url);
+}
+
+// Verifies that navigating to chrome://projector does not redirect.
+IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+                       TrustedNavigationNoRedirect) {
+  std::string url = chromeos::kChromeUITrustedProjectorAppUrl;
+  url += kTrustedGalleryView;
+  GURL gurl(url);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), gurl, WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  // Projector SWA is now open.
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  // URL remains unchanged.
+  EXPECT_EQ(tab->GetVisibleURL().spec(), url);
+}
+
+}  // namespace ash

@@ -9,7 +9,10 @@ namespace chromeos {
 
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
 extern const char kChromeUIProjectorAppHost[];
+
 extern const char kChromeUIUntrustedProjectorAppUrl[];
+extern const char kChromeUIUntrustedProjectorPwaUrl[];
+
 extern const char kChromeUITrustedProjectorAppUrl[];
 extern const char kChromeUITrustedProjectorSelfieCamUrl[];
 extern const char kChromeUITrustedProjectorGalleryUrl[];

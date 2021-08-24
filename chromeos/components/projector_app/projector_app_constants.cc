@@ -7,8 +7,13 @@
 namespace chromeos {
 
 const char kChromeUIProjectorAppHost[] = "projector";
+
+// content::WebUIDataSource::Create() requires trailing slash.
 const char kChromeUIUntrustedProjectorAppUrl[] =
     "chrome-untrusted://projector/";
+const char kChromeUIUntrustedProjectorPwaUrl[] =
+    "https://projector.apps.chrome";
+
 const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/";
 const char kChromeUITrustedProjectorSelfieCamUrl[] =
     "chrome://projector/selfie_cam/selfie_cam.html";

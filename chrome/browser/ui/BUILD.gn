@@ -2082,6 +2082,8 @@ static_library("ui") {
       "ash/projector/projector_app_client_impl.h",
       "ash/projector/projector_client_impl.cc",
       "ash/projector/projector_client_impl.h",
+      "ash/projector/projector_navigation_throttle.cc",
+      "ash/projector/projector_navigation_throttle.h",
       "ash/quick_answers/quick_answers_browser_client_impl.cc",
       "ash/quick_answers/quick_answers_browser_client_impl.h",
       "ash/screen_orientation_delegate_chromeos.cc",

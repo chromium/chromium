@@ -3304,6 +3304,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.h",
         "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
+        "../browser/ui/ash/projector/projector_navigation_throttle_browsertest.cc",
         "../browser/ui/ash/recording_service_browsertest.cc",
         "../browser/ui/ash/screen_orientation_delegate_chromeos_browsertest.cc",
         "../browser/ui/ash/sharesheet/sharesheet_bubble_view_browsertest.cc",

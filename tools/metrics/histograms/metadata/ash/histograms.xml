@@ -2241,7 +2241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
+  <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user chooses a marker color on the Projector toolbar
     in {TabletOrClamshell}.
@@ -2254,7 +2254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
+  <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user opens, closes, or presses a button the Projector
     toolbar in {TabletOrClamshell}.
