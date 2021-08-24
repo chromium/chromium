@@ -63,6 +63,12 @@ class SavePasswordMessageDelegate {
       bool update_password);
   void CreateMessage(bool update_password);
 
+  // Returns string id for message primary button. Takes into account whether
+  // this is save or update password scenario and whether update message will
+  // be followed by username confirmation dialog.
+  int GetPrimaryButtonTextId(bool update_password,
+                             bool use_followup_button_text);
+
   // Populates |usernames| with the list of usernames from best saved matches to
   // be presented to the user in a dropdown. Returns the index of the username
   // that matches the one from pending credentials.

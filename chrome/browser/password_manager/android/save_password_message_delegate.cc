@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -157,11 +158,14 @@ void SavePasswordMessageDelegate::CreateMessage(bool update_password) {
   }
   message_->SetDescription(description);
 
-  int primary_button_message_id = update_password
-                                      ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
-                                      : IDS_PASSWORD_MANAGER_SAVE_BUTTON;
-  message_->SetPrimaryButtonText(
-      l10n_util::GetStringUTF16(primary_button_message_id));
+  bool use_followup_button_text = false;
+  if (update_password) {
+    std::vector<std::u16string> usernames;
+    GetDisplayUsernames(&usernames);
+    use_followup_button_text = usernames.size() > 1;
+  }
+  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
+      GetPrimaryButtonTextId(update_password, use_followup_button_text)));
 
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
@@ -175,6 +179,18 @@ void SavePasswordMessageDelegate::CreateMessage(bool update_password) {
         base::BindOnce(&SavePasswordMessageDelegate::HandleNeverSaveClicked,
                        base::Unretained(this)));
   }
+}
+
+int SavePasswordMessageDelegate::GetPrimaryButtonTextId(
+    bool update_password,
+    bool use_followup_button_text) {
+  if (!update_password)
+    return IDS_PASSWORD_MANAGER_SAVE_BUTTON;
+  if (!use_followup_button_text)
+    return IDS_PASSWORD_MANAGER_UPDATE_BUTTON;
+  if (messages::UseFollowupButtonTextForUpdatePasswordButton())
+    return IDS_PASSWORD_MANAGER_UPDATE_WITH_FOLLOWUP_BUTTON;
+  return IDS_PASSWORD_MANAGER_CONTINUE_BUTTON;
 }
 
 void SavePasswordMessageDelegate::HandleMessageDismissed(
