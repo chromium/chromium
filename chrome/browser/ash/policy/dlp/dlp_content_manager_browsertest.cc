@@ -787,7 +787,7 @@ class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
                        GetRestrictionSetForURL) {
   SkipToLoginScreen();
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+  LogIn();
 
   base::Value rules(base::Value::Type::LIST);
 

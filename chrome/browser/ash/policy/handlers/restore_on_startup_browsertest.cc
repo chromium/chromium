@@ -70,14 +70,13 @@ void RestoreOnStartupTest::VerifyStartUpURLs() {
 // Verify that the policies are honored on a new user's login.
 IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, PRE_LogInAndVerify) {
   SkipToLoginScreen();
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+  LogIn();
   VerifyStartUpURLs();
 }
 
 // Verify that the policies are honored on an existing user's login.
 IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, LogInAndVerify) {
-  ash::LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(kAccountId),
-                                          kAccountPassword,
+  ash::LoginScreenTestApi::SubmitPassword(account_id(), "7654321",
                                           true /* check_if_submittable */);
   chromeos::test::WaitForPrimaryUserSessionStart();
   VerifyStartUpURLs();

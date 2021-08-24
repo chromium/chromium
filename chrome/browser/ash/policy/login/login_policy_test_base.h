@@ -11,7 +11,9 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "components/account_id/account_id.h"
 
 namespace base {
 class DictionaryValue;
@@ -30,12 +32,12 @@ class LoginPolicyTestBase : public chromeos::OobeBaseTest {
   ~LoginPolicyTestBase() override;
 
   // chromeos::OobeBaseTest::
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   virtual void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const;
   virtual void GetRecommendedPoliciesValue(base::DictionaryValue* policy) const;
-  virtual std::string GetAccount() const;
   virtual std::string GetIdToken() const;
 
   UserPolicyTestHelper* user_policy_helper() {
@@ -47,25 +49,21 @@ class LoginPolicyTestBase : public chromeos::OobeBaseTest {
   void SkipToLoginScreen();
 
   // Triggers the login, but does not wait for a user session to start.
-  void TriggerLogIn(const std::string& user_id,
-                    const std::string& password,
-                    const std::string& services);
+  void TriggerLogIn();
 
   // Triggers the login and waits for a user session to start.
-  void LogIn(const std::string& user_id,
-             const std::string& password,
-             const std::string& services);
+  void LogIn();
 
-  static const char kAccountPassword[];
-  static const char kAccountId[];
-  static const char kEmptyServices[];
+  const AccountId& account_id() const { return account_id_; }
 
   chromeos::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   chromeos::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
+  chromeos::LoginManagerMixin login_manager_{&mixin_host_};
 
  private:
   void SetMergeSessionParams();
 
+  const AccountId account_id_;  // Test AccountId.
   std::unique_ptr<UserPolicyTestHelper> user_policy_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPolicyTestBase);

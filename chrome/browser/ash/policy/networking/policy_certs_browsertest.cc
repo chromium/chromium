@@ -772,13 +772,6 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
                    base::Value(user_policy_blob));
   }
 
-  void TriggerLogIn() {
-    ash::LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->GetView<chromeos::GaiaScreenHandler>()
-        ->ShowSigninScreenForTest(kAccountId, kAccountPassword, kEmptyServices);
-  }
-
   Profile* active_user_profile() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
@@ -803,10 +796,8 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsOnUserSessionInitTest,
   scoped_refptr<net::X509Certificate> server_cert = net::ImportCertFromFile(
       server_cert_path.DirName(), server_cert_path.BaseName().value());
 
-  SkipToLoginScreen();
+  OobeBaseTest::WaitForSigninScreen();
   TriggerLogIn();
-
-  EXPECT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
 
   chromeos::test::WaitForPrimaryUserSessionStart();
   EXPECT_EQ(net::OK, VerifyTestServerCert(active_user_profile(), server_cert));
