@@ -439,6 +439,7 @@ extern const base::Feature kWifiSyncAllowDeletes;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWifiSyncAndroid;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncApplyDeletes;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowControlMenu;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowsFollowCursor;
 
 // Keep alphabetized.
@@ -568,6 +569,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVerticalSnapStateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperWebUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowControlMenuEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAttachApn();
