@@ -43,7 +43,6 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "chrome/updater/win/installer/regkey.h"
 #include "chrome/updater/win/tag_extractor.h"
 
 namespace updater {

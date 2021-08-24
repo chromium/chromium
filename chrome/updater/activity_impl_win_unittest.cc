@@ -15,6 +15,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -91,9 +92,9 @@ class ActivityWinTest
   }
 
   void TearDown() override {
-    base::win::RegKey(HKEY_CURRENT_USER, L"", DELETE)
+    base::win::RegKey(HKEY_CURRENT_USER, L"", Wow6432(DELETE))
         .DeleteKey(kClientStateKeyPath);
-    base::win::RegKey(HKEY_CURRENT_USER, L"", DELETE)
+    base::win::RegKey(HKEY_CURRENT_USER, L"", Wow6432(DELETE))
         .DeleteKey(low_integrity_key_path_.c_str());
   }
 
@@ -115,15 +116,15 @@ class ActivityWinTest
                        bool value,
                        WriteActiveBitCallback callback) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Create(HKEY_CURRENT_USER, key_name.c_str(), KEY_SET_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, key_name.c_str(),
+                                        Wow6432(KEY_SET_VALUE)));
     ASSERT_EQ(DWORD{ERROR_SUCCESS}, callback.Run(key, value));
   }
 
   void DeleteActiveBit(const std::wstring& key_name) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, key_name.c_str(), KEY_SET_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, key_name.c_str(),
+                                      Wow6432(KEY_SET_VALUE)));
     ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kDidRun));
   }
 
@@ -131,8 +132,8 @@ class ActivityWinTest
                       bool expected,
                       ReadActiveBitCallback callback) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, key_name.c_str(), KEY_QUERY_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, key_name.c_str(),
+                                      Wow6432(KEY_QUERY_VALUE)));
 
     const ReadActiveBitRetval retval = callback.Run(key);
     ASSERT_EQ(DWORD{ERROR_SUCCESS}, retval.read_result);

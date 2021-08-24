@@ -12,6 +12,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -40,7 +41,7 @@ void GroupPolicyManagerTests::TearDown() {
 void GroupPolicyManagerTests::DeletePolicyKey() {
   ASSERT_NO_FATAL_FAILURE(
       registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  base::win::RegKey key(HKEY_LOCAL_MACHINE);
+  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", Wow6432(DELETE));
   LONG result = key.DeleteKey(UPDATER_POLICIES_KEY);
   ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
 }
@@ -111,7 +112,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   ASSERT_NO_FATAL_FAILURE(
       registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        KEY_ALL_ACCESS);
+                        Wow6432(KEY_ALL_ACCESS));
 
   // Set global policies.
   EXPECT_EQ(ERROR_SUCCESS,
@@ -220,7 +221,7 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   ASSERT_NO_FATAL_FAILURE(
       registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        KEY_ALL_ACCESS);
+                        Wow6432(KEY_ALL_ACCESS));
 
   // Set global policies.
   EXPECT_EQ(ERROR_SUCCESS,

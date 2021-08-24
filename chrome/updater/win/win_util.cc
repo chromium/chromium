@@ -570,4 +570,8 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
                        kUpdaterVersionUtf16});
 }
 
+REGSAM Wow6432(REGSAM access) {
+  return KEY_WOW64_32KEY | access;
+}
+
 }  // namespace updater

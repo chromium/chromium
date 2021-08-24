@@ -159,13 +159,11 @@ int Setup(UpdaterScope scope) {
 
   for (const auto& key_path :
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
-    install_list->AddCreateRegKeyWorkItem(key, key_path,
-                                          WorkItem::kWow64Default);
-    install_list->AddSetRegValueWorkItem(key, key_path, WorkItem::kWow64Default,
-                                         kRegValuePV, kUpdaterVersionUtf16,
-                                         true);
+    install_list->AddCreateRegKeyWorkItem(key, key_path, Wow6432(0));
+    install_list->AddSetRegValueWorkItem(key, key_path, Wow6432(0), kRegValuePV,
+                                         kUpdaterVersionUtf16, true);
     install_list->AddSetRegValueWorkItem(
-        key, key_path, WorkItem::kWow64Default, kRegValueName,
+        key, key_path, Wow6432(0), kRegValueName,
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 

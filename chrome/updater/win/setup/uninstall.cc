@@ -145,8 +145,7 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   if (uninstall_all) {
     std::unique_ptr<WorkItemList> uninstall_list(
         WorkItem::CreateWorkItemList());
-    uninstall_list->AddDeleteRegKeyWorkItem(key, UPDATER_KEY,
-                                            WorkItem::kWow64Default);
+    uninstall_list->AddDeleteRegKeyWorkItem(key, UPDATER_KEY, Wow6432(0));
     if (!uninstall_list->Do()) {
       LOG(ERROR) << "Failed to delete the registry keys.";
       uninstall_list->Rollback();

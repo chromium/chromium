@@ -147,6 +147,10 @@ std::wstring GetTaskName(UpdaterScope scope);
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
 std::wstring GetTaskDisplayName(UpdaterScope scope);
 
+// Returns `KEY_WOW64_32KEY | access`. All registry access under the Updater key
+// should use `Wow6432(access)` as the `REGSAM`.
+REGSAM Wow6432(REGSAM access);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_
