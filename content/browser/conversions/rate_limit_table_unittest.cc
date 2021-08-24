@@ -39,21 +39,22 @@ class RateLimitTableTest : public testing::Test {
   }
 
   ConversionReport NewConversionReport(
-      const url::Origin& impression_origin,
-      const url::Origin& conversion_origin,
+      url::Origin impression_origin,
+      url::Origin conversion_origin,
       StorableImpression::Id impression_id = StorableImpression::Id(0),
       StorableImpression::SourceType source_type =
           StorableImpression::SourceType::kNavigation) {
-    return ConversionReport(ImpressionBuilder(clock()->Now())
-                                .SetImpressionOrigin(impression_origin)
-                                .SetConversionOrigin(conversion_origin)
-                                .SetImpressionId(impression_id)
-                                .SetSourceType(source_type)
-                                .Build(),
-                            /*conversion_data=*/0,
-                            /*conversion_time=*/clock()->Now(),
-                            /*report_time=*/clock()->Now(),
-                            /*conversion_id=*/absl::nullopt);
+    return ConversionReport(
+        ImpressionBuilder(clock()->Now())
+            .SetImpressionOrigin(std::move(impression_origin))
+            .SetConversionOrigin(std::move(conversion_origin))
+            .SetImpressionId(impression_id)
+            .SetSourceType(source_type)
+            .Build(),
+        /*conversion_data=*/0,
+        /*conversion_time=*/clock()->Now(),
+        /*report_time=*/clock()->Now(),
+        /*conversion_id=*/absl::nullopt);
   }
 
   size_t GetRateLimitRows(sql::Database* db) {

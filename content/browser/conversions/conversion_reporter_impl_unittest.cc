@@ -52,7 +52,7 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
     info.conversion_id = *conversion_report.conversion_id;
     info.original_report_time = conversion_report.original_report_time;
     info.http_response_code = 200;
-    std::move(sent_callback).Run(info);
+    std::move(sent_callback).Run(std::move(info));
   }
 
   ConversionReport::Id last_sent_report_id() { return last_sent_report_id_; }

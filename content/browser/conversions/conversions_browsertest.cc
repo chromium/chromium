@@ -41,14 +41,14 @@ namespace {
 struct ExpectedReportWaiter {
   // ControllableHTTPResponses can only wait for relative urls, so only supply
   // the path.
-  ExpectedReportWaiter(const GURL& report_url,
-                       const std::string body,
+  ExpectedReportWaiter(GURL report_url,
+                       std::string body,
                        net::EmbeddedTestServer* server)
-      : expected_url(report_url),
-        expected_body(body),
+      : expected_url(std::move(report_url)),
+        expected_body(std::move(body)),
         response(std::make_unique<net::test_server::ControllableHttpResponse>(
             server,
-            report_url.path())) {}
+            expected_url.path())) {}
 
   GURL expected_url;
   std::string expected_body;

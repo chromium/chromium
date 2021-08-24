@@ -237,21 +237,18 @@ ImpressionBuilder& ImpressionBuilder::SetData(uint64_t data) {
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetImpressionOrigin(
-    const url::Origin& origin) {
-  impression_origin_ = origin;
+ImpressionBuilder& ImpressionBuilder::SetImpressionOrigin(url::Origin origin) {
+  impression_origin_ = std::move(origin);
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetConversionOrigin(
-    const url::Origin& origin) {
-  conversion_origin_ = origin;
+ImpressionBuilder& ImpressionBuilder::SetConversionOrigin(url::Origin origin) {
+  conversion_origin_ = std::move(origin);
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(
-    const url::Origin& origin) {
-  reporting_origin_ = origin;
+ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(url::Origin origin) {
+  reporting_origin_ = std::move(origin);
   return *this;
 }
 
@@ -312,14 +309,14 @@ ConversionBuilder& ConversionBuilder::SetEventSourceTriggerData(
 }
 
 ConversionBuilder& ConversionBuilder::SetConversionDestination(
-    const net::SchemefulSite& conversion_destination) {
-  conversion_destination_ = conversion_destination;
+    net::SchemefulSite conversion_destination) {
+  conversion_destination_ = std::move(conversion_destination);
   return *this;
 }
 
 ConversionBuilder& ConversionBuilder::SetReportingOrigin(
-    const url::Origin& reporting_origin) {
-  reporting_origin_ = reporting_origin;
+    url::Origin reporting_origin) {
+  reporting_origin_ = std::move(reporting_origin);
   return *this;
 }
 

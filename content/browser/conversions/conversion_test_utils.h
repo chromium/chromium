@@ -219,7 +219,7 @@ class TestConversionManager : public ConversionManager {
     return last_impression_origin_;
   }
 
-  const absl::optional<int64_t> last_attribution_source_priority() {
+  const absl::optional<int64_t>& last_attribution_source_priority() {
     return last_attribution_source_priority_;
   }
 
@@ -249,14 +249,11 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetData(uint64_t data) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionOrigin(const url::Origin& origin)
-      WARN_UNUSED_RESULT;
+  ImpressionBuilder& SetImpressionOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetConversionOrigin(const url::Origin& domain)
-      WARN_UNUSED_RESULT;
+  ImpressionBuilder& SetConversionOrigin(url::Origin domain) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetReportingOrigin(const url::Origin& origin)
-      WARN_UNUSED_RESULT;
+  ImpressionBuilder& SetReportingOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
   ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type)
       WARN_UNUSED_RESULT;
@@ -303,9 +300,9 @@ class ConversionBuilder {
       uint64_t event_source_trigger_data) WARN_UNUSED_RESULT;
 
   ConversionBuilder& SetConversionDestination(
-      const net::SchemefulSite& conversion_destination) WARN_UNUSED_RESULT;
+      net::SchemefulSite conversion_destination) WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetReportingOrigin(const url::Origin& reporting_origin)
+  ConversionBuilder& SetReportingOrigin(url::Origin reporting_origin)
       WARN_UNUSED_RESULT;
 
   ConversionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;

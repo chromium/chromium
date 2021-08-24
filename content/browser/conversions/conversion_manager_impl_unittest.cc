@@ -82,7 +82,7 @@ class TestConversionReporter
   }
 
   void SetSentReportInfo(absl::optional<SentReportInfo> info) {
-    sent_report_info_ = info;
+    sent_report_info_ = std::move(info);
   }
 
   size_t num_reports() { return num_reports_; }

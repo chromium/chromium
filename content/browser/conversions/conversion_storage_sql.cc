@@ -733,10 +733,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
                                   expiry_time, *source_type,
                                   attribution_source_priority, impression_id);
 
-    ConversionReport report(std::move(impression), conversion_data,
-                            conversion_time, report_time, conversion_id);
-
-    conversions.push_back(std::move(report));
+    conversions.emplace_back(std::move(impression), conversion_data,
+                             conversion_time, report_time, conversion_id);
   }
 
   if (!statement.Succeeded())
@@ -1155,12 +1153,11 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
     if (!source_type.has_value())
       continue;
 
-    StorableImpression impression(impression_data, std::move(impression_origin),
-                                  std::move(conversion_origin),
-                                  std::move(reporting_origin), impression_time,
-                                  expiry_time, *source_type,
-                                  attribution_source_priority, impression_id);
-    impressions.push_back(std::move(impression));
+    impressions.emplace_back(impression_data, std::move(impression_origin),
+                             std::move(conversion_origin),
+                             std::move(reporting_origin), impression_time,
+                             expiry_time, *source_type,
+                             attribution_source_priority, impression_id);
   }
   if (!statement.Succeeded())
     return {};

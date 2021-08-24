@@ -82,7 +82,9 @@ class ConversionNetworkSenderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  void OnReportSent(SentReportInfo info) { sent_reports_.push_back(info); }
+  void OnReportSent(SentReportInfo info) {
+    sent_reports_.push_back(std::move(info));
+  }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 };
