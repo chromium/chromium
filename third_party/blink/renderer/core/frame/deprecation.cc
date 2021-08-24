@@ -182,7 +182,6 @@ String WillBeRemoved(const char* feature,
       feature, MilestoneString(milestone).Ascii().c_str(), details);
 }
 
-/* Currently ununsed.
 String ReplacedWillBeRemoved(const char* feature,
                              const char* replacement,
                              Milestone milestone,
@@ -193,7 +192,6 @@ String ReplacedWillBeRemoved(const char* feature,
       feature, MilestoneString(milestone).Ascii().c_str(), replacement,
       details);
 }
-*/
 
 DeprecationInfo GetDeprecationInfo(WebFeature feature) {
   switch (feature) {
@@ -582,6 +580,12 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return {"AuthorizationCoveredByWildcard", kM97,
               "\"Authorization\" will not be covered by the wildcard symbol (*)"
               "in CORS \"Access-Control-Allow-Headers\" handling."};
+
+    case WebFeature::kOpenWebDatabaseThirdPartyContext:
+      return {"OpenWebDatabaseThirdPartyContext", kM97,
+              ReplacedWillBeRemoved(
+                  "WebSQL in third-party contexts (i.e. cross-site iframes)",
+                  "Web Storage or Indexed Database", kM97, "5684870116278272")};
 
     // Features that aren't deprecated don't have a deprecation message.
     default:

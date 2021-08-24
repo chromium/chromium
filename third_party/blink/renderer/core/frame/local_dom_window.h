@@ -412,10 +412,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Returns true if this window is cross-site to the main frame. Defaults to
   // false in a detached window.
   // Note: This uses an outdated definition of "site" which only includes the
-  // registrable domain and not the scheme. For recording metrics in 3rd party
-  // contexts, prefer CountUseOnlyInCrossSiteIframe() which uses HTML's
-  // definition of "site" as a registrable domain and scheme.
+  // registrable domain and not the scheme. IsCrossSiteSubframeIncludingScheme()
+  // uses HTML's definition of "site" as a registrable domain and scheme.
   bool IsCrossSiteSubframe() const;
+
+  bool IsCrossSiteSubframeIncludingScheme() const;
 
   void DispatchPersistedPageshowEvent(base::TimeTicks navigation_start);
 
