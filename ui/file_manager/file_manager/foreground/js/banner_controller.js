@@ -25,6 +25,13 @@ const VIEW_COUNTER_SUFFIX = '_VIEW_COUNTER';
 const LAST_DISMISSED_SUFFIX = '_LAST_DISMISSED';
 
 /**
+ * The HTML attribute to force show a banner, if applied, the banner will always
+ * show.
+ * @private {string}
+ */
+const _BANNER_FORCE_SHOW_ATTRIBUTE = 'force-show-for-testing';
+
+/**
  * The central component to the Banners Framework. The controller maintains the
  * core logic that dictates which banner should be shown as well as what events
  * require a reconciliation of the banners to ensure the right banner is shown
@@ -100,6 +107,12 @@ export class BannerController extends EventTarget {
     this.container_ = document.querySelector('#banners');
 
     /**
+     * Whether banners should be loaded or not during for unit tests.
+     * @private {boolean}
+     */
+    this.disableBanners_ = false;
+
+    /**
      * Bind the onDirectorySizeChanged_ method to this instance once.
      * @private {!function(!chrome.fileManagerPrivate.FileWatchEvent)}
      */
@@ -117,7 +130,7 @@ export class BannerController extends EventTarget {
    */
   async initialize() {
     // TODO(benreich): Initialize banners in their priority order when
-    // implemented.
+    // implemented. This loading should be disabled for controller unit tests.
 
     for (const banner of this.warningBanners_) {
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
@@ -184,6 +197,11 @@ export class BannerController extends EventTarget {
    * @private
    */
   shouldShowBanner_(banner) {
+    if (banner.hasAttribute(_BANNER_FORCE_SHOW_ATTRIBUTE)) {
+      return true;
+    }
+
+    // Check if the banner should be shown on this particular volume type.
     const allowedVolumeTypes = banner.allowedVolumeTypes();
     if (!isAllowedVolume(this.currentVolume_, allowedVolumeTypes)) {
       return false;
@@ -311,6 +329,32 @@ export class BannerController extends EventTarget {
           this.onBannerDismissedClick_.bind(this));
       this.educationalBanners_.push(banner);
     }
+  }
+
+  /**
+   * Disable the banners from being loaded for testing. This is used to override
+   * the loading of actual banners to load fake banners in unit tests.
+   */
+  disableBannersForTesting() {
+    this.disableBanners_ = true;
+  }
+
+  /**
+   * Toggles force show a single banner. If multiple banners are force shown
+   * the banner with the highest priority will still be the only one shown.
+   * @param {string} bannerTagName The tagName of the banner to force show.
+   */
+  async toggleBannerForTesting(bannerTagName) {
+    const orderedBanners =
+        this.warningBanners_.concat(this.educationalBanners_);
+    for (const banner of orderedBanners) {
+      if (banner.tagName === bannerTagName) {
+        banner.toggleAttribute(_BANNER_FORCE_SHOW_ATTRIBUTE);
+        await this.reconcile();
+        return;
+      }
+    }
+    console.warn(`${bannerTagName} not found in initialized banners`);
   }
 
   /**

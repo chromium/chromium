@@ -300,6 +300,7 @@ export function setUp() {
     }
   });
   controller = new BannerController(directoryModel, volumeManager);
+  controller.disableBannersForTesting();
 
   // Ensure localStorage is cleared between each test.
   xfm.storage.local.clear();
