@@ -52,6 +52,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
   ]
 }
 
@@ -104,6 +105,7 @@ group("test_providers") {
     "//ios/public/provider/chrome/browser/signin:test_signin_error",
     "//ios/public/provider/chrome/browser/signin:test_signin_resources",
     "//ios/public/provider/chrome/browser/text_zoom:test_text_zoom",
+    "//ios/public/provider/chrome/browser/url_rewriters:test_url_rewriters",
 
     # The provider API needs to provide MaterialDesignComponent API (as the
     # internal provider provides an alternate implementation).
