@@ -28,13 +28,20 @@ class LoginDetectionPasswordStoreSitesBrowserTest
  public:
   LoginDetectionPasswordStoreSitesBrowserTest() = default;
 
-  void SetUpOnMainThread() override {
-    profile_password_store_ =
-        CreateAndUseTestPasswordStore(browser()->profile()).get();
-    account_password_store_ =
-        CreateAndUseTestAccountPasswordStore(browser()->profile()).get();
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &LoginDetectionPasswordStoreSitesBrowserTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
 
-    InProcessBrowserTest::SetUpOnMainThread();
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    profile_password_store_ = CreateAndUseTestPasswordStore(context).get();
+    account_password_store_ =
+        CreateAndUseTestAccountPasswordStore(context).get();
   }
 
   void AddLoginForSite(password_manager::PasswordStoreInterface* password_store,
@@ -74,6 +81,7 @@ class LoginDetectionPasswordStoreSitesBrowserTest
   base::HistogramTester histogram_tester;
   PasswordStoreInterface* profile_password_store_ = nullptr;
   PasswordStoreInterface* account_password_store_ = nullptr;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 // The code under test depends on feature EnablePasswordsAccountStorage which
