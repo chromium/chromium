@@ -1322,17 +1322,16 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
                                       kDisplayPropertiesSize);
     switch (property_id) {
       case TP::NTP_BACKGROUND_ALIGNMENT: {
-        std::string val;
-        if (iter.value().GetAsString(&val)) {
+        if (iter.value().is_string()) {
           temp_properties[TP::NTP_BACKGROUND_ALIGNMENT] =
-              TP::StringToAlignment(val);
+              TP::StringToAlignment(iter.value().GetString());
         }
         break;
       }
       case TP::NTP_BACKGROUND_TILING: {
-        std::string val;
-        if (iter.value().GetAsString(&val)) {
-          temp_properties[TP::NTP_BACKGROUND_TILING] = TP::StringToTiling(val);
+        if (iter.value().is_string()) {
+          temp_properties[TP::NTP_BACKGROUND_TILING] =
+              TP::StringToTiling(iter.value().GetString());
         }
         break;
       }
@@ -1369,24 +1368,20 @@ void BrowserThemePack::ParseImageNamesFromJSON(
         for (base::DictionaryValue::Iterator inner_iter(*inner_value);
              !inner_iter.IsAtEnd();
              inner_iter.Advance()) {
-          std::string name;
           ui::ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
           if (GetScaleFactorFromManifestKey(inner_iter.key(), &scale_factor) &&
-              inner_iter.value().is_string() &&
-              inner_iter.value().GetAsString(&name)) {
-            AddFileAtScaleToMap(iter.key(),
-                                scale_factor,
-                                images_path.AppendASCII(name),
-                                file_paths);
+              inner_iter.value().is_string()) {
+            AddFileAtScaleToMap(
+                iter.key(), scale_factor,
+                images_path.AppendASCII(inner_iter.value().GetString()),
+                file_paths);
           }
         }
       }
     } else if (iter.value().is_string()) {
-      std::string name;
-      if (iter.value().GetAsString(&name)) {
-        AddFileAtScaleToMap(iter.key(), ui::k100Percent,
-                            images_path.AppendASCII(name), file_paths);
-      }
+      AddFileAtScaleToMap(iter.key(), ui::k100Percent,
+                          images_path.AppendASCII(iter.value().GetString()),
+                          file_paths);
     }
   }
 }
