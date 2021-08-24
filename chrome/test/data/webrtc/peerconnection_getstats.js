@@ -242,6 +242,9 @@ let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   localId: 'string',
   remoteTimestamp: 'number',
   reportsSent: 'number',
+  roundTripTime: 'number',
+  totalRoundTripTime: 'number',
+  roundTripTimeMeasurements: 'number',
 });
 // TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
 addRTCStatsToWhitelist(
