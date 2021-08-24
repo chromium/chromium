@@ -51,6 +51,7 @@ class CloudExternalDataManagerBase : public CloudExternalDataManager {
                    url_loader_factory) override;
   void Disconnect() override;
   void Fetch(const std::string& policy,
+             const std::string& field_name,
              ExternalDataFetcher::FetchCallback callback) override;
 
   // Allows policies to reference |max_size| bytes of external data even if no

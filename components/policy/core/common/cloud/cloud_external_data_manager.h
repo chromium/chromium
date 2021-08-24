@@ -35,9 +35,26 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
     std::string url;
     std::string hash;
   };
+
+  struct POLICY_EXPORT MetadataKey {
+    MetadataKey();
+    explicit MetadataKey(const std::string& policy);
+    MetadataKey(const std::string& policy, const std::string& field_name);
+
+    bool operator<(const MetadataKey& other) const;
+
+    // For situations where you need an opaque identifier for the key, e.g.
+    // the ExternalPolicyDataUpdater or the CloudExternalDataStore.
+    // Do not use in situation where you might need to parse this.
+    std::string ToString() const;
+
+    std::string policy;
+    std::string field_name;
+  };
+
   // Maps from policy names to the metadata specifying the external data that
   // each of the policies references.
-  typedef std::map<std::string, MetadataEntry> Metadata;
+  typedef std::map<MetadataKey, MetadataEntry> Metadata;
 
   CloudExternalDataManager();
   CloudExternalDataManager(const CloudExternalDataManager&) = delete;

@@ -92,6 +92,8 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
                        const std::string& repsonse_data,
                        net::HttpStatusCode response_code);
 
+  std::string GetStoreKey(const std::string& policy);
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceCache> resource_cache_;
@@ -205,6 +207,11 @@ void CloudExternalDataManagerBaseTest::SetFakeResponse(
   test_url_loader_factory_.AddResponse(url, response_data, response_code);
 }
 
+std::string CloudExternalDataManagerBaseTest::GetStoreKey(
+    const std::string& policy) {
+  return CloudExternalDataManager::MetadataKey(policy).ToString();
+}
+
 // Verifies that when no valid external data reference has been set for a
 // policy, the attempt to retrieve the external data fails immediately.
 TEST_F(CloudExternalDataManagerBaseTest, FailToFetchInvalid) {
@@ -212,7 +219,8 @@ TEST_F(CloudExternalDataManagerBaseTest, FailToFetchInvalid) {
 
   // Attempt to retrieve external data for |kStringPolicy|, which is a string
   // policy that does not reference any external data.
-  external_data_manager_->Fetch(kStringPolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(kStringPolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   EXPECT_TRUE(callback_data_.find(0) != callback_data_.end());
@@ -221,7 +229,8 @@ TEST_F(CloudExternalDataManagerBaseTest, FailToFetchInvalid) {
 
   // Attempt to retrieve external data for |kUnknownPolicy|, which is not a
   // known policy.
-  external_data_manager_->Fetch(kUnknownPolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(kUnknownPolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   EXPECT_TRUE(callback_data_.find(1) != callback_data_.end());
@@ -235,7 +244,8 @@ TEST_F(CloudExternalDataManagerBaseTest, FailToFetchInvalid) {
 
   // Attempt to retrieve external data for |k10BytePolicy|, which now has an
   // invalid reference.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(2));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(2));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   EXPECT_TRUE(callback_data_.find(2) != callback_data_.end());
@@ -253,7 +263,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCache) {
 
   // Retrieve external data for |k10BytePolicy|. Verify that a download happens
   // and the callback is invoked with the downloaded data.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[0]);
@@ -266,7 +277,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCache) {
   // Retrieve external data for |k10BytePolicy| again. Verify that no download
   // is attempted but the callback is still invoked with the expected data,
   // served from the cache.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[1]);
@@ -280,7 +292,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCache) {
   // Retrieve external data for |k10BytePolicy| again. Verify that even though
   // downloads are not allowed, the callback is still invoked with the expected
   // data, served from the cache.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(2));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(2));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[2]);
@@ -291,12 +304,12 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCache) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
   std::string data;
-  EXPECT_FALSE(
-      CloudExternalDataStore(kCacheKey,
-                             task_environment_.GetMainThreadTaskRunner(),
-                             resource_cache_.get())
-          .Load(k10BytePolicy, crypto::SHA256HashString(k10ByteData), 10, &data)
-          .empty());
+  EXPECT_FALSE(CloudExternalDataStore(
+                   kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+                   resource_cache_.get())
+                   .Load(GetStoreKey(k10BytePolicy),
+                         crypto::SHA256HashString(k10ByteData), 10, &data)
+                   .empty());
   EXPECT_EQ(k10ByteData, data);
 }
 
@@ -319,8 +332,10 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCacheAll) {
   // Retrieve external data for |k10BytePolicy| and |k20BytePolicy|. Verify that
   // no downloads are attempted but the callbacks are still invoked with the
   // expected data, served from the cache.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, callback_data_.size());
   ASSERT_TRUE(callback_data_[0]);
@@ -336,8 +351,10 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCacheAll) {
   // Retrieve external data for |k10BytePolicy| and |k20BytePolicy|. Verify that
   // even though downloads are not allowed, the callbacks are still invoked with
   // the expected data, served from the cache.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(2));
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(3));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(2));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(3));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, callback_data_.size());
   ASSERT_TRUE(callback_data_[2]);
@@ -353,15 +370,15 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCacheAll) {
                                task_environment_.GetMainThreadTaskRunner(),
                                resource_cache_.get());
   std::string data;
-  EXPECT_FALSE(
-      cache
-          .Load(k10BytePolicy, crypto::SHA256HashString(k10ByteData), 10, &data)
-          .empty());
+  EXPECT_FALSE(cache
+                   .Load(GetStoreKey(k10BytePolicy),
+                         crypto::SHA256HashString(k10ByteData), 10, &data)
+                   .empty());
   EXPECT_EQ(k10ByteData, data);
-  EXPECT_FALSE(
-      cache
-          .Load(k20BytePolicy, crypto::SHA256HashString(k20ByteData), 20, &data)
-          .empty());
+  EXPECT_FALSE(cache
+                   .Load(GetStoreKey(k20BytePolicy),
+                         crypto::SHA256HashString(k20ByteData), 20, &data)
+                   .empty());
   EXPECT_EQ(k20ByteData, data);
 }
 
@@ -371,7 +388,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCacheAll) {
 TEST_F(CloudExternalDataManagerBaseTest, DownloadAfterConnect) {
   // Attempt to retrieve external data for |k10BytePolicy|. Verify that the
   // callback is not invoked as the request remains pending.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();
@@ -403,7 +421,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Attempt to retrieve external data for |k20BytePolicy|. Verify that the
   // callback is not invoked as the download attempt fails and the request
   // remains pending.
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();
@@ -418,7 +437,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Attempt to retrieve external data for |k20BytePolicy| again. Verify that
   // no callback is invoked still as the download attempt fails again and the
   // request remains pending.
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();
@@ -437,7 +457,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Attempt to retrieve external data for |k20BytePolicy| again. Verify that
   // no callback is invoked still as the downloaded succeeds but returns data
   // that does not match the external data reference.
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(2));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(2));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();
@@ -453,7 +474,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Attempt to retrieve external data for |k20BytePolicy| again. Verify that
   // the current callback and the three previously enqueued callbacks are
   // invoked with the downloaded data now.
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(3));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(3));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4u, callback_data_.size());
   ASSERT_TRUE(callback_data_[0]);
@@ -477,8 +499,8 @@ TEST_F(CloudExternalDataManagerBaseTest, LoadFromCache) {
   EXPECT_FALSE(CloudExternalDataStore(
                    kCacheKey, task_environment_.GetMainThreadTaskRunner(),
                    resource_cache_.get())
-                   .Store(k10BytePolicy, crypto::SHA256HashString(k10ByteData),
-                          k10ByteData)
+                   .Store(GetStoreKey(k10BytePolicy),
+                          crypto::SHA256HashString(k10ByteData), k10ByteData)
                    .empty());
 
   // Instantiate an external_data_manager_ that uses the primed cache.
@@ -488,7 +510,8 @@ TEST_F(CloudExternalDataManagerBaseTest, LoadFromCache) {
   // Retrieve external data for |k10BytePolicy|. Verify that no download is
   // attempted but the callback is still invoked with the expected data, served
   // from the cache.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[0]);
@@ -506,19 +529,19 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnStartup) {
       resource_cache_.get()));
   // Store valid external data for |k10BytePolicy| in the cache.
   EXPECT_FALSE(cache
-                   ->Store(k10BytePolicy, crypto::SHA256HashString(k10ByteData),
-                           k10ByteData)
+                   ->Store(GetStoreKey(k10BytePolicy),
+                           crypto::SHA256HashString(k10ByteData), k10ByteData)
                    .empty());
   // Store external data for |k20BytePolicy| that does not match the hash in its
   // external data reference.
   EXPECT_FALSE(cache
-                   ->Store(k20BytePolicy, crypto::SHA256HashString(k10ByteData),
-                           k10ByteData)
+                   ->Store(GetStoreKey(k20BytePolicy),
+                           crypto::SHA256HashString(k10ByteData), k10ByteData)
                    .empty());
   // Store external data for |kUnknownPolicy|, which is not a known policy and
   // therefore, cannot be referencing any external data.
   EXPECT_FALSE(cache
-                   ->Store(kUnknownPolicy,
+                   ->Store(GetStoreKey(kUnknownPolicy),
                            crypto::SHA256HashString(k10ByteData), k10ByteData)
                    .empty());
   cache.reset();
@@ -535,19 +558,19 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnStartup) {
   // Verify that the valid external data for |k10BytePolicy| is still in the
   // cache.
   EXPECT_FALSE(cache
-                   ->Load(k10BytePolicy, crypto::SHA256HashString(k10ByteData),
-                          10, &data)
+                   ->Load(GetStoreKey(k10BytePolicy),
+                          crypto::SHA256HashString(k10ByteData), 10, &data)
                    .empty());
   EXPECT_EQ(k10ByteData, data);
   // Verify that the external data for |k20BytePolicy| and |kUnknownPolicy| has
   // been pruned from the cache.
   EXPECT_TRUE(cache
-                  ->Load(k20BytePolicy, crypto::SHA256HashString(k10ByteData),
-                         20, &data)
+                  ->Load(GetStoreKey(k20BytePolicy),
+                         crypto::SHA256HashString(k10ByteData), 20, &data)
                   .empty());
   EXPECT_TRUE(cache
-                  ->Load(kUnknownPolicy, crypto::SHA256HashString(k10ByteData),
-                         20, &data)
+                  ->Load(GetStoreKey(kUnknownPolicy),
+                         crypto::SHA256HashString(k10ByteData), 20, &data)
                   .empty());
 }
 
@@ -561,8 +584,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
       kCacheKey, task_environment_.GetMainThreadTaskRunner(),
       resource_cache_.get()));
   EXPECT_FALSE(cache
-                   ->Store(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
-                           k20ByteData)
+                   ->Store(GetStoreKey(k20BytePolicy),
+                           crypto::SHA256HashString(k20ByteData), k20ByteData)
                    .empty());
   cache.reset();
 
@@ -585,8 +608,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
       resource_cache_.get());
   std::string data;
   EXPECT_TRUE(cache
-                  ->Load(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
-                         20, &data)
+                  ->Load(GetStoreKey(k20BytePolicy),
+                         crypto::SHA256HashString(k20ByteData), 20, &data)
                   .empty());
 }
 
@@ -600,14 +623,14 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
   // Store external data for |k10BytePolicy| that exceeds the maximal external
   // data size allowed for that policy.
   EXPECT_FALSE(cache
-                   ->Store(k10BytePolicy, crypto::SHA256HashString(k20ByteData),
-                           k20ByteData)
+                   ->Store(GetStoreKey(k10BytePolicy),
+                           crypto::SHA256HashString(k20ByteData), k20ByteData)
                    .empty());
   // Store external data for |k20BytePolicy| that is corrupted and does not
   // match the expected hash.
   EXPECT_FALSE(cache
-                   ->Store(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
-                           k10ByteData)
+                   ->Store(GetStoreKey(k20BytePolicy),
+                           crypto::SHA256HashString(k20ByteData), k10ByteData)
                    .empty());
   cache.reset();
 
@@ -627,7 +650,8 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
   // Retrieve external data for |k10BytePolicy|. Verify that the callback is
   // not invoked as the cached and downloaded external data exceed the maximal
   // size allowed for this policy and the request remains pending.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();
@@ -637,7 +661,8 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
 
   // Retrieve external data for |k20BytePolicy|. Verify that the callback is
   // invoked with the valid downloaded data, not the invalid data in the cache.
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());
   ASSERT_TRUE(callback_data_[1]);
@@ -660,14 +685,14 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
   // When this fails, it is certain that the original data is no longer present
   // in the cache.
   EXPECT_TRUE(cache
-                  ->Load(k10BytePolicy, crypto::SHA256HashString(k20ByteData),
-                         20, &data)
+                  ->Load(GetStoreKey(k10BytePolicy),
+                         crypto::SHA256HashString(k20ByteData), 20, &data)
                   .empty());
   // Verify that the invalid external data for |k20BytePolicy| has been replaced
   // with the downloaded valid data in the cache.
   EXPECT_FALSE(cache
-                   ->Load(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
-                          20, &data)
+                   ->Load(GetStoreKey(k20BytePolicy),
+                          crypto::SHA256HashString(k20ByteData), 20, &data)
                    .empty());
   EXPECT_EQ(k20ByteData, data);
 }
@@ -687,8 +712,10 @@ TEST_F(CloudExternalDataManagerBaseTest, PolicyChangeWhileDownloadPending) {
   // Attempt to retrieve external data for |k10BytePolicy| and |k20BytePolicy|.
   // Verify that no callbacks are invoked as the download attempts fail and the
   // requests remain pending.
-  external_data_manager_->Fetch(k10BytePolicy, ConstructFetchCallback(0));
-  external_data_manager_->Fetch(k20BytePolicy, ConstructFetchCallback(1));
+  external_data_manager_->Fetch(k10BytePolicy, std::string(),
+                                ConstructFetchCallback(0));
+  external_data_manager_->Fetch(k20BytePolicy, std::string(),
+                                ConstructFetchCallback(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_data_.empty());
   ResetCallbackData();

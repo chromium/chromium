@@ -16,12 +16,12 @@ namespace policy {
 
 namespace {
 
-// Encodes (policy, hash) into a single string.
-std::string GetSubkey(const std::string& policy, const std::string& hash) {
-  DCHECK(!policy.empty());
+// Encodes (key, hash) into a single string.
+std::string GetSubkey(const std::string& key, const std::string& hash) {
+  DCHECK(!key.empty());
   DCHECK(!hash.empty());
-  return base::NumberToString(policy.size()) + ":" +
-         base::NumberToString(hash.size()) + ":" + policy + hash;
+  return base::NumberToString(key.size()) + ":" +
+         base::NumberToString(hash.size()) + ":" + key + hash;
 }
 
 }  // namespace
@@ -42,30 +42,28 @@ CloudExternalDataStore::~CloudExternalDataStore() {
   // when this destructor is called not on |task_runner|.
 }
 
-void CloudExternalDataStore::Prune(
-    const CloudExternalDataManager::Metadata& metadata) {
+void CloudExternalDataStore::Prune(const PruningData& key_hash_pairs_to_keep) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   std::set<std::string> subkeys_to_keep;
-  for (CloudExternalDataManager::Metadata::const_iterator it = metadata.begin();
-       it != metadata.end(); ++it) {
-    subkeys_to_keep.insert(GetSubkey(it->first, it->second.hash));
+  for (const auto& it : key_hash_pairs_to_keep) {
+    subkeys_to_keep.insert(GetSubkey(it.first, it.second));
   }
   cache_->PurgeOtherSubkeys(cache_key_, subkeys_to_keep);
 }
 
-base::FilePath CloudExternalDataStore::Store(const std::string& policy,
+base::FilePath CloudExternalDataStore::Store(const std::string& key,
                                              const std::string& hash,
                                              const std::string& data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return cache_->Store(cache_key_, GetSubkey(policy, hash), data);
+  return cache_->Store(cache_key_, GetSubkey(key, hash), data);
 }
 
-base::FilePath CloudExternalDataStore::Load(const std::string& policy,
+base::FilePath CloudExternalDataStore::Load(const std::string& key,
                                             const std::string& hash,
                                             size_t max_size,
                                             std::string* data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  const std::string subkey = GetSubkey(policy, hash);
+  const std::string subkey = GetSubkey(key, hash);
   base::FilePath file_path = cache_->Load(cache_key_, subkey, data);
   if (!file_path.empty()) {
     if (data->size() <= max_size && crypto::SHA256HashString(*data) == hash)

@@ -738,9 +738,10 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserFetchSuccess) {
 
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _))
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
       .Times(1)
-      .WillOnce([&](const std::string& policy,
+      .WillOnce([&](const std::string& policy, const std::string& field_name,
                     ExternalDataFetcher::FetchCallback callback) {
         fetch_callback_ = std::move(callback);
       });
@@ -754,7 +755,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserFetchSuccess) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   std::move(fetch_callback_)
       .Run(std::make_unique<std::string>(avatar_policy_1_data_),
@@ -775,7 +778,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserFetchSuccess) {
 TEST_F(CloudExternalDataPolicyObserverTest, RegularUserClearUnset) {
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   LogInAsRegularUser();
 
@@ -785,7 +790,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserClearUnset) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   SetRegularUserAvatarPolicy("");
 
@@ -805,7 +812,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserClearSet) {
 
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(1);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(1);
 
   LogInAsRegularUser();
 
@@ -816,7 +825,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserClearSet) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   SetRegularUserAvatarPolicy("");
 
@@ -836,7 +847,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserClearSet) {
 TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetUnset) {
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   LogInAsRegularUser();
 
@@ -846,9 +859,10 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetUnset) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _))
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
       .Times(1)
-      .WillOnce([&](const std::string& policy,
+      .WillOnce([&](const std::string& policy, const std::string& field_name,
                     ExternalDataFetcher::FetchCallback callback) {
         fetch_callback_ = std::move(callback);
       });
@@ -862,7 +876,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetUnset) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   std::move(fetch_callback_)
       .Run(std::make_unique<std::string>(avatar_policy_1_data_),
@@ -887,7 +903,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetSet) {
 
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(1);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(1);
 
   LogInAsRegularUser();
 
@@ -898,9 +916,10 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetSet) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _))
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
       .Times(1)
-      .WillOnce([&](const std::string& policy,
+      .WillOnce([&](const std::string& policy, const std::string& field_name,
                     ExternalDataFetcher::FetchCallback callback) {
         fetch_callback_ = std::move(callback);
       });
@@ -914,7 +933,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserSetSet) {
   ClearObservations();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   std::move(fetch_callback_)
       .Run(std::make_unique<std::string>(avatar_policy_2_data_),
@@ -935,7 +956,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserLogoutTest) {
   SetRegularUserAvatarPolicy(avatar_policy_1_);
   CreateObserver();
 
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(1);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(1);
 
   LogInAsRegularUser();
 
@@ -950,7 +973,9 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserLogoutTest) {
   RemoveObserver();
 
   Mock::VerifyAndClear(&external_data_manager_);
-  EXPECT_CALL(external_data_manager_, Fetch(key::kUserAvatarImage, _)).Times(0);
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
 
   SetRegularUserAvatarPolicy("");
 
