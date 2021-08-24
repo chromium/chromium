@@ -49,8 +49,8 @@
   <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
     This app has been installed by your administrator.
   </message>
-  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING" desc="Label for the intent sharing settings section.">
-    Opening supported links
+  <message name="IDS_APP_MANAGEMENT_INTENT_SETTINGS_TITLE" desc="Title for the intent sharing settings section.">
+    Opening <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>supported links<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN" desc="Label for the intent sharing option to open in a specified app.">
     Open in <ph name="APP_NAME">$1<ex>Chrome browser</ex></ph>
@@ -60,5 +60,8 @@
   </message>
   <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION" desc="Label for the intent sharing description for when the app is set to open in tab mode.">
     <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is set to open in a new browser tab, supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="https://support.google.com/chromebook?p=app_intent" target="_blank"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
+<message name="IDS_APP_MANAGEMENT_INTENT_SETTINGS_DIALOG_TITLE" desc="Title for the dialog which shows a list of supported links for a specified app.">
+    Supported links
   </message>
 </grit-part>

@@ -1,0 +1,36 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+
+<dom-module id="app-management-supported-links-dialog">
+  <template>
+    <style include="app-management-shared-css settings-shared">
+      #dialog-body {
+        display: flex;
+        flex-direction: column;
+        height: 350px;
+        overflow: auto;
+      }
+
+      .list-item {
+        border-bottom: var(--cr-separator-line);
+        min-height: 36px;
+      }
+    </style>
+    <cr-dialog id="dialog" show-on-attach show-close-button>
+      <div slot="title">$i18n{appManagementIntentSettingsDialogTitle}</div>
+      <div id="dialog-body" slot="body" scrollable>
+        <iron-list id="list" scroll-target="dialog-body"
+            items="[[app.supportedLinks]]">
+            <template>
+              <div class="list-item">
+                [[item]]
+              </div>
+            </template>
+        </iron-list>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="supported_links_dialog.js"></script>
+</dom-module>

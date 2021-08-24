@@ -63,6 +63,7 @@ import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.m.
 import './os_apps_page/app_management_page/pwa_detail_view.m.js';
 import './os_apps_page/app_management_page/shared_style.m.js';
 import './os_apps_page/app_management_page/shared_vars.m.js';
+import './os_apps_page/app_management_page/supported_links_dialog.m.js';
 import './os_apps_page/app_management_page/supported_links_item.m.js';
 import './os_apps_page/app_management_page/toggle_row.m.js';
 import './os_apps_page/app_management_page/uninstall_button.m.js';

@@ -157,4 +157,53 @@ suite('<app-management-supported-links-item>', () => {
     assertTrue(!!supportedLinksItem.$$('#explanation-text'));
     assertTrue(!!supportedLinksItem.$$('#radio-group').disabled);
   });
+
+  test('can open and close dialog', async function() {
+    const supportedLink = 'google.com';
+    const pwaOptions = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: [supportedLink],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app1', pwaOptions);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    supportedLinksItem.app = app;
+
+    replaceBody(supportedLinksItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    assertFalse(!!supportedLinksItem.$$('#dialog'));
+
+    // Open dialog.
+    supportedLinksItem.$$('#heading').$$('a').click();
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+    const dialog = supportedLinksItem.$$('#dialog').$$('#dialog');
+    assertTrue(dialog.open);
+
+    // Confirm google.com shows up.
+    assertEquals(
+        supportedLinksItem.$$('#dialog')
+            .$$('#list')
+            .getElementsByClassName('list-item')[0]
+            .innerText,
+        supportedLink);
+
+    // Close dialog.
+    dialog.$$('#close').click();
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+    assertFalse(supportedLinksItem.$$('#dialog').$$('#dialog').open);
+  });
 });

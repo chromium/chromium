@@ -33,6 +33,7 @@ js_type_check("closure_compile_module") {
     ":shared_vars.m",
     ":store.m",
     ":store_client.m",
+    ":supported_links_dialog.m",
     ":supported_links_item.m",
     ":toggle_row.m",
     ":types.m",
@@ -277,17 +278,30 @@ js_library("store_client.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("supported_links_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_dialog.m.js" ]
+  deps = [
+    ":browser_proxy.m",
+    ":store_client.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  extra_deps = [ ":supported_links_dialog_module" ]
+}
+
 js_library("supported_links_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_item.m.js" ]
   deps = [
     ":browser_proxy.m",
     ":constants.m",
     ":store_client.m",
+    ":supported_links_dialog.m",
     ":types.m",
     ":util.m",
     "../../localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
   extra_deps = [ ":supported_links_item_module" ]
 }
@@ -349,6 +363,7 @@ group("polymer3_elements") {
     ":resize_lock_item_module",
     ":shared_style_module",
     ":shared_vars_module",
+    ":supported_links_dialog_module",
     ":supported_links_item_module",
     ":toggle_row_module",
     ":uninstall_button_module",
@@ -470,6 +485,15 @@ polymer_modulizer("shared_vars") {
   js_file = "shared_vars.m.js"
   html_file = "shared_vars.html"
   html_type = "custom-style"
+}
+
+polymer_modulizer("supported_links_dialog") {
+  js_file = "supported_links_dialog.js"
+  html_file = "supported_links_dialog.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
 }
 
 polymer_modulizer("supported_links_item") {

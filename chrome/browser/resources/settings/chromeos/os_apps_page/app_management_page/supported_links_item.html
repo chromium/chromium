@@ -4,11 +4,13 @@
 <link rel="import" href="browser_proxy.html">
 <link rel="import" href="constants.html">
 <link rel="import" href="store_client.html">
+<link rel="import" href="supported_links_dialog.html">
 <link rel="import" href="util.html">
 <link rel="import" href="../../localized_link/localized_link.html">
 <link rel="import" href="../../metrics_recorder.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 
 <dom-module id="app-management-supported-links-item">
   <template>
@@ -24,9 +26,10 @@
       }
     </style>
     <div class="permission-section-header">
-      <div class="header-text">
-        $i18n{appManagementIntentSharingLabel}
-      </div>
+      <settings-localized-link id="heading" class="header-text"
+          on-link-clicked="launchDialog_"
+          localized-string="$i18n{appManagementIntentSettingsTitle}">
+      </settings-localized-link>
     </div>
     <template is="dom-if" if="[[disabled_]]">
       <div id="explanation-text">
@@ -49,6 +52,11 @@
         </cr-radio-button>
       </cr-radio-group>
     </div>
+    <template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>
+      <app-management-supported-links-dialog id="dialog" app="[[app]]"
+          on-close="onDialogClose_">
+      </app-management-supported-links-dialog>
+    </template>
   </template>
   <script src="supported_links_item.js"></script>
 </dom-module>

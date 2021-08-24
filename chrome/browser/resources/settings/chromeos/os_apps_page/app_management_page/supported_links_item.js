@@ -34,6 +34,14 @@ Polymer({
       type: Boolean,
       computed: 'isDisabled_(app)',
     },
+
+    /**
+     * @private {boolean}
+     */
+    showSupportedLinksDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -44,7 +52,7 @@ Polymer({
    * @returns {boolean}
    * @private
    */
-   isHidden_(app) {
+  isHidden_(app) {
     if (!loadTimeData.getBoolean('appManagementIntentSettingsEnabled')) {
       return true;
     }
@@ -74,9 +82,9 @@ Polymer({
   },
 
   /**
-   * @private
    * @param {!App} app
    * @return {!string} label for 'preferred' radio button
+   * @private
    */
   getPreferredLabel_(app) {
     return this.i18n(
@@ -107,5 +115,26 @@ Polymer({
                                  AppManagementUserAction.PreferredAppTurnedOff;
     app_management.util.recordAppManagementUserAction(
         this.app.type, userAction);
+  },
+
+  /**
+   * Stamps and opens the Supported Links dialog.
+   * @param {!Event} e
+   * @private
+   */
+  launchDialog_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    this.showSupportedLinksDialog_ = true;
+  },
+
+  /**
+   * @private
+   */
+  onDialogClose_() {
+    this.showSupportedLinksDialog_ = false;
+    cr.ui.focusWithoutInk(assert(this.$$('#heading')));
   }
 });
