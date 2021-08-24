@@ -107,6 +107,7 @@ FontDescription::FontDescription()
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
   fields_.hash_category_ = kHashRegularValue;
+  fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -608,6 +609,16 @@ String FontDescription::ToStringForIdl(FontVariantCaps variant) {
       return "unicase";
     case FontVariantCaps::kTitlingCaps:
       return "titling-caps";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisWeight font_synthesis_weight) {
+  switch (font_synthesis_weight) {
+    case FontSynthesisWeight::kAutoFontSynthesisWeight:
+      return "Auto";
+    case FontSynthesisWeight::kNoneFontSynthesisWeight:
+      return "None";
   }
   return "Unknown";
 }

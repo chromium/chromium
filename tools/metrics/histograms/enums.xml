@@ -53746,6 +53746,7 @@ Called by update_use_counter_css.py.-->
   <int value="697" label="container-name"/>
   <int value="698" label="container-type"/>
   <int value="699" label="container"/>
+  <int value="700" label="font-synthesis-weight"/>
 </enum>
 
 <enum name="MappedEditingCommands">

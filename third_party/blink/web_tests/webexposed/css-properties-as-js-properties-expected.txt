@@ -176,6 +176,7 @@ fontSize
 fontSizeAdjust
 fontStretch
 fontStyle
+fontSynthesisWeight
 fontVariant
 fontVariantCaps
 fontVariantEastAsian

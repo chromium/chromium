@@ -176,6 +176,13 @@ void FontBuilder::SetVariantNumeric(const FontVariantNumeric& variant_numeric) {
   font_description_.SetVariantNumeric(variant_numeric);
 }
 
+void FontBuilder::SetFontSynthesisWeight(
+    FontDescription::FontSynthesisWeight font_synthesis_weight) {
+  Set(PropertySetFlag::kFontSynthesisWeight);
+
+  font_description_.SetFontSynthesisWeight(font_synthesis_weight);
+}
+
 void FontBuilder::SetTextRendering(TextRenderingMode text_rendering_mode) {
   Set(PropertySetFlag::kTextRendering);
 
@@ -392,6 +399,10 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetVariantNumeric(font_description_.VariantNumeric());
   if (IsSet(PropertySetFlag::kVariationSettings))
     description.SetVariationSettings(font_description_.VariationSettings());
+  if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {
+    description.SetFontSynthesisWeight(
+        font_description_.GetFontSynthesisWeight());
+  }
   if (IsSet(PropertySetFlag::kTextRendering))
     description.SetTextRendering(font_description_.TextRendering());
   if (IsSet(PropertySetFlag::kKerning))
