@@ -285,9 +285,9 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 # Flaky on AMD Win7
 crbug.com/989050 [ angle-d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
 
-# Win / Intel
-crbug.com/1215624 [ win intel angle-d3d11 ] conformance2/textures/video/* [ RetryOnFailure ]
-crbug.com/1215624 [ win intel angle-d3d11 ] conformance2/textures/webgl_canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
+# Win D3D11 / Passthrough / Intel+AMD
+crbug.com/1215624 [ win angle-d3d11 passthrough intel ] conformance2/textures/video/* [ RetryOnFailure ]
+crbug.com/1215624 [ win angle-d3d11 passthrough amd   ] conformance2/textures/video/* [ RetryOnFailure ]
 
 ####################
 # Mac failures     #
