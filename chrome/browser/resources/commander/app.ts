@@ -75,6 +75,7 @@ class CommanderAppElement extends PolymerElement {
   private initialize_() {
     this.options_ = [];
     this.$.input.value = '';
+    this.$.input.focus();
     this.focusedIndex_ = -1;
     this.resultSetId_ = null;
     this.promptText_ = null;
