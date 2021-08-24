@@ -3193,4 +3193,43 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   EXPECT_TRUE(
       GetProvider().registrar().GetAppById(app_id)->manifest_id().has_value());
 }
+
+// Test that showing the AppIdentity update confirmation and allowing the update
+// sends the right signal back.
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       VerifyCallbackUpgradeAllowed) {
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"Test app name", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  base::RunLoop run_loop;
+
+  chrome::ShowWebAppIdentityUpdateDialog(
+      app_id,
+      /* title_change= */ true,
+      /* icon_change= */ false, u"old_title", u"new_title",
+      /* old_icon= */ SkBitmap(),
+      /* new_icon= */ SkBitmap(),
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /* callback= */
+      base::BindLambdaForTesting(
+          [&](AppIdentityUpdate app_identity_update_allowed) {
+            // This verifies that the dialog sends us the signal to update.
+            DCHECK_EQ(AppIdentityUpdate::kAllowed, app_identity_update_allowed);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 }  // namespace web_app
