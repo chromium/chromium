@@ -15,6 +15,7 @@ module arc.mojom;
 // because of incompatibilities between Chrome and Chrome OS mojo versions
 // regarding the structure used for sending shared memory handles.
 // Next Method ID: 1
+[Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495"]
 interface ProtectedBufferManager {
   GetProtectedSharedMemoryFromHandle@0(handle dummy_handle)
       => (handle shared_memory_handle);

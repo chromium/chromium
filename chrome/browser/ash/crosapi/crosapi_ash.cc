@@ -56,6 +56,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
@@ -190,6 +191,11 @@ void CrosapiAsh::BindBrowserServiceHost(
     mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
   browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),
                                           std::move(receiver));
+}
+
+void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+    chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
 }
 
 void CrosapiAsh::BindChromeAppPublisher(

@@ -118,6 +118,7 @@ source_set("crosapi") {
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chromeos",
+    "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/sensors",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",

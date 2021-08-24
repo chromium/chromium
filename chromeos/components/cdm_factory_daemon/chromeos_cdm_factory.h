@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_factory.h"
@@ -39,8 +40,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
 
   // Invoked on GPU initialization to set the receiver to pass to the browser
   // process.
-  static mojo::PendingReceiver<cdm::mojom::CdmFactoryDaemon>
-  GetCdmFactoryDaemonReceiver();
+  static mojo::PendingReceiver<cdm::mojom::BrowserCdmFactory>
+  GetBrowserCdmFactoryReceiver();
 
   // media::CdmFactory implementation.
   void Create(

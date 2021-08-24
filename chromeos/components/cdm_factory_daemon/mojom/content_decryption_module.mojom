@@ -18,7 +18,7 @@ module chromeos.cdm.mojom;
 // between Chrome and Chrome OS.
 
 // See media::EmeInitDataType.
-[Extensible]
+[Stable, Extensible]
 enum EmeInitDataType {
   UNKNOWN,
   WEBM,
@@ -27,14 +27,14 @@ enum EmeInitDataType {
 };
 
 // See media::CdmSessionType
-[Extensible]
+[Stable, Extensible]
 enum CdmSessionType {
   kTemporary,
   kPersistentLicense,
 };
 
 // See media::CdmMessageType
-[Extensible]
+[Stable, Extensible]
 enum CdmMessageType {
   LICENSE_REQUEST,
   LICENSE_RENEWAL,
@@ -43,7 +43,7 @@ enum CdmMessageType {
 };
 
 // See media::CdmKeyInformation::KeyStatus
-[Extensible]
+[Stable, Extensible]
 enum CdmKeyStatus {
   USABLE,
   INTERNAL_ERROR,
@@ -55,7 +55,7 @@ enum CdmKeyStatus {
 };
 
 // See media::HdcpVersion
-[Extensible]
+[Stable, Extensible]
 enum HdcpVersion {
   kHdcpVersionNone,
   kHdcpVersion1_0,
@@ -70,7 +70,7 @@ enum HdcpVersion {
 };
 
 // See media::CdmPromise::Exception
-[Extensible]
+[Stable, Extensible]
 enum PromiseException {
   NOT_SUPPORTED_ERROR,
   INVALID_STATE_ERROR,
@@ -83,6 +83,7 @@ enum PromiseException {
 //   be ignored.
 // - When |success| is false, the promise is rejected with |exception|,
 //   |system_code| and |error_message|.
+[Stable]
 struct CdmPromiseResult {
   bool success;
   PromiseException exception;
@@ -93,29 +94,33 @@ struct CdmPromiseResult {
 // Transport layer of media::CdmKeyInformation (see
 // media/base/cdm_key_information.h). It is used to specify a key_id and it's
 // associated status.
+[Stable]
 struct CdmKeyInformation {
   array<uint8> key_id;
   CdmKeyStatus status;
   uint32 system_code;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum EncryptionScheme {
   kCenc,
   kCbcs
 };
 
+[Stable]
 struct EncryptionPattern {
   uint32 crypt_byte_block;
   uint32 skip_byte_block;
 };
 
 // See media::SubsampleEntry
+[Stable]
 struct SubsampleEntry {
   uint32 clear_bytes;
   uint32 cipher_bytes;
 };
 
+[Stable]
 struct DecryptConfig {
   EncryptionScheme encryption_scheme;
   string key_id;
@@ -124,7 +129,7 @@ struct DecryptConfig {
   EncryptionPattern? encryption_pattern;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum DecryptStatus {
   kSuccess,
   kNoKey,
@@ -132,6 +137,7 @@ enum DecryptStatus {
 };
 
 // Next Method ID: 11
+[Stable, Uuid="cbe7142d-379a-4b23-bfee-a370ab01bdea"]
 interface ContentDecryptionModule {
   // Provides a server certificate to be used to encrypt messages to the
   // license server.
@@ -200,6 +206,7 @@ interface ContentDecryptionModule {
 
 // Session callbacks. See media/base/content_decryption_module.h for details.
 // Next Method ID: 4
+[Stable, Uuid="f08e6938-ac41-48b8-8f55-a381732b932b"]
 interface ContentDecryptionModuleClient {
   // Called when the CDM needs to queue a message event to the session object.
   // See http://w3c.github.io/encrypted-media/#dom-evt-message

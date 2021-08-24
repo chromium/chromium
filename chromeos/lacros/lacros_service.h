@@ -28,6 +28,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -104,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Most use-cases of these methods can be replaced by IsAvailable(). See
   // crosapi::mojom::Clipboard for an example.
   bool IsAccountManagerAvailable() const;
+  bool IsBrowserCdmFactoryAvailable() const;
   bool IsMediaSessionAudioFocusAvailable() const;
   bool IsMediaSessionAudioFocusDebugAvailable() const;
   bool IsMediaSessionControllerAvailable() const;
@@ -169,6 +171,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindAudioFocusManagerDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           remote);
+
+  // This may be called on any thread.
+  void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver);
 
   // This may be called on any thread.
   void BindMachineLearningService(

@@ -4752,7 +4752,6 @@ static_library("browser") {
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",
-      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/feature_usage",
       "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",
@@ -4983,6 +4982,7 @@ static_library("browser") {
       "platform_keys/platform_keys.h",
     ]
     deps += [
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",

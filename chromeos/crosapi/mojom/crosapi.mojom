@@ -42,6 +42,7 @@ import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
@@ -68,8 +69,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 42
-// Next method id: 47
+// Next version: 43
+// Next method id: 48
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -105,6 +106,13 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=15]
   BindBrowserServiceHost@20(pending_receiver<BrowserServiceHost> receiver);
+
+  // Binds the BrowserCdmFactory interface for proxying communication to the
+  // HWDRM CDM hosted in a ChromeOS daemon process. We need to use a
+  // GenericPendingReceiver to avoid dependency circularities.
+  // Added in M95.
+  [MinVersion=42] BindBrowserCdmFactory@47(
+      mojo_base.mojom.GenericPendingReceiver receiver);
 
   // Binds the CertDatabase interface for initializing certificate database in
   // client applications.

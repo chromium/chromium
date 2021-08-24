@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -75,6 +76,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AppServiceProxy> receiver) override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
+  void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindChromeAppPublisher(

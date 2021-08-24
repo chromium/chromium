@@ -10,7 +10,7 @@
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -112,10 +112,10 @@ void ArcOemCryptoBridge::ConnectToDaemon(
     mojo::PendingRemote<mojom::ProtectedBufferManager> gpu_buffer_manager) {
   // Create the OutputProtection interface to pass to the CDM.
   mojo::PendingRemote<chromeos::cdm::mojom::OutputProtection> output_protection;
-  chromeos::CdmFactoryDaemonProxy::GetInstance().GetOutputProtection(
+  chromeos::CdmFactoryDaemonProxyAsh::GetInstance().GetOutputProtection(
       output_protection.InitWithNewPipeAndPassReceiver());
 
-  chromeos::CdmFactoryDaemonProxy::GetInstance().ConnectOemCrypto(
+  chromeos::CdmFactoryDaemonProxyAsh::GetInstance().ConnectOemCrypto(
       std::move(receiver), std::move(gpu_buffer_manager),
       std::move(output_protection));
 }

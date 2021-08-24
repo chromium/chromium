@@ -57,12 +57,14 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -544,9 +546,12 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (auto r = receiver.As<chromeos::cdm::mojom::CdmFactoryDaemon>())
-    chromeos::CdmFactoryDaemonProxy::Create(std::move(r));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+    chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+    chromeos::CdmFactoryDaemonProxyLacros::Create(std::move(r));
+#endif
 }
 
 void ChromeContentBrowserClient::BindUtilityHostReceiver(

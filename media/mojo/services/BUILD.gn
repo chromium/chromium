@@ -109,8 +109,7 @@ component("services") {
   } else if (use_vaapi || use_v4l2_codec) {
     sources += [ "gpu_mojo_media_client_cros.cc" ]
 
-    if (is_chromeos_ash) {
-      sources += [ "gpu_mojo_media_client_cros_ash.cc" ]
+    if (is_chromeos) {
       deps +=
           [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
     }

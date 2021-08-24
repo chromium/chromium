@@ -19,12 +19,15 @@
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "ui/ozone/public/ozone_platform.h"         // nogncheck
 #include "ui/ozone/public/surface_factory_ozone.h"  // nogncheck
 #endif
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
+#endif  // defined(OS_CHROMEOS)
 
 ChromeContentGpuClient::ChromeContentGpuClient()
     : main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
@@ -42,10 +45,12 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
       ->SetGetProtectedNativePixmapDelegate(base::BindRepeating(
           &arc::ProtectedBufferManager::GetProtectedNativePixmapFor,
           base::Unretained(protected_buffer_manager_.get())));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_CHROMEOS)
   content::ChildThread::Get()->BindHostReceiver(
-      chromeos::ChromeOsCdmFactory::GetCdmFactoryDaemonReceiver());
-#endif
+      chromeos::ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver());
+#endif  // defined(OS_CHROMEOS)
 
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

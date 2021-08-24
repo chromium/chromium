@@ -347,6 +347,13 @@ bool LacrosService::IsAccountManagerAvailable() const {
              Crosapi::MethodMinVersions::kBindAccountManagerMinVersion;
 }
 
+bool LacrosService::IsBrowserCdmFactoryAvailable() const {
+  absl::optional<uint32_t> version = CrosapiVersion();
+  return version &&
+         version.value() >=
+             Crosapi::MethodMinVersions::kBindBrowserCdmFactoryMinVersion;
+}
+
 bool LacrosService::IsMediaSessionAudioFocusAvailable() const {
   absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
@@ -416,6 +423,14 @@ void LacrosService::BindAudioFocusManagerDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>,
       &crosapi::mojom::Crosapi::BindMediaSessionAudioFocusDebug>(
       std::move(remote));
+}
+
+void LacrosService::BindBrowserCdmFactory(
+    mojo::GenericPendingReceiver receiver) {
+  DCHECK(IsBrowserCdmFactoryAvailable());
+  BindPendingReceiverOrRemote<mojo::GenericPendingReceiver,
+                              &crosapi::mojom::Crosapi::BindBrowserCdmFactory>(
+      std::move(receiver));
 }
 
 void LacrosService::BindMachineLearningService(

@@ -10,12 +10,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 namespace chromeos {
 class ChromeOsCdmContext;
 }
@@ -124,7 +123,7 @@ class MEDIA_EXPORT CdmContext {
   virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Returns a ChromeOsCdmContext interface when the context is backed by the
   // ChromeOS CdmFactoryDaemon. Otherwise return nullptr.
   virtual chromeos::ChromeOsCdmContext* GetChromeOsCdmContext();

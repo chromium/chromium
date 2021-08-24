@@ -11,9 +11,10 @@ module chromeos.cdm.mojom;
 // display, so they will be relevant to all external outputs. When the Mojo
 // connection is dropped, the request will be cancelled.
 // Next Method ID: 2
+[Stable, Uuid="1eab4228-7293-4ec9-ba76-52d9accd451a"]
 interface OutputProtection {
   // HDCP protection types.
-  [Extensible]
+  [Stable, Extensible]
   enum ProtectionType {
     NONE = 0,
     HDCP_TYPE_0 = 1,  // Inferred to be HDCP 1.4.
@@ -21,7 +22,7 @@ interface OutputProtection {
   };
 
   // Video output link types.
-  [Extensible]
+  [Stable, Extensible]
   enum LinkType {
     NONE = 0,
     UNKNOWN = 1,

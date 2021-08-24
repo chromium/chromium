@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -251,6 +252,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
 }
 
 constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
+    MakeInterfaceVersionEntry<chromeos::cdm::mojom::BrowserCdmFactory>(),
     MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
@@ -343,7 +345,7 @@ bool IsDataWipeRequiredInternal(base::Version data_version,
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 41,
+    crosapi::mojom::Crosapi::Version_ == 42,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");
