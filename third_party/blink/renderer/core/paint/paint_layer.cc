@@ -2506,9 +2506,14 @@ bool PaintLayer::HitTestContents(HitTestResult& result,
 
   bool did_hit;
   if (physical_fragment) {
-    did_hit = NGBoxFragmentPainter(*physical_fragment)
-                  .HitTestAllPhases(result, hit_test_location, fragment_offset,
-                                    hit_test_filter);
+    if (!physical_fragment->MayIntersect(result, hit_test_location,
+                                         fragment_offset)) {
+      did_hit = false;
+    } else {
+      did_hit = NGBoxFragmentPainter(*physical_fragment)
+                    .HitTestAllPhases(result, hit_test_location,
+                                      fragment_offset, hit_test_filter);
+    }
   } else {
     did_hit = GetLayoutObject().HitTestAllPhases(
         result, hit_test_location, fragment_offset, hit_test_filter);

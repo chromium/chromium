@@ -306,6 +306,9 @@ bool HitTestAllPhasesInFragment(const NGPhysicalBoxFragment& fragment,
         *result, hit_test_location, accumulated_offset);
   }
 
+  if (!fragment.MayIntersect(*result, hit_test_location, accumulated_offset))
+    return false;
+
   return NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(fragment))
       .HitTestAllPhases(*result, hit_test_location, accumulated_offset);
 }
@@ -319,6 +322,9 @@ bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
     return fragment.GetMutableLayoutObject()->NodeAtPoint(
         *result, hit_test_location, accumulated_offset, action);
   }
+
+  if (!fragment.MayIntersect(*result, hit_test_location, accumulated_offset))
+    return false;
 
   return NGBoxFragmentPainter(fragment).NodeAtPoint(*result, hit_test_location,
                                                     accumulated_offset, action);
@@ -1870,6 +1876,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
 bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                                        const PhysicalOffset& physical_offset) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+  // TODO(mstensho): Make sure that we never create an NGBoxFragmentPainter for
+  // a fragment that doesn't intersect, and turn this into a DCHECK.
   if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
                              physical_offset))
     return false;
@@ -1985,6 +1993,9 @@ bool NGBoxFragmentPainter::HitTestAllPhases(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestFilter hit_test_filter) {
+  // TODO(mstensho): Make sure that we never create an NGBoxFragmentPainter for
+  // a fragment that doesn't intersect, and DCHECK for that here.
+
   // Logic taken from LayoutObject::HitTestAllPhases().
   HitTestContext hit_test(kHitTestForeground, hit_test_location,
                           accumulated_offset, &result);
@@ -2139,6 +2150,10 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     const NGFragmentItem* item = cursor.Current().Item();
     DCHECK(item);
     DCHECK_EQ(item->BoxFragment(), &fragment);
+    if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
+                               physical_offset))
+      return false;
+
     if (fragment.IsInlineBox()) {
       return NGBoxFragmentPainter(cursor, *item, fragment)
           .NodeAtPoint(hit_test, physical_offset);
@@ -2416,16 +2431,10 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
       // We need to properly visit this fragment for hit-testing, rather than
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
-      if (child_fragment.CanTraverse()) {
-        if (NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
-                .NodeAtPoint(*hit_test.result, hit_test.location, child_offset,
-                             kHitTestFloat))
-          return true;
-      } else if (child_fragment.GetMutableLayoutObject()->NodeAtPoint(
-                     *hit_test.result, hit_test.location, child_offset,
-                     kHitTestFloat)) {
+      if (NodeAtPointInFragment(To<NGPhysicalBoxFragment>(child_fragment),
+                                hit_test.location, child_offset, kHitTestFloat,
+                                hit_test.result))
         return true;
-      }
       continue;
     }
 
