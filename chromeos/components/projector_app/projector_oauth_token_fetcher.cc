@@ -55,36 +55,35 @@ CoreAccountInfo ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo() const {
 }
 
 void ProjectorOAuthTokenFetcher::GetAccessTokenFor(
-    const std::string& gaia_id,
+    const std::string& email,
     AccessTokenRequestCallback callback) {
-  if (base::Contains(fetched_access_tokens_, gaia_id)) {
-    const auto& access_token_info = fetched_access_tokens_[gaia_id];
+  if (base::Contains(fetched_access_tokens_, email)) {
+    const auto& access_token_info = fetched_access_tokens_[email];
     if (base::Time::Now() + kBufferTime < access_token_info.expiration_time) {
       std::move(callback).Run(
-          gaia_id, GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+          email, GoogleServiceAuthError(GoogleServiceAuthError::NONE),
           access_token_info);
       return;
     }
 
     // Else the stored value is expired. Let's remove its entry.
-    fetched_access_tokens_.erase(gaia_id);
+    fetched_access_tokens_.erase(email);
   }
 
-  // If there is a pending fetch for the gaia_id, then append the callback to
+  // If there is a pending fetch for the email, then append the callback to
   // the pending callbacks.
-  if (base::Contains(pending_oauth_token_fetch_, gaia_id)) {
-    pending_oauth_token_fetch_[gaia_id].callbacks.push_back(
-        std::move(callback));
+  if (base::Contains(pending_oauth_token_fetch_, email)) {
+    pending_oauth_token_fetch_[email].callbacks.push_back(std::move(callback));
     return;
   }
 
-  InitiateAccessTokenFetchFor(gaia_id, std::move(callback));
+  InitiateAccessTokenFetchFor(email, std::move(callback));
 }
 
 void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
-    const std::string& gaia_id,
+    const std::string& email,
     AccessTokenRequestCallback callback) {
-  // There is no pending fetch for the gaia_id. Let's create a new fetch.
+  // There is no pending fetch for the email. Let's create a new fetch.
   // Let's start creating the oauth2 access token request.
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDriveOAuth2Scope);
@@ -98,33 +97,34 @@ void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
   auto* identity_manager = GetIdentityManager();
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher =
       identity_manager->CreateAccessTokenFetcherForAccount(
-          identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id).account_id,
+          identity_manager->FindExtendedAccountInfoByEmailAddress(email)
+              .account_id,
           /*oauth_consumer_name=*/"ProjectorOAuthTokenFetcher", scopes,
           base::BindOnce(
               &ProjectorOAuthTokenFetcher::OnAccessTokenRequestCompleted,
               // It is safe to use base::Unretained as |this| owns
               // |access_token_fetcher_|.
-              base::Unretained(this), gaia_id),
+              base::Unretained(this), email),
           mode);
-  AccessTokenRequests& entry = pending_oauth_token_fetch_[gaia_id];
+  AccessTokenRequests& entry = pending_oauth_token_fetch_[email];
   entry.access_token_fetcher = std::move(access_token_fetcher);
   entry.callbacks.push_back(std::move(callback));
 }
 
 void ProjectorOAuthTokenFetcher::OnAccessTokenRequestCompleted(
-    const std::string& gaia_id,
+    const std::string& email,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo info) {
-  if (!base::Contains(pending_oauth_token_fetch_, gaia_id))
+  if (!base::Contains(pending_oauth_token_fetch_, email))
     return;
 
-  for (auto& callback : pending_oauth_token_fetch_[gaia_id].callbacks)
-    std::move(callback).Run(gaia_id, error, info);
+  for (auto& callback : pending_oauth_token_fetch_[email].callbacks)
+    std::move(callback).Run(email, error, info);
 
   if (error.state() == GoogleServiceAuthError::State::NONE)
-    fetched_access_tokens_[gaia_id] = std::move(info);
+    fetched_access_tokens_[email] = std::move(info);
 
-  pending_oauth_token_fetch_.erase(gaia_id);
+  pending_oauth_token_fetch_.erase(email);
 }
 
 }  // namespace chromeos

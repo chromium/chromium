@@ -20,7 +20,6 @@ export const ProjectorError = {
  * @typedef {{
  *   name: string,
  *   email: string,
- *   gaia: string,
  *   pictureURL: string,
  *   isPrimaryUser: boolean
  * }}
@@ -39,7 +38,7 @@ export let OAuthTokenInfo;
 /**
  * Oauth token returned when getOAuthTokenForAccount is called.
  * @typedef {{
- *   userGaia: string,
+ *   email: string,
  *   oauthTokenInfo: OAuthTokenInfo,
  *   error: ProjectorError
  * }}
@@ -68,19 +67,20 @@ export class ProjectorBrowserProxy {
   canStartProjectorSession() {}
 
   /**
-   * Launches the Projector recording session for gaiaId. Returns true if
-   * a projector recording session was successfully launched.
-   * @param {string} gaiaId, user's gaia id.
+   * Launches the Projector recording session. Returns true if a projector
+   * recording session was successfully launched.
+   * @param {string} storageDir, the directory name in which the screen cast
+   *     will be saved in.
    * @param {Promise<bool>}
    */
-  startProjectorSession(gaiaId) {}
+  startProjectorSession(storageDir) {}
 
   /**
    * Gets the oauth token with the required scopes for the specified account.
-   * @param {string} gaiaId, user's gaia id.
+   * @param {string} email, user's email.
    * @return {!Promise<OAuthToken>}
    */
-  getOAuthTokenForAccount(gaiaId) {}
+  getOAuthTokenForAccount(email) {}
 
   /**
    * Sends 'error' message to handler.
@@ -106,13 +106,13 @@ export class ProjectorBrowserProxyImpl {
   }
 
   /** @override */
-  startProjectorSession(gaiaId) {
-    return sendWithPromise('startProjectorSession', [gaiaId]);
+  startProjectorSession(storageDir ) {
+    return sendWithPromise('startProjectorSession', [storageDir]);
   }
 
   /** @override */
-  getOAuthTokenForAccount(gaiaId) {
-    return sendWithPromise('getOAuthTokenForAccount', [gaiaId]);
+  getOAuthTokenForAccount(email) {
+    return sendWithPromise('getOAuthTokenForAccount', [email]);
   }
 
   /** @override */

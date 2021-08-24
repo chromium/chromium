@@ -13,7 +13,7 @@
 namespace chromeos {
 
 // Callback that is going to be called when OAuth token request is resolved.
-// The first argument is the GAIA id for which the token request is being made.
+// The first argument is the email for which the token request is being made.
 // The error state and access token info are provided by IdentityManager for the
 // OAuth token request that was made.
 using AccessTokenRequestCallback =
@@ -56,19 +56,19 @@ class ProjectorOAuthTokenFetcher {
   // Returns the CoreAccountInfo for the primary account.
   CoreAccountInfo GetPrimaryAccountInfo() const;
 
-  // If an unexpired access token is present for the gaia_id, synchronously
+  // If an unexpired access token is present for the email, synchronously
   // executes the callback with the cached OAuth token. Otherwise, creates a
   // signin::AccessTokenFetcher to fetch the requested OAuth token and caches
   // the callback to be executed when fetching completes.
-  void GetAccessTokenFor(const std::string& gaia_id,
+  void GetAccessTokenFor(const std::string& email,
                          AccessTokenRequestCallback callback);
 
  private:
-  void InitiateAccessTokenFetchFor(const std::string& gaia_id,
+  void InitiateAccessTokenFetchFor(const std::string& email,
                                    AccessTokenRequestCallback callback);
 
   // Executed when an OAuth token fetch either completes or fails
-  void OnAccessTokenRequestCompleted(const std::string& gaia_id,
+  void OnAccessTokenRequestCompleted(const std::string& email,
                                      GoogleServiceAuthError error,
                                      signin::AccessTokenInfo info);
 

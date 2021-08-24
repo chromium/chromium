@@ -52,7 +52,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   void StartProjectorSession(const base::ListValue* args);
 
   // Requested by the Projector SWA to get access to the OAuth token for the
-  // gaia_id provided in the `args`.
+  // account email provided in the `args`.
   void GetOAuthTokenForAccount(const base::ListValue* args);
 
   // Called by the Projector SWA when an error occurred.
@@ -63,7 +63,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // ProjectorBrowserProxy.getOAuthTokenForAccount by calling the
   // `js_callback_id`.
   void OnAccessTokenRequestCompleted(const std::string& js_callback_id,
-                                     const std::string& gaia_id,
+                                     const std::string& email,
                                      GoogleServiceAuthError error,
                                      const signin::AccessTokenInfo& info);
 

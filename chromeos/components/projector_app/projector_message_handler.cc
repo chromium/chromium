@@ -20,7 +20,6 @@ namespace {
 
 constexpr char kUserName[] = "name";
 constexpr char kUserEmail[] = "email";
-constexpr char kUserGaia[] = "gaia";
 constexpr char kUserPictureURL[] = "pictureURL";
 constexpr char kIsPrimaryUser[] = "isPrimaryUser";
 constexpr char kToken[] = "token";
@@ -103,7 +102,6 @@ void ProjectorMessageHandler::GetAccounts(const base::ListValue* args) {
     base::Value account_info(base::Value::Type::DICTIONARY);
     account_info.SetKey(kUserName, base::Value(info.full_name));
     account_info.SetKey(kUserEmail, base::Value(info.email));
-    account_info.SetKey(kUserGaia, base::Value(info.gaia));
     account_info.SetKey(kUserPictureURL, base::Value(info.picture_url));
     account_info.SetKey(kIsPrimaryUser,
                         base::Value(info.gaia == primary_account.gaia));
@@ -134,11 +132,16 @@ void ProjectorMessageHandler::StartProjectorSession(
   // containing the account which we need to start the recording with.
   DCHECK_EQ(args->GetList().size(), 2u);
 
-  const auto& requested_account = args->GetList()[1];
-  DCHECK(requested_account.is_list());
-  DCHECK_EQ(requested_account.GetList().size(), 1u);
+  const auto& func_args = args->GetList()[1];
+  DCHECK(func_args.is_list());
 
-  // TODO(b/195113693): Start the projector session with the selected account.
+  // The first entry is the drive directory to save the screen cast to.
+  // TODO(b/177959166): Pass the directory to ProjectorController when starting
+  // a new session.
+  DCHECK_EQ(func_args.GetList().size(), 1u);
+
+  // TODO(b/195113693): Start the projector session with the selected account
+  // and folder.
   auto* controller = ash::ProjectorController::Get();
   if (!controller->CanStartNewSession()) {
     ResolveJavascriptCallback(args->GetList()[0], base::Value(false));
@@ -164,10 +167,10 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
   DCHECK_EQ(requested_account.GetList().size(), 1u);
 
   auto& oauth_token_fetch_callback = args->GetList()[0].GetString();
-  const std::string& gaia_id = requested_account.GetList()[0].GetString();
+  const std::string& email = requested_account.GetList()[0].GetString();
 
   oauth_token_fetcher_.GetAccessTokenFor(
-      gaia_id,
+      email,
       base::BindOnce(&ProjectorMessageHandler::OnAccessTokenRequestCompleted,
                      GetWeakPtr(), oauth_token_fetch_callback));
 }
@@ -179,13 +182,13 @@ void ProjectorMessageHandler::OnError(const base::ListValue* args) {
 
 void ProjectorMessageHandler::OnAccessTokenRequestCompleted(
     const std::string& js_callback_id,
-    const std::string& gaia_id,
+    const std::string& email,
     GoogleServiceAuthError error,
     const signin::AccessTokenInfo& info) {
   AllowJavascript();
 
   base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(kUserGaia, base::Value(gaia_id));
+  response.SetKey(kUserEmail, base::Value(email));
   if (error.state() != GoogleServiceAuthError::State::NONE) {
     response.SetKey(kOAuthTokenInfo, base::Value());
     response.SetKey(kError, base::Value(ProjectorErrorToString(
