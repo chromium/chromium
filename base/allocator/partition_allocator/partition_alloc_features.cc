@@ -45,6 +45,10 @@ const Feature kPartitionAllocPCScanMUAwareScheduler{
 const Feature kPartitionAllocPCScanImmediateFreeing{
     "PartitionAllocPCScanImmediateFreeing", FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, PCScan clears eagerly (synchronously) on free().
+const Feature kPartitionAllocPCScanEagerClearing{
+    "PartitionAllocPCScanEagerClearing", FEATURE_DISABLED_BY_DEFAULT};
+
 // In addition to heap, scan also the stack of the current mutator.
 const Feature kPartitionAllocPCScanStackScanning {
   "PartitionAllocPCScanStackScanning",

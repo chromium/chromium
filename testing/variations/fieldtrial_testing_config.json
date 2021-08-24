@@ -6393,6 +6393,7 @@
                         "PartitionAllocPCScanBrowserOnly"
                     ],
                     "disable_features": [
+                        "PartitionAllocPCScanEagerClearing",
                         "PartitionAllocPCScanImmediateFreeing"
                     ]
                 }
