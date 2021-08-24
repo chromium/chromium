@@ -318,14 +318,12 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         Example: swarming.py query -S server-url.com --limit 1 \\
           'tasks/list?tags=os:Windows&tags=pool:chrome.tests.perf&tags=shard:12'
         """
-        values = [('tags', '%s:%s' % (k, v))
-                  for k, v in self._dimensions.iteritems()]
+        values = ['%s:%s' % (k, v) for k, v in self._dimensions.iteritems()]
         values.sort()
 
         # Append the shard as a tag
         values_with_shard = list(values)
-        values_with_shard.append(
-            ('tags', '%s:%s' % ('shard', str(shard_index))))
+        values_with_shard.append('%s:%s' % ('shard', str(shard_index)))
         values_with_shard.sort()
 
         # TODO(eyaich): For now we are ignoring the state of the returned
@@ -339,20 +337,16 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         # happens.
         try:
             if not self._sharded_query_failed:
-                query_result = self.query_swarming(
-                    'tasks/list',
-                    values_with_shard,
-                    limit='1',
-                    server=self._swarming_server)
+                tasks = self.list_tasks(values_with_shard,
+                                        limit='1',
+                                        server=self._swarming_server)
         except Exception:
             self._sharded_query_failed = True
         if self._sharded_query_failed:
-            query_result = self.query_swarming('tasks/list',
-                                               values,
-                                               limit='1',
-                                               server=self._swarming_server)
+            tasks = self.list_tasks(values,
+                                    limit='1',
+                                    server=self._swarming_server)
 
-        tasks = query_result.get('items')
         if tasks:
             # We queried with a limit of 1 so we could only get back
             # the most recent which is what we care about.
