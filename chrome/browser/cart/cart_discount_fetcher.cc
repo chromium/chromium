@@ -24,6 +24,7 @@
 namespace {
 const char kPostMethod[] = "POST";
 const char kContentType[] = "application/json; charset=UTF-8";
+const char kAcceptLanguageKey[] = "Accept-Language";
 
 const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
@@ -257,10 +258,11 @@ void CartDiscountFetcher::Fetch(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token) {
+    const std::string access_token,
+    const std::string fetch_for_locale) {
   CartDiscountFetcher::FetchForDiscounts(
       std::move(pending_factory), std::move(callback), std::move(proto_pairs),
-      is_oauth_fetch, std::move(access_token));
+      is_oauth_fetch, std::move(access_token), std::move(fetch_for_locale));
 }
 
 void CartDiscountFetcher::FetchForDiscounts(
@@ -268,9 +270,11 @@ void CartDiscountFetcher::FetchForDiscounts(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token) {
-  auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
-                                       std::move(proto_pairs), is_oauth_fetch);
+    const std::string access_token,
+    const std::string fetch_for_locale) {
+  auto fetcher =
+      CreateEndpointFetcher(std::move(pending_factory), std::move(proto_pairs),
+                            is_oauth_fetch, std::move(fetch_for_locale));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->PerformRequest(
@@ -283,7 +287,8 @@ void CartDiscountFetcher::FetchForDiscounts(
 std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     std::vector<CartDB::KeyAndValue> proto_pairs,
-    bool is_oauth_fetch) {
+    bool is_oauth_fetch,
+    const std::string fetch_for_locale) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_cart_discounts_lookup", R"(
         semantics {
@@ -313,9 +318,12 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
             "feature."
         })");
 
+  const std::vector<std::string> headers{kAcceptLanguageKey, std::move(fetch_for_locale)};
+
   return std::make_unique<EndpointFetcher>(
       GURL(kFetchDiscountsEndpoint), kPostMethod, kContentType, kTimeoutMs,
-      generatePostData(proto_pairs, base::Time::Now()), traffic_annotation,
+      generatePostData(proto_pairs, base::Time::Now()), headers,
+      traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       is_oauth_fetch);
 }

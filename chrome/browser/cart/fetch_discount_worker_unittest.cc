@@ -84,7 +84,8 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
       CartDiscountFetcherCallback callback,
       std::vector<CartDB::KeyAndValue> proto_pairs,
       const bool is_oauth_fetch,
-      const std::string access_token_str) override {
+      const std::string access_token_str,
+      const std::string fetch_for_locale) override {
     FakeCartDiscountFetcher::fetcher_fetch_count_++;
     // Only oauth fetch has a chance to be a tester.
     bool is_tester = is_tester_ && is_oauth_fetch;
@@ -118,7 +119,8 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
        CartDiscountFetcherCallback callback,
        std::vector<CartDB::KeyAndValue> proto_pairs,
        const bool is_oauth_fetch,
-       const std::string access_token_str),
+       const std::string access_token_str,
+       const std::string fetch_for_locale),
       (override));
 
   void DelegateToFake(CartDiscountMap fake_result, bool is_tester) {
@@ -132,11 +134,12 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
                    CartDiscountFetcherCallback callback,
                    std::vector<CartDB::KeyAndValue> proto_pairs,
                    const bool is_oauth_fetch,
-                   const std::string access_token_str) {
+                   const std::string access_token_str,
+                   const std::string fetch_for_locale) {
               return fake_cart_discount_fetcher_.Fetch(
                   std::move(pending_factory), std::move(callback),
                   std::move(proto_pairs), is_oauth_fetch,
-                  std::move(access_token_str));
+                  std::move(access_token_str), std::move(fetch_for_locale));
             });
   }
 

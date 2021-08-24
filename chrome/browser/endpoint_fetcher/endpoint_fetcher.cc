@@ -130,6 +130,7 @@ EndpointFetcher::EndpointFetcher(
     const std::string& content_type,
     int64_t timeout_ms,
     const std::string& post_data,
+    const std::vector<std::string>& headers,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const bool is_oauth_fetch)
@@ -139,6 +140,7 @@ EndpointFetcher::EndpointFetcher(
       content_type_(content_type),
       timeout_ms_(timeout_ms),
       post_data_(post_data),
+      headers_(headers),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),

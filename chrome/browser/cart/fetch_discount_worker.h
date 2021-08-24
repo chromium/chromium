@@ -135,7 +135,8 @@ class FetchDiscountWorker {
       AfterFetchingCallback after_fetching_callback,
       std::vector<CartDB::KeyAndValue> proto_pairs,
       const bool is_oauth_fetch,
-      const std::string access_token_str);
+      const std::string access_token_str,
+      const std::string fetch_for_locale);
 
   // This is run in a background thread, it posts AfterDiscountFetched() back to
   // UI thread to process the fetched result.
