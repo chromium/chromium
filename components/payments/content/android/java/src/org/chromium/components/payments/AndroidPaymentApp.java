@@ -176,8 +176,6 @@ public class AndroidPaymentApp
         @Override
         public void onIntentCompleted(int resultCode, Intent data) {
             assert mIntentCallback != null;
-            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
-            if (window != null) window.removeIntentCallback(this);
             IntentResult intentResult = new IntentResult();
             intentResult.resultCode = resultCode;
             intentResult.data = data;
