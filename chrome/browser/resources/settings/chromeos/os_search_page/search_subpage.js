@@ -66,6 +66,32 @@ Polymer({
         return loadTimeData.getBoolean('quickAnswersTranslationDisabled');
       },
     },
+
+    /** @private */
+    quickAnswersSubToggleEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('quickAnswersSubToggleEnabled');
+      },
+    },
+
+    /** @private */
+    quickAnswersSubLabel_: {
+      type: String,
+      value() {
+        return this.getAriaLabelledSubLabel_(
+            this.i18nAdvanced('quickAnswersEnableDescriptionWithLink'));
+      }
+    },
+
+    /** @private */
+    translationSubLabel_: {
+      type: String,
+      value() {
+        return this.getAriaLabelledSubLabel_(
+            this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
+      }
+    },
   },
 
   /**
@@ -89,18 +115,18 @@ Polymer({
   },
 
   /**
-   * Attaches aria attributes to the translation sub label.
+   * Attaches aria attributes to the sub label.
+   * @param {string} subLabel
+   * @return {string}
    * @private
    */
-  getAriaLabelledTranslationSubLabel_() {
+  getAriaLabelledSubLabel_(subLabel) {
     // Creating a <settings-localized-link> to get aria-labelled content with
     // the link. Since <settings-toggle-button> is a shared element which does
     // not have access to <settings-localized-link> internally, we create dummy
     // element and take its innerHTML here.
     const link = document.createElement('settings-localized-link');
-    link.setAttribute(
-        'localized-string',
-        this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
+    link.setAttribute('localized-string', subLabel);
     link.setAttribute('hidden', true);
     document.body.appendChild(link);
     const innerHTML = link.shadowRoot.querySelector('#container').innerHTML;

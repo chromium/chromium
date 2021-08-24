@@ -883,6 +883,10 @@ const base::Feature kQuickAnswersTranslationCloudAPI{
 const base::Feature kQuickAnswersV2{"QuickAnswersV2",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable quick answers V2 settings sub-toggles.
+const base::Feature kQuickAnswersV2SettingsSubToggle{
+    "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables fingerprint quick unlock.
 const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1548,6 +1552,10 @@ bool IsQuickAnswersV2Enabled() {
 
 bool IsQuickAnswersV2TranslationDisabled() {
   return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
+}
+
+bool IsQuickAnswersV2SettingsSubToggleEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
 }
 
 bool IsReduceDisplayNotificationsEnabled() {

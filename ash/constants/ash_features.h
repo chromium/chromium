@@ -334,6 +334,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswersV2;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kQuickAnswersV2SettingsSubToggle;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersOnEditableText;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersStandaloneSettings;
@@ -540,6 +542,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2SettingsSubToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReduceDisplayNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReverseScrollGesturesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

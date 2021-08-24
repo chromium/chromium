@@ -862,10 +862,13 @@
     Search
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE" desc="Title for a toggle that controls the Quick Answers feature.">
-    Quick Answers
+    Quick answers
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers toggle.">
     With a right-click or long press, show related info for your text selection
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION_WITH_LINK" desc="Sub label for the Quick Answers toggle with link to the web content languages.">
+    Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text. Customize translation by setting your preferred languages in <ph name="LINK_BEGIN">&lt;a target="_blank" href="#"&gt;</ph>Web content languages<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE" desc="Title for a toggle that controls the Quick Answers definiton feature.">
     Definition
