@@ -714,8 +714,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
                                            IDS_IOS_SETTING_ON)),
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
@@ -883,7 +883,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
           grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
                          IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
                      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
-                     nil)] performAction:grey_tap()];
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.
   [[EarlGrey selectElementWithMatcher:
