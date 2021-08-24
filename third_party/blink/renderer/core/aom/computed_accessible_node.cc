@@ -102,9 +102,14 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
       DocumentUpdateReason::kAccessibility);
   AXObjectCache& cache = ax_context_->GetAXObjectCache();
   AXID ax_id = cache.GetAXID(element_);
+  if (!ax_id) {
+    resolver_->Resolve();  // No AXObject exists for this element.
+    return;
+  }
 
   ComputedAccessibleNode* accessible_node =
       document.GetOrCreateComputedAccessibleNode(ax_id);
+  DCHECK(accessible_node);
   resolver_->Resolve(accessible_node);
 }
 
