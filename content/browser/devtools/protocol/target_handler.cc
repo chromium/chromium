@@ -867,6 +867,7 @@ void TargetHandler::AutoAttachRelated(
     DCHECK(auto_attach_related_targets_.empty());
     SetAutoAttachInternal(false, false, true, base::DoNothing());
   }
+  AutoAttach(auto_attacher_, host.get(), false);
   flatten_auto_attach_ = true;
   auto inserted = auto_attach_related_targets_.insert(
       std::make_pair(auto_attacher, wait_for_debugger_on_start));

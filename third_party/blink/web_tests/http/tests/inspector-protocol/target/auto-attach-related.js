@@ -64,6 +64,7 @@
   testRunner.log(`Re-enabling auto-attach for page1`);
   bp.Target.autoAttachRelated({targetId: page1.targetId(), waitForDebuggerOnStart: false});
   await bp.Target.onceAttachedToTarget();
+  await bp.Target.onceAttachedToTarget();
   // Now disable auto-attach again and assure the target is detached.
   bp.Target.setAutoAttach({autoAttach: false, waitForDebuggerOnStart: false, flatten: true});
   await expectTargetsDetached(1);
