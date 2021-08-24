@@ -3263,9 +3263,9 @@
             ],
             "experiments": [
                 {
-                    "name": "AllowFileBufferSizeControl",
+                    "name": "EnabledBufferSize512k",
                     "params": {
-                        "download_file_buffer_size": "1048576"
+                        "download_file_buffer_size": "524288"
                     },
                     "enable_features": [
                         "AllowFileBufferSizeControl"
