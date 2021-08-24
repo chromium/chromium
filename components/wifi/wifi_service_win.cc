@@ -32,6 +32,7 @@
 #include "base/win/win_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 
@@ -632,12 +633,10 @@ void WiFiServiceImpl::CreateNetwork(
   }
 
   if (tkip_profile_xml != profile_xml) {
-    std::unique_ptr<base::DictionaryValue> tkip_profile(
-        new base::DictionaryValue());
-    tkip_profile->SetString(kProfileXmlKey, tkip_profile_xml);
-    tkip_profile->SetBoolean(kProfileSharedKey, shared);
-    created_profiles_.SetWithoutPathExpansion(network_properties.guid,
-                                              std::move(tkip_profile));
+    base::DictionaryValue tkip_profile;
+    tkip_profile.SetStringKey(kProfileXmlKey, tkip_profile_xml);
+    tkip_profile.SetBoolKey(kProfileSharedKey, shared);
+    created_profiles_.SetKey(network_properties.guid, std::move(tkip_profile));
   }
 
   *network_guid = network_properties.guid;
@@ -880,20 +879,20 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
     LOG(ERROR) << kMaxAttempts << " attempts exceeded waiting for connect to "
                << network_guid;
 
-    base::DictionaryValue* created_profile = nullptr;
+    base::Value* created_profile = created_profiles_.FindDictKey(network_guid);
     // Check, whether this connection is using newly created profile.
-    if (created_profiles_.GetDictionaryWithoutPathExpansion(
-        network_guid, &created_profile)) {
-      std::string tkip_profile_xml;
-      bool shared = false;
+    if (created_profile) {
+      const std::string* tkip_profile_xml =
+          created_profile->FindStringKey(kProfileXmlKey);
+      absl::optional<bool> shared =
+          created_profile->FindBoolKey(kProfileSharedKey);
       // Check, if this connection there is alternative TKIP profile xml that
       // should be tried. If there is, then set it up and try to connect again.
-      if (created_profile->GetString(kProfileXmlKey, &tkip_profile_xml) &&
-          created_profile->GetBoolean(kProfileSharedKey, &shared)) {
+      if (tkip_profile_xml && shared) {
         // Remove TKIP profile xml, so it will not be tried again.
         created_profile->RemoveKey(kProfileXmlKey);
         created_profile->RemoveKey(kProfileSharedKey);
-        DWORD error_code = SetProfile(shared, tkip_profile_xml, true);
+        DWORD error_code = SetProfile(*shared, *tkip_profile_xml, true);
         if (error_code == ERROR_SUCCESS) {
           // Try to connect with new profile.
           error_code = Connect(network_guid,
@@ -1689,11 +1688,9 @@ bool WiFiServiceImpl::HaveProfile(const std::string& network_guid) {
 
 
 DWORD WiFiServiceImpl::DeleteCreatedProfile(const std::string& network_guid) {
-  base::DictionaryValue* created_profile = nullptr;
   DWORD error_code = ERROR_SUCCESS;
   // Check, whether this connection is using new created profile, and remove it.
-  if (created_profiles_.GetDictionaryWithoutPathExpansion(
-      network_guid, &created_profile)) {
+  if (created_profiles_.HasKey(network_guid)) {
     // Connection has failed, so delete it.
     std::wstring profile_name = ProfileNameFromGUID(network_guid);
     error_code = WlanDeleteProfile_function_(client_, &interface_guid_,
