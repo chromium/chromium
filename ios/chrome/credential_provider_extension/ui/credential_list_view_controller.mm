@@ -26,6 +26,8 @@ NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
 const CGFloat kHeaderHeight = 70;
 const CGFloat kNewCredentialHeaderHeight = 35;
+// Add extra space to offset the top of the table view from the search bar.
+const CGFloat kTableViewTopSpace = 8;
 
 UIColor* BackgroundColor() {
   return IsPasswordCreationEnabled()
@@ -104,6 +106,9 @@ UIColor* BackgroundColor() {
   // hidden under the accessories.
   self.tableView.tableFooterView =
       [[UIView alloc] initWithFrame:self.searchController.searchBar.frame];
+  if (IsPasswordCreationEnabled()) {
+    self.tableView.contentInset = UIEdgeInsetsMake(kTableViewTopSpace, 0, 0, 0);
+  }
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 

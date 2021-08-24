@@ -12,6 +12,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/ui/new_password_footer_view.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -51,6 +52,8 @@ using base::SysUTF16ToNSString;
 
   [self.tableView registerClass:[NewPasswordTableCell class]
          forCellReuseIdentifier:NewPasswordTableCell.reuseID];
+  [self.tableView registerClass:[NewPasswordFooterView class]
+      forHeaderFooterViewReuseIdentifier:NewPasswordFooterView.reuseID];
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedRowHeight = 44.0;
 }
@@ -94,22 +97,11 @@ using base::SysUTF16ToNSString;
   return cell;
 }
 
-- (NSString*)tableView:(UITableView*)tableView
-    titleForFooterInSection:(NSInteger)section {
-  NSString* userEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
-  if (userEmail) {
-    NSString* baseLocalizedString = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER",
-        @"Disclaimer telling users what will happen to their passwords");
-    return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
-                                                          withString:userEmail];
-  } else {
-    return NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_NO_EMAIL",
-        @"Disclaimer telling non-logged in users what will happen to their "
-        @"passwords");
-  }
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  return [tableView
+      dequeueReusableHeaderFooterViewWithIdentifier:NewPasswordFooterView
+                                                        .reuseID];
 }
 
 #pragma mark - UITableViewDelegate

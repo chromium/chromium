@@ -23,6 +23,8 @@ source_set("ui") {
     "empty_credentials_view_controller.mm",
     "new_password_coordinator.h",
     "new_password_coordinator.mm",
+    "new_password_footer_view.h",
+    "new_password_footer_view.mm",
     "new_password_mediator.h",
     "new_password_mediator.mm",
     "new_password_table_cell.h",
