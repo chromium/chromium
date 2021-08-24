@@ -96,33 +96,33 @@ TEST_F(ScoreNormalizerTest, DefaultConvertResultsToScores) {
 
 // Check when normalizing a score and no data is present we return 1.
 TEST_F(ScoreNormalizerTest, NormalizeScoreEmpty) {
-  EXPECT_EQ(normalizer_->NormalizeScore(-100), 1);
+  EXPECT_EQ(normalizer_->NormalizeScore(-100), 0.5);
 }
 
 // Check RecordScore() and NormalizeScore() functions.
 TEST_F(ScoreNormalizerTest, RecordNormalizeScore) {
   normalizer_->RecordScore(1);
   EXPECT_THAT(get_dividers(), ElementsAre(1));
-  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0));
   EXPECT_EQ(normalizer_->NormalizeScore(10), 1.9 / 2);
   EXPECT_EQ(normalizer_->NormalizeScore(-10), 1 / 24.0);
 
   normalizer_->RecordScore(1);
   EXPECT_THAT(get_dividers(), ElementsAre(1, 1));
-  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0));
   EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 3);
   EXPECT_EQ(normalizer_->NormalizeScore(0.5), 1 / 4.5);
 
   normalizer_->RecordScore(3);
   EXPECT_THAT(get_dividers(), ElementsAre(1, 1, 3));
-  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0));
   EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 4);
   EXPECT_EQ(normalizer_->NormalizeScore(-1), 1 / 12.0);
   EXPECT_EQ(normalizer_->NormalizeScore(10), (3 + 7.0 / 8) / 4);
 
   normalizer_->RecordScore(-1);
   EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3));
-  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0));
   EXPECT_EQ(normalizer_->NormalizeScore(1), 3.0 / 5);
   EXPECT_EQ(normalizer_->NormalizeScore(-1), 1.0 / 5);
   EXPECT_EQ(normalizer_->NormalizeScore(10), (4 + 7.0 / 8) / 5);
@@ -157,7 +157,7 @@ TEST_F(ScoreNormalizerTest, SmallRecordResults) {
   std::vector<double> scores = ConvertResultsToScores(results);
   normalizer_->RecordResults(results);
   EXPECT_THAT(get_dividers(), ElementsAre(1.0));
-  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0));
 }
 
 // Check record results for results of size = reservoir size.

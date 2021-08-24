@@ -51,7 +51,7 @@ BalancedReservoir::BalancedReservoir(const std::string& provider,
     : max_number_of_dividers_(max_number_of_dividers),
       provider_(provider),
       profile_(profile) {
-  DCHECK(max_number_of_dividers_ > 0);
+  DCHECK_GT(max_number_of_dividers_, 0);
   DCHECK(profile_);
   ReadPrefs();
 }
@@ -64,12 +64,17 @@ int BalancedReservoir::GetBin(const double score) const {
 }
 
 void BalancedReservoir::RecordScore(const double score) {
+  CheckState();
+
   const int index = GetBin(score);
-  // If there aren't enough dividers yet, then directly add the result as a
-  // divider.
   if (dividers_.size() < max_number_of_dividers_) {
+    // If there aren't enough dividers yet, then directly add the result as a
+    // divider.
     dividers_.insert(dividers_.begin() + index, score);
+    counts_.insert(counts_.begin() + index, 0);
   } else {
+    // Otherwise try splitting the largest bin and merge the smallest two, and
+    // keep the change if it improves error.
     if (counts_[index] == DBL_MAX) {
       for (int i = 0; i < counts_.size(); ++i) {
         counts_[i] = counts_[i] / static_cast<double>(2);
@@ -90,18 +95,27 @@ void BalancedReservoir::RecordScore(const double score) {
     UMA_HISTOGRAM_BOOLEAN("Apps.AppList.ScoreNormalizer.L2ErrorDecreased",
                           (new_error <= old_error));
   }
+
+  DCHECK_LE(dividers_.size(), max_number_of_dividers_);
+  CheckState();
 }
 
 void BalancedReservoir::SplitBinByScore(const int index, const double score) {
+  CheckState();
+
+  // TODO(crbug.com/1156930): Change this to a better way to split counts than
+  // halving the counts between the two new bins.
   dividers_.insert(dividers_.begin() + index, score);
   const double count = counts_[index] / 2;
   counts_[index] = count;
   counts_.insert(counts_.begin() + index, count);
-  // TODO(crbug.com/1156930): Change this to a better way to split counts than
-  // halving the counts between the two new bins.
+
+  CheckState();
 }
 
 void BalancedReservoir::MergeSmallestBins() {
+  CheckState();
+
   double smallest_adjacent_bin_count = DBL_MAX;
   int smallest_bin_index = 0;
   for (int i = 0; i < counts_.size() - 1; i++) {
@@ -114,6 +128,8 @@ void BalancedReservoir::MergeSmallestBins() {
       counts_[smallest_bin_index] + counts_[smallest_bin_index + 1];
   dividers_.erase(dividers_.begin() + smallest_bin_index);
   counts_.erase(counts_.begin() + smallest_bin_index);
+
+  CheckState();
 }
 
 double BalancedReservoir::GetError() const {
@@ -131,7 +147,7 @@ double BalancedReservoir::GetError() const {
 
 double BalancedReservoir::NormalizeScore(const double score) const {
   if (dividers_.empty()) {
-    return 1;
+    return 0.5;
   }
 
   const int index = GetBin(score);
@@ -184,11 +200,19 @@ void BalancedReservoir::ReadPrefs() {
                             (dividers_.empty() || counts_.empty()));
     }
   }
-  if (dividers_.empty() || counts_.empty()) {
+
+  if (!counts_.empty()) {
+    CheckState();
+  }
+
+  // If we didn't succeed in reading the stored counts and dividers, start the
+  // reservoir with empty state: no dividers and one counts bin.
+  //
+  // If there are more than |max_number_of_dividers_| stored dividers, then
+  // there's been a code change to the configuration so reset the state.
+  if (dividers_.empty() || dividers_.size() > max_number_of_dividers_) {
     dividers_ = std::vector<double>();
-    counts_ = std::vector<double>(max_number_of_dividers_ + 1);
-  } else {
-    DCHECK(dividers_.size() + 1 == counts_.size());
+    counts_ = std::vector<double>({0.0});
   }
 }
 
@@ -201,6 +225,17 @@ void BalancedReservoir::WritePrefs() {
   provider_data.SetKey("dividers", VectorToPrefsList(dividers_));
   provider_data.SetKey("counts", VectorToPrefsList(counts_));
   distribution_data->SetKey(provider_, std::move(provider_data));
+}
+
+void BalancedReservoir::SetStateForTest(const std::vector<double>& dividers,
+                                        const std::vector<double>& counts) {
+  dividers_ = dividers;
+  counts_ = counts;
+  CheckState();
+}
+
+void BalancedReservoir::CheckState() {
+  DCHECK(dividers_.size() + 1 == counts_.size());
 }
 
 }  // namespace app_list
