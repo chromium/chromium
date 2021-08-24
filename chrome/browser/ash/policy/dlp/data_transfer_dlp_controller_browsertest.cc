@@ -233,7 +233,7 @@ class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   SetClipboardText(kClipboardText116, nullptr);
 
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
 
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   FakeClipboardNotifier helper;
   FakeDlpController dlp_controller(
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   SetupCrostini();
 
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   FakeClipboardNotifier helper;
   FakeDlpController dlp_controller(
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   SetupCrostini();
 

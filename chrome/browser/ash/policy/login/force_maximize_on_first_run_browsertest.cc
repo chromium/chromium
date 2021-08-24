@@ -59,7 +59,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
 IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, PRE_TwoRuns) {
   SetUpResolution();
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   // Check that the first browser window is maximized.
   const BrowserList* const browser_list = BrowserList::GetInstance();
@@ -81,7 +81,8 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, PRE_TwoRuns) {
 
 IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
   SetUpResolution();
-  ash::LoginScreenTestApi::SubmitPassword(account_id(), "123456",
+  ash::LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(kAccountId),
+                                          kAccountPassword,
                                           true /* check_if_submittable */);
   chromeos::test::WaitForPrimaryUserSessionStart();
 
@@ -105,7 +106,7 @@ class ForceMaximizePolicyFalseTest : public ForceMaximizeOnFirstRunTest {
 IN_PROC_BROWSER_TEST_F(ForceMaximizePolicyFalseTest, GeneralFirstRun) {
   SetUpResolution();
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   const BrowserList* const browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());

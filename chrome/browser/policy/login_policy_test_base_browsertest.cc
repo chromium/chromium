@@ -37,7 +37,7 @@ namespace policy {
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   Profile* const profile = GetProfileForActiveUser();
   PrefService* prefs = profile->GetPrefs();
@@ -52,13 +52,12 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   base::ListValue allowed_languages;
   allowed_languages.AppendString("fr");
   policy->SetKey(key::kAllowedLanguages, std::move(allowed_languages));
-
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
                                          profile);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   Profile* const profile = GetProfileForActiveUser();
   const PrefService* prefs = profile->GetPrefs();
@@ -88,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   SkipToLoginScreen();
-  LogIn();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   Profile* const profile = GetProfileForActiveUser();
 
@@ -111,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[1]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
 
-  // Set policy to only allow "xkb:fr::fra", "xkb:de::ger" and an invalid value
+  // Set policy to only allow "xkb:fr::fra", "xkb:de::ger" an an invalid value
   // as input method.
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
@@ -179,7 +178,7 @@ class StartupBrowserWindowLaunchSuppressedTest : public LoginPolicyTestBase {
 
   void CheckLaunchedBrowserCount(unsigned int count) {
     SkipToLoginScreen();
-    LogIn();
+    LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
     Profile* const profile = GetProfileForActiveUser();
 
@@ -237,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
   SkipToLoginScreen();
 
   ProfileWaiter profile_waiter;
-  TriggerLogIn();
+  TriggerLogIn(kAccountId, kAccountPassword, kEmptyServices);
   profile_waiter.WaitForProfileAdded();
 
   const base::Value* policy_value =
