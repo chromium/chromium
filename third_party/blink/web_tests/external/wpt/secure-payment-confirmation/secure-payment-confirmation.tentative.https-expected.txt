@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+PASS Valid payment method data does not throw exceptions.
+PASS The action field is optional.
+PASS The timeout field is optional.
+PASS Extra payment method not allowed afterward.
+PASS Extra payment method not allowed beforehand.
+PASS Cannot request shipping information.
+PASS Cannot request payer name.
+PASS Cannot request payer email.
+PASS Cannot request payer phone.
+PASS Invalid action parameter throws an exception.
+PASS The credentialIds field is required.
+PASS The challenge field is required.
+PASS Empty credentialIds field throws exception.
+PASS Null challenge field throws exception.
+PASS Empty challenge field throws exception.
+PASS Timeout longer than 1 hour throws exception.
+PASS Large credentialIds value throws exception.
+PASS Large challenge value throws exception.
+PASS Instrument field is required.
+PASS Instrument display name is required.
+PASS Instrument icon is required.
+FAIL Payee origin is required. assert_throws_js: function "() => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Omitted payee origin.
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+      },
+    }], details);
+  }" did not throw
+Harness: the test ran to completion.
+

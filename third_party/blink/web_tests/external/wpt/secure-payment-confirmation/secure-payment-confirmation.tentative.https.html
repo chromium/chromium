@@ -19,6 +19,7 @@ test(() => {
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        timeout: 60000,
        instrument: {
         displayName: 'X',
@@ -35,6 +36,7 @@ test(() => {
        // Omitted action field.
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        timeout: 60000,
        instrument: {
          displayName: 'X',
@@ -51,6 +53,7 @@ test(() => {
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        // Omitted timeout field.
        instrument: {
          displayName: 'X',
@@ -68,6 +71,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -86,6 +90,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -104,6 +109,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -122,6 +128,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -140,6 +147,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -158,6 +166,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -177,6 +186,7 @@ test(() => {
         action: 'authorize',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -195,6 +205,7 @@ test(() => {
         action: 'authenticate',
         // Omitted credentialIds field.
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -212,6 +223,7 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        payeeOrigin: window.location.origin,
         // Omitted challenge field.
         timeout: 60000,
         instrument: {
@@ -233,6 +245,7 @@ test(() => {
         // Empty credentialIds field.
         credentialIds: [],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -252,6 +265,7 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         // Null challenge fields.
         challenge: null,
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -269,6 +283,7 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        payeeOrigin: window.location.origin,
         // Empty challenge fields.
         challenge: [],
         timeout: 60000,
@@ -289,6 +304,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         // Timeout longer than 1 hour.
         timeout: 1000 * 60 * 60 + 1,
         instrument: {
@@ -310,6 +326,7 @@ test(() => {
         credentialIds: [Uint8Array.from(
             'x'.repeat(1024 * 1024), c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -329,6 +346,7 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         // Large challenge value.
         challenge: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -347,6 +365,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         // Omitted instrument field.
       },
@@ -362,6 +381,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           // Ommitted instrument display name.
@@ -380,6 +400,7 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -389,4 +410,24 @@ test(() => {
     }], details);
   });
 }, 'Instrument icon is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Omitted payee origin.
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+      },
+    }], details);
+  });
+}, 'Payee origin is required.');
+
 </script>
