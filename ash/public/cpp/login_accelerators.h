@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -56,6 +58,11 @@ struct LoginAcceleratorData {
 // Accelerators handled by OOBE / Login components.
 ASH_PUBLIC_EXPORT extern const LoginAcceleratorData kLoginAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t kLoginAcceleratorDataLength;
+
+// Returns WebUI acelerator identifier string.
+// Returns empty string if accelerator is not handled by the OOBE/Login WebUI.
+ASH_PUBLIC_EXPORT std::string MapToWebUIAccelerator(
+    LoginAcceleratorAction action);
 
 }  // namespace ash
 

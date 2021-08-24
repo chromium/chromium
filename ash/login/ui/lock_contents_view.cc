@@ -2346,8 +2346,15 @@ bool LockContentsView::OnKeyPressed(const ui::KeyEvent& event) {
 
 void LockContentsView::RegisterAccelerators() {
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
-    if (!kLoginAcceleratorData[i].global)
+    // We need to register global accelerators and a few additional ones that
+    // are handled by the WebUI (and normally registered by the WebUI).
+    // When WebUI is loaded on demand, we would need to start WebUI after
+    // accelerator is pressed. So we register WebUI acceleratos here
+    // and then start WebUI when needed and pass the accelerator.
+    if (!kLoginAcceleratorData[i].global &&
+        MapToWebUIAccelerator(kLoginAcceleratorData[i].action).empty()) {
       continue;
+    }
     if ((screen_type_ == LockScreen::ScreenType::kLogin) &&
         !(kLoginAcceleratorData[i].scope & kScopeLogin)) {
       continue;

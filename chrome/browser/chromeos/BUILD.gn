@@ -1947,8 +1947,6 @@ source_set("chromeos") {
     "../ash/login/ui/views/user_board_view.h",
     "../ash/login/ui/web_contents_forced_title.cc",
     "../ash/login/ui/web_contents_forced_title.h",
-    "../ash/login/ui/webui_accelerator_mapping.cc",
-    "../ash/login/ui/webui_accelerator_mapping.h",
     "../ash/login/ui/webui_login_view.cc",
     "../ash/login/ui/webui_login_view.h",
     "../ash/login/user_board_view_mojo.cc",

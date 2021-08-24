@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
-#include "chrome/browser/ash/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -393,13 +393,23 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
+  // This path should only handle screen-specific acceletators, so we do not
+  // need to create WebUI here.
   if (GetWizardController() && GetWizardController()->is_initialized()) {
     if (GetWizardController()->HandleAccelerator(action))
       return true;
   }
-  // TODO(crbug.com/1102393): Remove once all accelerators handling is migrated
-  // to browser side.
-  GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
+  // There are currently no global accelerators for the lock screen that
+  // require WebUI. So we do not need to specifically load it when user is
+  // logged in.
+  if (GetOobeUI() || (!MapToWebUIAccelerator(action).empty() &&
+                      !user_manager::UserManager::Get()->IsUserLoggedIn())) {
+    // Ensure WebUI is loaded.
+    GetWizardController();
+    // TODO(crbug.com/1102393): Remove once all accelerators handling is
+    // migrated to browser side.
+    GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
+  }
   return true;
 }
 
