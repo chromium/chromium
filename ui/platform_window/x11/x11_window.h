@@ -41,18 +41,17 @@ class LocatedEvent;
 class WorkspaceExtensionDelegate;
 
 // PlatformWindow implementation for X11.
-class X11_WINDOW_EXPORT X11Window
-    : public PlatformWindow,
-      public WmMoveResizeHandler,
-      public PlatformEventDispatcher,
-      public x11::EventObserver,
-      public WorkspaceExtension,
-      public X11Extension,
-      public WmDragHandler,
-      public XDragDropClient::Delegate,
-      public X11MoveLoopDelegate,
-      public WmMoveLoopHandler,
-      public X11DesktopWindowMoveClient::Delegate {
+class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
+                                    public WmMoveResizeHandler,
+                                    public PlatformEventDispatcher,
+                                    public x11::EventObserver,
+                                    public WorkspaceExtension,
+                                    public X11Extension,
+                                    public WmDragHandler,
+                                    public XDragDropClient::Delegate,
+                                    public X11MoveLoopDelegate,
+                                    public WmMoveLoopHandler,
+                                    public X11DesktopWindowMoveClient::Delegate {
  public:
   explicit X11Window(PlatformWindowDelegate* platform_window_delegate);
   ~X11Window() override;
@@ -283,6 +282,8 @@ class X11_WINDOW_EXPORT X11Window
   // Handle the state change since BeforeActivationStateChanged().
   void AfterActivationStateChanged();
 
+  void MaybeUpdateOcclusionState();
+
   void DelayedResize(const gfx::Rect& bounds_in_pixels);
 
   // If mapped, sends a message to the window manager to enable or disable the
@@ -387,6 +388,12 @@ class X11_WINDOW_EXPORT X11Window
   // True if the window should stay on top of most other windows.
   bool is_always_on_top_ = false;
 
+  // True if the window is fully obscured by another window.
+  bool is_occluded_ = false;
+
+  PlatformWindowOcclusionState occlusion_state_ =
+      PlatformWindowOcclusionState::kUnknown;
+
   // Does |xwindow_| have the pointer grab (XI2 or normal)?
   bool has_pointer_grab_ = false;
 
@@ -419,8 +426,6 @@ class X11_WINDOW_EXPORT X11Window
   bool had_pointer_ = false;
   bool had_pointer_grab_ = false;
   bool had_window_focus_ = false;
-
-  bool was_minimized_ = false;
 
   // Used for synchronizing between |xwindow_| and desktop compositor during
   // resizing.

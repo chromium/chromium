@@ -1878,6 +1878,20 @@ void X11Window::AfterActivationStateChanged() {
     OnXWindowIsActiveChanged(is_active);
 }
 
+void X11Window::MaybeUpdateOcclusionState() {
+  PlatformWindowOcclusionState occlusion_state =
+      is_occluded_ ? PlatformWindowOcclusionState::kOccluded
+                   : PlatformWindowOcclusionState::kVisible;
+
+  if (!window_mapped_in_client_ || IsMinimized())
+    occlusion_state = PlatformWindowOcclusionState::kHidden;
+
+  if (occlusion_state != occlusion_state_) {
+    occlusion_state_ = occlusion_state;
+    platform_window_delegate_->OnOcclusionStateChanged(occlusion_state);
+  }
+}
+
 void X11Window::OnCrossingEvent(bool enter,
                                 bool focus_in_window_or_ancestor,
                                 x11::NotifyMode mode,
@@ -2096,6 +2110,9 @@ void X11Window::HandleEvent(const x11::Event& xev) {
       OnWorkspaceUpdated();
   } else if (auto* selection = xev.As<x11::SelectionNotifyEvent>()) {
     OnXWindowSelectionEvent(*selection);
+  } else if (auto* visibility = xev.As<x11::VisibilityNotifyEvent>()) {
+    is_occluded_ = visibility->state == x11::Visibility::FullyObscured;
+    MaybeUpdateOcclusionState();
   }
 }
 
@@ -2196,8 +2213,6 @@ void X11Window::OnWMStateUpdated() {
 
 void X11Window::UpdateWindowProperties(
     const base::flat_set<x11::Atom>& new_window_properties) {
-  was_minimized_ = IsMinimized();
-
   window_properties_ = new_window_properties;
 
   // Ignore requests by the window manager to enter or exit fullscreen (e.g. as
@@ -2208,6 +2223,7 @@ void X11Window::UpdateWindowProperties(
   is_always_on_top_ = HasWMSpecProperty(window_properties_,
                                         x11::GetAtom("_NET_WM_STATE_ABOVE"));
   OnXWindowStateChanged();
+  MaybeUpdateOcclusionState();
   ResetWindowRegion();
 }
 
