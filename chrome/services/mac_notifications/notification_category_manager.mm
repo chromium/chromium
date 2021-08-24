@@ -23,7 +23,7 @@ NSString* NotificationCategoryManager::GetOrCreateCategory(
     const Buttons& buttons,
     bool settings_button) {
   // Update category associations for the given |notification_id|.
-  ReleaseCategory(notification_id);
+  ReleaseCategories({notification_id});
   auto category_key = std::make_pair(buttons, settings_button);
   notification_id_buttons_map_.emplace(notification_id, category_key);
 
@@ -47,26 +47,42 @@ NSString* NotificationCategoryManager::GetOrCreateCategory(
   return [category identifier];
 }
 
-void NotificationCategoryManager::ReleaseCategory(
-    const std::string& notification_id) {
-  auto existing_key = notification_id_buttons_map_.find(notification_id);
-  if (existing_key == notification_id_buttons_map_.end())
+void NotificationCategoryManager::ReleaseCategories(
+    const std::vector<std::string>& notification_ids) {
+  bool needs_update = false;
+
+  for (const auto& notification_id : notification_ids) {
+    auto existing_key = notification_id_buttons_map_.find(notification_id);
+    if (existing_key == notification_id_buttons_map_.end())
+      continue;
+
+    CategoryKey category_key = std::move(existing_key->second);
+    notification_id_buttons_map_.erase(existing_key);
+
+    auto existing_entry = buttons_category_map_.find(category_key);
+    if (existing_entry == buttons_category_map_.end())
+      continue;
+
+    // Decrement refcount and cleanup the category if unused.
+    int& refcount = existing_entry->second.second;
+    --refcount;
+    if (refcount > 0)
+      continue;
+
+    buttons_category_map_.erase(existing_entry);
+    needs_update = true;
+  }
+
+  if (needs_update)
+    UpdateNotificationCenterCategories();
+}
+
+void NotificationCategoryManager::ReleaseAllCategories() {
+  if (buttons_category_map_.empty() && notification_id_buttons_map_.empty())
     return;
 
-  CategoryKey category_key = std::move(existing_key->second);
-  notification_id_buttons_map_.erase(existing_key);
-
-  auto existing_entry = buttons_category_map_.find(category_key);
-  if (existing_entry == buttons_category_map_.end())
-    return;
-
-  // Decrement refcount and cleanup the category if unused.
-  int& refcount = existing_entry->second.second;
-  --refcount;
-  if (refcount > 0)
-    return;
-
-  buttons_category_map_.erase(existing_entry);
+  buttons_category_map_.clear();
+  notification_id_buttons_map_.clear();
   UpdateNotificationCenterCategories();
 }
 

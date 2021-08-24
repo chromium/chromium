@@ -42,9 +42,12 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
                                 const Buttons& buttons,
                                 bool settings_button);
 
-  // Releases the category used for |notification_id|. This needs to be called
-  // once the notification has been closed to clean up unused categories.
-  void ReleaseCategory(const std::string& notification_id);
+  // Releases the category used for |notification_ids|. This needs to be called
+  // once the notifications have been closed to clean up unused categories.
+  void ReleaseCategories(const std::vector<std::string>& notification_ids);
+
+  // Releases all categories managed for |notification_center_|.
+  void ReleaseAllCategories();
 
  private:
   // Synchronizes the set of currently used notification categories with the

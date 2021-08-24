@@ -61,6 +61,13 @@ class MacNotificationServiceUNTest : public testing::Test {
           service_remote_.BindNewPipeAndPassReceiver(),
           handler_receiver_.BindNewPipeAndPassRemote(),
           mock_notification_center_);
+      [[mock_notification_center_ stub]
+          setNotificationCategories:[OCMArg checkWithBlock:^BOOL(
+                                                NSSet<UNNotificationCategory*>*
+                                                    categories) {
+            category_count_ = [categories count];
+            return YES;
+          }]];
       [mock_notification_center_ verify];
     }
   }
@@ -117,6 +124,10 @@ class MacNotificationServiceUNTest : public testing::Test {
         [[FakeUNNotification alloc] init]);
     [notification setRequest:request];
 
+    // Also call the |service_remote_| to setup the new notification. This will
+    // make sure that any internal state is updated as well.
+    DisplayNotificationSync(notification_id, profile_id, incognito);
+
     return notification;
   }
 
@@ -158,6 +169,44 @@ class MacNotificationServiceUNTest : public testing::Test {
     return displayed;
   }
 
+  API_AVAILABLE(macos(10.14))
+  void DisplayNotificationSync(const std::string& notification_id,
+                               const std::string& profile_id,
+                               bool incognito) {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+      quit_closure.Run();
+    }] addNotificationRequest:[OCMArg any] withCompletionHandler:[OCMArg any]];
+
+    // Create and display a new notification.
+    auto notification =
+        CreateMojoNotification(notification_id, profile_id, incognito);
+    service_remote_->DisplayNotification(std::move(notification));
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+
+  mac_notifications::mojom::NotificationPtr CreateMojoNotification(
+      const std::string& notification_id,
+      const std::string& profile_id,
+      bool incognito) {
+    auto notification_identifier = mojom::NotificationIdentifier::New(
+        notification_id, mojom::ProfileIdentifier::New(profile_id, incognito));
+    auto meta = mojom::NotificationMetadata::New(
+        std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+        /*creator_pid=*/0);
+    std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
+
+    return mac_notifications::mojom::Notification::New(
+        std::move(meta), u"title", u"subtitle", u"body",
+        /*renotify=*/true,
+        /*show_settings_button=*/true, std::move(buttons),
+        /*icon=*/gfx::ImageSkia());
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver_{
@@ -168,15 +217,13 @@ class MacNotificationServiceUNTest : public testing::Test {
   id<UNUserNotificationCenterDelegate> notification_center_delegate_ = nullptr;
   API_AVAILABLE(macos(10.14))
   std::unique_ptr<MacNotificationServiceUN> service_;
+  unsigned int category_count_ = 0u;
 };
 
 TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
   if (@available(macOS 10.14, *)) {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-
-    // Expect a new notification category for this notification.
-    [[mock_notification_center_ expect] setNotificationCategories:[OCMArg any]];
 
     // Verify notification content.
     [[mock_notification_center_ expect]
@@ -201,24 +248,15 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
          withCompletionHandler:[OCMArg any]];
 
     // Create and display a new notification.
-    auto profile_identifier =
-        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
-    auto notification_identifier = mojom::NotificationIdentifier::New(
-        "notificationId", std::move(profile_identifier));
-    auto meta = mojom::NotificationMetadata::New(
-        std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
-        /*creator_pid=*/0);
-
-    std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
-    auto notification = mac_notifications::mojom::Notification::New(
-        std::move(meta), u"title", u"subtitle", u"body",
-        /*renotify=*/true,
-        /*show_settings_button=*/true, std::move(buttons),
-        /*icon=*/gfx::ImageSkia());
+    auto notification = CreateMojoNotification("notificationId", "profileId",
+                                               /*incognito=*/true);
     service_remote_->DisplayNotification(std::move(notification));
 
     run_loop.Run();
     [mock_notification_center_ verify];
+
+    // Expect a new notification category for this notification.
+    EXPECT_EQ(1u, category_count_);
   }
 }
 
@@ -255,6 +293,9 @@ TEST_F(MacNotificationServiceUNTest, GetAllDisplayedNotifications) {
 
 TEST_F(MacNotificationServiceUNTest, CloseNotification) {
   if (@available(macOS 10.14, *)) {
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true);
+    EXPECT_EQ(1u, category_count_);
+
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
@@ -271,12 +312,19 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
 
     run_loop.Run();
     [mock_notification_center_ verify];
+
+    // Expect closing the notification to remove the category as well.
+    EXPECT_EQ(0u, category_count_);
   }
 }
 
 TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
   if (@available(macOS 10.14, *)) {
     auto notifications = SetupNotifications();
+    // Even though we created 3 notifications, all of them share the same
+    // category as they have the same actions.
+    EXPECT_EQ(1u, category_count_);
+
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
@@ -295,11 +343,16 @@ TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
 
     run_loop.Run();
     [mock_notification_center_ verify];
+    // Verify that we closed two notifications but one still holds a reverence
+    // to the common category.
+    EXPECT_EQ(1u, category_count_);
   }
 }
 
 TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
   if (@available(macOS 10.14, *)) {
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true);
+    EXPECT_EQ(1u, category_count_);
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
     [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
@@ -308,6 +361,7 @@ TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
     service_remote_->CloseAllNotifications();
     run_loop.Run();
     [mock_notification_center_ verify];
+    EXPECT_EQ(0u, category_count_);
   }
 }
 

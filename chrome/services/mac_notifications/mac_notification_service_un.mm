@@ -238,10 +238,11 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
 void MacNotificationServiceUN::CloseNotification(
     mojom::NotificationIdentifierPtr identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NSString* notification_id =
-      base::SysUTF8ToNSString(DeriveMacNotificationId(identifier));
+  std::string notification_id = DeriveMacNotificationId(identifier);
+  NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
   [notification_center_
-      removeDeliveredNotificationsWithIdentifiers:@[ notification_id ]];
+      removeDeliveredNotificationsWithIdentifiers:@[ notification_id_ns ]];
+  OnNotificationsClosed({notification_id});
 }
 
 void MacNotificationServiceUN::CloseNotificationsForProfile(
@@ -250,13 +251,20 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
   NSString* profile_id = base::SysUTF8ToNSString(profile->id);
   bool incognito = profile->incognito;
 
+  __block auto closed_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&MacNotificationServiceUN::OnNotificationsClosed,
+                     weak_factory_.GetWeakPtr()));
+
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull toasts) {
     base::scoped_nsobject<NSMutableArray> identifiers(
         [[NSMutableArray alloc] init]);
+    std::vector<std::string> closed_notification_ids;
 
     for (UNNotification* toast in toasts) {
       NSDictionary* user_info = [[[toast request] content] userInfo];
+      NSString* toast_id = [[toast request] identifier];
       NSString* toast_profile_id =
           [user_info objectForKey:kNotificationProfileId];
       bool toast_incognito =
@@ -264,18 +272,21 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
 
       if ([profile_id isEqualToString:toast_profile_id] &&
           incognito == toast_incognito) {
-        [identifiers addObject:[[toast request] identifier]];
+        [identifiers addObject:toast_id];
+        closed_notification_ids.push_back(base::SysNSStringToUTF8(toast_id));
       }
     }
 
     [notification_center_
         removeDeliveredNotificationsWithIdentifiers:identifiers];
+    std::move(closed_callback).Run(closed_notification_ids);
   }];
 }
 
 void MacNotificationServiceUN::CloseAllNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [notification_center_ removeAllDeliveredNotifications];
+  category_manager_.ReleaseAllCategories();
 }
 
 void MacNotificationServiceUN::RequestPermission() {
@@ -298,7 +309,17 @@ void MacNotificationServiceUN::RequestPermission() {
 void MacNotificationServiceUN::OnNotificationAction(
     mojom::NotificationActionInfoPtr action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (action->operation == NotificationOperation::NOTIFICATION_CLOSE)
+    OnNotificationsClosed({DeriveMacNotificationId(action->meta->id)});
+
   action_handler_->OnNotificationAction(std::move(action));
+}
+
+void MacNotificationServiceUN::OnNotificationsClosed(
+    const std::vector<std::string>& notification_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  category_manager_.ReleaseCategories(notification_ids);
 }
 
 }  // namespace mac_notifications

@@ -52,6 +52,9 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   // Called by |delegate_| when a user interacts with a notification.
   void OnNotificationAction(mojom::NotificationActionInfoPtr action);
 
+  // Called when the notifications got closed for any reason.
+  void OnNotificationsClosed(const std::vector<std::string>& notification_ids);
+
   mojo::Receiver<mojom::MacNotificationService> binding_;
   mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
   base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;

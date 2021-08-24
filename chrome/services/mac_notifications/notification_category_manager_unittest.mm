@@ -356,13 +356,61 @@ TEST_F(NotificationCategoryManagerTest, ReusesCategory) {
     EXPECT_TRUE([category_ids containsObject:category_id_1]);
 
     // Release category for first notification id.
-    manager_->ReleaseCategory("notification_id_1");
+    manager_->ReleaseCategories({"notification_id_1"});
     // Expect there to be still one category.
     EXPECT_EQ(1u, [[fake_notification_center_ categories] count]);
 
     // Release category for second notification id.
-    manager_->ReleaseCategory("notification_id_2");
+    manager_->ReleaseCategories({"notification_id_2"});
     // Expect it to release the category.
+    EXPECT_EQ(0u, [[fake_notification_center_ categories] count]);
+  }
+}
+
+TEST_F(NotificationCategoryManagerTest, ReleaseMultipleCategories) {
+  if (@available(macOS 10.14, *)) {
+    // Request two categories with the same buttons and one with different ones.
+    NSString* category_id_1 = manager_->GetOrCreateCategory(
+        "notification_id_1", /*buttons=*/{}, /*settings_button=*/false);
+    NSString* category_id_2 = manager_->GetOrCreateCategory(
+        "notification_id_2", /*buttons=*/{}, /*settings_button=*/false);
+    NSString* category_id_3 = manager_->GetOrCreateCategory(
+        "notification_id_3", /*buttons=*/{}, /*settings_button=*/true);
+
+    // Expect all category ids to be created.
+    EXPECT_NSEQ(category_id_1, category_id_2);
+    EXPECT_NSNE(category_id_2, category_id_3);
+    NSSet<NSString*>* category_ids = GetCategoryIds();
+    EXPECT_EQ(2u, [category_ids count]);
+    EXPECT_TRUE([category_ids containsObject:category_id_1]);
+    EXPECT_TRUE([category_ids containsObject:category_id_3]);
+
+    // Release categories for the first and third notification ids.
+    manager_->ReleaseCategories({"notification_id_1", "notification_id_3"});
+
+    // Expect the first category to still remain but the second one should not.
+    NSSet<NSString*>* remaining_category_ids = GetCategoryIds();
+    EXPECT_EQ(1u, [remaining_category_ids count]);
+    EXPECT_TRUE([remaining_category_ids containsObject:category_id_1]);
+  }
+}
+
+TEST_F(NotificationCategoryManagerTest, ReleaseAllCategories) {
+  if (@available(macOS 10.14, *)) {
+    // Request two categories with the same buttons and one with different ones.
+    manager_->GetOrCreateCategory("notification_id_1", /*buttons=*/{},
+                                  /*settings_button=*/false);
+    manager_->GetOrCreateCategory("notification_id_2", /*buttons=*/{},
+                                  /*settings_button=*/false);
+    manager_->GetOrCreateCategory("notification_id_3", /*buttons=*/{},
+                                  /*settings_button=*/true);
+
+    // Expect two unique categories to be created.
+    NSSet<NSString*>* category_ids = GetCategoryIds();
+    EXPECT_EQ(2u, [category_ids count]);
+
+    // Release all categories and expect them to be gone.
+    manager_->ReleaseAllCategories();
     EXPECT_EQ(0u, [[fake_notification_center_ categories] count]);
   }
 }
