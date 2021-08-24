@@ -101,8 +101,8 @@ class CastStreamingTestSender final
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;
 
-  std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
   std::unique_ptr<CastMessagePortSenderImpl> message_port_;
+  std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
 
   openscreen::cast::Sender* audio_sender_ = nullptr;
   openscreen::cast::Sender* video_sender_ = nullptr;
