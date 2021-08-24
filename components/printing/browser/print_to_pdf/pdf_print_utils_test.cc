@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/print_to_pdf/pdf_print_utils.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace headless {
+namespace print_to_pdf {
 
 namespace {
 
@@ -95,4 +95,4 @@ TEST(PageRangeTextToPagesTest, General) {
 
 }  // namespace
 
-}  // namespace headless
+}  // namespace print_to_pdf

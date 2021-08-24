@@ -33,5 +33,9 @@ specific_include_rules = {
   ],
   "headless_content_browser_client.cc": [
     "+components/policy",
+    "+components/printing/browser/print_to_pdf",
+  ],
+  "headless_web_contents_impl.cc": [
+    "+components/printing/browser/print_to_pdf",
   ],
 }

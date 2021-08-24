@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
-#define HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#ifndef COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#define COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/print_settings.h"
 
-namespace headless {
+namespace print_to_pdf {
 
 class PdfPrintManager : public printing::PrintManager,
                         public content::WebContentsUserData<PdfPrintManager> {
@@ -105,6 +105,6 @@ class PdfPrintManager : public printing::PrintManager,
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace headless
+}  // namespace print_to_pdf
 
-#endif  // HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#endif  // COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_

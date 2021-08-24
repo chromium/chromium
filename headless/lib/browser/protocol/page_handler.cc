@@ -6,10 +6,9 @@
 
 #include "base/bind.h"
 #include "content/public/browser/web_contents.h"
-#include "printing/units.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "headless/lib/browser/print_to_pdf/pdf_print_utils.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
@@ -65,7 +64,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
   }
 
   absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
-      print_pages_params = headless::GetPrintPagesParams(
+      print_pages_params = print_to_pdf::GetPrintPagesParams(
           web_contents_->GetMainFrame()->GetLastCommittedURL(),
           OptionalFromMaybe<bool>(landscape),
           OptionalFromMaybe<bool>(display_header_footer),
@@ -91,7 +90,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 
   bool return_as_stream = transfer_mode.fromMaybe("") ==
                           Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
-  headless::PdfPrintManager::FromWebContents(web_contents_.get())
+  print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())
       ->PrintToPdf(
           web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
           ignore_invalid_page_ranges.fromMaybe(false),
@@ -109,12 +108,12 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 void PageHandler::PDFCreated(
     bool return_as_stream,
     std::unique_ptr<PrintToPDFCallback> callback,
-    headless::PdfPrintManager::PrintResult print_result,
+    print_to_pdf::PdfPrintManager::PrintResult print_result,
     scoped_refptr<base::RefCountedMemory> data) {
   std::unique_ptr<base::DictionaryValue> response;
-  if (print_result != headless::PdfPrintManager::PRINT_SUCCESS) {
+  if (print_result != print_to_pdf::PdfPrintManager::PRINT_SUCCESS) {
     callback->sendFailure(Response::ServerError(
-        headless::PdfPrintManager::PrintResultToString(print_result)));
+        print_to_pdf::PdfPrintManager::PrintResultToString(print_result)));
     return;
   }
 

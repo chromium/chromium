@@ -408,15 +408,6 @@ component("headless_non_renderer") {
     ]
   }
 
-  if (enable_basic_printing) {
-    sources += [
-      "lib/browser/print_to_pdf/pdf_print_manager.cc",
-      "lib/browser/print_to_pdf/pdf_print_manager.h",
-      "lib/browser/print_to_pdf/pdf_print_utils.cc",
-      "lib/browser/print_to_pdf/pdf_print_utils.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//net",
@@ -466,6 +457,7 @@ component("headless_non_renderer") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser",
+      "//components/printing/browser/print_to_pdf",
       "//components/printing/common:mojo_interfaces",
       "//printing",
       "//printing/mojom",
@@ -696,13 +688,9 @@ test("headless_unittests") {
   }
 
   if (enable_basic_printing) {
-    sources += [
-      "lib/browser/print_to_pdf/pdf_print_utils.cc",
-      "lib/browser/print_to_pdf/pdf_print_utils.h",
-      "lib/browser/print_to_pdf/pdf_print_utils_test.cc",
-    ]
     deps += [
       "//components/printing/browser",
+      "//components/printing/browser/print_to_pdf",
       "//printing",
       "//printing/buildflags",
       "//third_party/blink/public:blink",

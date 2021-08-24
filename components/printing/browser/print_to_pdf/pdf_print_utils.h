@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_
-#define HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_
+#ifndef COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_
+#define COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
-namespace headless {
+namespace print_to_pdf {
 
 enum class PageRangeError {
   SYNTAX_ERROR,
@@ -46,6 +46,6 @@ GetPrintPagesParams(const GURL& page_url,
                     absl::optional<std::string> footer_template,
                     absl::optional<bool> prefer_css_page_size);
 
-}  // namespace headless
+}  // namespace print_to_pdf
 
-#endif  // HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_
+#endif  // COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_UTILS_H_

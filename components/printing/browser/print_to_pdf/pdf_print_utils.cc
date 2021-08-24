@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/print_to_pdf/pdf_print_utils.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -13,7 +13,7 @@
 #include "printing/units.h"
 #include "url/url_canon.h"
 
-namespace headless {
+namespace print_to_pdf {
 
 namespace {
 
@@ -178,4 +178,4 @@ GetPrintPagesParams(const GURL& page_url,
   return print_pages_params;
 }
 
-}  // namespace headless
+}  // namespace print_to_pdf

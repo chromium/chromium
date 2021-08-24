@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/print_to_pdf/pdf_print_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
 
 #include <utility>
 
-#include "headless/lib/browser/print_to_pdf/pdf_print_utils.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #endif
 
-namespace headless {
+namespace print_to_pdf {
 
 namespace {
 
@@ -262,4 +262,4 @@ void PdfPrintManager::ReleaseJob(PrintResult result) {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfPrintManager)
 
-}  // namespace headless
+}  // namespace print_to_pdf
