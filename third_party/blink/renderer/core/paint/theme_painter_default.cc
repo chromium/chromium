@@ -150,6 +150,16 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   return PixelSnappedIntRect(part_rect);
 }
 
+mojom::blink::ColorScheme GetColorScheme(const PaintInfo& paint_info,
+                                         const ComputedStyle& style) {
+  bool enable_force_dark =
+      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  if (color_scheme == mojom::blink::ColorScheme::kLight && enable_force_dark)
+    return mojom::blink::ColorScheme::kDark;
+  return color_scheme;
+}
+
 absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
   if (!RuntimeEnabledFeatures::CSSAccentColorEnabled())
     return absl::nullopt;
@@ -178,7 +188,6 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
                                         const PaintInfo& paint_info,
                                         const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
   extra_params.button.indeterminate = IsIndeterminate(element);
@@ -188,15 +197,11 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   IntRect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartCheckbox, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, color_scheme,
-      GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartCheckbox,
+      GetWebThemeState(element), unzoomed_rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -206,7 +211,6 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
                                      const PaintInfo& paint_info,
                                      const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
 
@@ -215,15 +219,11 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   IntRect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, color_scheme,
-      GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartRadio,
+      GetWebThemeState(element), unzoomed_rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -233,7 +233,6 @@ bool ThemePainterDefault::PaintButton(const Element& element,
                                       const PaintInfo& paint_info,
                                       const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.has_border = true;
   extra_params.button.background_color = kDefaultButtonBackgroundColor;
@@ -242,14 +241,11 @@ bool ThemePainterDefault::PaintButton(const Element& element,
     extra_params.button.background_color =
         style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
   }
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartButton,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -270,29 +266,23 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
   extra_params.text_field.has_border = true;
   extra_params.text_field.zoom = style.EffectiveZoom();
 
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
-
   Color background_color =
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   extra_params.text_field.background_color = background_color.Rgb();
   extra_params.text_field.auto_complete_active =
       DynamicTo<HTMLFormControlElement>(element)->IsAutofilled();
 
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
-
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartTextField, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintMenuList(const Element& element,
                                         const Document& document,
                                         const ComputedStyle& style,
-                                        const PaintInfo& i,
+                                        const PaintInfo& paint_info,
                                         const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   // Match Chromium Win behaviour of showing all borders if any are shown.
@@ -317,15 +307,10 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
 
   SetupMenuListArrow(document, style, rect, extra_params);
 
-  cc::PaintCanvas* canvas = i.context.Canvas();
-  bool enable_force_dark =
-      i.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
-
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -341,15 +326,10 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   extra_params.menu_list.fill_content_area = false;
   SetupMenuListArrow(document, style, rect, extra_params);
 
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
-
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -382,28 +362,22 @@ void ThemePainterDefault::SetupMenuListArrow(
 }
 
 bool ThemePainterDefault::PaintSliderTrack(const Element& element,
-                                           const LayoutObject& o,
-                                           const PaintInfo& i,
+                                           const LayoutObject& layout_object,
+                                           const PaintInfo& paint_info,
                                            const IntRect& rect,
                                            const ComputedStyle& style) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = i.context.Canvas();
   extra_params.slider.vertical =
-      o.StyleRef().EffectiveAppearance() == kSliderVerticalPart;
+      style.EffectiveAppearance() == kSliderVerticalPart;
   extra_params.slider.in_drag = false;
 
-  PaintSliderTicks(o, i, rect);
+  PaintSliderTicks(layout_object, paint_info, rect);
 
-  float zoom_level = o.StyleRef().EffectiveZoom();
-  extra_params.slider.zoom = zoom_level;
-  GraphicsContextStateSaver state_saver(i.context, false);
-  IntRect unzoomed_rect = rect;
-
-  auto* input = DynamicTo<HTMLInputElement>(element);
+  extra_params.slider.zoom = style.EffectiveZoom();
   extra_params.slider.thumb_x = 0;
   extra_params.slider.thumb_y = 0;
-  extra_params.slider.right_to_left = !o.StyleRef().IsLeftToRightDirection();
-  if (input) {
+  extra_params.slider.right_to_left = !style.IsLeftToRightDirection();
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     Element* thumb_element = input->UserAgentShadowRoot()
                                  ? input->UserAgentShadowRoot()->getElementById(
                                        shadow_element_names::kIdSliderThumb)
@@ -420,15 +394,11 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                     input_box->BorderTop().ToInt();
     }
   }
-  bool enable_force_dark =
-      i.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = o.StyleRef().UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartSliderTrack, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, color_scheme,
-      GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartSliderTrack,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -437,17 +407,12 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const PaintInfo& paint_info,
                                            const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.slider.vertical =
       style.EffectiveAppearance() == kSliderThumbVerticalPart;
   extra_params.slider.in_drag = element.IsActive();
+  extra_params.slider.zoom = style.EffectiveZoom();
 
-  float zoom_level = style.EffectiveZoom();
-  extra_params.slider.zoom = zoom_level;
-  GraphicsContextStateSaver state_saver(paint_info.context, false);
-  IntRect unzoomed_rect = rect;
-
-  // The element passed in is inside the user agent shadowdom of the input
+  // The element passed in is inside the user agent shadow DOM of the input
   // element, so we have to access the parent input element in order to get the
   // accent-color style set by the page.
   const SliderThumbElement* slider_element =
@@ -456,14 +421,11 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                            // SliderThumbElement
   absl::optional<SkColor> accent_color =
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle());
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartSliderThumb, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, color_scheme, accent_color);
+      paint_info.context.Canvas(), WebThemeEngine::kPartSliderThumb,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), accent_color);
   return false;
 }
 
@@ -472,7 +434,6 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
                                                const PaintInfo& paint_info,
                                                const IntRect& rect) {
   WebThemeEngine::ExtraParams extra_params;
-  cc::PaintCanvas* canvas = paint_info.context.Canvas();
 
   bool spin_up = false;
   if (const auto* spin_buttom = DynamicTo<SpinButtonElement>(element)) {
@@ -486,46 +447,38 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   extra_params.inner_spin.spin_up = spin_up;
   extra_params.inner_spin.read_only = read_only;
-  bool enable_force_dark =
-      paint_info.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
 
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartInnerSpinButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartInnerSpinButton,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintProgressBar(const Element& element,
-                                           const LayoutObject& o,
-                                           const PaintInfo& i,
+                                           const LayoutObject& layout_object,
+                                           const PaintInfo& paint_info,
                                            const IntRect& rect,
                                            const ComputedStyle& style) {
-  if (!o.IsProgress())
+  const auto* layout_progress = DynamicTo<LayoutProgress>(layout_object);
+  if (!layout_progress)
     return true;
 
-  const auto& layout_progress = To<LayoutProgress>(o);
-  IntRect value_rect = ProgressValueRectFor(layout_progress, rect);
+  IntRect value_rect = ProgressValueRectFor(*layout_progress, rect);
 
   WebThemeEngine::ExtraParams extra_params;
-  extra_params.progress_bar.determinate = layout_progress.IsDeterminate();
+  extra_params.progress_bar.determinate = layout_progress->IsDeterminate();
   extra_params.progress_bar.value_rect_x = value_rect.X();
   extra_params.progress_bar.value_rect_y = value_rect.Y();
   extra_params.progress_bar.value_rect_width = value_rect.Width();
   extra_params.progress_bar.value_rect_height = value_rect.Height();
-  extra_params.progress_bar.zoom = o.StyleRef().EffectiveZoom();
+  extra_params.progress_bar.zoom = style.EffectiveZoom();
 
-  DirectionFlippingScope scope(o, i, rect);
-  cc::PaintCanvas* canvas = i.context.Canvas();
-  bool enable_force_dark =
-      i.context.IsDarkModeEnabled() && !style.DisableForceDark();
-  mojom::blink::ColorScheme color_scheme = o.StyleRef().UsedColorScheme();
-  AdjustColorScheme(color_scheme, enable_force_dark);
-
+  DirectionFlippingScope scope(layout_object, paint_info, rect);
   Platform::Current()->ThemeEngine()->Paint(
-      canvas, WebThemeEngine::kPartProgressBar, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, color_scheme, GetAccentColor(style));
+      paint_info.context.Canvas(), WebThemeEngine::kPartProgressBar,
+      GetWebThemeState(element), rect, &extra_params,
+      GetColorScheme(paint_info, style), GetAccentColor(style));
   return false;
 }
 
@@ -641,13 +594,6 @@ IntRect ThemePainterDefault::ApplyZoomToRect(
   }
 
   return unzoomed_rect;
-}
-
-void ThemePainterDefault::AdjustColorScheme(mojom::ColorScheme& color_scheme,
-                                            bool enable_force_dark) {
-  if (color_scheme == mojom::blink::ColorScheme::kLight && enable_force_dark) {
-    color_scheme = mojom::blink::ColorScheme::kDark;
-  }
 }
 
 }  // namespace blink
