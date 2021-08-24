@@ -443,16 +443,17 @@ void NGInlineLayoutAlgorithm::CreateLine(
   context_->SetItemIndex(line_info->ItemsData().items,
                          line_info->EndItemIndex());
 
-  // |container_builder_| is already set up by |PlaceBlockInInline|.
-  if (line_info->IsBlockInInline())
-    return;
-
   // Even if we have something in-flow, it may just be empty items that
   // shouldn't trigger creation of a line. Exit now if that's the case.
   if (line_info->IsEmptyLine())
     return;
 
-  DCHECK(!line_box_metrics.IsEmpty());
+  if (!line_box_metrics.IsEmpty())
+    container_builder_.SetMetrics(line_box_metrics);
+
+  // |container_builder_| is already set up by |PlaceBlockInInline|.
+  if (line_info->IsBlockInInline())
+    return;
 
   // Up until this point, children are placed so that the dominant baseline is
   // at 0. Move them to the final baseline position, and set the logical top of
@@ -476,7 +477,6 @@ void NGInlineLayoutAlgorithm::CreateLine(
     inline_size = std::min(inline_size, one_em);
   }
   container_builder_.SetInlineSize(inline_size);
-  container_builder_.SetMetrics(line_box_metrics);
 }
 
 void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
@@ -624,14 +624,12 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   // |NGLayoutResult|.
   container_builder_.SetIsBlockInInline();
   container_builder_.SetInlineSize(fragment.InlineSize());
-  container_builder_.SetBaseDirection(line_info.BaseDirection());
 
   if (!result.IsSelfCollapsing()) {
     // Block-in-inline is wrapped in an anonymous block that has no margins.
     const FontHeight metrics = fragment.BaselineMetrics(
         /* margins */ NGLineBoxStrut(), baseline_type_);
     box_states_->OnBlockInInline(metrics, line_box);
-    container_builder_.SetMetrics(metrics);
   }
 
   end_margin_strut_ = result.EndMarginStrut();
