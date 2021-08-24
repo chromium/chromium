@@ -336,6 +336,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
+      // TODO(crbug/1242839): Hide the accessory if no fallback is available.
       return !available_sources_.empty() ||
              base::FeatureList::IsEnabled(
                  password_manager::features::kFillingPasswordsFromAnyOrigin);

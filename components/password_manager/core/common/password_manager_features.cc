@@ -76,7 +76,7 @@ const base::Feature kFillingAcrossAffiliatedWebsites{
 // The button opens a different sheet that allows filling a password from any
 // origin.
 const base::Feature kFillingPasswordsFromAnyOrigin{
-    "FillingPasswordsFromAnyOrigin", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FillingPasswordsFromAnyOrigin", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
