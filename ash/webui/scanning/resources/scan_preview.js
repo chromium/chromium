@@ -134,7 +134,6 @@ Polymer({
     'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
         ' showHelperText_)',
     'setScanProgressTimer_(showScanProgress_, progressPercent)',
-    'onObjectUrlsChange_(objectUrls.length)',
   ],
 
   /** @override */
@@ -281,30 +280,6 @@ Polymer({
   },
 
   /**
-   * When scanned images are inserted/removed, recalcuate the current page in
-   * view and set the focus CSS variable accordingly.
-   * @private
-   */
-  onObjectUrlsChange_() {
-    if (!this.multiPageScanChecked ||
-        this.appState != AppState.MULTI_PAGE_NEXT_ACTION) {
-      return;
-    }
-
-    // Need to wait for the new scanned images to render.
-    afterNextRender(this, () => {
-      const scannedImages =
-          this.$$('#scannedImages').getElementsByClassName('scanned-image');
-      if (scannedImages.length === 0) {
-        return;
-      }
-
-      this.setFocusedScannedImage_(
-          scannedImages, this.getCurrentPageInView_(scannedImages));
-    });
-  },
-
-  /**
    * Calculates the current page in view. Returns the page number of the
    * highest page in the viewport unless that page is scrolled halfway outside
    * the viewport, then it'll return the following page number. Assumes each
@@ -390,6 +365,11 @@ Polymer({
 
     this.scannedImagesLoaded_ = true;
     this.setActionToolbarPosition_();
+
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(
+        scannedImages, this.getCurrentPageInView_(scannedImages));
   },
 
   /**
