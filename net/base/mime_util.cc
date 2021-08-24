@@ -215,6 +215,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"image/x-xbitmap", "xbm"},
     {"message/rfc822", "eml"},
     {"text/calendar", "ics"},
+    {"text/csv", "csv"},
     {"text/html", "ehtml"},
     {"text/plain", "txt,text"},
     {"text/x-sh", "sh"},
