@@ -163,8 +163,12 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
         rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE},
        {mojom::RmadErrorCode::kDeviceInfoInvalid,
         rmad::RmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID},
-       {mojom::RmadErrorCode::kCalibrationMissingComponent,
-        rmad::RmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT},
+       {mojom::RmadErrorCode::kCalibrationComponentMissing,
+        rmad::RmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_MISSING},
+       {mojom::RmadErrorCode::kCalibrationStatusMissing,
+        rmad::RmadErrorCode::RMAD_ERROR_CALIBRATION_STATUS_MISSING},
+       {mojom::RmadErrorCode::kCalibrationComponentInvalid,
+        rmad::RmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_INVALID},
        {mojom::RmadErrorCode::kCalibrationFailed,
         rmad::RmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED},
        {mojom::RmadErrorCode::kProvisioningFailed,
@@ -181,7 +185,9 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
        {mojom::RmadErrorCode::kLogUploadFtpServerTransferFailed,
         rmad::RmadErrorCode::RMAD_ERROR_LOG_UPLOAD_FTP_SERVER_TRANSFER_FAILED},
        {mojom::RmadErrorCode::kCannotCancelRma,
-        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA}});
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA},
+       {mojom::RmadErrorCode::kCannotGetLog,
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
@@ -221,8 +227,10 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
            // Additional rmad components.
            {mojom::ComponentType::kGyroscope,
             rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE},
-           {mojom::ComponentType::kAccelerometer,
-            rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER},
+           {mojom::ComponentType::kBaseAccelerometer,
+            rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER},
+           {mojom::ComponentType::kLidAccelerometer,
+            rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER},
            {mojom::ComponentType::kScreen,
             rmad::RmadComponent::RMAD_COMPONENT_SCREEN},
 
@@ -258,9 +266,12 @@ TEST_F(ShimlessRmaMojoToProtoTest, CalibrationComponentsMatch) {
   constexpr auto enums = base::MakeFixedFlatMap<
       mojom::CalibrationComponent,
       rmad::CheckCalibrationState::CalibrationStatus::Component>(
-      {{mojom::CalibrationComponent::kAccelerometer,
+      {{mojom::CalibrationComponent::kBaseAccelerometer,
         rmad::CheckCalibrationState::CalibrationStatus::
-            RMAD_CALIBRATION_COMPONENT_ACCELEROMETER},
+            RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER},
+       {mojom::CalibrationComponent::kLidAccelerometer,
+        rmad::CheckCalibrationState::CalibrationStatus::
+            RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER},
        {mojom::CalibrationComponent::kGyroscope,
         rmad::CheckCalibrationState::CalibrationStatus::
             RMAD_CALIBRATION_COMPONENT_GYROSCOPE}});

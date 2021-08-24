@@ -138,28 +138,35 @@ enum RmadErrorCode {
   kDeviceInfoInvalid = 26,
 
   // Calibration component is missing.
-  kCalibrationMissingComponent = 27,
+  kCalibrationComponentMissing = 27,
+  // Calibration componenent status is missing.
+  kCalibrationStatusMissing = 28,
+  // Calibration component cannot be calibrated.
+  kCalibrationComponentInvalid = 29,
   // Calibration failed for a component.
-  kCalibrationFailed = 28,
+  kCalibrationFailed = 30,
 
   // Provisioning failed for the device.
-  kProvisioningFailed = 29,
+  kProvisioningFailed = 31,
 
   // Device could not be powerwashed.
-  kPowerwashFailed = 30,
+  kPowerwashFailed = 32,
 
   // Device finalization failed.
-  kFinalizationFailed = 31,
+  kFinalizationFailed = 33,
 
   // Logs failed to upload because the server could not be reached.
-  kLogUploadFtpServerCannotConnect = 32,
+  kLogUploadFtpServerCannotConnect = 34,
   // Logs failed to upload because the server refused the connection.
-  kLogUploadFtpServerConnectionRejected = 33,
+  kLogUploadFtpServerConnectionRejected = 35,
   // Logs failed to upload because the connection was interrupted.
-  kLogUploadFtpServerTransferFailed = 34,
+  kLogUploadFtpServerTransferFailed = 36,
 
   // It is not possible to cancel RMA finalization process at this point.
-  kCannotCancelRma = 35,
+  kCannotCancelRma = 37,
+
+  // Logs could not be retrieved.
+  kCannotGetLog = 38,
 };
 
 // TODO(gavindodd): This is copied from
@@ -204,14 +211,15 @@ enum ComponentType {
   kWireless = 14,
 
   // Additional rmad components.
-  kGyroscope = 15,
-  kAccelerometer = 16,
-  kScreen = 17,
+  kScreen = 15,
+  kBaseAccelerometer = 16,
+  kLidAccelerometer = 17,
+  kGyroscope = 18,
 
   // Irrelevant components.
   // TODO(chenghan): Do we really need these?
-  kKeyboard = 18,
-  kPowerButton = 19,
+  kKeyboard = 19,
+  kPowerButton = 20,
 };
 
 // Component repair state
@@ -240,8 +248,9 @@ struct Component {
 // See shimless_rma_mojom_traits.cc\h.
 enum CalibrationComponent {
   kCalibrateUnknown = 0,
-  kAccelerometer = 1,
-  kGyroscope = 2,
+  kGyroscope = 1,
+  kBaseAccelerometer = 2,
+  kLidAccelerometer = 3,
 };
 
 // This must remain in sync with ProvisionDeviceState::ProvisioningStep in

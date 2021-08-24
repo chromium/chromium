@@ -42,7 +42,8 @@ const ComponentTypeToName = {
   [ComponentType.kEthernet]: 'Ethernet',
   [ComponentType.kWireless]: 'Wireless',
   [ComponentType.kGyroscope]: 'Gyroscope',
-  [ComponentType.kAccelerometer]: 'Accelerometer',
+  [ComponentType.kBaseAccelerometer]: 'Base Accelerometer',
+  [ComponentType.kLidAccelerometer]: 'Lid Accelerometer',
   [ComponentType.kScreen]: 'Screen',
   [ComponentType.kKeyboard]: 'Keyboard',
   [ComponentType.kPowerButton]: 'Power Button'
@@ -67,7 +68,8 @@ const ComponentTypeToId = {
   [ComponentType.kEthernet]: 'componentEthernet',
   [ComponentType.kWireless]: 'componentWireless',
   [ComponentType.kGyroscope]: 'componentGyroscope',
-  [ComponentType.kAccelerometer]: 'componentAccelerometer',
+  [ComponentType.kBaseAccelerometer]: 'componentBaseAccelerometer',
+  [ComponentType.kLidAccelerometer]: 'componentLidAccelerometer',
   [ComponentType.kScreen]: 'componentScreen',
   [ComponentType.kKeyboard]: 'componentKeyboard',
   [ComponentType.kPowerButton]: 'componentPowerButton'

@@ -876,8 +876,9 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
                   ->mutable_components_repair()
                   ->add_component_repair();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
-  component->set_repair_state(
-      rmad::ComponentsRepairState::ComponentRepairStatus::RMAD_REPAIR_ORIGINAL);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
   std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -1685,7 +1686,7 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerCalibrationProgressObservation(
       rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+          RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER,
       0.25);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);

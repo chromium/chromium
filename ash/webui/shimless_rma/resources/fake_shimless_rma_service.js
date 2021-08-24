@@ -495,7 +495,7 @@ export class FakeShimlessRmaService {
         });
     if (this.automaticallyTriggerCalibrationObservation_) {
       this.triggerCalibrationObserver(
-          CalibrationComponent.kAccelerometer, 100, 1500);
+          CalibrationComponent.kBaseAccelerometer, 100, 1500);
     }
   }
 

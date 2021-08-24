@@ -135,10 +135,14 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kReimagingUnknownFailure;
     case ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID:
       return MojomRmadErrorCode::kDeviceInfoInvalid;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_MISSING:
+      return MojomRmadErrorCode::kCalibrationComponentMissing;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_STATUS_MISSING:
+      return MojomRmadErrorCode::kCalibrationStatusMissing;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_INVALID:
+      return MojomRmadErrorCode::kCalibrationComponentInvalid;
     case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED:
       return MojomRmadErrorCode::kCalibrationFailed;
-    case ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT:
-      return MojomRmadErrorCode::kCalibrationMissingComponent;
     case ProtoRmadErrorCode::RMAD_ERROR_PROVISIONING_FAILED:
       return MojomRmadErrorCode::kProvisioningFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_POWERWASH_FAILED:
@@ -154,6 +158,8 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kLogUploadFtpServerTransferFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA:
       return MojomRmadErrorCode::kCannotCancelRma;
+    case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG:
+      return MojomRmadErrorCode::kCannotGetLog;
 
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
@@ -251,8 +257,14 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     case MojomRmadErrorCode::kDeviceInfoInvalid:
       *out = ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID;
       return true;
-    case MojomRmadErrorCode::kCalibrationMissingComponent:
-      *out = ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT;
+    case MojomRmadErrorCode::kCalibrationComponentMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_MISSING;
+      return true;
+    case MojomRmadErrorCode::kCalibrationStatusMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_STATUS_MISSING;
+      return true;
+    case MojomRmadErrorCode::kCalibrationComponentInvalid:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_INVALID;
       return true;
     case MojomRmadErrorCode::kCalibrationFailed:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED;
@@ -280,6 +292,9 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kCannotCancelRma:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA;
+      return true;
+    case MojomRmadErrorCode::kCannotGetLog:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG;
       return true;
 
     case MojomRmadErrorCode::kNotSet:
@@ -324,12 +339,14 @@ MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
       return MojomComponentType::kWireless;
 
     // Additional rmad components.
-    case rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE:
-      return MojomComponentType::kGyroscope;
-    case rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER:
-      return MojomComponentType::kAccelerometer;
     case rmad::RmadComponent::RMAD_COMPONENT_SCREEN:
       return MojomComponentType::kScreen;
+    case rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER:
+      return MojomComponentType::kBaseAccelerometer;
+    case rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER:
+      return MojomComponentType::kLidAccelerometer;
+    case rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE:
+      return MojomComponentType::kGyroscope;
 
     case rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD:
       return MojomComponentType::kKeyboard;
@@ -394,14 +411,17 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
       return true;
 
       // Additional rmad components.
-    case MojomComponentType::kGyroscope:
-      *out = rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE;
-      return true;
-    case MojomComponentType::kAccelerometer:
-      *out = rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER;
-      return true;
     case MojomComponentType::kScreen:
       *out = rmad::RmadComponent::RMAD_COMPONENT_SCREEN;
+      return true;
+    case MojomComponentType::kBaseAccelerometer:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER;
+      return true;
+    case MojomComponentType::kLidAccelerometer:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER;
+      return true;
+    case MojomComponentType::kGyroscope:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE;
       return true;
 
     case MojomComponentType::kKeyboard:
@@ -477,11 +497,14 @@ EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::ToMojom(
     ProtoCalibrationComponent component) {
   switch (component) {
     case rmad::CheckCalibrationState::CalibrationStatus::
-        RMAD_CALIBRATION_COMPONENT_ACCELEROMETER:
-      return MojomCalibrationComponent::kAccelerometer;
-    case rmad::CheckCalibrationState::CalibrationStatus::
         RMAD_CALIBRATION_COMPONENT_GYROSCOPE:
       return MojomCalibrationComponent::kGyroscope;
+    case rmad::CheckCalibrationState::CalibrationStatus::
+        RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER:
+      return MojomCalibrationComponent::kBaseAccelerometer;
+    case rmad::CheckCalibrationState::CalibrationStatus::
+        RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER:
+      return MojomCalibrationComponent::kLidAccelerometer;
 
     case rmad::CheckCalibrationState::CalibrationStatus::
         RMAD_CALIBRATION_COMPONENT_UNKNOWN:
@@ -498,13 +521,17 @@ bool EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::
     FromMojom(MojomCalibrationComponent component,
               ProtoCalibrationComponent* out) {
   switch (component) {
-    case MojomCalibrationComponent::kAccelerometer:
-      *out = rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER;
-      return true;
     case MojomCalibrationComponent::kGyroscope:
       *out = rmad::CheckCalibrationState::CalibrationStatus::
           RMAD_CALIBRATION_COMPONENT_GYROSCOPE;
+      return true;
+    case MojomCalibrationComponent::kBaseAccelerometer:
+      *out = rmad::CheckCalibrationState::CalibrationStatus::
+          RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER;
+      return true;
+    case MojomCalibrationComponent::kLidAccelerometer:
+      *out = rmad::CheckCalibrationState::CalibrationStatus::
+          RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER;
       return true;
 
     case MojomCalibrationComponent::kCalibrateUnknown:

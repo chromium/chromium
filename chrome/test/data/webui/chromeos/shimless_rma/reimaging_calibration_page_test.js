@@ -50,7 +50,7 @@ export function reimagingCalibrationPageTest() {
   }
 
   test('Initializes', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
+    await initializeCalibrationPage(CalibrationComponent.kBaseAccelerometer);
     const preCalibration =
         component.shadowRoot.querySelector('#preCalibration');
     const Calibration = component.shadowRoot.querySelector('#calibration');
@@ -59,7 +59,7 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('NextButtonTriggersCalibration', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
+    await initializeCalibrationPage(CalibrationComponent.kBaseAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
 
     const preCalibration =
@@ -70,12 +70,12 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('CalibrationComplete', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
+    await initializeCalibrationPage(CalibrationComponent.kLidAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 
     service.triggerCalibrationObserver(
-        CalibrationComponent.kAccelerometer, 100, 0);
+        CalibrationComponent.kLidAccelerometer, 100, 0);
     await flushTasks();
 
     let savedResult;
@@ -89,7 +89,7 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('CalibrationInProgress', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
+    await initializeCalibrationPage(CalibrationComponent.kGyroscope);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 

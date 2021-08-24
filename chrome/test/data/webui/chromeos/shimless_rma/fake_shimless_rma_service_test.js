@@ -739,13 +739,13 @@ export function fakeShimlessRmaServiceTestSuite() {
        * @param {number} progress
        */
       onCalibrationUpdated(component, progress) {
-        assertEquals(component, CalibrationComponent.kAccelerometer);
+        assertEquals(component, CalibrationComponent.kBaseAccelerometer);
         assertEquals(progress, 0.5);
       }
     });
     service.observeCalibrationProgress(calibrationObserver);
     return service.triggerCalibrationObserver(
-        CalibrationComponent.kAccelerometer, 0.5, 0);
+        CalibrationComponent.kBaseAccelerometer, 0.5, 0);
   });
 
   test('ObserveProvisioningUpdated', () => {
