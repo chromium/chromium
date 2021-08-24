@@ -10,6 +10,7 @@ source_set("discover_feed_preview") {
   ]
   deps = [
     ":discover_feed_preview_ui",
+    "//components/url_formatter",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history:tab_helper",
     "//ios/chrome/browser/main:public",
@@ -29,6 +30,9 @@ source_set("discover_feed_preview_ui") {
     "discover_feed_preview_view_controller.h",
     "discover_feed_preview_view_controller.mm",
   ]
-  deps = []
+  deps = [
+    "//ios/chrome/common/ui/colors",
+    "//ui/gfx",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

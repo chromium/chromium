@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_coordinator.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/sys_string_conversions.h"
+#include "components/url_formatter/url_formatter.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -46,8 +48,16 @@
 
 - (void)start {
   [self configureWebState];
+
+  // Get the origin of the preview.
+  NSString* URL =
+      base::SysUTF16ToNSString(url_formatter::FormatUrl(self.URL.GetOrigin()));
+
+  // TODO(crbug.com/1242296): Monitor the URL changes in case of redirection.
+
   self.viewController = [[DiscoverFeedPreviewViewController alloc]
-      initWithView:_feedPreviewWebState->GetView()];
+      initWithView:_feedPreviewWebState->GetView()
+               URL:URL];
 }
 
 - (void)stop {
@@ -68,6 +78,9 @@
   // HistoryService.
   HistoryTabHelper::FromWebState(_feedPreviewWebState.get())
       ->SetDelayHistoryServiceNotification(false);
+
+  // Reset auto layout for preview before expanding it to a tab.
+  [self.viewController resetAutoLayoutForPreview];
 
   web_state_list->ReplaceWebStateAt(web_state_list->active_index(),
                                     std::move(_feedPreviewWebState));
