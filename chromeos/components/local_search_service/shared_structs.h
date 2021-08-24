@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-
 namespace chromeos {
 namespace local_search_service {
 
@@ -82,9 +81,8 @@ struct SearchParams {
   // will be considered relevant if either its prefix score is above
   // |prefix_threshold| or fuzzy score is above |fuzzy_threshold|. Both of these
   // thresholds should be in [0,1].
-  // TODO(jiameng): revise default values.
   double prefix_threshold = 0.6;
-  double fuzzy_threshold = 0.6;
+  double fuzzy_threshold = 0.7;
 };
 
 struct Position {
