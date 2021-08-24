@@ -34,7 +34,8 @@
    */
   async function testCompletion(prefix) {
     TestRunner.addResult('\nCompletion for prefix: ' + prefix);
-    var completions = await classesPane.prompt._buildClassNameCompletions('', prefix);
+    var completions =
+        await classesPane.prompt.buildClassNameCompletions('', prefix);
     for (var completion of completions)
       TestRunner.addResult(completion.text);
   }
