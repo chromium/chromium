@@ -12,16 +12,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
 
@@ -38,33 +33,6 @@ DesktopAttestationService::DesktopAttestationService()
     : key_pair_(std::make_unique<SigningKeyPair>()) {}
 
 DesktopAttestationService::~DesktopAttestationService() = default;
-
-void DesktopAttestationService::FillValuesForCBCM() {
-  if (public_key_.empty())
-    public_key_ = ExportPublicKey();
-  if (device_id_.empty())
-    device_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-  if (customer_id_.empty())
-    MayGetCustomerId();
-}
-
-void DesktopAttestationService::MayGetCustomerId() {
-  policy::ChromeBrowserPolicyConnector* browser_policy_connector =
-      g_browser_process->browser_policy_connector();
-  if (!browser_policy_connector)
-    return;
-  policy::MachineLevelUserCloudPolicyManager*
-      machine_level_user_cloud_policy_manager =
-          browser_policy_connector->machine_level_user_cloud_policy_manager();
-  // Check that we can retrieve the customer id.
-  if (!machine_level_user_cloud_policy_manager ||
-      !machine_level_user_cloud_policy_manager->store() ||
-      !machine_level_user_cloud_policy_manager->store()->has_policy())
-    return;
-  customer_id_ = machine_level_user_cloud_policy_manager->store()
-                     ->policy()
-                     ->obfuscated_customer_id();
-}
 
 bool DesktopAttestationService::ChallengeComesFromVerifiedAccess(
     const std::string& serialized_signed_data,
@@ -88,13 +56,11 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     std::unique_ptr<DeviceTrustSignals> signals,
     AttestationCallback callback) {
+  DCHECK(!ExportPublicKey().empty());
   DCHECK(signals);
-  std::string serialized_signed_data =
-      JsonChallengeToProtobufChallenge(challenge);
-  // If one of this values is missing then attestation flow won't succeed.
-  FillValuesForCBCM();
-  if (device_id_.empty() || public_key_.empty() || customer_id_.empty())
-    LOG(ERROR) << "There are missing values for the attestation flow.";
+  DCHECK(signals->has_device_id() && !signals->device_id().empty());
+  DCHECK(signals->has_obfuscated_customer_id() &&
+         !signals->obfuscated_customer_id().empty());
 
   AttestationCallback reply = base::BindOnce(
       &DesktopAttestationService::ParseChallengeResponseAndRunCallback,
@@ -170,10 +136,11 @@ void DesktopAttestationService::SignEnterpriseChallenge(
   }
   KeyInfo key_info;
   // Fill `key_info` out for Chrome Browser.
+  // TODO(crbug.com/1241870): Remove public key from signals.
   key_info.set_key_type(CBCM);
-  key_info.set_browser_instance_public_key(public_key_);
-  key_info.set_device_id(device_id_);
-  key_info.set_customer_id(customer_id_);
+  key_info.set_browser_instance_public_key(ExportPublicKey());
+  key_info.set_device_id(signals->device_id());
+  key_info.set_customer_id(signals->obfuscated_customer_id());
 
   key_info.set_allocated_device_trust_signals(signals.release());
 

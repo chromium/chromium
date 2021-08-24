@@ -7,27 +7,38 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/os_crypt/os_crypt_mocker.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::NavigationThrottle;
+using ::testing::_;
+using ::testing::Return;
 
 namespace {
 
-const base::Value kOrigins[]{base::Value("https://www.example.com"),
-                             base::Value("example2.example.com")};
+base::Value::ListStorage GetTrustedUrls() {
+  base::Value::ListStorage trusted_urls;
+  trusted_urls.push_back(base::Value("https://www.example.com"));
+  trusted_urls.push_back(base::Value("example2.example.com"));
+  return trusted_urls;
+}
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-constexpr char challenge[] =
+constexpr char kChallenge[] =
     "{"
     "\"challenge\": "
     "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
@@ -46,57 +57,68 @@ constexpr char challenge[] =
 
 namespace enterprise_connectors {
 
-class DeviceTrustNavigationThrottleTest
-    : public ChromeRenderViewHostTestHarness {
+class DeviceTrustNavigationThrottleTest : public testing::Test {
  public:
-  DeviceTrustNavigationThrottleTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DeviceTrustNavigationThrottleTest() : trusted_urls_(GetTrustedUrls()) {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    OSCryptMocker::SetUp();
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    EXPECT_CALL(mock_device_trust_service_, IsEnabled())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(mock_device_trust_service_,
+                RegisterTrustedUrlPatternsChangedCallback(_))
+        .WillOnce([this](base::RepeatingCallback<void(const base::ListValue&)>
+                             callback) {
+          callback.Run(trusted_urls_);
+          return base::CallbackListSubscription();
+        });
   }
 
-  void TearDown() override {
-    ChromeRenderViewHostTestHarness::TearDown();
-    OSCryptMocker::TearDown();
+  std::unique_ptr<DeviceTrustNavigationThrottle> CreateThrottle(
+      content::NavigationHandle* navigation_handle) {
+    return std::make_unique<DeviceTrustNavigationThrottle>(
+        &mock_device_trust_service_, navigation_handle);
   }
 
-  void EnableDeviceTrust() {
-    Profile::FromBrowserContext(browser_context())
-        ->GetPrefs()
-        ->Set(kContextAwareAccessSignalsAllowlistPref,
-              base::ListValue(kOrigins));
+  content::WebContents* web_contents() const { return web_contents_.get(); }
+  content::RenderFrameHost* main_frame() const {
+    return web_contents()->GetMainFrame();
   }
 
- private:
-  ScopedTestingLocalState testing_local_state_;
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  test::MockDeviceTrustService mock_device_trust_service_;
+  base::ListValue trusted_urls_;
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
-  EnableDeviceTrust();
-  GURL url("https://www.example.com/");
-  content::MockNavigationHandle test_handle(url, main_rfh());
-  EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
-      .Times(1);
-  auto throttle =
-      DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
-  ASSERT_TRUE(throttle);
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
+  EXPECT_CALL(test_handle,
+              SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
+  auto throttle = CreateThrottle(&test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
-  EnableDeviceTrust();
-  GURL url("https://www.no-example.com/");
-  content::MockNavigationHandle test_handle(url, main_rfh());
+  content::MockNavigationHandle test_handle(GURL("https://www.no-example.com/"),
+                                            main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
-  auto throttle =
-      DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
-  ASSERT_TRUE(throttle);
+  auto throttle = CreateThrottle(&test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
+// TODO(b/194041030): Enable for Chrome OS after navigation is deferred before
+// the challenge response is created.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+namespace {
 scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
     const std::string& challenge) {
   std::string raw_response_headers =
@@ -106,19 +128,17 @@ scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
   return base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_response_headers));
 }
+}  // namespace
 
-// TODO(b/194041030): Enable for Chrome OS after navigation is deferred before
-// the challenge response is created.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
-  EnableDeviceTrust();
-  GURL url("https://www.example.com/");
-  content::MockNavigationHandle test_handle(url, main_rfh());
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
 
-  test_handle.set_response_headers(GetHeaderChallenge(challenge));
-  auto throttle =
-      DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
-  ASSERT_TRUE(throttle);
+  test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
+  auto throttle = CreateThrottle(&test_handle);
+
+  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(kChallenge, _))
+      .Times(1);
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 }

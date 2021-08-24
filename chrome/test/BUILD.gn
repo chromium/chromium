@@ -7049,6 +7049,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "../browser/enterprise/connectors/device_trust:test_support",
       "../browser/enterprise/connectors/device_trust/attestation/common",
       "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
       "../browser/enterprise/connectors/device_trust/signals:test_support",
@@ -7064,6 +7065,8 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair_unittest.cc",
     ]
+
+    deps += [ "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests" ]
   }
 
   if (enable_plugins) {

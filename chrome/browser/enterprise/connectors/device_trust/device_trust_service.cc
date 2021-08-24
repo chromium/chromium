@@ -65,6 +65,9 @@ DeviceTrustService::DeviceTrustService(
   OnPolicyUpdated();
 }
 
+DeviceTrustService::DeviceTrustService(PrefService* profile_prefs)
+    : profile_prefs_(profile_prefs) {}
+
 DeviceTrustService::~DeviceTrustService() {
   DCHECK(callbacks_.empty());
 }

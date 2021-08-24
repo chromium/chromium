@@ -52,19 +52,24 @@ class DeviceTrustService : public KeyedService {
 
   // Check if DeviceTrustService is enabled.  This method may be called from
   // any task sequence.
-  bool IsEnabled() const;
+  virtual bool IsEnabled() const;
 
   // Starts flow that actually builds a response.
-  void BuildChallengeResponse(const std::string& challenge,
-                              AttestationCallback callback);
+  virtual void BuildChallengeResponse(const std::string& challenge,
+                                      AttestationCallback callback);
 
   // Register a `callback` that listens for changes in the trust URL patterns.
   // The callback may be run synchronously for initialization purposes.
-  base::CallbackListSubscription RegisterTrustedUrlPatternsChangedCallback(
+  virtual base::CallbackListSubscription
+  RegisterTrustedUrlPatternsChangedCallback(
       TrustedUrlPatternsChangedCallback callback);
 
   // KeyedService:
   void Shutdown() override;
+
+ protected:
+  // Default constructor that can be used by mocks to bypass initialization.
+  explicit DeviceTrustService(PrefService* profile_prefs);
 
  private:
   void OnPolicyUpdated();

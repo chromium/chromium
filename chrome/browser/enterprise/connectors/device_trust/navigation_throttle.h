@@ -40,6 +40,9 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
 
   explicit DeviceTrustNavigationThrottle(
       content::NavigationHandle* navigation_handle);
+  DeviceTrustNavigationThrottle(DeviceTrustService* device_trust_service,
+                                content::NavigationHandle* navigation_handle);
+
   DeviceTrustNavigationThrottle(const DeviceTrustNavigationThrottle&) = delete;
   DeviceTrustNavigationThrottle& operator=(
       const DeviceTrustNavigationThrottle&) = delete;
@@ -58,7 +61,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
   // Not owned.
-  DeviceTrustService* device_trust_service_;
+  DeviceTrustService* const device_trust_service_;
 
   // Set `challege_response` into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the

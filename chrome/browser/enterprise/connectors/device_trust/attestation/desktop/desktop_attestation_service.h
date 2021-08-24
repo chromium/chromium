@@ -79,17 +79,7 @@ class DesktopAttestationService : public AttestationService {
       AttestationCallback callback,
       const std::string& challenge_response_proto);
 
-  // Get customer id from policy fetch if CloudPolicyStore is loaded.
-  // If the CloudPolicyStore is not ready to retrieve the value, do nothing.
-  void MayGetCustomerId();
-
-  // Fill out `public_key_`, `customer_id` and `device_id_`.
-  void FillValuesForCBCM();
-
   GoogleKeys google_keys_;
-  std::string public_key_;
-  std::string customer_id_;
-  std::string device_id_;
   std::unique_ptr<enterprise_connectors::SigningKeyPair> key_pair_;
 
   base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};

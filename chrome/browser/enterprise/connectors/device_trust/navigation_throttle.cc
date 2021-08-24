@@ -47,10 +47,16 @@ DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
 
 DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {
-  device_trust_service_ =
-      DeviceTrustServiceFactory::GetForProfile(Profile::FromBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext()));
+    : DeviceTrustNavigationThrottle(
+          DeviceTrustServiceFactory::GetForProfile(Profile::FromBrowserContext(
+              navigation_handle->GetWebContents()->GetBrowserContext())),
+          navigation_handle) {}
+
+DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
+    DeviceTrustService* device_trust_service,
+    content::NavigationHandle* navigation_handle)
+    : content::NavigationThrottle(navigation_handle),
+      device_trust_service_(device_trust_service) {
   matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
   // Start listening for pref changes.
