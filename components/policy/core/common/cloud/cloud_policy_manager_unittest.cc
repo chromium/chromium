@@ -53,9 +53,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
 
   // Creates harnesses for mandatory and recommended levels, respectively.
   static PolicyProviderTestHarness* CreateMandatory();
@@ -114,9 +113,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                          POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   store_.policy_map_.Set(policy_name, policy_level(), policy_scope(),
                          POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 }

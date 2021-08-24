@@ -51,9 +51,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
   void Install3rdPartyPolicy(const base::DictionaryValue* policies) override;
 
   const base::FilePath& test_dir() { return test_dir_.GetPath(); }
@@ -126,9 +125,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   base::DictionaryValue dict;
   dict.SetKey(policy_name, policy_value->Clone());
   WriteConfigFile(dict, NextConfigFileName());

@@ -283,30 +283,38 @@ TEST_P(ConfigurationPolicyProviderTest, StringListValue) {
 }
 
 TEST_P(ConfigurationPolicyProviderTest, DictionaryValue) {
-  base::DictionaryValue expected_value;
-  expected_value.SetBoolean("bool", true);
-  expected_value.SetDouble("double", 123.456);
-  expected_value.SetInteger("int", 123);
-  expected_value.SetString("string", "omg");
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetBoolKey("bool", true);
+  expected_value.SetDoubleKey("double", 123.456);
+  expected_value.SetIntKey("int", 123);
+  expected_value.SetStringKey("string", "omg");
 
-  auto list = std::make_unique<base::ListValue>();
-  list->AppendString("first");
-  list->AppendString("second");
-  expected_value.Set("array", std::move(list));
+  {
+    base::Value list(base::Value::Type::LIST);
+    list.Append("first");
+    list.Append("second");
+    expected_value.SetKey("array", std::move(list));
+  }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("sub", "value");
-  list = std::make_unique<base::ListValue>();
-  auto sub = std::make_unique<base::DictionaryValue>();
-  sub->SetInteger("aaa", 111);
-  sub->SetInteger("bbb", 222);
-  list->Append(std::move(sub));
-  sub = std::make_unique<base::DictionaryValue>();
-  sub->SetString("ccc", "333");
-  sub->SetString("ddd", "444");
-  list->Append(std::move(sub));
-  dict->Set("sublist", std::move(list));
-  expected_value.Set("dictionary", std::move(dict));
+  base::Value sublist(base::Value::Type::LIST);
+  {
+    base::Value sub(base::Value::Type::DICTIONARY);
+    sub.SetIntKey("aaa", 111);
+    sub.SetIntKey("bbb", 222);
+    sublist.Append(std::move(sub));
+  }
+
+  {
+    base::Value sub(base::Value::Type::DICTIONARY);
+    sub.SetStringKey("ccc", "333");
+    sub.SetStringKey("ddd", "444");
+    sublist.Append(std::move(sub));
+  }
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("sub", "value");
+  dict.SetKey("sublist", std::move(sublist));
+  expected_value.SetKey("dictionary", std::move(dict));
 
   CheckValue(test_keys::kKeyDictionary, expected_value,
              base::BindOnce(&PolicyProviderTestHarness::InstallDictionaryPolicy,

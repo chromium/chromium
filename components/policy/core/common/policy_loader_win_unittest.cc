@@ -190,9 +190,8 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
   void Install3rdPartyPolicy(const base::DictionaryValue* policies) override;
 
   // Creates a harness instance that will install policy in HKCU or HKLM,
@@ -342,7 +341,7 @@ void RegistryTestHarness::InstallStringListPolicy(
 
 void RegistryTestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+    const base::Value* policy_value) {
   std::string json;
   base::JSONWriter::Write(*policy_value, &json);
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
