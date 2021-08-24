@@ -78,6 +78,8 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
   }
   // Native headless chrome relies on ozone/headless platform.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ::switches::kEnableFeatures, features::kUseOzonePlatform.name);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ::switches::kOzonePlatform, switches::kHeadless);
 }
 
