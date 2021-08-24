@@ -1,5 +1,6 @@
 Tests name sources in buttons.
 {
+    childIds : <object>
     domNode : button#button1
     ignored : false
     name : {
@@ -50,6 +51,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button2
     ignored : false
     name : {
@@ -105,6 +107,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button3
     ignored : false
     name : {
@@ -155,6 +158,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button4
     ignored : false
     name : {
@@ -210,6 +214,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button5
     ignored : false
     name : {
@@ -265,6 +270,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button6
     ignored : false
     name : {
@@ -320,6 +326,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button7
     ignored : false
     name : {
@@ -374,6 +381,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button8-title
@@ -437,6 +445,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button9
     ignored : false
     name : {
@@ -491,6 +500,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button10-title
@@ -554,6 +564,7 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
     domNode : button#button11
     ignored : false
     name : {

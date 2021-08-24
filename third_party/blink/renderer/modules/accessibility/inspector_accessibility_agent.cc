@@ -794,17 +794,13 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
     std::unique_ptr<AXNode> node =
         BuildProtocolAXObject(*ax_object, nullptr, false, nodes, cache);
 
-    auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
     const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
 
     for (auto& child_ax_object : children) {
-      child_ids->emplace_back(String::Number(child_ax_object->AXObjectID()));
-
       int depth = id_depth.second;
       if (max_depth == -1 || depth < max_depth)
         id_depths.emplace_back(child_ax_object->AXObjectID(), depth + 1);
     }
-    node->setChildIds(std::move(child_ids));
     nodes->emplace_back(std::move(node));
   }
 
@@ -850,12 +846,6 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   for (auto& child_ax_object : children) {
     std::unique_ptr<AXNode> child_node = BuildProtocolAXObject(
         *child_ax_object, nullptr, false, *out_nodes, cache);
-    auto grandchild_ids = std::make_unique<protocol::Array<AXNodeId>>();
-    const AXObject::AXObjectVector& grandchildren =
-        child_ax_object->UnignoredChildren();
-    for (AXObject* grandchild : grandchildren)
-      grandchild_ids->emplace_back(String::Number(grandchild->AXObjectID()));
-    child_node->setChildIds(std::move(grandchild_ids));
     (*out_nodes)->emplace_back(std::move(child_node));
   }
 
@@ -891,6 +881,11 @@ void InspectorAccessibilityAgent::FillCoreProperties(
     if (!value.IsEmpty())
       node_object.setValue(CreateValue(value));
   }
+  const AXObject::AXObjectVector& children = ax_object.UnignoredChildren();
+  auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
+  for (AXObject* child : children)
+    child_ids->emplace_back(String::Number(child->AXObjectID()));
+  node_object.setChildIds(std::move(child_ids));
 
   if (fetch_relatives)
     PopulateRelatives(ax_object, inspected_ax_object, node_object, nodes,

@@ -1,5 +1,6 @@
 Tests name sources in inputs.
 {
+    childIds : <object>
     domNode : input#text1
     ignored : false
     name : {
@@ -90,6 +91,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     domNode : input#text2
     ignored : false
     name : {
@@ -184,6 +186,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text3-title
@@ -300,6 +303,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text4-title
@@ -442,6 +446,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text5-title
@@ -581,6 +586,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text6-title
@@ -749,6 +755,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text7-title
@@ -875,6 +882,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     domNode : input#text8
     ignored : false
     name : {
@@ -965,6 +973,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text9-title
@@ -1115,6 +1124,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text10-title
@@ -1257,6 +1267,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     domNode : input#text11
     ignored : false
     name : {
@@ -1383,6 +1394,7 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : text12-title

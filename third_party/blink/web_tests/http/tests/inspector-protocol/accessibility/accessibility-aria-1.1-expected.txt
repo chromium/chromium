@@ -1,5 +1,6 @@
 Tests ARIA 1.1 accessibility markup.
 {
+    childIds : <object>
     domNode : input
     ignored : false
     name : {
@@ -102,6 +103,7 @@ Tests ARIA 1.1 accessibility markup.
     }
 }
 {
+    childIds : <object>
     domNode : img
     ignored : false
     name : {
@@ -158,6 +160,7 @@ Tests ARIA 1.1 accessibility markup.
     }
 }
 {
+    childIds : <object>
     domNode : button
     ignored : false
     name : {
@@ -220,6 +223,7 @@ Tests ARIA 1.1 accessibility markup.
     }
 }
 {
+    childIds : <object>
     domNode : input
     ignored : false
     name : {

@@ -18,6 +18,7 @@ RootWebArea
   img
     *SvgRoot
 {
+    childIds : <object>
     domNode : svg
     ignored : false
     name : {
@@ -143,6 +144,7 @@ RootWebArea
   *generic
     StaticText "Div in list isn't presentational"
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -176,6 +178,7 @@ RootWebArea
   *LabelText
     StaticText "Content within label refers to label container"
 {
+    childIds : <object>
     domNode : label
     ignored : false
     name : {
@@ -318,6 +321,7 @@ RootWebArea
       menuitem "sent down even though"
       menuitem "they are grandchildren"
 {
+    childIds : <object>
     domNode : select
     ignored : false
     name : {
@@ -381,6 +385,7 @@ RootWebArea
     MenuListPopup
       *menuitem "Options should be"
 {
+    childIds : <object>
     domNode : option
     ignored : false
     name : {
@@ -478,6 +483,7 @@ RootWebArea
   *generic "span with ARIA label"
     StaticText "should not be ignored"
 {
+    childIds : <object>
     domNode : span
     ignored : false
     name : {
@@ -541,6 +547,7 @@ RootWebArea
   *generic
     StaticText "summary element without details parent is ignored"
 {
+    childIds : <object>
     description : {
         type : computedString
         value : summary element without details parent is ignored
@@ -578,6 +585,7 @@ RootWebArea
   *button "Ignored parent shouldn't cause descendant to be missing from the tree"
     StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
 {
+    childIds : <object>
     domNode : button
     ignored : false
     name : {

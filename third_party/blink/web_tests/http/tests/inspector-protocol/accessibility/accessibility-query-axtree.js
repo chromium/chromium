@@ -84,7 +84,7 @@
     const response = await dp.Accessibility.queryAXTree(
         {objectId: documentObjId, accessibleName: 'title'});
     for (const axnode of response.result.nodes) {
-      testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId']);
+      testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId', 'childIds']);
     }
   }
 

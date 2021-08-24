@@ -1,5 +1,6 @@
 Tests name sources when used with aria-labelledby.
 {
+    childIds : <object>
     domNode : div#div
     ignored : false
     name : {
@@ -29,6 +30,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#self
     ignored : false
     name : {
@@ -84,6 +86,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby
     ignored : false
     name : {
@@ -170,6 +173,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledbySelf
     ignored : false
     name : {
@@ -256,6 +260,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby3
     ignored : false
     name : {
@@ -352,6 +357,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby4
     ignored : false
     name : {
@@ -438,6 +444,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby5
     ignored : false
     name : {
@@ -498,6 +505,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby6
     ignored : false
     name : {
@@ -584,6 +592,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby7
     ignored : false
     name : {
@@ -670,6 +679,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby8
     ignored : false
     name : {
@@ -756,6 +766,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelOnly
     ignored : false
     name : {
@@ -821,6 +832,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#emptyLabel1
     ignored : false
     name : {
@@ -876,6 +888,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#emptyLabel2
     ignored : false
     name : {
@@ -931,6 +944,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby9
     ignored : false
     name : {
@@ -1025,6 +1039,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby10
     ignored : false
     name : {
@@ -1111,6 +1126,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby11
     ignored : false
     name : {
@@ -1197,6 +1213,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby12
     ignored : false
     name : {
@@ -1283,6 +1300,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : input#input1
     ignored : false
     name : {

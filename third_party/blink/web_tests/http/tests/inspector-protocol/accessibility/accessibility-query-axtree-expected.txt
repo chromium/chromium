@@ -4,6 +4,7 @@ Running test: dumpAXNodes
 dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
+    childIds : <object>
     ignored : false
     name : {
         sources : [
@@ -48,6 +49,7 @@ dump both an ignored and an unignored axnode
 }
 {
     backendDOMNodeId : <number>
+    childIds : <object>
     ignored : false
     name : {
         sources : [
@@ -72,6 +74,7 @@ dump both an ignored and an unignored axnode
 }
 {
     backendDOMNodeId : <number>
+    childIds : <object>
     ignored : false
     nodeId : <string>
     properties : [

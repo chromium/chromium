@@ -1,5 +1,6 @@
 Tests relationship accessibility values.
 {
+    childIds : <object>
     domNode : ul#rg1
     ignored : false
     name : {
@@ -85,6 +86,7 @@ Tests relationship accessibility values.
     }
 }
 {
+    childIds : <object>
     domNode : ul#rg2
     ignored : false
     name : {

@@ -1,5 +1,6 @@
 Tests accessibility values in modal dialog.
 {
+    childIds : <object>
     domNode : dialog#modal
     ignored : false
     name : {
@@ -43,6 +44,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -75,6 +77,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -111,6 +114,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -147,6 +151,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -201,6 +206,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : false
     name : {

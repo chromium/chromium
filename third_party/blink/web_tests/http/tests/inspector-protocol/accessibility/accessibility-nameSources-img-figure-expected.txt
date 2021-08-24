@@ -1,5 +1,6 @@
 Tests name sources in images and figures.
 {
+    childIds : <object>
     domNode : figure#figure1
     ignored : false
     name : {
@@ -33,6 +34,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : figure#figure2
     ignored : false
     name : {
@@ -70,6 +72,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure3-title
@@ -137,6 +140,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure4-title
@@ -201,6 +205,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure5-title
@@ -294,6 +299,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : img#img1
     ignored : false
     name : {
@@ -327,6 +333,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : img#img2
     ignored : false
     name : {
@@ -364,6 +371,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img3-title
@@ -414,6 +422,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img4-title
@@ -473,6 +482,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img5-title
@@ -561,6 +571,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : div#link1
     ignored : false
     name : {
@@ -605,6 +616,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : svg#svg1
     ignored : false
     name : {

@@ -22,6 +22,7 @@ Tests accessibility values of ignored nodes in model dialog.
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : false
     name : {
@@ -58,6 +59,7 @@ Tests accessibility values of ignored nodes in model dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {

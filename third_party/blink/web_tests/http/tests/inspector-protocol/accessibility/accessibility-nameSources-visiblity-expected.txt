@@ -1,5 +1,6 @@
 Tests name sources in invisible nodes.
 {
+    childIds : <object>
     domNode : div#link1
     ignored : false
     name : {
@@ -44,6 +45,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input2
     ignored : false
     name : {
@@ -167,6 +169,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input3
     ignored : false
     name : {
@@ -350,6 +353,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input4
     ignored : false
     name : {
@@ -473,6 +477,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button1
     ignored : false
     name : {
@@ -555,6 +560,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button2
     ignored : false
     name : {
@@ -637,6 +643,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button3
     ignored : false
     name : {
@@ -719,6 +726,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button4
     ignored : false
     name : {
@@ -801,6 +809,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input5
     ignored : false
     name : {
