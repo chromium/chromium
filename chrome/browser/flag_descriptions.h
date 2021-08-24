@@ -1139,6 +1139,9 @@ extern const char kPdfUnseasonedDescription[];
 extern const char kPdfXfaFormsName[];
 extern const char kPdfXfaFormsDescription[];
 
+extern const char kBookmarksRefreshName[];
+extern const char kBookmarksRefreshDescription[];
+
 extern const char kForceWebContentsDarkModeName[];
 extern const char kForceWebContentsDarkModeDescription[];
 

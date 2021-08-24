@@ -107,6 +107,7 @@ extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kOfflineIndicatorV2;
 extern const base::Feature kOfflineMeasurementsBackgroundTask;
 extern const base::Feature kPageAnnotationsService;
+extern const base::Feature kBookmarksRefresh;
 extern const base::Feature kProbabilisticCryptidRenderer;
 extern const base::Feature kQuickActionSearchWidgetAndroid;
 extern const base::Feature kReachedCodeProfiler;

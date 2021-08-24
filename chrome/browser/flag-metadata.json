@@ -518,6 +518,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "bookmarks-refresh",
+    "owners": ["wylieb", "fgorski", "mdjones"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "borealis-disk-management",
     "owners": [ "danielng" ],
     "expiry_milestone": 96
