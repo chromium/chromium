@@ -216,6 +216,7 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
           .SetUpdateAppBadge(kSetNumericBadge)
           .Record(recorder);
     }
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 
     UpdateBadge(/*app_id=*/std::get<0>(app), absl::make_optional(value));
   }
@@ -234,6 +235,7 @@ void BadgeManager::ClearBadge() {
     ukm::builders::Badging(source_id)
         .SetUpdateAppBadge(kClearBadge)
         .Record(recorder);
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
     UpdateBadge(/*app_id=*/std::get<0>(app), absl::nullopt);
   }
 }

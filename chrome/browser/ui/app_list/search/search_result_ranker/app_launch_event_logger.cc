@@ -501,6 +501,7 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
         app_click_data.SetAppType(app->second.app_type())
             .SetAppLaunchId(launch_source_id)
             .Record(ukm::UkmRecorder::Get());
+        ukm::AppSourceUrlRecorder::MarkSourceForDeletion(click_data_source_id);
         continue;
       }
       app->second.set_time_since_last_click_sec(
@@ -523,8 +524,12 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
           .SetClickRank(app->second.click_rank())
           .SetLastLaunchedFrom(app->second.last_launched_from())
           .Record(ukm::UkmRecorder::Get());
+      ukm::AppSourceUrlRecorder::MarkSourceForDeletion(click_data_source_id);
     }
   }
+  if (launch_source_id != ukm::kInvalidSourceId)
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(launch_source_id);
+
   ProcessClick(app_launch_event, now);
 }
 
