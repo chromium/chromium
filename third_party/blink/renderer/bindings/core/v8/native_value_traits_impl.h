@@ -932,17 +932,6 @@ struct NativeValueTraits<IDLSequence<T>>
     return bindings::CreateIDLSequenceFromIterator<T>(
         isolate, std::move(script_iterator), exception_state);
   }
-
-  // https://heycam.github.io/webidl/#es-sequence
-  // This is a special case, used when converting an IDL union that contains a
-  // sequence or frozen array type.
-  static ImplType NativeValue(v8::Isolate* isolate,
-                              ScriptIterator script_iterator,
-                              ExceptionState& exception_state) {
-    DCHECK(!script_iterator.IsNull());
-    return bindings::CreateIDLSequenceFromIterator<T>(
-        isolate, std::move(script_iterator), exception_state);
-  }
 };
 
 template <typename T>
