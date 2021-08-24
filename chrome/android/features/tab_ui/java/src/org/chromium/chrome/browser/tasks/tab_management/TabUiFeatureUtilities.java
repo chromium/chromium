@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Random;
@@ -184,7 +185,8 @@ public class TabUiFeatureUtilities {
         Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
                 && Build.VERSION.SDK_INT >= ZOOMING_MIN_SDK.getValue()
-                && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue();
+                && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue()
+                && !StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled();
     }
 
     /**

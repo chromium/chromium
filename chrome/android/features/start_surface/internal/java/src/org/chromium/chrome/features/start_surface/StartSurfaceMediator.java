@@ -358,6 +358,37 @@ class StartSurfaceMediator
 
         if (mPropertyModel == null || state == mStartSurfaceState) return;
 
+        // When entering the Start surface by tapping home button or new tab page, we need to reset
+        // the scrolling position.
+        if (state == StartSurfaceState.SHOWING_HOMEPAGE) {
+            mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
+            mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
+            StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
+
+            String newHomeSurface =
+                    StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
+            switch (newHomeSurface) {
+                case "hide_tab_switcher_only":
+                    mHideMVForNewSurface = false;
+                    mHideTabCarouselForNewSurface = true;
+                    break;
+                case "hide_mv_tiles_and_tab_switcher":
+                    mHideMVForNewSurface = true;
+                    mHideTabCarouselForNewSurface = true;
+                    break;
+                default:
+                    mHideMVForNewSurface = false;
+                    mHideTabCarouselForNewSurface = false;
+            }
+        }
+
+        // Every time Chrome is started, no matter warm start or cold start, show MV tiles & tab
+        // carousel.
+        if (state == StartSurfaceState.SHOWING_START && !mTabModelSelector.isIncognitoSelected()) {
+            mHideMVForNewSurface = false;
+            mHideTabCarouselForNewSurface = false;
+        }
+
         // Cache previous state.
         if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {
             mPreviousStartSurfaceState = mStartSurfaceState;
@@ -430,42 +461,7 @@ class StartSurfaceMediator
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceStateInternal.
     private void setOverviewStateInternal() {
-        if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE) {
-            // When entering the Start surface by tapping home button or new tab page, we need to
-            // reset the scrolling position.
-            mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
-            mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
-            StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
-
-            String newHomeSurface =
-                    StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
-            switch (newHomeSurface) {
-                case "hide_tab_switcher_only":
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                case "hide_mv_tiles_and_tab_switcher":
-                    mHideMVForNewSurface = true;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                default:
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = false;
-            }
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-            if (!mTabModelSelector.isIncognitoSelected()) {
-                // Every time Chrome is started, no matter warm start or cold start, show MV tiles &
-                // tab carousel.
-                mHideMVForNewSurface = false;
-                mHideTabCarouselForNewSurface = false;
-            }
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
-            // Set secondary surface visible to make sure tab list recyclerview is updated in time
-            // (before GTS animations start). We need to skip
-            // mSecondaryTasksSurfaceController#showOverview here since it will hide GTS animations.
-            setSecondaryTasksSurfaceVisibility(
-                    /* isVisible= */ true, /* skipUpdateController = */ true);
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             setExploreSurfaceVisibility(!mIsIncognito && mFeedSurfaceController != null);
             boolean hasNormalTab;
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
@@ -485,7 +481,7 @@ class StartSurfaceMediator
                     hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
             setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
             setFakeBoxVisibility(!mIsIncognito);
-            setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController = */ false);
+            setSecondaryTasksSurfaceVisibility(mIsIncognito);
 
             // Only pad single pane home page since tabs grid has already been padding for the
             // bottom bar.
@@ -500,13 +496,11 @@ class StartSurfaceMediator
             setTabCarouselVisibility(false);
             setMVTilesVisibility(false);
             setFakeBoxVisibility(false);
-            setSecondaryTasksSurfaceVisibility(
-                    /* isVisible= */ true, /* skipUpdateController = */ false);
+            setSecondaryTasksSurfaceVisibility(true);
             setExploreSurfaceVisibility(false);
         } else if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
             if (mSecondaryTasksSurfacePropertyModel != null) {
-                setSecondaryTasksSurfaceVisibility(
-                        /* isVisible= */ false, /* skipUpdateController = */ false);
+                setSecondaryTasksSurfaceVisibility(false);
             }
         }
 
@@ -772,15 +766,7 @@ class StartSurfaceMediator
         if (mPropertyModel.get(IS_SHOWING_OVERVIEW)) notifyStateChange();
     }
 
-    /**
-     * Set the visibility of secondary tasks surface. Secondary tasks surface is used for showing
-     * normal grid tab switcher, incognito gird tab switcher and incognito homepage.
-     * @param isVisible Whether secondary tasks surface is visible.
-     * @param skipUpdateController Whether to skip mSecondaryTasksSurfaceController#showOverview and
-     *         mSecondaryTasksSurfaceController#hideOverview.
-     */
-    private void setSecondaryTasksSurfaceVisibility(
-            boolean isVisible, boolean skipUpdateController) {
+    private void setSecondaryTasksSurfaceVisibility(boolean isVisible) {
         assert mIsStartSurfaceEnabled;
 
         if (isVisible) {
@@ -792,11 +778,11 @@ class StartSurfaceMediator
                         mIsIncognito && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
             }
-            if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
+            if (mSecondaryTasksSurfaceController != null) {
                 mSecondaryTasksSurfaceController.showOverview(/* animate = */ true);
             }
         } else {
-            if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
+            if (mSecondaryTasksSurfaceController != null) {
                 mSecondaryTasksSurfaceController.hideOverview(/* animate = */ false);
             }
         }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.view.View;
@@ -19,6 +20,8 @@ class SecondaryTasksSurfaceViewBinder {
             PropertyKey propertyKey) {
         if (IS_SECONDARY_SURFACE_VISIBLE == propertyKey) {
             updateVisibility(viewHolder, model);
+        } else if (IS_SHOWING_OVERVIEW == propertyKey) {
+            updateVisibility(viewHolder, model);
         } else if (TOP_MARGIN == propertyKey) {
             setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
         }
@@ -26,7 +29,8 @@ class SecondaryTasksSurfaceViewBinder {
 
     private static void updateVisibility(
             TasksSurfaceViewBinder.ViewHolder viewHolder, PropertyModel model) {
-        boolean isShowing = model.get(IS_SECONDARY_SURFACE_VISIBLE);
+        boolean isShowing =
+                model.get(IS_SHOWING_OVERVIEW) && model.get(IS_SECONDARY_SURFACE_VISIBLE);
         if (isShowing && viewHolder.tasksSurfaceView.getParent() == null) {
             viewHolder.parentView.addView(viewHolder.tasksSurfaceView);
             setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
@@ -35,8 +39,6 @@ class SecondaryTasksSurfaceViewBinder {
         // We don't need to handle toolbar scrolling problem on secondary tasks surface so
         // topToolbarPlaceholderView is not needed.
         viewHolder.topToolbarPlaceholderView.setVisibility(View.GONE);
-        // Somehow if background is not transparent, GTS will be hidden.
-        viewHolder.tasksSurfaceView.getBackground().setAlpha(0);
         viewHolder.tasksSurfaceView.setVisibility(isShowing ? View.VISIBLE : View.GONE);
     }
 
