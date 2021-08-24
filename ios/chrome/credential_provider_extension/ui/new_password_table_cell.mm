@@ -223,6 +223,14 @@ const CGFloat kButtonSpacing = 8;
   UIImage* newImage =
       _passwordHidden ? self.revealPasswordImage : self.hidePasswordImage;
   [self.hidePasswordButton setImage:newImage forState:UIControlStateNormal];
+  self.hidePasswordButton.accessibilityLabel =
+      _passwordHidden
+          ? NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_"
+                              @"REVEAL_PASSWORD_HINT",
+                              @"Reveal Password")
+          : NSLocalizedString(
+                @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_HIDE_PASSWORD_HINT",
+                @"Hide Password");
 }
 
 // After |-prepareForReuse|, all views in the stack view are hidden. This method
