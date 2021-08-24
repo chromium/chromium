@@ -97,6 +97,10 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               GetKeyboardRemappedPrefValue,
               (const std::string& pref_name, int* value),
               (const, final));
+  MOCK_METHOD(void,
+              AddWizardCreatedObserverForTests,
+              (base::RepeatingClosure on_created),
+              (final));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLoginDisplayHost);

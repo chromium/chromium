@@ -73,6 +73,8 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   SigninUI* GetSigninUI() override;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const final;
+  void AddWizardCreatedObserverForTests(
+      base::RepeatingClosure on_created) final;
 
  private:
   class FakeBaseScreen;

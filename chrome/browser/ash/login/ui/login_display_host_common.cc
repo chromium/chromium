@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -564,6 +565,17 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
 
 void LoginDisplayHostCommon::ShowOsInstallScreen() {
   StartWizard(OsInstallScreenView::kScreenId);
+}
+
+void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
+    base::RepeatingClosure on_created) {
+  DCHECK(!on_wizard_controller_created_for_tests_);
+  on_wizard_controller_created_for_tests_ = std::move(on_created);
+}
+
+void LoginDisplayHostCommon::NotifyWizardCreated() {
+  if (on_wizard_controller_created_for_tests_)
+    on_wizard_controller_created_for_tests_.Run();
 }
 
 void LoginDisplayHostCommon::Cleanup() {
