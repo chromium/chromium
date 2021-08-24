@@ -120,7 +120,8 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.emplace_back(std::make_unique<OSSettingsSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<CroshSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<TerminalSystemAppDelegate>(profile));
-  info_vec.emplace_back(std::make_unique<HelpAppSystemAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<ash::HelpAppSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<MediaSystemAppDelegate>(profile));
   info_vec.emplace_back(
       std::make_unique<PrintManagementSystemAppDelegate>(profile));

@@ -698,7 +698,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kAccountManagerNumTimesMigrationRanSuccessfully,
                                 0);
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
-  chromeos::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
+  ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1290,7 +1290,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::MultiProfileUserController::RegisterProfilePrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   ash::ReleaseNotesStorage::RegisterProfilePrefs(registry);
-  chromeos::HelpAppNotificationController::RegisterProfilePrefs(registry);
+  ash::HelpAppNotificationController::RegisterProfilePrefs(registry);
   ash::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
   ash::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
   chromeos::Preferences::RegisterProfilePrefs(registry);
@@ -1597,9 +1597,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kQuickAnswersConsented);
 
   // Added 06/2021.
-  chromeos::HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+  ash::HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
       profile_prefs);
-  chromeos::HelpAppNotificationController::ClearObsoleteNotificationPrefs(
+  ash::HelpAppNotificationController::ClearObsoleteNotificationPrefs(
       profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -52,7 +52,7 @@ bool IsNotificationShownForCurrentMilestone(Profile* profile) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 namespace help_app {
 namespace prefs {
@@ -134,14 +134,14 @@ HelpAppNotificationController::~HelpAppNotificationController() = default;
 // Checks profile type and when the last notification was shown to determine
 // whether we should show the Discover tab notification to the user.
 bool HelpAppNotificationController::ShouldShowDiscoverNotification() {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppDiscoverTab)) {
+  if (!base::FeatureList::IsEnabled(features::kHelpAppDiscoverTab)) {
     return false;
   }
 
   bool should_show_for_current_channel =
       chrome::GetChannel() == version_info::Channel::STABLE ||
       base::FeatureList::IsEnabled(
-          ash::features::kHelpAppDiscoverTabNotificationAllChannels);
+          features::kHelpAppDiscoverTabNotificationAllChannels);
 
   if (!should_show_for_current_channel) {
     return false;
@@ -200,10 +200,10 @@ void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
     return;
   if (!release_notes_notification_) {
     release_notes_notification_ =
-        std::make_unique<ash::ReleaseNotesNotification>(profile_);
+        std::make_unique<ReleaseNotesNotification>(profile_);
   }
   // Let the ReleaseNotesNotification decide if it should show itself.
   release_notes_notification_->MaybeShowReleaseNotes();
 }
 
-}  // namespace chromeos
+}  // namespace ash

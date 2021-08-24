@@ -38,7 +38,7 @@ int CurrentMilestone() {
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
  public:
@@ -94,9 +94,9 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {chromeos::features::kHelpAppDiscoverTab,
-         chromeos::features::kHelpAppDiscoverTabNotificationAllChannels,
-         chromeos::features::kReleaseNotesNotificationAllChannels},
+        {features::kHelpAppDiscoverTab,
+         features::kHelpAppDiscoverTabNotificationAllChannels,
+         features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
     pref_service_ = CreatePrefServiceAndRegisterPrefs();
   }
@@ -419,4 +419,4 @@ TEST_F(HelpAppNotificationControllerTest,
                    prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 }
 
-}  // namespace chromeos
+}  // namespace ash

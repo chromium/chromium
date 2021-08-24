@@ -37,13 +37,15 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/events/devices/device_data_manager.h"
 
+namespace ash {
+
 namespace {
 
 void PopulateLoadTimeData(content::WebUI* web_ui,
                           content::WebUIDataSource* source) {
   // Enable accessibility mode (slower balloons) if either spoken feedback
   // or switch access is enabled.
-  auto* accessibility_manager = ash::AccessibilityManager::Get();
+  auto* accessibility_manager = AccessibilityManager::Get();
   source->AddBoolean("accessibility",
                      accessibility_manager->IsSpokenFeedbackEnabled() ||
                          accessibility_manager->IsSwitchAccessEnabled());
@@ -73,23 +75,20 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 
   // Add any features that have been enabled.
   source->AddBoolean("HelpAppReleaseNotes", true);
-  source->AddBoolean("HelpAppLauncherSearch",
-                     base::FeatureList::IsEnabled(
-                         chromeos::features::kHelpAppLauncherSearch) &&
-                         base::FeatureList::IsEnabled(
-                             chromeos::features::kEnableLocalSearchService));
+  source->AddBoolean(
+      "HelpAppLauncherSearch",
+      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
+          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppSearchServiceIntegration) &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kEnableLocalSearchService));
-  source->AddBoolean(
-      "HelpAppDiscoverTab",
-      base::FeatureList::IsEnabled(chromeos::features::kHelpAppDiscoverTab));
+          features::kHelpAppSearchServiceIntegration) &&
+          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+  source->AddBoolean("HelpAppDiscoverTab", base::FeatureList::IsEnabled(
+                                               features::kHelpAppDiscoverTab));
   source->AddBoolean(
       "HelpAppBackgroundPage",
-      base::FeatureList::IsEnabled(chromeos::features::kHelpAppBackgroundPage));
+      base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage));
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
@@ -110,7 +109,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       "multiDeviceFeaturesAllowed",
       chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
           pref_service));
-  source->AddBoolean("tabletMode", ash::TabletMode::Get()->InTabletMode());
+  source->AddBoolean("tabletMode", TabletMode::Get()->InTabletMode());
   // Checks if there are active touch screens.
   source->AddBoolean(
       "hasTouchScreen",
@@ -122,12 +121,11 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean("assistantAllowed",
                      assistant_allowed_state ==
                          chromeos::assistant::AssistantAllowedState::ALLOWED);
-  source->AddBoolean(
-      "assistantEnabled",
-      ash::AssistantState::Get()->settings_enabled().value_or(false));
+  source->AddBoolean("assistantEnabled",
+                     AssistantState::Get()->settings_enabled().value_or(false));
   source->AddBoolean("playStoreEnabled",
                      arc::IsArcPlayStoreEnabledForProfile(profile));
-  source->AddBoolean("pinEnabled", ash::quick_unlock::IsPinEnabled());
+  source->AddBoolean("pinEnabled", quick_unlock::IsPinEnabled());
 
   // Data about what type of account/login this is.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -153,3 +151,5 @@ HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 
   return std::make_unique<chromeos::HelpAppUntrustedUI>(web_ui, callback);
 }
+
+}  // namespace ash

@@ -10,7 +10,9 @@
 
 namespace content {
 class WebUI;
-}
+}  // namespace content
+
+namespace ash {
 
 /**
  * Implementation of the HelpAppUiDelegate interface. Provides the help app
@@ -33,5 +35,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
  private:
   content::WebUI* web_ui_;  // Owns |this|.
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_

@@ -18,7 +18,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 class HelpAppDiscoverTabNotificationTest : public BrowserWithTestWindowTest {
  public:
@@ -129,4 +129,4 @@ TEST_F(HelpAppDiscoverTabNotificationTest, LogsMetricWhenNotificationClicked) {
                    "Discover.DiscoverTabNotification.Clicked"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

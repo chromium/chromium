@@ -16,6 +16,8 @@
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "url/gurl.h"
 
+namespace ash {
+
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
@@ -46,12 +48,14 @@ PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
 
 void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  ash::UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
+  UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
       profile);
 }
 
 void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  ash::UserSessionManager::GetInstance()
-      ->MaybeShowHelpAppReleaseNotesNotification(profile);
+  UserSessionManager::GetInstance()->MaybeShowHelpAppReleaseNotesNotification(
+      profile);
 }
+
+}  // namespace ash

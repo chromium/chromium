@@ -67,7 +67,7 @@ WebUIConfigList CreateConfigs() {
   register_config(std::make_unique<MediaAppGuestUIConfig>());
   register_config(
       std::make_unique<chromeos::UntrustedPersonalizationAppUIConfig>());
-  register_config(std::make_unique<HelpAppUntrustedUIConfig>());
+  register_config(std::make_unique<ash::HelpAppUntrustedUIConfig>());
   register_config(
       std::make_unique<chromeos::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())

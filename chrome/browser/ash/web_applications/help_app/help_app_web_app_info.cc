@@ -17,9 +17,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 
+namespace ash {
+
 namespace {
 constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
-}
+}  // namespace
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
@@ -75,8 +77,7 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
 
 absl::optional<web_app::SystemAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppBackgroundPage)) {
+  if (base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage)) {
     return web_app::SystemAppBackgroundTaskInfo(
         absl::nullopt, GURL("chrome://help-app/background"),
         /*open_immediately=*/true);
@@ -89,3 +90,5 @@ std::unique_ptr<WebApplicationInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForHelpWebApp();
 }
+
+}  // namespace ash

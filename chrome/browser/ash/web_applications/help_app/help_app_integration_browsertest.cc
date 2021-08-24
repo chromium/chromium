@@ -59,13 +59,16 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace ash {
+namespace {
+
 class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   HelpAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppDiscoverTabNotificationAllChannels,
-         chromeos::features::kReleaseNotesNotificationAllChannels,
-         chromeos::features::kHelpAppLauncherSearch},
+        {features::kHelpAppDiscoverTabNotificationAllChannels,
+         features::kReleaseNotesNotificationAllChannels,
+         features::kHelpAppLauncherSearch},
         {});
   }
 
@@ -93,6 +96,8 @@ void WaitForAppToOpen(const GURL& expected_url) {
   // Help app should have opened at the expected page.
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
+
+}  // namespace
 
 // Test that the Help App installs and launches correctly. Runs some spot
 // checks on the manifest.
@@ -244,9 +249,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   auto release_notes_notification =
-      std::make_unique<ash::ReleaseNotesNotification>(profile());
-  auto release_notes_storage =
-      std::make_unique<ash::ReleaseNotesStorage>(profile());
+      std::make_unique<ReleaseNotesNotification>(profile());
+  auto release_notes_storage = std::make_unique<ReleaseNotesStorage>(profile());
 
   // Force the release notes notification to show up.
   profile()->GetPrefs()->SetInteger(
@@ -325,14 +329,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto notifications = display_service->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
   ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ(chromeos::kShowHelpAppDiscoverTabNotificationId,
-            notifications[0].id());
+  ASSERT_EQ(kShowHelpAppDiscoverTabNotificationId, notifications[0].id());
 
   // Click on the notification.
-  display_service->SimulateClick(
-      NotificationHandler::Type::TRANSIENT,
-      chromeos::kShowHelpAppDiscoverTabNotificationId, absl::nullopt,
-      absl::nullopt);
+  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                 kShowHelpAppDiscoverTabNotificationId,
+                                 absl::nullopt, absl::nullopt);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
@@ -766,3 +768,5 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
+
+}  // namespace ash
