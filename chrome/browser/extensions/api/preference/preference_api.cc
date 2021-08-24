@@ -709,14 +709,14 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
   CHECK(pref);
 
-  auto result = std::make_unique<base::DictionaryValue>();
+  base::Value result(base::Value::Type::DICTIONARY);
 
   // Retrieve level of control.
   std::string level_of_control =
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), browser_pref, incognito);
-  result->SetString(extensions::preference_api_constants::kLevelOfControl,
-                    level_of_control);
+  result.SetStringKey(extensions::preference_api_constants::kLevelOfControl,
+                      level_of_control);
 
   // Retrieve pref value.
   PrefTransformerInterface* transformer =
@@ -730,18 +730,17 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
                                                  pref->name());
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
-  result->Set(extensions::preference_api_constants::kValue,
-              std::move(transformed_value));
+  result.SetKey(extensions::preference_api_constants::kValue,
+                base::Value::FromUniquePtrValue(std::move(transformed_value)));
 
   // Retrieve incognito status.
   if (incognito) {
     ExtensionPrefs* ep = ExtensionPrefs::Get(browser_context());
-    result->SetBoolean(extensions::preference_api_constants::kIncognitoSpecific,
-                       ep->HasIncognitoPrefValue(browser_pref));
+    result.SetBoolKey(extensions::preference_api_constants::kIncognitoSpecific,
+                      ep->HasIncognitoPrefValue(browser_pref));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(std::move(result)));
 }
 
 SetPreferenceFunction::~SetPreferenceFunction() = default;
