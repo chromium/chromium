@@ -40,7 +40,7 @@
       <p class = "advice-label">please select your device from the system
         tray if this is not the intended device.</p>
     </div>
-    <div id = "audio-players">
+    <div id = "audio-player">
     </div>
   </section>
   <section id="input" hidden>
@@ -56,17 +56,17 @@
       <p class="advice-label">please select your device from the system
         tray if this is not the intended device.</p>
     </div>
-    <div id = 'channels'>
+    <div id = "channels">
       <p>
         Channle 0
       </p>
-      <canvas id='channel-l'></canvas>
+      <canvas id="channel-l"></canvas>
       <p>
         Channle 1
       </p>
-      <canvas id='channel-r'></canvas>
+      <canvas id="channel-r"></canvas>
     </div>
-    <div id = 'recording'>
+    <div id = "recording">
       <div id="button-section">
         <button id="record-btn">Record</button>
         <p id = "counter"></p>
@@ -74,10 +74,10 @@
       <div id="audio-file">
 
       </div>
-      <div id = 'input-qs' hidden>
+      <div id = "input-qs" hidden>
         <p>Can hear audio clearly?</p>
-        <button id = 'input-yes'>Yes</button>
-        <button id = 'input-no'>No</button>
+        <button id = "input-yes">Yes</button>
+        <button id = "input-no">No</button>
       </div>
     </div>
   </section>
@@ -139,13 +139,16 @@
     </table>
   </template>
   <template id="audioPlayer-template">
-    <div class = 'audio-player'>
+    <div class = "audio-player">
       <p id="audio-name"></p>
       <p id="audio-expectation"></p>
-      <audio title="local audio file" src="" controls>
-        This browser does not support the audio element.
-      </audio>
-      <p id="output-qs">Can hear clearly?</p>
+      <button id="play-btn">Play audio samples</button>
+      <button id="back" class="back-btn" hidden></button>
+      <div id ="output-qs" hidden>
+        <p>Can hear audio clearly?</p>
+        <button id="output-yes" class="yes-btn">Yes</button>
+        <button id="output-no" class="no-btn">No</button>
+      </div>
     </div>
   </template>
 </body>

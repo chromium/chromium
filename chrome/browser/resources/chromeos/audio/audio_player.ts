@@ -3,80 +3,102 @@
 // found in the LICENSE file.
 
 import {$} from 'chrome://resources/js/util.m.js';
-import {OutputPage} from './output_page.js';
+
+import {AudioSample, OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
 
 export class AudioPlayer extends HTMLElement {
-  private current: string;
-  private prev: string|undefined;
-  private next: string|undefined;
+  private sampleIdx: number;
   private audioDiv: HTMLDivElement;
-  private audio: HTMLAudioElement;
+  private audioPlay: HTMLButtonElement;
+  private audioCtx: AudioContext|undefined;
+  private audioQuery: HTMLDivElement;
   private audioNameTag: HTMLParagraphElement;
   private audioExpectation: HTMLParagraphElement;
-  constructor(current: string, prev: string|undefined, next: string|undefined) {
+  private prevLink: HTMLButtonElement;
+  private timer: number|undefined;
+  constructor(private audioSamples: AudioSample[]) {
     super();
-    this.current = current;
-    this.prev = prev;
-    this.next = next;
+    this.sampleIdx = 0;
     const clone = (<HTMLTemplateElement>$('audioPlayer-template'))
                       .content.cloneNode(true);
     this.audioDiv = <HTMLDivElement>(<HTMLElement>clone).querySelector('div');
-    this.audio = <HTMLAudioElement>(this.audioDiv.querySelector('audio'));
+    this.audioPlay =
+        <HTMLButtonElement>(this.audioDiv.querySelector('#play-btn'));
+    this.audioQuery =
+        <HTMLDivElement>(this.audioDiv.querySelector('#output-qs'));
     this.audioNameTag =
         <HTMLParagraphElement>(this.audioDiv.querySelectorAll('p')[0]);
     this.audioExpectation =
         <HTMLParagraphElement>(this.audioDiv.querySelectorAll('p')[1]);
+    this.prevLink = <HTMLButtonElement>(this.audioDiv.querySelector('#back'));
+    this.prevLink.textContent = '< Back';
+    this.prevLink.addEventListener('click', () => {
+      this.handleBackClick();
+    });
+
     this.setUpAudioPlayer();
+    this.setButtons();
     this.appendChild(this.audioDiv);
   }
 
-  setUpAudioPlayer() {
-    this.hidden = true;
-    this.id = this.current;
-    this.audio.src = this.current;
-    this.audioNameTag.innerHTML =
-        'Playing from: ' + this.current.replace('sound/', '');
-    this.createAudioExpectation();
-    this.createButtons();
+  private get current() {
+    return this.audioSamples[this.sampleIdx];
   }
 
-  createAudioExpectation() {
-    if (this.current.indexOf('left') !== -1) {
+  setUpAudioPlayer() {
+    this.audioNameTag.innerHTML = `Playing: ${this.current!.description}`;
+    this.setAudioExpectation();
+  }
+
+  setAudioExpectation() {
+    if (this.current!.pan == -1) {
       this.audioExpectation.innerHTML =
           'Should hear audio coming from the left channel.';
-    } else if (this.current.indexOf('right') !== -1) {
+    } else if (this.current!.pan == 1) {
       this.audioExpectation.innerHTML =
           'Should hear audio coming from the right channel.';
-    } else if (this.current.indexOf('1k') !== -1) {
-      this.audioExpectation.innerHTML =
-          'Warning: Should hear a high frequency pitch from all channels.';
     } else {
       this.audioExpectation.innerHTML =
           'Should hear audio of a single pitch from all channels.';
     }
   }
 
-  createButtons() {
-    if (this.prev) {
-      const prevLink = this.createButton('back', '< Back');
-      prevLink.addEventListener('click', () => {
-        this.handleBackClick();
-      });
-    }
-    const yesLink = this.createButton('yes', 'Yes');
-    const noLink = this.createButton('no', 'No');
+  setButtons() {
+    const yesLink =
+        <HTMLButtonElement>(this.audioQuery.querySelector('#output-yes'));
+    const noLink =
+        <HTMLButtonElement>(this.audioQuery.querySelector('#output-no'));
 
-    yesLink.addEventListener('click', () => {
-      yesLink.style.color = 'blue';
-      noLink.style.color = 'black';
-      this.handleResponse(true);
-    });
+    yesLink.addEventListener('click', () => this.handleResponse(true));
+    noLink.addEventListener('click', () => this.handleResponse(false));
 
-    noLink.addEventListener('click', () => {
-      noLink.style.color = 'blue';
-      yesLink.style.color = 'black';
-      this.handleResponse(false);
+    this.audioPlay.addEventListener('click', () => {
+      if (this.audioCtx?.state === 'running') {
+        this.audioCtx.suspend();
+      }
+
+      this.audioCtx = new AudioContext({sampleRate: this.current!.sampleRate});
+      const oscNode = this.audioCtx.createOscillator();
+      oscNode.type = 'sine';
+      oscNode.channelCount = this.current!.channelCount;
+      oscNode.frequency.value = this.current!.freqency;
+      if (this.current!.channelCount == 2) {
+        const panNode = this.audioCtx.createStereoPanner();
+        panNode.pan.value = this.current!.pan;
+        oscNode.connect(panNode);
+        panNode.connect(this.audioCtx.destination);
+      } else {
+        oscNode.connect(this.audioCtx.destination);
+      }
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.audioCtx?.suspend();
+        this.audioQuery.hidden = false;
+      }, 3000);
+      oscNode.start();
     });
   }
 
@@ -90,29 +112,26 @@ export class AudioPlayer extends HTMLElement {
   }
 
   handleBackClick() {
-    this.audio.pause();
-    this.audio.currentTime = 0;
-    if (this.prev) {
-      this.hidden = true;
-      $(this.prev).hidden = false;
+    this.sampleIdx -= 1;
+    this.audioCtx?.suspend();
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
     }
+    this.setUpAudioPlayer();
+    this.prevLink.hidden = this.sampleIdx == 0;
+    this.audioQuery.hidden = true;
   }
 
   handleResponse(response: boolean) {
-    OutputPage.getInstance().setOutputMapEntry(this.current, response);
-    if (this.next) {
-      this.handleNext();
-    } else {
+    OutputPage.getInstance().setOutputMapEntry(this.current!, response);
+    if (this.sampleIdx + 1 == this.audioSamples.length) {
       PageNavigator.getInstance().showPage('feedback');
-    }
-  }
-
-  handleNext() {
-    this.audio.pause();
-    this.audio.currentTime = 0;
-    if (this.next) {
-      this.hidden = true;
-      $(this.next).hidden = false;
+    } else {
+      this.sampleIdx += 1;
+      this.setUpAudioPlayer();
+      this.audioQuery.hidden = true;
+      this.prevLink.hidden = this.sampleIdx == 0;
     }
   }
 }
