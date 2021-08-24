@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/test/mock_projector_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
@@ -36,26 +37,6 @@ const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
 
 }  // namespace
 
-class ASH_PUBLIC_EXPORT MockProjectorController : public ProjectorController {
- public:
-  MockProjectorController() = default;
-
-  MockProjectorController(const MockProjectorController&) = delete;
-  MockProjectorController& operator=(const MockProjectorController&) = delete;
-  ~MockProjectorController() override = default;
-
-  // ProjectorController:
-  MOCK_METHOD0(StartProjectorSession, void());
-  MOCK_METHOD1(SetClient, void(ProjectorClient* client));
-  MOCK_METHOD1(OnSpeechRecognitionAvailable, void(bool available));
-  MOCK_METHOD1(OnTranscription,
-               void(const media::SpeechRecognitionResult& result));
-  MOCK_METHOD0(OnTranscriptionError, void());
-  MOCK_METHOD1(SetProjectorToolsVisible, void(bool is_visible));
-  MOCK_CONST_METHOD0(IsEligible, bool());
-  MOCK_CONST_METHOD0(CanStartNewSession, bool());
-};
-
 class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
@@ -74,7 +55,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
 
     scoped_resetter_ =
         std::make_unique<ProjectorController::ScopedInstanceResetterForTest>();
-    controller_ = std::make_unique<MockProjectorController>();
+    controller_ = std::make_unique<ash::MockProjectorController>();
     client_ = std::make_unique<ProjectorClientImpl>(controller_.get());
 
     CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
@@ -129,7 +110,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<ProjectorController::ScopedInstanceResetterForTest>
       scoped_resetter_;
-  std::unique_ptr<MockProjectorController> controller_;
+  std::unique_ptr<ash::MockProjectorController> controller_;
   std::unique_ptr<ProjectorClient> client_;
   speech::FakeSpeechRecognitionService* fake_service_;
 

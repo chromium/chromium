@@ -21,7 +21,7 @@ class ProjectorAppClient {
   static ProjectorAppClient* Get();
 
   // Returns the IdentityManager for the primary user profile.
-  virtual signin::IdentityManager* GetIdentityManager() const = 0;
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
 
  protected:
   ProjectorAppClient();

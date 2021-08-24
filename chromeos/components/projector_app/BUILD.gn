@@ -32,3 +32,33 @@ static_library("projector_app") {
     "//ui/webui",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_app_client.cc",
+    "test/mock_app_client.h",
+  ]
+
+  public_deps = [
+    ":projector_app",
+    "//ash/public/cpp:cpp",
+    "//ash/public/cpp:test_support",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "test/projector_message_handler_unittest.cc" ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

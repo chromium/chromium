@@ -33,6 +33,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/mojo_bootstrap:unit_tests",
     "//chromeos/components/multidevice:unit_tests",
     "//chromeos/components/phonehub:unit_tests",
+    "//chromeos/components/projector_app:unit_tests",
     "//chromeos/components/proximity_auth:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/sensors:unit_tests",

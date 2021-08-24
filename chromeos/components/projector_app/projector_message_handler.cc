@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/public/cpp/projector/projector_session.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
@@ -148,10 +147,9 @@ void ProjectorMessageHandler::StartProjectorSession(
     return;
   }
 
-  ash::ProjectorSession::Get()->Start(ash::SourceType::kUnset);
-
   // TODO(b/177959166) Remove setting the toolbar visibility here after the
-  // integration with screen capture is complete.
+  // integration with screen capture is complete. Simply notify the projector
+  // controller to start a new session.
   controller->SetProjectorToolsVisible(true);
   ResolveJavascriptCallback(args->GetList()[0], base::Value(true));
 }

@@ -16,7 +16,7 @@ class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
   ~ProjectorAppClientImpl() override;
 
   // chromeos::ProjectorAppClient:
-  signin::IdentityManager* GetIdentityManager() const override;
+  signin::IdentityManager* GetIdentityManager() override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

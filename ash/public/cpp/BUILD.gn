@@ -435,6 +435,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test/mock_projector_controller.cc",
+    "test/mock_projector_controller.h",
     "test/test_app_list_color_provider.cc",
     "test/test_app_list_color_provider.h",
     "test/test_image_downloader.cc",
@@ -456,6 +458,7 @@ source_set("test_support") {
     "//base",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp:cpp",
+    "//testing/gmock",
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/gfx",

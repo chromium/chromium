@@ -13,7 +13,7 @@
 ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;
 
-signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() const {
+signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
   return IdentityManagerFactory::GetForProfile(profile);
