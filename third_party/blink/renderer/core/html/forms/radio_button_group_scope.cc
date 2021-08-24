@@ -215,9 +215,7 @@ void RadioButtonGroupScope::UpdateCheckedState(HTMLInputElement* element) {
   DCHECK(name_to_group_map_);
   if (!name_to_group_map_)
     return;
-  RadioButtonGroup* group =
-      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
-  DCHECK(group);
+  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
   group->UpdateCheckedState(element);
 }
 
@@ -229,17 +227,13 @@ void RadioButtonGroupScope::RequiredAttributeChanged(
   DCHECK(name_to_group_map_);
   if (!name_to_group_map_)
     return;
-  RadioButtonGroup* group =
-      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
-  DCHECK(group);
+  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
   group->RequiredAttributeChanged(element);
 }
 
 HTMLInputElement* RadioButtonGroupScope::CheckedButtonForGroup(
     const AtomicString& name) const {
-  if (!name_to_group_map_)
-    return nullptr;
-  RadioButtonGroup* group = name_to_group_map_->DeprecatedAtOrEmptyValue(name);
+  RadioButtonGroup* group = FindGroupByName(name);
   return group ? group->CheckedButton() : nullptr;
 }
 
@@ -247,34 +241,22 @@ bool RadioButtonGroupScope::IsInRequiredGroup(HTMLInputElement* element) const {
   DCHECK_EQ(element->type(), input_type_names::kRadio);
   if (element->GetName().IsEmpty())
     return false;
-  if (!name_to_group_map_)
-    return false;
-  RadioButtonGroup* group =
-      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
+  RadioButtonGroup* group = FindGroupByName(element->GetName());
   return group && group->IsRequired() && group->Contains(element);
 }
 
 unsigned RadioButtonGroupScope::GroupSizeFor(
     const HTMLInputElement* element) const {
-  if (!name_to_group_map_)
-    return 0;
-
-  RadioButtonGroup* group =
-      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
-  if (!group)
-    return 0;
-  return group->size();
+  RadioButtonGroup* group = FindGroupByName(element->GetName());
+  return group ? group->size() : 0;
 }
 
 void RadioButtonGroupScope::RemoveButton(HTMLInputElement* element) {
   DCHECK_EQ(element->type(), input_type_names::kRadio);
   if (element->GetName().IsEmpty())
     return;
-  if (!name_to_group_map_)
-    return;
 
-  RadioButtonGroup* group =
-      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
+  RadioButtonGroup* group = FindGroupByName(element->GetName());
   if (!group)
     return;
   group->Remove(element);
@@ -288,6 +270,14 @@ void RadioButtonGroupScope::RemoveButton(HTMLInputElement* element) {
 
 void RadioButtonGroupScope::Trace(Visitor* visitor) const {
   visitor->Trace(name_to_group_map_);
+}
+
+RadioButtonGroup* RadioButtonGroupScope::FindGroupByName(
+    const AtomicString& name) const {
+  if (!name_to_group_map_)
+    return nullptr;
+  auto it = name_to_group_map_->find(name);
+  return it != name_to_group_map_->end() ? it->value : nullptr;
 }
 
 }  // namespace blink
