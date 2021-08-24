@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="UTF-8">
 <title>CSS Highlight API Test: </title>
 <link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
 <link rel="match" href="custom-highlight-painting-iframe-006-ref.html">
 <meta name="assert" value="Ranges contained in a registered Highlight that are moved to another document different than the owner of the HighlightRegistry where the Highlight has been registered should not be painted anymore.">
+<script src="resources/run-after-layout-and-paint.js"></script>
 <style>
   ::highlight(foo) {
     color: green;
@@ -38,7 +40,11 @@
   let iframe = document.querySelector("#iframe");
   iframe.onload = () => {
     let spanIframe = iframe.contentDocument.querySelector("#span-iframe");
-    r.setStart(spanIframe, 0);
-    r.setEnd(spanIframe, 1);
+    runAfterLayoutAndPaint(()=>{
+      r.setStart(spanIframe, 0);
+      r.setEnd(spanIframe, 1);
+      document.documentElement.removeAttribute("class");
+    });
   }
 </script>
+</html>

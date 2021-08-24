@@ -96,7 +96,11 @@ class RangeUpdateScope {
       range_->UpdateSelectionIfAddedToSelection();
     }
 
-    range_->ScheduleVisualUpdateIfInRegisteredHighlight();
+    range_->ScheduleVisualUpdateIfInRegisteredHighlight(
+        range_->OwnerDocument());
+    if (*old_document_ != range_->OwnerDocument()) {
+      range_->ScheduleVisualUpdateIfInRegisteredHighlight(*old_document_);
+    }
 #if DCHECK_IS_ON()
     current_range_ = nullptr;
 #endif
@@ -1746,8 +1750,8 @@ void Range::UpdateSelectionIfAddedToSelection() {
   selection.CacheRangeOfDocument(this);
 }
 
-void Range::ScheduleVisualUpdateIfInRegisteredHighlight() {
-  if (LocalDOMWindow* window = OwnerDocument().domWindow()) {
+void Range::ScheduleVisualUpdateIfInRegisteredHighlight(Document& document) {
+  if (LocalDOMWindow* window = document.domWindow()) {
     if (HighlightRegistry* highlight_registry =
             window->Supplementable<LocalDOMWindow>::RequireSupplement<
                 HighlightRegistry>()) {

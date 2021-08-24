@@ -206,7 +206,7 @@ class CORE_EXPORT Range final : public AbstractRange {
                                                 Node* common_root,
                                                 ExceptionState&);
   void UpdateSelectionIfAddedToSelection();
-  void ScheduleVisualUpdateIfInRegisteredHighlight();
+  void ScheduleVisualUpdateIfInRegisteredHighlight(Document& document);
   void RemoveFromSelectionIfInDifferentRoot(Document& old_document);
 
   Member<Document> owner_document_;  // Cannot be null.
