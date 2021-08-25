@@ -34,5 +34,10 @@ public final class SigninCheckerProvider {
         return sInstance;
     }
 
+    @MainThread
+    public static void setForTests(SigninChecker signinChecker) {
+        sInstance = signinChecker;
+    }
+
     private SigninCheckerProvider() {}
 }

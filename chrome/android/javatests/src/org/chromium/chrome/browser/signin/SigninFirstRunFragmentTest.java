@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.mock;
 
 import android.accounts.Account;
 import android.support.test.runner.lifecycle.Stage;
@@ -73,6 +74,7 @@ public class SigninFirstRunFragmentTest {
 
     @Before
     public void setUp() {
+        SigninCheckerProvider.setForTests(mock(SigninChecker.class));
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new SigninFirstRunFragment();
     }
