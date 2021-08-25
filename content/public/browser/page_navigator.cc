@@ -21,16 +21,10 @@ OpenURLParams::OpenURLParams(const GURL& url,
                              bool is_renderer_initiated)
     : url(url),
       referrer(referrer),
-      frame_tree_node_id(RenderFrameHost::kNoFrameTreeNodeId),
       disposition(disposition),
       transition(transition),
       is_renderer_initiated(is_renderer_initiated),
-      should_replace_current_entry(false),
-      user_gesture(!is_renderer_initiated),
-      triggering_event_info(blink::mojom::TriggeringEventInfo::kUnknown),
-      started_from_context_menu(false),
-      open_app_window_if_possible(false),
-      reload_type(ReloadType::NONE) {}
+      user_gesture(!is_renderer_initiated) {}
 
 OpenURLParams::OpenURLParams(const GURL& url,
                              const Referrer& referrer,
@@ -40,16 +34,11 @@ OpenURLParams::OpenURLParams(const GURL& url,
                              bool started_from_context_menu)
     : url(url),
       referrer(referrer),
-      frame_tree_node_id(RenderFrameHost::kNoFrameTreeNodeId),
       disposition(disposition),
       transition(transition),
       is_renderer_initiated(is_renderer_initiated),
-      should_replace_current_entry(false),
       user_gesture(!is_renderer_initiated),
-      triggering_event_info(blink::mojom::TriggeringEventInfo::kUnknown),
-      started_from_context_menu(started_from_context_menu),
-      open_app_window_if_possible(false),
-      reload_type(ReloadType::NONE) {}
+      started_from_context_menu(started_from_context_menu) {}
 
 OpenURLParams::OpenURLParams(const GURL& url,
                              const Referrer& referrer,
@@ -63,12 +52,7 @@ OpenURLParams::OpenURLParams(const GURL& url,
       disposition(disposition),
       transition(transition),
       is_renderer_initiated(is_renderer_initiated),
-      should_replace_current_entry(false),
-      user_gesture(!is_renderer_initiated),
-      triggering_event_info(blink::mojom::TriggeringEventInfo::kUnknown),
-      started_from_context_menu(false),
-      open_app_window_if_possible(false),
-      reload_type(ReloadType::NONE) {}
+      user_gesture(!is_renderer_initiated) {}
 
 OpenURLParams::OpenURLParams(const OpenURLParams& other) = default;
 
