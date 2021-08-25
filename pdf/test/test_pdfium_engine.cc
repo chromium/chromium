@@ -5,6 +5,8 @@
 #include "pdf/test/test_pdfium_engine.h"
 
 #include <string.h>
+
+#include <memory>
 #include <vector>
 
 #include "base/check_op.h"
@@ -16,6 +18,8 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace chrome_pdf {
 
@@ -29,6 +33,20 @@ TestPDFiumEngine::TestPDFiumEngine(PDFEngine::Client* client)
     : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
+
+bool TestPDFiumEngine::HandleInputEvent(
+    const blink::WebInputEvent& scaled_event) {
+  // Since blink::WebInputEvent is an abstract class, we cannot use equal
+  // matcher to verify its value. Here we test with blink::WebMouseEvent
+  // specifically.
+  if (!blink::WebInputEvent::IsMouseEventType(scaled_event.GetType()))
+    return false;
+
+  blink::WebMouseEvent* mouse_event = new blink::WebMouseEvent;
+  scaled_mouse_event_.reset(mouse_event);
+  *mouse_event = static_cast<const blink::WebMouseEvent&>(scaled_event);
+  return true;
+}
 
 bool TestPDFiumEngine::HasPermission(DocumentPermission permission) const {
   return base::Contains(permissions_, permission);
@@ -63,6 +81,10 @@ bool TestPDFiumEngine::ReadLoadedBytes(uint32_t length, void* buffer) {
 
 std::vector<uint8_t> TestPDFiumEngine::GetSaveData() {
   return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
+}
+
+const blink::WebMouseEvent* TestPDFiumEngine::GetScaledMouseEvent() const {
+  return scaled_mouse_event_ ? scaled_mouse_event_.get() : nullptr;
 }
 
 void TestPDFiumEngine::SetPermissions(

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -15,6 +16,11 @@
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+
+namespace blink {
+class WebInputEvent;
+}  // namespace blink
 
 namespace chrome_pdf {
 
@@ -34,6 +40,9 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   ~TestPDFiumEngine() override;
 
+  // Sets a scaled mouse event for testing.
+  bool HandleInputEvent(const blink::WebInputEvent& scaled_event) override;
+
   bool HasPermission(DocumentPermission permission) const override;
 
   const std::vector<DocumentAttachmentInfo>& GetDocumentAttachmentInfoList()
@@ -52,6 +61,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   std::vector<uint8_t> GetSaveData() override;
 
+  const blink::WebMouseEvent* GetScaledMouseEvent() const;
+
   void SetPermissions(const std::vector<DocumentPermission>& permissions);
 
  protected:
@@ -65,6 +76,8 @@ class TestPDFiumEngine : public PDFiumEngine {
   std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;
 
   DocumentMetadata metadata_;
+
+  std::unique_ptr<blink::WebMouseEvent> scaled_mouse_event_;
 
   base::flat_set<DocumentPermission> permissions_;
 };

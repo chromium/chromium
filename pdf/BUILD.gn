@@ -413,8 +413,10 @@ if (enable_pdf) {
       "//base",
       "//ppapi/cpp:objects",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
       "//ui/gfx:geometry_skia",
       "//ui/gfx/range",
+      "//ui/latency:latency",
     ]
   }
 
@@ -500,6 +502,7 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
+      "//ui/events/blink:blink",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",

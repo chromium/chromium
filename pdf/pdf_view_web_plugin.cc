@@ -429,11 +429,11 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& event,
     ui::Cursor* cursor) {
   // TODO(crbug.com/702993): The input events received by the Pepper plugin
-  // already have the device scale applied. The scaling done here should be
-  // moved into `PdfViewPluginBase::HandleInputEvent()` once the Pepper plugin
-  // is removed.
+  // already have the viewport-to-DIP scale applied. The scaling done here
+  // should be moved into `PdfViewPluginBase::HandleInputEvent()` once the
+  // Pepper plugin is removed.
   std::unique_ptr<blink::WebInputEvent> scaled_event =
-      ui::ScaleWebInputEvent(event.Event(), device_scale());
+      ui::ScaleWebInputEvent(event.Event(), viewport_to_dip_scale_);
 
   const blink::WebInputEvent& event_to_handle =
       scaled_event ? *scaled_event : event.Event();

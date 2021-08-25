@@ -16,6 +16,9 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -23,10 +26,14 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/latency/latency_info.h"
 
 namespace chrome_pdf {
 
@@ -42,6 +49,9 @@ using ::testing::Return;
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
 // testing.
 constexpr gfx::Size kCanvasSize(100, 100);
+
+// A common device scale for high DPI displays.
+constexpr float kDeviceScale = 2.0f;
 
 // Note: Make sure `kDefaultColor` is different from `kPaintColor` and the
 // plugin's background color. This will help identify bitmap changes after
@@ -84,6 +94,18 @@ SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
   expected_bitmap.eraseColor(kDefaultColor);
   expected_bitmap.erase(paint_color, gfx::RectToSkIRect(expected_clipped_area));
   return expected_bitmap;
+}
+
+blink::WebMouseEvent CreateDefaultMouseDownEvent() {
+  blink::WebMouseEvent web_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      /*position=*/gfx::PointF(),
+      /*global_position=*/gfx::PointF(),
+      blink::WebPointerProperties::Button::kLeft,
+      /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kLeftButtonDown,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  web_event.SetFrameScale(1);
+  return web_event;
 }
 
 class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
@@ -384,6 +406,42 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
     TestPaintSnapshots(params.device_scale, /*use_zoom_for_dsf=*/false,
                        params.window_rect, params.paint_rect);
   }
+}
+
+TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFEnabled) {
+  // Test when using zoom for DSF is enabled.
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+  wrapper_ptr_->set_device_scale(kDeviceScale);
+  UpdatePluginGeometry(kDeviceScale, gfx::Rect(20, 20));
+
+  ui::Cursor dummy_cursor;
+  plugin_->HandleInputEvent(
+      blink::WebCoalescedInputEvent(CreateDefaultMouseDownEvent(),
+                                    ui::LatencyInfo()),
+      &dummy_cursor);
+
+  ASSERT_TRUE(engine_ptr_->GetScaledMouseEvent());
+  EXPECT_EQ(gfx::PointF(-10.0f, 0.0f),
+            engine_ptr_->GetScaledMouseEvent()->PositionInWidget());
+}
+
+TEST_F(PdfViewWebPluginTest, HandleInputEventWithUseZoomForDSFDisabled) {
+  // Test when using zoom for DSF is disabled.
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(false));
+  wrapper_ptr_->set_device_scale(kDeviceScale);
+  UpdatePluginGeometry(kDeviceScale, gfx::Rect(20, 20));
+
+  ui::Cursor dummy_cursor;
+  plugin_->HandleInputEvent(
+      blink::WebCoalescedInputEvent(CreateDefaultMouseDownEvent(),
+                                    ui::LatencyInfo()),
+      &dummy_cursor);
+
+  ASSERT_TRUE(engine_ptr_->GetScaledMouseEvent());
+  EXPECT_EQ(gfx::PointF(-20.0f, 0.0f),
+            engine_ptr_->GetScaledMouseEvent()->PositionInWidget());
 }
 
 TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
