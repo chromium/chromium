@@ -180,6 +180,8 @@ class BidiServer implements IServer {
     return this._sendBidiMessage(messageStr);
   }
 
+  close() {}
+
   initialise(sendBidiMessage: (messageStr: string) => Promise<void>): void {
     this._initialised = true;
     this._sendBidiMessage = sendBidiMessage;

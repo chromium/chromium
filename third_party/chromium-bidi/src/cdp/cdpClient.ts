@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from '../utils/log';
-const logCdp = log('cdp');
 
 import { EventEmitter } from 'events';
-import { IServer } from '../utils/iServer';
+import { Connection } from './connection';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
+import ProtocolMapping from 'devtools-protocol/types/protocol-mapping';
 
 // Publicly visible type. Has all of the methods of CdpClientImpl, and a property
 // getter for each CDP Domain (provided by ProtocolApiExt).
@@ -33,24 +32,6 @@ type ProtocolApiExt = {
   [Domain in keyof ProtocolProxyApi.ProtocolApi]: DomainImpl &
     ProtocolProxyApi.ProtocolApi[Domain];
 };
-
-export interface CdpError {
-  code: number;
-  message: string;
-}
-
-interface CdpMessage {
-  id?: number;
-  result?: {};
-  error?: {};
-  method?: string;
-  params?: {};
-}
-
-interface CdpCallbacks {
-  resolve: (messageObj: {}) => void;
-  reject: (errorObj: {}) => void;
-}
 
 const mergedProtocol = [...browserProtocol.domains, ...jsProtocol.domains];
 
@@ -92,16 +73,13 @@ for (let domainInfo of mergedProtocol) {
 }
 
 class CdpClientImpl extends EventEmitter {
-  private _commandCallbacks: Map<number, CdpCallbacks>;
   private _domains: Map<string, DomainImpl>;
-  private _nextId: number;
 
-  constructor(private _transport: IServer) {
+  constructor(
+    private _connection: Connection,
+    private _sessionId: string | null
+  ) {
     super();
-
-    this._commandCallbacks = new Map();
-    this._nextId = 0;
-    this._transport.setOnMessage(this._onCdpMessage.bind(this));
 
     this._domains = new Map();
     for (const [domainName, ctor] of domainConstructorMap.entries()) {
@@ -120,39 +98,24 @@ class CdpClientImpl extends EventEmitter {
    * @param params Parameters to pass to the CDP command.
    */
   sendCommand(method: string, params: {}): Promise<{}> {
-    return new Promise((resolve, reject) => {
-      const id = this._nextId++;
-      this._commandCallbacks.set(id, { resolve, reject });
-      const messageObj = { id, method, params };
-      const messageStr = JSON.stringify(messageObj);
-
-      logCdp('sent > ' + messageStr);
-      this._transport.sendMessage(messageStr);
-    });
+    return this._connection._sendCommand(method, params, this._sessionId);
   }
 
-  private _onCdpMessage(messageStr: string): void {
-    logCdp('received < ' + messageStr);
+  _onCdpEvent(method: string, params: {}) {
+    // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
+    this.emit('event', method, params);
 
-    const messageObj: CdpMessage = JSON.parse(messageStr);
-    if (messageObj.id !== undefined) {
-      // Handle command response.
-      const callbacks = this._commandCallbacks.get(messageObj.id);
-      if (callbacks) {
-        if (messageObj.result) {
-          callbacks.resolve(messageObj.result);
-        } else if (messageObj.error) {
-          callbacks.reject(messageObj.error);
-        }
-      }
-    } else if (messageObj.method) {
-      // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
-      this.emit('event', messageObj.method, messageObj.params);
+    // Next, get the correct domain instance and tell it to emit the strongly typed event.
+    const [domainName, eventName] = method.split('.');
+    this._domains.get(domainName).emit(eventName, params);
+  }
 
-      // Next, get the correct domain instance and tell it to emit the strongly typed event.
-      const [domainName, eventName] = messageObj.method.split('.');
-      this._domains.get(domainName).emit(eventName, messageObj.params);
-    }
+  public on<K extends keyof ProtocolMapping.Events>(
+    event: 'event',
+    listener: (message: { method: K; params: {} }) => void
+  ): this;
+  public on(event: string | symbol, listener: (...args: any[]) => void): this {
+    return super.on(event, listener);
   }
 }
 
@@ -162,6 +125,6 @@ class CdpClientImpl extends EventEmitter {
  * @param transport A transport object that will be used to send and receive raw CDP messages.
  * @returns A connected CDP client object.
  */
-export function connectCdp(transport: IServer) {
-  return new CdpClientImpl(transport) as unknown as CdpClient;
+export function createClient(connection: Connection, sessionId: string | null) {
+  return new CdpClientImpl(connection, sessionId) as unknown as CdpClient;
 }

@@ -15,7 +15,7 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpClient, connectCdp } from '../cdp';
+import { CdpClient, Connection } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
 import { ServerBinding, IServer } from '../utils/iServer';
 
@@ -49,7 +49,8 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
   window.document.title = 'BiDi Mapper';
 
-  const cdpClient = _createCdpClient();
+  const cdpConnection = _createCdpConnection();
+  const cdpClient = cdpConnection.browserClient();
   const bidiServer = _createBidiServer();
 
   // Needed to filter out info related to BiDi target.
@@ -65,7 +66,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   bidiServer.sendMessage('launched');
 })();
 
-function _createCdpClient() {
+function _createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements IServer {
@@ -86,9 +87,14 @@ function _createCdpClient() {
     async sendMessage(message: string): Promise<void> {
       window.cdp.send(message);
     }
+
+    close() {
+      this._onMessage = null;
+      window.cdp.onmessage = null;
+    }
   }
 
-  return connectCdp(new WindowCdpTransport());
+  return new Connection(new WindowCdpTransport());
 }
 
 function _createBidiServer() {

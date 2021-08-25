@@ -20,6 +20,7 @@
 export interface IServer {
   setOnMessage: (handler: (messageObj: any) => Promise<void>) => void;
   sendMessage: (messageObj: any) => Promise<any>;
+  close(): void;
 }
 
 /**
@@ -57,6 +58,7 @@ export abstract class AbstractServer implements IServer {
   }
 
   abstract sendMessage(messageObj: any): Promise<any>;
+  close(): void {}
 
   /**
    * Sets handler, which will be called for each CDP message, except commands.

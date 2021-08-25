@@ -49,6 +49,7 @@ export class MapperServer implements IServer {
   sendMessage(messageObj: string): Promise<void> {
     return this._sendBidiMessage(messageObj);
   }
+  close() {}
 
   private async _establishCdpSession(cdpUrl: string): Promise<void> {
     return new Promise((resolve) => {

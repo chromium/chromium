@@ -19,6 +19,7 @@ import { IServer } from '../utils/iServer';
 export class StubServer implements IServer {
   setOnMessage: ((messageObj: any) => Promise<any>) & SinonSpy<any[], any>;
   sendMessage: ((messageObj: any) => Promise<void>) & SinonSpy<any[], any>;
+  close: (() => void) & SinonSpy<any[], any>;
 
   getOnMessage(): (string: string) => void {
     assert.called(this.setOnMessage);
@@ -33,5 +34,6 @@ export class StubServer implements IServer {
       SinonSpy<any[], any>;
     this.setOnMessage = spy() as any as ((messageObj: any) => Promise<void>) &
       SinonSpy<any[], any>;
+    this.close = spy() as any as (() => void) & SinonSpy<any[], any>;
   }
 }

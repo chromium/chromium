@@ -17,6 +17,17 @@
         "DEBUG": "*",
         "PORT": "8080"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [],
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "TS_NODE_PROJECT": "${workspaceFolder}/src/tsconfig.json"
+      }
     }
   ]
 }
