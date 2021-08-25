@@ -535,6 +535,7 @@ void WebController::ExecuteVoidJsWithoutArguments(
     const std::string& js_snippet,
     WebControllerErrorInfoProto::WebAction web_action,
     base::OnceCallback<void(const ClientStatus&)> callback) {
+  // Wrapping the callback to suppress and free the keyboard.
   auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
       element, std::move(callback));
 
@@ -734,6 +735,7 @@ void WebController::ClickOrTapElement(
     return;
   }
 
+  // Wrapping the callback to suppress and free the keyboard.
   auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
       element, std::move(callback));
 
@@ -1391,34 +1393,38 @@ void WebController::SendKeyboardInput(
     key_events.emplace_back(
         SendKeyboardInputWorker::KeyEventFromCodepoint(codepoint));
   }
-  auto worker =
-      std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
-  auto* ptr = worker.get();
-  pending_workers_.emplace_back(std::move(worker));
-  ptr->Start(
-      element.node_frame_id(), key_events, key_press_delay_in_millisecond,
-      base::BindOnce(&DecorateWebControllerStatus,
-                     WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
-                     base::BindOnce(&WebController::OnSendKeyboardInputDone,
-                                    weak_ptr_factory_.GetWeakPtr(), ptr,
-                                    std::move(callback))));
+  SendKeyEvents(WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT, key_events,
+                key_press_delay_in_millisecond, element, std::move(callback));
 }
 
 void WebController::SendKeyEvent(
     const KeyEvent& key_event,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
+  SendKeyEvents(WebControllerErrorInfoProto::SEND_KEY_EVENT, {key_event}, 0,
+                element, std::move(callback));
+}
+
+void WebController::SendKeyEvents(
+    WebControllerErrorInfoProto::WebAction web_action,
+    const std::vector<KeyEvent>& key_events,
+    int key_press_delay,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  // Wrapping the callback to suppress and free the keyboard.
+  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
+      element, std::move(callback));
+
   auto worker =
       std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
   auto* ptr = worker.get();
   pending_workers_.emplace_back(std::move(worker));
   ptr->Start(
-      element.node_frame_id(), {key_event}, 0,
-      base::BindOnce(&DecorateWebControllerStatus,
-                     WebControllerErrorInfoProto::SEND_KEY_EVENT,
+      element.node_frame_id(), key_events, key_press_delay,
+      base::BindOnce(&DecorateWebControllerStatus, web_action,
                      base::BindOnce(&WebController::OnSendKeyboardInputDone,
                                     weak_ptr_factory_.GetWeakPtr(), ptr,
-                                    std::move(callback))));
+                                    std::move(wrapped_callback))));
 }
 
 void WebController::OnSendKeyboardInputDone(
@@ -1672,6 +1678,9 @@ base::OnceCallback<void(const ClientStatus&)>
 WebController::GetAssistantActionRunningStateRetainingCallback(
     const ElementFinder::Result& element_result,
     base::OnceCallback<void(const ClientStatus&)> callback) {
+  if (element_result.container_frame_host == nullptr) {
+    return callback;
+  }
   ContentAutofillDriver* content_autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(
           element_result.container_frame_host);
