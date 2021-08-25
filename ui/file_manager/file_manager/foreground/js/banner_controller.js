@@ -11,6 +11,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
+import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
 
 /**
  * Local storage key suffix for how many times a banner was shown.
@@ -129,8 +130,11 @@ export class BannerController extends EventTarget {
    * @return {Promise<void>}
    */
   async initialize() {
-    // TODO(benreich): Initialize banners in their priority order when
-    // implemented. This loading should be disabled for controller unit tests.
+    if (!this.disableBanners_) {
+      // Banners are initialized in their priority order. The order of the array
+      // denotes the priority of the banner, 0th index is highest priority.
+      this.setWarningBannersInOrder([LocalDiskLowSpaceBannerTagName]);
+    }
 
     for (const banner of this.warningBanners_) {
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;

@@ -20,7 +20,10 @@ group("closure_compile") {
 
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
-  js_files = [ "warning_banner.js" ]
+  js_files = [
+    "local_disk_low_space_banner.js",
+    "warning_banner.js",
+  ]
 }
 
 js_type_check("closure_compile_jsmodules") {
@@ -32,7 +35,18 @@ js_type_check("closure_compile_jsmodules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
 
-  deps = [ ":warning_banner" ]
+  deps = [
+    ":local_disk_low_space_banner",
+    ":warning_banner",
+  ]
+}
+
+js_library("local_disk_low_space_banner") {
+  deps = [
+    ":warning_banner",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
 }
 
 js_library("warning_banner") {

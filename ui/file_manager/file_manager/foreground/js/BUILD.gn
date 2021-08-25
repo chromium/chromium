@@ -195,6 +195,7 @@ js_library("actions_model") {
 js_library("banner_controller") {
   deps = [
     ":directory_model",
+    "ui/banners:local_disk_low_space_banner",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",
