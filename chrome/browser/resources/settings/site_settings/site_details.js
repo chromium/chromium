@@ -160,6 +160,7 @@ class SiteDetailsElement extends SiteDetailsElementBase {
     }
     const site = Router.getInstance().getQueryParameters().get('site');
     if (!site) {
+      Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
       return;
     }
     this.origin_ = site;
