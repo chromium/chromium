@@ -778,6 +778,9 @@ extern const char kGlobalMediaControlsOverlayControlsDescription[];
 extern const char kOpenscreenCastStreamingSessionName[];
 extern const char kOpenscreenCastStreamingSessionDescription[];
 
+extern const char kCastStreamingAv1Name[];
+extern const char kCastStreamingAv1Description[];
+
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 

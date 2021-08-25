@@ -3696,6 +3696,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOpenscreenCastStreamingSessionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kOpenscreenCastStreamingSession)},
 
+    {"enable-cast-streaming-av1", flag_descriptions::kCastStreamingAv1Name,
+     flag_descriptions::kCastStreamingAv1Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingAv1)},
+
     {"enable-cast-streaming-vp9", flag_descriptions::kCastStreamingVp9Name,
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingVp9)},

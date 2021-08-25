@@ -47970,6 +47970,7 @@ from previous Chrome versions.
   <int value="-1269093329" label="AndroidOmniboxPreviewsBadge:disabled"/>
   <int value="-1269084216" label="ash-md"/>
   <int value="-1268836676" label="disable-out-of-process-pdf"/>
+  <int value="-1268452697" label="CastStreamingAv1:disabled"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
@@ -48533,6 +48534,7 @@ from previous Chrome versions.
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825747847"
       label="AutofillEnableSupportForMoreStructureInAddresses:enabled"/>
+  <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>

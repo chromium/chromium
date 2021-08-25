@@ -16,6 +16,9 @@ COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kOpenscreenCastStreamingSession;
 
 COMPONENT_EXPORT(MIRRORING_SERVICE)
+extern const base::Feature kCastStreamingAv1;
+
+COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastStreamingVp9;
 
 }  // namespace features
