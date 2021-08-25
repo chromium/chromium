@@ -320,11 +320,6 @@ void ChromeNewWindowClient::NewTab() {
   browser->SetFocusToLocationBar();
 }
 
-void ChromeNewWindowClient::NewTabWithUrl(const GURL& url,
-                                          bool from_user_interaction) {
-  OpenUrlImpl(url, from_user_interaction);
-}
-
 void ChromeNewWindowClient::NewWindow(bool is_incognito,
                                       bool should_trigger_session_restore) {
   if (is_incognito && !IsIncognitoAllowed())
@@ -338,6 +333,11 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito,
       is_incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                    : profile,
       should_trigger_session_restore);
+}
+
+void ChromeNewWindowClient::OpenUrl(const GURL& url,
+                                    bool from_user_interaction) {
+  OpenUrlImpl(url, from_user_interaction);
 }
 
 void ChromeNewWindowClient::OpenCalculator() {

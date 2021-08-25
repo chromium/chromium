@@ -18,14 +18,14 @@ void CrosapiNewWindowDelegate::NewTab() {
   crosapi::BrowserManager::Get()->NewTab();
 }
 
-void CrosapiNewWindowDelegate::NewTabWithUrl(const GURL& url,
-                                             bool from_user_interaction) {
-  crosapi::BrowserManager::Get()->OpenUrl(url);
-}
-
 void CrosapiNewWindowDelegate::NewWindow(bool incognito,
                                          bool should_trigger_session_restore) {
   crosapi::BrowserManager::Get()->NewWindow(incognito);
+}
+
+void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
+                                       bool from_user_interaction) {
+  crosapi::BrowserManager::Get()->OpenUrl(url);
 }
 
 void CrosapiNewWindowDelegate::OpenCalculator() {

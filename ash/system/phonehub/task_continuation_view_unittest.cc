@@ -25,7 +25,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void,
-              NewTabWithUrl,
+              OpenUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
 };
@@ -120,8 +120,8 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
 
   for (auto* child : task_view()->chips_view_->children()) {
     ContinueBrowsingChip* chip = static_cast<ContinueBrowsingChip*>(child);
-    // NewTabWithUrl is expected to call after button pressed simulation.
-    EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+    // OpenUrl is expected to call after button pressed simulation.
+    EXPECT_CALL(new_window_delegate(), OpenUrl)
         .WillOnce([](const GURL& url, bool from_user_interaction) {
           EXPECT_EQ(GURL("https://www.example.com/tab1"), url);
           EXPECT_TRUE(from_user_interaction);

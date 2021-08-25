@@ -101,16 +101,16 @@ void OnPeripheralLimitedNotificationClicked(absl::optional<int> button_index) {
       UpdateNotificationPrefCount(/*clicked_settings=*/true);
       break;
     case ButtonIndex::kLearnMore:
-      NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+      NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                                /*from_user_interaction=*/true);
       break;
   }
   RemoveNotification(kPciePeripheralLimitedPerformanceNotificationId);
 }
 
 void OnGuestNotificationClicked(bool is_thunderbolt_only) {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
 
   if (is_thunderbolt_only) {
     RemoveNotification(kPciePeripheralGuestModeNotSupportedNotificationId);
@@ -121,14 +121,14 @@ void OnGuestNotificationClicked(bool is_thunderbolt_only) {
 }
 
 void OnPeripheralBlockedNotificationClicked() {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
   RemoveNotification(kPciePeripheralDeviceBlockedNotificationId);
 }
 
 void OnBillboardNotificationClicked() {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
   RemoveNotification(kPciePeripheralBillboardDeviceNotificationId);
 }
 

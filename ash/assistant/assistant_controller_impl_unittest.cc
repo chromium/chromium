@@ -78,7 +78,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void,
-              NewTabWithUrl,
+              OpenUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
 
@@ -164,7 +164,7 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
             EXPECT_TRUE(from_server);
           }));
 
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL("https://g.co/"), url);
         EXPECT_TRUE(from_user_interaction);

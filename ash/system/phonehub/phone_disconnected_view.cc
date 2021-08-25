@@ -53,7 +53,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
           InterstitialScreenEvent::kLearnMore,
           base::BindRepeating(
-              &NewWindowDelegate::NewTabWithUrl,
+              &NewWindowDelegate::OpenUrl,
               base::Unretained(NewWindowDelegate::GetInstance()),
               GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
               /*from_user_interaction=*/true)),

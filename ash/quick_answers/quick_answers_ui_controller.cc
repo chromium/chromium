@@ -71,7 +71,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
   if (chromeos::features::IsQuickAnswersV2Enabled()) {
-    NewWindowDelegate::GetInstance()->NewTabWithUrl(
+    NewWindowDelegate::GetInstance()->OpenUrl(
         GURL(kGoogleSearchUrlPrefix +
              net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
         /*from_user_interaction=*/true);

@@ -141,8 +141,8 @@ void ContinueBrowsingChip::ButtonPressed() {
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
   user_action_recorder_->RecordBrowserTabOpened();
 
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      url_, /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(url_,
+                                            /*from_user_interaction=*/true);
 
   // Close Phone Hub bubble in current display.
   views::Widget* const widget = GetWidget();

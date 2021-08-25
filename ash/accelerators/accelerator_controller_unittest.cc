@@ -247,7 +247,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
   MOCK_METHOD(void, OpenCalculator, (), (override));
   MOCK_METHOD(void, ShowKeyboardShortcutViewer, (), (override));
   MOCK_METHOD(void,
-              NewTabWithUrl,
+              OpenUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
 };
@@ -2387,7 +2387,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Setup the expectation that the learn more button opens this shortcut
   // help link.
-  EXPECT_CALL(*new_window_delegate_, NewTabWithUrl)
+  EXPECT_CALL(*new_window_delegate_, OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kKeyboardShortcutHelpPageUrl), url);
         EXPECT_TRUE(from_user_interaction);

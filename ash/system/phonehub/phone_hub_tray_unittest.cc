@@ -37,7 +37,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void,
-              NewTabWithUrl,
+              OpenUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
 };
@@ -285,7 +285,7 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
 
   // Clicking on the set up button should open the corresponding settings page
   // for the notification set up flow.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL("chrome://os-settings/multidevice/"
                        "features?showNotificationAccessSetupDialog"),
@@ -442,7 +442,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
 
   // Clicking "Learn More" button should open the corresponding help center
   // article in a browser tab.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
                   url);
@@ -463,7 +463,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
 
   // Clicking "Learn more" button should open the corresponding help center
   // article in a browser tab.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
                   url);

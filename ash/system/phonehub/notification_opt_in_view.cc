@@ -73,8 +73,8 @@ NotificationOptInView::~NotificationOptInView() = default;
 void NotificationOptInView::SetUpButtonPressed() {
   // Opens the notification set up dialog in settings to start the opt in flow.
   LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kMultideviceSettingsUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kMultideviceSettingsUrl),
+                                            /*from_user_interaction=*/true);
 }
 
 void NotificationOptInView::DismissButtonPressed() {

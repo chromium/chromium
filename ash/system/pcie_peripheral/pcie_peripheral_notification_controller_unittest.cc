@@ -44,7 +44,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void,
-              NewTabWithUrl,
+              OpenUrl,
               (const GURL& url, bool from_user_interaction),
               (override));
 };
@@ -161,7 +161,7 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtOnly) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -187,7 +187,7 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtAltMode) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -211,7 +211,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(0u, notification->buttons().size());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -238,7 +238,7 @@ TEST_F(PciePeripheralNotificationControllerTest, BillboardDeviceNotification) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -264,7 +264,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   // Ensure this notification has the two correct buttons.
   EXPECT_EQ(2u, notification->buttons().size());
 
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -274,7 +274,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(2, GetPrefNotificationCount());
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -284,7 +284,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(1, GetPrefNotificationCount());
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -372,7 +372,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
 
   // We will always show guest notifications, expect that the pref did not
   // decrement.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);
@@ -402,7 +402,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
 
   // We will always show guest notifications, expect that the pref did not
   // decrement.
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+  EXPECT_CALL(new_window_delegate(), OpenUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
         EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
         EXPECT_TRUE(from_user_interaction);

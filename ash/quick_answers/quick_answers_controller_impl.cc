@@ -267,8 +267,8 @@ void QuickAnswersControllerImpl::OnNoticeSettingsRequestedByUser() {
   quick_answers_ui_controller_->CloseUserNoticeView();
   notice_controller_->AcceptNotice(
       chromeos::quick_answers::NoticeInteractionType::kManageSettings);
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kAssistantRelatedInfoUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kAssistantRelatedInfoUrl),
+                                            /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
@@ -285,13 +285,13 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
 }
 
 void QuickAnswersControllerImpl::OpenQuickAnswersDogfoodLink() {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kDogfoodUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kDogfoodUrl),
+                                            /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kQuickAnswersSettingsUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kQuickAnswersSettingsUrl),
+                                            /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::MaybeDismissQuickAnswersNotice() {

@@ -202,7 +202,7 @@ void ShowShortcutsChangedNotification() {
 
         if (button_index.has_value()) {
           DCHECK_EQ(0, button_index.value());
-          NewWindowDelegate::GetInstance()->NewTabWithUrl(
+          NewWindowDelegate::GetInstance()->OpenUrl(
               GURL(kKeyboardShortcutHelpPageUrl),
               /*from_user_interaction=*/true);
         } else {
