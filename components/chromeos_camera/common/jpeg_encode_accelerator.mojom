@@ -47,6 +47,8 @@ interface JpegEncodeAccelerator {
                handle output_fd, uint32 output_buffer_size)
       => (int32 task_id, uint32 encoded_buffer_size, EncodeStatus status);
 
+  // TODO(mojahsu): To be deprecated.
+  //
   // Encodes the given DMA-buf. |task_id| is used to distinguish different
   // tasks. The size of input image defined in |coded_size_width| and
   // |coded_size_height| and the format |input_format| represents by its fourcc
@@ -68,5 +70,30 @@ interface JpegEncodeAccelerator {
       uint32 exif_buffer_size,
       int32 coded_size_width,
       int32 coded_size_height)
+      => (uint32 encoded_buffer_size, EncodeStatus status);
+
+  // Encodes the given DMA-buf. |task_id| is used to distinguish different
+  // tasks. The size of input image defined in |coded_size_width| and
+  // |coded_size_height| and the format |input_format| represents by its fourcc
+  // value. The plane information of input DMA-buf and output DMA-buf is stored
+  // in |input_planes| and |output_planes| respectively. Although the actual
+  // amount of buffers could be equal to or less than the number of planes, the
+  // amount of plane information |input_planes| and |output_planes| should be
+  // same as the number of planes. |exif_handle| is the shared memory buffer,
+  // with |exif_buffer_size| as size, containing Exif data which will be put
+  // onto APP1 segment in the output JPEG image. |quality| is the quality of
+  // JPEG image. The range is from 1~100. High value means high quality. When
+  // the task ends, it returns |status| as the status code and
+  // |encoded_buffer_size| is the actual size of the encoded JPEG.
+  EncodeWithDmaBufAndQuality(
+      int32 task_id,
+      uint32 input_format,
+      array<DmaBufPlane> input_planes,
+      array<DmaBufPlane> output_planes,
+      handle exif_handle,
+      uint32 exif_buffer_size,
+      int32 coded_size_width,
+      int32 coded_size_height,
+      int32 quality)
       => (uint32 encoded_buffer_size, EncodeStatus status);
 };

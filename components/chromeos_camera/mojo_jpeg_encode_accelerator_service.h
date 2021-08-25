@@ -83,6 +83,18 @@ class MojoJpegEncodeAcceleratorService
       int32_t coded_size_height,
       EncodeWithDmaBufCallback callback) override;
 
+  void EncodeWithDmaBufAndQuality(
+      int32_t task_id,
+      uint32_t input_format,
+      std::vector<chromeos_camera::mojom::DmaBufPlanePtr> input_planes,
+      std::vector<chromeos_camera::mojom::DmaBufPlanePtr> output_planes,
+      mojo::ScopedHandle exif_handle,
+      uint32_t exif_buffer_size,
+      int32_t coded_size_width,
+      int32_t coded_size_height,
+      int32_t quality,
+      EncodeWithDmaBufCallback callback) override;
+
   void NotifyEncodeStatus(
       int32_t task_id,
       size_t encoded_picture_size,
