@@ -214,3 +214,11 @@ export function getBookmarkFromDragEvent(e: DragEvent):
 
   return dragElement.dataBookmark;
 }
+
+export function isValidDropTarget(element: HTMLElement) {
+  return element.id === 'folder' || element.classList.contains('bookmark');
+}
+
+export function isBookmarkFolderElement(element: HTMLElement): boolean {
+  return element.id === 'folder';
+}

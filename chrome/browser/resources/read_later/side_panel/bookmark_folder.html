@@ -13,7 +13,6 @@
     border: none;
     box-sizing: border-box;
     color: currentColor;
-    content-visibility: auto;
     display: grid;
     grid-template-areas: 'arrow icon title';
     grid-template-columns: 20px 20px auto;
@@ -32,6 +31,17 @@
 
   .row:not([empty]):active {
     background-color: var(--cr-active-background-color);
+  }
+
+  .arrow,
+  .icon,
+  .title {
+    /**
+     * Keep content-visibility on inner children of .row instead of on .row
+     * as the CSS property seems to have bugs with rendering elements outside
+     * of .row when dragging elements around.
+     */
+    content-visibility: auto;
   }
 
   #arrow {
@@ -89,6 +99,31 @@
   #children {
     --node-depth: var(--child-depth);
     min-height: calc(var(--child-count, 0) * var(--row-height));
+  }
+
+  [drop-position='into'] {
+    background: var(--mwb-list-item-selected-background-color);
+  }
+
+  [drop-position='above'],
+  [drop-position='below'] {
+    position: relative;
+  }
+
+  [drop-position='above']::after,
+  [drop-position='below']::after {
+    background: var(--google-blue-refresh-500);
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    top: -1px;
+    width: 100%;
+  }
+
+  [drop-position='below']::after {
+    bottom: -1px;
+    top: auto;
   }
 </style>
 <div id="container" role="treeitem" aria-expanded="[[getAriaExpanded_(open_)]]">
