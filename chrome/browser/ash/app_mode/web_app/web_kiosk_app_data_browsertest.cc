@@ -32,16 +32,17 @@ const char kTitleKey[] = "name";
 const char kIconKey[] = "icon";
 const char kLaunchUrlKey[] = "launch_url";
 const char kIconPath[] = "chrome/test/data/load_image/image.png";
+const char kIconBadPath[] = "chrome/test/data/load_image/image.html";
 const char kIconUrl[] = "/load_image/image.png";
 const char kIconUrl2[] = "/load_image/fail_image.png";
 const char kLastIconUrlKey[] = "last_icon_url";
 const char kLaunchUrl[] = "https://example.com/launch";
 const char kStartUrl[] = "https://example.com/start";
 
-base::FilePath GetFullPathToImage() {
+base::FilePath GetFullPathToImage(bool valid) {
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-  return test_data_dir.Append(kIconPath);
+  return test_data_dir.Append(valid ? kIconPath : kIconBadPath);
 }
 
 }  // namespace
@@ -57,13 +58,13 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
     waiter_->Run();
   }
 
-  void SetCached(bool installed) {
+  void SetCached(bool installed, bool icon_valid = true) {
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
     auto app_dict = std::make_unique<base::DictionaryValue>();
 
     app_dict->SetString(app_key + '.' + std::string(kTitleKey), kAppTitle);
     app_dict->SetString(app_key + '.' + std::string(kIconKey),
-                        GetFullPathToImage().value());
+                        GetFullPathToImage(icon_valid).value());
     if (installed)
       app_dict->SetString(app_key + '.' + std::string(kLaunchUrlKey),
                           kLaunchUrl);
@@ -244,4 +245,23 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kStartUrl));
 }
 
+IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, InvalidIcon) {
+  SetCached(/*installed = */ false, /*icon_valid=*/false);
+  WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
+                           std::string(), /*icon_url*/ GURL());
+  base::RunLoop loop;
+  app_data.SetOnLoadedCallbackForTesting(loop.QuitClosure());
+
+  app_data.LoadFromCache();
+  app_data.LoadIcon();
+  loop.Run();
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
+  const std::string* icon_url_string =
+      g_browser_process->local_state()
+          ->GetDictionary(WebKioskAppManager::kWebKioskDictionaryName)
+          ->FindDictKey(KioskAppDataBase::kKeyApps)
+          ->FindDictKey(kAppId)
+          ->FindStringKey(kLastIconUrlKey);
+  ASSERT_FALSE(icon_url_string);
+}
 }  // namespace ash

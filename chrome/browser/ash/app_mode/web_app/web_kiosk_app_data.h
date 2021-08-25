@@ -53,9 +53,13 @@ class WebKioskAppData : public KioskAppDataBase {
   void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
   void OnIconLoadFailure() override;
 
-  void SetStatus(Status status);
+  // Updates |status_|. Based on |notify|, we will notify |delegate_| about data
+  // update.
+  void SetStatus(Status status, bool notify = true);
 
   void UpdateFromWebAppInfo(std::unique_ptr<WebApplicationInfo> app_info);
+
+  void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 
   Status status() const { return status_; }
   const GURL& install_url() const { return install_url_; }
@@ -79,6 +83,8 @@ class WebKioskAppData : public KioskAppDataBase {
   GURL icon_url_;  // Url of the icon in case nothing is cached.
   // Used to download icon from |icon_url_|.
   std::unique_ptr<IconFetcher> icon_fetcher_;
+
+  base::OnceClosure on_loaded_closure_for_testing_;
 
   base::WeakPtrFactory<WebKioskAppData> weak_ptr_factory_{this};
 };
