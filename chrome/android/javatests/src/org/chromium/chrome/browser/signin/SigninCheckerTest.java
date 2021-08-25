@@ -165,6 +165,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN})
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
