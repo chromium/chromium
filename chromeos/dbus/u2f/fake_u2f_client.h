@@ -20,8 +20,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   FakeU2FClient& operator=(const FakeU2FClient&) = delete;
 
   // U2FClient:
-  void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
   void IsUvpaa(const u2f::IsUvpaaRequest& request,
                DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
   void IsU2FEnabled(const u2f::IsUvpaaRequest& request,

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -32,26 +31,14 @@ void FidoChromeOSDiscovery::Start() {
     return;
   }
 
-  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
-      ::tpm_manager::GetSupportedFeaturesRequest(),
-      base::BindOnce(&FidoChromeOSDiscovery::OnGetSupportedFeatures,
+  chromeos::U2FClient::IsU2FServiceAvailable(
+      base::BindOnce(&FidoChromeOSDiscovery::OnU2FServiceAvailable,
                      weak_factory_.GetWeakPtr()));
-}
-
-void FidoChromeOSDiscovery::OnGetSupportedFeatures(
-    const ::tpm_manager::GetSupportedFeaturesReply& reply) {
-  if (reply.support_u2f()) {
-    chromeos::U2FClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&FidoChromeOSDiscovery::OnU2FServiceAvailable,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    FIDO_LOG(EVENT) << "Device does not support ChromeOSAuthenticator";
-    observer()->DiscoveryStarted(this, /*success=*/false);
-  }
 }
 
 void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
   if (!u2f_service_available) {
+    FIDO_LOG(DEBUG) << "Device does not support ChromeOSAuthenticator";
     observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }

@@ -116,33 +116,67 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
     expires_after="2022-01-23">
-  <owner>yichengli@chromium.org</owner>
   <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
   <summary>Records the outcome of GetAssertion on Chrome OS.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.MakeCredentialStatus"
     enum="WebAuthenticationChromeOSMakeCredentialResult"
     expires_after="2022-01-23">
-  <owner>yichengli@chromium.org</owner>
   <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
   <summary>Records the outcome of MakeCredential on Chrome OS.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
-    expires_after="2021-11-19">
-  <owner>yichengli@chromium.org</owner>
+    expires_after="2022-08-31">
   <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the number of records of the user's WebAuthn credentials created on
     Chrome OS.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledDuration"
+    units="ms" expires_after="2022-08-31">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>The duration of a u2fd IsU2fEnabled request.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledStatus"
+    enum="WebAuthenticationU2FClientStatus" expires_after="2022-01-23">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether a u2fd IsU2fEnabled DBus call completed successfully or
+    encountered an error.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.U2FClient.IsUvpaaDuration"
+    units="ms" expires_after="2022-08-31">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>The duration of a u2fd IsUvpaa request.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.U2FClient.IsUvpaaStatus"
+    enum="WebAuthenticationU2FClientStatus" expires_after="2022-01-23">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether a u2fd IsUvpaa DBus call completed successfully or
+    encountered an error.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.ChromeOS.UserVerificationRequired"
     enum="Boolean" expires_after="2021-11-19">
-  <owner>yichengli@chromium.org</owner>
   <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records whether the Chrome OS platform authenticator should try to verify
     the user (instead of requiring power button press). Note that a
