@@ -910,9 +910,15 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         pref_service, g_browser_process->local_state());
   }
 
+  if (!enabled)
+    return;
+
+  // Dictation is enabled. Check that appropriate nudges, dialogs and downloads
+  // are triggered.
   const std::string dictation_locale =
       pref_service->GetString(prefs::kAccessibilityDictationLocale);
-  if (!triggered_by_user && enabled) {
+  if (!triggered_by_user) {
+    // This Dictation change was not due to an explicit user action.
     const absl::optional<bool> offline_nudge =
         GetDictationOfflineNudgePrefForLocale(profile_, dictation_locale);
 
@@ -935,12 +941,14 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         DictionaryPrefUpdate update(
             pref_service, prefs::kAccessibilityDictationLocaleOfflineNudge);
         update.Get()->SetBoolKey(dictation_locale, false);
+        // Trigger an installation.
+        MaybeInstallSoda(dictation_locale);
       }
     }
-  }
-
-  if (triggered_by_user)
+  } else {
+    // Explicit user action. Show download notification or dialog.
     MaybeShowNetworkDictationDialogOrInstallSoda();
+  }
 }
 
 void AccessibilityManager::MaybeShowNetworkDictationDialogOrInstallSoda() {
