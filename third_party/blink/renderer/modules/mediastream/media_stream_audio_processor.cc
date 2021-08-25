@@ -11,7 +11,6 @@
 #include <array>
 #include <limits>
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -522,13 +521,11 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
 
   absl::optional<int> agc_startup_min_volume =
       Platform::Current()->GetAgcStartupMinimumVolume();
-  absl::optional<std::string> audio_processing_platform_config_json =
-      Platform::Current()->GetWebRTCAudioProcessingConfiguration();
 
   audio_processing_ = CreateWebRtcAudioProcessingModule(
       properties.ToAudioProcessingSettings(
           use_capture_multi_channel_processing_),
-      audio_processing_platform_config_json, agc_startup_min_volume);
+      agc_startup_min_volume);
 
   // Register as a listener for the echo cancellation playout reference signal.
   if (playout_data_source_) {

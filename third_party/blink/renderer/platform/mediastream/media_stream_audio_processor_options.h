@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_OPTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_OPTIONS_H_
 
-#include <string>
-
 #include "base/files/file.h"
 #include "build/build_config.h"
 #include "media/base/audio_processing.h"
@@ -94,14 +92,12 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 };
 
 // Creates and configures a webrtc::AudioProcessing audio processing module
-// (APM), based on the provided parameters. The optional parameters
-// |audio_processing_platform_config_json| and |agc_startup_min_volume| contain
-// specific parameter tunings provided by the platform. If possible, it is
-// preferred to instead use field trials for testing new parameter sets.
+// (APM), based on the provided parameters. The optional parameter
+// |agc_startup_min_volume| exists for legacy reasons. It is preferred to
+// instead use field trials for testing new parameters.
 PLATFORM_EXPORT rtc::scoped_refptr<AudioProcessing>
 CreateWebRtcAudioProcessingModule(
     const media::AudioProcessingSettings& settings,
-    absl::optional<std::string> audio_processing_platform_config_json,
     absl::optional<int> agc_startup_min_volume);
 
 // Starts the echo cancellation dump in
@@ -153,22 +149,13 @@ struct PLATFORM_EXPORT WebRtcAnalogAgcClippingControlParams {
 // Configures automatic gain control in `apm_config`. If analog gain control is
 // enabled and `hybrid_agc_params` is specified, then the hybrid AGC
 // configuration will be used - i.e., analog AGC1 and adaptive digital AGC2.
-// When only digital gain control is enabled and `compression_gain_db` is
-// specified, the AGC2 fixed digital controller is enabled.
 // TODO(bugs.webrtc.org/7494): Clean up once hybrid AGC experiment finalized.
 PLATFORM_EXPORT void ConfigAutomaticGainControl(
     const media::AudioProcessingSettings& settings,
     const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
     const absl::optional<WebRtcAnalogAgcClippingControlParams>&
         clipping_control_params,
-    absl::optional<double> compression_gain_db,
     webrtc::AudioProcessing::Config& apm_config);
-
-PLATFORM_EXPORT void PopulateApmConfig(
-    AudioProcessing::Config* apm_config,
-    const media::AudioProcessingSettings& settings,
-    const absl::optional<std::string>& audio_processing_platform_config_json,
-    absl::optional<double>* gain_control_compression_gain_db);
 
 }  // namespace blink
 

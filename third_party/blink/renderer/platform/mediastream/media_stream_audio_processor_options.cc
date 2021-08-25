@@ -9,68 +9,18 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/webrtc_switches.h"
 #include "third_party/webrtc/api/audio/echo_canceller3_config.h"
-#include "third_party/webrtc/api/audio/echo_canceller3_config_json.h"
 #include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace blink {
 namespace {
-
-using NoiseSuppression = webrtc::AudioProcessing::Config::NoiseSuppression;
-
-absl::optional<double> GetGainControlCompressionGain(
-    const base::Value& config) {
-  const base::Value* found = config.FindKey("gain_control_compression_gain_db");
-  if (!found)
-    return absl::nullopt;
-  double gain = found->GetDouble();
-  DCHECK_GE(gain, 0.f);
-  return gain;
-}
-
-absl::optional<double> GetPreAmplifierGainFactor(const base::Value& config) {
-  const base::Value* found = config.FindKey("pre_amplifier_fixed_gain_factor");
-  if (!found)
-    return absl::nullopt;
-  double factor = found->GetDouble();
-  DCHECK_GE(factor, 1.f);
-  return factor;
-}
-
-absl::optional<NoiseSuppression::Level> GetNoiseSuppressionLevel(
-    const base::Value& config) {
-  const base::Value* found = config.FindKey("noise_suppression_level");
-  if (!found)
-    return absl::nullopt;
-  int level = found->GetInt();
-  DCHECK_GE(level, static_cast<int>(NoiseSuppression::kLow));
-  DCHECK_LE(level, static_cast<int>(NoiseSuppression::kVeryHigh));
-  return static_cast<NoiseSuppression::Level>(level);
-}
-
-void GetExtraConfigFromJson(
-    const std::string& audio_processing_platform_config_json,
-    absl::optional<double>* gain_control_compression_gain_db,
-    absl::optional<double>* pre_amplifier_fixed_gain_factor,
-    absl::optional<NoiseSuppression::Level>* noise_suppression_level) {
-  auto config = base::JSONReader::Read(audio_processing_platform_config_json);
-  if (!config) {
-    LOG(ERROR) << "Failed to parse platform config JSON.";
-    return;
-  }
-  *gain_control_compression_gain_db = GetGainControlCompressionGain(*config);
-  *pre_amplifier_fixed_gain_factor = GetPreAmplifierGainFactor(*config);
-  *noise_suppression_level = GetNoiseSuppressionLevel(*config);
-}
 
 using ClippingPredictor = webrtc::AudioProcessing::Config::GainController1::
     AnalogGainController::ClippingPredictor;
@@ -257,20 +207,9 @@ void ConfigAutomaticGainControl(
     const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
     const absl::optional<WebRtcAnalogAgcClippingControlParams>&
         clipping_control_params,
-    absl::optional<double> compression_gain_db,
     AudioProcessing::Config& apm_config) {
-  // The AGC2 fixed digital controller is always enabled when automatic gain
-  // control is enabled, the experimental analog AGC is disabled and a
-  // compression gain is specified.
-  // TODO(bugs.webrtc.org/7494): Remove this option since it makes no sense to
-  // run a fixed digital gain after AGC1 adaptive digital.
-  const bool use_fixed_digital_agc2 =
-      settings.automatic_gain_control &&
-      !settings.experimental_automatic_gain_control &&
-      compression_gain_db.has_value();
   const bool use_hybrid_agc = hybrid_agc_params.has_value();
-  const bool agc1_enabled = settings.automatic_gain_control &&
-                            (use_hybrid_agc || !use_fixed_digital_agc2);
+  const bool agc1_enabled = settings.automatic_gain_control;
 
   // Configure AGC1.
   if (agc1_enabled) {
@@ -287,9 +226,8 @@ void ConfigAutomaticGainControl(
   // Configure AGC2.
   auto& agc2_config = apm_config.gain_controller2;
   if (settings.experimental_automatic_gain_control) {
-    // Experimental AGC is enabled. Hybrid AGC may or may not be enabled. Config
-    // AGC2 with adaptive mode and the given options, while ignoring
-    // `use_fixed_digital_agc2`.
+    // Experimental AGC is enabled. Hybrid AGC may or may not be enabled.
+    // Configure AGC2 with adaptive mode and the given options.
     agc2_config.enabled = use_hybrid_agc;
     agc2_config.fixed_digital.gain_db = 0.0f;
     agc2_config.adaptive_digital.enabled = use_hybrid_agc;
@@ -355,54 +293,11 @@ void ConfigAutomaticGainControl(
       clipping_predictor->use_predicted_step =
           clipping_control_params->use_predicted_step;
     }
-  } else if (use_fixed_digital_agc2) {
-    // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2
-    // with fixed gain mode.
-    agc2_config.enabled = true;
-    agc2_config.fixed_digital.gain_db = compression_gain_db.value();
-    agc2_config.adaptive_digital.enabled = false;
   }
-}
-
-void PopulateApmConfig(
-    AudioProcessing::Config* apm_config,
-    const media::AudioProcessingSettings& settings,
-    const absl::optional<std::string>& audio_processing_platform_config_json,
-    absl::optional<double>* gain_control_compression_gain_db) {
-  // TODO(crbug.com/895814): When Chrome uses AGC2, handle all JSON config via
-  // webrtc::AudioProcessing::Config.
-  absl::optional<double> pre_amplifier_fixed_gain_factor;
-  absl::optional<NoiseSuppression::Level> noise_suppression_level;
-  if (audio_processing_platform_config_json.has_value()) {
-    GetExtraConfigFromJson(audio_processing_platform_config_json.value(),
-                           gain_control_compression_gain_db,
-                           &pre_amplifier_fixed_gain_factor,
-                           &noise_suppression_level);
-  }
-
-  apm_config->high_pass_filter.enabled = settings.high_pass_filter;
-
-  if (pre_amplifier_fixed_gain_factor.has_value()) {
-    apm_config->pre_amplifier.enabled = true;
-    apm_config->pre_amplifier.fixed_gain_factor =
-        pre_amplifier_fixed_gain_factor.value();
-  }
-
-  apm_config->noise_suppression.enabled = settings.noise_suppression;
-  apm_config->noise_suppression.level =
-      noise_suppression_level.value_or(NoiseSuppression::kHigh);
-
-  apm_config->echo_canceller.enabled = settings.echo_cancellation;
-#if defined(OS_ANDROID)
-  apm_config->echo_canceller.mobile_mode = true;
-#else
-  apm_config->echo_canceller.mobile_mode = false;
-#endif
 }
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const media::AudioProcessingSettings& settings,
-    absl::optional<std::string> audio_processing_platform_config_json,
     absl::optional<int> agc_startup_min_volume) {
   // Experimental options provided at creation.
   // TODO(https://bugs.webrtc.org/5298): Replace with equivalent settings in
@@ -445,18 +340,9 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   // Create and configure the webrtc::AudioProcessing.
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
-    webrtc::EchoCanceller3Config aec3_config;
-    if (audio_processing_platform_config_json) {
-      aec3_config = webrtc::Aec3ConfigFromJsonString(
-          *audio_processing_platform_config_json);
-      bool config_parameters_already_valid =
-          webrtc::EchoCanceller3Config::Validate(&aec3_config);
-      RTC_DCHECK(config_parameters_already_valid);
-    }
-
     ap_builder.SetEchoControlFactory(
         std::unique_ptr<webrtc::EchoControlFactory>(
-            new webrtc::EchoCanceller3Factory(aec3_config)));
+            new webrtc::EchoCanceller3Factory()));
   }
   rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing_module =
       ap_builder.Create(config);
@@ -466,16 +352,21 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture =
       settings.multi_channel_capture_processing;
-
-  absl::optional<double> gain_control_compression_gain_db;
-  PopulateApmConfig(&apm_config, settings,
-                    audio_processing_platform_config_json,
-                    &gain_control_compression_gain_db);
+  apm_config.high_pass_filter.enabled = settings.high_pass_filter;
+  apm_config.noise_suppression.enabled = settings.noise_suppression;
+  apm_config.noise_suppression.level =
+      webrtc::AudioProcessing::Config::NoiseSuppression::Level::kHigh;
+  apm_config.echo_canceller.enabled = settings.echo_cancellation;
+#if defined(OS_ANDROID)
+  apm_config.echo_canceller.mobile_mode = true;
+#else
+  apm_config.echo_canceller.mobile_mode = false;
+#endif
+  apm_config.residual_echo_detector.enabled = false;
 
   // Set up gain control functionalities.
   ConfigAutomaticGainControl(settings, hybrid_agc_params,
-                             clipping_control_params,
-                             gain_control_compression_gain_db, apm_config);
+                             clipping_control_params, apm_config);
 
   // Ensure that 48 kHz APM processing is always active. This overrules the
   // default setting in WebRTC of 32 kHz for ARM platforms.
@@ -483,7 +374,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     apm_config.pipeline.maximum_internal_processing_rate = 48000;
   }
 
-  apm_config.residual_echo_detector.enabled = false;
   audio_processing_module->ApplyConfig(apm_config);
   return audio_processing_module;
 }

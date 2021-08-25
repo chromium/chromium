@@ -36,8 +36,6 @@ constexpr media::AudioProcessingSettings kAudioProcessingExperimentalAgc{
     .automatic_gain_control = true,
     .experimental_automatic_gain_control = true};
 
-constexpr double kCompressionGainDb = 10.0;
-
 constexpr WebRtcAnalogAgcClippingControlParams kClippingControlParams{
     .mode = 2,  // ClippingPredictor::Mode::kFixedStepClippingPeakPrediction
     .window_length = 111,
@@ -56,15 +54,14 @@ TEST(ConfigAutomaticGainControlTest, DoNotChangeApmConfig) {
   webrtc::AudioProcessing::Config apm_config;
 
   ConfigAutomaticGainControl(kAudioProcessingNoAgc, kHybridAgcParams,
-                             kClippingControlParams,
-                             /*compression_gain_db=*/7, apm_config);
+                             kClippingControlParams, apm_config);
   EXPECT_EQ(apm_config.gain_controller1, kDefaultConfig.gain_controller1);
   EXPECT_EQ(apm_config.gain_controller2, kDefaultConfig.gain_controller2);
 
   ConfigAutomaticGainControl(kAudioProcessingNoAgc,
                              /*hybrid_agc_params=*/absl::nullopt,
                              /*clipping_control_params=*/absl::nullopt,
-                             /*compression_gain_db=*/absl::nullopt, apm_config);
+                             apm_config);
   EXPECT_EQ(apm_config.gain_controller1, kDefaultConfig.gain_controller1);
   EXPECT_EQ(apm_config.gain_controller2, kDefaultConfig.gain_controller2);
 }
@@ -75,7 +72,7 @@ TEST(ConfigAutomaticGainControlTest, EnableDefaultAGC1) {
   ConfigAutomaticGainControl(kAudioProcessingNoExperimentalAgc,
                              /*hybrid_agc_params=*/absl::nullopt,
                              /*clipping_control_params=*/absl::nullopt,
-                             /*compression_gain_db=*/absl::nullopt, apm_config);
+                             apm_config);
 
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_EQ(
@@ -90,26 +87,12 @@ TEST(ConfigAutomaticGainControlTest, EnableDefaultAGC1) {
                    .clipping_predictor.enabled);
 }
 
-TEST(ConfigAutomaticGainControlTest, EnableFixedDigitalAGC2) {
-  webrtc::AudioProcessing::Config apm_config;
-
-  ConfigAutomaticGainControl(kAudioProcessingNoExperimentalAgc,
-                             /*hybrid_agc_params=*/absl::nullopt,
-                             /*clipping_control_params=*/absl::nullopt,
-                             kCompressionGainDb, apm_config);
-  EXPECT_FALSE(apm_config.gain_controller1.enabled);
-  EXPECT_TRUE(apm_config.gain_controller2.enabled);
-  EXPECT_FALSE(apm_config.gain_controller2.adaptive_digital.enabled);
-  EXPECT_FLOAT_EQ(apm_config.gain_controller2.fixed_digital.gain_db,
-                  kCompressionGainDb);
-}
-
 TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
   webrtc::AudioProcessing::Config apm_config;
 
   ConfigAutomaticGainControl(kAudioProcessingExperimentalAgc, kHybridAgcParams,
                              /*clipping_control_params=*/absl::nullopt,
-                             kCompressionGainDb, apm_config);
+                             apm_config);
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_EQ(
       apm_config.gain_controller1.mode,
@@ -119,8 +102,6 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
       webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
 #endif  // defined(OS_ANDROID)
   EXPECT_TRUE(apm_config.gain_controller2.enabled);
-  // `compression_gain_db` has no effect when hybrid AGC is active.
-  EXPECT_FLOAT_EQ(apm_config.gain_controller2.fixed_digital.gain_db, 0.0f);
   EXPECT_TRUE(apm_config.gain_controller2.adaptive_digital.enabled);
   EXPECT_EQ(apm_config.gain_controller2.adaptive_digital.dry_run,
             kHybridAgcParams.dry_run);
@@ -145,9 +126,9 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
 
 TEST(ConfigAutomaticGainControlTest, EnableClippingControl) {
   webrtc::AudioProcessing::Config apm_config;
-  ConfigAutomaticGainControl(
-      kAudioProcessingExperimentalAgc, /*hybrid_agc_params=*/absl::nullopt,
-      kClippingControlParams, kCompressionGainDb, apm_config);
+  ConfigAutomaticGainControl(kAudioProcessingExperimentalAgc,
+                             /*hybrid_agc_params=*/absl::nullopt,
+                             kClippingControlParams, apm_config);
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_TRUE(apm_config.gain_controller1.analog_gain_controller.enabled);
 
@@ -178,127 +159,6 @@ TEST(ConfigAutomaticGainControlTest, EnableClippingControl) {
             kClippingControlParams.use_predicted_step);
 }
 
-TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
-  webrtc::AudioProcessing::Config apm_config;
-  const media::AudioProcessingSettings settings;
-  absl::optional<double> gain_control_compression_gain_db;
-
-  PopulateApmConfig(&apm_config, settings,
-                    /*audio_processing_platform_config_json=*/absl::nullopt,
-                    &gain_control_compression_gain_db);
-  EXPECT_FALSE(gain_control_compression_gain_db.has_value());
-  EXPECT_TRUE(apm_config.high_pass_filter.enabled);
-  EXPECT_FALSE(apm_config.pre_amplifier.enabled);
-  EXPECT_TRUE(apm_config.noise_suppression.enabled);
-  EXPECT_EQ(apm_config.noise_suppression.level,
-            webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-  EXPECT_TRUE(apm_config.echo_canceller.enabled);
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(
-#else
-  EXPECT_FALSE(
-#endif
-      apm_config.echo_canceller.mobile_mode);
-}
-
-TEST(PopulateApmConfigTest, SetGainsInConfigJson) {
-  webrtc::AudioProcessing::Config apm_config;
-  const media::AudioProcessingSettings settings;
-  absl::optional<std::string> audio_processing_platform_config_json =
-      "{\"gain_control_compression_gain_db\": 10, "
-      "\"pre_amplifier_fixed_gain_factor\": 2.0}";
-  absl::optional<double> gain_control_compression_gain_db;
-
-  PopulateApmConfig(&apm_config, settings,
-                    audio_processing_platform_config_json,
-                    &gain_control_compression_gain_db);
-  EXPECT_TRUE(gain_control_compression_gain_db.has_value());
-  EXPECT_EQ(gain_control_compression_gain_db.value(), 10);
-  EXPECT_TRUE(apm_config.high_pass_filter.enabled);
-  EXPECT_TRUE(apm_config.pre_amplifier.enabled);
-  EXPECT_FLOAT_EQ(apm_config.pre_amplifier.fixed_gain_factor, 2.0);
-  EXPECT_TRUE(apm_config.noise_suppression.enabled);
-  EXPECT_EQ(apm_config.noise_suppression.level,
-            webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-  EXPECT_TRUE(apm_config.echo_canceller.enabled);
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(
-#else
-  EXPECT_FALSE(
-#endif
-      apm_config.echo_canceller.mobile_mode);
-}
-
-TEST(PopulateApmConfigTest, SetNoiseSuppressionLevelInConfigJson) {
-  webrtc::AudioProcessing::Config apm_config;
-  const media::AudioProcessingSettings settings;
-  absl::optional<std::string> audio_processing_platform_config_json =
-      "{\"noise_suppression_level\": 3}";
-  absl::optional<double> gain_control_compression_gain_db;
-
-  PopulateApmConfig(&apm_config, settings,
-                    audio_processing_platform_config_json,
-                    &gain_control_compression_gain_db);
-  EXPECT_FALSE(gain_control_compression_gain_db.has_value());
-  EXPECT_TRUE(apm_config.high_pass_filter.enabled);
-  EXPECT_FALSE(apm_config.pre_amplifier.enabled);
-  EXPECT_TRUE(apm_config.noise_suppression.enabled);
-  EXPECT_EQ(apm_config.noise_suppression.level,
-            webrtc::AudioProcessing::Config::NoiseSuppression::kVeryHigh);
-  EXPECT_TRUE(apm_config.echo_canceller.enabled);
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(
-#else
-  EXPECT_FALSE(
-#endif
-      apm_config.echo_canceller.mobile_mode);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, SetGainsInConfigJson) {
-  const media::AudioProcessingSettings settings{
-      .automatic_gain_control = true,
-      .experimental_automatic_gain_control = false};
-  absl::optional<std::string> audio_processing_platform_config_json =
-      "{\"gain_control_compression_gain_db\": 12.1212, "
-      "\"pre_amplifier_fixed_gain_factor\": 2.345}";
-
-  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
-      CreateWebRtcAudioProcessingModule(
-          settings, audio_processing_platform_config_json,
-          /*agc_startup_min_volume=*/absl::nullopt);
-  ASSERT_TRUE(!!apm);
-  webrtc::AudioProcessing::Config config = apm->GetConfig();
-
-  // Pre-amplifier is enabled if a gain factor is specified.
-  EXPECT_TRUE(config.pre_amplifier.enabled);
-  EXPECT_FLOAT_EQ(config.pre_amplifier.fixed_gain_factor, 2.345);
-
-  // Fixed digital AGC2 is enabled if AGC is on, analog AGC is off, and a
-  // compression gain is specified.
-  EXPECT_TRUE(config.gain_controller2.enabled);
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
-  EXPECT_FLOAT_EQ(config.gain_controller2.fixed_digital.gain_db, 12.1212);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     SetNoiseSuppressionLevelInConfigJson) {
-  const media::AudioProcessingSettings settings{.noise_suppression = true};
-  absl::optional<std::string> audio_processing_platform_config_json =
-      "{\"noise_suppression_level\": 3}";
-
-  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
-      CreateWebRtcAudioProcessingModule(
-          settings, audio_processing_platform_config_json,
-          /*agc_startup_min_volume=*/absl::nullopt);
-  ASSERT_TRUE(!!apm);
-
-  webrtc::AudioProcessing::Config config = apm->GetConfig();
-
-  EXPECT_TRUE(config.noise_suppression.enabled);
-  EXPECT_EQ(config.noise_suppression.level,
-            webrtc::AudioProcessing::Config::NoiseSuppression::kVeryHigh);
-}
-
 // Verify the default audio processing effects.
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   const AudioProcessingProperties properties;
@@ -308,7 +168,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   rtc::scoped_refptr<webrtc::AudioProcessing> apm =
       CreateWebRtcAudioProcessingModule(
           settings,
-          /*audio_processing_platform_config_json=*/absl::nullopt,
           /*agc_startup_min_volume=*/absl::nullopt);
   ASSERT_TRUE(!!apm);
 
@@ -318,11 +177,14 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   EXPECT_TRUE(config.pipeline.multi_channel_capture);
   EXPECT_EQ(config.pipeline.maximum_internal_processing_rate, 48000);
   EXPECT_TRUE(config.high_pass_filter.enabled);
+  EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
   EXPECT_FALSE(config.gain_controller2.enabled);
   EXPECT_TRUE(config.noise_suppression.enabled);
+  EXPECT_EQ(config.noise_suppression.level,
+            webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
   EXPECT_FALSE(config.voice_detection.enabled);
   EXPECT_FALSE(config.residual_echo_detector.enabled);
 
@@ -344,7 +206,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
     rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
-            /*audio_processing_platform_config_json=*/absl::nullopt,
             /*agc_startup_min_volume=*/absl::nullopt);
     ASSERT_TRUE(!!apm);
     webrtc::AudioProcessing::Config config = apm->GetConfig();
@@ -362,7 +223,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
     rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
-            /*audio_processing_platform_config_json=*/absl::nullopt,
             /*agc_startup_min_volume=*/absl::nullopt);
     ASSERT_TRUE(!!apm);
     webrtc::AudioProcessing::Config config = apm->GetConfig();
@@ -383,7 +243,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
     rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
-            /*audio_processing_platform_config_json=*/absl::nullopt,
             /*agc_startup_min_volume=*/absl::nullopt);
     ASSERT_TRUE(!!apm);
     webrtc::AudioProcessing::Config config = apm->GetConfig();
@@ -399,7 +258,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
     rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
-            /*audio_processing_platform_config_json=*/absl::nullopt,
             /*agc_startup_min_volume=*/absl::nullopt);
     ASSERT_TRUE(!!apm);
     webrtc::AudioProcessing::Config config = apm->GetConfig();
@@ -412,27 +270,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
     EXPECT_FALSE(config.transient_suppression.enabled);
 #endif
   }
-}
-
-// There is no way to test what echo cancellation configuration is applied, but
-// this test at least exercises the code that handles echo cancellation
-// configuration from JSON.
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     ApplyEchoCancellationConfigFromJson) {
-  // Arbitrary settings to have something to parse.
-  absl::optional<std::string> audio_processing_platform_config_json =
-      "{\"aec3\": {"
-      "\"comfort_noise\": {\"noise_floor_dbfs\": -123.4567},"
-      "\"echo_model\": {\"min_noise_floor_power\": 1234567.8},"
-      "},}";
-  const media::AudioProcessingSettings settings{.echo_cancellation = true};
-  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
-      CreateWebRtcAudioProcessingModule(
-          settings, audio_processing_platform_config_json,
-          /*agc_startup_min_volume=*/absl::nullopt);
-  ASSERT_TRUE(!!apm);
-  webrtc::AudioProcessing::Config config = apm->GetConfig();
-  EXPECT_TRUE(config.echo_canceller.enabled);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
