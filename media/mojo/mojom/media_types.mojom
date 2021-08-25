@@ -138,6 +138,20 @@ enum EncryptionType {
   kEncryptedWithClearLead,
 };
 
+// See media/base/svc_scalability_mode.h for description.
+// This mojo enum only list hardware codec supported scalability mode.
+enum SVCScalabilityMode {
+  // kUnsupportedMode is used to handle the enum differ of C++ and Mojo
+  // SVCScalabilityMode in ToMojom, should not be used in other place.
+  kUnsupportedMode,
+  kL1T2,
+  kL1T3,
+  kL2T2Key,
+  kL2T3Key,
+  kL3T2Key,
+  kL3T3Key,
+};
+
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
 struct VideoColorSpace {

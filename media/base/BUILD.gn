@@ -295,6 +295,8 @@ source_set("base") {
     "supported_types.h",
     "supported_video_decoder_config.cc",
     "supported_video_decoder_config.h",
+    "svc_scalability_mode.cc",
+    "svc_scalability_mode.h",
     "text_cue.cc",
     "text_cue.h",
     "text_ranges.cc",

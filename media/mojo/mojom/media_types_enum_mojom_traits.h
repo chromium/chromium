@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "media/base/renderer_factory_selector.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
@@ -100,6 +101,84 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return true;
       case media::mojom::EncryptionType::kEncryptedWithClearLead:
         *output = ::media::EncryptionType::kEncryptedWithClearLead;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
+  static media::mojom::SVCScalabilityMode ToMojom(
+      media::SVCScalabilityMode input) {
+    switch (input) {
+      case media::SVCScalabilityMode::kL1T2:
+        return media::mojom::SVCScalabilityMode::kL1T2;
+      case media::SVCScalabilityMode::kL1T3:
+        return media::mojom::SVCScalabilityMode::kL1T3;
+      case media::SVCScalabilityMode::kL2T2Key:
+        return media::mojom::SVCScalabilityMode::kL2T2Key;
+      case media::SVCScalabilityMode::kL2T3Key:
+        return media::mojom::SVCScalabilityMode::kL2T3Key;
+      case media::SVCScalabilityMode::kL3T2Key:
+        return media::mojom::SVCScalabilityMode::kL3T2Key;
+      case media::SVCScalabilityMode::kL3T3Key:
+        return media::mojom::SVCScalabilityMode::kL3T3Key;
+      case media::SVCScalabilityMode::kL2T1:
+      case media::SVCScalabilityMode::kL2T2:
+      case media::SVCScalabilityMode::kL2T3:
+      case media::SVCScalabilityMode::kL3T1:
+      case media::SVCScalabilityMode::kL3T2:
+      case media::SVCScalabilityMode::kL3T3:
+      case media::SVCScalabilityMode::kL2T1h:
+      case media::SVCScalabilityMode::kL2T2h:
+      case media::SVCScalabilityMode::kL2T3h:
+      case media::SVCScalabilityMode::kS2T1:
+      case media::SVCScalabilityMode::kS2T2:
+      case media::SVCScalabilityMode::kS2T3:
+      case media::SVCScalabilityMode::kS2T1h:
+      case media::SVCScalabilityMode::kS2T2h:
+      case media::SVCScalabilityMode::kS2T3h:
+      case media::SVCScalabilityMode::kS3T1:
+      case media::SVCScalabilityMode::kS3T2:
+      case media::SVCScalabilityMode::kS3T3:
+      case media::SVCScalabilityMode::kS3T1h:
+      case media::SVCScalabilityMode::kS3T2h:
+      case media::SVCScalabilityMode::kS3T3h:
+      case media::SVCScalabilityMode::kL2T2KeyShift:
+      case media::SVCScalabilityMode::kL2T3KeyShift:
+      case media::SVCScalabilityMode::kL3T2KeyShift:
+      case media::SVCScalabilityMode::kL3T3KeyShift:
+        NOTREACHED();
+        return media::mojom::SVCScalabilityMode::kUnsupportedMode;
+    }
+  }
+
+  static bool FromMojom(media::mojom::SVCScalabilityMode input,
+                        media::SVCScalabilityMode* output) {
+    switch (input) {
+      case media::mojom::SVCScalabilityMode::kUnsupportedMode:
+        NOTREACHED();
+        return false;
+      case media::mojom::SVCScalabilityMode::kL1T2:
+        *output = media::SVCScalabilityMode::kL1T2;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL1T3:
+        *output = media::SVCScalabilityMode::kL1T3;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T2Key:
+        *output = media::SVCScalabilityMode::kL2T2Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T3Key:
+        *output = media::SVCScalabilityMode::kL2T3Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T2Key:
+        *output = media::SVCScalabilityMode::kL3T2Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T3Key:
+        *output = media::SVCScalabilityMode::kL3T3Key;
         return true;
     }
 
