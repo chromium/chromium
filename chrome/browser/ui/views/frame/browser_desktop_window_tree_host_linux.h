@@ -57,6 +57,9 @@ class BrowserDesktopWindowTreeHostLinux
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
 
+  // BrowserWindowTreeHostPlatform:
+  void FrameTypeChanged() override;
+
   // views::DesktopWindowTreeHostLinuxImpl:
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;

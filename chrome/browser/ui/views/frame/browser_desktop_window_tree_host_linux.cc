@@ -95,6 +95,11 @@ bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
 }
 
+void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
+  DesktopWindowTreeHostPlatform::FrameTypeChanged();
+  UpdateFrameHints();
+}
+
 bool BrowserDesktopWindowTreeHostLinux::SupportsMouseLock() {
   auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
   if (!wayland_extension)
