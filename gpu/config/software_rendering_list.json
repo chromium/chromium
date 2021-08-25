@@ -737,11 +737,11 @@
     {
       "id": 105,
       "description": "GPU raster broken on PowerVR SGX even on Lollipop",
-      "cr_bugs": [461456],
+      "cr_bugs": [461456, 1243361],
       "os": {
         "type": "android"
       },
-      "gl_renderer": "PowerVR SGX.*",
+      "gl_renderer": "PowerVR SGX \\d+",
       "features": [
         "accelerated_2d_canvas",
         "gpu_rasterization"
