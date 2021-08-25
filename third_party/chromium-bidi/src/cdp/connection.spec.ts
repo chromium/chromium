@@ -109,7 +109,7 @@ describe('Connection', function () {
       })
     );
 
-    const sessionClient = conn.sessionClient(SOME_SESSION_ID);
+    const sessionClient = conn.sessionClient(SOME_SESSION_ID)!;
     chai.assert.isNotNull(sessionClient);
     sessionClient.Page.on('frameNavigated', sessionCallback);
 
@@ -134,7 +134,7 @@ describe('Connection', function () {
       })
     );
 
-    const otherSessionClient = conn.sessionClient(ANOTHER_SESSION_ID);
+    const otherSessionClient = conn.sessionClient(ANOTHER_SESSION_ID)!;
     chai.assert.isNotNull(otherSessionClient);
     otherSessionClient.Page.on('loadEventFired', otherSessionCallback);
 

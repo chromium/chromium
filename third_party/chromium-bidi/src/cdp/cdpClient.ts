@@ -107,7 +107,10 @@ class CdpClientImpl extends EventEmitter {
 
     // Next, get the correct domain instance and tell it to emit the strongly typed event.
     const [domainName, eventName] = method.split('.');
-    this._domains.get(domainName).emit(eventName, params);
+    const domain = this._domains.get(domainName);
+    if (domain) {
+      domain.emit(eventName, params);
+    }
   }
 
   public on<K extends keyof ProtocolMapping.Events>(

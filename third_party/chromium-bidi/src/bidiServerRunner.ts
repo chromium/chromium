@@ -40,6 +40,8 @@ export class BidiServerRunner {
     const server = http.createServer(function (request, response) {
       debugInternal(new Date() + ' Received request for ' + request.url);
 
+      if (!request.url) return response.end(404);
+
       // Needed for WPT compatibility.
       if (request.url.startsWith('/session')) {
         response.writeHead(200, {
@@ -167,14 +169,14 @@ export class BidiServerRunner {
 
 class BidiServer implements IServer {
   private _handlers: ((messageStr: string) => void)[] = new Array();
-  private _initialised: boolean = false;
-  private _sendBidiMessage: (messageStr: string) => Promise<void>;
+  private _sendBidiMessage: ((messageStr: string) => Promise<void>) | null =
+    null;
 
   setOnMessage(handler: (messageStr: string) => Promise<void>): void {
     this._handlers.push(handler);
   }
   sendMessage(messageStr: any): Promise<void> {
-    if (!this._initialised)
+    if (!this._sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
 
     return this._sendBidiMessage(messageStr);
@@ -183,7 +185,6 @@ class BidiServer implements IServer {
   close() {}
 
   initialise(sendBidiMessage: (messageStr: string) => Promise<void>): void {
-    this._initialised = true;
     this._sendBidiMessage = sendBidiMessage;
   }
 

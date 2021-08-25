@@ -1,13 +1,10 @@
 import { Protocol } from 'devtools-protocol';
 
 export class Context {
-  _targetInfo: Protocol.Target.TargetInfo;
-  _contextId: string;
-  _sessionId: string;
+  _targetInfo?: Protocol.Target.TargetInfo;
+  _sessionId?: string;
 
-  constructor(contextId: string) {
-    this._contextId = contextId;
-  }
+  constructor(private _contextId: string) {}
 
   _setSessionId(sessionId: string): void {
     this._sessionId = sessionId;
@@ -21,15 +18,15 @@ export class Context {
     this._updateTargetInfo(targetInfo);
   }
 
-  getId(): string {
+  public get id(): string {
     return this._contextId;
   }
 
-  toBidi(): any {
+  toBidi() {
     return {
-      context: this._targetInfo.targetId,
-      parent: this._targetInfo.openerId ? this._targetInfo.openerId : null,
-      url: this._targetInfo.url,
+      context: this._targetInfo!.targetId,
+      parent: this._targetInfo!.openerId ? this._targetInfo!.openerId : null,
+      url: this._targetInfo!.url,
     };
   }
 }

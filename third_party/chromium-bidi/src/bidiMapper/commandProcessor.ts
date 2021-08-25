@@ -26,9 +26,6 @@ interface BidiCommandMessage {
 }
 
 export class CommandProcessor {
-  private _cdpClient: CdpClient;
-  private _bidiServer: IServer;
-  private _selfTargetId: string;
   private _contextProcessor: BrowsingContextProcessor;
 
   static run(cdpClient: CdpClient, bidiServer: IServer, selfTargetId: string) {
@@ -42,16 +39,10 @@ export class CommandProcessor {
   }
 
   private constructor(
-    cdpClient: CdpClient,
-    bidiServer: IServer,
-    selfTargetId: string
+    private _cdpClient: CdpClient,
+    private _bidiServer: IServer,
+    private _selfTargetId: string
   ) {
-    this._bidiServer = bidiServer;
-    this._cdpClient = cdpClient;
-    this._selfTargetId = selfTargetId;
-  }
-
-  private run() {
     this._contextProcessor = new BrowsingContextProcessor(
       this._cdpClient,
       this._selfTargetId,
@@ -62,7 +53,9 @@ export class CommandProcessor {
         return this._onContextDestroyed(t);
       }
     );
+  }
 
+  private run() {
     this._cdpClient.Target.on('attachedToTarget', (params) => {
       this._contextProcessor.handleAttachedToTargetEvent(params);
     });

@@ -2,7 +2,7 @@ import { IServer } from '../utils/iServer';
 import WebSocket from 'ws';
 
 export class WebSocketTransport implements IServer {
-  private _onMessage?: (message: string) => void;
+  private _onMessage: ((message: string) => void) | null = null;
 
   constructor(private _ws: WebSocket) {
     this._ws.on('message', (message: string) => {

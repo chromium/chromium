@@ -33,7 +33,7 @@
     "@types/debug": "^4.1.6",
     "@types/mocha": "^8.2.2",
     "@types/sinon": "^10.0.2",
-    "@types/websocket": "^1.0.2",
+    "@types/websocket": "^1.0.4",
     "@types/ws": "^7.4.4",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",

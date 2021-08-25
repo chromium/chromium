@@ -6,6 +6,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noImplicitAny": true
+    "strict": true
   }
 }

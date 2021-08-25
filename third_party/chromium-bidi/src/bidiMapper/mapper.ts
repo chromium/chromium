@@ -28,7 +28,7 @@ declare global {
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
     cdp: {
       send: (message: string) => void;
-      onmessage: (message: string) => void;
+      onmessage: ((message: string) => void) | null;
     };
 
     // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
@@ -70,7 +70,7 @@ function _createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements IServer {
-    private _onMessage?: (message: string) => void;
+    private _onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {

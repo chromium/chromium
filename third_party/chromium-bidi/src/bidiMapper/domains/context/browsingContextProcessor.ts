@@ -50,8 +50,9 @@ export class BrowsingContextProcessor {
   }
 
   private _getContext(contextId: string): Context {
-    if (!this._isKnownContext(contextId)) throw new Error('context not found');
-    return this._contexts.get(contextId);
+    const context = this._contexts.get(contextId);
+    if (!context) throw new Error('context not found');
+    return context;
   }
 
   private _isKnownContext(contextId: string): boolean {
@@ -93,7 +94,7 @@ export class BrowsingContextProcessor {
   ) {
     logContext('detachedFromTarget event recevied', params);
 
-    const targetId = params.targetId;
+    const targetId = params.targetId!;
     if (!this._isKnownContext(targetId)) return;
 
     const context = this._getOrCreateContext(targetId);
@@ -101,7 +102,7 @@ export class BrowsingContextProcessor {
 
     if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
 
-    this._contexts.delete(context._contextId);
+    this._contexts.delete(context.id);
   }
 
   async process_createContext(params: any): Promise<any> {

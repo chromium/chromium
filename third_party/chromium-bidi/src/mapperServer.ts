@@ -26,20 +26,33 @@ import { CdpClient, Connection, WebSocketTransport } from './cdp';
 
 export class MapperServer implements IServer {
   private _handlers: ((messageObj: any) => void)[] = new Array();
-  private _mapperCdpClient: CdpClient;
-  private _launchedPromiseResolve: () => void;
-  private _launchedPromise: Promise<void> = new Promise((resolve) => {
-    this._launchedPromiseResolve = resolve;
-  });
 
   static async create(
     cdpUrl: string,
     mapperContent: string
   ): Promise<MapperServer> {
-    const mapper = new MapperServer();
     const cdpConnection = await this._establishCdpConnection(cdpUrl);
-    await mapper._initMapper(cdpConnection, mapperContent);
-    return mapper;
+    try {
+      const mapperCdpClient = await this._initMapper(
+        cdpConnection,
+        mapperContent
+      );
+      return new MapperServer(cdpConnection, mapperCdpClient);
+    } catch (e) {
+      cdpConnection.close();
+      throw e;
+    }
+  }
+
+  private constructor(
+    private _cdpConnection: Connection,
+    private _mapperCdpClient: CdpClient
+  ) {
+    this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
+    this._mapperCdpClient.Runtime.on(
+      'consoleAPICalled',
+      this._onConsoleAPICalled
+    );
   }
 
   setOnMessage(handler: (messageObj: any) => void): void {
@@ -48,7 +61,9 @@ export class MapperServer implements IServer {
   sendMessage(messageObj: string): Promise<void> {
     return this._sendBidiMessage(messageObj);
   }
-  close() {}
+  close() {
+    this._cdpConnection.close();
+  }
 
   private static async _establishCdpConnection(
     cdpUrl: string
@@ -84,12 +99,6 @@ export class MapperServer implements IServer {
     params: Protocol.Runtime.BindingCalledEvent
   ) => {
     if (params.name === 'sendBidiResponse') {
-      // Needed to check when Mapper is launched on the frontend.
-      if (params.payload === '"launched"') {
-        this._launchedPromiseResolve();
-        return;
-      }
-
       this._onBidiMessage(params.payload);
     }
   };
@@ -97,16 +106,17 @@ export class MapperServer implements IServer {
   private _onConsoleAPICalled = async (
     params: Protocol.Runtime.ConsoleAPICalledEvent
   ) => {
-    debugLog.apply(
-      null,
+    debugLog(
+      'consoleAPICalled %s %O',
+      params.type,
       params.args.map((arg) => arg.value)
     );
   };
 
-  private async _initMapper(
+  private static async _initMapper(
     cdpConnection: Connection,
     mapperContent: string
-  ): Promise<void> {
+  ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
     // await browserClient.Log.enable();
@@ -119,31 +129,49 @@ export class MapperServer implements IServer {
     const { sessionId: mapperSessionId } =
       await browserClient.Target.attachToTarget({ targetId, flatten: true });
 
-    this._mapperCdpClient = cdpConnection.sessionClient(mapperSessionId);
-    this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
-    this._mapperCdpClient.Runtime.on(
-      'consoleAPICalled',
-      this._onConsoleAPICalled
-    );
+    const mapperCdpClient = cdpConnection.sessionClient(mapperSessionId);
+    if (!mapperCdpClient) {
+      throw new Error('Unable to connect to mapper CDP target');
+    }
 
-    await this._mapperCdpClient.Runtime.enable();
+    await mapperCdpClient.Runtime.enable();
 
     await browserClient.Target.exposeDevToolsProtocol({
       bindingName: 'cdp',
       targetId,
     });
 
-    await this._mapperCdpClient.Runtime.addBinding({
+    await mapperCdpClient.Runtime.addBinding({
       name: 'sendBidiResponse',
     });
-    await this._mapperCdpClient.Runtime.evaluate({ expression: mapperContent });
+
+    const launchedPromise = new Promise<void>((resolve) => {
+      const onBindingCalled = ({
+        name,
+        payload,
+      }: Protocol.Runtime.BindingCalledEvent) => {
+        // Needed to check when Mapper is launched on the frontend.
+        if (name === 'sendBidiResponse' && payload === '"launched"') {
+          mapperCdpClient.Runtime.removeListener(
+            'bindingCalled',
+            onBindingCalled
+          );
+          resolve();
+        }
+      };
+
+      mapperCdpClient.Runtime.on('bindingCalled', onBindingCalled);
+    });
+
+    await mapperCdpClient.Runtime.evaluate({ expression: mapperContent });
 
     // Let Mapper know what is it's TargetId to filter out related targets.
-    await this._mapperCdpClient.Runtime.evaluate({
+    await mapperCdpClient.Runtime.evaluate({
       expression: 'window.setSelfTargetId(' + JSON.stringify(targetId) + ')',
     });
 
-    await this._launchedPromise;
+    await launchedPromise;
     debugInternal('Launched!');
+    return mapperCdpClient;
   }
 }
