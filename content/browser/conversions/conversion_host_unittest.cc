@@ -1026,44 +1026,5 @@ TEST_F(ConversionHostTest, AndroidConversion_BadScheme) {
 }
 #endif
 
-class ConversionHostNoInitTest : public ::testing::Test {};
-
-TEST(ConversionHostNoInitTest, AppImpression_Valid) {
-  absl::optional<blink::Impression> impression =
-      ConversionHost::ParseImpressionFromApp("9223372036854775807",
-                                             "https://example.com",
-                                             "https://example2.com", 1234);
-  EXPECT_EQ(9223372036854775807ull, impression->impression_data);
-  EXPECT_EQ("example.com", impression->conversion_destination.host());
-  EXPECT_EQ("example2.com", impression->reporting_origin->host());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1234), impression->expiry);
-}
-
-TEST(ConversionHostNoInitTest, AppImpression_Valid_NoOptionals) {
-  absl::optional<blink::Impression> impression =
-      ConversionHost::ParseImpressionFromApp("9223372036854775807",
-                                             "https://example.com", "", 0);
-  EXPECT_EQ(9223372036854775807ull, impression->impression_data);
-  EXPECT_EQ("example.com", impression->conversion_destination.host());
-  EXPECT_EQ(absl::nullopt, impression->reporting_origin);
-  EXPECT_EQ(absl::nullopt, impression->expiry);
-}
-
-TEST(ConversionHostNoInitTest, AppImpression_Invalid_Destination) {
-  EXPECT_EQ(absl::nullopt, ConversionHost::ParseImpressionFromApp(
-                               "12345", "http://bad.com", "", 0));
-}
-
-TEST(ConversionHostNoInitTest, AppImpression_Invalid_ReportTo) {
-  EXPECT_EQ(absl::nullopt,
-            ConversionHost::ParseImpressionFromApp(
-                "12345", "https://example.com", "http://bad.com", 0));
-}
-
-TEST(ConversionHostNoInitTest, AppImpression_Invalid_EventId) {
-  EXPECT_EQ(absl::nullopt, ConversionHost::ParseImpressionFromApp(
-                               "-12345", "https://example.com", "", 0));
-}
-
 }  // namespace
 }  // namespace content

@@ -58,12 +58,6 @@ class CONTENT_EXPORT ConversionHost
       const url::Origin& impression_origin,
       const blink::Impression& impression);
 
-  static absl::optional<blink::Impression> ParseImpressionFromApp(
-      const std::string& attribution_source_event_id,
-      const std::string& attribution_destination,
-      const std::string& attribution_report_to,
-      int64_t attribution_expiry) WARN_UNUSED_RESULT;
-
   static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
       const blink::Impression& impression) WARN_UNUSED_RESULT;
 

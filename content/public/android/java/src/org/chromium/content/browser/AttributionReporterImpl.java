@@ -7,6 +7,7 @@ package org.chromium.content.browser;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.AttributionReporter;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -25,10 +26,22 @@ public class AttributionReporterImpl extends AttributionReporter {
                 webContents, sourcePackageName, sourceEventId, destination, reportTo, expiry);
     }
 
+    /**
+     * @see AttributionReporter#reportAppImpression.
+     */
+    @Override
+    public void reportAppImpression(BrowserContextHandle browserContext, String sourcePackageName,
+            String sourceEventId, String destination, String reportTo, long expiry) {
+        AttributionReporterImplJni.get().reportAppImpression(
+                browserContext, sourcePackageName, sourceEventId, destination, reportTo, expiry);
+    }
+
     @NativeMethods
     interface Natives {
         void reportAttributionForCurrentNavigation(WebContents webContents,
                 String sourcePackageName, String sourceEventId, String destination, String reportTo,
                 long expiry);
+        void reportAppImpression(BrowserContextHandle browserContext, String sourcePackageName,
+                String sourceEventId, String destination, String reportTo, long expiry);
     }
 }

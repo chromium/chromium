@@ -36,6 +36,17 @@ public abstract class AttributionReporter {
             String sourcePackageName, String sourceEventId, String destination, String reportTo,
             long expiry);
 
+    /**
+     * Report an Impression Attribution coming from an app - for example, when the user is shown an
+     * ad in an app. This Attribution is not associated with any navigation.
+     *
+     * @param browserContext The BrowserContextHandle in which we're currently running.
+     * @see LoadUrlParams#setAttributionParameters for the rest of the parameters.
+     */
+    public abstract void reportAppImpression(BrowserContextHandle browserContext,
+            String sourcePackageName, String sourceEventId, String destination, String reportTo,
+            long expiry);
+
     public static void setInstanceForTesting(AttributionReporter reporter) {
         sAttributionReporterForTesting = reporter;
     }

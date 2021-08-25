@@ -13,10 +13,10 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/strcat.h"
-#include "content/browser/conversions/conversion_host.h"
+#include "content/browser/conversions/conversion_host_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/common/url_utils.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
@@ -319,10 +319,10 @@ void NavigationControllerAndroid::LoadUrl(
     DCHECK(!params.initiator_origin);
     // At the moment, source package name is only used for attribution.
     DCHECK(attribution_source_event_id);
-    params.initiator_origin = OriginFromPackageName(
+    params.initiator_origin = OriginFromAndroidPackageName(
         ConvertJavaStringToUTF8(env, source_package_name));
 
-    params.impression = ConversionHost::ParseImpressionFromApp(
+    params.impression = conversion_host_utils::ParseImpressionFromApp(
         ConvertJavaStringToUTF8(env, attribution_source_event_id),
         ConvertJavaStringToUTF8(env, attribution_destination),
         attribution_report_to
@@ -510,13 +510,6 @@ jboolean NavigationControllerAndroid::IsEntryMarkedToBeSkipped(
     const base::android::JavaParamRef<jobject>& obj,
     jint index) {
   return navigation_controller_->IsEntryMarkedToBeSkipped(index);
-}
-
-// static
-url::Origin NavigationControllerAndroid::OriginFromPackageName(
-    const std::string& package) {
-  return url::Origin::Create(
-      GURL(base::StrCat({content::kAndroidAppScheme, ":", package})));
 }
 
 }  // namespace content

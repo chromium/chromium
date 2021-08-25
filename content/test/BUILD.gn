@@ -1953,6 +1953,7 @@ test("content_unittests") {
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/conversions/conversion_host_unittest.cc",
+    "../browser/conversions/conversion_host_utils_unittest.cc",
     "../browser/conversions/conversion_manager_impl_unittest.cc",
     "../browser/conversions/conversion_network_sender_impl_unittest.cc",
     "../browser/conversions/conversion_policy_unittest.cc",
@@ -2342,6 +2343,7 @@ test("content_unittests") {
     sources += [
       "../browser/accessibility/browser_accessibility_android_unittest.cc",
       "../browser/android/nfc_host_unittest.cc",
+      "../browser/conversions/attribution_reporter_android_unittest.cc",
       "../browser/renderer_host/input/web_input_event_builders_android_unittest.cc",
       "../browser/tracing/background_reached_code_tracing_observer_android_unittest.cc",
       "../browser/web_contents/color_chooser_unittest.cc",

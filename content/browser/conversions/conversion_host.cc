@@ -11,8 +11,8 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "content/browser/conversions/conversion_host_utils.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_page_metrics.h"
@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/url_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
@@ -73,14 +74,6 @@ void RecordRegisterConversionAllowed(bool allowed) {
 
 void RecordRegisterImpressionAllowed(bool allowed) {
   base::UmaHistogramBoolean("Conversions.RegisterImpressionAllowed", allowed);
-}
-
-bool IsAndroidAppOrigin(const absl::optional<url::Origin>& origin) {
-#if defined(OS_ANDROID)
-  return origin && origin->scheme() == kAndroidAppScheme;
-#else
-  return false;
-#endif
 }
 
 }  // namespace
@@ -247,46 +240,10 @@ void ConversionHost::VerifyAndStoreImpression(
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     ConversionManager& conversion_manager) {
-  // Convert |impression| into a StorableImpression that can be forwarded to
-  // storage. If a reporting origin was not provided, default to the conversion
-  // destination for reporting.
-  const url::Origin& reporting_origin = !impression.reporting_origin
-                                            ? impression_origin
-                                            : *impression.reporting_origin;
-
-  const bool allowed =
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-          web_contents()->GetBrowserContext(),
-          ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          &impression_origin, /*conversion_origin=*/nullptr, &reporting_origin);
+  bool allowed = conversion_host_utils::VerifyAndStoreImpression(
+      source_type, impression_origin, impression,
+      web_contents()->GetBrowserContext(), conversion_manager);
   RecordRegisterImpressionAllowed(allowed);
-  if (!allowed)
-    return;
-
-  const bool impression_origin_trustworthy =
-      network::IsOriginPotentiallyTrustworthy(impression_origin) ||
-      IsAndroidAppOrigin(impression_origin);
-  // Conversion measurement is only allowed in secure contexts.
-  if (!impression_origin_trustworthy ||
-      !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(
-          impression.conversion_destination)) {
-    return;
-  }
-
-  base::Time impression_time = base::Time::Now();
-
-  const ConversionPolicy& policy = conversion_manager.GetConversionPolicy();
-  StorableImpression storable_impression(
-      policy.GetSanitizedImpressionData(impression.impression_data),
-      impression_origin, impression.conversion_destination, reporting_origin,
-      impression_time,
-      policy.GetExpiryTimeForImpression(impression.expiry, impression_time,
-                                        source_type),
-      source_type, impression.priority,
-      /*impression_id=*/absl::nullopt);
-
-  conversion_manager.HandleImpression(std::move(storable_impression));
 }
 
 void ConversionHost::RegisterConversion(
@@ -428,37 +385,6 @@ void ConversionHost::BindReceiver(
   if (!conversion_host)
     return;
   conversion_host->receivers_.Bind(rfh, std::move(receiver));
-}
-
-// static
-absl::optional<blink::Impression> ConversionHost::ParseImpressionFromApp(
-    const std::string& source_event_id,
-    const std::string& destination,
-    const std::string& report_to,
-    int64_t expiry) {
-  // Java API should have rejected these already.
-  DCHECK(!source_event_id.empty() && !destination.empty());
-
-  blink::Impression impression;
-  if (!base::StringToUint64(source_event_id, &impression.impression_data))
-    return absl::nullopt;
-
-  impression.conversion_destination = url::Origin::Create(GURL(destination));
-  if (!network::IsOriginPotentiallyTrustworthy(
-          impression.conversion_destination)) {
-    return absl::nullopt;
-  }
-
-  if (!report_to.empty()) {
-    impression.reporting_origin = url::Origin::Create(GURL(report_to));
-    if (!network::IsOriginPotentiallyTrustworthy(*impression.reporting_origin))
-      return absl::nullopt;
-  }
-
-  if (expiry != 0)
-    impression.expiry = base::TimeDelta::FromMilliseconds(expiry);
-
-  return impression;
 }
 
 // static

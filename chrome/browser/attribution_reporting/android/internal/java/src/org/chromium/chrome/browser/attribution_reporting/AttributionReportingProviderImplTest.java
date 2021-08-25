@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.attribution_reporting;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,21 +21,44 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.content_public.browser.AttributionReporter;
+import org.chromium.content_public.browser.BrowserStartupController;
 
 /**
  * Unit tests for the AttributionReportingProviderImpl
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
 public class AttributionReportingProviderImplTest {
+    private static final String EVENT_ID = "12345";
+    private static final String CONVERSION_URL = "https://example.com";
+    private static final String REPORT_TO_URL = "https://other.com";
+    private static final Long EXPIRY = 60000L;
+
     @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
+
+    @Rule
+    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Mock
+    public AttributionReporter mAttributionReporter;
 
     private ContentProviderClient mContentProviderClient;
     private Uri mContentUri;
@@ -43,10 +70,12 @@ public class AttributionReportingProviderImplTest {
         mContentUri = Uri.parse("content://" + authority);
         mContentProviderClient =
                 context.getContentResolver().acquireContentProviderClient(mContentUri);
+
+        AttributionReporter.setInstanceForTesting(mAttributionReporter);
     }
 
-    private ContentValues makeContentValues(
-            String eventId, String destination, String reportTo, String expiry) {
+    public static ContentValues makeContentValues(
+            String eventId, String destination, String reportTo, Long expiry) {
         ContentValues values = new ContentValues();
         values.put(AttributionConstants.EXTRA_ATTRIBUTION_SOURCE_EVENT_ID, eventId);
         values.put(AttributionConstants.EXTRA_ATTRIBUTION_DESTINATION, destination);
@@ -57,88 +86,27 @@ public class AttributionReportingProviderImplTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testInvalidAttribution_Disabled() throws Exception {
-        ContentValues values = new ContentValues();
-        values.put("badkey", "value");
-        Assert.assertNull(mContentProviderClient.insert(mContentUri, values));
-    }
-
-    @Test
-    @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testValidAttribution_Disabled() throws Exception {
-        ContentValues values = makeContentValues("event", "destination", "reportTo", "expiry");
-        Assert.assertNull(mContentProviderClient.insert(mContentUri, values));
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testInvalidAttribution_Enabled() throws Exception {
-        ContentValues values = new ContentValues();
-        values.put("badkey", "value");
-        Exception exception = null;
-        try {
-            mContentProviderClient.insert(mContentUri, values);
-        } catch (IllegalArgumentException e) {
-            exception = e;
-        }
-        Assert.assertNotNull(exception);
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testValidAttribution_Enabled() throws Exception {
-        ContentValues values = makeContentValues("event", "destination", "reportTo", "expiry");
+    public void testValidAttribution_Enabled_WithNative() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowserStartupController.getInstance().startBrowserProcessesSync(
+                    LibraryProcessType.PROCESS_BROWSER, false);
+        });
+        ContentValues values = makeContentValues(EVENT_ID, CONVERSION_URL, REPORT_TO_URL, EXPIRY);
         Uri uri = mContentProviderClient.insert(mContentUri, values);
         Assert.assertEquals(Uri.EMPTY, uri);
+        Mockito.verify(mAttributionReporter, Mockito.times(1))
+                .reportAppImpression(any(),
+                        eq(ContextUtils.getApplicationContext().getPackageName()), eq(EVENT_ID),
+                        eq(CONVERSION_URL), eq(REPORT_TO_URL), eq(EXPIRY));
     }
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testQuery() throws Exception {
-        Exception exception = null;
-        try {
-            mContentProviderClient.query(mContentUri, null, null, null, null);
-        } catch (UnsupportedOperationException e) {
-            exception = e;
-        }
-        Assert.assertNotNull(exception);
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testDelete() throws Exception {
-        Exception exception = null;
-        try {
-            mContentProviderClient.delete(mContentUri, null, null);
-        } catch (UnsupportedOperationException e) {
-            exception = e;
-        }
-        Assert.assertNotNull(exception);
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testUpdate() throws Exception {
-        Exception exception = null;
-        try {
-            mContentProviderClient.update(mContentUri, null, null, null);
-        } catch (UnsupportedOperationException e) {
-            exception = e;
-        }
-        Assert.assertNotNull(exception);
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
-    public void testGetType() throws Exception {
-        Assert.assertNull(mContentProviderClient.getType(mContentUri));
+    public void testValidAttribution_Enabled_WithoutNative() throws Exception {
+        ContentValues values = makeContentValues(EVENT_ID, CONVERSION_URL, REPORT_TO_URL, EXPIRY);
+        Uri uri = mContentProviderClient.insert(mContentUri, values);
+        Assert.assertEquals(Uri.EMPTY, uri);
+        Mockito.verify(mAttributionReporter, Mockito.times(0))
+                .reportAppImpression(any(), any(), any(), any(), any(), anyLong());
     }
 }

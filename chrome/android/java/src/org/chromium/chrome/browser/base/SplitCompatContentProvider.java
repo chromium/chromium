@@ -90,6 +90,10 @@ public class SplitCompatContentProvider extends ContentProvider {
             return mContentProvider.getContext();
         }
 
+        protected final String getCallingPackage() {
+            return mContentProvider.getCallingPackage();
+        }
+
         public abstract Cursor query(Uri uri, String[] projection, String selection,
                 String[] selectionArgs, String sortOrder);
         public abstract Uri insert(Uri uri, ContentValues values);
