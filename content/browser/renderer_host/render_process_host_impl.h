@@ -8,51 +8,36 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
-#include <queue>
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/process/process.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
-#include "content/browser/media/frameless_media_interface_proxy.h"
-#include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/tracing/tracing_service_controller.h"
-#include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
+#include "content/common/media/media_log_records.mojom-forward.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "ipc/ipc_channel_proxy.h"
-#include "media/media_buildflags.h"
+#include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -63,7 +48,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/network_isolation_key.h"
-#include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -72,7 +56,6 @@
 #include "services/tracing/public/mojom/traced_process.mojom-forward.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom-forward.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
@@ -80,6 +63,7 @@
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
@@ -99,13 +83,10 @@ class CommandLine;
 class PersistentMemoryAllocator;
 }  // namespace base
 
-namespace url {
-class Origin;
-}
-
-namespace tracing {
-class SystemTracingService;
-}
+namespace blink {
+class AssociatedInterfaceRegistry;
+class StorageKey;
+}  // namespace blink
 
 namespace perfetto {
 namespace protos {
@@ -115,17 +96,23 @@ class RenderProcessHost;
 }  // namespace protos
 }  // namespace perfetto
 
+namespace tracing {
+class SystemTracingService;
+}
+
+namespace url {
+class Origin;
+}
+
 namespace viz {
 class GpuClient;
 }
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace content {
 class AgentSchedulingGroupHost;
+class EmbeddedFrameSinkProviderImpl;
 class FileSystemManagerImpl;
+class FramelessMediaInterfaceProxy;
 class InProcessChildThreadParams;
 class IsolationContext;
 class MediaStreamTrackMetricsHost;
