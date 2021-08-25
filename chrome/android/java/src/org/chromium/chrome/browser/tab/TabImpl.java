@@ -27,11 +27,13 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -1528,7 +1530,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
             }
-            View compositorView = getActivity().getCompositorViewHolder();
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                    getActivity().getCompositorViewHolderSupplier();
+            View compositorView = compositorViewHolderSupplier.get();
             webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
 
             CriticalPersistedTabData.from(this).setWebContentsState(null);

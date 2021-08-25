@@ -78,7 +78,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
     private boolean isKeyboardVisible() {
         CustomTabActivity activity = mTestRule.getActivity();
         return activity.getWindowAndroid().getKeyboardDelegate().isKeyboardShowing(
-                activity, activity.getCompositorViewHolder());
+                activity, activity.getCompositorViewHolderForTesting());
     }
 
     @Test

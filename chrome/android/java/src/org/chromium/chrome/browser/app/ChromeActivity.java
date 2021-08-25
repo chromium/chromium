@@ -202,6 +202,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -668,10 +669,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * This function triggers the layout inflation. If subclasses override {@link
-     * #doLayoutInflation}, no calls to {@link #getCompositorViewHolder()} can be done until
-     * inflation is complete and {@link #onInitialLayoutInflationComplete()} is called. If the
+     * #doLayoutInflation}, no calls to {@link #getCompositorViewHolderSupplier().get()} can be done
+     * until inflation is complete and {@link #onInitialLayoutInflationComplete()} is called. If the
      * subclass does not override {@link #doLayoutInflation}, then {@link
-     * #getCompositorViewHolder()} is safe to be called after calling super.
+     * #getCompositorViewHolderSupplier().get()} is safe to be called after calling super.
      */
     @Override
     protected final void triggerLayoutInflation() {
@@ -2020,15 +2021,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * @deprecated Use {@link #getCompositorViewHolderSupplier()} instead.
-     * @return A {@link CompositorViewHolder} instance.
-     */
-    @Deprecated
-    public CompositorViewHolder getCompositorViewHolder() {
-        return mCompositorViewHolderSupplier.get();
-    }
-
-    /**
      * Gets the browser controls manager, creates it unless already created.
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
      *         use {@link BrowserControlsManagerSupplier}.
@@ -2113,10 +2105,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mRootUiCoordinator.getTopUiThemeColorProvider());
         compositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
 
+        SwipeHandler swipeHandler = layoutManager.getToolbarSwipeHandler();
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()
-                && getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler() != null) {
-            controlContainer.setSwipeHandler(
-                    getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler());
+                && swipeHandler != null) {
+            controlContainer.setSwipeHandler(swipeHandler);
         }
 
         mActivityTabProvider.setLayoutStateProvider(layoutManager);
@@ -2844,5 +2836,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         printingController.startPrint(
                 new TabPrinter(currentTabSupplier.get()), new PrintManagerDelegateImpl(activity));
         return true;
+    }
+
+    /**
+     * Returns a {@link CompositorViewHolder} instance for testing.
+     */
+    public CompositorViewHolder getCompositorViewHolderForTesting() {
+        return mCompositorViewHolderSupplier.get();
     }
 }

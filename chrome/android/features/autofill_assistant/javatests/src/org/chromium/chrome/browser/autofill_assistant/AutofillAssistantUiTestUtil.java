@@ -475,7 +475,7 @@ class AutofillAssistantUiTestUtil {
                             .getWindowAndroid()
                             .getKeyboardDelegate()
                             .isKeyboardShowing(testRule.getActivity(),
-                                    testRule.getActivity().getCompositorViewHolder());
+                                    testRule.getActivity().getCompositorViewHolderForTesting());
             String errorMsg = "Timeout while waiting for the keyboard to be "
                     + (isShowing ? "visible" : "hidden");
             Criteria.checkThat(errorMsg, isKeyboardShowing, Matchers.is(isShowing));
@@ -593,7 +593,8 @@ class AutofillAssistantUiTestUtil {
                 / coordinates.getDeviceScaleFactor();
 
         int[] compositorLocation = new int[2];
-        testRule.getActivity().getCompositorViewHolder().getLocationOnScreen(compositorLocation);
+        testRule.getActivity().getCompositorViewHolderForTesting().getLocationOnScreen(
+                compositorLocation);
         int offsetY = compositorLocation[1]
                 + testRule.getActivity().getBrowserControlsManager().getContentOffset();
 

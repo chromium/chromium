@@ -313,7 +313,7 @@ public class TabGridDialogTest {
 
         // Calculate expected values of animation source rect.
         mHasReceivedSourceRect = false;
-        View parentView = cta.getCompositorViewHolder();
+        View parentView = cta.getCompositorViewHolderForTesting();
         Rect parentRect = new Rect();
         parentView.getGlobalVisibleRect(parentRect);
         Rect sourceRect = new Rect();
@@ -546,7 +546,7 @@ public class TabGridDialogTest {
     public void testSelectionEditorPosition() {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        View parentView = cta.getCompositorViewHolder();
+        View parentView = cta.getCompositorViewHolderForTesting();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
@@ -1123,7 +1123,7 @@ public class TabGridDialogTest {
         CriteriaHelper.pollUiThread(()
                                             -> isEnabled
                         == KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
-                                cta, cta.getCompositorViewHolder()));
+                                cta, cta.getCompositorViewHolderForTesting()));
     }
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
@@ -1216,7 +1216,7 @@ public class TabGridDialogTest {
         int largeMargin = (int) cta.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
         int topMargin = isPortrait ? largeMargin : smallMargin;
         int sideMargin = isPortrait ? smallMargin : largeMargin;
-        View parentView = cta.getCompositorViewHolder();
+        View parentView = cta.getCompositorViewHolderForTesting();
         Rect parentRect = new Rect();
         parentView.getGlobalVisibleRect(parentRect);
 
@@ -1246,7 +1246,7 @@ public class TabGridDialogTest {
         // Wait until the keyboard is hidden to make sure the edit has taken effect.
         KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
         CriteriaHelper.pollUiThread(
-                () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder()));
+                () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
     }
 
     private void verifyFirstCardTitle(String title) {
@@ -1281,7 +1281,7 @@ public class TabGridDialogTest {
         assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                                      : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                 bottomControls.getImportantForAccessibility());
-        View compositorViewHolder = cta.getCompositorViewHolder();
+        View compositorViewHolder = cta.getCompositorViewHolderForTesting();
         assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                                      : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                 compositorViewHolder.getImportantForAccessibility());
@@ -1339,7 +1339,7 @@ public class TabGridDialogTest {
             View titleTextView = cta.findViewById(R.id.tab_group_toolbar).findViewById(R.id.title);
             KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
             boolean keyboardVisible =
-                    delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder());
+                    delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting());
             boolean isFocused = titleTextView.isFocused();
             return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
         });

@@ -101,7 +101,7 @@ public class TabSelectionEditorTest {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
                     mActivityTestRule.getActivity(), mParentView, mTabModelSelector,
                     mActivityTestRule.getActivity().getTabContentManager(), getMode(),
-                    mActivityTestRule.getActivity().getCompositorViewHolder());
+                    mActivityTestRule.getActivity().getCompositorViewHolderForTesting());
 
             mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
             mTabSelectionEditorLayout =

@@ -84,7 +84,7 @@ public class TabUmaTest {
                 /* ChromeActivityNativeDelegate */ cta, /* isCustomTab= */ false,
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(), /* TabCreatorManager */ cta,
-                cta::getTabModelSelector, cta::getCompositorViewHolder,
+                cta::getTabModelSelector, cta.getCompositorViewHolderSupplier(),
                 cta.getModalDialogManagerSupplier(), cta::getSnackbarManager,
                 cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(), cta.getWindowAndroid(),

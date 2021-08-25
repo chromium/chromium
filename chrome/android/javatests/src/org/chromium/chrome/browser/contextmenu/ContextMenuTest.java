@@ -552,8 +552,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                 "Number of open tabs does not match", numOpenedTabs, tabModel.getCount());
 
         // Wait for any new tab animation to finish if we're being driven by the compositor.
-        final LayoutManagerImpl layoutDriver =
-                mDownloadTestRule.getActivity().getCompositorViewHolder().getLayoutManager();
+        final LayoutManagerImpl layoutDriver = mDownloadTestRule.getActivity()
+                                                       .getCompositorViewHolderForTesting()
+                                                       .getLayoutManager();
         CriteriaHelper.pollUiThread(() -> {
             return layoutDriver.getActiveLayout().shouldDisplayContentOverlay();
         }, "Background tab animation not finished.");

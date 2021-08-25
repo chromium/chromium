@@ -405,7 +405,7 @@ class ContextualSearchFakeServer
                 OverlayContentProgressObserver progressObserver, ChromeActivity activity,
                 float barHeight) {
             super(contentDelegate, progressObserver, activity, false, barHeight,
-                    activity.getCompositorViewHolder(), activity.getWindowAndroid(),
+                    activity.getCompositorViewHolderForTesting(), activity.getWindowAndroid(),
                     activity::getActivityTab);
         }
 

@@ -439,11 +439,12 @@ class ManualFillingMediator extends EmptyTabObserver
             mAccessorySheet.hide();
             // The compositor should relayout the view when the sheet is hidden. This is necessary
             // to trigger events that rely on the relayout (like toggling the overview button):
-            CompositorViewHolder compositorViewHolder = mActivity.getCompositorViewHolder();
-            if (compositorViewHolder != null) {
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                    mActivity.getCompositorViewHolderSupplier();
+            if (compositorViewHolderSupplier.hasValue()) {
                 // The CompositorViewHolder is null when the activity is in the process of being
                 // destroyed which also renders relayouting pointless.
-                compositorViewHolder.requestLayout();
+                compositorViewHolderSupplier.get().requestLayout();
             }
         }
     }

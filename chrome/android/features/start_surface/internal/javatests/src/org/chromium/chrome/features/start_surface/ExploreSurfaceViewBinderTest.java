@@ -79,8 +79,8 @@ public class ExploreSurfaceViewBinderTest {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
             mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(
                     mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getCompositorViewHolder(), mPropertyModel, true,
-                    mBottomSheetController, new ObservableSupplierImpl<>(),
+                    mActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
+                    mPropertyModel, true, mBottomSheetController, new ObservableSupplierImpl<>(),
                     mScrollableContainerDelegate,
                     mActivityTestRule.getActivity().getSnackbarManager(),
                     mActivityTestRule.getActivity().getShareDelegateSupplier(),

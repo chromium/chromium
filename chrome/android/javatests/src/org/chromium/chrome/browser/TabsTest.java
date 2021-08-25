@@ -961,7 +961,7 @@ public class TabsTest {
         // Listen for changes in the layout to indicate the swipe has completed.
         final CallbackHelper staticLayoutCallbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getCompositorViewHolder().getLayoutManager().addSceneChangeObserver(
+            activity.getCompositorViewHolderForTesting().getLayoutManager().addSceneChangeObserver(
                     new SceneChangeObserver() {
                         @Override
                         public void onTabSelectionHinted(int tabId) {}
