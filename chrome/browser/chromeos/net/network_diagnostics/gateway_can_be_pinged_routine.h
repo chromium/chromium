@@ -21,6 +21,9 @@ namespace network_diagnostics {
 // Tests whether a device can ping all the gateways it is connected to.
 class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
  public:
+  using GatewayCanBePingedRoutineCallback =
+      mojom::NetworkDiagnosticsRoutines::GatewayCanBePingedCallback;
+
   explicit GatewayCanBePingedRoutine(
       chromeos::DebugDaemonClient* debug_daemon_client);
   GatewayCanBePingedRoutine(const GatewayCanBePingedRoutine&) = delete;

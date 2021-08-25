@@ -467,8 +467,8 @@ void FakeCrosHealthdService::RequestNetworkHealthForTesting(
 
 void FakeCrosHealthdService::RunLanConnectivityRoutineForTesting(
     chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-        RunLanConnectivityCallback callback) {
-  network_diagnostics_routines_->RunLanConnectivity(std::move(callback));
+        LanConnectivityCallback callback) {
+  network_diagnostics_routines_->LanConnectivity(std::move(callback));
 }
 
 absl::optional<FakeCrosHealthdService::RoutineUpdateParams>

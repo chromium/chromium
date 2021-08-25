@@ -267,6 +267,115 @@ class NetworkDiagnosticsTest : public ::testing::Test {
 
 // Test whether NetworkDiagnostics can successfully invoke the
 // LanConnectivity routine.
+TEST_F(NetworkDiagnosticsTest, LanConnectivityReachability) {
+  mojom::RoutineVerdict received_verdict;
+  base::RunLoop run_loop;
+  network_diagnostics()->LanConnectivity(base::BindOnce(
+      [](mojom::RoutineVerdict* received_verdict,
+         base::OnceClosure quit_closure, mojom::RoutineVerdict actual_verdict) {
+        *received_verdict = actual_verdict;
+        std::move(quit_closure).Run();
+      },
+      &received_verdict, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// SignalStrength routine.
+TEST_F(NetworkDiagnosticsTest, SignalStrengthReachability) {
+  mojom::RoutineVerdict received_verdict;
+  std::vector<mojom::SignalStrengthProblem> received_problems;
+  base::RunLoop run_loop;
+  network_diagnostics()->SignalStrength(base::BindOnce(
+      [](mojom::RoutineVerdict* received_verdict,
+         std::vector<mojom::SignalStrengthProblem>* received_problems,
+         base::OnceClosure quit_closure, mojom::RoutineVerdict actual_verdict,
+         const std::vector<mojom::SignalStrengthProblem>& actual_problems) {
+        *received_verdict = actual_verdict;
+        *received_problems = std::move(actual_problems);
+        std::move(quit_closure).Run();
+      },
+      &received_verdict, &received_problems, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::SignalStrengthProblem> no_problems;
+  EXPECT_EQ(received_problems, no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// GatewayCanBePinged routine.
+TEST_F(NetworkDiagnosticsTest, GatewayCanBePingedReachability) {
+  test_debug_daemon_client()->set_icmp_output(kFakeValidICMPOutput);
+  mojom::RoutineVerdict received_verdict;
+  std::vector<mojom::GatewayCanBePingedProblem> received_problems;
+  base::RunLoop run_loop;
+  network_diagnostics()->GatewayCanBePinged(base::BindOnce(
+      [](mojom::RoutineVerdict* received_verdict,
+         std::vector<mojom::GatewayCanBePingedProblem>* received_problems,
+         base::OnceClosure quit_closure, mojom::RoutineVerdict actual_verdict,
+         const std::vector<mojom::GatewayCanBePingedProblem>& actual_problems) {
+        *received_verdict = actual_verdict;
+        *received_problems = std::move(actual_problems);
+        std::move(quit_closure).Run();
+      },
+      &received_verdict, &received_problems, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::GatewayCanBePingedProblem> no_problems;
+  EXPECT_EQ(received_problems, no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// HasSecureWiFiConnection routine.
+TEST_F(NetworkDiagnosticsTest, HasSecureWiFiConnectionReachability) {
+  mojom::RoutineVerdict received_verdict;
+  std::vector<mojom::HasSecureWiFiConnectionProblem> received_problems;
+  base::RunLoop run_loop;
+  network_diagnostics()->HasSecureWiFiConnection(base::BindOnce(
+      [](mojom::RoutineVerdict* received_verdict,
+         std::vector<mojom::HasSecureWiFiConnectionProblem>* received_problems,
+         base::OnceClosure quit_closure, mojom::RoutineVerdict actual_verdict,
+         const std::vector<mojom::HasSecureWiFiConnectionProblem>&
+             actual_problems) {
+        *received_verdict = actual_verdict;
+        *received_problems = std::move(actual_problems);
+        std::move(quit_closure).Run();
+      },
+      &received_verdict, &received_problems, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::HasSecureWiFiConnectionProblem> no_problems;
+  EXPECT_EQ(received_problems, no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// DnsResolverPresent routine.
+TEST_F(NetworkDiagnosticsTest, DnsResolverPresentReachability) {
+  // Attach nameservers to the IPConfigs.
+  SetUpNameServers(kWellFormedDnsServers);
+
+  mojom::RoutineVerdict received_verdict;
+  std::vector<mojom::DnsResolverPresentProblem> received_problems;
+  base::RunLoop run_loop;
+  network_diagnostics()->DnsResolverPresent(base::BindOnce(
+      [](mojom::RoutineVerdict* received_verdict,
+         std::vector<mojom::DnsResolverPresentProblem>* received_problems,
+         base::OnceClosure quit_closure, mojom::RoutineVerdict actual_verdict,
+         const std::vector<mojom::DnsResolverPresentProblem>& actual_problems) {
+        *received_verdict = actual_verdict;
+        *received_problems = std::move(actual_problems);
+        std::move(quit_closure).Run();
+      },
+      &received_verdict, &received_problems, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::DnsResolverPresentProblem> no_problems;
+  EXPECT_EQ(received_problems, no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// LanConnectivity routine through RunLanConnectivity.
 TEST_F(NetworkDiagnosticsTest, RunLanConnectivityReachability) {
   base::RunLoop run_loop;
   mojom::RoutineResultPtr result;
@@ -282,7 +391,7 @@ TEST_F(NetworkDiagnosticsTest, RunLanConnectivityReachability) {
 }
 
 // Test whether NetworkDiagnostics can successfully invoke the
-// SignalStrength routine.
+// SignalStrength routine through RunSignalStrength.
 TEST_F(NetworkDiagnosticsTest, RunSignalStrengthReachability) {
   base::RunLoop run_loop;
   mojom::RoutineResultPtr result;
@@ -298,7 +407,7 @@ TEST_F(NetworkDiagnosticsTest, RunSignalStrengthReachability) {
 }
 
 // Test whether NetworkDiagnostics can successfully invoke the
-// GatewayCanBePinged routine.
+// GatewayCanBePinged routine through RunGatewayCanBePinged.
 TEST_F(NetworkDiagnosticsTest, RunGatewayCanBePingedReachability) {
   test_debug_daemon_client()->set_icmp_output(kFakeValidICMPOutput);
   base::RunLoop run_loop;
@@ -316,7 +425,7 @@ TEST_F(NetworkDiagnosticsTest, RunGatewayCanBePingedReachability) {
 }
 
 // Test whether NetworkDiagnostics can successfully invoke the
-// HasSecureWiFiConnection routine.
+// HasSecureWiFiConnection routine through RuneHasSecureWiFiConnection.
 TEST_F(NetworkDiagnosticsTest, RunHasSecureWiFiConnectionReachability) {
   base::RunLoop run_loop;
   mojom::RoutineResultPtr result;
@@ -333,7 +442,7 @@ TEST_F(NetworkDiagnosticsTest, RunHasSecureWiFiConnectionReachability) {
 }
 
 // Test whether NetworkDiagnostics can successfully invoke the
-// DnsResolverPresent routine.
+// DnsResolverPresent routine through RunDnsResolverPresent.
 TEST_F(NetworkDiagnosticsTest, RunDnsResolverPresentReachability) {
   // Attach nameservers to the IPConfigs.
   SetUpNameServers(kWellFormedDnsServers);

@@ -251,7 +251,7 @@ class FakeCrosHealthdService final
   // Calls the LanConnectivity routine on |network_diagnostics_routines_|.
   void RunLanConnectivityRoutineForTesting(
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-          RunLanConnectivityCallback callback);
+          LanConnectivityCallback callback);
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.

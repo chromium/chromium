@@ -32,6 +32,8 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
         TlsProber::TlsProbeCompleteCallback callback) = 0;
   };
 
+  using HttpFirewallRoutineCallback =
+      mojom::NetworkDiagnosticsRoutines::HttpFirewallCallback;
   using TlsProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<TlsProber>(
           TlsProber::NetworkContextGetter network_context_getter,

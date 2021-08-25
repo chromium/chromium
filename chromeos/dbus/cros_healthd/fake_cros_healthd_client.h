@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // remote.
   void RunLanConnectivityRoutineForTesting(
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-          RunLanConnectivityCallback);
+          LanConnectivityCallback);
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.

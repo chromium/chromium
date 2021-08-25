@@ -18,6 +18,9 @@ namespace network_diagnostics {
 // Tests whether the internet connection is trapped behind a captive portal.
 class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
  public:
+  using CaptivePortalRoutineCallback =
+      mojom::NetworkDiagnosticsRoutines::CaptivePortalCallback;
+
   CaptivePortalRoutine();
   CaptivePortalRoutine(const CaptivePortalRoutine&) = delete;
   CaptivePortalRoutine& operator=(const CaptivePortalRoutine&) = delete;

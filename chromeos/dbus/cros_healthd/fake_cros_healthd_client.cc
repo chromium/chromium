@@ -192,7 +192,7 @@ void FakeCrosHealthdClient::RequestNetworkHealthForTesting(
 
 void FakeCrosHealthdClient::RunLanConnectivityRoutineForTesting(
     chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-        RunLanConnectivityCallback callback) {
+        LanConnectivityCallback callback) {
   // Flush the receiver, so the NetworkDiagnosticsRoutines interface is
   // registered before routines are called on it.
   receiver_.FlushForTesting();

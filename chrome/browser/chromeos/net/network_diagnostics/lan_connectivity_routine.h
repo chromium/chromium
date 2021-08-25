@@ -21,6 +21,9 @@ namespace network_diagnostics {
 // this routine.
 class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
  public:
+  using LanConnectivityRoutineCallback =
+      mojom::NetworkDiagnosticsRoutines::LanConnectivityCallback;
+
   LanConnectivityRoutine();
   LanConnectivityRoutine(const LanConnectivityRoutine&) = delete;
   LanConnectivityRoutine& operator=(const LanConnectivityRoutine&) = delete;
