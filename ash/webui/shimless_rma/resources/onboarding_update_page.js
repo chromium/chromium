@@ -12,13 +12,29 @@ import './icons.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
  * 'onboarding-update-page' is the page that checks to see if the version is up
  * to date before starting the rma process.
  */
+
+// TODO(gavindodd): i18n string
+const operationName = {
+  [OsUpdateOperation.kIdle]: 'Not updating',
+  [OsUpdateOperation.kCheckingForUpdate]: 'checking for update',
+  [OsUpdateOperation.kUpdateAvailable]: 'update found',
+  [OsUpdateOperation.kDownloading]: 'downloading update',
+  [OsUpdateOperation.kVerifying]: 'verifying update',
+  [OsUpdateOperation.kFinalizing]: 'installing update',
+  [OsUpdateOperation.kUpdatedNeedReboot]: 'need reboot',
+  [OsUpdateOperation.kReportingErrorEvent]: 'error updating',
+  [OsUpdateOperation.kAttemptingRollback]: 'attempting rollback',
+  [OsUpdateOperation.kDisabled]: 'update disabled',
+  [OsUpdateOperation.kNeedPermissionToUpdate]: 'need permission to update'
+};
+
 export class OnboardingUpdatePageElement extends PolymerElement {
   static get is() {
     return 'onboarding-update-page';
@@ -49,6 +65,15 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       },
 
       /**
+       * @protected
+       * @type {string}
+       */
+      updateProgressMessage_: {
+        type: String,
+        value: '',
+      },
+
+      /**
        * TODO(joonbug): populate this and make private.
        * @type {boolean}
        */
@@ -67,10 +92,28 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       },
 
       /**
+       * @protected
+       * @type {boolean}
+       */
+      updateInProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * @private
        * @type {?ShimlessRmaServiceInterface}
        */
       shimlessRmaService_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * Receiver responsible for observing OS update progress.
+       * @protected {?OsUpdateObserverReceiver}
+       */
+      osUpdateObserverReceiver_: {
         type: Object,
         value: null,
       },
@@ -91,6 +134,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     super.ready();
     this.shimlessRmaService_ = getShimlessRmaService();
     this.getCurrentVersionText_();
+    this.observeOsUpdateProgress_();
   }
 
   /**
@@ -124,7 +168,14 @@ export class OnboardingUpdatePageElement extends PolymerElement {
 
   /** @protected */
   onUpdateButtonClicked_() {
-    // TODO(joonbug): trigger update
+    this.updateInProgress_ = true;
+    this.shimlessRmaService_.updateOs().then((res) => {
+      if (!res.updateStarted) {
+        // TODO(gavindodd): i18n string
+        this.updateProgressMessage_ = 'OS update failed';
+        this.updateInProgress_ = false;
+      }
+    });
   }
 
   /**
@@ -137,6 +188,32 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.updateOsSkipped();
+  }
+
+  /** @private */
+  observeOsUpdateProgress_() {
+    this.osUpdateObserverReceiver_ = new OsUpdateObserverReceiver(
+        /**
+         * @type {!OsUpdateObserverInterface}
+         */
+        (this));
+
+    this.shimlessRmaService_.observeOsUpdateProgress(
+        this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * Implements OsUpdateObserver.onOsUpdateProgressUpdated()
+   * @param {!OsUpdateOperation} operation
+   * @param {number} progress
+   */
+  onOsUpdateProgressUpdated(operation, progress) {
+    if (operation === OsUpdateOperation.kIdle) {
+      this.updateInProgress_ = false;
+    }
+    // TODO(gavindodd): i18n string
+    this.updateProgressMessage_ = 'OS update progress received ' +
+        operationName[operation] + ' ' + Math.round(progress * 100) + '%';
   }
 };
 

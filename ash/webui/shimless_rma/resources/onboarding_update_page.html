@@ -11,6 +11,7 @@
     <h1>Make sure Chrome OS is up to date</h1>
     <p>Update to the latest version of Chrome OS for an optimized repair process.</p>
     <p id="versionInfo">{{currentVersionText_}}</p>
+    <p id="progressMessage">{{updateProgressMessage_}}</p>
     <p id="networkUnavailable" hidden$="{{networkAvailable}}">
       To check if OS is up to date, connect to the internet in previous screen
     </p>
@@ -20,7 +21,8 @@
         id="checkUpdate" on-click="onUpdateCheckButtonClicked_">
       Check for updates
     </cr-button>
-    <cr-button hidden$="{{!updateAvailable_}}"
+    <cr-button disabled="{{updateInProgress_}}"
+        hidden$="{{!updateAvailable_}}"
         id="performUpdate" on-click="onUpdateButtonClicked_">
       Update version and restart
     </cr-button>

@@ -57,6 +57,12 @@ export let CalibrationComponent = ash.shimlessRma.mojom.CalibrationComponent;
 export let ProvisioningStep = ash.shimlessRma.mojom.ProvisioningStep;
 
 /**
+ * Type alias for OsUpdateOperation.
+ * @typedef {ash.shimlessRma.mojom.OsUpdateOperation}
+ */
+export let OsUpdateOperation = ash.shimlessRma.mojom.OsUpdateOperation;
+
+/**
  * @typedef {ash.shimlessRma.mojom.Component}
  */
 export let Component = ash.shimlessRma.mojom.Component;
@@ -66,6 +72,27 @@ export let Component = ash.shimlessRma.mojom.Component;
  * @typedef {ash.shimlessRma.mojom.ErrorObserverRemote}
  */
 export let ErrorObserverRemote = ash.shimlessRma.mojom.ErrorObserverRemote;
+
+/**
+ * Type alias for OsUpdateObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.OsUpdateObserverRemote}
+ */
+export let OsUpdateObserverRemote =
+    ash.shimlessRma.mojom.OsUpdateObserverRemote;
+
+/**
+ * Type alias for OsUpdateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.OsUpdateObserverReceiver}
+ */
+export let OsUpdateObserverReceiver =
+    ash.shimlessRma.mojom.OsUpdateObserverReceiver;
+
+/**
+ * Type alias for OsUpdateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.OsUpdateObserverInterface}
+ */
+export let OsUpdateObserverInterface =
+    ash.shimlessRma.mojom.OsUpdateObserverInterface;
 
 /**
  * Type alias for CalibrationObserverRemote.

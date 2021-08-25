@@ -136,15 +136,14 @@ void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome) {
     LOG(ERROR) << "UpdateOs called from incorrect state "
                << state_proto_.state_case();
-    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
-                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    std::move(callback).Run(false);
     return;
   }
   // TODO(gavindodd): Trigger a chrome update.
-  TransitionNextStateGeneric(std::move(callback));
+  std::move(callback).Run(false);
 }
 
-void ShimlessRmaService::UpdateOsSkipped(UpdateOsCallback callback) {
+void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome) {
     LOG(ERROR) << "UpdateOs called from incorrect state "
                << state_proto_.state_case();
@@ -478,6 +477,13 @@ void ShimlessRmaService::Error(rmad::RmadErrorCode error) {
   }
 }
 
+void ShimlessRmaService::OsUpdateProgress(mojom::OsUpdateOperation operation,
+                                          double progress) {
+  if (os_update_observer_.is_bound()) {
+    os_update_observer_->OnOsUpdateProgressUpdated(operation, progress);
+  }
+}
+
 void ShimlessRmaService::CalibrationProgress(
     rmad::CheckCalibrationState::CalibrationStatus::Component component,
     double progress) {
@@ -509,6 +515,11 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
 void ShimlessRmaService::ObserveError(
     ::mojo::PendingRemote<mojom::ErrorObserver> observer) {
   error_observer_.Bind(std::move(observer));
+}
+
+void ShimlessRmaService::ObserveOsUpdateProgress(
+    ::mojo::PendingRemote<mojom::OsUpdateObserver> observer) {
+  os_update_observer_.Bind(std::move(observer));
 }
 
 void ShimlessRmaService::ObserveCalibrationProgress(

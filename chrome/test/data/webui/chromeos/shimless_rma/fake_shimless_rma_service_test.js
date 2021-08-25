@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponent, CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertDeepEquals, assertEquals, assertGE, assertLE} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
 export function fakeShimlessRmaServiceTestSuite() {
   /** @type {?FakeShimlessRmaService} */
@@ -145,36 +145,19 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('UpdateOsOk', () => {
-    let states = [
-      {state: RmaState.kUpdateOs, error: RmadErrorCode.kOk},
-      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
+  test('SetUpdateOsResultTrueUpdatesResult', () => {
+    service.setUpdateOsResult(true);
 
-    return service.updateOs().then((state) => {
-      assertEquals(state.state, RmaState.kChooseDestination);
-      assertEquals(state.error, RmadErrorCode.kOk);
+    return service.updateOs().then((result) => {
+      assertEquals(result.updateStarted, true);
     });
   });
 
-  test('UpdateOsWhenRmaNotRequired', () => {
-    return service.updateOs().then((state) => {
-      assertEquals(state.state, RmaState.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
+  test('SetUpdateOsResultFalseUpdatesResult', () => {
+    service.setUpdateOsResult(false);
 
-  test('UpdateOsWrongStateFails', () => {
-    let states = [
-      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
-      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.updateOs().then((state) => {
-      assertEquals(state.state, RmaState.kWelcomeScreen);
-      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    return service.updateOs().then((result) => {
+      assertEquals(result.updateStarted, false);
     });
   });
 
@@ -192,7 +175,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('UpdateOsSkippedWhenRmaNotRequired', () => {
-    return service.updateOs().then((state) => {
+    return service.updateOsSkipped().then((state) => {
       assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
@@ -205,7 +188,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.updateOs().then((state) => {
+    return service.updateOsSkipped().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
@@ -728,6 +711,24 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
     service.observeError(errorObserver);
     return service.triggerErrorObserver(RmadErrorCode.kRequestInvalid, 0);
+  });
+
+  test('ObserveOsUpdate', () => {
+    /** @type {!OsUpdateObserverRemote} */
+    const osUpdateObserver = /** @type {!OsUpdateObserverRemote} */ ({
+      /**
+       * Implements OsUpdateObserverRemote.onOsUpdateProgressUpdated()
+       * @param {!OsUpdateOperation} operation
+       * @param {number} progress
+       */
+      onOsUpdateProgressUpdated(operation, progress) {
+        assertEquals(operation, OsUpdateOperation.kDownloading);
+        assertEquals(progress, 0.75);
+      }
+    });
+    service.observeOsUpdateProgress(osUpdateObserver);
+    return service.triggerOsUpdateObserver(
+        OsUpdateOperation.kDownloading, 0.75, 0);
   });
 
   test('ObserveCalibrationUpdated', () => {

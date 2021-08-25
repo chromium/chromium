@@ -7,7 +7,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -50,6 +50,19 @@ export class FakeShimlessRmaService {
      * @private {boolean}
      */
     this.automaticallyTriggerCalibrationObservation_ = false;
+
+    /**
+     * Control automatically triggering OS update observations.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerOsUpdateObservation_ = false;
+
+    /**
+     * The fake result of calling UpdatesOs, used to determine if fake
+     * observations should be triggered.
+     * @private {boolean}
+     */
+    this.osCanUpdate_ = false;
 
     this.reset();
   }
@@ -192,10 +205,29 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{updateStarted: boolean}>}
    */
   updateOs() {
-    return this.getNextStateForMethod_('updateOs', RmaState.kUpdateOs);
+    if (this.osCanUpdate_ && this.automaticallyTriggerOsUpdateObservation_) {
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kCheckingForUpdate, 0.1, 500);
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kUpdateAvailable, 0.3, 1000);
+      this.triggerOsUpdateObserver(OsUpdateOperation.kDownloading, 0.5, 1500);
+      this.triggerOsUpdateObserver(OsUpdateOperation.kVerifying, 0.7, 2000);
+      this.triggerOsUpdateObserver(OsUpdateOperation.kFinalizing, 0.9, 2500);
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kUpdatedNeedReboot, 1.0, 3000);
+    }
+    return this.methods_.resolveMethod('updateOs');
+  }
+
+  /**
+   * @param {boolean} started
+   */
+  setUpdateOsResult(started) {
+    this.osCanUpdate_ = started;
+    this.methods_.setResult('updateOs', {updateStarted: started});
   }
 
   /**
@@ -483,6 +515,19 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * Implements ShimlessRmaServiceInterface.ObserveOsUpdate.
+   * @param {!OsUpdateObserverRemote} remote
+   */
+  observeOsUpdateProgress(remote) {
+    this.observables_.observe(
+        'OsUpdateObserver_onOsUpdateProgressUpdated', (operation, progress) => {
+          remote.onOsUpdateProgressUpdated(
+              /** @type {!OsUpdateOperation} */ (operation),
+              /** @type {number} */ (progress));
+        });
+  }
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveCalibration.
    * @param {!CalibrationObserverRemote} remote
    */
@@ -495,7 +540,7 @@ export class FakeShimlessRmaService {
         });
     if (this.automaticallyTriggerCalibrationObservation_) {
       this.triggerCalibrationObserver(
-          CalibrationComponent.kBaseAccelerometer, 100, 1500);
+          CalibrationComponent.kBaseAccelerometer, 1.0, 1500);
     }
   }
 
@@ -534,6 +579,13 @@ export class FakeShimlessRmaService {
    */
   automaticallyTriggerCalibrationObservation() {
     this.automaticallyTriggerCalibrationObservation_ = true;
+  }
+
+  /**
+   * Trigger OS update observations when an OS update is started.
+   */
+  automaticallyTriggerOsUpdateObservation() {
+    this.automaticallyTriggerOsUpdateObservation_ = true;
   }
 
   /**
@@ -577,6 +629,18 @@ export class FakeShimlessRmaService {
    */
   triggerErrorObserver(error, delayMs) {
     return this.triggerObserverAfterMs('ErrorObserver_onError', error, delayMs);
+  }
+
+  /**
+   * Causes the OS update observer to fire after a delay.
+   * @param {!OsUpdateOperation} operation
+   * @param {number} progress
+   * @param {number} delayMs
+   */
+  triggerOsUpdateObserver(operation, progress, delayMs) {
+    return this.triggerObserverAfterMs(
+        'OsUpdateObserver_onOsUpdateProgressUpdated', [operation, progress],
+        delayMs);
   }
 
   /**
@@ -727,6 +791,7 @@ export class FakeShimlessRmaService {
     }
     this.observables_ = new FakeObservables();
     this.observables_.register('ErrorObserver_onError');
+    this.observables_.register('OsUpdateObserver_onOsUpdateProgressUpdated');
     this.observables_.register('CalibrationObserver_onCalibrationUpdated');
     this.observables_.register('ProvisioningObserver_onProvisioningUpdated');
     this.observables_.register(

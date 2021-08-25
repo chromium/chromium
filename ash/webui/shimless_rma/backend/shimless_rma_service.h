@@ -44,7 +44,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetCurrentOsVersion(GetCurrentOsVersionCallback callback) override;
   void CheckForOsUpdates(CheckForOsUpdatesCallback callback) override;
   void UpdateOs(UpdateOsCallback callback) override;
-  void UpdateOsSkipped(UpdateOsCallback callback) override;
+  void UpdateOsSkipped(UpdateOsSkippedCallback callback) override;
 
   void SetSameOwner(SetSameOwnerCallback callback) override;
   void SetDifferentOwner(SetDifferentOwnerCallback callback) override;
@@ -90,6 +90,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
+  void ObserveOsUpdateProgress(
+      ::mojo::PendingRemote<mojom::OsUpdateObserver> observer) override;
   void ObserveCalibrationProgress(
       ::mojo::PendingRemote<mojom::CalibrationObserver> observer) override;
   void ObserveProvisioningProgress(
@@ -113,6 +115,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
 
+  void OsUpdateProgress(mojom::OsUpdateOperation operation, double progress);
+
  private:
   template <class Callback>
   void TransitionNextStateGeneric(Callback callback);
@@ -129,6 +133,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   rmad::RmadState state_proto_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
+  mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;
   mojo::Remote<mojom::CalibrationObserver> calibration_observer_;
   mojo::Remote<mojom::ProvisioningObserver> provisioning_observer_;
   mojo::Remote<mojom::HardwareWriteProtectionStateObserver>

@@ -185,6 +185,23 @@ struct QrCode {
   array<uint8> data;
 };
 
+// Keep in sync with:
+// platform2/system_api/dbus/update_engine/update_engine.proto:Operation
+// Note: ERROR removed - see crbug.com/977320
+enum OsUpdateOperation {
+  kIdle = 0,
+  kCheckingForUpdate = 1,
+  kUpdateAvailable = 2,
+  kDownloading = 3,
+  kVerifying = 4,
+  kFinalizing = 5,
+  kUpdatedNeedReboot = 6,
+  kReportingErrorEvent = 7,
+  kAttemptingRollback = 8,
+  kDisabled = 9,
+  kNeedPermissionToUpdate = 10,
+};
+
 // Device components
 // This maps to RmadComponent in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
@@ -269,6 +286,15 @@ interface ErrorObserver {
   OnError(RmadErrorCode error);
 };
 
+// Implemented by clients to track the progress of OS update.
+// The observer receives the current update operation and the progress in a
+// 0 - 1 range.
+interface OsUpdateObserver {
+  // OnOsUpdateProgressUpdated is called when the UpdateEngine sends a update
+  // status change signal.
+  OnOsUpdateProgressUpdated(OsUpdateOperation operation, float progress);
+};
+
 // Implemented by clients to track the progress of component calibration.
 // The observer receives the current component being calibrated and the
 // progress of all calibration in a 0 - 1 range.
@@ -349,7 +375,7 @@ interface ShimlessRmaService {
   // Returns true if there is an OS update available, false otherwise.
   CheckForOsUpdates() => (bool update_available);
   // Attempts to start a Chrome OS update.
-  UpdateOs() => (RmaState state, RmadErrorCode error);
+  UpdateOs() => (bool update_started);
   // Skips OS update.
   UpdateOsSkipped() => (RmaState state, RmadErrorCode error);
 
@@ -462,6 +488,8 @@ interface ShimlessRmaService {
   // Registers an observer for any out of band error that occurs, such as a
   // calibration failure.
   ObserveError(pending_remote<ErrorObserver> observer);
+  // Registers an observer for updates on progress of OS update installation.
+  ObserveOsUpdateProgress(pending_remote<OsUpdateObserver> observer);
   // Registers an observer for updates on progress of component calibration.
   ObserveCalibrationProgress(pending_remote<CalibrationObserver> observer);
   // Registers an observer for updates on progress of device provisioning.
