@@ -28,37 +28,43 @@ int NV12Rotate(uint8_t* tmp_buffer,
                int src_stride_y,
                const uint8_t* src_uv,
                int src_stride_uv,
-               int src_width,
-               int src_height,
                uint8_t* dst_y,
                int dst_stride_y,
                uint8_t* dst_uv,
                int dst_stride_uv,
-               int dst_width,
-               int dst_height,
+               int width,
+               int height,
                VideoRotation relative_rotation) {
   libyuv::RotationModeEnum rotation = libyuv::kRotate0;
+  int tmp_width = width;
+  int tmp_height = height;
   switch (relative_rotation) {
     case VIDEO_ROTATION_0:
       NOTREACHED() << "Unexpected rotation: " << rotation;
       return -1;
     case VIDEO_ROTATION_90:
       rotation = libyuv::kRotate90;
+      tmp_width = height;
+      tmp_height = width;
       break;
     case VIDEO_ROTATION_180:
       rotation = libyuv::kRotate180;
+      tmp_width = width;
+      tmp_height = height;
       break;
     case VIDEO_ROTATION_270:
       rotation = libyuv::kRotate270;
+      tmp_width = height;
+      tmp_height = width;
       break;
   }
 
   // Rotating.
   int tmp_uv_width = 0;
   int tmp_uv_height = 0;
-  if (!(base::CheckAdd<int>(dst_width, 1) / 2).AssignIfValid(&tmp_uv_width) ||
-      !(base::CheckAdd<int>(dst_height, 1) / 2).AssignIfValid(&tmp_uv_height)) {
-    VLOGF(1) << "Overflow occurred for " << dst_width << "x" << dst_height;
+  if (!(base::CheckAdd<int>(tmp_width, 1) / 2).AssignIfValid(&tmp_uv_width) ||
+      !(base::CheckAdd<int>(tmp_height, 1) / 2).AssignIfValid(&tmp_uv_height)) {
+    VLOGF(1) << "Overflow occurred for " << tmp_width << "x" << tmp_height;
     return -1;
   }
   uint8_t* const tmp_u = tmp_buffer;
@@ -67,7 +73,7 @@ int NV12Rotate(uint8_t* tmp_buffer,
   // Rotate the NV12 planes to I420.
   int ret = libyuv::NV12ToI420Rotate(
       src_y, src_stride_y, src_uv, src_stride_uv, dst_y, dst_stride_y, tmp_u,
-      tmp_uv_width, tmp_v, tmp_uv_width, src_width, src_height, rotation);
+      tmp_uv_width, tmp_v, tmp_uv_width, width, height, rotation);
   if (ret != 0)
     return ret;
 
@@ -385,11 +391,9 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
           // temporary U and V planes for I420 data. Although
           // |intermediate_frame_->data(0)| is much larger than the required
           // size, we use the frame to simplify the code.
-          return NV12Rotate(
-              intermediate_frame_->data(0), Y_UV_DATA(input),
-              input->visible_rect().width(), input->visible_rect().height(),
-              Y_UV_DATA(output), output->visible_rect().width(),
-              output->visible_rect().height(), relative_rotation_);
+          return NV12Rotate(intermediate_frame_->data(0), Y_UV_DATA(input),
+                            Y_UV_DATA(output), input->visible_rect().width(),
+                            input->visible_rect().height(), relative_rotation_);
         }
         // Scaling mode.
         return libyuv::NV12Scale(
