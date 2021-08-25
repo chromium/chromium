@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -299,6 +300,9 @@ class WebContents : public PageNavigator,
   // Returns the user browser context associated with this WebContents (via the
   // NavigationController).
   virtual content::BrowserContext* GetBrowserContext() = 0;
+
+  // Returns a weak pointer.
+  virtual base::WeakPtr<WebContents> GetWeakPtr() = 0;
 
   // Gets the URL that is currently being displayed, if there is one.
   // This method is deprecated. DO NOT USE! Pick either |GetVisibleURL| or

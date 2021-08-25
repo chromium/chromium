@@ -1162,6 +1162,10 @@ BrowserContext* WebContentsImpl::GetBrowserContext() {
   return GetController().GetBrowserContext();
 }
 
+base::WeakPtr<WebContents> WebContentsImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 const GURL& WebContentsImpl::GetURL() {
   return GetVisibleURL();
 }
