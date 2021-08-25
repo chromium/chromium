@@ -56,132 +56,21 @@ void NetworkDiagnostics::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void NetworkDiagnostics::LanConnectivity(LanConnectivityCallback callback) {
-  RunLanConnectivity(base::BindOnce(
-      [](LanConnectivityCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(result->verdict);
-      },
-      std::move(callback)));
+void NetworkDiagnostics::GetResult(mojom::RoutineType type,
+                                   GetResultCallback callback) {
+  mojom::RoutineResultPtr result;
+  if (results_.count(type)) {
+    result = results_[type].Clone();
+  }
+  std::move(callback).Run(std::move(result));
 }
 
-void NetworkDiagnostics::SignalStrength(SignalStrengthCallback callback) {
-  RunSignalStrength(base::BindOnce(
-      [](SignalStrengthCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_signal_strength_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::GatewayCanBePinged(
-    GatewayCanBePingedCallback callback) {
-  RunGatewayCanBePinged(base::BindOnce(
-      [](GatewayCanBePingedCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_gateway_can_be_pinged_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::HasSecureWiFiConnection(
-    HasSecureWiFiConnectionCallback callback) {
-  RunHasSecureWiFiConnection(base::BindOnce(
-      [](HasSecureWiFiConnectionCallback callback,
-         mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(
-                result->problems->get_has_secure_wifi_connection_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::DnsResolverPresent(
-    DnsResolverPresentCallback callback) {
-  RunDnsResolverPresent(base::BindOnce(
-      [](DnsResolverPresentCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_dns_resolver_present_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::DnsLatency(DnsLatencyCallback callback) {
-  RunDnsLatency(base::BindOnce(
-      [](DnsLatencyCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_dns_latency_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::DnsResolution(DnsResolutionCallback callback) {
-  RunDnsResolution(base::BindOnce(
-      [](DnsResolutionCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_dns_resolution_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::CaptivePortal(CaptivePortalCallback callback) {
-  RunCaptivePortal(base::BindOnce(
-      [](CaptivePortalCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_captive_portal_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::HttpFirewall(HttpFirewallCallback callback) {
-  RunHttpFirewall(base::BindOnce(
-      [](HttpFirewallCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_http_firewall_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::HttpsFirewall(HttpsFirewallCallback callback) {
-  RunHttpsFirewall(base::BindOnce(
-      [](HttpsFirewallCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_https_firewall_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::HttpsLatency(HttpsLatencyCallback callback) {
-  RunHttpsLatency(base::BindOnce(
-      [](HttpsLatencyCallback callback, mojom::RoutineResultPtr result) {
-        std::move(callback).Run(
-            result->verdict,
-            std::move(result->problems->get_https_latency_problems()));
-      },
-      std::move(callback)));
-}
-
-void NetworkDiagnostics::VideoConferencing(
-    const absl::optional<std::string>& stun_server_name,
-    VideoConferencingCallback callback) {
-  RunVideoConferencing(
-      std::move(stun_server_name),
-      base::BindOnce(
-          [](VideoConferencingCallback callback,
-             mojom::RoutineResultPtr result) {
-            std::move(callback).Run(
-                result->verdict,
-                result->problems->get_video_conferencing_problems(), "");
-          },
-          std::move(callback)));
+void NetworkDiagnostics::GetAllResults(GetAllResultsCallback callback) {
+  base::flat_map<mojom::RoutineType, mojom::RoutineResultPtr> response;
+  for (auto& r : results_) {
+    response[r.first] = r.second.Clone();
+  }
+  std::move(callback).Run(std::move(response));
 }
 
 void NetworkDiagnostics::RunLanConnectivity(
@@ -279,23 +168,6 @@ void NetworkDiagnostics::RunRoutine(
   routine_ptr->RunRoutine(base::BindOnce(
       &NetworkDiagnostics::HandleResult, weak_ptr_factory_.GetWeakPtr(),
       std::move(routine), std::move(callback)));
-}
-
-void NetworkDiagnostics::GetResult(mojom::RoutineType type,
-                                   GetResultCallback callback) {
-  mojom::RoutineResultPtr result;
-  if (results_.count(type)) {
-    result = results_[type].Clone();
-  }
-  std::move(callback).Run(std::move(result));
-}
-
-void NetworkDiagnostics::GetAllResults(GetAllResultsCallback callback) {
-  base::flat_map<mojom::RoutineType, mojom::RoutineResultPtr> response;
-  for (auto& r : results_) {
-    response[r.first] = r.second.Clone();
-  }
-  std::move(callback).Run(std::move(response));
 }
 
 void NetworkDiagnostics::HandleResult(

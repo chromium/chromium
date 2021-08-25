@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
+// Next MinVersion: 1
+//
 // NOTE: This mojom should be kept in sync with the copy in the Chromium OS
 // repo: src/platform2/diagnostics/mojo/network_diagnostics.mojom.
 
@@ -11,7 +13,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Enumeration of the possible network diagnostic routines. See
 // NetworkDiagnosticsRoutines interface for more details.
-[Extensible]
+[Stable, Extensible]
 enum RoutineType {
   kLanConnectivity,
   kSignalStrength,
@@ -31,7 +33,7 @@ enum RoutineType {
 };
 
 // Each routine can result in one of the possible verdicts.
-[Extensible]
+[Stable, Extensible]
 enum RoutineVerdict {
   // Routine ran successfully and no connectivity problem found.
   kNoProblem,
@@ -42,19 +44,19 @@ enum RoutineVerdict {
 };
 
 // Problems related to the LanConnectivity routine.
-[Extensible]
+[Stable, Extensible]
 enum LanConnectivityProblem {
   kNoLanConnectivity,
 };
 
 // Problems related to the SignalStrength routine.
-[Extensible]
+[Stable, Extensible]
 enum SignalStrengthProblem {
   kWeakSignal,
 };
 
 // Problems related to the GatewayCanBePinged routine.
-[Extensible]
+[Stable, Extensible]
 enum GatewayCanBePingedProblem {
   // All gateways are unreachable, hence cannot be pinged.
   kUnreachableGateway,
@@ -69,7 +71,7 @@ enum GatewayCanBePingedProblem {
 };
 
 // Problems related to the HasSecureWiFiConnection routine.
-[Extensible]
+[Stable, Extensible]
 enum HasSecureWiFiConnectionProblem {
   kSecurityTypeNone,
   kSecurityTypeWep8021x,
@@ -78,7 +80,7 @@ enum HasSecureWiFiConnectionProblem {
 };
 
 // Problems related to the DnsResolverPresent routine.
-[Extensible]
+[Stable, Extensible]
 enum DnsResolverPresentProblem {
   kNoNameServersFound,
   kMalformedNameServers,
@@ -86,7 +88,7 @@ enum DnsResolverPresentProblem {
 };
 
 // Problems related to the DnsLatencyProblem routine.
-[Extensible]
+[Stable, Extensible]
 enum DnsLatencyProblem {
   // The routine was unable to resolve one or more hosts.
   kHostResolutionFailure,
@@ -97,14 +99,14 @@ enum DnsLatencyProblem {
 };
 
 // Problems related to the DnsResolution routine.
-[Extensible]
+[Stable, Extensible]
 enum DnsResolutionProblem {
   // The routine was unable to successfully resolve the test host
   kFailedToResolveHost,
 };
 
 // Problems related to the CaptivePortal routine.
-[Extensible]
+[Stable, Extensible]
 enum CaptivePortalProblem {
   // No active networks found.
   kNoActiveNetworks,
@@ -122,7 +124,7 @@ enum CaptivePortalProblem {
 };
 
 // Problems related to the HttpFirewall routine.
-[Extensible]
+[Stable, Extensible]
 enum HttpFirewallProblem {
   // DNS resolution failures above threshold.
   kDnsResolutionFailuresAboveThreshold,
@@ -133,7 +135,7 @@ enum HttpFirewallProblem {
 };
 
 // Problems related to the HttpsFirewall routine.
-[Extensible]
+[Stable, Extensible]
 enum HttpsFirewallProblem {
   // DNS resolution failure rate is high.
   kHighDnsResolutionFailureRate,
@@ -144,7 +146,7 @@ enum HttpsFirewallProblem {
 };
 
 // Problems related to the HttpsLatency routine.
-[Extensible]
+[Stable, Extensible]
 enum HttpsLatencyProblem {
   // One or more DNS resolutions resulted in a failure.
   kFailedDnsResolutions,
@@ -157,7 +159,7 @@ enum HttpsLatencyProblem {
 };
 
 // Problems related to the VideoConferencing routine.
-[Extensible]
+[Stable, Extensible]
 enum VideoConferencingProblem {
   // Failed requests to a STUN server via UDP.
   kUdpFailure,
@@ -168,7 +170,7 @@ enum VideoConferencingProblem {
 };
 
 // Problems related to the ArcHttp routine.
-[Extensible]
+[Stable, Extensible]
 enum ArcHttpProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -183,7 +185,7 @@ enum ArcHttpProblem {
 };
 
 // Problems related to the ArcDnsResolution routine.
-[Extensible]
+[Stable, Extensible]
 enum ArcDnsResolutionProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -198,7 +200,7 @@ enum ArcDnsResolutionProblem {
 };
 
 // Problems related to the ArcPing routine.
-[Extensible]
+[Stable, Extensible]
 enum ArcPingProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -220,6 +222,7 @@ enum ArcPingProblem {
 
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
+[Stable]
 union RoutineProblems {
   array<LanConnectivityProblem> lan_connectivity_problems;
   array<SignalStrengthProblem> signal_strength_problems;
@@ -239,6 +242,7 @@ union RoutineProblems {
 };
 
 // A single routine's result.
+[Stable]
 struct RoutineResult {
   // The result of the routine.
   RoutineVerdict verdict;
@@ -248,125 +252,76 @@ struct RoutineResult {
   mojo_base.mojom.Time timestamp;
 };
 
-// A map of routine results by routine type.
-struct RoutineResults {
-  map<RoutineType, RoutineResult> results;
-};
-
 // This interface is to be used by any clients that need to run specific
 // network-related diagnostics. Expected clients of this interface are
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
 // a few). The bound implementation is intended to live in the browser process.
+// Deprecated Methods: 1 - 11
+// Next Method ID: 29
+[Stable]
 interface NetworkDiagnosticsRoutines {
-  // DEPRECATED: See RunLanConnectivity
-  LanConnectivity() => (RoutineVerdict verdict);
+  // Returns the most recent result for the specified routine type, if it has
+  // been run.
+  GetResult@27(RoutineType routine) => (RoutineResult? result);
 
-  // DEPRECATED: See RunSignalStrength
-  SignalStrength() => (RoutineVerdict verdict,
-      array<SignalStrengthProblem> problems);
-
-  // DEPRECATED: See RunGatewayCanBePinged
-  GatewayCanBePinged() => (RoutineVerdict verdict,
-      array<GatewayCanBePingedProblem> problems);
-
-  // DEPRECATED: See RunHasSecureWiFiConnection
-  HasSecureWiFiConnection() => (RoutineVerdict verdict,
-      array<HasSecureWiFiConnectionProblem> problems);
-
-  // DEPRECATED: See RunDnsResolverPresent
-  DnsResolverPresent() => (RoutineVerdict verdict,
-      array<DnsResolverPresentProblem> problems);
-
-  // DEPRECATED: See RunDnsLatency
-  DnsLatency() => (RoutineVerdict verdict,
-      array<DnsLatencyProblem> problem);
-
-  // DEPRECATED: See RunDnsResolution
-  DnsResolution() => (RoutineVerdict verdict,
-      array<DnsResolutionProblem> problems);
-
-  // DEPRECATED: See RunCaptivePortal
-  CaptivePortal() => (RoutineVerdict verdict,
-      array<CaptivePortalProblem> problems);
-
-  // DEPRECATED: See RunHttpFirewall
-  HttpFirewall() => (RoutineVerdict verdict,
-      array<HttpFirewallProblem> problems);
-
-  // DEPRECATED: See RunHttpsFirewall
-  HttpsFirewall() => (RoutineVerdict verdict,
-      array<HttpsFirewallProblem> problems);
-
-  // DEPRECATED: See RunHttpsLatency
-  HttpsLatency() => (RoutineVerdict verdict,
-      array<HttpsLatencyProblem> problems);
-
-  // DEPRECATED: See RunVideoConferencing
-  VideoConferencing(string? stun_server_hostname) => (RoutineVerdict verdict,
-      array<VideoConferencingProblem> problems, string? support_details);
+  // Returns a map of all previously run routine types and their most recent
+  // result.
+  GetAllResults@28() => (map<RoutineType, RoutineResult> results);
 
   // Tests whether the device is connected to a LAN. It is possible that the
   // device may be trapped in a captive portal yet pass this test successfully.
   // Captive portal checks are done separately and are outside of the scope of
   // this routine. See CaptivePortal() below.
-  RunLanConnectivity() => (RoutineResult result);
+  RunLanConnectivity@12() => (RoutineResult result);
 
   // Tests whether there is an acceptable signal strength on wireless networks.
-  RunSignalStrength() => (RoutineResult result);
+  RunSignalStrength@13() => (RoutineResult result);
 
   // Tests whether the gateway of connected networks is pingable.
-  RunGatewayCanBePinged() => (RoutineResult result);
+  RunGatewayCanBePinged@14() => (RoutineResult result);
 
   // Tests whether the WiFi connection is secure. Note that if WiFi is not
   // connected, the routine will result in a |kNotRun| verdict.
-  RunHasSecureWiFiConnection() => (RoutineResult result);
+  RunHasSecureWiFiConnection@15() => (RoutineResult result);
 
   // Tests whether a DNS resolver is available to the browser.
-  RunDnsResolverPresent() => (RoutineResult result);
+  RunDnsResolverPresent@16() => (RoutineResult result);
 
   // Tests whether the DNS latency is below an acceptable threshold.
-  RunDnsLatency() => (RoutineResult result);
+  RunDnsLatency@17() => (RoutineResult result);
 
   // Tests whether a DNS resolution can be completed successfully.
-  RunDnsResolution() => (RoutineResult result);
+  RunDnsResolution@18() => (RoutineResult result);
 
   // Tests whether the internet connection is behind a captive portal.
-  RunCaptivePortal() => (RoutineResult result);
+  RunCaptivePortal@19() => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTP port 80.
-  RunHttpFirewall() => (RoutineResult result);
+  RunHttpFirewall@20() => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTPS port 443.
-  RunHttpsFirewall() => (RoutineResult result);
+  RunHttpsFirewall@21() => (RoutineResult result);
 
   // Tests whether the HTTPS latency is within established tolerance levels for
   // the system.
-  RunHttpsLatency() => (RoutineResult result);
+  RunHttpsLatency@22() => (RoutineResult result);
 
   // Tests the device's video conferencing capabilities by testing whether the
   // device can:
   // (1) Contact either a default or specified STUN server via UDP.
   // (2) Contact either a default or specified STUN server via TCP.
   // (3) Reach common media endpoints.
-  RunVideoConferencing(string? stun_server_hostname) => (RoutineResult result);
+  RunVideoConferencing@23(string? stun_server_hostname)
+      => (RoutineResult result);
 
   // Tests whether ARC can make successful HTTP GET requests to the resources
   // needed during the ARC Provisioning step.
-  RunArcHttp() => (RoutineResult result);
+  RunArcHttp@24() => (RoutineResult result);
+
+  // Tests whether ARC can reach the connected networks' gateways.
+  RunArcPing@25() => (RoutineResult result);
 
   // Tests whether ARC can make successful DNS queries to the hostnames
   // needed during the ARC Provisioning step.
-  RunArcDnsResolution() => (RoutineResult result);
-
-  // Tests whether ARC can reach resources needed during the ARC Provisioning
-  // step.
-  RunArcPing() => (RoutineResult result);
-
-  // Returns the most recent result for the specified routine type, if it has
-  // been run.
-  GetResult(RoutineType routine) => (RoutineResult? result);
-
-  // Returns a map of all previously run routine types and their most recent
-  // result.
-  GetAllResults() => (map<RoutineType, RoutineResult> results);
+  RunArcDnsResolution@26() => (RoutineResult result);
 };
