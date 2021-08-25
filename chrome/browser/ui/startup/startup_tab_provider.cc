@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -40,14 +42,13 @@
 #include "net/base/url_util.h"
 
 #if defined(OS_WIN)
+#include "base/strings/string_util_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/shell_integration.h"
 #endif  // defined(OS_WIN)
 
 namespace {
-
-using content::ChildProcessSecurityPolicy;
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
@@ -60,23 +61,58 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
   return other_tabbed_browser != browser_list->end();
 }
 
+// Validates the URL whether it is allowed to be opened at launching.
+bool ValidateUrl(const GURL& url) {
+  // Exclude dangerous schemes.
+  if (!url.is_valid())
+    return false;
+
+  const GURL settings_url(chrome::kChromeUISettingsURL);
+  bool url_points_to_an_approved_settings_page = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In ChromeOS, allow any settings page to be specified on the command line.
+  url_points_to_an_approved_settings_page =
+      url.GetOrigin() == settings_url.GetOrigin();
+#else
+  // Exposed for external cleaners to offer a settings reset to the
+  // user. The allowed URLs must match exactly.
+  const GURL reset_settings_url =
+      settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
+  url_points_to_an_approved_settings_page = url == reset_settings_url;
+#if defined(OS_WIN)
+  // On Windows, also allow a hash for the Chrome Cleanup Tool.
+  const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
+      std::string("#") + settings::ResetSettingsHandler::kCctResetSettingsHash);
+  url_points_to_an_approved_settings_page =
+      url_points_to_an_approved_settings_page ||
+      url == reset_settings_url_with_cct_hash;
+#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  return policy->IsWebSafeScheme(url.scheme()) ||
+         url.SchemeIs(url::kFileScheme) ||
+         url_points_to_an_approved_settings_page ||
+         url.spec() == url::kAboutBlankURL;
+}
+
 // Returns the list of URLs to open from the command line.
 std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
                                          const base::FilePath& cur_dir,
                                          Profile* profile) {
   std::vector<GURL> urls;
 
-  const base::CommandLine::StringVector& params = command_line.GetArgs();
-  for (size_t i = 0; i < params.size(); ++i) {
-    base::FilePath param = base::FilePath(params[i]);
+  for (const auto& arg : command_line.GetArgs()) {
+    // Note: Type/encoding of |arg| matches with the one of FilePath.
+    // So, we use them for encoding conversions.
+
     // Handle Vista way of searching - "? <search-term>"
-    if ((param.value().size() > 2) && (param.value()[0] == '?') &&
-        (param.value()[1] == ' ')) {
+    if (base::StartsWith(arg, FILE_PATH_LITERAL("? "))) {
       GURL url(GetDefaultSearchURLForSearchTerms(
           TemplateURLServiceFactory::GetForProfile(profile),
-          param.LossyDisplayName().substr(2)));
+          base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
       if (url.is_valid()) {
-        urls.push_back(url);
+        urls.push_back(std::move(url));
         continue;
       }
     }
@@ -87,7 +123,7 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
     // This call can (in rare circumstances) block the UI thread.
     // Allow it until this bug is fixed.
     //  http://code.google.com/p/chromium/issues/detail?id=60641
-    GURL url = GURL(param.MaybeAsASCII());
+    GURL url(base::FilePath(arg).MaybeAsASCII());
 
     // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
     // URL, otherwise we will look in the current directory for a file named
@@ -96,43 +132,11 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
     // otherwise we wouldn't correctly handle '#' in a file name.
     if (!url.is_valid() || url.SchemeIsFile()) {
       base::ThreadRestrictions::ScopedAllowIO allow_io;
-      url = url_formatter::FixupRelativeFile(cur_dir, param);
+      url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
     }
-    // Exclude dangerous schemes.
-    if (!url.is_valid())
-      continue;
 
-    const GURL settings_url = GURL(chrome::kChromeUISettingsURL);
-    bool url_points_to_an_approved_settings_page = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // In ChromeOS, allow any settings page to be specified on the command line.
-    url_points_to_an_approved_settings_page =
-        url.GetOrigin() == settings_url.GetOrigin();
-#else
-    // Exposed for external cleaners to offer a settings reset to the
-    // user. The allowed URLs must match exactly.
-    const GURL reset_settings_url =
-        settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
-    url_points_to_an_approved_settings_page = url == reset_settings_url;
-#if defined(OS_WIN)
-    // On Windows, also allow a hash for the Chrome Cleanup Tool.
-    const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
-        std::string("#") +
-        settings::ResetSettingsHandler::kCctResetSettingsHash);
-    url_points_to_an_approved_settings_page =
-        url_points_to_an_approved_settings_page ||
-        url == reset_settings_url_with_cct_hash;
-#endif  // defined(OS_WIN)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    ChildProcessSecurityPolicy* policy =
-        ChildProcessSecurityPolicy::GetInstance();
-    if (policy->IsWebSafeScheme(url.scheme()) ||
-        url.SchemeIs(url::kFileScheme) ||
-        url_points_to_an_approved_settings_page ||
-        (url.spec().compare(url::kAboutBlankURL) == 0)) {
-      urls.push_back(url);
-    }
+    if (ValidateUrl(url))
+      urls.push_back(std::move(url));
   }
   return urls;
 }
