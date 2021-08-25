@@ -414,6 +414,10 @@ BoxLayoutExtraInput::~BoxLayoutExtraInput() {
   box->SetBoxLayoutExtraInput(nullptr);
 }
 
+void BoxLayoutExtraInput::Trace(Visitor* visitor) const {
+  visitor->Trace(box);
+}
+
 LayoutBoxRareData::LayoutBoxRareData()
     : spanner_placeholder_(nullptr),
       override_logical_width_(-1),
