@@ -596,6 +596,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                           modifierFlags:0
                                  action:@selector(keyCommandDown)];
 
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    commandUp.wantsPriorityOverSystemBehavior = YES;
+    commandDown.wantsPriorityOverSystemBehavior = YES;
+  }
+#endif
+
   return @[ commandUp, commandDown ];
 }
 
@@ -633,6 +640,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
                           modifierFlags:0
                                  action:@selector(keyCommandRight)];
+
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    commandLeft.wantsPriorityOverSystemBehavior = YES;
+    commandRight.wantsPriorityOverSystemBehavior = YES;
+  }
+#endif
 
   return @[ commandLeft, commandRight ];
 }
