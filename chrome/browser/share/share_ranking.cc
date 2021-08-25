@@ -504,11 +504,12 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
 
   if (profile->IsOffTheRecord()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
-                       base::Unretained(env), absl::nullopt));
-    return;
+    // For incognito/guest profiles, we use the source ranking from the parent
+    // normal profile but never write anything back to that profile, meaning the
+    // user will get their existing ranking but no change to it will be made
+    // based on incognito activity.
+    DCHECK(!jpersist);
+    profile = profile->GetOriginalProfile();
   }
 
   auto* history = sharing::ShareHistory::Get(profile);
