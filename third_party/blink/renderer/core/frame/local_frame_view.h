@@ -599,6 +599,7 @@ class CORE_EXPORT LocalFrameView final
   LayoutAnalyzer* GetLayoutAnalyzer() { return analyzer_.get(); }
 
   bool LocalFrameTreeAllowsThrottling() const;
+  bool LocalFrameTreeForcesThrottling() const;
 
   // Returns true if this frame should not render or schedule visual updates.
   bool ShouldThrottleRendering() const;
@@ -812,8 +813,26 @@ class CORE_EXPORT LocalFrameView final
     base::AutoReset<bool> value_;
   };
 
+  // The logic to determine whether a view can be render throttled is delicate,
+  // but in some cases we want to unconditionally force all views in a local
+  // frame tree to be throttled. Having ForceThrottlingScope on the stack will
+  // do that; it supercedes any DisallowThrottlingScope on the stack.
+  class ForceThrottlingScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ForceThrottlingScope(const LocalFrameView& frame_view);
+    ForceThrottlingScope(const ForceThrottlingScope&) = delete;
+    ForceThrottlingScope& operator=(const ForceThrottlingScope&) = delete;
+    ~ForceThrottlingScope() = default;
+
+   private:
+    AllowThrottlingScope allow_scope_;
+    base::AutoReset<bool> value_;
+  };
   friend class AllowThrottlingScope;
   friend class DisallowThrottlingScope;
+  friend class ForceThrottlingScope;
 
   PaintController& EnsurePaintController();
 
@@ -1071,6 +1090,8 @@ class CORE_EXPORT LocalFrameView final
 
   // Used by AllowThrottlingScope and DisallowThrottlingScope
   bool allow_throttling_ = false;
+  // Used by ForceThrottlingScope
+  bool force_throttling_ = false;
 
   // This is set on the local root frame view only.
   DocumentLifecycle::LifecycleState target_state_;

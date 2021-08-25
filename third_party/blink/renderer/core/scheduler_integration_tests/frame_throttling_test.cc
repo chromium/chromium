@@ -2139,6 +2139,49 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 }
 
+TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
+  InitializeRemote();
+  LocalFrameRoot().FrameWidget()->Resize({640, 480});
+  SimRequest local_root_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  local_root_resource.Complete(
+      "<div style='will-change:transform'>Hello, world!</div>");
+  CompositeFrame();
+  LocalFrameView* view = LocalFrameRoot().GetFrame()->View();
+  Element* div = view->GetFrame().GetDocument()->QuerySelector("div");
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_FALSE(
+        view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  } else {
+    EXPECT_FALSE(div->GetLayoutObject()
+                     ->PaintingLayer()
+                     ->EnclosingLayerWithCompositedLayerMapping(kIncludeSelf)
+                     ->GraphicsLayerBacking()
+                     ->GetPaintController()
+                     .GetPaintArtifact()
+                     .IsEmpty());
+  }
+  // This emulates javascript.
+  div->setAttribute("style", "", ASSERT_NO_EXCEPTION);
+  div->getBoundingClientRect();
+  // This emulates WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame.
+  view->UpdateRenderThrottlingStatus(true, false, false, true);
+  // UpdateRenderThrottlingStatus should have cleared out previous paint
+  // results.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(
+        view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  } else {
+    EXPECT_TRUE(div->GetLayoutObject()
+                    ->PaintingLayer()
+                    ->EnclosingLayerWithCompositedLayerMapping(kIncludeSelf)
+                    ->GraphicsLayerBacking()
+                    ->GetPaintController()
+                    .GetPaintArtifact()
+                    .IsEmpty());
+  }
+}
+
 TEST_P(FrameThrottlingTest, ForceCompositingUpdateOnVisibilityChange) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;

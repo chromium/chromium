@@ -2253,6 +2253,12 @@ bool LocalFrameView::LocalFrameTreeAllowsThrottling() const {
   return false;
 }
 
+bool LocalFrameView::LocalFrameTreeForcesThrottling() const {
+  if (LocalFrameView* root_view = GetFrame().LocalFrameRoot().View())
+    return root_view->force_throttling_;
+  return false;
+}
+
 void LocalFrameView::PrepareForLifecycleUpdateRecursive() {
   // We will run lifecycle phases for LocalFrameViews that are unthrottled; or
   // are throttled but require IntersectionObserver steps to run.
@@ -4018,6 +4024,12 @@ LocalFrameView::DisallowThrottlingScope::DisallowThrottlingScope(
     : value_(&frame_view.GetFrame().LocalFrameRoot().View()->allow_throttling_,
              false) {}
 
+LocalFrameView::ForceThrottlingScope::ForceThrottlingScope(
+    const LocalFrameView& frame_view)
+    : allow_scope_(frame_view),
+      value_(&frame_view.GetFrame().LocalFrameRoot().View()->force_throttling_,
+             true) {}
+
 PaintController& LocalFrameView::EnsurePaintController() {
   if (!paint_controller_)
     paint_controller_ = std::make_unique<PaintController>();
@@ -4467,7 +4479,7 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // By this point, every frame in the local frame tree has become throttled,
     // so painting the tree should just clear the previous painted output.
     DCHECK(!IsUpdatingLifecycle());
-    AllowThrottlingScope allow_throtting(*this);
+    ForceThrottlingScope force_throttling(*this);
     RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   }
 
@@ -4574,6 +4586,8 @@ unsigned LocalFrameView::GetIntersectionObservationFlags(
 }
 
 bool LocalFrameView::ShouldThrottleRendering() const {
+  if (LocalFrameTreeForcesThrottling())
+    return true;
   bool throttled_for_global_reasons = LocalFrameTreeAllowsThrottling() &&
                                       CanThrottleRendering() &&
                                       frame_->GetDocument();
