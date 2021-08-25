@@ -865,6 +865,7 @@
 <translation id="4067263367174615723">C1 (লেফাফা)</translation>
 <translation id="4067947977115446013">মান্য ঠিকনা দিয়ক</translation>
 <translation id="4072193657607981494">নীতি ল’ড হৈ আছে</translation>
+<translation id="4072486802667267160">আপোনাৰ অৰ্ডাৰ প্ৰক্ৰিয়া চলি থকা অৱস্থাত কোনো আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="4073797364926776829">কাৰ্ড চাওক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰট’কল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
 <translation id="4075941231477579656">স্পৰ্শ আইডি</translation>
@@ -1409,6 +1410,7 @@
 <translation id="5921185718311485855">অন</translation>
 <translation id="5921639886840618607">কাৰ্ডখন Google একাউণ্টত ছেভ কৰিবনে?</translation>
 <translation id="5922853866070715753">প্ৰায় সম্পূর্ণ হৈছেই</translation>
+<translation id="5932224571077948991">ছাইটে বিনা অনুমতিত বা কোনো বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱায়</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> খুলি থকা হৈছে…</translation>
 <translation id="5951495562196540101">উপভোক্তাৰ একাউণ্টৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি (পেকেজ অনুজ্ঞাপত্ৰ উপলব্ধ)।</translation>
@@ -1708,6 +1710,7 @@
 <translation id="7086090958708083563">ব্যৱহাৰকাৰীয়ে অনুৰোধ কৰা আপল'ড</translation>
 <translation id="7087282848513945231">জিলা</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সমগ্ৰ ছাইটত ষ্ট’ৰ কৰি ৰখা ডেটা আৰু অনুমতি পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
+<translation id="7108338896283013870">লুকুৱাওক</translation>
 <translation id="7108634116785509031"><ph name="HOST" />এ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব বিচাৰিছে</translation>
 <translation id="7108819624672055576">এটা এক্সটেনশ্বনে অনুমতি দিছে</translation>
 <translation id="7111012039238467737">(মান্য)</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7119414471315195487">অন্য টেব বা প্ৰ’গ্ৰামবোৰ বন্ধ কৰক</translation>
 <translation id="7129409597930077180">এই ঠিকনালৈ পঠিয়াব নোৱাৰি। অন্য এটা ঠিকনা বাছনি কৰক।</translation>
 <translation id="7135130955892390533">স্থিতি দেখুৱাওক</translation>
+<translation id="7138472120740807366">ডেলিভাৰীৰ পদ্ধতি</translation>
 <translation id="7139724024395191329">এমিৰে'ট</translation>
 <translation id="714064300541049402">কাষৰ ২ প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
 <translation id="7152423860607593928">সংখ্যা-১৪ (লেফাফা)</translation>
@@ -1843,6 +1847,7 @@
 <translation id="7549584377607005141">সঠিকভাৱে দেখুৱাবলৈ ৱেব পৃষ্ঠাটোক আপুনি আগতে দিয়া ডেটাৰ প্ৰয়োজন হ'ব। আপুনি এই ডেটাখিনি পুনৰ পঠিয়াব পাৰে, কিন্তু সেয়া কৰিলে এই পৃষ্ঠাটোৱে কৰা পূৰ্বৱৰ্তী কোনো কাৰ্যৰ পুনৰাবৃত্তি হ'ব পাৰে।</translation>
 <translation id="7550637293666041147">আপোনাৰ ডিভাইচৰ ব্যৱহাৰকাৰী নাম আৰু Chromeৰ ব্যৱহাৰকাৰী নাম</translation>
 <translation id="755279583747225797">ট্ৰায়েলটো সক্ৰিয় হৈ আছে</translation>
+<translation id="7552846755917812628">এই পৰামর্শসমূহ অনুসৰণ কৰি চাওক:</translation>
 <translation id="7554475479213504905">পুনৰ ল’ড কৰক আৰু তথাপিও দেখুৱাওক</translation>
 <translation id="7554791636758816595">নতুন টেব</translation>
 <translation id="7559278538486662777">এই এপ্‌টোৰ আকাৰ সলনি কৰিব নোৱাৰি।</translation>

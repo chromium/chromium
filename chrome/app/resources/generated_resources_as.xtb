@@ -2812,6 +2812,7 @@
   আপুনি <ph name="CONTROL_PANEL_APPLET_NAME" /> আৰম্ভ কৰিব খোজেনে?</translation>
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
 <translation id="3943582379552582368">&amp;উভতি যাওক</translation>
+<translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3945513714196326460">এটা চুটি নাম দি চাওক</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />ত প্ৰতিচ্ছবিৰ &amp;সন্ধান কৰক</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
@@ -2892,6 +2893,7 @@
 <translation id="4035758313003622889">&amp;কাৰ্য পৰিচালক</translation>
 <translation id="4036778507053569103">ছাৰ্ভাৰৰ পৰা ডাউনল’ড কৰা নীতিটো অমান্য।</translation>
 <translation id="4037084878352560732">ঘোঁৰা</translation>
+<translation id="4042863763121826131">{NUM_PAGES,plural, =1{এই পৃষ্ঠাটোৰ পৰা বাহিৰ হওক}one{এই পৃষ্ঠাবোৰৰ পৰা বাহিৰ হওক}other{এই পৃষ্ঠাবোৰৰ পৰা বাহিৰ হওক}}</translation>
 <translation id="4044612648082411741">আপোনাৰ প্ৰমাণপত্ৰৰ পাছৱৰ্ডটো দিয়ক</translation>
 <translation id="4044708573046946214">স্ক্ৰীন লকৰ পাছৱৰ্ড</translation>
 <translation id="404493185430269859">সন্ধানৰ ডিফ’ল্ট ইঞ্জিন</translation>
@@ -3298,6 +3300,7 @@
 <translation id="4515872537870654449">ছাৰ্ভিছিঙৰ বাবে Dellৰ সৈতে যোগাযোগ কৰক। ফেনখনে যদি কাম কৰা নাই ড’কটো বন্ধ হৈ যাব।</translation>
 <translation id="4519331665958994620">ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="4519935350946509010">সংযোগৰ আসোঁৱাহ।</translation>
+<translation id="4520385623207007473">ব্যৱহাৰ হৈ থকা কুকি</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত ডিভাইচ</translation>
 <translation id="4522570452068850558">সবিশেষ</translation>
 <translation id="4522600456902129422">এই ছাইটটোৰ ক্লিপব’ৰ্ড চোৱাৰ অনুমতি অব্যাহত ৰাখক</translation>
@@ -4265,6 +4268,7 @@
 <translation id="5585898376467608182">আপোনাৰ ডিভাইচটোৰ ষ্ট’ৰেজৰ খালী ঠাই কমিছে। <ph name="APP_NAME" /> ব্যৱহাৰ কৰিবলৈ অতি কমেও <ph name="MINIMUM_SPACE" /> খালী ঠাইৰ আৱশ্যক। খালী ঠাই বঢ়াবলৈ ডিভাইচৰ পৰা ফাইল মচক।</translation>
 <translation id="5585912436068747822">ফৰ্মেট কৰিব পৰা নগ’ল</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="558918721941304263">এপ্‌ ল’ড কৰি থকা হৈছে...</translation>
 <translation id="5592595402373377407">এতিয়ালৈকে পৰ্যাপ্ত ডেটা উপলব্ধ হোৱা নাই।</translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
@@ -4548,6 +4552,7 @@
 <translation id="592880897588170157">PDF ফাইলসমূহ Chromeত স্বয়ংক্ৰিয়ভাৱে খোলাৰ সলনি ডাউনল’ড কৰক</translation>
 <translation id="5931146425219109062">আপুনি চোৱা ৱেবছাইটসমূহত নিজৰ ডেটা পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="5932124097031739492">Linux সফলভাৱে আপগ্ৰে’ড কৰা হ’ল।</translation>
+<translation id="5932224571077948991">ছাইটে বিনা অনুমতিত বা কোনো বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱায়</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />ৰ ইউএছবি ডিভাইচ</translation>
 <translation id="5932441198730183141">এই Google Meetৰ হাৰ্ডৱেৰ ডিভাইচটো পঞ্জীয়ন কৰিবলৈ আপোনাৰ ওচৰত পৰ্যাপ্ত উপলব্ধ অনুজ্ঞাপত্ৰ নাই। অধিক ক্ৰয় কৰিবলৈ অনুগ্ৰহ কৰি বিক্ৰী বিভাগৰ সৈতে যোগাযোগ কৰক। আপুনি যদি এই বাৰ্তাটো আসোঁৱাহপূৰ্ণ হিচাপে দেখা পাইছে বুলি ভাবিছে, তেন্তে অনুগ্ৰহ কৰি সহায়তা কেন্দ্ৰৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5932881020239635062">ক্ৰমিক নম্বৰ</translation>
@@ -5016,6 +5021,7 @@
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - অডিঅ' প্লে' কৰি থকা হৈছে</translation>
 <translation id="6442187272350399447">অতি উত্তম</translation>
 <translation id="6442445294758185945">আপডে’টটো ডাউনল’ড কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6444070574980481588">তাৰিখ আৰু সময় ছেট কৰক</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - ব্লুটুথ স্কেন সক্ৰিয় হৈ আছে</translation>
 <translation id="6445450263907939268">আপুনি যদি এই সালসলনিসমূহ নিবিচাৰে আপুনি আপোনাৰ পূৰ্বৱৰ্তী ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিব পাৰে।</translation>
 <translation id="6446213738085045933">ডেস্কটপ শ্বৰ্টকাট সৃষ্টি কৰক</translation>
@@ -5118,6 +5124,7 @@
 <translation id="6545867563032584178">Mac ছিষ্টেম অগ্ৰাধিকাৰসমূহত মাইক্ৰ'ফ'ন অফ কৰা আছে</translation>
 <translation id="6547354035488017500">অতিকমেও ৫১২ এম.বি. ঠাই খালী কৰক নহ'লে আপোনাৰ ডিভাইচটোৱে সমর্থন কৰিব নোৱাৰা হ'ব। খালী ঠাই উলিয়াবলৈ ডিভাইচৰ ষ্ট'ৰেজৰ পৰা ফাইল মচক।</translation>
 <translation id="654871471440386944">কেৰেট ব্ৰাউজিং অন কৰিবনে?</translation>
+<translation id="6550675742724504774">বিকল্প</translation>
 <translation id="6551508934388063976">কামাণ্ড উপলব্ধ নহয়। নতুন টেব খুলিবলৈ control-N টিপক।</translation>
 <translation id="6551612971599078809">ছাইটোৱে ইউএছবি ব্যৱহাৰ কৰি আছে</translation>
 <translation id="6551739526055143276">Family Linkএ পৰিচালনা কৰা</translation>
@@ -5248,6 +5255,7 @@
 <translation id="6691541770654083180">পৃথিৱী</translation>
 <translation id="6691936601825168937">&amp;ফৰৱাৰ্ড কৰক</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১ খন পৃষ্ঠা}one{{COUNT} খন পৃষ্ঠা}other{{COUNT} খন পৃষ্ঠা}}</translation>
+<translation id="6697492270171225480">কোনো এটা পৃষ্ঠা বিচাৰি নোপোৱাৰ সময়ত একেধৰণৰ পৃষ্ঠাৰ পৰামর্শ প্ৰদর্শন কৰক</translation>
 <translation id="6697690052557311665">শ্বেয়াৰ কৰিবলৈ Files এপত থকা কোনো এটা ফ’ল্ডাৰত সোঁফালে ক্লিক কৰক আৰু "Share with Linux" বাছনি কৰক।</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> আৰু <ph name="WEBSITE_2" />ত থকা আপোনাৰ ডেটাখিনি পঢ়ক</translation>
 <translation id="6699883973579689168">এতিয়া আপুনি নিজৰ সকলো Google একাউণ্ট একেঠাইতে পৰিচালনা কৰিব পাৰিব। আপুনি Chrome আৰু Google Playৰ ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহক প্ৰদান কৰা এক্সেছ আৰু অনুমতিসমূহ এতিয়া আপুনি ছাইন ইন হৈ থকা সকলো একাউণ্টৰ ক্ষেত্ৰতে প্ৰযোজ্য হ'ব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -5631,6 +5639,7 @@
 <translation id="7102687220333134671">স্বয়ংক্ৰিয়ভাৱে হোৱা আপডে’টৰ সুবিধাটো অন কৰা হ’ল</translation>
 <translation id="7102832101143475489">অনুৰোধটোৰ সময় উকলিল</translation>
 <translation id="710640343305609397">নেটৱৰ্ক ছেটিংসমূহ খোলক</translation>
+<translation id="7108338896283013870">লুকুৱাওক</translation>
 <translation id="7108668606237948702">দিয়ক</translation>
 <translation id="7108933416628942903">এতিয়াই লক কৰক</translation>
 <translation id="7109543803214225826">শ্বৰ্টকাট আঁতৰোৱা হ’ল</translation>
@@ -6026,6 +6035,7 @@
 <translation id="7550830279652415241">বুকমাৰ্ক_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল৷</translation>
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
+<translation id="7552846755917812628">এই পৰামর্শসমূহ অনুসৰণ কৰি চাওক:</translation>
 <translation id="7553012839257224005">Linux কণ্টেইনাৰটো পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="7553242001898162573">আপোনাৰ পাছৱৰ্ড দিয়ক</translation>
 <translation id="7553347517399115470">এই এপ্‌টোত এইসমূহ ফৰ্মেটৰ ফাইল খোলোঁতে পুনৰ নুসুধিব:
@@ -6038,6 +6048,7 @@
 <translation id="7557411183415085169">Linuxৰ ডিস্কৰ খালী ঠাই কমিছে</translation>
 <translation id="7559719679815339381">অনুগ্ৰহ কৰি অপেক্ষা কৰক....কিঅ'স্ক এপ‌্‌ আপডে'ট কৰি থকা হৈছে। USB ষ্টিকডাল আঁতৰ নকৰিব।</translation>
 <translation id="7560756177962144929">আপোনাৰ <ph name="DEVICE_TYPE" /> ছিংক কৰক</translation>
+<translation id="7561196759112975576">সদায়</translation>
 <translation id="756445078718366910">ব্ৰাউজাৰ ৱিণ্ড’ খোলক</translation>
 <translation id="7564847347806291057">প্ৰক্ৰিয়া সমাপ্ত কৰক</translation>
 <translation id="756503097602602175">আপুনি ছাইন ইন কৰি ৰখা Google একাউণ্টসমূহ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />ৰ পৰা পৰিচালনা কৰিব পাৰে। আপুনি ৱেবছাইট আৰু এপক দিয়া অনুমতি আটাইবোৰ একাউণ্টত প্ৰযোজ্য হ’ব পাৰে। যদি আপুনি আপোনাৰ একাউণ্টৰ তথ্য কোনো ছাইট অথবা এপে এক্সেছ কৰাটো নিবিচাৰে, তেন্তে আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />ত অতিথি হিচাপে ছাইন ইন কৰিব পাৰে অথবা এখন <ph name="LINK_2_BEGIN" />ইনক’গনিট’ ৱিণ্ড’<ph name="LINK_2_END" />ত ৱেব ব্ৰাউজ কৰিব পাৰে।</translation>
@@ -6850,6 +6861,7 @@
 <translation id="8392364544846746346">কোনো ছাইটে আপোনাৰ ডিভাইচত ফাইল অথবা ফ’ল্ডাৰসমূহ সম্পাদনা কৰিবলৈ বিচাৰিলে সোধক</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" />ৰ বিকল্পৰ মেনু</translation>
 <translation id="8393511274964623038">প্লাগইন বন্ধ কৰক</translation>
+<translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
 <translation id="8397825320644530257">সংযুক্ত হৈ থকা ফ’নৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="8398877366907290961">যিকোনো প্ৰকাৰে অব্যাহত ৰাখক</translation>
 <translation id="8401432541486058167">আপোনাৰ স্মাৰ্ট কাৰ্ডখনৰ সৈতে জড়িত পিনটো দিয়ক।</translation>
