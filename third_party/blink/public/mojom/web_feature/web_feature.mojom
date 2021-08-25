@@ -3299,6 +3299,7 @@ enum WebFeature {
   kFontSelectorCSSFontFamilyWebKitPrefixStandard = 3987,
   kFontSelectorCSSFontFamilyWebKitPrefixBody = 3988,
   kFontBuilderCSSFontFamilyWebKitPrefixBody = 3989,
+  kCapabilityDelegationOfPaymentRequest = 3990,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

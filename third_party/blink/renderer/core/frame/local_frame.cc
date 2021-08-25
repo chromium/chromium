@@ -3009,6 +3009,8 @@ void LocalFrame::PostMessageEvent(
 
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled() &&
       message.delegate_payment_request) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCapabilityDelegationOfPaymentRequest);
     payment_request_token_.Activate();
   }
 

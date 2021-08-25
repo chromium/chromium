@@ -821,20 +821,27 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   LocalFrame* local_frame = DomWindow()->GetFrame();
 
-  bool payment_request_allowed =
+  bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(local_frame);
-  if (!payment_request_allowed) {
+  bool payment_request_token_active =
+      local_frame->IsPaymentRequestTokenActive();
+
+  if (!has_transient_user_activation) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
+
+    if (!payment_request_token_active) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kPaymentRequestShowWithoutGestureOrToken);
+    }
   }
+
+  bool payment_request_allowed = has_transient_user_activation;
 
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext())) {
-    payment_request_allowed |= local_frame->IsPaymentRequestTokenActive();
+    payment_request_allowed |= payment_request_token_active;
     if (!payment_request_allowed) {
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kPaymentRequestShowWithoutGestureOrToken);
-
       String message =
           "PaymentRequest.show() requires either transient user activation or "
           "delegated payment request capability";
