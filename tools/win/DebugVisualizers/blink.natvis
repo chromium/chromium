@@ -1,6 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AutoVisualizer
     xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!--
+   !== USE_V8_OILPAN version of Member
+   !== Note: We need type cast to |raw_| because |raw_| is in base class
+   !== |cppgc::internal::MemberBase| instead of |BasicMember|.
+   !== See "v8/include/cppgc/member.h"
+   !-->
+  <Type Name="cppgc::internal::BasicMember&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <!--
+   !== !USE_V8_OILPAN version of Member
+   !== See "third_party/blink/renderer/platform/heap/impl/member.h"
+   !-->
   <Type Name="blink::MemberBase&lt;*&gt;">
     <SmartPointer Usage="Minimal">raw_</SmartPointer>
     <DisplayString Condition="raw_ == 0">null</DisplayString>
@@ -165,8 +184,8 @@
   <Type Name="blink::ContainerNode">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_.raw_</HeadPointer>
-        <NextPointer>next_.raw_</NextPointer>
+        <HeadPointer>(blink::Node*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::Node*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -183,8 +202,8 @@
   <Type Name="blink::LayoutObjectChildList">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_</HeadPointer>
-        <NextPointer>next_</NextPointer>
+        <HeadPointer>(blink::LayoutObject*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::LayoutObject*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -196,8 +215,8 @@
   <Type Name="blink::InlineFlowBox">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_</HeadPointer>
-        <NextPointer>next_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -205,8 +224,8 @@
   <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_</HeadPointer>
-        <NextPointer>(blink::InlineFlowBox*)next_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
