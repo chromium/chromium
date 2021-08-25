@@ -190,6 +190,7 @@ public class CableAuthenticatorUI
                 mState = State.RUNNING;
                 break;
 
+            case SERVER_LINK:
             case FCM:
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
                 if (!adapter.isEnabled()) {
@@ -198,11 +199,6 @@ public class CableAuthenticatorUI
                     mState = State.ENABLE_BLUETOOTH;
                     return;
                 }
-                mState = State.BLUETOOTH_PERMISSION;
-                break;
-
-            case SERVER_LINK:
-                // GMS Core should have taken care of enabling Bluetooth.
                 mState = State.BLUETOOTH_PERMISSION;
                 break;
 
@@ -579,6 +575,7 @@ public class CableAuthenticatorUI
                 onBluetoothEnabled();
                 break;
 
+            case SERVER_LINK:
             case FCM:
                 ViewGroup top = (ViewGroup) getView();
                 top.removeAllViews();
