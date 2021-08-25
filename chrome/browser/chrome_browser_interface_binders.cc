@@ -68,6 +68,7 @@
 #include "components/translate/content/common/translate.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
@@ -999,6 +1000,9 @@ void PopulateChromeWebUIFrameBinders(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+void PopulateChromeWebUIFrameInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {}
 
 }  // namespace internal
 }  // namespace chrome

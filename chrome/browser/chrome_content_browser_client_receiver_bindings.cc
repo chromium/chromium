@@ -336,6 +336,11 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 #endif
 }
 
+void ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  chrome::internal::PopulateChromeWebUIFrameInterfaceBrokers(registry);
+}
+
 void ChromeContentBrowserClient::
     RegisterBrowserInterfaceBindersForServiceWorker(
         mojo::BinderMapWithContext<

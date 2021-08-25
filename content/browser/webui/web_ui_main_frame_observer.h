@@ -54,11 +54,15 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       int32_t line_no,
       const std::u16string& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
-  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
  private:
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  void MaybeEnableWebUIJavaScriptErrorReporting(
+      NavigationHandle* navigation_handle);
+
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)

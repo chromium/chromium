@@ -33,6 +33,7 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -232,6 +233,7 @@ class VpnServiceProxy;
 class WebAuthenticationDelegate;
 class WebContents;
 class WebContentsViewDelegate;
+class WebUIBrowserInterfaceBrokerRegistry;
 class XrIntegrationClient;
 struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
@@ -1117,6 +1119,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // execution context.
   virtual void RegisterBrowserInterfaceBindersForServiceWorker(
       mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {}
+
+  // Allows the embedder to register per-WebUI interface brokers that are used
+  // for handling Mojo.bindInterface in WebUI JavaScript.
+  //
+  // The exposed interfaces are grouped by the WebUI controller type. For any
+  // given WebUI page, only the interfaces corresponding to its controller type
+  // will be exposed.
+  virtual void RegisterWebUIInterfaceBrokers(
+      WebUIBrowserInterfaceBrokerRegistry& registry) {}
 
   // Content was unable to bind a receiver for this associated interface, so the
   // embedder should try. Returns true if the |handle| was actually taken and
