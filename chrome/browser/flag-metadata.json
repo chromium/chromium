@@ -4987,22 +4987,22 @@
   {
     "name": "shared-highlighting-amp",
     "owners": ["cheickcisse@google.com"],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "shared-highlighting-ios",
     "owners": ["tmartino"],
-    "expiry_milestone": 94
+    "expiry_milestone": 97
   },
   {
     "name": "shared-highlighting-use-blocklist",
     "owners": ["tmartino"],
-    "expiry_milestone": 94
+    "expiry_milestone": 97
   },
   {
     "name": "shared-highlighting-v2",
     "owners": ["kmilka"],
-    "expiry_milestone": 94
+    "expiry_milestone": 97
   },
   {
     "name": "sharing-desktop-screenshots",
