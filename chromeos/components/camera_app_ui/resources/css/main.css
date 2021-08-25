@@ -6,6 +6,7 @@
   /* Standard CrOS styles */
   --blue-300-rgb: 138, 180, 248;
   --blue-300: rgb(var(--blue-300-rgb));
+  --blue-500: rgb(66, 133, 244);
   --grey-100: rgb(241, 243, 244);
   --grey-200: rgb(232, 234, 237);
   --grey-500: rgb(154, 160, 166);
