@@ -692,7 +692,15 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
     FormFieldData* optional_field) const {
   form.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
-  form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
+
+  // GetLastCommittedURL doesn't include URL updates due to document.open() and
+  // so it might be about:blank or about:srcdoc. In this case fallback to
+  // GetLastCommittedOrigin. See http://crbug.com/1209270 for more details.
+  GURL url = render_frame_host_->GetLastCommittedURL();
+  if (url.SchemeIs(url::kAboutScheme))
+    url = render_frame_host_->GetLastCommittedOrigin().GetURL();
+  form.url = StripAuthAndParams(url);
+
   if (auto* main_rfh = render_frame_host_->GetMainFrame())
     form.main_frame_origin = main_rfh->GetLastCommittedOrigin();
   else
