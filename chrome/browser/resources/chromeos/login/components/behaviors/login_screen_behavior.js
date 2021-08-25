@@ -133,12 +133,11 @@ var LoginScreenBehavior = {
    * @private
    */
   registerScreenApi_(name, api) {
-    // Closure compiler incorrectly parses this, so we use cr.define.call(...).
-    cr.define.call(cr.define, 'login', function() {
-      var result = {};
-      result[name] = api;
-      return result;
-    });
+    // TODO(crbug.com/1229130) - Improve this.
+    if (globalThis.login == undefined) {
+      globalThis.login = {};
+    }
+    globalThis.login[name] = api;
   },
 };
 
