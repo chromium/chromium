@@ -19,7 +19,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
@@ -31,7 +31,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
@@ -44,7 +44,7 @@
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
@@ -56,7 +56,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_dawn": true,
       "use_goma": true
@@ -69,7 +69,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
@@ -81,7 +81,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_dawn": true,
       "use_goma": true
@@ -107,7 +107,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
@@ -119,7 +119,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_dawn": true,
       "use_goma": true
     }
