@@ -106,7 +106,8 @@ bool GetComponentDirectory(base::FilePath* result) {
 #if defined(OS_FUCHSIA)
   // TODO(crbug.com/1241871): Support bundled components.
   return false;
-#elif defined(OS_MAC)
+#else
+#if defined(OS_MAC)
   // If called from Chrome, return the framework's Libraries directory.
   if (base::mac::AmIBundled()) {
     *result = chrome::GetFrameworkBundlePath();
@@ -119,6 +120,7 @@ bool GetComponentDirectory(base::FilePath* result) {
 
   // The rest of the world expects components in the module directory.
   return base::PathService::Get(base::DIR_MODULE, result);
+#endif
 }
 
 }  // namespace
@@ -457,7 +459,8 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_FUCHSIA)
       // TODO(crbug.com/1241872): Support external extensions.
       return false;
-#elif defined(OS_MAC)
+#else
+#if defined(OS_MAC)
       if (!chrome::GetGlobalApplicationSupportDirectory(&cur))
         return false;
 
@@ -473,12 +476,14 @@ bool PathProvider(int key, base::FilePath* result) {
       create_dir = true;
 #endif
       break;
+#endif
 
     case chrome::DIR_DEFAULT_APPS:
 #if defined(OS_FUCHSIA)
       // TODO(crbug.com/1241872): Support default-installed apps.
       return false;
-#elif defined(OS_MAC)
+#else
+#if defined(OS_MAC)
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
 #else
@@ -487,6 +492,7 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("default_apps"));
 #endif
       break;
+#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     case chrome::DIR_NATIVE_MESSAGING:
