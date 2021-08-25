@@ -254,6 +254,86 @@ PrintSettings::PrintSettings() {
   Clear();
 }
 
+PrintSettings::PrintSettings(const PrintSettings& settings) {
+  ranges_ = settings.ranges_;
+  selection_only_ = settings.selection_only_;
+  margin_type_ = settings.margin_type_;
+  title_ = settings.title_;
+  url_ = settings.url_;
+  display_header_footer_ = settings.display_header_footer_;
+  should_print_backgrounds_ = settings.should_print_backgrounds_;
+  collate_ = settings.collate_;
+  color_ = settings.color_;
+  copies_ = settings.copies_;
+  duplex_mode_ = settings.duplex_mode_;
+  device_name_ = settings.device_name_;
+  requested_media_ = settings.requested_media_;
+  page_setup_device_units_ = settings.page_setup_device_units_;
+  dpi_ = settings.dpi_;
+  scale_factor_ = settings.scale_factor_;
+  rasterize_pdf_ = settings.rasterize_pdf_;
+  rasterize_pdf_dpi_ = settings.rasterize_pdf_dpi_;
+  landscape_ = settings.landscape_;
+  supports_alpha_blend_ = settings.supports_alpha_blend_;
+#if defined(OS_WIN)
+  print_text_with_gdi_ = settings.print_text_with_gdi_;
+  printer_language_type_ = settings.printer_language_type_;
+#endif
+  is_modifiable_ = settings.is_modifiable_;
+  pages_per_sheet_ = settings.pages_per_sheet_;
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  for (const auto& item : settings.advanced_settings_)
+    advanced_settings_.emplace(item.first, item.second.Clone());
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS)
+  send_user_info_ = settings.send_user_info_;
+  username_ = settings.username_;
+  pin_value_ = settings.pin_value_;
+#endif  // defined(OS_CHROMEOS)
+}
+
+PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
+  if (this == &settings)
+    return *this;
+
+  ranges_ = settings.ranges_;
+  selection_only_ = settings.selection_only_;
+  margin_type_ = settings.margin_type_;
+  title_ = settings.title_;
+  url_ = settings.url_;
+  display_header_footer_ = settings.display_header_footer_;
+  should_print_backgrounds_ = settings.should_print_backgrounds_;
+  collate_ = settings.collate_;
+  color_ = settings.color_;
+  copies_ = settings.copies_;
+  duplex_mode_ = settings.duplex_mode_;
+  device_name_ = settings.device_name_;
+  requested_media_ = settings.requested_media_;
+  page_setup_device_units_ = settings.page_setup_device_units_;
+  dpi_ = settings.dpi_;
+  scale_factor_ = settings.scale_factor_;
+  rasterize_pdf_ = settings.rasterize_pdf_;
+  rasterize_pdf_dpi_ = settings.rasterize_pdf_dpi_;
+  landscape_ = settings.landscape_;
+  supports_alpha_blend_ = settings.supports_alpha_blend_;
+#if defined(OS_WIN)
+  print_text_with_gdi_ = settings.print_text_with_gdi_;
+  printer_language_type_ = settings.printer_language_type_;
+#endif
+  is_modifiable_ = settings.is_modifiable_;
+  pages_per_sheet_ = settings.pages_per_sheet_;
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  for (const auto& item : settings.advanced_settings_)
+    advanced_settings_.emplace(item.first, item.second.Clone());
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS)
+  send_user_info_ = settings.send_user_info_;
+  username_ = settings.username_;
+  pin_value_ = settings.pin_value_;
+#endif  // defined(OS_CHROMEOS)
+  return *this;
+}
+
 PrintSettings::~PrintSettings() = default;
 
 void PrintSettings::Clear() {

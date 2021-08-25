@@ -4,6 +4,9 @@
 
 module printing.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Corresponds to `printing::PageMargins` in printing/page_setup.h.
@@ -39,4 +42,46 @@ struct PageRange {
 struct RequestedMedia {
   gfx.mojom.Size size_microns;
   string vendor_id;
+};
+
+// Corresponds to `printing::PrintSettings` in printing/print_settings.h.
+struct PrintSettings {
+  array<PageRange> ranges;
+  bool selection_only;
+  MarginType margin_type;
+  mojo_base.mojom.String16 title;
+  mojo_base.mojom.String16 url;
+  bool display_header_footer;
+  bool should_print_backgrounds;
+  bool collate;
+  ColorModel color;
+  int32 copies;
+  DuplexMode duplex_mode;
+  mojo_base.mojom.String16 device_name;
+  RequestedMedia requested_media;
+  PageSetup page_setup_device_units;
+  gfx.mojom.Size dpi;
+  double scale_factor;
+  bool rasterize_pdf;
+  bool landscape;
+  bool supports_alpha_blend;
+
+  [EnableIf=is_win]
+  bool print_text_with_gdi;
+  [EnableIf=is_win]
+  PrinterLanguageType printer_language_type;
+
+  bool is_modifiable;
+  PageMargins requested_custom_margins_in_points;
+  int32 pages_per_sheet;
+
+  [EnableIf=is_linux_or_chromeos]
+  map<string, mojo_base.mojom.Value> advanced_settings;
+
+  [EnableIf=is_chromeos]
+  bool send_user_info;
+  [EnableIf=is_chromeos]
+  string username;
+  [EnableIf=is_chromeos]
+  string pin_value;
 };

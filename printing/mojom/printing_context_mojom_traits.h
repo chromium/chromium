@@ -5,6 +5,10 @@
 #ifndef PRINTING_MOJOM_PRINTING_CONTEXT_MOJOM_TRAITS_H_
 #define PRINTING_MOJOM_PRINTING_CONTEXT_MOJOM_TRAITS_H_
 
+#include <string>
+
+#include "build/build_config.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/mojom/printing_context.mojom-shared.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
@@ -83,6 +87,111 @@ struct StructTraits<printing::mojom::RequestedMediaDataView,
 
   static bool Read(printing::mojom::RequestedMediaDataView data,
                    printing::PrintSettings::RequestedMedia* out);
+};
+
+template <>
+struct StructTraits<printing::mojom::PrintSettingsDataView,
+                    printing::PrintSettings> {
+  static const printing::PageRanges& ranges(const printing::PrintSettings& s) {
+    return s.ranges();
+  }
+  static bool selection_only(const printing::PrintSettings& s) {
+    return s.selection_only();
+  }
+  static printing::mojom::MarginType margin_type(
+      const printing::PrintSettings& s) {
+    return s.margin_type();
+  }
+  static const std::u16string& title(const printing::PrintSettings& s) {
+    return s.title();
+  }
+  static const std::u16string& url(const printing::PrintSettings& s) {
+    return s.url();
+  }
+  static bool display_header_footer(const printing::PrintSettings& s) {
+    return s.display_header_footer();
+  }
+  static bool should_print_backgrounds(const printing::PrintSettings& s) {
+    return s.should_print_backgrounds();
+  }
+  static bool collate(const printing::PrintSettings& s) { return s.collate(); }
+  static printing::mojom::ColorModel color(const printing::PrintSettings& s) {
+    return s.color();
+  }
+  static int32_t copies(const printing::PrintSettings& s) { return s.copies(); }
+  static printing::mojom::DuplexMode duplex_mode(
+      const printing::PrintSettings& s) {
+    return s.duplex_mode();
+  }
+  static const std::u16string& device_name(const printing::PrintSettings& s) {
+    return s.device_name();
+  }
+  static const printing::PrintSettings::RequestedMedia& requested_media(
+      const printing::PrintSettings& s) {
+    return s.requested_media();
+  }
+  static const printing::PageSetup& page_setup_device_units(
+      const printing::PrintSettings& s) {
+    return s.page_setup_device_units();
+  }
+  static const gfx::Size& dpi(const printing::PrintSettings& s) {
+    return s.dpi_size();
+  }
+  static double scale_factor(const printing::PrintSettings& s) {
+    return s.scale_factor();
+  }
+  static bool rasterize_pdf(const printing::PrintSettings& s) {
+    return s.rasterize_pdf();
+  }
+  static bool landscape(const printing::PrintSettings& s) {
+    return s.landscape();
+  }
+  static bool supports_alpha_blend(const printing::PrintSettings& s) {
+    return s.supports_alpha_blend();
+  }
+
+#if defined(OS_WIN)
+  static bool print_text_with_gdi(const printing::PrintSettings& s) {
+    return s.print_text_with_gdi();
+  }
+  static printing::mojom::PrinterLanguageType printer_language_type(
+      const printing::PrintSettings& s) {
+    return s.printer_language_type();
+  }
+#endif  // defined(OS_WIN)
+
+  static bool is_modifiable(const printing::PrintSettings& s) {
+    return s.is_modifiable();
+  }
+  static const printing::PageMargins& requested_custom_margins_in_points(
+      const printing::PrintSettings& s) {
+    return s.requested_custom_margins_in_points();
+  }
+  static int32_t pages_per_sheet(const printing::PrintSettings& s) {
+    return s.pages_per_sheet();
+  }
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  static const printing::PrintSettings::AdvancedSettings& advanced_settings(
+      const printing::PrintSettings& s) {
+    return s.advanced_settings();
+  }
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+#if defined(OS_CHROMEOS)
+  static bool send_user_info(const printing::PrintSettings& s) {
+    return s.send_user_info();
+  }
+  static const std::string& username(const printing::PrintSettings& s) {
+    return s.username();
+  }
+  static const std::string& pin_value(const printing::PrintSettings& s) {
+    return s.pin_value();
+  }
+#endif  // defined(OS_CHROMEOS)
+
+  static bool Read(printing::mojom::PrintSettingsDataView data,
+                   printing::PrintSettings* out);
 };
 
 }  // namespace mojo

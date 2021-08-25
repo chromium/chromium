@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
@@ -77,8 +76,8 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   PrintSettings();
-  PrintSettings(const PrintSettings&) = delete;
-  PrintSettings& operator=(const PrintSettings&) = delete;
+  PrintSettings(const PrintSettings&);
+  PrintSettings& operator=(const PrintSettings&);
   ~PrintSettings();
 
   // Reinitialize the settings to the default values.
@@ -114,6 +113,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
                                bool landscape_needs_flip);
   const PageSetup& page_setup_device_units() const {
     return page_setup_device_units_;
+  }
+  // `set_page_setup_device_units()` intended to be used only for mojom
+  // validation.
+  void set_page_setup_device_units(const PageSetup& page_setup_device_units) {
+    page_setup_device_units_ = page_setup_device_units;
   }
 
   void set_device_name(const std::u16string& device_name) {
@@ -198,6 +202,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void set_printer_language_type(mojom::PrinterLanguageType type) {
     printer_language_type_ = type;
   }
+  mojom::PrinterLanguageType printer_language_type() const {
+    return printer_language_type_;
+  }
   bool printer_language_is_textonly() const {
     return printer_language_type_ == mojom::PrinterLanguageType::kTextOnly;
   }
@@ -240,7 +247,7 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   void set_pin_value(const std::string& pin_value) { pin_value_ = pin_value; }
   const std::string& pin_value() const { return pin_value_; }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   // Cookie generator. It is used to initialize `PrintedDocument` with its
   // associated `PrintSettings`, to be sure that each generated `PrintedPage`

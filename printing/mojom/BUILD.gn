@@ -11,9 +11,17 @@ mojom("mojom") {
 
 if (enable_basic_printing) {
   mojom("printing_context") {
+    if (is_linux || is_chromeos) {
+      enabled_features = [ "is_linux_or_chromeos" ]
+    }
+
     sources = [ "printing_context.mojom" ]
 
-    public_deps = [ "//ui/gfx/geometry/mojom" ]
+    public_deps = [
+      ":mojom",
+      "//mojo/public/mojom/base",
+      "//ui/gfx/geometry/mojom",
+    ]
 
     cpp_typemaps = [
       {
@@ -34,12 +42,18 @@ if (enable_basic_printing) {
             mojom = "printing.mojom.RequestedMedia"
             cpp = "::printing::PrintSettings::RequestedMedia"
           },
+          {
+            mojom = "printing.mojom.PrintSettings"
+            cpp = "::printing::PrintSettings"
+          },
         ]
         traits_sources = [ "printing_context_mojom_traits.cc" ]
         traits_headers = [ "printing_context_mojom_traits.h" ]
         traits_deps = [
+          "//mojo/public/mojom/base",
           "//printing",
           "//ui/gfx/geometry",
+          "//ui/gfx/geometry/mojom",
         ]
       },
     ]

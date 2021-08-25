@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/values.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/mojom/printing_context.mojom.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
@@ -55,6 +58,208 @@ PrintSettings::RequestedMedia GenerateSampleRequestedMedia() {
   media.size_microns = kRequestedMediaSize;
   media.vendor_id = kRequestedMediaVendorId;
   return media;
+}
+
+// Support two possible sample `PrintSettings`, to ensure that certain fields
+// get definitively tested for coverage (e.g., booleans).  Note that not all
+// fields need distinct values between the two.  A key difference between them
+// is custom vs. default margins, as this has significant implications
+// internally on printable area.
+const PageRanges kPrintSettingsPageRanges{{/*from=*/1, /*to=*/2},
+                                          {/*from=*/5, /*to=*/8},
+                                          {/*from=*/10, /*to=*/10}};
+constexpr char16_t kPrintSettingsTitle[] = u"Title";
+constexpr char16_t kPrintSettingsUrl[] = u"//url";
+constexpr int kPrintSettingsCopies = 99;
+constexpr char16_t kPrintSettingsDeviceName[] = u"device";
+const PrintSettings::RequestedMedia kPrintSettingsRequestedMedia{
+    /*size_microns=*/gfx::Size(/*width=*/215900, /*height=*/279400),
+    /*vendor_id=*/"vendor"};
+const PageMargins kPrintSettingsCustomMarginsInPoints(/*header=*/10,
+                                                      /*footer=*/15,
+                                                      /*left=*/20,
+                                                      /*right=*/25,
+                                                      /*top=*/30,
+                                                      /*bottom=*/35);
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+PrintSettings::AdvancedSettings GenerateSampleAdvancedSettings() {
+  PrintSettings::AdvancedSettings advanced_settings;
+  advanced_settings.emplace("advanced-setting-A", base::Value("setting-A"));
+  advanced_settings.emplace("advanced-setting-B", base::Value(42));
+  return advanced_settings;
+}
+
+const PrintSettings::AdvancedSettings kPrintSettingsAdvancedSettings =
+    GenerateSampleAdvancedSettings();
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+#if defined(OS_CHROMEOS)
+constexpr char kPrintSettingsUsername[] = "username";
+constexpr char kPrintSettingsPinValue[] = "pin-value";
+#endif  // defined(OS_CHROMEOS)
+
+constexpr bool kPrintSettingsSetSelection1 = false;
+constexpr bool kPrintSettingsSetSelection2 = true;
+
+constexpr mojom::MarginType kPrintSettingsMarginType1 =
+    mojom::MarginType::kDefaultMargins;
+constexpr mojom::MarginType kPrintSettingsMarginType2 =
+    mojom::MarginType::kCustomMargins;
+
+constexpr bool kPrintSettingsDisplayHeaderFooter1 = true;
+constexpr bool kPrintSettingsDisplayHeaderFooter2 = false;
+
+constexpr bool kPrintSettingsShouldPrintBackgrounds1 = false;
+constexpr bool kPrintSettingsShouldPrintBackgrounds2 = true;
+
+constexpr bool kPrintSettingsCollate1 = false;
+constexpr bool kPrintSettingsCollate2 = true;
+
+constexpr mojom::ColorModel kPrintSettingsColorModel1 =
+    mojom::ColorModel::kGrayscale;
+constexpr mojom::ColorModel kPrintSettingsColorModel2 = mojom::ColorModel::kRGB;
+
+constexpr mojom::DuplexMode kPrintSettingsDuplexMode1 =
+    mojom::DuplexMode::kSimplex;
+constexpr mojom::DuplexMode kPrintSettingsDuplexMode2 =
+    mojom::DuplexMode::kLongEdge;
+
+constexpr gfx::Size kPrintSettingsDpi1(600, 600);
+constexpr gfx::Size kPrintSettingsDpi2(1200, 600);
+
+constexpr double kPrintSettingsScaleFactor1 = 1.0;
+constexpr double kPrintSettingsScaleFactor2 = 1.25;
+
+constexpr bool kPrintSettingsRasterizePdf1 = true;
+constexpr bool kPrintSettingsRasterizePdf2 = false;
+
+constexpr bool kPrintSettingsLandscape1 = false;
+constexpr bool kPrintSettingsLandscape2 = true;
+
+constexpr bool kPrintSettingsSupportsAlphaBlend1 = false;
+constexpr bool kPrintSettingsSupportsAlphaBlend2 = true;
+
+#if defined(OS_WIN)
+constexpr bool kPrintSettingsPrintTextWithGdi1 = true;
+constexpr bool kPrintSettingsPrintTextWithGdi2 = false;
+
+constexpr mojom::PrinterLanguageType kPrintSettingsPrinterLanguageType1 =
+    mojom::PrinterLanguageType::kTextOnly;
+constexpr mojom::PrinterLanguageType kPrintSettingsPrinterLanguageType2 =
+    mojom::PrinterLanguageType::kXps;
+#endif  // defined(OS_WIN)
+
+constexpr bool kPrintSettingsModifiable1 = true;
+constexpr bool kPrintSettingsModifiable2 = false;
+
+constexpr int kPrintSettingsPagesPerSheet1 = 1;
+constexpr int kPrintSettingsPagesPerSheet2 = 2;
+
+#if defined(OS_CHROMEOS)
+constexpr bool kPrintSettingsSendUserInfo1 = true;
+constexpr bool kPrintSettingsSendUserInfo2 = false;
+#endif
+
+PrintSettings GenerateSamplePrintSettingsCommon() {
+  PrintSettings settings;
+
+  settings.set_ranges(kPrintSettingsPageRanges);
+  settings.set_title(kPrintSettingsTitle);
+  settings.set_url(kPrintSettingsUrl);
+  settings.set_copies(kPrintSettingsCopies);
+  settings.set_device_name(kPrintSettingsDeviceName);
+  settings.set_requested_media(kPrintSettingsRequestedMedia);
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  PrintSettings::AdvancedSettings& advanced_settings =
+      settings.advanced_settings();
+  for (const auto& item : kPrintSettingsAdvancedSettings)
+    advanced_settings.emplace(item.first, item.second.Clone());
+#endif
+
+#if defined(OS_CHROMEOS)
+  settings.set_username(kPrintSettingsUsername);
+  settings.set_pin_value(kPrintSettingsPinValue);
+#endif
+
+  return settings;
+}
+
+PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
+  PrintSettings settings = GenerateSamplePrintSettingsCommon();
+
+  settings.set_selection_only(kPrintSettingsSetSelection1);
+  settings.set_margin_type(kPrintSettingsMarginType1);
+  settings.set_display_header_footer(kPrintSettingsDisplayHeaderFooter1);
+  settings.set_should_print_backgrounds(kPrintSettingsShouldPrintBackgrounds1);
+  settings.set_collate(kPrintSettingsCollate1);
+  settings.set_color(kPrintSettingsColorModel1);
+  settings.set_duplex_mode(kPrintSettingsDuplexMode1);
+  settings.set_dpi(
+      kPrintSettingsDpi1.width());  // Same resolution for both axes.
+  settings.set_scale_factor(kPrintSettingsScaleFactor1);
+  settings.set_rasterize_pdf(kPrintSettingsRasterizePdf1);
+  settings.SetOrientation(kPrintSettingsLandscape1);
+  settings.set_supports_alpha_blend(kPrintSettingsSupportsAlphaBlend1);
+
+#if defined(OS_WIN)
+  settings.set_print_text_with_gdi(kPrintSettingsPrintTextWithGdi1);
+  settings.set_printer_language_type(kPrintSettingsPrinterLanguageType1);
+#endif
+
+  settings.set_is_modifiable(kPrintSettingsModifiable1);
+  settings.set_pages_per_sheet(kPrintSettingsPagesPerSheet1);
+
+#if defined(OS_CHROMEOS)
+  settings.set_send_user_info(kPrintSettingsSendUserInfo1);
+#endif
+
+  return settings;
+}
+
+PrintSettings GenerateSamplePrintSettingsCustomMargins() {
+  PrintSettings settings = GenerateSamplePrintSettingsCommon();
+
+  settings.set_selection_only(kPrintSettingsSetSelection2);
+  settings.set_margin_type(kPrintSettingsMarginType2);
+  settings.set_display_header_footer(kPrintSettingsDisplayHeaderFooter2);
+  settings.set_should_print_backgrounds(kPrintSettingsShouldPrintBackgrounds2);
+  settings.set_collate(kPrintSettingsCollate2);
+  settings.set_color(kPrintSettingsColorModel2);
+  settings.set_duplex_mode(kPrintSettingsDuplexMode2);
+  settings.set_dpi_xy(kPrintSettingsDpi2.width(), kPrintSettingsDpi2.height());
+  settings.set_scale_factor(kPrintSettingsScaleFactor2);
+  settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
+  settings.SetOrientation(kPrintSettingsLandscape2);
+  settings.set_supports_alpha_blend(kPrintSettingsSupportsAlphaBlend2);
+
+  settings.SetCustomMargins(kPrintSettingsCustomMarginsInPoints);
+
+#if defined(OS_WIN)
+  settings.set_print_text_with_gdi(kPrintSettingsPrintTextWithGdi2);
+  settings.set_printer_language_type(kPrintSettingsPrinterLanguageType2);
+#endif
+
+  settings.set_is_modifiable(kPrintSettingsModifiable2);
+  settings.set_pages_per_sheet(kPrintSettingsPagesPerSheet2);
+
+#if defined(OS_CHROMEOS)
+  settings.set_send_user_info(kPrintSettingsSendUserInfo2);
+#endif
+
+  return settings;
+}
+
+bool RequestedMediasEqual(const PrintSettings::RequestedMedia& lhs,
+                          const PrintSettings::RequestedMedia& rhs) {
+  return lhs.size_microns == rhs.size_microns && lhs.vendor_id == rhs.vendor_id;
+}
+
+bool PageMarginsEqual(const PageMargins& lhs, const PageMargins& rhs) {
+  return lhs.header == rhs.header && lhs.footer == rhs.footer &&
+         lhs.left == rhs.left && lhs.right == rhs.right && lhs.top == rhs.top &&
+         lhs.bottom == rhs.bottom;
 }
 
 }  // namespace
@@ -245,5 +450,152 @@ TEST(PrintingContextMojomTraitsTest,
 
   EXPECT_TRUE(output.IsDefault());
 }
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsDefaultMargins) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  PrintSettings output;
+
+  // `page_setup_device_units` is set programmatically by PrintSettings based
+  // upon all other parameters.  Capture its initial value before letting
+  // `input` be touched by the serializer.
+  const PageSetup kPageSetupDeviceUnits = input.page_setup_device_units();
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_EQ(output.ranges(), kPrintSettingsPageRanges);
+  EXPECT_EQ(output.selection_only(), kPrintSettingsSetSelection1);
+  EXPECT_EQ(output.margin_type(), kPrintSettingsMarginType1);
+  EXPECT_EQ(output.title(), kPrintSettingsTitle);
+  EXPECT_EQ(output.url(), kPrintSettingsUrl);
+  EXPECT_EQ(output.display_header_footer(), kPrintSettingsDisplayHeaderFooter1);
+  EXPECT_EQ(output.should_print_backgrounds(),
+            kPrintSettingsShouldPrintBackgrounds1);
+  EXPECT_EQ(output.collate(), kPrintSettingsCollate1);
+  EXPECT_EQ(output.color(), kPrintSettingsColorModel1);
+  EXPECT_EQ(output.copies(), kPrintSettingsCopies);
+  EXPECT_EQ(output.duplex_mode(), kPrintSettingsDuplexMode1);
+  EXPECT_EQ(output.device_name(), kPrintSettingsDeviceName);
+  EXPECT_TRUE(RequestedMediasEqual(output.requested_media(),
+                                   kPrintSettingsRequestedMedia));
+  EXPECT_TRUE(output.page_setup_device_units().Equals(kPageSetupDeviceUnits));
+  EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi1);
+  EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor1);
+  EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf1);
+  EXPECT_EQ(output.landscape(), kPrintSettingsLandscape1);
+  EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend1);
+
+#if defined(OS_WIN)
+  EXPECT_EQ(output.print_text_with_gdi(), kPrintSettingsPrintTextWithGdi1);
+  EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType1);
+#endif
+
+  EXPECT_EQ(output.is_modifiable(), kPrintSettingsModifiable1);
+
+  // Since `kPrintSettingsMarginType1` is not `kCustomMargins` then expect the
+  // custom margins to be default values.
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
+                               PageMargins()));
+
+  EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet1);
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  EXPECT_EQ(output.advanced_settings(), kPrintSettingsAdvancedSettings);
+#endif
+
+#if defined(OS_CHROMEOS)
+  EXPECT_EQ(output.send_user_info(), kPrintSettingsSendUserInfo1);
+  EXPECT_EQ(output.username(), kPrintSettingsUsername);
+  EXPECT_EQ(output.pin_value(), kPrintSettingsPinValue);
+#endif
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsCustomMargins) {
+  PrintSettings input = GenerateSamplePrintSettingsCustomMargins();
+  PrintSettings output;
+
+  // `page_setup_device_units` is set programmatically by PrintSettings based
+  // upon all other parameters.  Capture its initial value before letting
+  // `input` be touched by the serializer.
+  const PageSetup kPageSetupDeviceUnits = input.page_setup_device_units();
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_EQ(output.ranges(), kPrintSettingsPageRanges);
+  EXPECT_EQ(output.selection_only(), kPrintSettingsSetSelection2);
+  EXPECT_EQ(output.margin_type(), kPrintSettingsMarginType2);
+  EXPECT_EQ(output.title(), kPrintSettingsTitle);
+  EXPECT_EQ(output.url(), kPrintSettingsUrl);
+  EXPECT_EQ(output.display_header_footer(), kPrintSettingsDisplayHeaderFooter2);
+  EXPECT_EQ(output.should_print_backgrounds(),
+            kPrintSettingsShouldPrintBackgrounds2);
+  EXPECT_EQ(output.collate(), kPrintSettingsCollate2);
+  EXPECT_EQ(output.color(), kPrintSettingsColorModel2);
+  EXPECT_EQ(output.copies(), kPrintSettingsCopies);
+  EXPECT_EQ(output.duplex_mode(), kPrintSettingsDuplexMode2);
+  EXPECT_EQ(output.device_name(), kPrintSettingsDeviceName);
+  EXPECT_TRUE(RequestedMediasEqual(output.requested_media(),
+                                   kPrintSettingsRequestedMedia));
+  EXPECT_TRUE(output.page_setup_device_units().Equals(kPageSetupDeviceUnits));
+  EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi2);
+  EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
+  EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf2);
+  EXPECT_EQ(output.landscape(), kPrintSettingsLandscape2);
+  EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend2);
+
+#if defined(OS_WIN)
+  EXPECT_EQ(output.print_text_with_gdi(), kPrintSettingsPrintTextWithGdi2);
+  EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType2);
+#endif
+
+  EXPECT_EQ(output.is_modifiable(), kPrintSettingsModifiable2);
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
+                               kPrintSettingsCustomMarginsInPoints));
+  EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet2);
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  EXPECT_EQ(output.advanced_settings(), kPrintSettingsAdvancedSettings);
+#endif
+
+#if defined(OS_CHROMEOS)
+  EXPECT_EQ(output.send_user_info(), kPrintSettingsSendUserInfo2);
+  EXPECT_EQ(output.username(), kPrintSettingsUsername);
+  EXPECT_EQ(output.pin_value(), kPrintSettingsPinValue);
+#endif
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsEmptyPageRanges) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  PrintSettings output;
+
+  // Empty page ranges are allowed in settings.
+  const PageRanges kEmptyPageRanges;
+  input.set_ranges(kEmptyPageRanges);
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_EQ(output.ranges(), kEmptyPageRanges);
+}
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsEmptyAdvancedSettings) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  PrintSettings output;
+
+  // Empty advanced settings is allowed.
+  input.advanced_settings().clear();
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_TRUE(output.advanced_settings().empty());
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace printing
