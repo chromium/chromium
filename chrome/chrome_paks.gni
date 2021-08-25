@@ -283,14 +283,14 @@ template("chrome_extra_paks") {
         sources += [
           "$root_gen_dir/ash/ash_sample_system_web_app_resources.pak",
           "$root_gen_dir/ash/ash_sample_system_web_app_untrusted_resources.pak",
+          "$root_gen_dir/ash/ash_telemetry_extension_resources.pak",
           "$root_gen_dir/chromeos/chromeos_demo_mode_app_resources.pak",
-          "$root_gen_dir/chromeos/chromeos_telemetry_extension_resources.pak",
         ]
         deps += [
           "//ash/webui/resources:sample_system_web_app_resources",
           "//ash/webui/resources:sample_system_web_app_untrusted_resources",
+          "//ash/webui/resources:telemetry_extension_resources",
           "//chromeos/resources:demo_mode_app_resources",
-          "//chromeos/resources:telemetry_extension_resources",
         ]
       }
     }

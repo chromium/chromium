@@ -31,6 +31,10 @@ test("ash_webui_unittests") {
     "//ui/base:base",
   ]
 
+  if (!is_official_build) {
+    deps += [ "//ash/webui/telemetry_extension_ui:unit_tests" ]
+  }
+
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
@@ -51,6 +55,9 @@ group("closure_compile") {
   ]
 
   if (!is_official_build) {
-    deps += [ "//ash/webui/sample_system_web_app_ui:closure_compile" ]
+    deps += [
+      "//ash/webui/sample_system_web_app_ui:closure_compile",
+      "//ash/webui/telemetry_extension_ui:closure_compile",
+    ]
   }
 }

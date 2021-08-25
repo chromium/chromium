@@ -475,7 +475,7 @@
     "includes": [2650],
     "structures": [2655],
   },
-  "chromeos/components/telemetry_extension_ui/resources/telemetry_extension_resources.grd": {
+  "ash/webui/telemetry_extension_ui/resources/telemetry_extension_resources.grd": {
     "includes": [2660],
   },
   "chromeos/resources/chromeos_resources.grd": {

@@ -101,3 +101,19 @@ grit("diagnostics_app_resources") {
 
   output_dir = "$root_gen_dir/ash"
 }
+
+# Resources used by chrome://telemetry-extension
+grit("telemetry_extension_resources") {
+  source = "//ash/webui/telemetry_extension_ui/resources/telemetry_extension_resources.grd"
+
+  deps = [ "//ash/webui/telemetry_extension_ui/mojom:mojom_js" ]
+
+  outputs = [
+    "grit/ash_telemetry_extension_resources.h",
+    "grit/ash_telemetry_extension_resources_map.cc",
+    "grit/ash_telemetry_extension_resources_map.h",
+    "ash_telemetry_extension_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

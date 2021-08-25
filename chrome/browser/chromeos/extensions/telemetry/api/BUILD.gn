@@ -19,10 +19,10 @@ source_set("api") {
   ]
 
   deps = [
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
     "//chrome/common/chromeos/extensions/api",
-    "//chromeos/components/telemetry_extension_ui/mojom",
-    "//chromeos/components/telemetry_extension_ui/services:telemetry_services",
     "//extensions/browser",
     "//extensions/common",
   ]

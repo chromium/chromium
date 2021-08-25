@@ -256,11 +256,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
+#include "ash/webui/telemetry_extension_ui/telemetry_extension_ui.h"
+#include "ash/webui/telemetry_extension_ui/url_constants.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"
 #include "chromeos/components/demo_mode_app_ui/url_constants.h"
-#include "chromeos/components/telemetry_extension_ui/telemetry_extension_ui.h"
-#include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #endif
 
 #if !defined(OS_CHROMEOS)

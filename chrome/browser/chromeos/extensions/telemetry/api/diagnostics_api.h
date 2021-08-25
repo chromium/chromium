@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_
 
-#include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "chromeos/components/telemetry_extension_ui/services/diagnostics_service.h"
+#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
+#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"

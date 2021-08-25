@@ -51,10 +51,6 @@ test("chromeos_components_unittests") {
     deps += [ "//chromeos/components/camera_app_ui:unit_tests" ]
   }
 
-  if (!is_official_build) {
-    deps += [ "//chromeos/components/telemetry_extension_ui:unit_tests" ]
-  }
-
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
@@ -77,8 +73,4 @@ group("closure_compile") {
     "//chromeos/components/print_management:closure_compile",
     "//chromeos/components/system_apps:closure_compile",
   ]
-
-  if (!is_official_build) {
-    deps += [ "//chromeos/components/telemetry_extension_ui:closure_compile" ]
-  }
 }

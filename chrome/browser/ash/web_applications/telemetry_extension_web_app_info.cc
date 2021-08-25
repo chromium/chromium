@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_telemetry_extension_resources.h"
+#include "ash/webui/telemetry_extension_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/telemetry_extension_ui/url_constants.h"
-#include "chromeos/grit/chromeos_telemetry_extension_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTelemetryExtension() {

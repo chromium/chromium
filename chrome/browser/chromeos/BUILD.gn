@@ -103,6 +103,7 @@ source_set("chromeos") {
     "//ash/webui/scanning/mojom",
     "//ash/webui/shimless_rma",
     "//ash/webui/shortcut_customization_ui",
+    "//ash/webui/telemetry_extension_ui/mojom",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -176,7 +177,6 @@ source_set("chromeos") {
     "//chromeos/components/smbfs/mojom",
     "//chromeos/components/string_matching",
     "//chromeos/components/sync_wifi",
-    "//chromeos/components/telemetry_extension_ui/mojom",
     "//chromeos/components/tether",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
@@ -3326,11 +3326,11 @@ source_set("chromeos") {
     deps += [
       "//ash/webui/resources:sample_system_web_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_untrusted_resources_grit",
+      "//ash/webui/resources:telemetry_extension_resources",
       "//ash/webui/sample_system_web_app_ui",
+      "//ash/webui/telemetry_extension_ui",
       "//chromeos/components/demo_mode_app_ui",
-      "//chromeos/components/telemetry_extension_ui",
       "//chromeos/resources:demo_mode_app_resources_grit",
-      "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
       "../ash/web_applications/demo_mode_web_app_info.cc",
