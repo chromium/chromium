@@ -24,6 +24,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -47,6 +49,9 @@ constexpr int kExtraSmallVerticalDistanceBetweenUsersDp = 32;
 // Height of gradient shown at the top/bottom of the user list in the extra
 // small display style.
 constexpr int kExtraSmallGradientHeightDp = 112;
+
+// Inset the scroll bar from the edges of the screen.
+constexpr gfx::Insets kVerticalScrollInsets(2, 0, 2, 8);
 
 constexpr char kScrollableUsersListContentViewName[] =
     "ScrollableUsersListContent";
@@ -210,7 +215,9 @@ ScrollableUsersListView::ScrollableUsersListView(
   SetBackgroundColor(absl::nullopt);
   SetDrawOverflowIndicator(false);
 
-  SetVerticalScrollBar(std::make_unique<RoundedScrollBar>(false));
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  SetVerticalScrollBar(std::move(vertical_scroll));
   SetHorizontalScrollBar(std::make_unique<RoundedScrollBar>(true));
 
   observation_.Observe(Shell::Get()->wallpaper_controller());

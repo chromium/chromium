@@ -7,7 +7,13 @@
 
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+
+namespace views {
+class BaseScrollBarThumb;
+}  // namespace views
 
 namespace ash {
 
@@ -15,12 +21,19 @@ namespace ash {
 // - Shows the thumb on scroll and on hover
 // - Fades out the thumb after a delay
 // - Draws the thumb with rounded ends
-class RoundedScrollBar : public views::ScrollBar {
+// - Becomes brighter when the cursor is over the thumb
+class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
  public:
+  METADATA_HEADER(RoundedScrollBar);
+
   explicit RoundedScrollBar(bool horizontal);
   RoundedScrollBar(const RoundedScrollBar&) = delete;
   RoundedScrollBar& operator=(const RoundedScrollBar&) = delete;
   ~RoundedScrollBar() override;
+
+  // Sets the insets for the scroll track. Useful if the scroll view is adjacent
+  // to the edge of the screen or the edge of a widget.
+  void SetInsets(const gfx::Insets& insets);
 
   // views::ScrollBar:
   gfx::Rect GetTrackBounds() const override;
@@ -31,15 +44,22 @@ class RoundedScrollBar : public views::ScrollBar {
   void ScrollToPosition(int position) override;
   void ObserveScrollEvent(const ui::ScrollEvent& event) override;
 
+  views::BaseScrollBarThumb* GetThumbForTest() const;
+
  private:
   class Thumb;
 
+  // Shows the scrollbar and/or updates its opacity.
   void ShowScrollbar();
+
+  // Hides the scrollbar if the mouse is outside the scroll track.
   void HideScrollBar();
 
-  // When the mouse is hovering over the scrollbar, the scrollbar should always
-  // be displayed.
-  bool mouse_over_scrollbar_ = false;
+  // Called when the thumb hover/pressed state changed.
+  void OnThumbStateChanged();
+
+  // Insets for the scroll track.
+  gfx::Insets insets_;
 
   // Timer that will start the scrollbar's hiding animation when it reaches 0.
   base::RetainingOneShotTimer hide_scrollbar_timer_;

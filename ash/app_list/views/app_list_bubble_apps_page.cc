@@ -15,6 +15,7 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,7 +32,12 @@ using views::BoxLayout;
 namespace ash {
 
 namespace {
+
 constexpr int kContinueColumnCount = 2;
+
+// Insets for the vertical scroll bar.
+constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -50,12 +56,18 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
-  scroll_view_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
   // Don't paint a background. The bubble already has one.
   scroll_view_->SetBackgroundColor(absl::nullopt);
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
+
+  // Set up scroll bars.
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  auto vertical_scroll =
+      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
   auto scroll_contents = std::make_unique<views::View>();
   auto* layout = scroll_contents->SetLayoutManager(

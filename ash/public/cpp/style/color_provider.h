@@ -63,7 +63,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   };
 
   enum class ContentLayerType {
-    kLoginScrollBarColor,
+    kScrollBarColor,
     kSeparatorColor,
 
     kTextColorPrimary,

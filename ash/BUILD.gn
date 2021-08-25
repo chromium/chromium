@@ -2145,6 +2145,7 @@ test("ash_unittests") {
     "clipboard/clipboard_history_unittest.cc",
     "clipboard/clipboard_history_util_unittest.cc",
     "clipboard/clipboard_nudge_controller_unittest.cc",
+    "controls/rounded_scroll_bar_unittest.cc",
     "dbus/gesture_properties_service_provider_unittest.cc",
     "dbus/url_handler_service_provider_unittest.cc",
     "detachable_base/detachable_base_handler_unittest.cc",
