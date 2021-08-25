@@ -230,6 +230,9 @@ class ChromeIdentityService {
   void CanOfferExtendedSyncPromos(ChromeIdentity* identity,
                                   CapabilitiesCallback callback);
 
+  // Returns true if the service can be used.
+  virtual bool IsServiceSupported();
+
   // Returns the MDM device status associated with |user_info|.
   virtual MDMDeviceStatus GetMDMDeviceStatus(NSDictionary* user_info);
 

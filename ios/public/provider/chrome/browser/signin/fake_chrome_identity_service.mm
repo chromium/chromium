@@ -278,6 +278,10 @@ void FakeChromeIdentityService::GetHostedDomainForIdentity(
   });
 }
 
+bool FakeChromeIdentityService::IsServiceSupported() {
+  return true;
+}
+
 NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
     ChromeIdentity* identity) {
   NSString* domain =

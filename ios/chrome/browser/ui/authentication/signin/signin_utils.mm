@@ -178,7 +178,10 @@ void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
 }
 
 bool IsSigninAllowed(const PrefService* prefs) {
-  return prefs->GetBoolean(prefs::kSigninAllowed) && IsSigninAllowedByPolicy();
+  ios::ChromeIdentityService* identityService =
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  return identityService->IsServiceSupported() &&
+         prefs->GetBoolean(prefs::kSigninAllowed) && IsSigninAllowedByPolicy();
 }
 
 bool IsSigninAllowedByPolicy() {

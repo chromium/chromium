@@ -171,6 +171,12 @@ void ChromeIdentityService::CanOfferExtendedSyncPromos(
       });
 }
 
+bool ChromeIdentityService::IsServiceSupported() {
+  // TODO(crbug.com/1234966): Needs to return false, once
+  // ChromeIdentityServiceImpl::IsServiceSupported() is implemented.
+  return true;
+}
+
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
     NSDictionary* user_info) {
   return 0;
