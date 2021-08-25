@@ -1046,8 +1046,13 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
 void MonitorExperimentalSettingsChanges() {
   // Startup values for settings to be observed.
   __block NSString* hash = TestingPoliciesHash();
+  static std::atomic_bool pending_check(false);
 
   auto monitor = ^(NSNotification* notification) {
+    bool has_pending_check = pending_check.exchange(true);
+    if (has_pending_check)
+      return;
+
     // Can be called from any thread from where the notification was sent,
     // but since it may change standardUserDefaults, and that has to be on main
     // thread, dispatch to main thread.
@@ -1066,6 +1071,8 @@ void MonitorExperimentalSettingsChanges() {
             @{kPolicyLoaderIOSConfigurationKey : testing_policies};
         [defaults registerDefaults:registration_defaults];
       }
+
+      pending_check.store(false);
     });
   };
 
