@@ -20,6 +20,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 
@@ -167,13 +168,22 @@ AnimationBuilder::~AnimationBuilder() {
        it != layer_animation_sequences_.end();) {
     auto* const target = it->first;
     auto end_it = layer_animation_sequences_.upper_bound(target);
+    DCHECK(target->layer()) << "Animation targets must paint to a layer.";
+    ui::ScopedLayerAnimationSettings settings(target->layer()->GetAnimator());
+    if (preemption_strategy_)
+      settings.SetPreemptionStrategy(preemption_strategy_.value());
     std::vector<ui::LayerAnimationSequence*> sequences;
     std::transform(it, end_it, std::back_inserter(sequences),
                    [](auto& it) { return it.second.release(); });
-    DCHECK(target->layer()) << "Animation targets must paint to a layer.";
     target->layer()->GetAnimator()->StartTogether(std::move(sequences));
     it = end_it;
   }
+}
+
+AnimationBuilder& AnimationBuilder::SetPreemptionStrategy(
+    ui::LayerAnimator::PreemptionStrategy preemption_strategy) {
+  preemption_strategy_ = preemption_strategy;
+  return *this;
 }
 
 AnimationSequenceBlock AnimationBuilder::Once() {

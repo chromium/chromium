@@ -12,8 +12,10 @@
 #include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/views_export.h"
@@ -31,6 +33,10 @@ class VIEWS_EXPORT AnimationBuilder {
  public:
   AnimationBuilder();
   ~AnimationBuilder();
+
+  // Options for the whole animation
+  AnimationBuilder& SetPreemptionStrategy(
+      ui::LayerAnimator::PreemptionStrategy preemption_strategy);
 
   // Creates a new sequence (that optionally repeats).
   AnimationSequenceBlock Once();
@@ -75,6 +81,7 @@ class VIEWS_EXPORT AnimationBuilder {
   std::multimap<ui::LayerOwner*, std::unique_ptr<ui::LayerAnimationSequence>>
       layer_animation_sequences_;
   std::unique_ptr<Observer> animation_observer_;
+  absl::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
 
   // Data for the current sequence.
   bool repeating_;

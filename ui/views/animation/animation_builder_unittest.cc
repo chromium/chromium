@@ -10,6 +10,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/property_change_reason.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -646,6 +647,77 @@ TEST_F(AnimationBuilderTest, RepeatedlyImplicitlyAppendsTrailingPause) {
   Step(kDurationLong - kDurationShort);
   EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
   EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 4.0);
+}
+
+TEST_F(AnimationBuilderTest, PreemptionStrategyTest) {
+  using ps = ui::LayerAnimator::PreemptionStrategy;
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kStepSize = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(5);
+
+  // Set the initial value to animate.
+  delegate->SetBrightnessFromAnimation(
+      1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+  {
+    AnimationBuilder().Once().SetDuration(kDuration).SetBrightness(view, 0.0f);
+  }
+
+  // The animation hasn't started.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 1.0f);
+  // Step the animation, but don't complete it.
+  Step(kStepSize);
+  // Make sure the animation is progressing.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.8f);
+  // Make sure we're still animatiing.
+  EXPECT_TRUE(view->layer()->GetAnimator()->is_animating());
+
+  // Now start a new animation to a different target.
+  {
+    AnimationBuilder()
+        .SetPreemptionStrategy(ps::IMMEDIATELY_SET_NEW_TARGET)
+        .Once()
+        .SetDuration(
+            kStepSize)  // We only moved previous animation by kStepSize
+        .SetBrightness(view, 1.0f);
+  }
+
+  Step(kStepSize);
+  // The above animation should have been aborted, and set the brightness to the
+  // new target immediately.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 1.0f);
+  EXPECT_FALSE(view->layer()->GetAnimator()->is_animating());
+
+  // Start another animation which we'll preemtp to test another strategy.
+  {
+    AnimationBuilder().Once().SetDuration(kDuration).SetBrightness(view, 0.0f);
+  }
+
+  // This should start out like the one above.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 1.0f);
+  Step(kStepSize);
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.8f);
+  EXPECT_TRUE(view->layer()->GetAnimator()->is_animating());
+
+  {
+    AnimationBuilder()
+        .SetPreemptionStrategy(ps::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(kStepSize)
+        .SetBrightness(view, 1.0f);
+  }
+
+  // The new animation should pick up where the last one left off.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.8f);
+  Step(kStepSize);
+  // The new animation is in force if it steps toward the new target.
+  EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 1.0f);
+  // Make sure the animation is fully complete.
+  Step(kStepSize);
+  // The animation should be done now.
+  EXPECT_FALSE(view->layer()->GetAnimator()->is_animating());
 }
 
 }  // namespace views
