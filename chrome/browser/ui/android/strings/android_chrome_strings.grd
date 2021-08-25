@@ -4980,7 +4980,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex> template selected</ph>
       </message>
       <message name="IDS_CONTENT_CREATION_NOTE_DIALOG_DESCRIPTION" desc="Accessibility information for note template picking dialog.">
-        Select a template for your highlight
+        Select a template for your highlight. To return to the main dialog, use an up then down gesture, then tap Next.
       </message>
       <message name="IDS_CONTENT_CREATION_NOTE_SHORTENED_MESSAGE" desc="Toast message displayed when highlighted text is too long and is cropped to fit in the note.">
         Highlight was shortened
