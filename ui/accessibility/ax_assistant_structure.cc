@@ -58,7 +58,7 @@ bool IsLeaf(const AXNode* node) {
     return true;
   }
 
-  switch (node->data().role) {
+  switch (node->GetRole()) {
     case ax::mojom::Role::kImage:
     case ax::mojom::Role::kMeter:
     case ax::mojom::Role::kScrollBar:
@@ -104,9 +104,9 @@ std::u16string GetValue(const AXNode* node) {
 }
 
 std::u16string GetText(const AXNode* node) {
-  if (node->data().role == ax::mojom::Role::kPdfRoot ||
-      node->data().role == ax::mojom::Role::kIframe ||
-      node->data().role == ax::mojom::Role::kIframePresentational) {
+  if (node->GetRole() == ax::mojom::Role::kPdfRoot ||
+      node->GetRole() == ax::mojom::Role::kIframe ||
+      node->GetRole() == ax::mojom::Role::kIframePresentational) {
     return std::u16string();
   }
 
@@ -122,7 +122,7 @@ std::u16string GetText(const AXNode* node) {
     if (node->data().HasState(ax::mojom::State::kEditable))
       return value;
 
-    switch (node->data().role) {
+    switch (node->GetRole()) {
       case ax::mojom::Role::kComboBoxMenuButton:
       case ax::mojom::Role::kTextFieldWithComboBox:
       case ax::mojom::Role::kPopUpButton:
@@ -133,7 +133,7 @@ std::u16string GetText(const AXNode* node) {
     }
   }
 
-  if (node->data().role == ax::mojom::Role::kColorWell) {
+  if (node->GetRole() == ax::mojom::Role::kColorWell) {
     unsigned int color = static_cast<unsigned int>(
         node->GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
     unsigned int red = color >> 16 & 0xFF;
@@ -156,8 +156,8 @@ std::u16string GetText(const AXNode* node) {
   if (text.empty())
     text = value;
 
-  if (node->data().role == ax::mojom::Role::kRootWebArea ||
-      node->data().role == ax::mojom::Role::kPdfRoot) {
+  if (node->GetRole() == ax::mojom::Role::kRootWebArea ||
+      node->GetRole() == ax::mojom::Role::kPdfRoot) {
     return text;
   }
 
@@ -168,8 +168,8 @@ std::u16string GetText(const AXNode* node) {
     }
   }
 
-  if (text.empty() && (ui::IsLink(node->data().role) ||
-                       node->data().role == ax::mojom::Role::kImage)) {
+  if (text.empty() && (ui::IsLink(node->GetRole()) ||
+                       node->GetRole() == ax::mojom::Role::kImage)) {
     std::u16string url =
         node->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);
@@ -241,8 +241,8 @@ void WalkAXTreeDepthFirst(const AXNode* node,
                           AssistantNode* result) {
   result->text = GetText(node);
   result->class_name =
-      AXRoleToAndroidClassName(node->data().role, node->GetUnignoredParent());
-  result->role = AXRoleToString(node->data().role);
+      AXRoleToAndroidClassName(node->GetRole(), node->GetUnignoredParent());
+  result->role = AXRoleToString(node->GetRole());
 
   result->text_size = -1.0;
   result->bgcolor = 0;

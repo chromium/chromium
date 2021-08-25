@@ -30,9 +30,9 @@ namespace {
 void FindCellsInRow(AXNode* node, std::vector<AXNode*>* cell_nodes) {
   for (AXNode* child : node->children()) {
     if (child->IsIgnored() ||
-        child->data().role == ax::mojom::Role::kGenericContainer)
+        child->GetRole() == ax::mojom::Role::kGenericContainer)
       FindCellsInRow(child, cell_nodes);
-    else if (IsCellOrTableHeader(child->data().role))
+    else if (IsCellOrTableHeader(child->GetRole()))
       cell_nodes->push_back(child);
   }
 }
@@ -51,16 +51,16 @@ void FindRowsAndThenCells(AXNode* node,
                           AXNodeID& caption_node_id) {
   for (AXNode* child : node->children()) {
     if (child->IsIgnored() ||
-        child->data().role == ax::mojom::Role::kGenericContainer ||
-        child->data().role == ax::mojom::Role::kGroup ||
-        child->data().role == ax::mojom::Role::kRowGroup) {
+        child->GetRole() == ax::mojom::Role::kGenericContainer ||
+        child->GetRole() == ax::mojom::Role::kGroup ||
+        child->GetRole() == ax::mojom::Role::kRowGroup) {
       FindRowsAndThenCells(child, row_node_list, cell_nodes_per_row,
                            caption_node_id);
-    } else if (IsTableRow(child->data().role)) {
+    } else if (IsTableRow(child->GetRole())) {
       row_node_list->push_back(child);
       cell_nodes_per_row->push_back(std::vector<AXNode*>());
       FindCellsInRow(child, &cell_nodes_per_row->back());
-    } else if (child->data().role == ax::mojom::Role::kCaption) {
+    } else if (child->GetRole() == ax::mojom::Role::kCaption) {
       caption_node_id = child->id();
     }
   }
@@ -85,7 +85,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   DCHECK(node == tree->root());
 #endif
 
-  if (!IsTableLike(table_node->data().role))
+  if (!IsTableLike(table_node->GetRole()))
     return nullptr;
 
   AXTableInfo* info = new AXTableInfo(tree, table_node);
@@ -366,10 +366,10 @@ void AXTableInfo::BuildCellAndHeaderVectorsFromCellData() {
            c < cell_data.col_index + cell_data.col_span; c++) {
         DCHECK_LT(c, col_count);
         AXNode* cell = cell_data.cell;
-        if (cell->data().role == ax::mojom::Role::kColumnHeader) {
+        if (cell->GetRole() == ax::mojom::Role::kColumnHeader) {
           col_headers[c].push_back(cell->id());
           all_headers.push_back(cell->id());
-        } else if (cell->data().role == ax::mojom::Role::kRowHeader) {
+        } else if (cell->GetRole() == ax::mojom::Role::kRowHeader) {
           row_headers[r].push_back(cell->id());
           all_headers.push_back(cell->id());
         }

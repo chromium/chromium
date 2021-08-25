@@ -266,7 +266,7 @@ void AXEventGenerator::ClearEvents() {
 void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
   DCHECK(node);
 
-  if (node->data().role == ax::mojom::Role::kInlineTextBox)
+  if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return;
 
   std::set<EventParams>& node_events = tree_events_[node];
@@ -332,10 +332,10 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
     case ax::mojom::State::kExpanded:
       AddEvent(node, new_value ? Event::EXPANDED : Event::COLLAPSED);
 
-      if (node->data().role == ax::mojom::Role::kRow ||
-          node->data().role == ax::mojom::Role::kTreeItem) {
+      if (node->GetRole() == ax::mojom::Role::kRow ||
+          node->GetRole() == ax::mojom::Role::kTreeItem) {
         AXNode* container = node;
-        while (container && !IsRowContainer(container->data().role))
+        while (container && !IsRowContainer(container->GetRole()))
           container = container->parent();
         if (container)
           AddEvent(container, Event::ROW_COUNT_CHANGED);
@@ -348,7 +348,7 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
       AddEvent(node, Event::IGNORED_CHANGED);
       if (!new_value)
         AddEvent(node, Event::SUBTREE_CREATED);
-      if (node->data().role == ax::mojom::Role::kMenu) {
+      if (node->GetRole() == ax::mojom::Role::kMenu) {
         new_value ? AddEvent(node, Event::MENU_POPUP_END)
                   : AddEvent(node, Event::MENU_POPUP_START);
       }
@@ -419,7 +419,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       // the value of the nearest ancestor that sets the aria-live attribute."
       // Example: A new chat message is added to the room with aria-live="off",
       // then the author removes aria-live.
-      if (!IsAlert(node->data().role)) {
+      if (!IsAlert(node->GetRole())) {
         bool was_off = !old_value.empty()
                            ? old_value == "off"
                            : !node->data().IsContainedInActiveLiveRegion();
@@ -444,7 +444,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
 
       // If it's a change to static text, and it's in an editable text field,
       // fire an event on the editable root.
-      if (IsText(node->data().role)) {
+      if (IsText(node->GetRole())) {
         AXNode* text_field = node->GetTextFieldAncestor();
         if (text_field)
           AddEvent(text_field, Event::EDITABLE_TEXT_CHANGED);
@@ -456,7 +456,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
     case ax::mojom::StringAttribute::kValue:
       if (node->data().IsRangeValueSupported()) {
         AddEvent(node, Event::RANGE_VALUE_CHANGED);
-      } else if (IsSelectElement(node->data().role)) {
+      } else if (IsSelectElement(node->GetRole())) {
         AddEvent(node, Event::SELECTED_VALUE_CHANGED);
       } else if (node->data().IsTextField()) {
         AddEvent(node, Event::VALUE_IN_TEXT_FIELD_CHANGED);
@@ -536,7 +536,7 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kSortDirection:
       // Ignore sort direction changes on roles other than table headers and
       // grid headers.
-      if (IsTableHeader(node->data().role))
+      if (IsTableHeader(node->GetRole()))
         AddEvent(node, Event::SORT_CHANGED);
       break;
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
@@ -633,7 +633,7 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
       AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
       AXNode* container = node;
       while (container &&
-             !IsContainerWithSelectableChildren(container->data().role))
+             !IsContainerWithSelectableChildren(container->GetRole()))
         container = container->parent();
       if (container)
         AddEvent(container, Event::SELECTED_CHILDREN_CHANGED);
@@ -796,7 +796,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
       continue;
     }
 
-    if (IsAlert(change.node->data().role))
+    if (IsAlert(change.node->GetRole()))
       AddEvent(change.node, Event::ALERT);
     else if (change.node->data().IsActiveLiveRegionRoot())
       AddEvent(change.node, Event::LIVE_REGION_CREATED);
@@ -857,7 +857,7 @@ void AXEventGenerator::FireActiveDescendantEvents() {
         node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
     if (!descendant)
       continue;
-    switch (descendant->data().role) {
+    switch (descendant->GetRole()) {
       case ax::mojom::Role::kMenuItem:
       case ax::mojom::Role::kMenuItemCheckBox:
       case ax::mojom::Role::kMenuItemRadio:

@@ -363,17 +363,17 @@ TEST(AXTreeTest, SerializeSimpleAXTree) {
   const AXNode* root_node = dst_tree.root();
   ASSERT_TRUE(root_node != nullptr);
   EXPECT_EQ(root.id, root_node->id());
-  EXPECT_EQ(root.role, root_node->data().role);
+  EXPECT_EQ(root.role, root_node->GetRole());
 
   ASSERT_EQ(2u, root_node->children().size());
 
   const AXNode* button_node = root_node->children()[0];
   EXPECT_EQ(button.id, button_node->id());
-  EXPECT_EQ(button.role, button_node->data().role);
+  EXPECT_EQ(button.role, button_node->GetRole());
 
   const AXNode* checkbox_node = root_node->children()[1];
   EXPECT_EQ(checkbox.id, checkbox_node->id());
-  EXPECT_EQ(checkbox.role, checkbox_node->data().role);
+  EXPECT_EQ(checkbox.role, checkbox_node->GetRole());
 
   EXPECT_EQ(
       "AXTree title=Title\n"
