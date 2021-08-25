@@ -42,6 +42,15 @@ const PrivacyReviewStep = {
 const REVIEW_STEPS = 5;
 
 /**
+ * @typedef {{
+ *   headerString: (string|undefined),
+ *   onNextButtonClick: function(),
+ *   onBackButtonClick: (function()|undefined),
+ * }}
+ */
+let PrivacyReviewStepComponents;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
@@ -90,6 +99,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     };
   }
 
+  constructor() {
+    super();
+
+    /** @private {Map<PrivacyReviewStep, PrivacyReviewStepComponents>} */
+    this.privacyReviewStepToComponentsMap_ =
+        this.computePrivacyReviewStepToComponentsMap_();
+  }
+
   /**
    * RouteObserverBehavior
    * @param {!Route} newRoute
@@ -99,6 +116,57 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     if (newRoute === routes.PRIVACY_REVIEW) {
       this.updateStateFromQueryParameters_();
     }
+  }
+
+  /**
+   * Returns the map of privacy review steps to their components.
+   * @return {Map<PrivacyReviewStep, PrivacyReviewStepComponents>}
+   * @private
+   */
+  computePrivacyReviewStepToComponentsMap_() {
+    // This allows states to directly call page actions.
+    const page = this;
+
+    return new Map([
+      [
+        PrivacyReviewStep.WELCOME,
+        {
+          onNextButtonClick: function() {
+            page.navigateToCard_(PrivacyReviewStep.MSBB);
+          },
+        },
+      ],
+      [
+        PrivacyReviewStep.COMPLETION,
+        {
+          onNextButtonClick: function() {
+            // TODO(crbug/1215630): Navigate to routes.PRIVACY and focus the
+            // privacy review row.
+          },
+        },
+      ],
+      [
+        PrivacyReviewStep.MSBB,
+        {
+          headerString: page.i18n('privacyReviewMsbbCardHeader'),
+          onNextButtonClick: function() {
+            page.navigateToCard_(PrivacyReviewStep.CLEAR_ON_EXIT);
+          },
+        },
+      ],
+      [
+        PrivacyReviewStep.CLEAR_ON_EXIT,
+        {
+          headerString: page.i18n('privacyReviewClearOnExitCardHeader'),
+          onNextButtonClick: function() {
+            page.navigateToCard_(PrivacyReviewStep.COMPLETION);
+          },
+          onBackButtonClick: function() {
+            page.navigateToCard_(PrivacyReviewStep.MSBB);
+          },
+        },
+      ],
+    ]);
   }
 
   /**
@@ -135,23 +203,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /** @private */
   onNextButtonClick_() {
-    switch (this.privacyReviewStep_) {
-      case PrivacyReviewStep.WELCOME:
-        this.navigateToCard_(PrivacyReviewStep.MSBB);
-        break;
-      case PrivacyReviewStep.COMPLETION:
-        // TODO(crbug/1215630): Navigate to routes.PRIVACY and focus the
-        // privacy review row.
-        break;
-      case PrivacyReviewStep.MSBB:
-        this.navigateToCard_(PrivacyReviewStep.CLEAR_ON_EXIT);
-        break;
-      case PrivacyReviewStep.CLEAR_ON_EXIT:
-        this.navigateToCard_(PrivacyReviewStep.COMPLETION);
-        break;
-      default:
-        assertNotReached();
-    }
+    this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)
+        .onNextButtonClick();
+  }
+
+  /** @private */
+  onBackButtonClick_() {
+    this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)
+        .onBackButtonClick();
   }
 
   /**
@@ -187,14 +246,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    * @return {string|undefined}
    */
   computeHeaderString_() {
-    switch (this.privacyReviewStep_) {
-      case PrivacyReviewStep.MSBB:
-        return this.i18n('privacyReviewMsbbCardHeader');
-      case PrivacyReviewStep.CLEAR_ON_EXIT:
-        return this.i18n('privacyReviewClearOnExitCardHeader');
-      default:
-        return undefined;
-    }
+    return this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)
+        .headerString;
   }
 
   /**

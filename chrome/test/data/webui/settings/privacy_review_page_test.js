@@ -32,6 +32,19 @@ suite('PrivacyReviewPage', function() {
   });
 
   /**
+   * Equivalent of the user manually navigating to the corresponding step via
+   * typing the URL and step parameter in the Omnibox.
+   * @private
+   * @param {string} step
+   */
+  function navigateToStep(step) {
+    Router.getInstance().navigateTo(
+        routes.PRIVACY_REVIEW,
+        /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
+    flush();
+  }
+
+  /**
    * @param {string} step
    */
   function assertQueryParameter(step) {
@@ -128,5 +141,15 @@ suite('PrivacyReviewPage', function() {
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
     assertCompletionCardVisible();
+  });
+
+  test('testBackNavigation', function() {
+    navigateToStep('clearOnExit');
+    assertClearOnExitCardVisible();
+
+    // Back to the MSBB card.
+    page.shadowRoot.querySelector('#backButton').click();
+    flush();
+    assertMsbbCardVisible();
   });
 });
