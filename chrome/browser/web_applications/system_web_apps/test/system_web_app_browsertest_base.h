@@ -104,8 +104,6 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
                                   Browser** out_browser);
 };
 
-enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
-
 class SystemWebAppManagerBrowserTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
