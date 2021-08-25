@@ -23,8 +23,8 @@ Update Instructions:
       https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
 * Copy this instance ID to the turbine entry in //DEPS.
 * Update this file with the new version string for that instance and submit.
-  * We mostly care about the string after @ and before .crX as it's the revision
-    of turbine we are moving to.
+  * We mostly care about the string after @ as it's the revision of turbine we
+    are moving to.
 
 Local Modifications:
 No modifications.
