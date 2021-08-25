@@ -292,6 +292,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/RecentTabsPageTest.java",
+  "javatests/src/org/chromium/chrome/browser/ntp/RevampedIncognitoDescriptionViewRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/cards/promo/enhanced_protection/EnhancedProtectionPromoTest.java",
   "javatests/src/org/chromium/chrome/browser/offlinepages/MHTMLPageTest.java",
