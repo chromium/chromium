@@ -134,12 +134,20 @@ struct FormCache::CachedFormData {
   std::vector<FrameTokenWithPredecessor> child_frames;
 };
 
+void FormCache::MaybeUpdateParsedFormsPeak() {
+  peak_size_of_parsed_forms_ =
+      std::max(peak_size_of_parsed_forms_,
+               std::max(parsed_forms_rendererid_.size(), parsed_forms_.size()));
+}
+
 std::vector<FormData> FormCache::ModifiedExtractNewForms(
     const FieldDataManager* field_data_manager) {
   std::vector<FormData> forms;
   WebDocument document = frame_->GetDocument();
-  if (document.IsNull())
+  if (document.IsNull()) {
+    MaybeUpdateParsedFormsPeak();
     return forms;
+  }
 
   initial_checked_state_.clear();
   initial_select_values_.clear();
@@ -173,6 +181,7 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
           std::make_move_iterator(old_parsed_forms.begin()),
           std::make_move_iterator(old_parsed_forms.end()));
       PruneInitialValueCaches(observed_unique_renderer_ids);
+      MaybeUpdateParsedFormsPeak();
       return false;
     }
 
@@ -196,6 +205,7 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
         forms.push_back(std::move(form));
       }
     }
+    MaybeUpdateParsedFormsPeak();
     return true;
   };
 
@@ -213,8 +223,10 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
                                   nullptr)) {
       continue;
     }
-    if (!ProcessForm(std::move(form)))
+    if (!ProcessForm(std::move(form))) {
+      MaybeUpdateParsedFormsPeak();
       return forms;
+    }
   }
 
   // Look for more parseable fields outside of forms. Create a synthetic form
@@ -230,12 +242,16 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
           fieldsets, control_elements, iframe_elements, nullptr, document,
           field_data_manager, extract_mask, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
     return forms;
   }
-  if (!ProcessForm(std::move(synthetic_form)))
+  if (!ProcessForm(std::move(synthetic_form))) {
+    MaybeUpdateParsedFormsPeak();
     return forms;
+  }
 
   PruneInitialValueCaches(observed_unique_renderer_ids);
+  MaybeUpdateParsedFormsPeak();
   return forms;
 }
 
@@ -246,8 +262,10 @@ std::vector<FormData> FormCache::ExtractNewForms(
   }
   std::vector<FormData> forms;
   WebDocument document = frame_->GetDocument();
-  if (document.IsNull())
+  if (document.IsNull()) {
+    MaybeUpdateParsedFormsPeak();
     return forms;
+  }
 
   initial_checked_state_.clear();
   initial_select_values_.clear();
@@ -283,6 +301,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
     if (num_fields_seen > kMaxParseableFields ||
         num_frames_seen > kMaxParseableFrames) {
       PruneInitialValueCaches(observed_unique_renderer_ids);
+      MaybeUpdateParsedFormsPeak();
       return forms;
     }
 
@@ -327,6 +346,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
           fieldsets, control_elements, iframe_elements, nullptr, document,
           field_data_manager, extract_mask, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
     return forms;
   }
 
@@ -338,6 +358,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
   if (num_fields_seen > kMaxParseableFields ||
       num_frames_seen > kMaxParseableFrames) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
     return forms;
   }
 
@@ -354,17 +375,20 @@ std::vector<FormData> FormCache::ExtractNewForms(
   }
 
   PruneInitialValueCaches(observed_unique_renderer_ids);
+  MaybeUpdateParsedFormsPeak();
   return forms;
 }
 
 void FormCache::Reset() {
   // Record the size of |parsed_forms_| every time it reaches its peak size. The
   // peak size is reached right before the cache is cleared.
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize", parsed_forms_.size());
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize",
+                            peak_size_of_parsed_forms_);
 
   synthetic_form_ = FormData();
   parsed_forms_.clear();
-  // Remove after the `AutofillUseNewFormExtraction` feature is deleted.
+  // TODO(crbug/1215333): Remove after the `AutofillUseNewFormExtraction`
+  // feature is deleted.
   parsed_forms_rendererid_.clear();
   initial_select_values_.clear();
   initial_checked_state_.clear();

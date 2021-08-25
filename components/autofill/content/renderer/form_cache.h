@@ -93,6 +93,12 @@ class FormCache {
   // |initial_checked_state_| whose keys not contained in |ids_to_retain|.
   void PruneInitialValueCaches(const std::set<FieldRendererId>& ids_to_retain);
 
+  // Update the peak size of the cached forms stored in
+  // |peak_size_of_parsed_forms_|.
+  // TODO(crbug/1215333): Remove after `Autofill.FormCacheSize` experiment is
+  // completed.
+  void MaybeUpdateParsedFormsPeak();
+
   // The frame this FormCache is associated with. Weak reference.
   blink::WebLocalFrame* frame_;
 
@@ -104,6 +110,13 @@ class FormCache {
   // `AutofillUseNewFormExtraction` feature is enabled. Remove after the feature
   // is deleted.
   std::map<FormRendererId, CachedFormData> parsed_forms_rendererid_;
+
+  // Stores the peak size of the cached forms for `Autofill.FormCacheSize`
+  // metric. The cached forms are stored in |parsed_forms_| or
+  // |parsed_forms_rendererid_| depending on the `AutofillUseNewFormExtraction`
+  // feature.
+  // TODO(crbug/1215333): Remove after the experiment is completed.
+  size_t peak_size_of_parsed_forms_ = 0;
 
   // The synthetic FormData is for all the fieldsets in the document without a
   // form owner.
