@@ -516,36 +516,58 @@ TEST_F(SharedProtoDatabaseClientTest, LoadKeysAndEntriesWhile) {
   KeyVector key_list_b = {"entry2", "entry3", "entry4"};
   UpdateEntries(client_b.get(), key_list_b, leveldb_proto::KeyVector(), true);
 
-  KeyIteratorController controller_a =
-      base::BindRepeating([](const std::string& key) {
-        if (key >= std::string("entry3"))
-          return Enums::kLoadAndStop;
-        return Enums::kLoadAndContinue;
-      });
-  std::unique_ptr<KeyValueMap> keys_and_entries_a;
-  LoadKeysAndEntriesWhile(client_a.get(), "entry1", controller_a, true,
-                          &keys_and_entries_a);
+  {
+    KeyIteratorController controller_a =
+        base::BindRepeating([](const std::string& key) {
+          if (key >= std::string("entry3"))
+            return Enums::kLoadAndStop;
+          return Enums::kLoadAndContinue;
+        });
+    std::unique_ptr<KeyValueMap> keys_and_entries_a;
+    LoadKeysAndEntriesWhile(client_a.get(), "entry1", controller_a, true,
+                            &keys_and_entries_a);
 
-  KeyIteratorController controller_b =
-      base::BindRepeating([](const std::string& key) {
-        if (key > std::string("entry1"))
-          return Enums::kSkipAndStop;
-        return Enums::kLoadAndContinue;
-      });
-  std::unique_ptr<KeyValueMap> keys_and_entries_b;
-  LoadKeysAndEntriesWhile(client_b.get(), "entry0", controller_b, true,
-                          &keys_and_entries_b);
+    ValueVector entries;
 
-  ValueVector entries;
+    for (auto& pair : *keys_and_entries_a) {
+      entries.push_back(pair.second);
+    }
 
-  for (auto& pair : *keys_and_entries_a) {
-    entries.push_back(pair.second);
+    ASSERT_EQ(keys_and_entries_a->size(), 3U);
+    ASSERT_TRUE(ContainsEntries({"entry1", "entry2", "entry3"}, entries,
+                                ProtoDbType::TEST_DATABASE0));
   }
 
-  ASSERT_EQ(keys_and_entries_a->size(), 3U);
-  ASSERT_EQ(keys_and_entries_b->size(), 0U);
-  ASSERT_TRUE(ContainsEntries({"entry1", "entry2", "entry3"}, entries,
-                              ProtoDbType::TEST_DATABASE0));
+  {
+    KeyIteratorController controller_b =
+        base::BindRepeating([](const std::string& key) {
+          if (key > std::string("entry1"))
+            return Enums::kSkipAndStop;
+          return Enums::kLoadAndContinue;
+        });
+    std::unique_ptr<KeyValueMap> keys_and_entries_b;
+    LoadKeysAndEntriesWhile(client_b.get(), "entry0", controller_b, true,
+                            &keys_and_entries_b);
+    ASSERT_EQ(keys_and_entries_b->size(), 0U);
+  }
+
+  {
+    KeyIteratorController controller_c = base::BindRepeating(
+        [](const std::string& key) { return Enums::kLoadAndContinue; });
+    std::unique_ptr<KeyValueMap> keys_and_entries_c;
+    LoadKeysAndEntriesWhile(client_a.get(), "", controller_c, true,
+                            &keys_and_entries_c);
+
+    ValueVector entries;
+
+    for (auto& pair : *keys_and_entries_c) {
+      entries.push_back(pair.second);
+    }
+
+    ASSERT_EQ(keys_and_entries_c->size(), key_list_a.size());
+    ASSERT_TRUE(
+        ContainsEntries(key_list_a, entries, ProtoDbType::TEST_DATABASE0));
+  }
 }
 
 TEST_F(SharedProtoDatabaseClientTest, LoadKeys) {
