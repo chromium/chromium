@@ -171,9 +171,8 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
     return CloneVideoFrame(gpu_memory_buffer_factory_.get(),
                            CreateVideoFrameFromImage(input_image).get(),
                            *input_layout, input_storage_type, dst_buffer_usage);
-#else
-    return nullptr;
 #endif
+    return nullptr;
   }
 }
 
