@@ -5384,6 +5384,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [self ntpCoordinatorForWebState:webState];
     DCHECK(newTabPageCoordinator);
     [newTabPageCoordinator stop];
+    [newTabPageCoordinator disconnect];
     _ntpCoordinatorsForWebStates.erase(webState);
   }
   if (self.active && self.currentWebState == webState) {

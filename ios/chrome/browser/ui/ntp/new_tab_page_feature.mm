@@ -13,7 +13,7 @@
 // Feature disabled by default to keep the legacy NTP until the refactored one
 // covers all existing functionality.
 const base::Feature kRefactoredNTP{"RefactoredNTP",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDiscoverFeedPreview{
     "EnableDiscoverFeedPreview", base::FEATURE_DISABLED_BY_DEFAULT};

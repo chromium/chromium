@@ -311,6 +311,16 @@
   self.started = NO;
 }
 
+- (void)disconnect {
+  // TODO(crbug.com/1200303): Move this to stop once we stop starting/stopping
+  // the Coordinator when turning the feed on/off.
+  [self.discoverFeedExpanded setObserver:nil];
+  self.discoverFeedExpanded = nil;
+
+  _prefChangeRegistrar.reset();
+  _prefObserverBridge.reset();
+}
+
 // Updates the visible property based on viewPresented and sceneInForeground
 // properties.
 // Sends metrics when NTP becomes invisible.

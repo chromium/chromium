@@ -85,6 +85,10 @@ class WebState;
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
 
+// TODO(crbug.com/1200303):Remove this method once we stop starting/stopping the
+// Coordinator when turning the feed on/off.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

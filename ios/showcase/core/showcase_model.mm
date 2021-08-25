@@ -78,11 +78,6 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
     },
 #endif
     @{
-      showcase::kClassForDisplayKey : @"ContentSuggestionsViewController",
-      showcase::kClassForInstantiationKey : @"SCContentSuggestionsCoordinator",
-      showcase::kUseCaseKey : @"Content Suggestions UI",
-    },
-    @{
       showcase::kClassForDisplayKey : @"SettingsViewController",
       showcase::kClassForInstantiationKey : @"SCSettingsCoordinator",
       showcase::kUseCaseKey : @"Main settings screen",

@@ -10,7 +10,7 @@
 
 // Feature disabled by default to keep showing old Zine feed.
 const base::Feature kDiscoverFeedInNtp{"DiscoverFeedInNtp",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
