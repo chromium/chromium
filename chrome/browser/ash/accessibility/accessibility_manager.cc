@@ -2044,6 +2044,10 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
     soda_observation_.Observe(soda_installer);
   soda_installer->Init(profile_->GetPrefs(), g_browser_process->local_state());
 
+  // Reset whether failed notification was shown. This ensures it is only shown
+  // at most once per download attempt.
+  soda_failed_notification_shown_ = false;
+
   // TODO(crbug.com/1173135): The SODA installer may have already been
   // initialized. To support multiple locales, if download didn't start, try
   // installing the locale directly.
@@ -2136,6 +2140,9 @@ bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
     return false;
   }
 
+  if (soda_failed_notification_shown_)
+    return false;
+
   // Note: this function assumes that it's called after a SODA error, either for
   // the SODA binary or a language pack. Show the failed notification if:
   // 1. |language_code| == kNone (encodes that this was an error for the SODA
@@ -2165,6 +2172,9 @@ void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
   AccessibilityController::Get()
       ->ShowSpeechRecognitionDownloadNotificationForDictation(succeeded,
                                                               display_name);
+
+  if (!succeeded)
+    soda_failed_notification_shown_ = true;
 }
 
 }  // namespace ash

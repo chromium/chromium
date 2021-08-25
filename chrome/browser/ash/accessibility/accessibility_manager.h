@@ -561,6 +561,10 @@ class AccessibilityManager
   std::unique_ptr<Dictation> dictation_;
   bool dictation_active_ = false;
   bool network_dictation_dialog_is_showing_ = false;
+  // Whether a SODA download failed notification has been shown. This is
+  // reset each time download is initialized because each download attempt
+  // could fail separately.
+  bool soda_failed_notification_shown_ = false;
   bool dictation_triggered_by_user_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
