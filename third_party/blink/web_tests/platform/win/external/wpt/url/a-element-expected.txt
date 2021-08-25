@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 664 tests; 362 PASS, 302 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 664 tests; 365 PASS, 299 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -645,35 +645,35 @@ FAIL Parsing: <abc:rootless> against <abc://host/path> assert_equals: href expec
 FAIL Parsing: <abc:rootless> against <abc:/path> assert_equals: href expected "abc:rootless" but got "abc:/rootless"
 PASS Parsing: <abc:rootless> against <abc:path>
 FAIL Parsing: <abc:/rooted> against <abc://host/path> assert_equals: href expected "abc:/rooted" but got "abc://host/rooted"
-FAIL Parsing: <http://1.2.3.4.5> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://1.2.3.4.5.> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://0..0x300/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://0..0x300./> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://256.256.256.256.256> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://256.256.256.256.256.> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://1.2.3.08> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://1.2.3.08.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://1.2.3.09> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://09.2.3.4> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://09.2.3.4.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://01.2.3.4.5> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://01.2.3.4.5.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://1.2.3.4.5> against <http://other.com/> assert_equals: failure should set href to input expected "http://1.2.3.4.5" but got "http://1.2.3.4.5/"
+FAIL Parsing: <http://1.2.3.4.5.> against <http://other.com/> assert_equals: failure should set href to input expected "http://1.2.3.4.5." but got "http://1.2.3.4.5./"
+PASS Parsing: <http://0..0x300/> against <about:blank>
+PASS Parsing: <http://0..0x300./> against <about:blank>
+FAIL Parsing: <http://256.256.256.256.256> against <http://other.com/> assert_equals: failure should set href to input expected "http://256.256.256.256.256" but got "http://256.256.256.256.256/"
+FAIL Parsing: <http://256.256.256.256.256.> against <http://other.com/> assert_equals: failure should set href to input expected "http://256.256.256.256.256." but got "http://256.256.256.256.256./"
+FAIL Parsing: <http://1.2.3.08> against <about:blank> assert_equals: failure should set href to input expected "http://1.2.3.08" but got "http://1.2.3.08/"
+FAIL Parsing: <http://1.2.3.08.> against <about:blank> assert_equals: failure should set href to input expected "http://1.2.3.08." but got "http://1.2.3.08./"
+FAIL Parsing: <http://1.2.3.09> against <about:blank> assert_equals: failure should set href to input expected "http://1.2.3.09" but got "http://1.2.3.09/"
+FAIL Parsing: <http://09.2.3.4> against <about:blank> assert_equals: failure should set href to input expected "http://09.2.3.4" but got "http://09.2.3.4/"
+FAIL Parsing: <http://09.2.3.4.> against <about:blank> assert_equals: failure should set href to input expected "http://09.2.3.4." but got "http://09.2.3.4./"
+FAIL Parsing: <http://01.2.3.4.5> against <about:blank> assert_equals: failure should set href to input expected "http://01.2.3.4.5" but got "http://01.2.3.4.5/"
+FAIL Parsing: <http://01.2.3.4.5.> against <about:blank> assert_equals: failure should set href to input expected "http://01.2.3.4.5." but got "http://01.2.3.4.5./"
 FAIL Parsing: <http://0x100.2.3.4> against <about:blank> assert_equals: failure should set href to input expected "http://0x100.2.3.4" but got "http://0x100.2.3.4/"
 FAIL Parsing: <http://0x100.2.3.4.> against <about:blank> assert_equals: failure should set href to input expected "http://0x100.2.3.4." but got "http://0x100.2.3.4./"
-FAIL Parsing: <http://0x1.2.3.4.5> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://0x1.2.3.4.5.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.1.2.3.4> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.1.2.3.4.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.2.3.4> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.2.3.4.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.09> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.09.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.0x4> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.0x4.> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://0x1.2.3.4.5> against <about:blank> assert_equals: failure should set href to input expected "http://0x1.2.3.4.5" but got "http://0x1.2.3.4.5/"
+FAIL Parsing: <http://0x1.2.3.4.5.> against <about:blank> assert_equals: failure should set href to input expected "http://0x1.2.3.4.5." but got "http://0x1.2.3.4.5./"
+FAIL Parsing: <http://foo.1.2.3.4> against <about:blank> assert_equals: failure should set href to input expected "http://foo.1.2.3.4" but got "http://foo.1.2.3.4/"
+FAIL Parsing: <http://foo.1.2.3.4.> against <about:blank> assert_equals: failure should set href to input expected "http://foo.1.2.3.4." but got "http://foo.1.2.3.4./"
+FAIL Parsing: <http://foo.2.3.4> against <about:blank> assert_equals: failure should set href to input expected "http://foo.2.3.4" but got "http://foo.2.3.4/"
+FAIL Parsing: <http://foo.2.3.4.> against <about:blank> assert_equals: failure should set href to input expected "http://foo.2.3.4." but got "http://foo.2.3.4./"
+FAIL Parsing: <http://foo.09> against <about:blank> assert_equals: failure should set href to input expected "http://foo.09" but got "http://foo.09/"
+FAIL Parsing: <http://foo.09.> against <about:blank> assert_equals: failure should set href to input expected "http://foo.09." but got "http://foo.09./"
+FAIL Parsing: <http://foo.0x4> against <about:blank> assert_equals: failure should set href to input expected "http://foo.0x4" but got "http://foo.0x4/"
+FAIL Parsing: <http://foo.0x4.> against <about:blank> assert_equals: failure should set href to input expected "http://foo.0x4." but got "http://foo.0x4./"
 PASS Parsing: <http://foo.09..> against <about:blank>
-FAIL Parsing: <http://0999999999999999999/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.0x> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://foo.0XFfFfFfFfFfFfFfFfFfAcE123> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://💩.123/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+PASS Parsing: <http://0999999999999999999/> against <about:blank>
+FAIL Parsing: <http://foo.0x> against <about:blank> assert_equals: failure should set href to input expected "http://foo.0x" but got "http://foo.0x/"
+FAIL Parsing: <http://foo.0XFfFfFfFfFfFfFfFfFfAcE123> against <about:blank> assert_equals: failure should set href to input expected "http://foo.0XFfFfFfFfFfFfFfFfFfAcE123" but got "http://foo.0xfffffffffffffffffface123/"
+FAIL Parsing: <http://💩.123/> against <about:blank> assert_equals: failure should set href to input expected "http://💩.123/" but got "http://xn--ls8h.123/"
 Harness: the test ran to completion.
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 635 tests; 271 PASS, 364 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 635 tests; 386 PASS, 249 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL's constructor's base argument: file://example:1/ should throw
 PASS URL's href: file://example:1/ should throw
@@ -485,60 +485,60 @@ FAIL XHR: file://xn--/p should throw assert_throws_dom: function "() => client.o
 PASS sendBeacon(): file://xn--/p should throw
 FAIL Location's href: file://xn--/p should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
 FAIL window.open(): file://xn--/p should throw assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: Cannot read properties of null (reading 'close')" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-FAIL URL's constructor's base argument: http://0..0x300/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://0..0x300/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://0..0x300/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://0..0x300/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://0..0x300/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://0..0x300/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://0..0x300./ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://0..0x300./ should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://0..0x300./ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://0..0x300./ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://0..0x300./ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://0..0x300./ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://1.2.3.08 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://1.2.3.08 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://1.2.3.08 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://1.2.3.08 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://1.2.3.08 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://1.2.3.08 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://1.2.3.08. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://1.2.3.08. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://1.2.3.08. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://1.2.3.08. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://1.2.3.08. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://1.2.3.08. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://1.2.3.09 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://1.2.3.09 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://1.2.3.09 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://1.2.3.09 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://1.2.3.09 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://1.2.3.09 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://09.2.3.4 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://09.2.3.4 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://09.2.3.4 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://09.2.3.4 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://09.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://09.2.3.4 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://09.2.3.4. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://09.2.3.4. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://09.2.3.4. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://09.2.3.4. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://09.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://09.2.3.4. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://01.2.3.4.5 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://01.2.3.4.5 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://01.2.3.4.5 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://01.2.3.4.5 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://01.2.3.4.5 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://01.2.3.4.5 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://01.2.3.4.5. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://01.2.3.4.5. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://01.2.3.4.5. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://01.2.3.4.5. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://01.2.3.4.5. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://01.2.3.4.5. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://0..0x300/ should throw
+PASS URL's href: http://0..0x300/ should throw
+PASS XHR: http://0..0x300/ should throw
+PASS sendBeacon(): http://0..0x300/ should throw
+FAIL Location's href: http://0..0x300/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0..0x300/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://0..0x300/ should throw
+PASS URL's constructor's base argument: http://0..0x300./ should throw
+PASS URL's href: http://0..0x300./ should throw
+PASS XHR: http://0..0x300./ should throw
+PASS sendBeacon(): http://0..0x300./ should throw
+FAIL Location's href: http://0..0x300./ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0..0x300./' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://0..0x300./ should throw
+PASS URL's constructor's base argument: http://1.2.3.08 should throw
+PASS URL's href: http://1.2.3.08 should throw
+PASS XHR: http://1.2.3.08 should throw
+PASS sendBeacon(): http://1.2.3.08 should throw
+FAIL Location's href: http://1.2.3.08 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://1.2.3.08' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://1.2.3.08 should throw
+PASS URL's constructor's base argument: http://1.2.3.08. should throw
+PASS URL's href: http://1.2.3.08. should throw
+PASS XHR: http://1.2.3.08. should throw
+PASS sendBeacon(): http://1.2.3.08. should throw
+FAIL Location's href: http://1.2.3.08. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://1.2.3.08.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://1.2.3.08. should throw
+PASS URL's constructor's base argument: http://1.2.3.09 should throw
+PASS URL's href: http://1.2.3.09 should throw
+PASS XHR: http://1.2.3.09 should throw
+PASS sendBeacon(): http://1.2.3.09 should throw
+FAIL Location's href: http://1.2.3.09 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://1.2.3.09' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://1.2.3.09 should throw
+PASS URL's constructor's base argument: http://09.2.3.4 should throw
+PASS URL's href: http://09.2.3.4 should throw
+PASS XHR: http://09.2.3.4 should throw
+PASS sendBeacon(): http://09.2.3.4 should throw
+FAIL Location's href: http://09.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://09.2.3.4' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://09.2.3.4 should throw
+PASS URL's constructor's base argument: http://09.2.3.4. should throw
+PASS URL's href: http://09.2.3.4. should throw
+PASS XHR: http://09.2.3.4. should throw
+PASS sendBeacon(): http://09.2.3.4. should throw
+FAIL Location's href: http://09.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://09.2.3.4.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://09.2.3.4. should throw
+PASS URL's constructor's base argument: http://01.2.3.4.5 should throw
+PASS URL's href: http://01.2.3.4.5 should throw
+PASS XHR: http://01.2.3.4.5 should throw
+PASS sendBeacon(): http://01.2.3.4.5 should throw
+FAIL Location's href: http://01.2.3.4.5 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://01.2.3.4.5' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://01.2.3.4.5 should throw
+PASS URL's constructor's base argument: http://01.2.3.4.5. should throw
+PASS URL's href: http://01.2.3.4.5. should throw
+PASS XHR: http://01.2.3.4.5. should throw
+PASS sendBeacon(): http://01.2.3.4.5. should throw
+FAIL Location's href: http://01.2.3.4.5. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://01.2.3.4.5.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://01.2.3.4.5. should throw
 PASS URL's constructor's base argument: http://0x100.2.3.4 should throw
 PASS URL's href: http://0x100.2.3.4 should throw
 PASS XHR: http://0x100.2.3.4 should throw
@@ -551,89 +551,89 @@ PASS XHR: http://0x100.2.3.4. should throw
 PASS sendBeacon(): http://0x100.2.3.4. should throw
 FAIL Location's href: http://0x100.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0x100.2.3.4.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 PASS window.open(): http://0x100.2.3.4. should throw
-FAIL URL's constructor's base argument: http://0x1.2.3.4.5 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://0x1.2.3.4.5 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://0x1.2.3.4.5 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://0x1.2.3.4.5 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://0x1.2.3.4.5 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://0x1.2.3.4.5 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://0x1.2.3.4.5. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://0x1.2.3.4.5. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://0x1.2.3.4.5. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://0x1.2.3.4.5. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://0x1.2.3.4.5. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://0x1.2.3.4.5. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.1.2.3.4 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.1.2.3.4 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.1.2.3.4 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.1.2.3.4 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.1.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.1.2.3.4 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.1.2.3.4. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.1.2.3.4. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.1.2.3.4. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.1.2.3.4. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.1.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.1.2.3.4. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.2.3.4 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.2.3.4 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.2.3.4 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.2.3.4 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.2.3.4 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.2.3.4. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.2.3.4. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.2.3.4. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.2.3.4. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.2.3.4. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.09 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.09 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.09 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.09 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.09 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.09 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.09. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.09. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.09. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.09. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.09. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.09. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.0x4 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.0x4 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.0x4 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.0x4 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.0x4 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.0x4 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.0x4. should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.0x4. should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.0x4. should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.0x4. should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.0x4. should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.0x4. should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://0999999999999999999/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://0999999999999999999/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://0999999999999999999/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://0999999999999999999/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://0999999999999999999/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://0999999999999999999/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.0x should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.0x should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.0x should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.0x should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.0x should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.0x should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-FAIL URL's constructor's base argument: http://💩.123/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-FAIL URL's href: http://💩.123/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
-FAIL XHR: http://💩.123/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon(): http://💩.123/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href: http://💩.123/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
-FAIL window.open(): http://💩.123/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://0x1.2.3.4.5 should throw
+PASS URL's href: http://0x1.2.3.4.5 should throw
+PASS XHR: http://0x1.2.3.4.5 should throw
+PASS sendBeacon(): http://0x1.2.3.4.5 should throw
+FAIL Location's href: http://0x1.2.3.4.5 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0x1.2.3.4.5' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://0x1.2.3.4.5 should throw
+PASS URL's constructor's base argument: http://0x1.2.3.4.5. should throw
+PASS URL's href: http://0x1.2.3.4.5. should throw
+PASS XHR: http://0x1.2.3.4.5. should throw
+PASS sendBeacon(): http://0x1.2.3.4.5. should throw
+FAIL Location's href: http://0x1.2.3.4.5. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0x1.2.3.4.5.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://0x1.2.3.4.5. should throw
+PASS URL's constructor's base argument: http://foo.1.2.3.4 should throw
+PASS URL's href: http://foo.1.2.3.4 should throw
+PASS XHR: http://foo.1.2.3.4 should throw
+PASS sendBeacon(): http://foo.1.2.3.4 should throw
+FAIL Location's href: http://foo.1.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.1.2.3.4' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.1.2.3.4 should throw
+PASS URL's constructor's base argument: http://foo.1.2.3.4. should throw
+PASS URL's href: http://foo.1.2.3.4. should throw
+PASS XHR: http://foo.1.2.3.4. should throw
+PASS sendBeacon(): http://foo.1.2.3.4. should throw
+FAIL Location's href: http://foo.1.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.1.2.3.4.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.1.2.3.4. should throw
+PASS URL's constructor's base argument: http://foo.2.3.4 should throw
+PASS URL's href: http://foo.2.3.4 should throw
+PASS XHR: http://foo.2.3.4 should throw
+PASS sendBeacon(): http://foo.2.3.4 should throw
+FAIL Location's href: http://foo.2.3.4 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.2.3.4' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.2.3.4 should throw
+PASS URL's constructor's base argument: http://foo.2.3.4. should throw
+PASS URL's href: http://foo.2.3.4. should throw
+PASS XHR: http://foo.2.3.4. should throw
+PASS sendBeacon(): http://foo.2.3.4. should throw
+FAIL Location's href: http://foo.2.3.4. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.2.3.4.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.2.3.4. should throw
+PASS URL's constructor's base argument: http://foo.09 should throw
+PASS URL's href: http://foo.09 should throw
+PASS XHR: http://foo.09 should throw
+PASS sendBeacon(): http://foo.09 should throw
+FAIL Location's href: http://foo.09 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.09' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.09 should throw
+PASS URL's constructor's base argument: http://foo.09. should throw
+PASS URL's href: http://foo.09. should throw
+PASS XHR: http://foo.09. should throw
+PASS sendBeacon(): http://foo.09. should throw
+FAIL Location's href: http://foo.09. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.09.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.09. should throw
+PASS URL's constructor's base argument: http://foo.0x4 should throw
+PASS URL's href: http://foo.0x4 should throw
+PASS XHR: http://foo.0x4 should throw
+PASS sendBeacon(): http://foo.0x4 should throw
+FAIL Location's href: http://foo.0x4 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.0x4' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.0x4 should throw
+PASS URL's constructor's base argument: http://foo.0x4. should throw
+PASS URL's href: http://foo.0x4. should throw
+PASS XHR: http://foo.0x4. should throw
+PASS sendBeacon(): http://foo.0x4. should throw
+FAIL Location's href: http://foo.0x4. should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.0x4.' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.0x4. should throw
+PASS URL's constructor's base argument: http://0999999999999999999/ should throw
+PASS URL's href: http://0999999999999999999/ should throw
+PASS XHR: http://0999999999999999999/ should throw
+PASS sendBeacon(): http://0999999999999999999/ should throw
+FAIL Location's href: http://0999999999999999999/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://0999999999999999999/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://0999999999999999999/ should throw
+PASS URL's constructor's base argument: http://foo.0x should throw
+PASS URL's href: http://foo.0x should throw
+PASS XHR: http://foo.0x should throw
+PASS sendBeacon(): http://foo.0x should throw
+FAIL Location's href: http://foo.0x should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.0x' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.0x should throw
+PASS URL's constructor's base argument: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw
+PASS URL's href: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw
+PASS XHR: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw
+PASS sendBeacon(): http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw
+FAIL Location's href: http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo.0XFfFfFfFfFfFfFfFfFfAcE123' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo.0XFfFfFfFfFfFfFfFfFfAcE123 should throw
+PASS URL's constructor's base argument: http://💩.123/ should throw
+PASS URL's href: http://💩.123/ should throw
+PASS XHR: http://💩.123/ should throw
+PASS sendBeacon(): http://💩.123/ should throw
+FAIL Location's href: http://💩.123/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://💩.123/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://💩.123/ should throw
 Harness: the test ran to completion.
 

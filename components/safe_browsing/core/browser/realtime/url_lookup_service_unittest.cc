@@ -601,7 +601,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCanCheckUrl) {
       {"ftp://example.test/path", false}, {"http://localhost/path", false},
       {"http://127.0.0.1/path", false},   {"http://127.0.0.1:2222/path", false},
       {"http://192.168.1.1/path", false}, {"http://172.16.2.2/path", false},
-      {"http://10.1.1.9/path", false},    {"http://10.1.1.09/path", true},
+      {"http://10.1.1.9/path", false},    {"http://10.1.1.0xG/path", true},
       {"http://example.test/path", true}, {"http://nodothost/path", false},
       {"http://x.x/shorthost", false}};
   for (auto& can_check_url_case : can_check_url_cases) {
