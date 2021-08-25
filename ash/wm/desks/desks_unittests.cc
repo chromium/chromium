@@ -6245,6 +6245,32 @@ TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithFullscreenedWindow) {
   EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
 }
 
+// Tests that the bar should not be created in non-active user session.
+TEST_F(PersistentDesksBarTest, NoPersistentDesksBarInNonActiveUserSession) {
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  TestSessionControllerClient* client = GetSessionControllerClient();
+
+  // The bar should be created with two desks.
+  NewDesk();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should not be created in LOCKED user session when docked magnifier
+  // is enabled/disabled.
+  client->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_FALSE(GetBarWidget());
+  accessibility_controller->docked_magnifier().SetEnabled(true);
+  EXPECT_FALSE(GetBarWidget());
+  accessibility_controller->docked_magnifier().SetEnabled(false);
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created when the user session is active.
+  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
 TEST_F(PersistentDesksBarTest, DisplayMetricsChanged) {
   UpdateDisplay("800x600,400x500");
   NewDesk();

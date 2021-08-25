@@ -247,6 +247,12 @@ bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
     return false;
   }
 
+  // Do not create the bar in non-active user session.
+  if (shell->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return false;
+  }
+
   // Do not create the bar if the shelf is not horizontal-aligned.
   if (!Shelf::ForWindow(Shell::GetPrimaryRootWindow())->IsHorizontalAlignment())
     return false;
