@@ -74,7 +74,6 @@ export class FeedbackPage extends Page {
     map.forEach((value: any, key: string) => {
       tempObject[key] = value;
     });
-    console.log(tempObject);
     return tempObject;
   }
 

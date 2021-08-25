@@ -11,15 +11,17 @@ export class AudioPlayer extends HTMLElement {
   private sampleIdx: number;
   private audioDiv: HTMLDivElement;
   private audioPlay: HTMLButtonElement;
-  private audioCtx: AudioContext|undefined;
+  private audioContext: AudioContext|null;
   private audioQuery: HTMLDivElement;
   private audioNameTag: HTMLParagraphElement;
   private audioExpectation: HTMLParagraphElement;
   private prevLink: HTMLButtonElement;
-  private timer: number|undefined;
+  private timerId: number|null;
   constructor(private audioSamples: AudioSample[]) {
     super();
     this.sampleIdx = 0;
+    this.audioContext = null;
+    this.timerId = null;
     const clone = (<HTMLTemplateElement>$('audioPlayer-template'))
                       .content.cloneNode(true);
     this.audioDiv = <HTMLDivElement>(<HTMLElement>clone).querySelector('div');
@@ -74,29 +76,31 @@ export class AudioPlayer extends HTMLElement {
     noLink.addEventListener('click', () => this.handleResponse(false));
 
     this.audioPlay.addEventListener('click', () => {
-      if (this.audioCtx?.state === 'running') {
-        this.audioCtx.suspend();
+      if (this.audioContext?.state === 'running') {
+        this.audioContext.suspend();
       }
 
-      this.audioCtx = new AudioContext({sampleRate: this.current!.sampleRate});
-      const oscNode = this.audioCtx.createOscillator();
+      this.audioContext =
+          new AudioContext({sampleRate: this.current!.sampleRate});
+      const oscNode = this.audioContext.createOscillator();
       oscNode.type = 'sine';
       oscNode.channelCount = this.current!.channelCount;
       oscNode.frequency.value = this.current!.freqency;
       if (this.current!.channelCount == 2) {
-        const panNode = this.audioCtx.createStereoPanner();
+        const panNode = this.audioContext.createStereoPanner();
         panNode.pan.value = this.current!.pan;
         oscNode.connect(panNode);
-        panNode.connect(this.audioCtx.destination);
+        panNode.connect(this.audioContext.destination);
       } else {
-        oscNode.connect(this.audioCtx.destination);
+        oscNode.connect(this.audioContext.destination);
       }
-      if (this.timer) {
-        clearTimeout(this.timer);
+      if (this.timerId) {
+        window.clearTimeout(this.timerId);
       }
-      this.timer = setTimeout(() => {
-        this.audioCtx?.suspend();
+      this.timerId = window.setTimeout(() => {
+        this.audioContext?.suspend();
         this.audioQuery.hidden = false;
+        this.timerId = null;
       }, 3000);
       oscNode.start();
     });
@@ -113,10 +117,10 @@ export class AudioPlayer extends HTMLElement {
 
   handleBackClick() {
     this.sampleIdx -= 1;
-    this.audioCtx?.suspend();
-    if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = undefined;
+    this.audioContext?.suspend();
+    if (this.timerId) {
+      window.clearTimeout(this.timerId);
+      this.timerId = null;
     }
     this.setUpAudioPlayer();
     this.prevLink.hidden = this.sampleIdx == 0;

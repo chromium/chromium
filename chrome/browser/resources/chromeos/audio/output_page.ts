@@ -80,7 +80,6 @@ export class OutputPage extends Page {
 
   setOutputMapEntry(audioSample: AudioSample, canHear: boolean) {
     this.testOutputFeedback.set(audioSample.description, canHear);
-    console.log(this.testOutputFeedback);
   }
 
   createAudioPlayer() {

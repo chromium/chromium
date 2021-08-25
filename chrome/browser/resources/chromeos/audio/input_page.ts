@@ -152,8 +152,6 @@ export class InputPage extends Page {
     };
     if (this.mediaRecorder) {
       this.mediaRecorder.onstop = () => {
-        console.log('data available after MediaRecorder.stop() called.');
-
         const clipContainer = document.createElement('article');
         const audio = document.createElement('audio');
 
@@ -167,7 +165,6 @@ export class InputPage extends Page {
         const audioURL = window.URL.createObjectURL(blob);
         audio.src = audioURL;
         this.testInputFeedback.set('audioUrl', audioURL);
-        console.log('recorder stopped');
       };
 
       this.mediaRecorder.ondataavailable = (event: dataavailable) => {
@@ -182,8 +179,6 @@ export class InputPage extends Page {
       const clipSection = $('audio-file');
       this.recordClicked = true;
       this.mediaRecorder.start();
-      console.log(this.mediaRecorder.state);
-      console.log('recorder started');
       this.startTimer();
       recordButton.className = 'on-stop';
       recordButton.textContent = 'Stop';
@@ -199,8 +194,6 @@ export class InputPage extends Page {
       this.recordClicked = false;
       this.mediaRecorder.stop();
       this.stopTimer();
-      console.log(this.mediaRecorder.state);
-      console.log('recorder stopped');
       recordButton.className = 'on-record';
       recordButton.textContent = 'Record';
       $('input-qs').hidden = false;
@@ -209,11 +202,11 @@ export class InputPage extends Page {
 
   startTimer() {
     var startTime = Date.now();
-    this.intervalId = setInterval(() => {
+    this.intervalId = window.setInterval(() => {
       var delta = Date.now() - startTime;
       $('counter').innerHTML =
           String(Math.floor(delta / 1000)) + ':' + String(delta % 1000);
-    });
+    }, 200);
   }
 
   stopTimer() {
