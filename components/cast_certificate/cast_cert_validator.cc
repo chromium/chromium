@@ -101,15 +101,17 @@ class CastTrustStore {
   void AddDeveloperCertificates() {
     base::AutoLock guard(lock_);
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    std::string cert_path = command_line->GetSwitchValueASCII(
+    std::string cert_path_arg = command_line->GetSwitchValueASCII(
         switches::kCastDeveloperCertificatePath);
-    if (!cert_path.empty()) {
-      base::FilePath path;
-      base::PathService::Get(base::DIR_CURRENT, &path);
-      path = path.Append(cert_path);
-      VLOG(1) << "Using cast developer certificate path=" << cert_path
-              << ", processed as: " << path;
-      if (!PopulateStoreWithCertsFromPath(&store_, path)) {
+    if (!cert_path_arg.empty()) {
+      base::FilePath cert_path(cert_path_arg);
+      if (!cert_path.IsAbsolute()) {
+        base::FilePath path;
+        base::PathService::Get(base::DIR_CURRENT, &path);
+        cert_path = path.Append(cert_path);
+      }
+      VLOG(1) << "Using cast developer certificate path " << cert_path;
+      if (!PopulateStoreWithCertsFromPath(&store_, cert_path)) {
         LOG(WARNING) << "No developer certs added to store, only official"
                         "Google root CA certificates will work.";
       }
