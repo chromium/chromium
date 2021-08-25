@@ -93,7 +93,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.NEW_WINDOW_APP_MENU, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
-                    .put(ChromeFeatureList.CCT_RESIZEABLE_90_MAXIMUM_HEIGHT, false)
+                    .put(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false)
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .build();
