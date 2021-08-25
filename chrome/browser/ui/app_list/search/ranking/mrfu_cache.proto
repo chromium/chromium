@@ -8,14 +8,20 @@ option optimize_for = LITE_RUNTIME;
 
 package app_list;
 
-// The storage proto for the MrfuCache class.
-//
-// TODO(crbug.com/1199206): Expand on details once implemented.
+// The storage proto for the MrfuCache class, see its header comment for more
+// information.
 message MrfuCacheProto {
-  message ScoreData {
-    optional float score = 1;
-    optional int64 last_update_count = 2;
-  }
+  // Versioning information that can be used to discard on-disk state if an
+  // incompatible change is made to the MRFU cache's algorithm. Currently unset
+  // and unused.
+  optional int32 version = 1;
 
-  map<string, ScoreData> values = 1;
+  message Score {
+    optional float score = 1 [default = 0.0];
+    optional int64 last_update_count = 2 [default = 0];
+  }
+  map<string, Score> items = 2;
+
+  // The total number of updates by the MRFU cache.
+  optional int64 update_count = 3 [default = 0];
 }

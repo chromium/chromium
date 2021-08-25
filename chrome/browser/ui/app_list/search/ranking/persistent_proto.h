@@ -134,6 +134,8 @@ class PersistentProto {
     return *proto_;
   }
 
+  bool initialized() const { return initialized_; }
+
   constexpr bool has_value() const { return proto_.get() != nullptr; }
 
   constexpr explicit operator bool() const { return has_value(); }
@@ -210,6 +212,7 @@ class PersistentProto {
       purge_after_reading_ = false;
     }
 
+    initialized_ = true;
     std::move(on_read_).Run(result.first);
   }
 
@@ -228,6 +231,10 @@ class PersistentProto {
 
   // How long to delay writing to disk for on a call to QueueWrite.
   const base::TimeDelta write_delay_;
+
+  // Whether the proto has finished reading from disk. |proto_| will be empty
+  // before |initialized_| is true.
+  bool initialized_ = false;
 
   // Whether or not a write is currently scheduled.
   bool write_is_queued_ = false;

@@ -1,0 +1,168 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.h"
+
+#include <memory>
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "base/test/task_environment.h"
+#include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace app_list {
+namespace {
+
+constexpr float kEps = 1e-3f;
+
+}  // namespace
+
+class MrfuCacheTest : public testing::Test {
+ public:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
+
+  MrfuCache::Params TestingParams() {
+    MrfuCache::Params params;
+    params.half_life = 10.0f;
+    params.boost_factor = 5.0f;
+    params.write_delay = base::TimeDelta::FromSeconds(0);
+    return params;
+  }
+
+  void ClearDisk() {
+    base::DeleteFile(GetPath());
+    ASSERT_FALSE(base::PathExists(GetPath()));
+  }
+
+  MrfuCacheProto ReadFromDisk() {
+    std::string proto_str;
+    CHECK(base::ReadFileToString(GetPath(), &proto_str));
+    MrfuCacheProto proto;
+    CHECK(proto.ParseFromString(proto_str));
+    return proto;
+  }
+
+  void WriteToDisk(const MrfuCacheProto& proto) {
+    ASSERT_TRUE(base::WriteFile(GetPath(), proto.SerializeAsString()));
+  }
+
+  void Wait() { task_environment_.RunUntilIdle(); }
+
+  float boost_coeff(const MrfuCache& cache) { return cache.boost_coeff_; }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(MrfuCacheTest, UnusedItemHasScoreZero) {
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+
+  EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+}
+
+TEST_F(MrfuCacheTest, UseAndGetOneItem) {
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+
+  // Our boost_factor is set to 5, so it should take 5 consecutive uses for "A"
+  // to get to score approximately 2/3.
+  for (int i = 0; i < 5; ++i)
+    cache.Use("A");
+  EXPECT_NEAR(cache.Get("A"), 0.6666f, kEps);
+}
+
+TEST_F(MrfuCacheTest, UseAndDecayItem) {
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+
+  // Use "A" once and record that score.
+  cache.Use("A");
+  const float score = cache.Get("A");
+
+  // Then use "B" another item 10 times. Because the half life is 10, the score
+  // for "A" should have approximately halved.
+  for (int i = 0; i < 10; ++i)
+    cache.Use("B");
+  EXPECT_NEAR(cache.Get("A"), score / 2.0f, kEps);
+}
+
+TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
+  // This is a hand-optimized solution to the boost coefficient equation
+  // accurate to 3 dp. It uses a half-life of 10 (so decay coefficient of about
+  // 0.933033) and boost rate of 5.
+  const float kExpected = 0.233f;
+
+  MrfuCache cache(GetPath(), TestingParams());
+  EXPECT_NEAR(boost_coeff(cache), kExpected, 0.001f);
+}
+
+TEST_F(MrfuCacheTest, UseIgnoredBeforeInitComplete) {
+  MrfuCache cache(GetPath(), TestingParams());
+
+  // The proto hasn't finished initializing from disk yet, so this use should be
+  // ignored.
+  cache.Use("A");
+
+  // Now the class is finished initializing.
+  Wait();
+  EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+}
+
+TEST_F(MrfuCacheTest, WriteToDisk) {
+  // Create a cache and use some items, record the scores. Ensure it's written
+  // to disk by calling Wait.
+  float a_score;
+  float b_score;
+  {
+    MrfuCache cache(GetPath(), TestingParams());
+    Wait();
+    cache.Use("A");
+    cache.Use("B");
+    a_score = cache.Get("A");
+    b_score = cache.Get("B");
+    Wait();
+  }
+
+  // Check the proto looks reasonable. We don't need to check all fields, as the
+  // details of writing are tested by PersistentProto.
+  MrfuCacheProto proto = ReadFromDisk();
+  EXPECT_EQ(proto.items_size(), 2);
+  EXPECT_FLOAT_EQ(proto.items().at("A").score(), a_score);
+  EXPECT_FLOAT_EQ(proto.items().at("B").score(), b_score);
+}
+
+TEST_F(MrfuCacheTest, ReadFromDisk) {
+  // Create a test proto and write it to disk.
+  MrfuCacheProto proto;
+  MrfuCacheProto::Score score;
+  proto.set_update_count(10);
+  auto& items = *proto.mutable_items();
+  score.set_score(0.5f);
+  score.set_last_update_count(10);
+  items["A"] = score;
+  score.set_score(0.6f);
+  score.set_last_update_count(10);
+  items["B"] = score;
+
+  WriteToDisk(proto);
+
+  // Then create a cache and check the score values.
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+  EXPECT_FLOAT_EQ(cache.Get("A"), 0.5f);
+  EXPECT_FLOAT_EQ(cache.Get("B"), 0.6f);
+}
+
+}  // namespace app_list
