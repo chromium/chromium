@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Forsiktig:<ph name="END_BOLD" /> Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass. <ph name="BEGIN_LINK" />Les mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviner</translation>
 <translation id="183183971458492120">Laster inn informasjon …</translation>
+<translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
 <translation id="1838709767668011582">Google-nettsted</translation>
 <translation id="1844692022597038441">Denne filen er ikke tilgjengelig utenfor Internett.</translation>
 <translation id="1853795129690976061">Denne mappen deles med Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Tilgangsbegrenset</translation>
 <translation id="6356685157277930264">Tilbakemeldingsvindu for Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
+<translation id="636254897931573416">Ugyldig verdi i listen over samsvarende domenesuffikser</translation>
 <translation id="6367976544441405720">Varebil</translation>
 <translation id="637062427944097960">Denne filen ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>

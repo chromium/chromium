@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Овие датотеки се привремени и може да се бришат автоматски за да се ослободи простор на дискот. <ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Се вчитуваат информации…</translation>
+<translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
 <translation id="1838709767668011582">Сајт на Google</translation>
 <translation id="1844692022597038441">Датотеката не е достапна локално.</translation>
 <translation id="1853795129690976061">Папкава е споделена со Linux</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Забранет пристап</translation>
 <translation id="6356685157277930264">Прозорец со информации за датотеките</translation>
 <translation id="6358884629796491903">Змеј</translation>
+<translation id="636254897931573416">Неважечка вредност за совпаѓање на суфиксот на доменот</translation>
 <translation id="6367976544441405720">Комбе</translation>
 <translation id="637062427944097960">Оваа датотека се отвори на друг десктоп. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="6394388407447716302">Само за читање</translation>

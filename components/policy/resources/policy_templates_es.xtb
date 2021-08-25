@@ -1822,7 +1822,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se inhabilita esta opción, los usuarios no podrán sincronizar las configuraciones de la red Wi‑Fi.
 
-      Esta función depende de que se habilite el tipo de datos de <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en <ph name="CHROME_SYNC_NAME" />. Si se inhabilita <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en la política <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> o se inhabilita <ph name="CHROME_SYNC_NAME" /> en la política <ph name="SYNC_DISABLED_POLICY_NAME" />, no se habilitará esta función.
+      Esta función depende de que se habilite el tipo de datos <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en <ph name="CHROME_SYNC_NAME" />. Si se inhabilita <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en la política <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> o se inhabilita <ph name="CHROME_SYNC_NAME" /> en la política <ph name="SYNC_DISABLED_POLICY_NAME" />, no se habilitará esta función.
 
       Si no se establece esta política, la opción predeterminada no estará disponible para los usuarios gestionados.</translation>
 <translation id="3142410959002029864">Si se establece esta política, se anula el modo predeterminado de impresión por las dos caras. Si el modo no está disponible, se ignorará esta política.</translation>
@@ -5248,13 +5248,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Nota: Usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> en Android.</translation>
 <translation id="7508067364927180229">Este ajuste proporciona varias opciones de disponibilidad que se aplican al navegador <ph name="LACROS_NAME" />.
 
-      Si se asigna el valor <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> a esta política, el usuario podrá habilitar <ph name="LACROS_NAME" /> y establecer que sea el navegador principal.
+      Si se asigna <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> a esta política, el usuario podrá habilitar <ph name="LACROS_NAME" /> y establecer que sea el navegador principal.
 
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, el usuario no podrá usar <ph name="LACROS_NAME" />.
+      Si se le asigna <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, el usuario no podrá usar <ph name="LACROS_NAME" />.
 
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal.
+      Si se le asigna <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal.
 
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal.
+      Si se le asigna <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal.
 
       Si esta política no se establece, la opción predeterminada será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> en el caso de los usuarios gestionados por empresas y, en el caso de los usuarios no gestionados, la opción predeterminada será <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />.
 
@@ -5650,7 +5650,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
           Esta política no tendrá efecto si se le asigna el valor "True", se deja vacía o no se le asigna ningún valor.</translation>
 <translation id="8008421342605619236">Configura las políticas de los mensajes nativos. No se permitirán los hosts de mensajes nativos bloqueados si no se incluyen en la lista de permitidos.</translation>
 <translation id="8011935490612940798">Controlar la función <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8013739405949922317">Esta opción ya no está disponible. Usa la política <ph name="LACROS_AVAILABILITY_POLICY_NAME" /> en su lugar.
+<translation id="8013739405949922317">Esta opción ya no está disponible. Usa <ph name="LACROS_AVAILABILITY_POLICY_NAME" /> en su lugar.
 
       Si esta política se inhabilita o no se establece, el usuario no podrá usar <ph name="LACROS_NAME" />.
 
@@ -6523,10 +6523,10 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="9096772739225230999">No enviar información sobre la configuración de red</translation>
 <translation id="9097005000667946359">Si se establece esta política, especifica una lista de aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, y qué usuarios no podrán desinstalarlas ni desactivarlas.
 
-      Cada elemento de la lista de esta política es un objeto con un elemento obligatorio:
+      Cada elemento de la lista de esta política es un objeto con un miembro obligatorio:
       <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
 
-      y 5 elementos opcionales:
+      y 5 miembros opcionales:
       - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
       (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una pestaña nueva)
 
@@ -6537,7 +6537,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       - <ph name="FALLBACK_APP_NAME_LABEL" />
       A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
       te permite anular el nombre de la aplicación si no es una
-      aplicación web progresiva (PWA), o el nombre de la aplicación instalado
+      aplicación web progresiva (PWA), o el nombre de la aplicación instalada
       temporalmente si es una PWA, pero se requiere autenticación para que la
       instalación pueda completarse. Si se proporcionan tanto
       <ph name="CUSTOM_NAME_LABEL" /> como

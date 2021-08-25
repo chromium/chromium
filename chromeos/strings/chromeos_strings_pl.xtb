@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
 <translation id="4536864596629708641">Konfiguracja IP</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -363,6 +364,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
+<translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>

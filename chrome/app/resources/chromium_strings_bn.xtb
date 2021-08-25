@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Chromium থেকে সরান...</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromium সম্পর্কে</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে <ph name="BEGIN_BOLD" />আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে<ph name="END_BOLD" />। প্রয়োজনীয় সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium আপ-টু-ডেট আছে</translation>
 <translation id="2983934633046890458">Chromium আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে।</translation>
 <translation id="3032706164202344641">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>

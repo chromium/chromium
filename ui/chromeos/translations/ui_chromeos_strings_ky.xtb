@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Эскертүү:<ph name="END_BOLD" /> Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
+<translation id="1834290891154666894">Cубъекттин кошумча аталышына окшош жараксыз жазуу</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бул файл офлайнда жеткиликтүү эмес.</translation>
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Кирүү мүмкүнчүлүгү чектелген</translation>
 <translation id="6356685157277930264">Files колдонмосу тууралуу пикирлер көрсөтүлгөн терезе</translation>
 <translation id="6358884629796491903">Ажыдаар</translation>
+<translation id="636254897931573416">Домен суффиксине окшош жараксыз маани</translation>
 <translation id="6367976544441405720">Фургон</translation>
 <translation id="637062427944097960">Бул файл башка иштактада ачылган. Аны көрүү үчүн <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) карай жылыңыз.</translation>
 <translation id="6394388407447716302">Окуу үчүн гана</translation>

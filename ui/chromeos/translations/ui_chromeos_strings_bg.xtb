@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информацията се зарежда...</translation>
+<translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
 <translation id="1838709767668011582">Сайт в Google</translation>
 <translation id="1844692022597038441">Този файл не е налице офлайн.</translation>
 <translation id="1853795129690976061">Тази папка е споделена с Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Достъпът е ограничен</translation>
 <translation id="6356685157277930264">Прозорец с информация за файловете</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="636254897931573416">Невалидна стойност в списъка със съответствия на суфикса на домейна</translation>
 <translation id="6367976544441405720">Микробус</translation>
 <translation id="637062427944097960">Този файл се отвори на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да го прегледате.</translation>
 <translation id="6394388407447716302">Само за четене</translation>

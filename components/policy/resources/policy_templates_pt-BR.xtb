@@ -1137,7 +1137,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
 
-      Se esta política for definida, será possível configurar se o usuário poderá fazer login no <ph name="PRODUCT_NAME" />. Se ela for definida como falsa, o funcionamento de apps e extensões que usam a API chrome.identity será impedido, então é recomendável usar a política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
+      Se a política for definida, será possível configurar se o usuário poderá fazer login no <ph name="PRODUCT_NAME" />. Se ela for definida como falsa, o funcionamento de apps e extensões que usam a API chrome.identity será impedido, então é recomendável usar a política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="2384233438419344179">Se a política for definida como "Ativada", os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como "Desativada", os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
 
       Se ela não for definida, os cookies de terceiros serão ativados, mas os usuários poderão mudar essa configuração.</translation>
@@ -5153,7 +5153,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
        Se a política for definida como "Desativada" ou não for definida, imagens de terceiros não poderão ser exibidas em um prompt de autenticação.
 
       Normalmente, essa política fica desativada como defesa contra phishing.</translation>
-<translation id="7406039009275722824">Desativar a <ph name="CHROME_SYNC_NAME" /> fará com que a restauração e o Backup do Android não funcionem corretamente.</translation>
+<translation id="7406039009275722824">Desativar a <ph name="CHROME_SYNC_NAME" /> fará com que o recurso de backup e restauração do Android não funcione corretamente.</translation>
 <translation id="7407441173422042771">Esta política controla a previsão de rede no <ph name="PRODUCT_NAME" />. Ela controla a pré-busca de DNS, a pré-conexão SSL e TCP e a pré-renderização das páginas da Web.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a previsão de rede será ativada, mas os usuários poderão mudar a configuração.</translation>
@@ -5617,7 +5617,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
           Esta política não terá efeito se for definida como verdadeira, deixada vazia ou sem definição.</translation>
 <translation id="8008421342605619236">Configura políticas para as mensagens nativas. Hosts de mensagens nativas bloqueados não serão permitidos, a menos que estejam na lista de permissões.</translation>
 <translation id="8011935490612940798">Controlar o recurso de <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8013739405949922317">Esta configuração foi descontinuada. Use a <ph name="LACROS_AVAILABILITY_POLICY_NAME" />
+<translation id="8013739405949922317">Esta configuração foi descontinuada. Use a <ph name="LACROS_AVAILABILITY_POLICY_NAME" />.
 
       Se essa política for desativada ou deixada sem definição, o usuário não poderá usar o <ph name="LACROS_NAME" />.
 
@@ -6509,12 +6509,12 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       - <ph name="OVERRIDE_APP_NAME_LABEL" />
       (a partir da versão 96 do <ph name="PRODUCT_NAME" />)
-      permite substituir permanentemente o nome do app para todos os apps da
+      permite substituir permanentemente os nomes de todos os apps da
 Web e PWAs.
 
       - <ph name="CUSTOM_ICON_LABEL" />
       (a partir da versão 96 do <ph name="PRODUCT_NAME" />)
-      permite substituir o ícone do app para apps instalados. Os
+      permite substituir os ícones dos apps instalados. Os
       ícones precisam ser quadrados, com no máximo 1 MB de tamanho e estar em um destes
       formatos: jpeg, png, gif, webp, ico. O valor de hash precisa ser o hash SHA256
       do arquivo de ícone.

@@ -54,6 +54,8 @@
 <translation id="2847479871509788944">Chromium मधून काढून टाका...</translation>
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2910007522516064972">&amp;Chromium बद्दल</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />एक शेवटचा रिमाइंडर: इंस्टॉलेशन <ph name="BEGIN_BOLD" />तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल<ph name="END_BOLD" />. कृपया तुमच्यासाठी महत्त्वाच्या असलेल्या डेटाचा तुम्ही बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
 <translation id="2983934633046890458">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="3032706164202344641">Chromium तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>

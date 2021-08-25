@@ -310,6 +310,7 @@
 <translation id="2932150158123903946">Меморијски простор за Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Тастатура се неће променити</translation>
 <translation id="2942036813789421260">Картица за преглед је затворена</translation>
+<translation id="2946420957526726953">Chrome се ажурира ради повезивања са другим уређајима</translation>
 <translation id="2956410042958133412">Овим налогом управљају <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитане странице}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаних страница}}</translation>
 <translation id="2961210776189273067">Звање</translation>
@@ -616,6 +617,7 @@ Google налог можда има друге облике историје п�
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="488187801263602086">Преименујте датотеку</translation>
 <translation id="4885273946141277891">Неподржан број Chrome инстанци.</translation>
+<translation id="4905823827770127520">Уврстите линк до странице</translation>
 <translation id="4908869848243824489">Google Discover</translation>
 <translation id="4910889077668685004">Апликације за плаћање</translation>
 <translation id="4912413785358399818">Премести картицу</translation>

@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Опрез:<ph name="END_BOLD" /> Ове датотеке су привремене и могу да се аутоматски избришу да би се ослободио простор на диску. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информације се учитавају...</translation>
+<translation id="1834290891154666894">Неважећи унос подударања алтернативног назива субјекта</translation>
 <translation id="1838709767668011582">Google сајт</translation>
 <translation id="1844692022597038441">Ова датотека није доступна ван мреже.</translation>
 <translation id="1853795129690976061">Овај директоријум се дели са Linux-ом</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Приступ је ограничен</translation>
 <translation id="6356685157277930264">Прозор за повратне информације датотека</translation>
 <translation id="6358884629796491903">Змај</translation>
+<translation id="636254897931573416">Неважећа вредност подударања суфикса домена</translation>
 <translation id="6367976544441405720">Комби</translation>
 <translation id="637062427944097960">Ова датотека је отворена на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте је погледали.</translation>
 <translation id="6394388407447716302">Само за читање</translation>

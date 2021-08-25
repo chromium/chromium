@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Pozor:<ph name="END_BOLD" /> Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Nalaganje podatkov …</translation>
+<translation id="1834290891154666894">Neveljaven vnos za ujemanje nadomestnega imena subjekta</translation>
 <translation id="1838709767668011582">Googlovo spletno mesto</translation>
 <translation id="1844692022597038441">Ta datoteka ni na voljo brez povezave.</translation>
 <translation id="1853795129690976061">Ta datoteka je deljena z Linuxom</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Dostop je omejen</translation>
 <translation id="6356685157277930264">Okno za povratne informacije v aplikaciji Datoteke</translation>
 <translation id="6358884629796491903">Zmaj</translation>
+<translation id="636254897931573416">Neveljavna vrednost za ujemanje pripone domene</translation>
 <translation id="6367976544441405720">Kombi</translation>
 <translation id="637062427944097960">Ta datoteka je odprta na drugem namizju. Če si jo želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Samo za branje</translation>

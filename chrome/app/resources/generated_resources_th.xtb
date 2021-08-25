@@ -767,7 +767,7 @@
 <translation id="1790194216133135334">ส่งลิงก์ไปที่ <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">นำสิทธิ์การเข้าถึงออก</translation>
 <translation id="1792619191750875668">การแสดงผลแบบขยาย</translation>
-<translation id="1793625608969726781">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, คอมพิวเตอร์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1793625608969726781">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, คอมพิวเตอร์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691">ไม่ต้องแสดง <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">ส่งความคิดเห็นเพื่อช่วยเราแก้ไขปัญหานี้</translation>
 <translation id="1795214765651529549">ใช้แบบคลาสสิก</translation>
@@ -1146,7 +1146,7 @@
 <translation id="2179416702468739594">กำลังหาโปรไฟล์ที่พร้อมใช้งาน ซึ่งอาจทำให้เครือข่ายมือถือของคุณยกเลิกการเชื่อมต่อเป็นเวลาสักครู่</translation>
 <translation id="2180620921879609685">บล็อกเนื้อหาในหน้าใดก็ได้</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
-<translation id="2183027945672030611">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, อุปกรณ์ควบคุมเกม, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="2183027945672030611">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, อุปกรณ์ควบคุมเกม, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
 <translation id="2186711480981247270">หน้าเว็บที่แชร์จากอุปกรณ์อื่น</translation>
 <translation id="2187675480456493911">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว ระบบจะไม่ซิงค์การตั้งค่าที่ผู้ใช้คนอื่นๆ แก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -1263,7 +1263,7 @@
 <translation id="2301402091755573488">แท็บที่แชร์</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ขออนุญาตเพิ่มเติม</translation>
 <translation id="23055578400314116">เลือกชื่อผู้ใช้</translation>
-<translation id="2306366691914573029">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, ไม่ทราบประเภทอุปกรณ์</translation>
+<translation id="2306366691914573029">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, ไม่ทราบประเภทอุปกรณ์</translation>
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
 <translation id="2307553512430195144">หากคุณยอมรับ Google Assistant จะรออยู่ในโหมดสแตนด์บายเพื่อตรวจจับเสียงพูด "Ok Google" และ Voice Match ทำให้รู้ว่าคนที่กำลังพูดคือ <ph name="SUPERVISED_USER_NAME" />
     <ph name="BR" />
@@ -1549,7 +1549,7 @@
 <translation id="2606568927909309675">สร้างคำบรรยายสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายออกไปจากอุปกรณ์</translation>
 <translation id="2607101320794533334">ข้อมูลหัวเรื่องคีย์สาธารณะ</translation>
 <translation id="2609896558069604090">สร้างทางลัด...</translation>
-<translation id="2609902589050805912">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, อุปกรณ์เสียง</translation>
+<translation id="2609902589050805912">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, อุปกรณ์เสียง</translation>
 <translation id="2609980095400624569">เริ่มการเชื่อมต่อไม่ได้</translation>
 <translation id="2610157865375787051">สลีป</translation>
 <translation id="2610260699262139870">ข&amp;นาดจริง</translation>
@@ -1617,7 +1617,7 @@
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
 <translation id="2674764818721168631">ปิด</translation>
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
-<translation id="2678676117809690850">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, โทรศัพท์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="2678676117809690850">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, โทรศัพท์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">ประวั&amp;ติ</translation>
 <translation id="2681124317993121768">ไม่รองรับโปรไฟล์ผู้มาเยือน</translation>
 <translation id="2682498795777673382">อัปเดตจากผู้ปกครองของคุณ</translation>
@@ -1814,7 +1814,7 @@
 <translation id="287205682142673348">การส่งต่อพอร์ต</translation>
 <translation id="287286579981869940">เพิ่ม <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">ปิด</translation>
-<translation id="2872966656309879564">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, คอมพิวเตอร์</translation>
+<translation id="2872966656309879564">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, คอมพิวเตอร์</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2875698561019555027">(หน้าข้อผิดพลาดของ Chrome)</translation>
 <translation id="2876336351874743617">นิ้วที่ 2</translation>
@@ -2006,7 +2006,7 @@
 <translation id="3067198360141518313">เรียกใช้ปลั๊กอินนี้</translation>
 <translation id="3071624960923923138">คุณสามารถคลิกที่นี่เพื่อเปิดแท็บใหม่</translation>
 <translation id="3072775339180057696">อนุญาตให้เว็บไซต์ดู <ph name="FILE_NAME" /> ไหม</translation>
-<translation id="3074799113165994093">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, โทรศัพท์</translation>
+<translation id="3074799113165994093">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, โทรศัพท์</translation>
 <translation id="3075874217500066906">จำเป็นต้องรีสตาร์ทเพื่อเริ่มดำเนินการ Powerwash เมื่อรีสตาร์ทแล้ว ระบบจะขอให้คุณยืนยันว่าคุณต้องการดำเนินการ</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">บันทึกในอุปกรณ์นี้เท่านั้น</translation>
@@ -2048,7 +2048,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> ไม่สำเร็จ}other{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> ไม่สำเร็จ}}</translation>
 <translation id="3118319026408854581">ความช่วยเหลือของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">โปรดรอสักครู่แล้วลองเริ่มต้น Linux อีกครั้ง</translation>
-<translation id="3119689272338239690">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, ไม่ทราบประเภทอุปกรณ์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3119689272338239690">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, ไม่ทราบประเภทอุปกรณ์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">คุณกำลังแคสต์เนื้อหา/URL อะไร</translation>
 <translation id="3120430004221004537">การเข้ารหัสสำหรับการดำเนินการที่ระบุไม่เพียงพอใน "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2560,7 +2560,7 @@
 <translation id="3682824389861648626">เกณฑ์การเคลื่อนไหว</translation>
 <translation id="3683524264665795342">คำขอการแชร์หน้าจอของ <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">ค่ากำหนด USB ใน Linux</translation>
-<translation id="3686786761304157917">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, แป้นพิมพ์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3686786761304157917">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, แป้นพิมพ์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">เกิดข้อผิดพลาดขณะพยายามเขียนไฟล์: <ph name="ERROR_TEXT" /></translation>
 <translation id="3688507211863392146">เขียนไปยังไฟล์และโฟลเดอร์ที่คุณเปิดในแอปพลิเคชัน</translation>
 <translation id="3688526734140524629">เปลี่ยนช่อง</translation>
@@ -2660,7 +2660,7 @@
 <translation id="3778740492972734840">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="3778868487658107119">ถามคำถามและบอกให้ทำสิ่งต่างๆ ได้เหมือนเป็น Google ส่วนตัวที่พร้อมช่วยเหลือคุณเสมอ</translation>
 <translation id="3781742599892759500">การเข้าถึงไมโครโฟนใน Linux</translation>
-<translation id="3782488227140539029">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, กล้องวิดีโอ, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3782488227140539029">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, กล้องวิดีโอ, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">ยังไม่ได้กำหนดสวิตช์หรือแป้น</translation>
 <translation id="378312418865624974">อ่านตัวระบุเฉพาะสำหรับคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="3784372983762739446">อุปกรณ์บลูทูธ</translation>
@@ -2900,7 +2900,7 @@
 <translation id="4002329649066944389">จัดการข้อยกเว้นเฉพาะเว็บไซต์</translation>
 <translation id="4002440992267487163">ตั้งค่า PIN</translation>
 <translation id="4005817994523282006">วิธีการตรวจหาเขตเวลา</translation>
-<translation id="400645326027787740">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, อุปกรณ์ควบคุมเกม</translation>
+<translation id="400645326027787740">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, อุปกรณ์ควบคุมเกม</translation>
 <translation id="4007856537951125667">ซ่อนทางลัด</translation>
 <translation id="4008291085758151621">ข้อมูลไซต์ไม่พร้อมใช้งานใน VR</translation>
 <translation id="4010917659463429001">หากต้องการรับบุ๊กมาร์กบนอุปกรณ์เคลื่อนที่ ให้<ph name="GET_IOS_APP_LINK" /></translation>
@@ -3677,7 +3677,7 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">เปิดด้วยเครื่องมือดูระบบ</translation>
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
-<translation id="4889450157778777235">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, กล้องวิดีโอ</translation>
+<translation id="4889450157778777235">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, กล้องวิดีโอ</translation>
 <translation id="4890773143211625964">แสดงตัวเลือกเครื่องพิมพ์ขั้นสูง</translation>
 <translation id="4891089016822695758">ฟอรัมเบต้า</translation>
 <translation id="4892229439761351791">เว็บไซต์ใช้บลูทูธได้</translation>
@@ -4066,7 +4066,7 @@
 <translation id="5319359161174645648">Google ขอแนะนำ Chrome</translation>
 <translation id="5319712128756744240">จับคู่อุปกรณ์ใหม่</translation>
 <translation id="5320135788267874712">ชื่ออุปกรณ์ใหม่</translation>
-<translation id="532043380734099846">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, เมาส์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="532043380734099846">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, เมาส์, ระดับแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">อาจไม่สามารถเข้าถึงเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5324300749339591280">รายชื่อแอป</translation>
 <translation id="5324780743567488672">ตั้งค่าเขตเวลาโดยอัตโนมัติโดยใช้ตำแหน่งของคุณ</translation>
@@ -4264,7 +4264,7 @@
 <translation id="5534304873398226603">ทิ้งรูปภาพหรือวิดีโอ</translation>
 <translation id="5535941515421698170">นำข้อมูลที่มีอยู่ของคุณออกจากอุปกรณ์นี้ด้วย</translation>
 <translation id="5539221284352502426">เซิร์ฟเวอร์ปฏิเสธรหัสผ่านที่คุณป้อน สาเหตุที่เป็นไปได้คือรหัสผ่านสั้นเกินไป ทั้งนี้รหัสผ่านต้องมีตัวเลขหรือสัญลักษณ์อยู่ด้วย และต้องแตกต่างจากรหัสผ่านที่เคยใช้</translation>
-<translation id="5539467723438368868">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, แท็บเล็ต</translation>
+<translation id="5539467723438368868">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, แท็บเล็ต</translation>
 <translation id="5541694225089836610">ผู้ดูแลระบบของคุณปิดการทำงาน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
 <translation id="5542750926112347543">บล็อกคุกกี้จาก <ph name="DOMAIN" /></translation>
@@ -4325,7 +4325,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">ไม่ได้รับอนุญาตให้เชื่อมต่ออุปกรณ์ MIDI</translation>
 <translation id="5602765853043467355">ล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จากอุปกรณ์นี้</translation>
-<translation id="5604884720628869833">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, แป้นพิมพ์</translation>
+<translation id="5604884720628869833">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, แป้นพิมพ์</translation>
 <translation id="5605623530403479164">เครื่องมือค้นหาอื่นๆ</translation>
 <translation id="5605758115928394442">เราส่งการแจ้งเตือนให้คุณทางโทรศัพท์แล้วเพื่อยืนยันตัวตน</translation>
 <translation id="560834977503641186">การซิงค์ Wi-Fi ดูข้อมูลเพิ่มเติม</translation>
@@ -7468,7 +7468,7 @@
 <translation id="897525204902889653">บริการเขตกักบริเวณ</translation>
 <translation id="8975396729541388937">ยกเลิกการสมัครได้ทุกเมื่อโดยคลิกลิงก์ในอีเมลที่ได้รับ</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก 1 แท็บ}other{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก # แท็บ}}</translation>
-<translation id="8977175149983066223">อุปกรณ์ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" /> เครื่อง, <ph name="DEVICE_NAME" />, เมาส์</translation>
+<translation id="8977175149983066223">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, เมาส์</translation>
 <translation id="8977811652087512276">รหัสผ่านไม่ถูกต้องหรือไฟล์เสียหาย</translation>
 <translation id="8978154919215542464">เปิด - ซิงค์ทุกอย่าง</translation>
 <translation id="897939795688207351">ใน <ph name="ORIGIN" /></translation>

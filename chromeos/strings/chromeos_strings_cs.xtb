@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
 <translation id="4511264077854731334">Portál</translation>
+<translation id="4521826082652183069">Shoda alternativních názvů subjektu</translation>
 <translation id="4536864596629708641">Konfigurace IP adresy</translation>
 <translation id="4548483925627140043">Signál nebyl nalezen</translation>
 <translation id="455835558791489930">Baterie s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -363,6 +364,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklů</translation>
 <translation id="7762130827864645708">Změna hesla byla úspěšná. Odteď používejte nové heslo.</translation>
+<translation id="7763470514545477072">Shoda přípon domén</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7819857487979277519">PSK (WPA nebo RSN)</translation>

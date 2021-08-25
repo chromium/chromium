@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Przestroga:<ph name="END_BOLD" /> te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingwin</translation>
 <translation id="183183971458492120">Ładuję informacje…</translation>
+<translation id="1834290891154666894">Nieprawidłowa pozycja dopasowania alternatywnej nazwy podmiotu</translation>
 <translation id="1838709767668011582">Witryna Google</translation>
 <translation id="1844692022597038441">Ten plik nie jest dostępny offline.</translation>
 <translation id="1853795129690976061">Ten folder jest udostępniany Linuksowi</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Ograniczony dostęp</translation>
 <translation id="6356685157277930264">Okno informacji zwrotnych o plikach</translation>
 <translation id="6358884629796491903">Smok</translation>
+<translation id="636254897931573416">Nieprawidłowa wartość dopasowania sufiksu domeny</translation>
 <translation id="6367976544441405720">Furgonetka</translation>
 <translation id="637062427944097960">Ten plik został otwarty na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby go zobaczyć.</translation>
 <translation id="6394388407447716302">Tylko do odczytu</translation>

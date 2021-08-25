@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Compte:<ph name="END_BOLD" />  Aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüí</translation>
 <translation id="183183971458492120">S'està carregant la informació...</translation>
+<translation id="1834290891154666894">Entrada no vàlida de nom alternatiu d'assumpte coincident</translation>
 <translation id="1838709767668011582">Lloc de Google</translation>
 <translation id="1844692022597038441">Aquest fitxer no està disponible sense connexió.</translation>
 <translation id="1853795129690976061">Aquesta carpeta es comparteix amb Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Accés restringit</translation>
 <translation id="6356685157277930264">Finestra de suggeriments en fitxers</translation>
 <translation id="6358884629796491903">Drac</translation>
+<translation id="636254897931573416">Valor no vàlid de sufix de domini coincident</translation>
 <translation id="6367976544441405720">Furgoneta</translation>
 <translation id="637062427944097960">Aquest fitxer s'ha obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="6394388407447716302">Només de lectura</translation>
