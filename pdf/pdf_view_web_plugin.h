@@ -47,6 +47,7 @@ class MetafileSkia;
 
 namespace chrome_pdf {
 
+class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
@@ -238,9 +239,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
-  // Initializes the plugin using the `container_wrapper` provided by tests.
-  bool InitializeForTesting(
-      std::unique_ptr<ContainerWrapper> container_wrapper);
+  // Initializes the plugin using the `container_wrapper` and `engine` provided
+  // by tests.
+  bool InitializeForTesting(std::unique_ptr<ContainerWrapper> container_wrapper,
+                            std::unique_ptr<PDFiumEngine> engine);
 
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
 
@@ -276,7 +278,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
-  bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper);
+  bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper,
+                        std::unique_ptr<PDFiumEngine> engine);
 
   void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 

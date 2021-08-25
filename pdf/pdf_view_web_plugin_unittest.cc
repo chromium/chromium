@@ -12,6 +12,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/test/test_helpers.h"
+#include "pdf/test/test_pdfium_engine.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -211,7 +212,9 @@ class PdfViewWebPluginTest : public testing::Test {
 
     auto wrapper = std::make_unique<FakeContainerWrapper>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
-    plugin_->InitializeForTesting(std::move(wrapper));
+    auto engine = std::make_unique<TestPDFiumEngine>(plugin_.get());
+    engine_ptr_ = engine.get();
+    plugin_->InitializeForTesting(std::move(wrapper), std::move(engine));
   }
 
   void TearDown() override {
@@ -291,6 +294,7 @@ class PdfViewWebPluginTest : public testing::Test {
         << window_rect.ToString();
   }
 
+  TestPDFiumEngine* engine_ptr_;
   FakeContainerWrapper* wrapper_ptr_;
   FakePdfViewWebPluginClient* client_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;

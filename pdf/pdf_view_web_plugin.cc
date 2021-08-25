@@ -250,17 +250,20 @@ PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK_EQ(container->Plugin(), this);
-  return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container));
+  return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container),
+                          nullptr);
 }
 
 bool PdfViewWebPlugin::InitializeForTesting(
-    std::unique_ptr<ContainerWrapper> container_wrapper) {
-  return InitializeCommon(std::move(container_wrapper));
+    std::unique_ptr<ContainerWrapper> container_wrapper,
+    std::unique_ptr<PDFiumEngine> engine) {
+  return InitializeCommon(std::move(container_wrapper), std::move(engine));
 }
 
 // Modeled on `OutOfProcessInstance::Init()`.
 bool PdfViewWebPlugin::InitializeCommon(
-    std::unique_ptr<ContainerWrapper> container_wrapper) {
+    std::unique_ptr<ContainerWrapper> container_wrapper,
+    std::unique_ptr<PDFiumEngine> engine) {
   container_wrapper_ = std::move(container_wrapper);
 
   // Check if the PDF is being loaded in the PDF chrome extension. We only allow
@@ -297,7 +300,9 @@ bool PdfViewWebPlugin::InitializeCommon(
 
   PerProcessInitializer::GetInstance().Acquire();
 
-  InitializeEngine(std::make_unique<PDFiumEngine>(this, params->script_option));
+  InitializeEngine(
+      engine ? std::move(engine)
+             : std::make_unique<PDFiumEngine>(this, params->script_option));
   LoadUrl(params->src_url, /*is_print_preview=*/false);
   set_url(params->original_url);
   post_message_sender_.set_container(Container());
