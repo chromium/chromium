@@ -52,7 +52,7 @@ const char kResultDirectoryParam[] = "result_directory";
 const char TraceStartupConfig::kDefaultStartupCategories[] =
 #if defined(OS_ANDROID)
     "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
-    "loading,gpu,disabled-by-default-cpu_profiler,download_service,"
+    "loading,gpu,ui,disabled-by-default-cpu_profiler,download_service,"
     "disabled-by-default-histogram_samples,"
     "disabled-by-default-user_action_samples,-*";
 #else
