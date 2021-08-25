@@ -685,20 +685,6 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
             weak_factory_.GetWeakPtr(),
             extension_misc::kEspeakSpeechSynthesisExtensionId));
   }
-
-  if (features::IsEnhancedNetworkVoicesEnabled() &&
-      !Exists(extension_misc::kEnhancedNetworkTtsExtensionId)) {
-    base::FilePath resources_path =
-        base::PathService::CheckedGet(chrome::DIR_RESOURCES);
-    AddComponentFromDirWithManifestFilename(
-        resources_path.Append(extension_misc::kEnhancedNetworkTtsExtensionPath),
-        extension_misc::kEnhancedNetworkTtsExtensionId,
-        extension_misc::kEnhancedNetworkTtsManifestFilename,
-        extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
-        base::BindOnce(&ComponentLoader::FinishLoadSpeechSynthesisExtension,
-                       weak_factory_.GetWeakPtr(),
-                       extension_misc::kEnhancedNetworkTtsExtensionId));
-  }
 }
 
 void ComponentLoader::FinishAddComponentFromDir(
