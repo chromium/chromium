@@ -1028,7 +1028,7 @@ bool AXNodeData::IsMenuButton() const {
 }
 
 bool AXNodeData::IsTextField() const {
-  return IsAtomicTextField() || IsNonAtomicTextField();
+  return IsAtomicTextField() || IsNonAtomicTextField() || IsSpinnerTextField();
 }
 
 bool AXNodeData::IsPasswordField() const {
@@ -1050,6 +1050,14 @@ bool AXNodeData::IsAtomicTextField() const {
 
 bool AXNodeData::IsNonAtomicTextField() const {
   return GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
+}
+
+bool AXNodeData::IsSpinnerTextField() const {
+  // TODO(accessibility) Should an editable spin button be it's own role?
+  // This would allow this method to go away, by instead adding the editable
+  // spinbutton role to AXRoleProperties::IsTextField().
+  return role == ax::mojom::Role::kSpinButton &&
+         GetStringAttribute(ax::mojom::StringAttribute::kInputType) == "number";
 }
 
 bool AXNodeData::IsReadOnlyOrDisabled() const {

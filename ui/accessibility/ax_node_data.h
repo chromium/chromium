@@ -283,6 +283,13 @@ struct AX_BASE_EXPORT AXNodeData {
   // attribute.
   bool IsNonAtomicTextField() const;
 
+  // Some spinners are text fields, and some are not. For example, an ordinary
+  // <input type="number"> allows caret movement and behaves like a textfield,
+  // but the <input type="number"> used inside date, datetime, datetime-local,
+  // month, time, and week types does not allow this. In either type, pressing
+  // up/down arrow will change the value to the previous/next allowed value.
+  bool IsSpinnerTextField() const;
+
   // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
   // By default, all nodes that can't be edited are readonly.
   bool IsReadOnlyOrDisabled() const;
