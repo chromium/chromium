@@ -873,8 +873,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.StatefulFreeSpace" units="MB"
-    expires_after="2021-10-01">
-  <owner>jamescook@chromium.org</owner>
+    expires_after="2022-04-01">
+  <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
     Chrome OS stateful partition space free. Sampled once daily.
