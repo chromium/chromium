@@ -266,6 +266,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        IntentUtils.addTrustedIntentExtras(intent);
         return intent;
     }
 
