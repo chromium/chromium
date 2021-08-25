@@ -47,6 +47,10 @@ bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
+IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() {
+  return ui::IMEBridge::Get()->GetCandidateWindowHandler();
+}
+
 bool IsFstEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
@@ -735,7 +739,13 @@ void NativeInputMethodEngine::ImeObserver::OnCandidateClicked(
     const std::string& component_id,
     int candidate_id,
     InputMethodEngineBase::MouseButtonEvent button) {
-  ime_base_observer_->OnCandidateClicked(component_id, candidate_id, button);
+  if (ShouldRouteToNativeMojoEngine(component_id)) {
+    if (input_method_.is_bound()) {
+      input_method_->OnCandidateSelected(candidate_id);
+    }
+  } else {
+    ime_base_observer_->OnCandidateClicked(component_id, candidate_id, button);
+  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
@@ -885,6 +895,33 @@ void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
 void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
     const std::vector<ime::TextSuggestion>& suggestions) {
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+}
+
+void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
+    chromeos::ime::mojom::CandidatesWindowPtr window) {
+  ui::CandidateWindow candidate_window;
+  if (!window) {
+    GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,
+                                                   /*visible=*/false);
+    return;
+  }
+
+  for (const auto& candidate : window->candidates) {
+    ui::CandidateWindow::Entry entry;
+    entry.value = base::UTF8ToUTF16(candidate->text);
+    entry.label = base::UTF8ToUTF16(candidate->label.value_or(""));
+    entry.annotation = base::UTF8ToUTF16(candidate->annotation.value_or(""));
+    candidate_window.mutable_candidates()->push_back(entry);
+  }
+
+  ui::CandidateWindow::CandidateWindowProperty property;
+  property.cursor_position = window->highlighted_candidate;
+  property.page_size = window->candidates.size();
+  property.is_vertical = true;
+  candidate_window.SetProperty(property);
+
+  GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,
+                                                 /*visible=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::RecordUkm(mojom::UkmEntryPtr entry) {

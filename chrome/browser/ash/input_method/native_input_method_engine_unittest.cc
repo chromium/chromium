@@ -75,6 +75,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
                uint32_t offset,
                ime::mojom::SelectionRangePtr selection_range),
               (override));
+  MOCK_METHOD(void,
+              OnCandidateSelected,
+              (uint32_t selected_candidate_index),
+              (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
 
   mojo::Remote<ime::mojom::InputMethodHost> host;

@@ -48,6 +48,7 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   void OnCompositionCanceledBySystem() override;
   void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override;
+  void OnCandidateSelected(uint32_t selected_candidate_index) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 

@@ -84,6 +84,7 @@ class TestDecoderState : public mojom::InputMethod {
   void OnCompositionCanceledBySystem() override {}
   void ProcessKeyEvent(chromeos::ime::mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override {}
+  void OnCandidateSelected(uint32_t selected_candidate_index) override {}
 
   mojo::Receiver<mojom::InputMethod> receiver_{this};
   mojo::Remote<mojom::InputMethodHost> input_method_host_;
@@ -132,6 +133,7 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
       const std::vector<TextSuggestion>& suggestions) override {}
+  void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
 
   std::u16string last_commit;
@@ -156,6 +158,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(const std::vector<::chromeos::ime::TextSuggestion>&
                               suggestions) override {}
+  void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
 
  protected:

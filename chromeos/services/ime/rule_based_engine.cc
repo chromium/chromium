@@ -147,6 +147,11 @@ void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
       host_));
 }
 
+void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
+  // Rule-based engines don't use candidates.
+  NOTREACHED();
+}
+
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> receiver,

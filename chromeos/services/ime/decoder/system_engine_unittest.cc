@@ -45,6 +45,10 @@ struct MockInputMethod : public mojom::InputMethod {
               (chromeos::ime::mojom::PhysicalKeyEventPtr event,
                ProcessKeyEventCallback callback),
               (override));
+  MOCK_METHOD(void,
+              OnCandidateSelected,
+              (uint32_t selected_candidate_index),
+              (override));
 };
 
 class TestDecoderState {
@@ -113,6 +117,10 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
   MOCK_METHOD(void,
               DisplaySuggestions,
               (const std::vector<ime::TextSuggestion>& suggestions),
+              (override));
+  MOCK_METHOD(void,
+              UpdateCandidatesWindow,
+              (mojom::CandidatesWindowPtr window),
               (override));
   MOCK_METHOD(void, RecordUkm, (mojom::UkmEntryPtr entry), (override));
 };

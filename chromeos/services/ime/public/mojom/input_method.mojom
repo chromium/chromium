@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module chromeos.ime.mojom;
 
@@ -250,7 +250,7 @@ struct InputFieldInfo {
 // a Chrome utility process, and this interface uses the InputMethodHost
 // interface to communicate back to the browser process.
 //
-// Next ordinal: 5
+// Next ordinal: 6
 [Stable]
 interface InputMethod {
   // Called when there's a new focused input field.
@@ -277,4 +277,9 @@ interface InputMethod {
   // Informs the IME that composition was canceled by the system. This can
   // for example happen if the user presses the Escape key.
   OnCompositionCanceledBySystem@4();
+
+  // Informs the IME that a candidate from the candidates window was selected by
+  // the user. This is usually from the user clicking the candidate.
+  // |selected_candidate_index| is the index of the selected candidate.
+  [MinVersion=3] OnCandidateSelected@5(uint32 selected_candidate_index);
 };

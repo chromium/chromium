@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module chromeos.ime.mojom;
 
@@ -172,6 +172,37 @@ struct NonCompliantApiMetric {
   InputMethodApiOperation non_compliant_operation@0;
 };
 
+// A candidate shown in the candidates window.
+//
+// Next ordinal: 2
+[Stable]
+struct Candidate {
+  string text@0;
+
+  // Some optional text that is displayed to the left of the candidate text.
+  // It usually indicates a shortcut that the user can use to select that
+  // candidate (e.g. a number).
+  string? label@1;
+
+  // Some optional text that is displayed to the right of the candidate text.
+  // It typically gives information about how the candidate is used
+  // linguistically.
+  string? annotation@2;
+};
+
+// The candidates window shows a list of potential candidates for the user's
+// current input. It is usually shown as a window below the current composition.
+//
+// Next ordinal: 1
+[Stable, MinVersion=2]
+struct CandidatesWindow {
+  // List of candidates to be displayed. Must not be empty.
+  array<Candidate> candidates@0;
+
+  // The index of the candidate that should be highlighted visually.
+  uint32 highlighted_candidate@1;
+};
+
 // Interface for InputMethod to interact with Chrome.
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
@@ -236,6 +267,10 @@ interface InputMethodHost {
 
   // Asks the system to display the given suggestions to the user.
   DisplaySuggestions@6(array<SuggestionCandidate> suggestions);
+
+  // Asks the system to update the current candidates window state.
+  // If `window` is null, then the candidates window is hidden.
+  [MinVersion=2] UpdateCandidatesWindow@9(CandidatesWindow? window);
 
   // ===========================================
   // The following methods do not require focus.
