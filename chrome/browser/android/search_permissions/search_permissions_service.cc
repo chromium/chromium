@@ -195,6 +195,11 @@ bool SearchPermissionsService::IsPermissionControlledByDSE(
   return true;
 }
 
+bool SearchPermissionsService::IsDseOrigin(const url::Origin& origin) {
+  return origin.scheme() == url::kHttpsScheme &&
+         origin.IsSameOriginWith(delegate_->GetDSEOrigin());
+}
+
 void SearchPermissionsService::ResetDSEPermission(ContentSettingsType type) {
   url::Origin dse_origin = delegate_->GetDSEOrigin();
   GURL dse_url = dse_origin.GetURL();

@@ -154,6 +154,13 @@ public class WebsitePreferenceBridge {
     }
 
     /**
+     * Returns whether the DSE (Default Search Engine) origin matches the given origin.
+     */
+    public static boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin) {
+        return WebsitePreferenceBridgeJni.get().isDSEOrigin(browserContextHandle, origin);
+    }
+
+    /**
      * Returns whether this origin is activated for ad blocking, and will have resources blocked
      * unless they are explicitly allowed via a permission.
      */
@@ -355,6 +362,7 @@ public class WebsitePreferenceBridge {
                 int value);
         boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, String origin);
+        boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin);
         boolean getAdBlockingActivated(BrowserContextHandle browserContextHandle, String origin);
         boolean isContentSettingEnabled(
                 BrowserContextHandle browserContextHandle, int contentSettingType);

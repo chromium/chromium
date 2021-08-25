@@ -459,6 +459,7 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_SIMPLIFIED_UX = "RelatedSearchesSimplifiedUx";
     public static final String RELATED_SEARCHES_UI = "RelatedSearchesUi";
     public static final String REQUEST_DESKTOP_SITE_FOR_TABLETS = "RequestDesktopSiteForTablets";
+    public static final String REVERT_DSE_AUTOMATIC_PERMISSIONS = "RevertDSEAutomaticPermissions";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
             "SearchEnginePromo.ExistingDevice";
