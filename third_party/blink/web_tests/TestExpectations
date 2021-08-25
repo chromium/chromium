@@ -6955,3 +6955,11 @@ crbug.com/1242907 [ Linux ] external/wpt/orientation-sensor/RelativeOrientationS
 crbug.com/1242907 [ Linux ] external/wpt/idle-detection/idle-detection-disabled-by-feature-policy.https.sub.html [ Crash Pass ]
 crbug.com/1242907 [ Linux ] external/wpt/webusb/usb-disabled-by-feature-policy.https.sub.html [ Crash Pass ]
 crbug.com/1242907 [ Linux ] external/wpt/serial/serial-disabled-by-feature-policy.https.sub.html [ Crash Pass ]
+
+# Sheriff 2021-08-25
+crbug.com/1243128 [ Win ] external/wpt/css/css-cascade/layer-basic.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/editing/run/insertparagraph.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/editing/run/justifyright.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/web-share/disabled-by-permissions-policy.https.sub.html [ Failure ]
