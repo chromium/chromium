@@ -452,6 +452,70 @@ TEST_F(EventModelImplTest, IncrementingExistingMultiDayEventNewDay) {
   test::VerifyEventsEqual(bar_event2, store_->GetLastWrittenEvent());
 }
 
+TEST_F(EventModelImplTest, IncrementingSnoozeEvent) {
+  model_->Initialize(
+      base::BindOnce(&EventModelImplTest::OnModelInitializationFinished,
+                     base::Unretained(this)),
+      1000u);
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(model_->IsReady());
+
+  // Verify that incrementing snooze across multiple days update the snooze
+  // count and the last_snooze_time_us field.
+  base::Time snooze_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(5));
+  model_->IncrementEvent("snooze", 1u);
+  model_->IncrementSnooze("snooze", 1u, base::Time());
+  model_->IncrementEvent("snooze", 2u);
+  model_->IncrementEvent("snooze", 3u);
+  model_->IncrementSnooze("snooze", 3u, base::Time());
+  model_->IncrementEvent("snooze", 3u);
+  model_->IncrementSnooze("snooze", 3u, snooze_time);
+  model_->IncrementEvent("snooze", 5u);
+  const Event* bar_event = model_->GetEvent("snooze");
+  EXPECT_EQ(snooze_time.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            bar_event->last_snooze_time_us());
+  EXPECT_EQ(0u, model_->GetSnoozeCount("snooze", 1u, 5u));
+  EXPECT_EQ(2u, model_->GetSnoozeCount("snooze", 3u, 5u));
+  EXPECT_EQ(3u, model_->GetSnoozeCount("snooze", 5u, 5u));
+  EXPECT_EQ(2u, model_->GetEventCount("snooze", 5u, 5u));
+}
+
+TEST_F(EventModelImplTest, DismissSnoozeEvent) {
+  model_->Initialize(
+      base::BindOnce(&EventModelImplTest::OnModelInitializationFinished,
+                     base::Unretained(this)),
+      1000u);
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(model_->IsReady());
+
+  // Verify that dismissing a snooze event update the snooze_dismissed flag.
+  model_->DismissSnooze("bar");
+  const Event* bar_event = model_->GetEvent("bar");
+  EXPECT_EQ(true, bar_event->snooze_dismissed());
+}
+
+TEST_F(EventModelImplTest, GetLastSnoozeTimestamp) {
+  model_->Initialize(
+      base::BindOnce(&EventModelImplTest::OnModelInitializationFinished,
+                     base::Unretained(this)),
+      1000u);
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(model_->IsReady());
+
+  // Verify the correct last_snooze_time_us is returned.
+  base::Time snooze_time1 = base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(4));
+  base::Time snooze_time2 = base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(5));
+
+  model_->IncrementSnooze("bar", 10u, snooze_time1);
+  model_->IncrementSnooze("bar", 10u, snooze_time2);
+  const Event* bar_event = model_->GetEvent("bar");
+  EXPECT_EQ(snooze_time2.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            bar_event->last_snooze_time_us());
+}
+
 TEST_F(EventModelImplTest, GetEventCount) {
   model_->Initialize(
       base::BindOnce(&EventModelImplTest::OnModelInitializationFinished,

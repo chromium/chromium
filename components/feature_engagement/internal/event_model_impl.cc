@@ -52,34 +52,13 @@ const Event* EventModelImpl::GetEvent(const std::string& event_name) const {
 uint32_t EventModelImpl::GetEventCount(const std::string& event_name,
                                        uint32_t current_day,
                                        uint32_t window_size) const {
-  const Event* event = GetEvent(event_name);
-
-  // If the Event object is not found, or if the window is 0 days, there will
-  // never be any events.
-  if (event == nullptr || window_size == 0u)
-    return 0;
-
-  DCHECK(window_size >= 0);
-
-  // A window of N=0:  Nothing should be counted.
-  // A window of N=1:  |current_day| should be counted.
-  // A window of N=2+: |current_day| plus |N-1| more days should be counted.
-  uint32_t oldest_accepted_day = current_day - window_size + 1;
-
-  // Cap |oldest_accepted_day| to UNIX epoch.
-  if (window_size > current_day)
-    oldest_accepted_day = 0u;
-
-  // Calculate the number of events within the window.
-  uint32_t event_count = 0;
-  for (const auto& event_day : event->events()) {
-    if (event_day.day() < oldest_accepted_day)
-      continue;
-
-    event_count += event_day.count();
-  }
-
-  return event_count;
+  uint32_t event_count =
+      GetEventCountOrSnooze(event_name, current_day, window_size,
+                            /*is_snooze=*/false);
+  uint32_t snooze_count =
+      GetEventCountOrSnooze(event_name, current_day, window_size,
+                            /*is_snooze=*/true);
+  return event_count - snooze_count;
 }
 
 void EventModelImpl::IncrementEvent(const std::string& event_name,
@@ -110,6 +89,50 @@ void EventModelImpl::IncrementEvent(const std::string& event_name,
   event_count->set_day(current_day);
   event_count->set_count(1u);
   store_->WriteEvent(event);
+}
+
+void EventModelImpl::IncrementSnooze(const std::string& event_name,
+                                     uint32_t current_day,
+                                     base::Time current_time) {
+  DCHECK(ready_);
+  Event& event = GetNonConstEvent(event_name);
+  for (int i = 0; i < event.events_size(); ++i) {
+    Event_Count* event_count = event.mutable_events(i);
+    DCHECK(event_count->has_day());
+    DCHECK(event_count->has_count());
+    if (event_count->day() != current_day)
+      continue;
+    event_count->set_snooze_count(event_count->snooze_count() + 1);
+  }
+  event.set_last_snooze_time_us(
+      current_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  store_->WriteEvent(event);
+}
+
+void EventModelImpl::DismissSnooze(const std::string& event_name) {
+  DCHECK(ready_);
+  Event& event = GetNonConstEvent(event_name);
+  event.set_snooze_dismissed(true);
+  store_->WriteEvent(event);
+}
+
+base::Time EventModelImpl::GetLastSnoozeTimestamp(
+    const std::string& event_name) const {
+  const Event* event = GetEvent(event_name);
+
+  // If the Event object is not found, return.
+  if (!event)
+    return base::Time();
+
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(event->last_snooze_time_us()));
+}
+
+uint32_t EventModelImpl::GetSnoozeCount(const std::string& event_name,
+                                        uint32_t window,
+                                        uint32_t current_day) {
+  return GetEventCountOrSnooze(event_name, current_day, window,
+                               /*is_snooze=*/true);
 }
 
 void EventModelImpl::OnStoreLoaded(OnModelInitializationFinished callback,
@@ -152,6 +175,39 @@ void EventModelImpl::OnStoreLoaded(OnModelInitializationFinished callback,
 
   ready_ = true;
   std::move(callback).Run(true);
+}
+
+int EventModelImpl::GetEventCountOrSnooze(const std::string& event_name,
+                                          int current_day,
+                                          int window,
+                                          bool is_snooze) const {
+  const Event* event = GetEvent(event_name);
+
+  // If the Event object is not found, or if the window is 0 days, there will
+  // never be any events.
+  if (!event || window == 0u)
+    return 0;
+
+  DCHECK(window >= 0);
+
+  // A window of N=0:  Nothing should be counted.
+  // A window of N=1:  |current_day| should be counted.
+  // A window of N=2+: |current_day| plus |N-1| more days should be counted.
+  uint32_t oldest_accepted_day = current_day - window + 1;
+
+  // Cap |oldest_accepted_day| to UNIX epoch.
+  if (window > current_day)
+    oldest_accepted_day = 0u;
+
+  // Calculate the number of events within the window.
+  uint32_t count = 0;
+  for (const auto& event_day : event->events()) {
+    if (event_day.day() < oldest_accepted_day)
+      continue;
+    count += is_snooze ? event_day.snooze_count() : event_day.count();
+  }
+
+  return count;
 }
 
 Event& EventModelImpl::GetNonConstEvent(const std::string& event_name) {

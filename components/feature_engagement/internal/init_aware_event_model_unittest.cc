@@ -36,6 +36,11 @@ class MockEventModel : public EventModel {
   MOCK_CONST_METHOD3(GetEventCount,
                      uint32_t(const std::string&, uint32_t, uint32_t));
   MOCK_METHOD2(IncrementEvent, void(const std::string&, uint32_t));
+  MOCK_METHOD3(IncrementSnooze, void(const std::string&, uint32_t, base::Time));
+  MOCK_METHOD1(DismissSnooze, void(const std::string&));
+  MOCK_CONST_METHOD1(GetLastSnoozeTimestamp, base::Time(const std::string&));
+  MOCK_METHOD3(GetSnoozeCount,
+               uint32_t(const std::string&, uint32_t, uint32_t));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockEventModel);
