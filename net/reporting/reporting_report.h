@@ -50,6 +50,12 @@ struct NET_EXPORT ReportingReport {
       base::TimeTicks queued,
       int attempts);
 
+  // Do NOT use this constructor outside of mojo deserialization context.
+  ReportingReport();
+  ReportingReport(const ReportingReport&) = delete;
+  ReportingReport(ReportingReport&& other);
+  ReportingReport& operator=(const ReportingReport&) = delete;
+  ReportingReport& operator=(ReportingReport&& other);
   ~ReportingReport();
 
   // Bundles together the NIK, origin of the report URL, and group name.
@@ -111,8 +117,6 @@ struct NET_EXPORT ReportingReport {
   int attempts = 0;
 
   Status status = Status::QUEUED;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingReport);
 };
 
 }  // namespace net

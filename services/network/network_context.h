@@ -566,11 +566,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return require_network_isolation_key_;
   }
 
-  void AddReportingApiObserver(
-      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer,
-      AddReportingApiObserverCallback callback) override;
-
 #if BUILDFLAG(ENABLE_REPORTING)
+  void AddReportingApiObserver(
+      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
+      override;
   void OnReportAdded(const net::ReportingReport* service_report) override;
   void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
 #endif  // BUILDFLAG(ENABLE_REPORTING)

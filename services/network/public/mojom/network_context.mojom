@@ -39,6 +39,7 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
+import "services/network/public/mojom/reporting_report.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -682,41 +683,6 @@ struct URLLoaderFactoryParams {
   // TODO(lukasza): https://crbug.com/1151008: Consider removing this
   // diagnostic aid once the bug is understood.
   string debug_tag = "";
-};
-
-// The status of a Reporting API report.
-enum ReportingApiReportStatus {
-  kQueued,
-  kPending,
-};
-
-// A Reporting API report.
-struct ReportingApiReport {
-  // The URL of the document that triggered the report.
-  url.mojom.Url url;
-  // The name of the endpoint group that should be used to deliver the report.
-  string group;
-  // The type of the report (specifies the set of data that is contained
-  // in the report body).
-  string type;
-  // When the report was generated.
-  mojo_base.mojom.TimeTicks timestamp;
-  // How many uploads deep the related request was.
-  int32 depth;
-  // The number of delivery attempts made so far, not including an active
-  // attempt.
-  int32 attempts;
-  // The body of the report.
-  mojo_base.mojom.DictionaryValue body;
-  // The status of the report.
-  ReportingApiReportStatus status;
-};
-
-// Indirectly listens to changes in the Reporting Service via
-// ReportingCacheObserver as intermediate
-interface ReportingApiObserver {
-  // Called whenever a report is added
-  OnReportsAdded(array<ReportingApiReport> reports);
 };
 
 // Callback interface for NetworkContext when routing identifiers aren't
@@ -1395,8 +1361,8 @@ interface NetworkContext {
   [EnableIf=is_ct_supported]
   SetSCTAuditingEnabled(bool enabled);
 
-  // Adds an observer that will receive Reporting Service callbacks.
-  // Returns Reporting API reports currently stored in the reporting service.
-  AddReportingApiObserver(pending_remote<ReportingApiObserver> observer)
-      => (array<ReportingApiReport> reports);
+  // Adds an observer that will receive Reporting Service callbacks. Generates
+  // events for Reporting API reports currently stored in the reporting service.
+  [EnableIf=enable_reporting]
+  AddReportingApiObserver(pending_remote<ReportingApiObserver> observer);
 };

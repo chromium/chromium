@@ -820,6 +820,7 @@ mojom("mojom") {
     "p2p_trusted.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
+    "reporting_report.mojom",
     "ssl_config.mojom",
     "supports_loading_mode.mojom",
     "tcp_socket.mojom",
@@ -862,6 +863,7 @@ mojom("mojom") {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
+    enabled_features += [ "enable_reporting" ]
   }
 
   # This is only needed on desktop linux, but the defines make this difficult
@@ -982,6 +984,31 @@ mojom("mojom") {
       traits_public_deps = [ "//net" ]
     },
   ]
+
+  if (enable_reporting) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network::mojom::ReportingApiReportStatus"
+            cpp = "::net::ReportingReport::Status"
+          },
+          {
+            mojom = "network.mojom.ReportingApiReport"
+            cpp = "::net::ReportingReport"
+          },
+        ]
+        traits_headers = [
+          "//services/network/public/cpp/reporting_api_report_mojom_traits.h",
+        ]
+        traits_sources = [
+          "//services/network/public/cpp/reporting_api_report_mojom_traits.cc",
+        ]
+        traits_public_deps = [ "//net" ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_cpp_typemaps
   blink_cpp_typemaps = shared_cpp_typemaps
 }

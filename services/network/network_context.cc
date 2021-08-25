@@ -94,6 +94,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reporting_report.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/resolve_host_request.h"
@@ -1043,37 +1044,8 @@ void NetworkContext::QueueSignedExchangeReport(
   logging_service->QueueSignedExchangeReport(std::move(details));
 }
 
-namespace {
-
-mojom::ReportingApiReportPtr ConvertReportToMojo(
-    const net::ReportingReport* service_report) {
-  auto report = mojom::ReportingApiReport::New();
-  report->url = service_report->url;
-  report->group = service_report->group;
-  report->type = service_report->type;
-  report->timestamp = service_report->queued;
-  report->depth = service_report->depth;
-  report->attempts = service_report->attempts;
-  report->body = service_report->body->Clone();
-  switch (service_report->status) {
-    case net::ReportingReport::Status::PENDING:
-      report->status = mojom::ReportingApiReportStatus::kPending;
-      break;
-    case net::ReportingReport::Status::QUEUED:
-      report->status = mojom::ReportingApiReportStatus::kQueued;
-      break;
-    case net::ReportingReport::Status::DOOMED:
-      NOTREACHED();
-      break;
-  }
-  return report;
-}
-
-}  // namespace
-
 void NetworkContext::AddReportingApiObserver(
-    mojo::PendingRemote<network::mojom::ReportingApiObserver> observer,
-    AddReportingApiObserverCallback callback) {
+    mojo::PendingRemote<network::mojom::ReportingApiObserver> observer) {
   if (url_request_context() && url_request_context()->reporting_service()) {
     if (!is_observing_reporting_service_) {
       is_observing_reporting_service_ = true;
@@ -1083,26 +1055,19 @@ void NetworkContext::AddReportingApiObserver(
           base::BindRepeating(&NetworkContext::OnReportingObserverDisconnect,
                               weak_factory_.GetWeakPtr()));
     }
-    reporting_api_observers_.Add(std::move(observer));
+    auto id = reporting_api_observers_.Add(std::move(observer));
 
     auto service_reports =
         url_request_context()->reporting_service()->GetReports();
-    std::vector<mojom::ReportingApiReportPtr> result;
-    result.reserve(service_reports.size());
     for (const auto* service_report : service_reports) {
-      auto report = ConvertReportToMojo(service_report);
-      result.push_back(std::move(report));
+      reporting_api_observers_.Get(id)->OnReportAdded(*service_report);
     }
-    std::move(callback).Run(std::move(result));
   }
 }
 
 void NetworkContext::OnReportAdded(const net::ReportingReport* service_report) {
   for (const auto& observer : reporting_api_observers_) {
-    std::vector<mojom::ReportingApiReportPtr> result;
-    auto report = ConvertReportToMojo(service_report);
-    result.push_back(std::move(report));
-    observer->OnReportsAdded(std::move(result));
+    observer->OnReportAdded(*service_report);
   }
 }
 
@@ -1165,12 +1130,6 @@ void NetworkContext::QueueSignedExchangeReport(
     const net::NetworkIsolationKey& network_isolation_key) {
   NOTREACHED();
 }
-void NetworkContext::AddReportingApiObserver(
-    mojo::PendingRemote<network::mojom::ReportingApiObserver> observer,
-    AddReportingApiObserverCallback callback) {
-  NOTREACHED();
-}
-
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 void NetworkContext::ClearDomainReliability(

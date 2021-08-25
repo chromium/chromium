@@ -1004,7 +1004,9 @@ NetworkHandler::NetworkHandler(
       storage_partition_(nullptr),
       host_(nullptr),
       enabled_(false),
+#if BUILDFLAG(ENABLE_REPORTING)
       reporting_receiver_(this),
+#endif  // BUILDFLAG(ENABLE_REPORTING)
       bypass_service_worker_(false),
       cache_disabled_(false),
       update_loader_factories_callback_(
@@ -1251,23 +1253,20 @@ Response NetworkHandler::Disable() {
   return Response::FallThrough();
 }
 
-void NetworkHandler::OnReportsAdded(
-    std::vector<network::mojom::ReportingApiReportPtr> reports) {
-  for (network::mojom::ReportingApiReportPtr& report : reports) {
-    const base::Value base_body = std::move(report->body);
-    auto protocol_report =
-        protocol::Network::ReportingApiReport::Create()
-            .SetInitiatorUrl(report->url.spec())
-            .SetDestination(report->group)
-            .SetType(report->type)
-            .SetTimestamp(
-                (report->timestamp - base::TimeTicks::UnixEpoch()).InSecondsF())
-            .SetDepth(report->depth)
-            .SetBody(protocol::DictionaryValue::cast(
-                protocol::toProtocolValue(&base_body, 1000)))
-            .Build();
-    frontend_->ReportingApiReportAdded(std::move(protocol_report));
-  }
+#if BUILDFLAG(ENABLE_REPORTING)
+void NetworkHandler::OnReportAdded(const net::ReportingReport& report) {
+  auto protocol_report =
+      protocol::Network::ReportingApiReport::Create()
+          .SetInitiatorUrl(report.url.spec())
+          .SetDestination(report.group)
+          .SetType(report.type)
+          .SetTimestamp(
+              (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
+          .SetDepth(report.depth)
+          .SetBody(protocol::DictionaryValue::cast(
+              protocol::toProtocolValue(report.body.get(), 1000)))
+          .Build();
+  frontend_->ReportingApiReportAdded(std::move(protocol_report));
 }
 
 Response NetworkHandler::EnableReportingApi(const bool enable) {
@@ -1280,14 +1279,19 @@ Response NetworkHandler::EnableReportingApi(const bool enable) {
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer;
       reporting_receiver_.Bind(observer.InitWithNewPipeAndPassReceiver());
       storage_partition_->GetNetworkContext()->AddReportingApiObserver(
-          std::move(observer), base::BindOnce(&NetworkHandler::OnReportsAdded,
-                                              weak_factory_.GetWeakPtr()));
+          std::move(observer));
     }
   } else {
     reporting_receiver_.reset();
   }
   return Response::Success();
 }
+
+#else
+Response NetworkHandler::EnableReportingApi(const bool enable) {
+  return Response::InternalError();
+}
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {
   cache_disabled_ = cache_disabled;

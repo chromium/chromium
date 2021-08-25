@@ -39,6 +39,9 @@ ReportingReport::ReportingReport(
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
 }
 
+ReportingReport::ReportingReport() = default;
+ReportingReport::ReportingReport(ReportingReport&& other) = default;
+ReportingReport& ReportingReport::operator=(ReportingReport&& other) = default;
 ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
