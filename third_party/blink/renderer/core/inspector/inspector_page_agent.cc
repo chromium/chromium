@@ -1406,9 +1406,6 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
   if (loader && !loader->UnreachableURL().IsEmpty())
     frame_object->setUnreachableUrl(loader->UnreachableURL().GetString());
   frame_object->setAdFrameStatus(BuildAdFrameStatus(frame));
-  auto origin_trials = CreateOriginTrials(frame->DomWindow());
-  if (!origin_trials->empty())
-    frame_object->setOriginTrials(std::move(origin_trials));
   return frame_object;
 }
 

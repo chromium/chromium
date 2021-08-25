@@ -6848,8 +6848,6 @@ domain Page
       experimental CrossOriginIsolatedContextType crossOriginIsolatedContextType
       # Indicated which gated APIs / features are available.
       experimental array of GatedAPIFeatures gatedAPIFeatures
-      # Frame document's origin trials with at least one token present.
-      experimental optional array of OriginTrial originTrials
 
   # Information about the Resource on the page.
   experimental type FrameResource extends object
