@@ -78,13 +78,14 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
 // bfcache yet.
 //
 // Tracking bug for enabling bfcache on desktop: https://crbug.com/1171298.
+const base::Feature kBackForwardCache {
+  "BackForwardCache",
 #if defined(OS_ANDROID)
-const base::Feature kBackForwardCache{"BackForwardCache",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-const base::Feature kBackForwardCache{"BackForwardCache",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 // Enable same-site back-forward cache for trybots. This is here because of
 // https://crbug.com/1211818 and should only used for trybots. For normal use
@@ -102,13 +103,15 @@ const base::Feature kBackForwardCacheSameSiteForBots{
 
 // BackForwardCacheMemoryControls is enabled only on Android to disable
 // BackForwardCache for lower memory devices due to memory limiations.
+const base::Feature kBackForwardCacheMemoryControls{
+  "BackForwardCacheMemoryControls",
+
 #if defined(OS_ANDROID)
-const base::Feature kBackForwardCacheMemoryControls{
-    "BackForwardCacheMemoryControls", base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-const base::Feature kBackForwardCacheMemoryControls{
-    "BackForwardCacheMemoryControls", base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 // Block subresource requests whose URLs contain embedded credentials (e.g.
 // `https://user:pass@example.com/resource`).
@@ -152,13 +155,15 @@ const base::Feature kBlockInsecurePrivateNetworkRequestsForNavigations{
 };
 
 // Use ThreadPriority::DISPLAY for browser UI and IO threads.
+const base::Feature kBrowserUseDisplayThreadPriority{
+  "BrowserUseDisplayThreadPriority",
+
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kBrowserUseDisplayThreadPriority{
-    "BrowserUseDisplayThreadPriority", base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-const base::Feature kBrowserUseDisplayThreadPriority{
-    "BrowserUseDisplayThreadPriority", base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 // When enabled, keyboard user activation will be verified by the browser side.
 const base::Feature kBrowserVerifiedUserActivationKeyboard{
@@ -918,15 +923,16 @@ const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable WebAssembly trap handler.
+const base::Feature kWebAssemblyTrapHandler {
+  "WebAssemblyTrapHandler",
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
      defined(OS_MAC)) &&                                             \
     defined(ARCH_CPU_X86_64)
-const base::Feature kWebAssemblyTrapHandler{"WebAssemblyTrapHandler",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-const base::Feature kWebAssemblyTrapHandler{"WebAssemblyTrapHandler",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 // Controls whether the WebAuthentication API is enabled:
 // https://w3c.github.io/webauthn

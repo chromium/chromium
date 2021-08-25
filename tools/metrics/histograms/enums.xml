@@ -50529,6 +50529,7 @@ from previous Chrome versions.
   <int value="792307132"
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
+  <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
@@ -51842,6 +51843,7 @@ from previous Chrome versions.
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
+  <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1858919054" label="SplitSettingsSync:disabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
   <int value="1860955818" label="PowerScheduler:enabled"/>

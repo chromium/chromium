@@ -12,6 +12,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
 import org.chromium.services.network.NetworkServiceFeatures;
@@ -171,5 +172,8 @@ public final class ProductionSupportedFlagList {
                     "Enables use selective image inversion to automatically darken page, it will be"
                             + " used when WebView is in dark mode, but website doesn't provide dark"
                             + " style."),
+            Flag.baseFeature(ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
+                    "Enables reporting of browser and renderer navigation inconsistencies on"
+                            + "navigations"),
     };
 }
