@@ -56,10 +56,9 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
-#include "ios/public/provider/chrome/browser/browser_url_rewriter_provider.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
+#include "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
 #include "ios/public/provider/chrome/browser/voice/audio_session_controller.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
 #include "ios/web/common/features.h"
@@ -286,10 +285,7 @@ void ChromeWebClient::GetAdditionalWebUISchemes(
 void ChromeWebClient::PostBrowserURLRewriterCreation(
     web::BrowserURLRewriter* rewriter) {
   rewriter->AddURLRewriter(&WillHandleWebBrowserAboutURL);
-  BrowserURLRewriterProvider* provider =
-      ios::GetChromeBrowserProvider().GetBrowserURLRewriterProvider();
-  if (provider)
-    provider->AddProviderRewriters(rewriter);
+  ios::provider::AddURLRewriters(rewriter);
 }
 
 std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
