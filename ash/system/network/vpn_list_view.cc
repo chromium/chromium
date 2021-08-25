@@ -24,6 +24,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -225,7 +226,6 @@ class VPNListNetworkEntry : public HoverHighlightView,
   void OnGetNetworkState(NetworkStatePropertiesPtr result);
   void UpdateFromNetworkState(const NetworkStateProperties* network);
 
-  VPNListView* const owner_;
   TrayNetworkStateModel* model_;
   const std::string guid_;
 
@@ -240,7 +240,6 @@ VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,
                                          TrayNetworkStateModel* model,
                                          const NetworkStateProperties* network)
     : HoverHighlightView(owner),
-      owner_(owner),
       model_(model),
       guid_(network->guid) {
   UpdateFromNetworkState(network);
@@ -280,7 +279,7 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
   std::u16string label = network_icon::GetLabelForNetworkList(vpn);
   AddIconAndLabel(image, label);
   if (chromeos::network_config::StateIsConnected(vpn->connection_state)) {
-    owner_->SetupConnectedScrollListItem(this);
+    SetupConnectedScrollListItem(this);
     if (IsVpnConfigAllowed()) {
       disconnect_button_ = TrayPopupUtils::CreateTrayPopupButton(
           // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
@@ -308,7 +307,7 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
         label,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING)));
-    owner_->SetupConnectingScrollListItem(this);
+    SetupConnectingScrollListItem(this);
   } else {
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT, label));

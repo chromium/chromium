@@ -90,19 +90,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
       bool checked,
       bool enterprise_managed = false);
 
-  // Adds connected sub label to the |view| with appropriate style and updates
-  // accessibility label.
-  void SetupConnectedScrollListItem(HoverHighlightView* view);
-
-  // Adds connected sub label with the device's battery percentage to the |view|
-  // with appropriate style and updates accessibility label.
-  void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                    absl::optional<uint8_t> battery_percentage);
-
-  // Adds connecting sub label to the |view| with appropriate style and updates
-  // accessibility label.
-  void SetupConnectingScrollListItem(HoverHighlightView* view);
-
   // Adds a sticky sub header to |scroll_content_| containing |icon| and a text
   // represented by |text_id| resource id.
   TriView* AddScrollListSubHeader(const gfx::VectorIcon& icon, int text_id);
