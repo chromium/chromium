@@ -937,6 +937,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1974821797477522211">Připojení k síti</translation>
 <translation id="1975841812214822307">Odebrat...</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
+<translation id="1976928778492259496">Snímač otisků prstů je na levé straně zařízení <ph name="DEVICE_TYPE" />. Zlehka se ho dotkněte kterýmkoliv prstem.</translation>
 <translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
 <translation id="1978057560491495741">Odstranění adresy</translation>
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
@@ -6853,6 +6854,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8397825320644530257">Odpojit připojený telefon</translation>
 <translation id="8398877366907290961">Přesto pokračovat</translation>
 <translation id="8401432541486058167">Zadejte kód PIN přidružený k vaší chytré kartě.</translation>
+<translation id="8404893580027489425">Snímač otisků prstů je na pravé straně zařízení <ph name="DEVICE_TYPE" />. Zlehka se ho dotkněte kterýmkoliv prstem.</translation>
 <translation id="8405046151008197676">Zobrazit hlavní změny v poslední aktualizaci</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
 <translation id="8409413588194360210">obslužné nástroje pro platby</translation>

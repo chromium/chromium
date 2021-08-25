@@ -59,14 +59,14 @@
 <translation id="235650106824528204">L'administrador del perfil de treball pot suprimir qualsevol dada de Chrome que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2409866122341731384">Esborra la unitat de disc dur i instal·la Chrome OS</translation>
 <translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Estem a punt per instal·lar Chrome OS. Quan continuïs:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />S'esborraran els fitxers, les dades i el sistema operatiu actual.
-          <ph name="LIST_ITEM" />S'instal·larà Chrome OS.
-          <ph name="LIST_ITEM" />S'apagarà el dispositiu quan es completi la instal·lació.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Un últim recordatori: la instal·lació esborrarà tota la unitat de disc dur. Assegura't que hagis fet una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Un cop comenci la instal·lació, no es pondrà cancel·lar.<ph name="END_PARAGRAPH3" /></translation>
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />S'esborraran els fitxers, les dades i el sistema operatiu actual.
+<ph name="LIST_ITEM" />S'instal·larà Chrome OS.
+<ph name="LIST_ITEM" />S'apagarà el dispositiu quan es completi la instal·lació.
+<ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Un darrer recordatori: la instal·lació esborrarà tota la unitat de disc dur. Assegura't que hagis creat una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH2" />
+<ph name="BEGIN_PARAGRAPH3" />Un cop comenci la instal·lació, no es pondrà cancel·lar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome no ha pogut sincronitzar les dades perquè la sincronització no està disponible per al vostre domini.</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>

@@ -342,6 +342,7 @@
 <translation id="1374844444528092021">Certifikat koji zahtijeva mreža "<ph name="NETWORK_NAME" />" nije instaliran ili više ne vrijedi. Preuzmite novi certifikat i pokušajte se povezati ponovo.</translation>
 <translation id="1375321115329958930">Spremljene zaporke</translation>
 <translation id="137651782282853227">Ovdje će se pojaviti spremljene adrese</translation>
+<translation id="1376771218494401509">Dodijeli &amp;prozoru naziv...</translation>
 <translation id="1377600615067678409">Preskoči za sada</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> kontrolira tu postavku</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nema ugroženih zaporki}=1{Jedna ugrožena zaporka}one{{NUM_COMPROMISED} ugrožena zaporka}few{{NUM_COMPROMISED} ugrožene zaporke}other{{NUM_COMPROMISED} ugroženih zaporki}}</translation>
@@ -7517,6 +7518,7 @@ Toj radnji možete dodijeliti više prekidača</translation>
 <translation id="9102610709270966160">Omogući proširenje</translation>
 <translation id="9103479157856427471">Povećani zaslon prati fokus na tipkovnici</translation>
 <translation id="9103868373786083162">Pritisnite za povratak, kontekstni izbornik za prikaz povijesti</translation>
+<translation id="9108035152087032312">Dodijeli &amp;prozoru naziv...</translation>
 <translation id="9108072915170399168">Za potrošnju podatkovnog prometa trenutačno je odabrana postavka Bez interneta</translation>
 <translation id="9108692355621501797">Svrha je <ph name="LINK_BEGIN" />Obavijesti o privatnosti za G Suite for Education<ph name="LINK_END" /> objasniti korisnicima proizvoda G Suite for Education i njihovim roditeljima koje podatke taj proizvod prikuplja, zašto se ti podaci prikupljaju i što se s njima radi.</translation>
 <translation id="9108808586816295166">Sigurni DNS možda neće biti dostupan cijelo vrijeme</translation>

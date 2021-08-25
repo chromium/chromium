@@ -164,14 +164,14 @@
 <translation id="6134968993075716475">Navegació segura està desactivada. Chromium recomana activar-la.</translation>
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>
 <translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Estem a punt per instal·lar Chromium OS. Quan continuïs:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />S'esborraran els fitxers, les dades i el sistema operatiu actual.
-          <ph name="LIST_ITEM" />S'instal·larà Chromium OS.
-          <ph name="LIST_ITEM" />S'apagarà el dispositiu quan es completi la instal·lació.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Un últim recordatori: la instal·lació esborrarà tota la unitat de disc dur. Assegura't que hagis fet una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Un cop comenci la instal·lació, no es pondrà cancel·lar.<ph name="END_PARAGRAPH3" /></translation>
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />S'esborraran els fitxers, les dades i el sistema operatiu actual.
+<ph name="LIST_ITEM" />S'instal·larà Chromium OS.
+<ph name="LIST_ITEM" />S'apagarà el dispositiu quan es completi la instal·lació.
+<ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Un darrer recordatori: la instal·lació esborrarà tota la unitat de disc dur. Assegura't que hagis creat una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH2" />
+<ph name="BEGIN_PARAGRAPH3" />Un cop comenci la instal·lació, no es pondrà cancel·lar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="6212496753309875659">Aquest equip ja té una versió més recent de Chromium. Si el programari no funciona, desinstal·leu Chromium i torneu-ho a provar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium es reiniciarà ara}=1{Chromium es reiniciarà d'aquí a 1 segon}other{Chromium es reiniciarà d'aquí a # segons}}</translation>
