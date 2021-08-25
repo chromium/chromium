@@ -107,3 +107,13 @@ export function convertFrequencyToChannel(frequency) {
   const channelProperties = CHANNELS.get(frequency);
   return channelProperties ? channelProperties.channel : null;
 }
+
+/**
+ * @param {number} frequency
+ * @return {!ChannelBand}
+ */
+export function getFrequencyChannelBand(frequency) {
+  /** @type {ChannelProperties|undefined} */
+  const channelProperties = CHANNELS.get(frequency);
+  return channelProperties ? channelProperties.band : ChannelBand.UNKNOWN;
+}

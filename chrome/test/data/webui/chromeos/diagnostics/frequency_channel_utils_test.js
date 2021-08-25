@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {convertFrequencyToChannel} from 'chrome://diagnostics/frequency_channel_utils.js';
+import {ChannelBand} from 'chrome://diagnostics/diagnostics_types.js';
+import {convertFrequencyToChannel, getFrequencyChannelBand} from 'chrome://diagnostics/frequency_channel_utils.js';
 
 import {assertEquals} from '../../chai_assert.js';
 
@@ -23,5 +24,11 @@ export function frequencyChannelUtilsTestSuite() {
     assertEquals(14, convertFrequencyToChannel(2484));
     assertEquals(32, convertFrequencyToChannel(5160));
     assertEquals(196, convertFrequencyToChannel(5980));
+  });
+
+  test('GetFrequencyChannelBand', () => {
+    assertEquals(ChannelBand.UNKNOWN, getFrequencyChannelBand(0));
+    assertEquals(ChannelBand.TWO_DOT_FOUR_GHZ, getFrequencyChannelBand(2412));
+    assertEquals(ChannelBand.FIVE_GHZ, getFrequencyChannelBand(5160));
   });
 }
