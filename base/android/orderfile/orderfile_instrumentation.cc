@@ -71,6 +71,13 @@ struct LogData {
 LogData g_data[kPhases];
 std::atomic<int> g_data_index;
 
+// Number of unexpected addresses, that is addresses that are not within [start,
+// end) bounds for the executable code.
+//
+// This should be exactly 0, since the start and end of .text should be known
+// perfectly by the linker, but it does happen. See crbug.com/1186598.
+std::atomic<int> g_unexpected_addresses;
+
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 // Dump offsets when a memory dump is requested. Used only if
 // switches::kDevtoolsInstrumentationDumping is set.
@@ -126,8 +133,6 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
   const size_t end =
       for_testing ? kEndOfTextForTesting : base::android::kEndOfText;
   if (UNLIKELY(address < start || address > end)) {
-    Disable();
-
     if (!AreAnchorsSane()) {
       // Something is really wrong with the anchors, and this is likely to be
       // triggered from within a static constructor, where logging is likely to
@@ -137,7 +142,17 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
       IMMEDIATE_CRASH();
     }
 
-    LOG(FATAL) << "Unexpected address! start = " << std::hex << start
+    // We should really crash at the first instance, but it does happen on bots,
+    // for a mysterious reason. Give it some leeway. Note that since we don't
+    // remember the caller address, if a single function is misplaced but we get
+    // many calls to it, then we still crash. If this is the case, add
+    // deduplication.
+    if (g_unexpected_addresses.fetch_add(1, std::memory_order_relaxed) < 10) {
+      return;
+    }
+
+    Disable();
+    LOG(FATAL) << "Too many unexpected addresses! start = " << std::hex << start
                << " end = " << end << " address = " << address;
   }
 
@@ -229,6 +244,12 @@ NO_INSTRUMENT_FUNCTION void StopAndDumpToFile(int pid,
       LOG(ERROR) << "Problem with dump " << phase << " (" << tag << ")";
     }
   }
+
+  int unexpected_addresses =
+      g_unexpected_addresses.load(std::memory_order_relaxed);
+  if (unexpected_addresses != 0) {
+    LOG(WARNING) << "Got " << unexpected_addresses << " unexpected addresses!";
+  }
 }
 
 }  // namespace
@@ -305,6 +326,8 @@ NO_INSTRUMENT_FUNCTION void ResetForTesting() {
            sizeof(uint32_t) * kMaxElements);
     g_data[i].index.store(0);
   }
+
+  g_unexpected_addresses.store(0, std::memory_order_relaxed);
 }
 
 NO_INSTRUMENT_FUNCTION void RecordAddressForTesting(size_t address) {
