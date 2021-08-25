@@ -135,10 +135,6 @@ void RequestSystemMediaCapturePermission(AVMediaType media_type,
   }
 }
 
-// Heuristic to check screen capture permission on macOS 10.15.
-// Screen Capture is considered allowed if the name of at least one normal
-// or dock window running on another process is visible.
-// See https://crbug.com/993692.
 bool IsScreenCaptureAllowed() {
   if (@available(macOS 10.15, *)) {
     if (!base::FeatureList::IsEnabled(
