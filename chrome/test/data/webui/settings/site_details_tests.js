@@ -487,14 +487,4 @@ suite('SiteDetails', function() {
     testElement = createSiteDetails(origin);
     return browserProxy.whenCalled('fetchBlockAutoplayStatus');
   });
-
-  test('empty site navigates away', function() {
-    // Confirm that when attempting to load the page without a provided site,
-    // the page is navigated away.
-    testElement = createSiteDetails('');
-    flush();
-    assertEquals(
-        routes.SITE_SETTINGS_ALL.path,
-        Router.getInstance().getCurrentRoute().path);
-  });
 });
