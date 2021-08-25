@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
+#include <cstdint>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -123,8 +124,7 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
   }
   // Erase current time from the calendar.
   cal_tz->clear();
-  time_t ms_from_epoch = cur_time.ToTimeT() * 1000;
-  cal_tz->setTime(ms_from_epoch, status);
+  cal_tz->setTime(cur_time.ToJavaTime(), status);
   if (U_FAILURE(status)) {
     LOG(ERROR) << "Couldn't create calendar";
     return nullptr;
