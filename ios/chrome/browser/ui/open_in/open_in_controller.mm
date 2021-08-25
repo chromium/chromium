@@ -313,6 +313,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (void)disable {
   _disabled = YES;
+  [self removeOverlayedView];
   [self openInToolbar].alpha = 0.0f;
   [_openInTimer invalidate];
   [self.baseView removeGestureRecognizer:_tapRecognizer];
