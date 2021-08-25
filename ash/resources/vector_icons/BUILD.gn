@@ -323,6 +323,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_tray_caps_lock.icon",
     "system_tray_cast.icon",
     "system_tray_do_not_disturb.icon",
+    "system_tray_hps_notify.icon",
     "system_tray_managed.icon",
     "system_tray_notification_counter_plus.icon",
     "system_tray_recording.icon",
