@@ -11254,66 +11254,50 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoNotCacheIfMediaSessionPlaybackStateChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Check that setting |playbackState| blocks the back-forward cache regardless
-  // of the original playback state.
-  struct {
-    std::string playback_state;
-  } test_cases[] = {
-      {"none"},
-      {"paused"},
-      {"playing"},
-  };
+  // 1) Navigate to a page using MediaSession.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+    navigator.mediaSession.metadata = new MediaMetadata({
+      artwork: [
+        {src: "test_image.jpg", sizes: "1x1", type: "image/jpeg"},
+        {src: "test_image.jpg", sizes: "10x10", type: "image/jpeg"}
+      ]
+    });
+  )"));
 
-  for (const auto& test_case : test_cases) {
-    // 1) Navigate to a page using MediaSession.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-    RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
-    RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-    EXPECT_TRUE(ExecJs(rfh_a, R"(
-      navigator.mediaSession.metadata = new MediaMetadata({
-        artwork: [
-          {src: "test_image.jpg", sizes: "1x1", type: "image/jpeg"},
-          {src: "test_image.jpg", sizes: "10x10", type: "image/jpeg"}
-        ]
-      });
-    )"));
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-    // 2) Navigate away.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-    // 3) Go back.
-    web_contents()->GetController().GoBack();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  // The page is restored since the playback state is not changed.
+  ExpectRestored(FROM_HERE);
 
-    // The page is restored since the playback state is not changed.
-    ExpectRestored(FROM_HERE);
+  // 4) Modify the playback state of the media session.
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+    navigator.mediaSession.playbackState = 'playing';
+  )"));
 
-    // 4) Modify the playback state of the media session.
-    EXPECT_EQ("none", EvalJs(rfh_a, R"(
-      navigator.mediaSession.playbackState;
-    )"));
-    EXPECT_TRUE(ExecJs(rfh_a, JsReplace(R"(
-      navigator.mediaSession.playbackState = $1;
-    )",
-                                        test_case.playback_state)));
+  // 5) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-    // 5) Navigate away.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  // 6) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-    // 6) Go back.
-    web_contents()->GetController().GoBack();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-    // The page is not restored due to the playback.
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaSession);
-    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                           kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, FROM_HERE);
-  }
+  // The page is not restored due to the playback.
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaSession);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, FROM_HERE);
 }
 
 // Test if the delegate doesn't support BFCache that the reason is
