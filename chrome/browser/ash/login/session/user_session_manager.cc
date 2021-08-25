@@ -803,8 +803,16 @@ void UserSessionManager::SetAppModeChromeClientOAuthInfo(
 
 void UserSessionManager::DoBrowserLaunch(Profile* profile,
                                          LoginDisplayHost* login_host) {
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  auto* session_manager = session_manager::SessionManager::Get();
+  const auto current_session_state = session_manager->session_state();
+  // LOGGED_IN_NOT_ACTIVE should only be set from OOBE, LOGIN_PRIMARY, or
+  // LOGIN_SECONDARY.
+  if (current_session_state == session_manager::SessionState::OOBE ||
+      current_session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      current_session_state == session_manager::SessionState::LOGIN_SECONDARY) {
+    session_manager->SetSessionState(
+        session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  }
 
   ui_shown_time_ = base::Time::Now();
   DoBrowserLaunchInternal(profile, login_host, false /* locale_pref_checked */);
