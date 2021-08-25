@@ -25,7 +25,7 @@ let ringCSSStyle = null;
  * All valid values of '--focus-ring-style'.
  * @const {!Set<string>}
  */
-const ringStyleValues = new Set(['circle', 'mode-item-input']);
+const ringStyleValues = new Set(['circle', 'mode-item-input', 'pill']);
 
 /**
  * The reference bounding rectangle of focused UI.

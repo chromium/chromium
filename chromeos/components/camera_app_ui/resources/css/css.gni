@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 css_files = [
+  "button.css",
   "document_mode_dialog.css",
   "focus_ring.css",
   "inkdrop.css",
