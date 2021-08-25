@@ -19,6 +19,7 @@
 namespace views {
 
 class View;
+class Widget;
 
 // Wraps a View in an ui::TrackedElement.
 class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
@@ -49,6 +50,11 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // the same across all Views associated with a root Widget (such as an
   // application window).
   static ui::ElementContext GetContextForView(View* view);
+
+  // Returns the context associated with a particular Widget. The context will
+  // be the same across all Widgets associated with a root Widget (such as an
+  // application window).
+  static ui::ElementContext GetContextForWidget(Widget* widget);
 
   // Returns the corresponding TrackedElementViews for the given view, or
   // null if none exists. Note that views which are not visible or not added to

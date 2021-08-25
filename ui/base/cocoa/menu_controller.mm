@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
+#include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -177,6 +178,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
       [self addItemToMenu:menu atIndex:index fromModel:model];
   }
 
+  if (_delegate)
+    [_delegate controllerWillAddMenu:menu fromModel:model];
+
   return menu;
 }
 
@@ -292,9 +296,16 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   ui::MenuModel* model =
       [WeakPtrToMenuModelAsNSObject getFrom:[sender representedObject]];
   DCHECK(model);
-  if (model)
+  if (model) {
+    const ui::ElementIdentifier identifier =
+        model->GetElementIdentifierAt(modelIndex);
+    if (identifier) {
+      ui::ElementTrackerMac::GetInstance()->NotifyMenuItemActivated(
+          [sender menu], identifier);
+    }
     model->ActivatedAt(modelIndex,
                        ui::EventFlagsFromNative([NSApp currentEvent]));
+  }
   // Note: |self| may be destroyed by the call to ActivatedAt().
 }
 
@@ -334,4 +345,3 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 @end
-

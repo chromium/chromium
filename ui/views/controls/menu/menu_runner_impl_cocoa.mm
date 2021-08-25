@@ -10,6 +10,7 @@
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/events/base_event_utils.h"
@@ -22,6 +23,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/controls/menu/new_badge.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -181,16 +183,37 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @end
 
+@interface IdentifierContainer : NSObject
+- (std::vector<ui::ElementIdentifier>&)ids;
+@end
+
+@implementation IdentifierContainer {
+  std::vector<ui::ElementIdentifier> _ids;
+}
+- (std::vector<ui::ElementIdentifier>&)ids {
+  return _ids;
+}
+@end
+
 @interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate> {
-  id<NSObject> _menuOpenObserver;
+  NSMutableArray* _menuObservers;
 }
 @end
 
 @implementation MenuControllerDelegate
 
+- (instancetype)init {
+  if (self = [super init]) {
+    _menuObservers = [[NSMutableArray alloc] init];
+  }
+  return self;
+}
+
 - (void)dealloc {
-  if (_menuOpenObserver)
-    [[NSNotificationCenter defaultCenter] removeObserver:_menuOpenObserver];
+  for (NSObject* obj in _menuObservers)
+    [[NSNotificationCenter defaultCenter] removeObserver:obj];
+
+  [_menuObservers release];
 
   [super dealloc];
 }
@@ -221,22 +244,61 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
     menuItem.onStateImage = iphDotImage;
     menuItem.offStateImage = iphDotImage;
     menuItem.mixedStateImage = iphDotImage;
+  }
+}
 
-    DCHECK(!_menuOpenObserver);
-    _menuOpenObserver = [[NSNotificationCenter defaultCenter]
-        addObserverForName:NSMenuDidBeginTrackingNotification
-                    object:menuItem.menu
-                     queue:nil
-                usingBlock:^(NSNotification* note) {
-                  NSMenu* menu = note.object;
-                  if ([menu respondsToSelector:@selector(_menuImpl)]) {
-                    NSCarbonMenuImpl* menuImpl = [menu _menuImpl];
-                    if ([menuImpl respondsToSelector:@selector
-                                  (highlightItemAtIndex:)]) {
-                      [menuImpl highlightItemAtIndex:index];
-                    }
-                  }
-                }];
+- (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model {
+  int alerted_index = -1;
+  IdentifierContainer* const element_ids =
+      [[[IdentifierContainer alloc] init] autorelease];
+  for (int i = 0; i < model->GetItemCount(); ++i) {
+    if (model->IsAlertedAt(i)) {
+      DCHECK_LT(alerted_index, 0);
+      alerted_index = i;
+    }
+    const ui::ElementIdentifier identifier = model->GetElementIdentifierAt(i);
+    if (identifier)
+      [element_ids ids].push_back(identifier);
+  }
+
+  if (alerted_index >= 0 || ![element_ids ids].empty()) {
+    auto shown_callback = ^(NSNotification* note) {
+      if (alerted_index >= 0) {
+        if ([menu respondsToSelector:@selector(_menuImpl)]) {
+          NSCarbonMenuImpl* menuImpl = [menu _menuImpl];
+          if ([menuImpl respondsToSelector:@selector(highlightItemAtIndex:)]) {
+            [menuImpl highlightItemAtIndex:alerted_index];
+          }
+        }
+      }
+      for (ui::ElementIdentifier element_id : [element_ids ids]) {
+        ui::ElementTrackerMac::GetInstance()->NotifyMenuItemShown(menu,
+                                                                  element_id);
+      }
+    };
+
+    [_menuObservers
+        addObject:[[NSNotificationCenter defaultCenter]
+                      addObserverForName:NSMenuDidBeginTrackingNotification
+                                  object:menu
+                                   queue:nil
+                              usingBlock:shown_callback]];
+  }
+
+  if (![element_ids ids].empty()) {
+    auto hidden_callback = ^(NSNotification* note) {
+      for (ui::ElementIdentifier element_id : [element_ids ids]) {
+        ui::ElementTrackerMac::GetInstance()->NotifyMenuItemHidden(menu,
+                                                                   element_id);
+      }
+    };
+
+    [_menuObservers
+        addObject:[[NSNotificationCenter defaultCenter]
+                      addObserverForName:NSMenuDidEndTrackingNotification
+                                  object:menu
+                                   queue:nil
+                              usingBlock:hidden_callback]];
   }
 }
 
@@ -408,13 +470,19 @@ void MenuRunnerImplCocoa::RunMenuAt(Widget* parent,
 
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
+  NSMenu* const menu = [menu_controller_ menu];
   if (run_types & MenuRunner::CONTEXT_MENU) {
-    [NSMenu popUpContextMenu:[menu_controller_ menu]
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
+        menu, views::ElementTrackerViews::GetContextForWidget(parent));
+
+    [NSMenu popUpContextMenu:menu
                    withEvent:EventForPositioningContextMenu(bounds, window)
                      forView:view];
+
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+
   } else if (run_types & MenuRunner::COMBOBOX) {
     NSMenuItem* checked_item = FirstCheckedItem(menu_controller_);
-    NSMenu* menu = [menu_controller_ menu];
     base::scoped_nsobject<NSView> anchor_view(CreateMenuAnchorView(
         window, bounds, checked_item, menu.size.width, anchor));
     [menu setMinimumWidth:bounds.width() + kNativeCheckmarkWidth];

@@ -189,9 +189,13 @@ ElementTrackerViews* ElementTrackerViews::GetInstance() {
 
 // static
 ui::ElementContext ElementTrackerViews::GetContextForView(View* view) {
-  const Widget* const widget = view->GetWidget();
-  return widget ? ui::ElementContext(widget->GetPrimaryWindowWidget())
-                : ui::ElementContext();
+  Widget* const widget = view->GetWidget();
+  return widget ? GetContextForWidget(widget) : ui::ElementContext();
+}
+
+// static
+ui::ElementContext ElementTrackerViews::GetContextForWidget(Widget* widget) {
+  return ui::ElementContext(widget->GetPrimaryWindowWidget());
 }
 
 TrackedElementViews* ElementTrackerViews::GetElementForView(View* view) {

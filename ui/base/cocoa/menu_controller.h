@@ -17,9 +17,12 @@ class MenuModel;
 
 COMPONENT_EXPORT(UI_BASE)
 @protocol MenuControllerCocoaDelegate
+// Called as each item is created during menu or submenu creation.
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
                       atIndex:(NSInteger)index;
+// Called after all menu items in a menu or submenu are created.
+- (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model;
 @end
 
 // A controller for the cross-platform menu model. The menu that's created

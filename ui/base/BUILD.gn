@@ -314,6 +314,8 @@ component("base") {
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
       "dragdrop/os_exchange_data_provider_mac.mm",
+      "interaction/element_tracker_mac.h",
+      "interaction/element_tracker_mac.mm",
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
       "resource/resource_bundle_mac.mm",
@@ -918,6 +920,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "cocoa/nsmenuitem_additions_unittest.mm",
+      "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
     ]
   }
