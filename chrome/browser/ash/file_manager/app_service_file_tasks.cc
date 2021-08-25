@@ -122,8 +122,10 @@ void FindAppServiceTasks(Profile* profile,
       continue;
 
     // Media app and other SWAs can handle "non-native" files.
-    if (has_non_native_file && launch_entry.app_id != web_app::kMediaAppId)
+    if (has_non_native_file &&
+        !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
       continue;
+    }
 
     // "Hide" the media app task (i.e. skip the rest of this loop which would
     // add it as a handler) when the flag to handle PDF is off.
@@ -142,7 +144,8 @@ void FindAppServiceTasks(Profile* profile,
         /* is_default=*/false,
         // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
         // e.g. IsGoodMatchAppsFileHandler().
-        /* is_generic=*/launch_entry.app_id != web_app::kMediaAppId,
+        /* is_generic=*/
+        !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id),
         /* is_file_extension_match=*/launch_entry.is_file_extension_match));
   }
 }

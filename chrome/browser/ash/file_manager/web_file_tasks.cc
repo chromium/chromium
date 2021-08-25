@@ -64,7 +64,7 @@ void FindWebTasks(Profile* profile,
 
   std::vector<web_app::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
-    if (has_non_native_file && app_id != web_app::kMediaAppId)
+    if (has_non_native_file && !web_app::IsSystemAppIdWithFileHandlers(app_id))
       continue;
 
     if (!os_integration_manager.IsFileHandlingAPIAvailable(app_id))

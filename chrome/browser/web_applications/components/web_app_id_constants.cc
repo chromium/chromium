@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 
+#include "base/strings/string_piece.h"
+
 namespace web_app {
 
 // The URLs used to generate the app IDs MUST match the start_url field of the
@@ -140,5 +142,9 @@ const char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://tv.youtube.com/"))
 const char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
+
+bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
+  return id == kMediaAppId || id == kMediaAppAudioId;
+}
 
 }  // namespace web_app

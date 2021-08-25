@@ -395,7 +395,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
       // participate in intent handling.
       if (!apps_util::IsInstalled(update.Readiness()) ||
           (update.ShowInLauncher() != apps::mojom::OptionalBool::kTrue &&
-           update.AppId() != web_app::kMediaAppId)) {
+           !web_app::IsSystemAppIdWithFileHandlers(update.AppId()))) {
         return;
       }
       if (exclude_browser_tab_apps &&

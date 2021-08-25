@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_ID_CONSTANTS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_ID_CONSTANTS_H_
 
+#include "base/strings/string_piece_forward.h"
+
 namespace web_app {
 
 extern const char kA4AppId[];
@@ -40,6 +42,8 @@ extern const char kStadiaAppId[];
 extern const char kYoutubeAppId[];
 extern const char kYoutubeMusicAppId[];
 extern const char kYoutubeTVAppId[];
+
+bool IsSystemAppIdWithFileHandlers(base::StringPiece id);
 
 }  // namespace web_app
 
