@@ -145,6 +145,10 @@ const char kChromeWebstoreOAuth2Scope[] =
 const char kAccountCapabilitiesOAuth2Scope[] =
     "https://www.googleapis.com/auth/account.capabilities";
 
+// OAuth2 scope for support content API.
+const char kSupportContentOAuth2Scope[] =
+    "https://www.googleapis.com/auth/supportcontent";
+
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";
 const char kGaiaLsid[] = "lsid";
