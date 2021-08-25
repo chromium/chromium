@@ -181,6 +181,7 @@
 <translation id="6404817160109697034">{SECONDS,plural, =1{১ ছেকেণ্ড পূর্বে}one{# ছেকেণ্ড পূর্বে}other{# ছেকেণ্ড পূর্বে}}</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6430678249303439055">এই এপ্‌‌টোৰ পৰা সকলো জাননী অৱৰোধ কৰক</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{১ ছেকেণ্ড পূর্বে}one{# ছেকেণ্ড পূর্বে}other{# ছেকেণ্ড পূর্বে}}</translation>
 <translation id="6503257047630241175">RTF সমল</translation>
 <translation id="6539092367496845964">কিবা ভুল হ’ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="654149438358937226">সকলো জাননী অৱৰোধ কৰক</translation>
@@ -242,6 +243,7 @@
 <translation id="8331626408530291785">ওপৰলৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{১ বছৰ}one{# বছৰ}other{# বছৰ}}</translation>
 <translation id="838869780401515933">চ্চেক মাৰ্ক দিয়ক</translation>
+<translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
 <translation id="8394908167088220973">মিডিয়া প্লে’/পজ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{১ব}one{#ব}other{#ব}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ফাইল (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
@@ -263,6 +265,7 @@
 <translation id="9002566407876343676">খোলক</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{১ ছেকেণ্ড}one{# ছেকেণ্ড}other{# ছেকেণ্ড}}</translation>
 <translation id="9059834730836941392">জাননী সংকোচন কৰক</translation>
+<translation id="9150735707954472829">টেব</translation>
 <translation id="9161053988251441839">পৰামর্শ হিচাপে পোৱা এপ্</translation>
 <translation id="9170848237812810038">&amp;আনডু কৰক</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />ৰ বাবে ১ টা ফলাফল দেখুৱাই থকা হৈছে</translation>
