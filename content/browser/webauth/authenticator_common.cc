@@ -1046,7 +1046,7 @@ void AuthenticatorCommon::MakeCredential(
   // If the request originates from CryptoToken or carries a valid
   // googleLegacyAppidSupport extension, a U2F/CTAP1 credential bound to an
   // AppID will be created.
-  absl::optional<std::string> u2f_credential_app_id_override =
+  const absl::optional<std::string> u2f_credential_app_id_override =
       MakeCredentialU2fAppIdOverride(caller_origin, options);
   if (u2f_credential_app_id_override) {
     ctap_make_credential_request_->rp.id = *u2f_credential_app_id_override;
@@ -1085,7 +1085,8 @@ void AuthenticatorCommon::MakeCredential(
   if (attestation == device::AttestationConveyancePreference::
                          kEnterpriseIfRPListedOnAuthenticator &&
       GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(), relying_party_id_)) {
+          GetBrowserContext(),
+          u2f_credential_app_id_override.value_or(relying_party_id_))) {
     attestation =
         device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
   }

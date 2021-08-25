@@ -55,12 +55,12 @@ absl::optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
     return ConstructBogusU2fRegistrationCommand();
   }
 
-  const bool is_invidual_attestation =
+  const bool is_individual_attestation =
       request.attestation_preference ==
       AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
   return ConstructU2fRegisterCommand(
       fido_parsing_utils::CreateSHA256Hash(request.rp.id),
-      request.client_data_hash, is_invidual_attestation);
+      request.client_data_hash, is_individual_attestation);
 }
 
 absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
