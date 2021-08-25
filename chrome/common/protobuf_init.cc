@@ -6,24 +6,35 @@
 
 #include <google/protobuf/generated_message_util.h>
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/threading/thread_local.h"
 
 namespace chrome {
 namespace {
 
 using ScopedBoostThreadPriority =
     base::internal::ScopedMayLoadLibraryAtBackgroundPriority;
-ScopedBoostThreadPriority* g_boost_thread_priority;
+using ScopedBoostThreadPriorityTLS =
+    base::ThreadLocalPointer<ScopedBoostThreadPriority>;
+
+ScopedBoostThreadPriorityTLS& GetScopedBoostThreadPriorityTLS() {
+  static base::NoDestructor<ScopedBoostThreadPriorityTLS> tls_slot;
+  return *tls_slot;
+}
 
 void EnterInitSCC() {
-  DCHECK(!g_boost_thread_priority);
-  g_boost_thread_priority = new ScopedBoostThreadPriority(FROM_HERE, nullptr);
+  DCHECK(!GetScopedBoostThreadPriorityTLS().Get());
+  GetScopedBoostThreadPriorityTLS().Set(
+      new ScopedBoostThreadPriority(FROM_HERE, nullptr));
 }
 
 void LeaveInitSCC() {
-  DCHECK(g_boost_thread_priority);
-  delete g_boost_thread_priority;
-  g_boost_thread_priority = nullptr;
+  DCHECK(GetScopedBoostThreadPriorityTLS().Get());
+  ScopedBoostThreadPriority* boost_thread_priority =
+      GetScopedBoostThreadPriorityTLS().Get();
+  delete boost_thread_priority;
+  GetScopedBoostThreadPriorityTLS().Set(nullptr);
 }
 
 }  // namespace

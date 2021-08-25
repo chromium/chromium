@@ -825,15 +825,18 @@ void InitSCCImpl(SCCInfoBase* scc) {
              SCCInfoBase::kRunning);
     return;
   }
+
+  // Give the chance to the embedder to adjust thread priority before performing
+  // protobuf initialisation. The process-wide lock |mu| is a source of
+  // contention and should aboid being taken at low thread priority.
+  if (g_init_scc_enter)
+    g_init_scc_enter();
+
   InitProtobufDefaults();
   mu.Lock();
   runner.store(me, std::memory_order_relaxed);
 
-  if (g_init_scc_enter)
-    g_init_scc_enter();
   InitSCC_DFS(scc);
-  if (g_init_scc_leave)
-    g_init_scc_leave();
 
 #ifndef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
   runner.store(std::thread::id{}, std::memory_order_relaxed);
@@ -842,6 +845,10 @@ void InitSCCImpl(SCCInfoBase* scc) {
 #endif  // #ifndef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
 
   mu.Unlock();
+
+  // If needed, restore the thread priority.
+  if (g_init_scc_leave)
+    g_init_scc_leave();
 }
 
 }  // namespace internal
