@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class Profile;
 class SkBitmap;
 class WebAppUninstallDialogViews;
 
@@ -22,6 +23,7 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(WebAppIdentityUpdateConfirmationView);
   WebAppIdentityUpdateConfirmationView(
+      Profile* profile,
       const std::string& app_id,
       bool title_change,
       bool icon_change,
@@ -29,7 +31,6 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
       const std::u16string& new_title,
       const SkBitmap& old_icon,
       const SkBitmap& new_icon,
-      content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback);
   WebAppIdentityUpdateConfirmationView(
       const WebAppIdentityUpdateConfirmationView&) = delete;
@@ -47,16 +48,16 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   void OnDialogAccepted();
   void OnWebAppUninstallDialogClosed(bool uninstalled);
 
+  Profile* const profile_;
+
   // The id of the app whose identity is changing.
-  std::string app_id_;
+  const std::string app_id_;
 
   // A callback to relay the results of the app identity update dialog.
   web_app::AppIdentityDialogCallback callback_;
 
   // The app uninstall dialog, shown to confirm the uninstallation.
   std::unique_ptr<WebAppUninstallDialogViews> uninstall_dialog_;
-
-  content::WebContents* web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_IDENTITY_UPDATE_CONFIRMATION_VIEW_H_

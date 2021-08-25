@@ -41,6 +41,7 @@ WebAppIdentityUpdateConfirmationView::~WebAppIdentityUpdateConfirmationView() =
     default;
 
 WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
+    Profile* profile,
     const std::string& app_id,
     bool title_change,
     bool icon_change,
@@ -48,11 +49,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
     const std::u16string& new_title,
     const SkBitmap& old_icon,
     const SkBitmap& new_icon,
-    content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback)
-    : app_id_(app_id),
-      callback_(std::move(callback)),
-      web_contents_(web_contents) {
+    : profile_(profile), app_id_(app_id), callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -205,8 +203,7 @@ void WebAppIdentityUpdateConfirmationView::OnWebAppUninstallDialogClosed(
 
 bool WebAppIdentityUpdateConfirmationView::Cancel() {
   uninstall_dialog_ = std::make_unique<WebAppUninstallDialogViews>(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      GetWidget()->GetNativeWindow());
+      profile_, GetWidget()->GetNativeWindow());
   uninstall_dialog_->ConfirmUninstall(
       app_id_, webapps::WebappUninstallSource::kAppMenu,
       base::BindOnce(
@@ -230,9 +227,11 @@ void ShowWebAppIdentityUpdateDialog(
     const SkBitmap& new_icon,
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* dialog = new WebAppIdentityUpdateConfirmationView(
-      app_id, title_change, icon_change, old_title, new_title, old_icon,
-      new_icon, web_contents, std::move(callback));
+      profile, app_id, title_change, icon_change, old_title, new_title,
+      old_icon, new_icon, std::move(callback));
   views::Widget* dialog_widget =
       constrained_window::CreateBrowserModalDialogViews(
           dialog, web_contents->GetTopLevelNativeWindow());
