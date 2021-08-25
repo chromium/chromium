@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ማስጠንቀቂያ፦<ph name="END_BOLD" />  እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ፔንግዊን</translation>
 <translation id="183183971458492120">መረጃ በመጫን ላይ...</translation>
+<translation id="1834290891154666894">ልክ ያልሆነ የርዕስ አማራጭ ስም ዝምድና ግቤት</translation>
 <translation id="1838709767668011582">የGoogle ጣቢያ</translation>
 <translation id="1844692022597038441">ይህ ፋይል ከመስመር ውጪ አይገኝም።</translation>
 <translation id="1853795129690976061">ይህ አቃፊ ለLinux ተጋርቷል</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">መዳረሻ ተገድቧል</translation>
 <translation id="6356685157277930264">የፋይሎች ግብረመልስ መስኮት</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
+<translation id="636254897931573416">ልክ ያልሆነ ጎራ ድኅረ ቅጥያ ዝምድና እሴት</translation>
 <translation id="6367976544441405720">ቫን</translation>
 <translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>

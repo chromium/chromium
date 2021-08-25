@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага!<ph name="END_BOLD" />  Гэта часовыя файлы, яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Ідзе загрузка інфармацыі...</translation>
+<translation id="1834290891154666894">Несапраўдны запіс супадзення па альтэрнатыўным імені суб'екта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1844692022597038441">Файл недаступны па-за сеткай.</translation>
 <translation id="1853795129690976061">Гэта папка абагулена з Linux</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Доступ абмежаваны</translation>
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>
 <translation id="6367976544441405720">Мікрааўтобус</translation>
 <translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Толькі чытанне</translation>

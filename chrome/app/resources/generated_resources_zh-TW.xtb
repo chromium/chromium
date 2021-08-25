@@ -161,6 +161,7 @@
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
+<translation id="1169435433292653700">「<ph name="FILE_NAME" />」含有機密或危險的資料。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1170288591054440704">網站必須先詢問你，才能使用裝置上安裝的字型</translation>
 <translation id="1171135284592304528">鍵盤焦點所在物件變更時醒目顯示</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> 要求與 HID 裝置連線</translation>
@@ -190,6 +191,7 @@
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1195558154361252544">除了你允許的網站之外，自動封鎖所有網站的通知</translation>
 <translation id="1197088940767939838">橘色</translation>
+<translation id="1197935538609051549">停用</translation>
 <translation id="1197979282329025000">擷取 <ph name="PRINTER_NAME" /> 的印表機功能狀態時發生錯誤，無法向 <ph name="CLOUD_PRINT_NAME" /> 註冊該印表機。</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
@@ -719,6 +721,7 @@
 <translation id="1744108098763830590">背景頁面</translation>
 <translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748563609363301860">你可以將這組密碼儲存在 Google 帳戶中，也可以只儲存在這部裝置上</translation>
+<translation id="1750048572964661931">如要保護手機應用程式的存取權，請在這部 Chromebook 上設定 PIN 碼或密碼。</translation>
 <translation id="1750172676754093297">你的安全金鑰無法儲存指紋</translation>
 <translation id="1751249301761991853">個人化</translation>
 <translation id="1751262127955453661">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
@@ -5464,6 +5467,7 @@
 <translation id="6853388645642883916">更新程式休眠中</translation>
 <translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
+<translation id="6856210255562079267">無法開啟應用程式</translation>
 <translation id="6856348640027512653">不得使用虛擬實境裝置或資料</translation>
 <translation id="6856623341093082836">設定及調整觸控螢幕精確度</translation>
 <translation id="6856850379840757744">這項功能開啟後，系統會將所有通知設為靜音</translation>
@@ -5808,6 +5812,7 @@
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="725109152065019550">很抱歉，你的管理員已停用你帳戶中的外部儲存裝置。</translation>
 <translation id="7251346854160851420">預設桌布</translation>
+<translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> 想取得先前所核發安全金鑰的 ID 編號。該網站將明確得知你正在使用的安全金鑰為何。</translation>
 <translation id="7253521419891527137">瞭解詳情(&amp;L)</translation>
 <translation id="7254951428499890870">你確定要在診斷模式中啟動「<ph name="APP_NAME" />」？</translation>

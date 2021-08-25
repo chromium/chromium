@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4511264077854731334">ポータル</translation>
+<translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
 <translation id="4536864596629708641">IP 設定</translation>
 <translation id="4548483925627140043">シグナルは検出されませんでした</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
+<translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>

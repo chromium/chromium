@@ -92,6 +92,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1611993646327628135">Bật</translation>
 <translation id="1615402009686901181">Theo chính sách của quản trị viên, tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Trợ lý.</translation>
 <translation id="1667964833127753507">Chế độ màu trung tính không dùng màu được trích xuất từ hình nền mà thay các màu này bằng bộ màu sáng hoặc tối có sắc trung tính.</translation>
@@ -321,6 +322,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3560866052109807830">Công cụ đánh dấu</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
@@ -557,6 +559,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
+<translation id="5253783950165989294">Đã kết nối với thiết bị có tên <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% pin</translation>
 <translation id="5260676007519551770">Không gian làm việc 4</translation>
 <translation id="5283198616748585639">Thêm 1 phút</translation>
 <translation id="528468243742722775">Kết thúc</translation>
@@ -769,6 +772,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
 <translation id="7007983414944123363">Hệ thống chưa xác minh được mã PIN hoặc mật khẩu của bạn. Hãy thử lại.</translation>
+<translation id="7014684956566476813">Đã kết nối với thiết bị có tên <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Quay lại lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Không gian làm việc 6</translation>
 <translation id="7025533177575372252">Kết nối <ph name="DEVICE_NAME" /> với điện thoại của bạn</translation>

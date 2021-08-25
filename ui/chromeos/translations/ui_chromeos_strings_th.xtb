@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ข้อควรระวัง:<ph name="END_BOLD" /> ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">นกเพนกวิน</translation>
 <translation id="183183971458492120">กำลังโหลดข้อมูล...</translation>
+<translation id="1834290891154666894">รายการจับคู่ชื่อสำรองของหัวเรื่องไม่ถูกต้อง</translation>
 <translation id="1838709767668011582">เว็บไซต์ Google</translation>
 <translation id="1844692022597038441">ไฟล์นี้ไม่สามารถใช้งานแบบออฟไลน์ได้</translation>
 <translation id="1853795129690976061">โฟลเดอร์นี้แชร์กับ Linux อยู่</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">จำกัดสิทธิ์เข้าถึง</translation>
 <translation id="6356685157277930264">หน้าต่างความคิดเห็นของไฟล์</translation>
 <translation id="6358884629796491903">มังกร</translation>
+<translation id="636254897931573416">ค่าการจับคู่ส่วนต่อท้ายโดเมนไม่ถูกต้อง</translation>
 <translation id="6367976544441405720">รถตู้</translation>
 <translation id="637062427944097960">ไฟล์นี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="6394388407447716302">อ่านอย่างเดียว</translation>

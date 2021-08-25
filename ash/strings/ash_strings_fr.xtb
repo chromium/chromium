@@ -92,6 +92,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans l'Assistant.</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas des couleurs issues du fond d'écran : il les remplace par une gamme de tonalités neutres (claires ou sombres).</translation>
@@ -321,6 +322,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3486220673238053218">définition</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3560866052109807830">Outils de dessin Marqueur</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
@@ -555,6 +557,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
+<translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5283198616748585639">Ajouter une minute</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -767,6 +770,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="7007983414944123363">Impossible de valider votre code ou votre mot de passe. Réessayez.</translation>
+<translation id="7014684956566476813">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Revenez à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Bureau 6</translation>
 <translation id="7025533177575372252">Associer votre <ph name="DEVICE_NAME" /> à votre téléphone</translation>

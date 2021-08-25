@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perspėjimas:<ph name="END_BOLD" /> šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="183183971458492120">Įkeliama informacija...</translation>
+<translation id="1834290891154666894">Netinkama alternatyvaus subjekto pavadinimo atitikties įvestis</translation>
 <translation id="1838709767668011582">„Google“ svetainė</translation>
 <translation id="1844692022597038441">Šis failas nepasiekiamas neprisijungus.</translation>
 <translation id="1853795129690976061">Šis aplankas bendrinamas su „Linux“</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Prieiga apribota</translation>
 <translation id="6356685157277930264">Failų atsiliepimų langas</translation>
 <translation id="6358884629796491903">Drakonas</translation>
+<translation id="636254897931573416">Netinkama domeno plėtinio atitikties vertė</translation>
 <translation id="6367976544441405720">Vanas</translation>
 <translation id="637062427944097960">Šis failas atidarytas kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
 <translation id="6394388407447716302">Tik skaitoma</translation>

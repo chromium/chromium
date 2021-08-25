@@ -310,6 +310,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
 <translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
 <translation id="2942036813789421260">미리보기 탭 닫힘</translation>
+<translation id="2946420957526726953">다른 기기에 연결하기 위해 Chrome을 업데이트하는 중</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" />님과 <ph name="PARENT_NAME_2" />님이 관리하는 계정입니다.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
 <translation id="2961210776189273067">제목</translation>
@@ -616,6 +617,7 @@
 <translation id="4881695831933465202">열기</translation>
 <translation id="488187801263602086">파일 이름 변경</translation>
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
+<translation id="4905823827770127520">페이지 링크 포함</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4912413785358399818">탭 이동</translation>

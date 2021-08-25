@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ລະວັງ:<ph name="END_BOLD" />  ໄຟລ໌ເຫຼົ່ານີ​ແມ່ນ​ໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ມີບ່ອນ​ວ່າງດິສກ໌.  <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ນົກເພັນກວິນ</translation>
 <translation id="183183971458492120">ກຳລັງໂຫຼດຂໍ້ມູນ...</translation>
+<translation id="1834290891154666894">ຂໍ້ມູນການຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1838709767668011582">ເວັບໄຊ Google</translation>
 <translation id="1844692022597038441">ໄຟລ໌ນີ້ບໍ່​ມີ​ໃຫ້​ແບບອອຟລາຍນ໌.</translation>
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">ຈຳກັດການເຂົ້າເຖິງໄວ້ແລ້ວ</translation>
 <translation id="6356685157277930264">ໜ້າຈໍຄຳເຫັນຂອງ Files</translation>
 <translation id="6358884629796491903">ມັງກອນ</translation>
+<translation id="636254897931573416">ຄ່າການຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນບໍ່ຖືກຕ້ອງ</translation>
 <translation id="6367976544441405720">ລົດຕູ້</translation>
 <translation id="637062427944097960">ໄຟລ໌ນີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນແລ້ວ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>

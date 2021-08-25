@@ -92,6 +92,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
 <translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> gailu</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Laguntzailea eginbideak emaitza irakurtzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="1667964833127753507">Kolore neutroaren moduak ez ditu erabiltzen horma-paperetik ateratako koloreak, baizik eta tonu neutroko ñabardura argien edo ilunen multzo batekin ordezkatzen.</translation>
@@ -321,6 +322,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> kontuaren bidez kudeatzen da kontu hau</translation>
+<translation id="353086728817903341">Konektatu da <ph name="NUM_DEVICES" /> gailutara</translation>
 <translation id="3552189655002856821">Desaktibatuta dago wifi-konexioa</translation>
 <translation id="3560866052109807830">Markatzailearen marrazketa-tresnak</translation>
 <translation id="3563775809269155755">Gaitu wifi-gunea</translation>
@@ -558,6 +560,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="523505283826916779">Erabilerraztasun-ezarpenak</translation>
+<translation id="5253783950165989294">Konektatuta da <ph name="DEVICE_NAME" /> izeneko gailu batera. Bateria: % <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="5260676007519551770">4. lan-eremua</translation>
 <translation id="5283198616748585639">Gehitu 1 minutu</translation>
 <translation id="528468243742722775">Amaitu</translation>
@@ -770,6 +773,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
 <translation id="7007983414944123363">Ezin izan da egiaztatu PINa edo pasahitza. Saiatu berriro.</translation>
+<translation id="7014684956566476813">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. lan-eremua</translation>
 <translation id="7025533177575372252">Konektatu <ph name="DEVICE_NAME" /> telefonoarekin</translation>

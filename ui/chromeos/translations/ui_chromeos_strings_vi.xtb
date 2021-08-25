@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Chú ý:<ph name="END_BOLD" /> Các tệp này là tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="183183971458492120">Đang tải thông tin...</translation>
+<translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
 <translation id="1838709767668011582">Trang web Google</translation>
 <translation id="1844692022597038441">Tệp này không có khi ngoại tuyến.</translation>
 <translation id="1853795129690976061">Thư mục này được chia sẻ với Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Truy cập bị hạn chế</translation>
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
 <translation id="6358884629796491903">Rồng</translation>
+<translation id="636254897931573416">Giá trị so khớp hậu tố tên miền không hợp lệ</translation>
 <translation id="6367976544441405720">Xe tải</translation>
 <translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
 <translation id="6394388407447716302">Chỉ có thể đọc</translation>

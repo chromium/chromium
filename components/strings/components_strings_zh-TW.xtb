@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="100957008357583611">要允許網站使用你的位置資訊嗎？</translation>
 <translation id="1010200102790553230">稍後再載入頁面</translation>
+<translation id="1011206368273183593">正在準備檔案</translation>
 <translation id="1015730422737071372">提供其他詳細資訊</translation>
 <translation id="1019413721762100891">關閉</translation>
 <translation id="1021110881106174305">接受的信用卡</translation>
@@ -1143,6 +1144,7 @@
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
+<translation id="4849865131988503897">準確率檢查</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
 <translation id="4853901935952445031">2022 年 2 月後，這個網站將不能使用 U2F API。如果你是網站擁有者，請為該網站改用 Web Authentication API。</translation>
@@ -2350,6 +2352,7 @@
 <translation id="9154194610265714752">已更新</translation>
 <translation id="9157595877708044936">設定中...</translation>
 <translation id="9158625974267017556">C6 (信封)</translation>
+<translation id="9164029392738894042">準確率檢查</translation>
 <translation id="9168814207360376865">允許網站檢查付款方式是否已成功儲存</translation>
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
 <translation id="9169931577761441333">將 <ph name="APP_NAME" /> 新增至主畫面</translation>

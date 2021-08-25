@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="100957008357583611">위치를 사용하시겠습니까?</translation>
 <translation id="1010200102790553230">페이지 나중에 로드하기</translation>
+<translation id="1011206368273183593">파일 준비 중</translation>
 <translation id="1015730422737071372">추가 세부정보 제공</translation>
 <translation id="1019413721762100891">꺼짐</translation>
 <translation id="1021110881106174305">사용할 수 있는 카드</translation>
@@ -1143,6 +1144,7 @@
 <translation id="4838327282952368871">꿈</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>
+<translation id="4849865131988503897">정확성 검사</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
 <translation id="4853901935952445031">2022년 2월부터 이 사이트에서 U2F API를 사용할 수 없게 됩니다. 사이트 소유자인 경우 Web Authentication API를 사용하도록 변경해야 합니다.</translation>
@@ -2349,6 +2351,7 @@
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="9157595877708044936">설정 중...</translation>
 <translation id="9158625974267017556">C6(봉투)</translation>
+<translation id="9164029392738894042">정확성 검사</translation>
 <translation id="9168814207360376865">사이트에서 저장된 결제 수단이 있는지 확인하도록 허용</translation>
 <translation id="9169664750068251925">이 사이트에서 항상 차단</translation>
 <translation id="9169931577761441333">홈 화면에 <ph name="APP_NAME" /> 추가</translation>

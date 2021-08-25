@@ -92,6 +92,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1611993646327628135">Açık</translation>
 <translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Asistan'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="1667964833127753507">Nötr renk modu, duvar kağıdından çıkarılan renkleri kullanmaz, bunları nötr tonlu açık veya koyu renklerle değiştirir.</translation>
@@ -321,6 +322,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza bağlanıldı</translation>
 <translation id="3552189655002856821">Kablosuz bağlantı kapalı</translation>
 <translation id="3560866052109807830">İşaretçi çizim araçları</translation>
 <translation id="3563775809269155755">Hotspot'ı etkinleştir</translation>
@@ -557,6 +559,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> adlı cihaza bağlanıldı, pil %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5260676007519551770">Çalışma Masası 4</translation>
 <translation id="5283198616748585639">1 dk ekle</translation>
 <translation id="528468243742722775">Son</translation>
@@ -770,6 +773,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
 <translation id="7007983414944123363">PIN'iniz veya şifreniz doğrulanamadı. Tekrar deneyin.</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> adlı cihaza bağlanıldı</translation>
 <translation id="7015766095477679451">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="70168403932084660">Masa 6</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazınızı telefonunuza bağlayın</translation>

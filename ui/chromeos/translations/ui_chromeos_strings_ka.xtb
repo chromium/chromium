@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />გაფრთხილება:<ph name="END_BOLD" /> ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასანთავისუფლებლად. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">პინგვინი</translation>
 <translation id="183183971458492120">მიმდინარეობს ინფორმაციის ჩატვირთვა…</translation>
+<translation id="1834290891154666894">სუბიექტის ალტერნატიული სახელის დამთხვევის მნიშვნელობა არასწორია</translation>
 <translation id="1838709767668011582">Google-ის საიტი</translation>
 <translation id="1844692022597038441">ეს ფაილი არ არის ხელმისაწვდომი ოფლაინში.</translation>
 <translation id="1853795129690976061">ეს საქაღალდე გაზიარებულია Linux-თან</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">წვდომა შეზღუდულია</translation>
 <translation id="6356685157277930264">ფაილებთან დაკავშირებული გამოხმაურების ფანჯარა</translation>
 <translation id="6358884629796491903">დრაკონი</translation>
+<translation id="636254897931573416">დომენის სუფიქსის დამთხვევის მნიშვნელობა არასწორია</translation>
 <translation id="6367976544441405720">ფურგონი</translation>
 <translation id="637062427944097960">ეს ფაილი გახსნილია სხვა სამუშაო დაფაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="6394388407447716302">მხოლოდ კითხვადი</translation>

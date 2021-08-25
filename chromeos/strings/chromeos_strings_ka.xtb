@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4511264077854731334">პორტალი</translation>
+<translation id="4521826082652183069">სუბიექტის ალტერნატიული სახელის დამთხვევა</translation>
 <translation id="4536864596629708641">IP კონფიგურაცია</translation>
 <translation id="4548483925627140043">სიგნალი ვერ მოიძებნა</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> მა·სთ-იანი ბატარეა</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7762130827864645708">პაროლი წარმატებით შეიცვალა. ამიერიდან გამოიყენეთ ახალი პაროლი.</translation>
+<translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7819857487979277519">PSK (WPA ან RSN)</translation>

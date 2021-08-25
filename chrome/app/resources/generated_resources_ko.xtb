@@ -163,6 +163,7 @@
 <translation id="1166583374608765787">이름 업데이트 검토</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> 탭이 <ph name="DESK_TITLE" /> 데스크로 이동했습니다</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 데이터가 포함되어 있습니다. 관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1170288591054440704">사이트에서 기기에 설치된 글꼴을 사용하려고 할 때 확인</translation>
 <translation id="1171135284592304528">키보드 포커스가 이동할 때 키보드 포커스가 있는 객체를 강조표시합니다.</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" />에서 HID 기기에 연결하려고 합니다.</translation>
@@ -192,6 +193,7 @@
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197935538609051549">비활성화</translation>
 <translation id="1197979282329025000"><ph name="PRINTER_NAME" /> 프린터의 인쇄 가능 매수를 검색하는 중에 오류가 발생했습니다. 이 프린터를 <ph name="CLOUD_PRINT_NAME" />(으)로 등록할 수 없습니다.</translation>
 <translation id="119944043368869598">모두 삭제</translation>
 <translation id="1199814941632954229">다음 인증서 프로필의 인증서가 프로비저닝되는 중입니다</translation>
@@ -730,6 +732,7 @@
 <translation id="1744108098763830590">백그라운드 페이지</translation>
 <translation id="1745732479023874451">연락처 관리</translation>
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
+<translation id="1750048572964661931">Chromebook에 PIN 또는 비밀번호를 설정하여 휴대전화 앱 액세스를 보호하세요.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
 <translation id="1751249301761991853">개인</translation>
 <translation id="1751262127955453661">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 수정할 수 있게 됩니다.</translation>
@@ -5478,6 +5481,7 @@
 <translation id="6853388645642883916">업데이터 절전 모드</translation>
 <translation id="68541483639528434">다른 탭 닫기</translation>
 <translation id="6855892664589459354">Crostini 백업 및 복원</translation>
+<translation id="6856210255562079267">앱을 열 수 없습니다</translation>
 <translation id="6856348640027512653">가상 현실 기기 또는 데이터 사용이 허용되지 않음</translation>
 <translation id="6856623341093082836">터치스크린 설정 및 정확도 조정</translation>
 <translation id="6856850379840757744">사용 설정되면 모든 알림이 무음 설정됩니다.</translation>
@@ -5822,6 +5826,7 @@
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251346854160851420">기본 배경화면</translation>
+<translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" />에서 보안 키를 발행했으며 보안 키의 ID 번호를 알고 싶어 합니다. 사이트에서 내가 사용하는 보안 키를 정확히 알 수 있습니다.</translation>
 <translation id="7253521419891527137">자세히 알아보기(&amp;L)</translation>
 <translation id="7254951428499890870">'<ph name="APP_NAME" />'을(를) 진단 모드로 실행하시겠습니까?</translation>

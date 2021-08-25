@@ -92,6 +92,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1611993646327628135">Aktive</translation>
 <translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin tek "Asistenti".</translation>
 <translation id="1667964833127753507">Modaliteti me ngjyra neutrale nuk përdor ngjyrat e nxjerra nga imazhi i sfondit, duke i zëvendësuar me një grupim me nuanca me tonalitet të çelur ose të errët.</translation>
@@ -321,6 +322,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
 <translation id="3513798432020909783">Llogaria menaxhohet nga <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">U lidh me <ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3560866052109807830">Vegla vizatimi me piketë</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
@@ -404,6 +406,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4129129681837227511">Për të parë njoftime në ekranin e kyçjes, shkyçe për të ndryshuar cilësimin</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
 <translation id="4157822100366708405">Cilësimet e "Temës së errët"</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4195877955194704651">Butoni i klikimeve automatike</translation>
 <translation id="4197790712631116042">Joaktiv</translation>
@@ -497,6 +500,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
+<translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="479989351350248267">kërko</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="4814539958450445987">Ekrani i identifikimit</translation>
@@ -555,6 +559,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
+<translation id="5253783950165989294">U lidh me një pajisje me emrin "<ph name="DEVICE_NAME" />". Niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
 <translation id="5283198616748585639">Shto 1 minutë</translation>
 <translation id="528468243742722775">Fundi</translation>
@@ -767,6 +772,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
 <translation id="7007983414944123363">Kod yt PIN ose fjalëkalimi nuk mund të verifikoheshin. Provo përsëri.</translation>
+<translation id="7014684956566476813">Lidhur me një pajisje me emrin "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Tavolina e punës 6</translation>
 <translation id="7025533177575372252">Lidhe <ph name="DEVICE_NAME" /> me telefonin tënd</translation>

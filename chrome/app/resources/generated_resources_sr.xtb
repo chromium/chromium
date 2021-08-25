@@ -161,7 +161,7 @@
 <translation id="1166583374608765787">Прегледајте ажурирање назива</translation>
 <translation id="1166596238782048887">Картица <ph name="TAB_TITLE" /> припада радној површини <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Отварање за <ph name="TIME_REMAINING" />...</translation>
-<translation id="1169435433292653700"><ph name="FILE_NAME" /> садржи осетљиве или опасне податке. Администратор каже: <ph name="CUSTOM_MESSAGE" /></translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> садржи осетљиве или опасне податке. Администратор каже: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1170288591054440704">Питај када сајт жели да користи фонтове инсталиране на уређају</translation>
 <translation id="1171135284592304528">Истакни објекат помоћу фокуса тастатуре када се промени</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> жели да се повеже са HID уређајем</translation>
@@ -5813,7 +5813,7 @@
 <translation id="7250616558727237648">Уређај са којим делите садржај није одговорио. Пробајте поново.</translation>
 <translation id="725109152065019550">Жао нам је, администратор је онемогућио спољну меморију на овом налогу.</translation>
 <translation id="7251346854160851420">Подразумевана позадина</translation>
-<translation id="7251635775446614726">Администратор каже: <ph name="CUSTOM_MESSAGE" /></translation>
+<translation id="7251635775446614726">Администратор каже: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7251979364707973467">Веб-сајт <ph name="WEBSITE" /> вам је издао безбедносни кључ и жели да сазна његов ИД број. Сајт ће тачно знати који безбедносни кључ користите.</translation>
 <translation id="7253521419891527137">&amp;Сазнајте више</translation>
 <translation id="7254951428499890870">Да ли стварно желите да покренете „<ph name="APP_NAME" />“ у режиму дијагностике?</translation>

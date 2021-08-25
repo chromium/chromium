@@ -92,6 +92,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans l'Assistant.</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas de couleurs extraites d'un fond d'écran, il les remplace par un ensemble de couleurs claires ou sombres aux teintes neutres.</translation>
@@ -321,6 +322,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3486220673238053218">définition</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3560866052109807830">Outils de dessin : marqueur</translation>
 <translation id="3563775809269155755">Activer le point d'accès sans fil</translation>
@@ -404,6 +406,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> : <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
 <translation id="4197790712631116042">Désactivé</translation>
@@ -497,6 +500,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
+<translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="479989351350248267">chercher</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
@@ -555,6 +559,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
+<translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5283198616748585639">Ajouter 1 minute</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -767,6 +772,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="7007983414944123363">Votre NIP ou votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
+<translation id="7014684956566476813">Connecté à un appareil nommé <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Revenez à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Bureau 6</translation>
 <translation id="7025533177575372252">Connectez votre <ph name="DEVICE_NAME" /> à votre téléphone</translation>

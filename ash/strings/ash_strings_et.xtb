@@ -92,6 +92,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1611993646327628135">Sees</translation>
 <translation id="1615402009686901181">Administraatori eeskirjad keelavad ekraanikuva jäädvustamise, kui konfidentsiaalne sisu on nähtaval</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistendis tulemuste nägemiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="1667964833127753507">Neutraalne värvirežiim ei kasuta taustapildist tuletatud värve, vaid asendab need neutraalsete heledate või tumedate toonidega.</translation>
@@ -321,6 +322,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">Ühendatud <ph name="NUM_DEVICES" /> seadmega</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3560866052109807830">Markeriga joonistamise tööriistad</translation>
 <translation id="3563775809269155755">Kuumkoha lubamine</translation>
@@ -558,6 +560,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
+<translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
 <translation id="5283198616748585639">Lisa 1 min</translation>
 <translation id="528468243742722775">Lõpeta</translation>
@@ -770,6 +773,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
 <translation id="7007983414944123363">Teie PIN-koodi või parooli ei saanud kinnitada. Proovige uuesti.</translation>
+<translation id="7014684956566476813">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Tulge tagasi kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Töölaud 6</translation>
 <translation id="7025533177575372252">Ühendage seade <ph name="DEVICE_NAME" /> oma telefoniga</translation>

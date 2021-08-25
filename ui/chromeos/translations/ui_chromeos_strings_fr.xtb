@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attention<ph name="END_BOLD" /> : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations…</translation>
+<translation id="1834290891154666894">Entrée non valide pour la correspondance de l'autre nom de l'objet</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Ce fichier n'est pas disponible hors connexion.</translation>
 <translation id="1853795129690976061">Ce dossier est partagé avec Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Accès limité</translation>
 <translation id="6356685157277930264">Fenêtre de commentaires sur les fichiers</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="636254897931573416">Valeur non valide pour la correspondance du suffixe de domaine</translation>
 <translation id="6367976544441405720">Van</translation>
 <translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">Lecture seule</translation>

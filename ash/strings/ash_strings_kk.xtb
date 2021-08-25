@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">Қосулы</translation>
 <translation id="1615402009686901181">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Assistant-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="1667964833127753507">Бейтарап түс режимінде тұсқағаздарыңыздың түстері пайдаланылмайды. Олардың орнына интерфейс бейтарап ашық немесе күңгірт реңктерге боялады.</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын есептік жазба</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> құрылғыға қосылды.</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
 <translation id="3560866052109807830">Маркермен сызу құралдары</translation>
 <translation id="3563775809269155755">Хотспотты қосу</translation>
@@ -557,6 +559,7 @@
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="523505283826916779">Арнайы мүмкіндіктер параметрлері</translation>
+<translation id="5253783950165989294">"<ph name="DEVICE_NAME" />" деп аталатын, батарея заряды <ph name="BATTERY_PERCENTAGE" />% құрылғыға қосылды.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
 <translation id="5283198616748585639">1 мин қосу</translation>
 <translation id="528468243742722775">Соңы</translation>
@@ -769,6 +772,7 @@
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
 <translation id="698231206551913481">Бұл пайдаланушы өшірілгеннен кейін, оған қатысты барлық файлдар және жергілікті деректер біржола жойылады.</translation>
 <translation id="7007983414944123363">PIN кодыңыз не құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
+<translation id="7014684956566476813">"<ph name="DEVICE_NAME" />" деп аталатын құрылғыға қосылды.</translation>
 <translation id="7015766095477679451">Сағат <ph name="COME_BACK_TIME" /> болғанда, қайта қолданып көріңіз.</translation>
 <translation id="70168403932084660">6-шы жұмыс үстелі</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> құрылғысын телефонға жалғаңыз</translation>

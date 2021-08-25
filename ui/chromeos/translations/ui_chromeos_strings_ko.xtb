@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />주의:<ph name="END_BOLD" /> 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="183183971458492120">정보 로드 중...</translation>
+<translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
 <translation id="1838709767668011582">Google 사이트</translation>
 <translation id="1844692022597038441">이 파일은 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">액세스 제한됨</translation>
 <translation id="6356685157277930264">파일 의견 창</translation>
 <translation id="6358884629796491903">용</translation>
+<translation id="636254897931573416">잘못된 도메인 서픽스 일치 값</translation>
 <translation id="6367976544441405720">승합차</translation>
 <translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="6394388407447716302">읽기 전용</translation>

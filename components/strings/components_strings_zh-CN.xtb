@@ -5,6 +5,7 @@
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100957008357583611">允许此网站使用您的位置信息？</translation>
 <translation id="1010200102790553230">保存网页以供日后加载</translation>
+<translation id="1011206368273183593">正在准备文件</translation>
 <translation id="1015730422737071372">提供其他详细信息</translation>
 <translation id="1019413721762100891">已关闭</translation>
 <translation id="1021110881106174305">接受的信用卡</translation>
@@ -1118,6 +1119,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">梦幻</translation>
 <translation id="484462545196658690">自动</translation>
+<translation id="4849865131988503897">准确度检查</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="485316830061041779">德语</translation>
 <translation id="4853901935952445031">2022 年 2 月之后，此网站将无法使用 U2F API。如果您是此网站的所有者，则应将其更改为使用 Web Authentication API。</translation>
@@ -2310,6 +2312,7 @@
 <translation id="9154194610265714752">已更新</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
+<translation id="9164029392738894042">准确度检查</translation>
 <translation id="9168814207360376865">允许网站检查您是否已保存付款方式</translation>
 <translation id="9169664750068251925">在此网站上始终阻止</translation>
 <translation id="9169931577761441333">将“<ph name="APP_NAME" />”添加到主屏幕</translation>

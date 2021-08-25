@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Mag-ingat:<ph name="END_BOLD" /> Ang mga file na ito ay pansamantala at maaaring awtomatikong tanggalin upang magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
+<translation id="1834290891154666894">Invalid na entry ng pagtugma ng alternatibong pangalan</translation>
 <translation id="1838709767668011582">Site ng Google</translation>
 <translation id="1844692022597038441">Hindi available offline ang file na ito.</translation>
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Pinaghihigpitan ang access</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="636254897931573416">Invalid na value ng pagtugma ng domain suffix</translation>
 <translation id="6367976544441405720">Van</translation>
 <translation id="637062427944097960">Ang file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="6394388407447716302">Read-only</translation>
