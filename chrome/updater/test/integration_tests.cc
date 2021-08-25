@@ -327,7 +327,22 @@ TEST_F(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, UnregisterUninstalledApp) {
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1243080): These are flaky.
+#define MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded \
+DISABLED_UninstallIfMaxServerWakesBeforeRegistrationExceeded
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+DISABLED_UninstallUpdaterWhenAllAppsUninstalled
+#define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
+#else  // OS_MAC
+#define MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded \
+UninstallIfMaxServerWakesBeforeRegistrationExceeded
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+UninstallUpdaterWhenAllAppsUninstalled
+#define MAYBE_UnregisterUninstalledApp UnregisterUninstalledApp
+#endif  // !OS_MAC
+
+TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   Install();
   ExpectInstalled();
   RegisterApp("test1");
@@ -347,7 +362,8 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
+TEST_F(IntegrationTest,
+MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
   WaitForServerExit();
   ExpectInstalled();
@@ -358,7 +374,8 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   ExpectClean();
 }
 
-TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
+TEST_F(IntegrationTest,
+MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   RegisterApp("test1");
   ExpectInstalled();
@@ -378,8 +395,9 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
 
 // Windows does not currently have a concept of app ownership, so this
 // test need not run on Windows.
+// TODO(https://crbug.com/1243080): This is flaky.
 #if defined(OS_MAC)
-TEST_F(IntegrationTest, UnregisterUnownedApp) {
+TEST_F(IntegrationTest, DISABLED_UnregisterUnownedApp) {
   Install();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
