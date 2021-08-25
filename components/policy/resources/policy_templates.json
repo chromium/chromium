@@ -27043,7 +27043,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'owners': ['tsergeant@chromium.org', 'chromeos-apps-foundation-team@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:94-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
