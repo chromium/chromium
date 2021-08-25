@@ -2707,11 +2707,13 @@ Output.ROLE_INFO = {
   },
   splitter: {msgId: 'role_separator', inherits: 'abstractSpan'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
+  subscript: {msgId: 'role_subscript', inherits: 'abstractSpan'},
   suggestion: {
     msgId: 'role_suggestion',
     inherits: 'abstractSpan',
     contextOrder: OutputContextOrder.FIRST
   },
+  superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
   tab: {msgId: 'role_tab'},
   tabList: {msgId: 'role_tablist', inherits: 'abstractContainer'},
   tabPanel: {msgId: 'role_tabpanel'},

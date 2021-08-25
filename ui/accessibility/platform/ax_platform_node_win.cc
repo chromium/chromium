@@ -5677,6 +5677,10 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kSplitter:
       return ROLE_SYSTEM_SEPARATOR;
 
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuperscript:
+      return ROLE_SYSTEM_GROUPING;
+
     case ax::mojom::Role::kSvgRoot:
       return ROLE_SYSTEM_GRAPHIC;
 
@@ -6064,6 +6068,8 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kCode:
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kStrong:
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuperscript:
     case ax::mojom::Role::kTime:
       ia2_role = IA2_ROLE_TEXT_FRAME;
       break;
@@ -6503,6 +6509,10 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
 
     case ax::mojom::Role::kSplitter:
       return L"separator";
+
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuperscript:
+      return L"group";
 
     case ax::mojom::Role::kSvgRoot:
       return L"img";
@@ -7156,6 +7166,8 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_StatusBarControlTypeId;
 
     case ax::mojom::Role::kStrong:
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuperscript:
       return UIA_TextControlTypeId;
 
     case ax::mojom::Role::kSplitter:

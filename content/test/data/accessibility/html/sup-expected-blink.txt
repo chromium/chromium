@@ -4,7 +4,8 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='This text contains'
 ++++++++++inlineTextBox name='This text contains'
-++++++++staticText name='superscript' textPosition=superscript
-++++++++++inlineTextBox name='superscript'
+++++++++superscript textPosition=superscript
+++++++++++staticText name='superscript' textPosition=superscript
+++++++++++++inlineTextBox name='superscript'
 ++++++++staticText name='text.'
 ++++++++++inlineTextBox name='text.'

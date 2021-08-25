@@ -106,7 +106,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next value: 185
+// Next version: 2
+// Next value: 187
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   // Used for role="none"/"presentation" -- ignored in platform tree.
@@ -284,7 +285,9 @@ enum Role {
   kStaticText = 158,
   kStatus = 159,
   kStrong = 160,
+  [MinVersion=1] kSubscript = 185,
   kSuggestion = 161,
+  [MinVersion=1] kSuperscript = 186,
   kSvgRoot = 162,
   kSwitch = 163,
   kTab = 164,

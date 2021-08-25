@@ -2908,20 +2908,14 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_SPIN_BUTTON;
     case ax::mojom::Role::kSplitter:
       return ATK_ROLE_SEPARATOR;
-    case ax::mojom::Role::kStaticText: {
-      switch (static_cast<ax::mojom::TextPosition>(
-          GetIntAttribute(ax::mojom::IntAttribute::kTextPosition))) {
-        case ax::mojom::TextPosition::kSubscript:
-          return kSubscriptRole;
-        case ax::mojom::TextPosition::kSuperscript:
-          return kSuperscriptRole;
-        default:
-          break;
-      }
+    case ax::mojom::Role::kStaticText:
       return kStaticRole;
-    }
     case ax::mojom::Role::kStatus:
       return ATK_ROLE_STATUSBAR;
+    case ax::mojom::Role::kSubscript:
+      return kSubscriptRole;
+    case ax::mojom::Role::kSuperscript:
+      return kSuperscriptRole;
     case ax::mojom::Role::kSvgRoot:
       return ATK_ROLE_DOCUMENT_FRAME;
     case ax::mojom::Role::kTab:

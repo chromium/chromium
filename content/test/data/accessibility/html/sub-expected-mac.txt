@@ -1,5 +1,21 @@
 AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='This text contains '
-++++AXStaticText AXValue='subscript'
+++++AXGroup AXSubrole=AXSubscriptStyleGroup
+++++++AXStaticText AXValue='subscript'
 ++++AXStaticText AXValue=' text.'
+++AXGroup
+++++AXStaticText AXValue='H'
+++++AXGroup AXSubrole=AXSubscriptStyleGroup
+++++++AXStaticText AXValue=' '
+++++++AXGroup AXSubrole=AXDeleteStyleGroup
+++++++++AXGroup AXDescription='3'
+++++++++++AXGroup AXDescription='oops'
+++++++++++++AXStaticText AXValue='3'
+++++++AXStaticText AXValue=' '
+++++++AXGroup AXSubrole=AXInsertStyleGroup
+++++++++AXLink AXDescription='2'
+++++++++++AXGroup AXDescription='better'
+++++++++++++AXStaticText AXValue='2'
+++++++AXStaticText AXValue=' '
+++++AXStaticText AXValue='O'

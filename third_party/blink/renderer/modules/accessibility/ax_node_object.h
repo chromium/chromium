@@ -315,7 +315,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void CheckValidChild(AXObject* child);
 #endif
 
-  ax::mojom::blink::TextPosition GetTextPositionFromAria() const;
+  ax::mojom::blink::TextPosition GetTextPositionFromRole() const;
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   static bool IsNameFromLabelElement(HTMLElement* control);

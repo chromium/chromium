@@ -639,8 +639,14 @@ below:
       <message name="IDS_AX_ROLE_STRONG" desc="Accessibility role description for content which is important, serious, or urgent">
         strong
       </message>
+      <message name="IDS_AX_ROLE_SUBSCRIPT" desc="Accessibility role description for subscript" is_accessibility_with_no_ui="true">
+        subscript
+      </message>
       <message name="IDS_AX_ROLE_SUGGESTION" desc="Accessibility role description for suggestion, meaning a suggested change to some content">
         suggestion
+      </message>
+      <message name="IDS_AX_ROLE_SUPERSCRIPT" desc="Accessibility role description for superscript" is_accessibility_with_no_ui="true">
+        superscript
       </message>
       <message name="IDS_AX_ROLE_SWITCH" desc="Accessibility role description for switch">
         switch

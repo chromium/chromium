@@ -23,6 +23,6 @@
 ++++[static] name=' ' offset=0
 ++++[static] name='line-through' offset=0
 ++++[static] name=' ' offset=0
-++++[subscript] name='subscript' offset=0 text-position=sub
+++++[static] name='subscript' offset=0 text-position=sub
 ++++[static] name=' ' offset=0
-++++[superscript] name='superscript' offset=0 text-position=super
+++++[static] name='superscript' offset=0 text-position=super

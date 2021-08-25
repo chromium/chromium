@@ -1,5 +1,6 @@
 Document
 ++Group IsControlElement=false
 ++++Text Name='This text contains '
-++++Text Name='superscript'
+++++Text
+++++++Text Name='superscript'
 ++++Text Name=' text.'

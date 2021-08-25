@@ -528,6 +528,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kSearch,
           ax::mojom::blink::Role::kSection,
           ax::mojom::blink::Role::kSplitter,
+          ax::mojom::blink::Role::kSubscript,
+          ax::mojom::blink::Role::kSuperscript,
           ax::mojom::blink::Role::kTime,
       };
 
@@ -1030,6 +1032,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (GetNode()->HasTagName(html_names::kInsTag))
     return ax::mojom::blink::Role::kContentInsertion;
+
+  if (GetNode()->HasTagName(html_names::kSubTag))
+    return ax::mojom::blink::Role::kSubscript;
+
+  if (GetNode()->HasTagName(html_names::kSupTag))
+    return ax::mojom::blink::Role::kSuperscript;
 
   if (GetNode()->HasTagName(html_names::kMainTag))
     return ax::mojom::blink::Role::kMain;
@@ -2016,32 +2024,34 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
   return AXNodeObject::GetTextDirection();
 }
 
-ax::mojom::blink::TextPosition AXNodeObject::GetTextPositionFromAria() const {
+ax::mojom::blink::TextPosition AXNodeObject::GetTextPositionFromRole() const {
   // Check for role="subscript" or role="superscript" on the element, or if
   // static text, on the containing element.
   AXObject* obj = nullptr;
   if (RoleValue() == ax::mojom::blink::Role::kStaticText)
     obj = ParentObject();
-  else if (RoleValue() == ax::mojom::blink::Role::kGenericContainer)
-    obj = const_cast<AXNodeObject*>(this);  // May have role=sub/superscript.
+  else
+    obj = const_cast<AXNodeObject*>(this);
 
-  if (obj) {
-    const AtomicString& aria_role =
-        obj->GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-    if (aria_role == "subscript")
-      return ax::mojom::blink::TextPosition::kSubscript;
-    if (aria_role == "superscript")
-      return ax::mojom::blink::TextPosition::kSuperscript;
-  }
+  if (obj->RoleValue() == ax::mojom::blink::Role::kSubscript)
+    return ax::mojom::blink::TextPosition::kSubscript;
+  if (obj->RoleValue() == ax::mojom::blink::Role::kSuperscript)
+    return ax::mojom::blink::TextPosition::kSuperscript;
+
+  if (!GetLayoutObject() || !GetLayoutObject()->IsInline())
+    return ax::mojom::blink::TextPosition::kNone;
+
+  // We could have an inline element which descends from a subscript or
+  // superscript.
+  if (auto* parent = obj->ParentObjectUnignored())
+    return static_cast<AXNodeObject*>(parent)->GetTextPositionFromRole();
 
   return ax::mojom::blink::TextPosition::kNone;
 }
 
 ax::mojom::blink::TextPosition AXNodeObject::GetTextPosition() const {
   if (GetNode()) {
-    // role="subscript" and role="superscript" don't use an internal role, they
-    // just return a TextPosition here.
-    const auto& text_position = GetTextPositionFromAria();
+    const auto& text_position = GetTextPositionFromRole();
     if (text_position != ax::mojom::blink::TextPosition::kNone)
       return text_position;
   }

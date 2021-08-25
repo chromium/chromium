@@ -1566,8 +1566,14 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kStrong:
       // No role description.
       break;
+    case ax::mojom::Role::kSubscript:
+      // No role description.
+      break;
     case ax::mojom::Role::kSuggestion:
       message_id = IDS_AX_ROLE_SUGGESTION;
+      break;
+    case ax::mojom::Role::kSuperscript:
+      // No role description.
       break;
     case ax::mojom::Role::kSwitch:
       message_id = IDS_AX_ROLE_SWITCH;

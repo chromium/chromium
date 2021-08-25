@@ -976,8 +976,14 @@
   <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'status' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_STATUS_BRL">
     sts
   </message>
+  <message desc="Accessibility role description for subscript," name="IDS_CHROMEVOX_ROLE_SUBSCRIPT" is_accessibility_with_no_ui="true">
+    Subscript
+  </message>
   <message desc="Accessibility role description for suggestion, meaning a suggested change to some content" name="IDS_CHROMEVOX_ROLE_SUGGESTION" is_accessibility_with_no_ui="true">
     Suggest
+  </message>
+  <message desc="Accessibility role description for superscript," name="IDS_CHROMEVOX_ROLE_SUPERSCRIPT" is_accessibility_with_no_ui="true">
+    Superscript
   </message>
   <message desc="Describes an element with the ARIA role tab." meaning="UI element" name="IDS_CHROMEVOX_ROLE_TAB">
     Tab

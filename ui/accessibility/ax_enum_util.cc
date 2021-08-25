@@ -442,8 +442,12 @@ const char* ToString(ax::mojom::Role role) {
       return "section";
     case ax::mojom::Role::kStrong:
       return "strong";
+    case ax::mojom::Role::kSubscript:
+      return "subscript";
     case ax::mojom::Role::kSuggestion:
       return "suggestion";
+    case ax::mojom::Role::kSuperscript:
+      return "superscript";
     case ax::mojom::Role::kSvgRoot:
       return "svgRoot";
     case ax::mojom::Role::kScrollBar:

@@ -403,7 +403,9 @@ const RoleEntry kAriaRoles[] = {
     {"spinbutton", ax::mojom::blink::Role::kSpinButton},
     {"status", ax::mojom::blink::Role::kStatus},
     {"strong", ax::mojom::blink::Role::kStrong},
+    {"subscript", ax::mojom::blink::Role::kSubscript},
     {"suggestion", ax::mojom::blink::Role::kSuggestion},
+    {"superscript", ax::mojom::blink::Role::kSuperscript},
     {"switch", ax::mojom::blink::Role::kSwitch},
     {"tab", ax::mojom::blink::Role::kTab},
     {"table", ax::mojom::blink::Role::kTable},
@@ -5486,6 +5488,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kRuby:
     case ax::mojom::blink::Role::kSection:
     case ax::mojom::blink::Role::kStrong:
+    case ax::mojom::blink::Role::kSubscript:
+    case ax::mojom::blink::Role::kSuperscript:
     case ax::mojom::blink::Role::kTime:
       if (recursive) {
         // Use contents if part of a recursive name computation.
