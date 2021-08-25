@@ -227,6 +227,11 @@ TEST_F(MenuManagerTest, ChildFunctions) {
 
 TEST_F(MenuManagerTest, PopulateFromValue) {
   const Extension* extension = AddExtension("test");
+  std::string error;
+
+  std::unique_ptr<MenuItem> invalid_item(MenuItem::Populate(
+      extension->id(), base::Value("needs a dictionary"), &error));
+  EXPECT_EQ(invalid_item.get(), nullptr);
 
   bool incognito = true;
   int type = MenuItem::CHECKBOX;
@@ -239,32 +244,32 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   contexts.Add(MenuItem::SELECTION);
   int contexts_value = contexts.ToValue()->GetInt();
 
-  auto document_url_patterns = std::make_unique<base::ListValue>();
-  document_url_patterns->AppendString("http://www.google.com/*");
-  document_url_patterns->AppendString("http://www.reddit.com/*");
+  base::Value document_url_patterns(base::Value::Type::LIST);
+  document_url_patterns.Append("http://www.google.com/*");
+  document_url_patterns.Append("http://www.reddit.com/*");
 
-  auto target_url_patterns = std::make_unique<base::ListValue>();
-  target_url_patterns->AppendString("http://www.yahoo.com/*");
-  target_url_patterns->AppendString("http://www.facebook.com/*");
+  base::Value target_url_patterns(base::Value::Type::LIST);
+  target_url_patterns.Append("http://www.yahoo.com/*");
+  target_url_patterns.Append("http://www.facebook.com/*");
 
-  base::DictionaryValue value;
-  value.SetBoolean("incognito", incognito);
-  value.SetString("string_uid", std::string());
-  value.SetInteger("type", type);
-  value.SetString("title", title);
-  value.SetBoolean("checked", checked);
-  value.SetBoolean("visible", visible);
-  value.SetBoolean("enabled", enabled);
-  value.SetInteger("contexts", contexts_value);
-  std::string error;
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetBoolKey("incognito", incognito);
+  value.SetStringKey("string_uid", std::string());
+  value.SetIntKey("type", type);
+  value.SetStringKey("title", title);
+  value.SetBoolKey("checked", checked);
+  value.SetBoolKey("visible", visible);
+  value.SetBoolKey("enabled", enabled);
+  value.SetIntKey("contexts", contexts_value);
   URLPatternSet document_url_pattern_set;
-  document_url_pattern_set.Populate(*document_url_patterns,
-                                    URLPattern::SCHEME_ALL, true, &error);
-  value.Set("document_url_patterns", std::move(document_url_patterns));
+  document_url_pattern_set.Populate(
+      base::Value::AsListValue(document_url_patterns), URLPattern::SCHEME_ALL,
+      true, &error);
+  value.SetKey("document_url_patterns", std::move(document_url_patterns));
   URLPatternSet target_url_pattern_set;
-  target_url_pattern_set.Populate(*target_url_patterns, URLPattern::SCHEME_ALL,
-                                  true, &error);
-  value.Set("target_url_patterns", std::move(target_url_patterns));
+  target_url_pattern_set.Populate(base::Value::AsListValue(target_url_patterns),
+                                  URLPattern::SCHEME_ALL, true, &error);
+  value.SetKey("target_url_patterns", std::move(target_url_patterns));
 
   std::unique_ptr<MenuItem> item(
       MenuItem::Populate(extension->id(), value, &error));
