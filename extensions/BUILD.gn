@@ -149,8 +149,8 @@ static_library("test_support") {
     "//components/crx_file",
     "//components/guest_view/browser:test_support",
     "//components/keyed_service/content",
-    "//components/prefs:test_support",
     "//components/pref_registry",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
     "//components/user_prefs",
@@ -253,6 +253,11 @@ test("extensions_unittests") {
   ]
 
   data_deps = [ "//third_party/mesa_headers" ]
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+  }
 }
 
 test("extensions_browsertests") {
