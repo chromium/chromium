@@ -174,6 +174,15 @@ void HTMLSlotElement::assign(HeapVector<Member<Node>> nodes,
   UseCounter::Count(GetDocument(), WebFeature::kSlotAssignNode);
   if (nodes.IsEmpty() && manually_assigned_nodes_.IsEmpty())
     return;
+  for (auto& node : nodes) {
+    if (!node->IsSlotable()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidNodeTypeError,
+          "The type of node provided is not slotable: '" + node->nodeName() +
+              "'");
+      return;
+    }
+  }
   HeapLinkedHashSet<WeakMember<Node>> old_manually_assigned_nodes(
       manually_assigned_nodes_);
   HeapLinkedHashSet<WeakMember<Node>> nodes_set;
