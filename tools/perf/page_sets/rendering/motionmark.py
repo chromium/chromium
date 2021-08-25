@@ -17,6 +17,7 @@ class MotionMarkPage(rendering_story.RenderingStory):
                page_set,
                shared_page_state_class=shared_page_state.SharedMobilePageState,
                name_suffix='',
+               make_javascript_deterministic=False,
                extra_browser_args=None):
     super(MotionMarkPage, self).__init__(
         page_set=page_set,
