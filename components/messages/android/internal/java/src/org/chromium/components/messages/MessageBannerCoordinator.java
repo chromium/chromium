@@ -86,19 +86,12 @@ class MessageBannerCoordinator {
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      */
     void hide(boolean animate, Runnable messageHidden) {
+        mTimer.cancelTimer();
         mMediator.hide(animate, () -> {
-            mTimer.cancelTimer();
             setOnTouchRunnable(null);
             setOnTitleChanged(null);
             messageHidden.run();
         });
-    }
-
-    /**
-     * Called when the message should be dismissed so that message banner can do clean-up.
-     */
-    void dismiss() {
-        mTimer.cancelTimer();
     }
 
     void setOnTouchRunnable(Runnable runnable) {
