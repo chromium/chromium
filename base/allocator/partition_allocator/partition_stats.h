@@ -33,8 +33,8 @@ struct ThreadCacheStats {
   uint64_t batch_fill_count;  // Number of central allocator requests.
 
   // Memory cost:
-  uint64_t bucket_total_memory;
-  uint64_t metadata_overhead;
+  uint32_t bucket_total_memory;
+  uint32_t metadata_overhead;
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   uint64_t allocs_per_bucket_[kNumBuckets + 1];

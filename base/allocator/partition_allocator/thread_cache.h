@@ -348,10 +348,15 @@ class BASE_EXPORT ThreadCache {
   // improve locality, and open the door to per-thread settings.
   static uint16_t largest_active_bucket_index_;
 
-  Bucket buckets_[kBucketCount];
-  size_t cached_memory_ = 0;
+  // These are at the beginning as they're accessed for each allocation.
+  uint32_t cached_memory_ = 0;
   std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
+
+  // Buckets are quite big, though each is only 2 pointers.
+  Bucket buckets_[kBucketCount];
+
+  // Cold data below.
   PartitionRoot<ThreadSafe>* const root_;
   const PlatformThreadId thread_id_;
 #if DCHECK_IS_ON()

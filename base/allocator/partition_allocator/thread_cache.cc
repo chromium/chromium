@@ -434,9 +434,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
 }
 
 ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
-    : buckets_(),
-      should_purge_(false),
-      stats_(),
+    : should_purge_(false),
       root_(root),
       thread_id_(PlatformThread::CurrentId()),
       next_(nullptr),
