@@ -423,7 +423,7 @@ def fyi_builder(
 
     # TODO(crbug.com/1135718): Promote out of experiment for all builders.
     kwargs.setdefault("experiments", {})
-    kwargs["experiments"].setdefault("chromium.chromium_tests.use_rdb_results", 5)
+    kwargs["experiments"].setdefault("chromium.chromium_tests.use_rdb_results", 100)
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
