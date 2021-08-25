@@ -36,7 +36,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -510,33 +509,6 @@ public class LocationBarTest {
         ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
         ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
-    }
-
-    @Test
-    @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testFocusLogic_lenButtonVisibilityOnStartNtpPhone_updatedOnceWhenNtpScrolled() {
-        startActivityNormally();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), not(isDisplayed())));
-
-        Mockito.reset(mVoiceRecognitionHandler);
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        // Updating the fraction once should query voice search visibility.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mLocationBarMediator.setUrlFocusChangeFraction(.5f));
-        Mockito.verify(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        // Further updates to the fraction shouldn't trigger a button visibility update.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mLocationBarMediator.setUrlFocusChangeFraction(.6f));
-        Mockito.verify(mVoiceRecognitionHandler, Mockito.times(1)).isVoiceSearchEnabled();
     }
 
     @Test
