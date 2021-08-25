@@ -6,23 +6,41 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-layout-settings',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const PrintPreviewLayoutSettingsElementBase =
+    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
 
-  behaviors: [SettingsBehavior, SelectBehavior],
+/** @polymer */
+export class PrintPreviewLayoutSettingsElement extends
+    PrintPreviewLayoutSettingsElementBase {
+  static get is() {
+    return 'print-preview-layout-settings';
+  }
 
-  properties: {
-    disabled: Boolean,
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  observers: ['onLayoutSettingChange_(settings.layout.value)'],
+  static get properties() {
+    return {
+      disabled: Boolean,
+    };
+  }
+
+  static get observers() {
+    return ['onLayoutSettingChange_(settings.layout.value)'];
+  }
 
   /**
    * @param {*} newValue The new value of the layout setting.
@@ -31,10 +49,13 @@ Polymer({
   onLayoutSettingChange_(newValue) {
     this.selectedValue =
         /** @type {boolean} */ (newValue) ? 'landscape' : 'portrait';
-  },
+  }
 
   /** @param {string} value The new select value. */
   onProcessSelectChange(value) {
     this.setSetting('layout', value === 'landscape');
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewLayoutSettingsElement.is, PrintPreviewLayoutSettingsElement);

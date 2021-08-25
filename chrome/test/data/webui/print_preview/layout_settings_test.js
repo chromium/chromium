@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewLayoutSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
@@ -32,7 +32,7 @@ suite('LayoutSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = layoutSection.$$('select');
+    const select = layoutSection.shadowRoot.querySelector('select');
     assertEquals('portrait', select.value);
 
     layoutSection.setSetting('layout', true);
@@ -43,7 +43,7 @@ suite('LayoutSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = layoutSection.$$('select');
+    const select = layoutSection.shadowRoot.querySelector('select');
     assertEquals('portrait', select.value);
     assertFalse(
         /** @type {boolean} */ (layoutSection.getSettingValue('layout')));

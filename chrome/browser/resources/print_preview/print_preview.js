@@ -55,6 +55,11 @@ export {PrintPreviewDestinationSelectCrosElement} from './ui/destination_select_
 export {DestinationState, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement} from './ui/destination_settings.js';
 export {PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
 export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
+export {PrintPreviewHeaderElement} from './ui/header.js';
+export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';
+// <if expr="not chromeos and not lacros">
+export {PrintPreviewLinkContainerElement} from './ui/link_container.js';
+// </if>
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
 export {SelectBehavior} from './ui/select_behavior.js';

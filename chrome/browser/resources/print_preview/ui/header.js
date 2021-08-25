@@ -10,43 +10,59 @@ import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {Error, State} from '../data/state.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-header',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewHeaderElementBase =
+    mixinBehaviors([SettingsBehavior], PolymerElement);
 
-  behaviors: [SettingsBehavior],
+/** @polymer */
+export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
+  static get is() {
+    return 'print-preview-header';
+  }
 
-  properties: {
-    cloudPrintErrorMessage: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Destination} */
-    destination: Object,
+  static get properties() {
+    return {
+      cloudPrintErrorMessage: String,
 
-    /** @type {!Error} */
-    error: Number,
+      /** @type {!Destination} */
+      destination: Object,
 
-    /** @type {!State} */
-    state: Number,
+      /** @type {!Error} */
+      error: Number,
 
-    managed: Boolean,
+      /** @type {!State} */
+      state: Number,
 
-    sheetCount: Number,
+      managed: Boolean,
 
-    /** @private {?string} */
-    summary_: String,
-  },
+      sheetCount: Number,
 
-  observers: [
-    'updateSummary_(sheetCount, state, destination.id)',
-  ],
+      /** @private {?string} */
+      summary_: String,
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateSummary_(sheetCount, state, destination.id)',
+    ];
+  }
 
   /**
    * @return {boolean}
@@ -57,7 +73,7 @@ Polymer({
         (getPrinterTypeForDestination(this.destination) ===
              PrinterType.PDF_PRINTER ||
          this.destination.id === Destination.GooglePromotedId.DOCS);
-  },
+  }
 
   /** @private */
   updateSummary_() {
@@ -76,7 +92,7 @@ Polymer({
         this.summary_ = null;
         break;
     }
-  },
+  }
 
   /**
    * @return {string} The error message to display.
@@ -91,7 +107,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /** @private */
   updateSheetsSummary_() {
@@ -107,5 +123,7 @@ Polymer({
         .then(label => {
           this.summary_ = label;
         });
-  },
-});
+  }
+}
+
+customElements.define(PrintPreviewHeaderElement.is, PrintPreviewHeaderElement);

@@ -9,48 +9,56 @@ import './print_preview_vars_css.js';
 import './throbber_css.js';
 
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
 
-Polymer({
-  is: 'print-preview-link-container',
+/** @polymer */
+export class PrintPreviewLinkContainerElement extends PolymerElement {
+  static get is() {
+    return 'print-preview-link-container';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    appKioskMode: Boolean,
+  static get properties() {
+    return {
+      appKioskMode: Boolean,
 
-    /** @type {?Destination} */
-    destination: Object,
+      /** @type {?Destination} */
+      destination: Object,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    /** @private {boolean} */
-    shouldShowSystemDialogLink_: {
-      type: Boolean,
-      computed: 'computeShouldShowSystemDialogLink_(appKioskMode, destination)',
-      reflectToAttribute: true,
-    },
+      /** @private {boolean} */
+      shouldShowSystemDialogLink_: {
+        type: Boolean,
+        computed:
+            'computeShouldShowSystemDialogLink_(appKioskMode, destination)',
+        reflectToAttribute: true,
+      },
 
-    /** @private {boolean} */
-    systemDialogLinkDisabled_: {
-      type: Boolean,
-      computed: 'computeSystemDialogLinkDisabled_(disabled)',
-    },
+      /** @private {boolean} */
+      systemDialogLinkDisabled_: {
+        type: Boolean,
+        computed: 'computeSystemDialogLinkDisabled_(disabled)',
+      },
 
-    /** @private {boolean} */
-    openingSystemDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      openingSystemDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    openingInPreview_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private {boolean} */
+      openingInPreview_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * @return {boolean} Whether the system dialog link should be visible.
@@ -66,7 +74,7 @@ Polymer({
     return !!this.destination &&
         this.destination.origin === DestinationOrigin.LOCAL &&
         this.destination.id !== Destination.GooglePromotedId.SAVE_AS_PDF;
-  },
+  }
 
   /**
    * @return {boolean} Whether the system dialog link should be disabled
@@ -74,7 +82,17 @@ Polymer({
    */
   computeSystemDialogLinkDisabled_() {
     return isWindows && this.disabled;
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @private
+   */
+  fire_(eventName) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true}));
+  }
+
 
   /** @private */
   onSystemDialogClick_() {
@@ -85,19 +103,22 @@ Polymer({
     // <if expr="not is_win">
     this.openingSystemDialog_ = true;
     // </if>
-    this.fire('print-with-system-dialog');
-  },
+    this.fire_('print-with-system-dialog');
+  }
 
   // <if expr="is_macosx">
   /** @private */
   onOpenInPreviewClick_() {
     this.openingInPreview_ = true;
-    this.fire('open-pdf-in-preview');
-  },
+    this.fire_('open-pdf-in-preview');
+  }
   // </if>
 
   /** @return {boolean} Whether the system dialog link is available. */
   systemDialogLinkAvailable() {
     return this.shouldShowSystemDialogLink_ && !this.systemDialogLinkDisabled_;
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewLinkContainerElement.is, PrintPreviewLinkContainerElement);

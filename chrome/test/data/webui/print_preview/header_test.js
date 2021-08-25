@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, PrintPreviewModelElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, PrintPreviewHeaderElement, PrintPreviewModelElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -66,7 +66,7 @@ suite(header_test.suiteName, function() {
   // Tests that the 4 different messages (non-virtual printer singular and
   // plural, virtual printer singular and plural) all show up as expected.
   test(assert(header_test.TestNames.HeaderPrinterTypes), async function() {
-    const summary = header.$$('.summary');
+    const summary = header.shadowRoot.querySelector('.summary');
     {
       const {messageName, itemCount} =
           await pluralString.whenCalled('getPluralString');
@@ -107,7 +107,7 @@ suite(header_test.suiteName, function() {
   // Tests that the correct message is shown for non-READY states, and that
   // the print button is disabled appropriately.
   test(assert(header_test.TestNames.HeaderChangesForState), async function() {
-    const summary = header.$$('.summary');
+    const summary = header.shadowRoot.querySelector('.summary');
     await pluralString.whenCalled('getPluralString');
     assertEquals('1 sheet of paper', summary.textContent.trim());
 
@@ -132,8 +132,8 @@ suite(header_test.suiteName, function() {
 
   // Tests that enterprise badge shows up if any setting is managed.
   test(assert(header_test.TestNames.EnterprisePolicy), function() {
-    assertTrue(header.$$('iron-icon').hidden);
+    assertTrue(header.shadowRoot.querySelector('iron-icon').hidden);
     header.managed = true;
-    assertFalse(header.$$('iron-icon').hidden);
+    assertFalse(header.shadowRoot.querySelector('iron-icon').hidden);
   });
 });
