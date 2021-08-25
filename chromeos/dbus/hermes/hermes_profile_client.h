@@ -100,6 +100,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
       const dbus::ObjectPath& carrier_profile_path,
       HermesResponseCallback callback) = 0;
 
+  // Rename the profile's nick name to |new_name| with given
+  // |carrier_profile_path|. |callback| will receive status code indicating
+  // response status.
+  virtual void RenameProfile(const dbus::ObjectPath& carrier_profile_path,
+                             const std::string& new_name,
+                             HermesResponseCallback callback) = 0;
+
   // Returns properties for eSIM carrier profile with given
   // |carrier_profile_path|.
   virtual Properties* GetProperties(

@@ -139,6 +139,20 @@ class HermesProfileClientImpl : public HermesProfileClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void RenameProfile(const dbus::ObjectPath& carrier_profile_path,
+                     const std::string& new_name,
+                     HermesResponseCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesProfileInterface,
+                                 hermes::profile::kRename);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(new_name);
+    dbus::ObjectProxy* object_proxy = GetObject(carrier_profile_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
+        base::BindOnce(&HermesProfileClientImpl::OnHermesStatusResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   Properties* GetProperties(
       const dbus::ObjectPath& carrier_profile_path) override {
     return GetObject(carrier_profile_path).second;
