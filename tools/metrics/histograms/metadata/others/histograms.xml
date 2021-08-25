@@ -20133,10 +20133,11 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.OriginInfo.PermissionChanged"
-    enum="ContentType" expires_after="2021-12-26">
+    enum="ContentType" expires_after="2022-08-25">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Count of how often a specific content type (permission) is changed using the
     Origin Info dialog.
@@ -20147,10 +20148,11 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.OriginInfo.PermissionChanged.Allowed"
-    enum="ContentType" expires_after="2021-08-22">
+    enum="ContentType" expires_after="2022-08-25">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Count of how often a specific content type (permission) is set to 'Allowed'
     using the Origin Info dialog.
@@ -20161,10 +20163,11 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.OriginInfo.PermissionChanged.Blocked"
-    enum="ContentType" expires_after="2021-08-22">
+    enum="ContentType" expires_after="2022-08-25">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Count of how often a specific content type (permission) is set to 'Blocked'
     using the Origin Info dialog.
