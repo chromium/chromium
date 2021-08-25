@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/review_document.css">
-    <link rel="stylesheet" href="/css/scanner.css">
+    <link rel="stylesheet" href="/css/scan.css">
     <script src="/js/mojo/mojo_bindings_lite.js"></script>
     <script src="/js/mojo/time.mojom-lite.js"></script>
     <script src="/js/mojo/camera_metadata_tags.mojom-lite.js"></script>
@@ -183,9 +183,9 @@
           </div>
           <div class="mode-item" i18n-new-feature="new_document_scan_toast">
             <input type="radio" name="mode"
-                 data-mode="scanner" tabindex="0"
-                 i18n-aria="switch_scanner_mode_button">
-            <span i18n-text="label_switch_scanner_mode_button"
+                 data-mode="scan" tabindex="0"
+                 i18n-aria="switch_scan_mode_button">
+            <span i18n-text="label_switch_scan_mode_button"
                   aria-hidden="true"></span>
           </div>
           <div class="mode-item">
@@ -197,17 +197,17 @@
           </div>
         </div>
       </div>
-      <div id="scanner-modes-group">
-        <div id="scan-document-option" class="scanner-mode-item">
-          <input id="scanner-document" type="radio" tabindex="0"
-                 name="scanner-type" data-scantype="document"
+      <div id="scan-modes-group">
+        <div id="scan-document-option" class="scan-mode-item">
+          <input id="scan-document" type="radio" tabindex="0"
+                 name="scan-type" data-scantype="document"
                  i18n-aria="scan_document_option">
           <div class="label" i18n-text="label_scan_document_option"
                aria-hidden="true"></div>
         </div>
-        <div class="scanner-mode-item">
-          <input id="scanner-barcode" type="radio" tabindex="0"
-                 name="scanner-type" data-scantype="barcode"
+        <div class="scan-mode-item">
+          <input id="scan-barcode" type="radio" tabindex="0"
+                 name="scan-type" data-scantype="barcode"
                  i18n-aria="scan_qrcode_option">
           <div class="label" i18n-text="label_scan_qrcode_option"
                aria-hidden="true"></div>

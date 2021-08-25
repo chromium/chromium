@@ -45,9 +45,9 @@ function getElemetFromScanType(type) {
 const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
 
 /**
- * Controller for the scanner options of Camera view.
+ * Controller for the scan options of Camera view.
  */
-export class ScannerOptions {
+export class ScanOptions {
   /**
    * @param {{
    *   doReconfigure: function(): !Promise,
@@ -81,8 +81,8 @@ export class ScannerOptions {
      * @private
      * @const
      */
-    this.scannerOptions_ = [...dom.getAll(
-        '#scanner-modes-group [data-scantype]', HTMLInputElement)];
+    this.scanOptions_ =
+        [...dom.getAll('#scan-modes-group [data-scantype]', HTMLInputElement)];
 
     /**
      * Whether preview have attached as scan frame source.
@@ -112,21 +112,21 @@ export class ScannerOptions {
     this.docModeDevices_ = [];
 
     /**
-     * Called when scanner option changed.
-     * @type {function(): undefined}
+     * Called when scan option changed.
+     * @type {function(): void}
      * @public
      */
     this.onChange = () => {};
 
-    const updateShowScannerMode = () => {
+    const updateShowScanMode = () => {
       state.set(
-          state.State.SHOW_SCANNER_MODE,
+          state.State.SHOW_SCAN_MODE,
           this.docModeDevices_.length > 0 ||
               state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS));
     };
     state.addObserver(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS, () => {
       this.doReconfigure_();
-      updateShowScannerMode();
+      updateShowScanMode();
     });
     infoUpdater.addDeviceChangeListener(() => {
       const devicesInfo = infoUpdater.getCamera3DevicesInfo();
@@ -139,10 +139,10 @@ export class ScannerOptions {
           this.docModeDevices_.push(deviceId);
         }
       }
-      updateShowScannerMode();
+      updateShowScanMode();
     });
 
-    [this.photoBarcodeOption_, ...this.scannerOptions_].forEach((opt) => {
+    [this.photoBarcodeOption_, ...this.scanOptions_].forEach((opt) => {
       opt.addEventListener('click', (evt) => {
         if (state.get(state.State.CAMERA_CONFIGURING)) {
           evt.preventDefault();
@@ -153,10 +153,10 @@ export class ScannerOptions {
       this.updateOption_(
           this.photoBarcodeOption_.checked ? ScanType.BARCODE : null);
     });
-    this.scannerOptions_.forEach((opt) => {
+    this.scanOptions_.forEach((opt) => {
       opt.addEventListener('change', (evt) => {
         if (opt.checked) {
-          this.updateOption_(this.getScannerToggledOption_());
+          this.updateOption_(this.getToggledScanOption_());
         }
       });
     });
@@ -166,8 +166,8 @@ export class ScannerOptions {
    * @return {!ScanType} Returns scan type of checked radio buttons in scan type
    *     option groups.
    */
-  getScannerToggledOption_() {
-    const checkedEl = this.scannerOptions_.find(({checked}) => checked);
+  getToggledScanOption_() {
+    const checkedEl = this.scanOptions_.find(({checked}) => checked);
     return checkedEl === undefined ? DEFAULT_SCAN_TYPE :
                                      getScanTypeFromElement(checkedEl);
   }
@@ -199,10 +199,10 @@ export class ScannerOptions {
     this.documentCornerOverylay_.attach(deviceId);
     this.previewAttached_ = true;
     const scanType = (() => {
-      if (!state.get(Mode.SCANNER)) {
+      if (!state.get(Mode.SCAN)) {
         return null;
       }
-      const type = this.getScannerToggledOption_();
+      const type = this.getToggledScanOption_();
       if (type === ScanType.DOCUMENT && !this.canScanDocument_(deviceId)) {
         return ScanType.BARCODE;
       }
@@ -230,8 +230,7 @@ export class ScannerOptions {
     assert(this.barcodeScanner_ !== null);
 
     this.updateOptionsUI_(scanType);
-    const mode =
-        state.get(state.State.SHOW_SCANNER_MODE) ? Mode.SCANNER : Mode.PHOTO;
+    const mode = state.get(state.State.SHOW_SCAN_MODE) ? Mode.SCAN : Mode.PHOTO;
     if (state.get(mode) && scanType === ScanType.BARCODE) {
       sendBarcodeEnabledEvent();
       this.barcodeScanner_.start();
@@ -240,7 +239,7 @@ export class ScannerOptions {
       this.stopBarcodeScanner_();
     }
 
-    if (state.get(Mode.SCANNER) && scanType === ScanType.DOCUMENT) {
+    if (state.get(Mode.SCAN) && scanType === ScanType.DOCUMENT) {
       const currentDeviceId = this.documentCornerOverylay_.getDeviceId();
       if (!this.canScanDocument_(currentDeviceId)) {
         this.doSwitchDevice_(this.docModeDevices_[0]);
@@ -268,7 +267,7 @@ export class ScannerOptions {
    * @private
    */
   updateOptionsUI_(scanType) {
-    if (state.get(Mode.SCANNER)) {
+    if (state.get(Mode.SCAN)) {
       assert(scanType !== null);
       getElemetFromScanType(scanType).checked = true;
     } else if (state.get(Mode.PHOTO)) {

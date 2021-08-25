@@ -71,7 +71,7 @@ export const I18nString = {
   LABEL_SCAN_DOCUMENT_OPTION: 'label_scan_document_option',
   LABEL_SCAN_QRCODE_OPTION: 'label_scan_qrcode_option',
   LABEL_SWITCH_RECORD_VIDEO_BUTTON: 'label_switch_record_video_button',
-  LABEL_SWITCH_SCANNER_MODE_BUTTON: 'label_switch_scanner_mode_button',
+  LABEL_SWITCH_SCAN_MODE_BUTTON: 'label_switch_scan_mode_button',
   LABEL_SWITCH_TAKE_PHOTO_BUTTON: 'label_switch_take_photo_button',
   LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON:
       'label_switch_take_portrait_bokeh_photo_button',
@@ -109,7 +109,7 @@ export const I18nString = {
   STATUS_MSG_RECORDING_STOPPED: 'status_msg_recording_stopped',
   SWITCH_CAMERA_BUTTON: 'switch_camera_button',
   SWITCH_RECORD_VIDEO_BUTTON: 'switch_record_video_button',
-  SWITCH_SCANNER_MODE_BUTTON: 'switch_scanner_mode_button',
+  SWITCH_SCAN_MODE_BUTTON: 'switch_scan_mode_button',
   SWITCH_TAKE_PHOTO_BUTTON: 'switch_take_photo_button',
   SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON:
       'switch_take_portrait_bokeh_photo_button',

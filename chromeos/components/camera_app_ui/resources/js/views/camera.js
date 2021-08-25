@@ -49,15 +49,15 @@ import {Layout} from './camera/layout.js';
 import {
   Modes,
   PhotoHandler,  // eslint-disable-line no-unused-vars
-  Scanner,
-  ScannerHandler,  // eslint-disable-line no-unused-vars
+  Scan,
+  ScanHandler,  // eslint-disable-line no-unused-vars
   setAvc1Parameters,
   Video,
   VideoHandler,  // eslint-disable-line no-unused-vars
 } from './camera/mode/index.js';
 import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
-import {ScannerOptions} from './camera/scanner_options.js';
+import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {Dialog} from './dialog.js';
@@ -84,7 +84,7 @@ class CameraSuspendedError extends Error {
  * Camera-view controller.
  * @implements {VideoHandler}
  * @implements {PhotoHandler}
- * @implements {ScannerHandler}
+ * @implements {ScanHandler}
  */
 export class Camera extends View {
   /**
@@ -150,10 +150,10 @@ export class Camera extends View {
     this.layout_ = new Layout();
 
     /**
-     * @type {!ScannerOptions}
+     * @type {!ScanOptions}
      * @private
      */
-    this.scannerOptions_ = new ScannerOptions({
+    this.scanOptions_ = new ScanOptions({
       doReconfigure: this.start.bind(this),
       doSwitchDevice: (deviceId) => this.options_.switchDevice(deviceId),
       infoUpdater: this.infoUpdater_,
@@ -279,7 +279,7 @@ export class Camera extends View {
 
     /**
      * Preview constraints saved for temporarily close/restore preview
-     * before/after |ScannerHandler| review document result.
+     * before/after |ScanHandler| review document result.
      * @type {?StreamConstraints}
      * @private
      */
@@ -414,7 +414,7 @@ export class Camera extends View {
     });
 
     this.initVideoEncoderOptions_();
-    await this.initScannerMode_();
+    await this.initScanMode_();
   }
 
   /**
@@ -477,7 +477,7 @@ export class Camera extends View {
   /**
    * @private
    */
-  async initScannerMode_() {
+  async initScanMode_() {
     const helper = await ChromeHelper.getInstance();
     const isPlatformSupport = await helper.isDocumentModeSupported();
     state.set(state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT, isPlatformSupport);
@@ -485,12 +485,11 @@ export class Camera extends View {
       return;
     }
 
-    const scannerModeBtn =
-        dom.get('input[data-mode="scanner"]', HTMLInputElement);
+    const scanModeBtn = dom.get('input[data-mode="scan"]', HTMLInputElement);
 
     const docModeToastKey = 'isDocModeToastShown';
     const checkShowToast = () => {
-      state.removeObserver(state.State.SHOW_SCANNER_MODE, checkShowToast);
+      state.removeObserver(state.State.SHOW_SCAN_MODE, checkShowToast);
       if (state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
           localStorage.getBool(docModeToastKey)) {
         return;
@@ -499,24 +498,24 @@ export class Camera extends View {
       localStorage.set(docModeToastKey, true);
       // aria-owns don't work on HTMLInputElement, show toast on parent div
       // instead.
-      const scannerModeItem =
-          assertInstanceof(scannerModeBtn.parentElement, HTMLDivElement);
-      newFeatureToast.show(scannerModeItem);
-      scannerModeBtn.addEventListener('click', () => {
+      const scanModeItem =
+          assertInstanceof(scanModeBtn.parentElement, HTMLDivElement);
+      newFeatureToast.show(scanModeItem);
+      scanModeBtn.addEventListener('click', () => {
         newFeatureToast.hide();
       });
     };
-    if (state.get(state.State.SHOW_SCANNER_MODE)) {
+    if (state.get(state.State.SHOW_SCAN_MODE)) {
       checkShowToast();
     } else {
-      state.addObserver(state.State.SHOW_SCANNER_MODE, checkShowToast);
+      state.addObserver(state.State.SHOW_SCAN_MODE, checkShowToast);
     }
 
     const docModeDialogKey = 'isDocModeDialogShown';
     if (!localStorage.getBool(docModeDialogKey)) {
       const checkShowDialog = () => {
-        if (!state.get(Mode.SCANNER) ||
-            !this.scannerOptions_.isDocumentModeEanbled()) {
+        if (!state.get(Mode.SCAN) ||
+            !this.scanOptions_.isDocumentModeEanbled()) {
           return;
         }
         this.removeConfigureCompleteListener_(checkShowDialog);
@@ -531,15 +530,14 @@ export class Camera extends View {
     // When entering document mode, refocus to shutter button for letting user
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
-      if (!state.get(state.State.CAMERA_CONFIGURING) &&
-          state.get(Mode.SCANNER) &&
-          this.scannerOptions_.isDocumentModeEanbled()) {
+      if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
+          this.scanOptions_.isDocumentModeEanbled()) {
         dom.getAll('button.shutter', HTMLButtonElement)
             .forEach((btn) => btn.offsetParent && btn.focus());
       }
     };
     state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
-    this.scannerOptions_.onChange = checkRefocus;
+    this.scanOptions_.onChange = checkRefocus;
   }
 
   /**
@@ -774,13 +772,13 @@ export class Camera extends View {
    * @return {!Promise}
    * @private
    */
-  async restorePreviewInScannerMode_() {
+  async restorePreviewInScanMode_() {
     assert(this.constraints_ !== null);
-    await this.modes_.prepareDevice(Mode.SCANNER);
+    await this.modes_.prepareDevice(Mode.SCAN);
     await this.preview_.open(this.constraints_);
-    const scannerMode = assertInstanceof(this.modes_.current, Scanner);
-    scannerMode.updatePreview(this.preview_.stream);
-    await this.scannerOptions_.attachPreview(this.preview_.video);
+    const scanMode = assertInstanceof(this.modes_.current, Scan);
+    scanMode.updatePreview(this.preview_.stream);
+    await this.scanOptions_.attachPreview(this.preview_.video);
   }
 
   /**
@@ -789,11 +787,11 @@ export class Camera extends View {
   async setReviewDocument(blob) {
     this.constraints_ = this.preview_.getConstraits();
     await this.preview_.close();
-    await this.scannerOptions_.detachPreview();
+    await this.scanOptions_.detachPreview();
     try {
       await this.reviewDocumentView_.setReviewDocument(blob);
     } catch (e) {
-      await this.restorePreviewInScannerMode_();
+      await this.restorePreviewInScanMode_();
       throw e;
     }
   }
@@ -803,7 +801,7 @@ export class Camera extends View {
    */
   async getDocumentReviewResult() {
     const result = await this.reviewDocumentView_.startReview();
-    await this.restorePreviewInScannerMode_();
+    await this.restorePreviewInScanMode_();
     return result;
   }
 
@@ -980,7 +978,7 @@ export class Camera extends View {
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, factory, stream, this.facingMode_, deviceId, captureR);
-          await this.scannerOptions_.attachPreview(this.preview_.video);
+          await this.scanOptions_.attachPreview(this.preview_.video);
           for (const l of this.configureCompleteListener_) {
             l();
           }
@@ -1088,6 +1086,6 @@ export class Camera extends View {
     // mode before stopping preview to close extra stream first.
     await this.modes_.clear();
     await this.preview_.close();
-    await this.scannerOptions_.detachPreview();
+    await this.scanOptions_.detachPreview();
   }
 }

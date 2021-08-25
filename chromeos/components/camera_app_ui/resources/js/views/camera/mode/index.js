@@ -34,9 +34,9 @@ import {
 } from './photo.js';
 import {PortraitFactory} from './portrait.js';
 import {
-  ScannerFactory,
-  ScannerHandler,  // eslint-disable-line no-unused-vars
-} from './scanner.js';
+  ScanFactory,
+  ScanHandler,  // eslint-disable-line no-unused-vars
+} from './scan.js';
 import {SquareFactory} from './square.js';
 import {
   VideoFactory,
@@ -44,7 +44,7 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
-export {Scanner, ScannerHandler} from './scanner.js';
+export {Scan, ScanHandler} from './scan.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**
@@ -134,11 +134,11 @@ export class Modes {
    * @param {!DoSwitchMode} doSwitchMode
    * @param {!PhotoHandler} photoHandler
    * @param {!VideoHandler} videoHandler
-   * @param {!ScannerHandler} scannerHandler
+   * @param {!ScanHandler} scanHandler
    */
   constructor(
       defaultMode, photoPreferrer, videoPreferrer, doSwitchMode, photoHandler,
-      videoHandler, scannerHandler) {
+      videoHandler, scanHandler) {
     /**
      * @type {!DoSwitchMode}
      * @private
@@ -312,11 +312,10 @@ export class Modes {
             getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
-      [Mode.SCANNER]: {
-        getCaptureFactory: () => new ScannerFactory(
-            getNonNullConstraints(), this.captureResolution_, scannerHandler),
-        isSupported: async (deviceId) =>
-            state.get(state.State.SHOW_SCANNER_MODE),
+      [Mode.SCAN]: {
+        getCaptureFactory: () => new ScanFactory(
+            getNonNullConstraints(), this.captureResolution_, scanHandler),
+        isSupported: async (deviceId) => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, cros.mojom.CaptureIntent.DOCUMENT),

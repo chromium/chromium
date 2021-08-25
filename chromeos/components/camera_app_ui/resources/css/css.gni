@@ -11,5 +11,5 @@ css_files = [
   "new_feature_toast.css",
   "ptz_panel.css",
   "review_document.css",
-  "scanner.css",
+  "scan.css",
 ]

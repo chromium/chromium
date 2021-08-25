@@ -446,11 +446,11 @@
       <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Portrait
       </message>
-      <message desc="Label for spoken feedback to read out for switch to scanner mode button." name="IDS_SWITCH_SCANNER_MODE_BUTTON">
-        Switch to scanner mode
+      <message desc="Label for spoken feedback to read out for switch to scan mode button." name="IDS_SWITCH_SCAN_MODE_BUTTON">
+        Switch to scan mode
       </message>
-      <message desc="Label for switch to scanner mode button for scanning QR Code or document." name="IDS_LABEL_SWITCH_SCANNER_MODE_BUTTON">
-        Scanner
+      <message desc="Label for switch to scan mode button for scanning QR Code or document." name="IDS_LABEL_SWITCH_SCAN_MODE_BUTTON">
+        Scan
       </message>
       <message desc="Label for scanning document option." name="IDS_LABEL_SCAN_DOCUMENT_OPTION">
         Document

@@ -6,11 +6,11 @@ body:not(.platform-support-scan-document) #expert-enable-document-mode-on-all-ca
   display: none;
 }
 
-body:is(.show-scanner-mode, :not(.streaming), :not(.photo)) #toggle-barcode {
+body:is(.show-scan-mode, :not(.streaming), :not(.photo)) #toggle-barcode {
   display: none;
 }
 
-body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-modes-group {
+body:is(:not(.show-scan-mode), :not(.scan), :not(.streaming)) #scan-modes-group {
   display: none;
 }
 
@@ -24,7 +24,7 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
   border-radius: 50%;
 }
 
-#scanner-modes-group {
+#scan-modes-group {
   background-color: rgba(var(--grey-900-rgb), 0.8);
   border-radius: var(--border-radius-rounded-with-short-side);
   bottom: calc(var(--bottom-line) * 2 + 8px);
@@ -36,20 +36,20 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
   transform: translateX(-50%);
 }
 
-.scanner-mode-item {
+.scan-mode-item {
   border-radius: var(--border-radius-rounded-with-short-side);
   pointer-events: auto;
   position: relative;
 }
 
-.scanner-mode-item > input {
+.scan-mode-item > input {
   height: 100%;
   position: absolute;
   width: 100%;
   z-index: 1;
 }
 
-.scanner-mode-item > div.label {
+.scan-mode-item > div.label {
   border-radius: var(--border-radius-rounded-with-short-side);
   font: 14px/20px var(--default-font-family);
   line-height: 20px;
@@ -57,7 +57,7 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
   z-index: 0;
 }
 
-.scanner-mode-item input:checked + div.label {
+.scan-mode-item input:checked + div.label {
   background: white;
   box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
   color: var(--grey-900);
@@ -78,7 +78,7 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
   width: calc(100% / 2);
 }
 
-body.scanner.enable-scan-barcode :is(#shutters-group, #toggle-timer) {
+body.scan.enable-scan-barcode :is(#shutters-group, #toggle-timer) {
   display: none;
 }
 
