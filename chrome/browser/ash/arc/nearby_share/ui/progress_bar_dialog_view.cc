@@ -57,7 +57,7 @@ ProgressBarDialogView::ProgressBarDialogView() {
 
   progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>(
       /*preferred_height=*/kProgressBarHeight));
-  progress_bar_->SetValue(-1);  // infinite animation.
+  progress_bar_->SetValue(0.01);  // set small initial value.
   progress_bar_->SetPreferredSize(
       gfx::Size(kProgressBarWidth, kProgressBarHeight));
   progress_bar_->SizeToPreferredSize();
