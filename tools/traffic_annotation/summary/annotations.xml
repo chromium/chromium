@@ -178,7 +178,7 @@ Refer to README.md for content description and update process.
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="77" hash_code="109987793" type="0" deprecated="2019-07-30" content_hash_code="112740597" file_path=""/>
  <item id="lib_address_input" added_in_milestone="62" hash_code="50816767" type="0" content_hash_code="57977576" os_list="linux,windows" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc"/>
  <item id="litepages_robots_rules" added_in_milestone="89" hash_code="50910588" type="0" content_hash_code="72567080" os_list="linux,windows" file_path="chrome/browser/subresource_redirect/origin_robots_rules.cc"/>
- <item id="load_autofill_gstatic_data" added_in_milestone="78" hash_code="119416099" type="0" content_hash_code="8433621" os_list="linux,windows" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc"/>
+ <item id="load_autofill_gstatic_data" added_in_milestone="78" hash_code="119416099" type="0" content_hash_code="128051538" os_list="linux,windows" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc"/>
  <item id="logo_service" added_in_milestone="73" hash_code="35473769" type="0" content_hash_code="20271299" os_list="linux,windows" file_path="components/search_provider_logos/logo_service_impl.cc"/>
  <item id="logo_tracker" added_in_milestone="62" hash_code="36859107" type="0" deprecated="2018-12-07" content_hash_code="67588075" file_path=""/>
  <item id="lookup_single_password_leak" added_in_milestone="78" hash_code="16927377" type="0" content_hash_code="12158296" os_list="linux,windows" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc"/>

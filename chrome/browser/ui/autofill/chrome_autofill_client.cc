@@ -334,7 +334,7 @@ ChromeAutofillClient::GetAllowedMerchantsForVirtualCards() {
     return std::vector<std::string>();
 
   return AutofillGstaticReader::GetInstance()
-      ->GetTokenizationMerchantWhitelist();
+      ->GetTokenizationMerchantAllowlist();
 }
 
 std::vector<std::string>
@@ -343,7 +343,7 @@ ChromeAutofillClient::GetAllowedBinRangesForVirtualCards() {
     return std::vector<std::string>();
 
   return AutofillGstaticReader::GetInstance()
-      ->GetTokenizationBinRangesWhitelist();
+      ->GetTokenizationBinRangesAllowlist();
 }
 
 void ChromeAutofillClient::ShowLocalCardMigrationDialog(
