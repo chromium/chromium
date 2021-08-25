@@ -17,6 +17,10 @@
 #include "remoting/host/linux/file_path_util.h"
 #endif  // defined(OS_LINUX)
 
+#if defined(OS_WIN)
+#include "remoting/host/host_settings_win.h"
+#endif  // defined (OS_WIN)
+
 namespace remoting {
 
 namespace {
@@ -51,6 +55,8 @@ HostSettings* HostSettings::GetInstance() {
 #elif defined(OS_LINUX)
   static base::NoDestructor<FileHostSettings> instance(base::FilePath(
       GetConfigDirectoryPath().Append(GetHostHash() + ".settings.json")));
+#elif defined(OS_WIN)
+  static base::NoDestructor<HostSettingsWin> instance;
 #else
   // HostSettings is currently neither implemented nor used on other platforms.
   static base::NoDestructor<EmptyHostSettings> instance;
