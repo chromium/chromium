@@ -150,22 +150,6 @@ bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {
   return network::cors::CorsUnsafeRequestHeaderNames(in).empty();
 }
 
-bool ContainsOnlyCorsSafelistedOrForbiddenHeaders(
-    const HTTPHeaderMap& headers) {
-  Vector<String> header_names;
-
-  net::HttpRequestHeaders::HeaderVector in;
-  for (const auto& entry : headers) {
-    in.push_back(net::HttpRequestHeaders::HeaderKeyValuePair(
-        entry.key.Latin1(), entry.value.Latin1()));
-  }
-  // |is_revalidating| is not needed for blink-side CORS.
-  constexpr bool is_revalidating = false;
-  return network::cors::CorsUnsafeNotForbiddenRequestHeaderNames(
-             in, is_revalidating)
-      .empty();
-}
-
 bool IsOkStatus(int status) {
   return network::cors::IsOkStatus(status);
 }
