@@ -518,10 +518,10 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   //
   // The `std::move` on statusor instead of on the whole expression enables
   // warnings about possible uses of the statusor object after the move.
-  const T& value() const&;
-  T& value() &;
-  const T&& value() const&&;
-  T&& value() &&;
+  const T& value() const& ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T& value() & ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  const T&& value() const&& ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T&& value() && ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // StatusOr<T>:: operator*()
   //
@@ -533,10 +533,10 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // `absl::StatusOr<T>`. Alternatively, see the `value()` member function for a
   // similar API that guarantees crashing or throwing an exception if there is
   // no current value.
-  const T& operator*() const&;
-  T& operator*() &;
-  const T&& operator*() const&&;
-  T&& operator*() &&;
+  const T& operator*() const& ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T& operator*() & ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  const T&& operator*() const&& ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T&& operator*() && ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // StatusOr<T>::operator->()
   //
@@ -545,8 +545,8 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // REQUIRES: `this->ok() == true`, otherwise the behavior is undefined.
   //
   // Use `this->ok()` to verify that there is a current value.
-  const T* operator->() const;
-  T* operator->();
+  const T* operator->() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T* operator->() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // StatusOr<T>::value_or()
   //

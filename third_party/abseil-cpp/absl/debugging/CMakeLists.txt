@@ -25,6 +25,7 @@ absl_cc_library(
     "internal/stacktrace_emscripten-inl.inc"
     "internal/stacktrace_generic-inl.inc"
     "internal/stacktrace_powerpc-inl.inc"
+    "internal/stacktrace_riscv-inl.inc"
     "internal/stacktrace_unimplemented-inl.inc"
     "internal/stacktrace_win32-inl.inc"
     "internal/stacktrace_x86-inl.inc"

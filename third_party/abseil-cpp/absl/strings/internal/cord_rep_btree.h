@@ -623,7 +623,7 @@ inline void CordRepBtree::Destroy(CordRepBtree* tree) {
 inline CordRepBtree* CordRepBtree::CopyRaw() const {
   auto* tree = static_cast<CordRepBtree*>(::operator new(sizeof(CordRepBtree)));
   memcpy(static_cast<void*>(tree), this, sizeof(CordRepBtree));
-  new (&tree->refcount) Refcount;
+  new (&tree->refcount) RefcountAndFlags;
   return tree;
 }
 

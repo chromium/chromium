@@ -126,6 +126,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::bits
     absl::config
     absl::endian
     absl::int128

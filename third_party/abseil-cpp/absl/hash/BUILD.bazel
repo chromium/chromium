@@ -152,6 +152,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:endian",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
     ],
 )

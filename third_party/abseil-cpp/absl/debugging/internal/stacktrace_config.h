@@ -65,6 +65,9 @@
 #elif defined(__aarch64__)
 #define ABSL_STACKTRACE_INL_HEADER \
   "absl/debugging/internal/stacktrace_aarch64-inl.inc"
+#elif defined(__riscv)
+#define ABSL_STACKTRACE_INL_HEADER \
+  "absl/debugging/internal/stacktrace_riscv-inl.inc"
 #elif defined(__has_include)
 #if __has_include(<execinfo.h>)
 // Note: When using glibc this may require -funwind-tables to function properly.

@@ -66,6 +66,7 @@ absl_source_set("low_level_hash") {
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
   visibility = [ ":*" ]

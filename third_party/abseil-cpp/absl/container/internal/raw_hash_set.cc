@@ -59,6 +59,8 @@ void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
 }
+// Extern template instantiotion for inline function.
+template FindInfo find_first_non_full(const ctrl_t*, size_t, size_t);
 
 }  // namespace container_internal
 ABSL_NAMESPACE_END
