@@ -1017,7 +1017,7 @@ const base::Feature kWebAppManifestIconUpdating{
 #endif  // defined(OS_ANDROID)
 
 const base::Feature kWebAppManifestPolicyAppIdentityUpdate{
-    "WebAppManifestPolicyAppIdentityUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebAppManifestPolicyAppIdentityUpdate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // When enabled, the web (PWA) Kiosk session uses Lacros-chrome as the web
