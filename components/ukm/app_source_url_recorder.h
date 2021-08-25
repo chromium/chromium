@@ -67,6 +67,10 @@ class AppSourceUrlRecorder {
 
   // For internal use only.
   static SourceId GetSourceIdForUrl(const GURL& url, const AppType);
+
+  // Informs UKM service that the source_id is no longer needed nor used by the
+  // end of the current reporting cycle, and thus can be deleted later.
+  static void MarkSourceForDeletion(SourceId source_id);
 };
 
 }  // namespace ukm

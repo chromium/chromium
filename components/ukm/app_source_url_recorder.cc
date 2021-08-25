@@ -63,4 +63,17 @@ SourceId AppSourceUrlRecorder::GetSourceIdForUrl(const GURL& url,
   return source_id;
 }
 
+void AppSourceUrlRecorder::MarkSourceForDeletion(SourceId source_id) {
+  if (GetSourceIdType(source_id) != SourceIdType::APP_ID) {
+    DLOG(FATAL) << "AppSourceUrlRecorder::MarkSourceForDeletion invoked on "
+                << "non-APP_ID type SourceId: " << source_id;
+    return;
+  }
+
+  ukm::DelegatingUkmRecorder* const recorder =
+      ukm::DelegatingUkmRecorder::Get();
+  if (recorder)
+    recorder->MarkSourceForDeletion(source_id);
+}
+
 }  // namespace ukm
