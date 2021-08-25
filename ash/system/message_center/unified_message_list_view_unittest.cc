@@ -15,7 +15,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 using message_center::MessageCenter;
 using message_center::MessageView;
@@ -25,22 +25,22 @@ namespace ash {
 
 namespace {
 
-class TestNotificationView : public message_center::NotificationViewMD {
+class TestNotificationView : public message_center::NotificationView {
  public:
   TestNotificationView(const message_center::Notification& notification)
-      : NotificationViewMD(notification) {
+      : NotificationView(notification) {
     layer()->GetAnimator()->set_preemption_strategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
 
   ~TestNotificationView() override = default;
 
-  // message_center::NotificationViewMD:
+  // message_center::NotificationView:
   void UpdateCornerRadius(int top_radius, int bottom_radius) override {
     top_radius_ = top_radius;
     bottom_radius_ = bottom_radius;
-    message_center::NotificationViewMD::UpdateCornerRadius(top_radius,
-                                                           bottom_radius);
+    message_center::NotificationView::UpdateCornerRadius(top_radius,
+                                                         bottom_radius);
   }
 
   int top_radius() const { return top_radius_; }

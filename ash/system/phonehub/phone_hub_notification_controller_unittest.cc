@@ -21,7 +21,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 namespace ash {
 
@@ -267,14 +267,14 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
   const std::u16string expected_phone_name = u"Phone name";
   phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
 
-  auto notification_view =
+  auto phonehub_notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
           controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
-  auto* notification_view_md =
-      static_cast<message_center::NotificationViewMD*>(notification_view.get());
+  auto* notification_view = static_cast<message_center::NotificationView*>(
+      phonehub_notification_view.get());
   views::Label* summary_text_label =
-      static_cast<views::Label*>(notification_view_md->GetViewByID(
-          message_center::NotificationViewMD::kSummaryTextView));
+      static_cast<views::Label*>(notification_view->GetViewByID(
+          message_center::NotificationView::kSummaryTextView));
 
   // Notification should contain phone name in the summary text.
   EXPECT_EQ(expected_phone_name, summary_text_label->GetText());
@@ -284,18 +284,18 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   auto* notification = FindNotification(kCrOSNotificationId0);
 
-  auto notification_view =
+  auto phonehub_notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
           controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
-  auto* notification_view_md =
-      static_cast<message_center::NotificationViewMD*>(notification_view.get());
-  views::View* action_buttons_row = notification_view_md->GetViewByID(
-      message_center::NotificationViewMD::kActionButtonsRow);
+  auto* notification_view = static_cast<message_center::NotificationView*>(
+      phonehub_notification_view.get());
+  views::View* action_buttons_row = notification_view->GetViewByID(
+      message_center::NotificationView::kActionButtonsRow);
   views::View* reply_button = action_buttons_row->children()[0];
 
   // Initially, reply button should be disabled after replied.
   const std::u16string kInlineReply0 = u"inline reply 0";
-  notification_view_md->OnNotificationInputSubmit(0, kInlineReply0);
+  notification_view->OnNotificationInputSubmit(0, kInlineReply0);
   EXPECT_FALSE(reply_button->GetEnabled());
 
   // After a brief moment, it should be enabled.

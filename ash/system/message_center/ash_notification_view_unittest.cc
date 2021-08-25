@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/message_center/ash_notification_view_md.h"
+#include "ash/system/message_center/ash_notification_view.h"
 
 #include "ash/test/ash_test_base.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_header_view.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 using message_center::Notification;
 using message_center::NotificationHeaderView;
-using message_center::NotificationViewMD;
+using message_center::NotificationView;
 
 namespace ash {
 
@@ -49,20 +49,18 @@ std::unique_ptr<Notification> CreateTestNotification(bool has_image = false) {
 
 }  // namespace
 
-class AshNotificationViewMDTest : public AshTestBase,
-                                  public views::ViewObserver {
+class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
  public:
-  AshNotificationViewMDTest() = default;
-  AshNotificationViewMDTest(const AshNotificationViewMDTest&) = delete;
-  AshNotificationViewMDTest& operator=(const AshNotificationViewMDTest&) =
-      delete;
-  ~AshNotificationViewMDTest() override = default;
+  AshNotificationViewTest() = default;
+  AshNotificationViewTest(const AshNotificationViewTest&) = delete;
+  AshNotificationViewTest& operator=(const AshNotificationViewTest&) = delete;
+  ~AshNotificationViewTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
     auto notification = CreateTestNotification();
-    notification_view_ = std::make_unique<AshNotificationViewMD>(*notification);
+    notification_view_ = std::make_unique<AshNotificationView>(*notification);
   }
 
   void TearDown() override {
@@ -73,15 +71,13 @@ class AshNotificationViewMDTest : public AshTestBase,
  protected:
   views::View* GetExpandButton() { return notification_view_->expand_button_; }
 
-  AshNotificationViewMD* notification_view() {
-    return notification_view_.get();
-  }
+  AshNotificationView* notification_view() { return notification_view_.get(); }
 
  private:
-  std::unique_ptr<AshNotificationViewMD> notification_view_;
+  std::unique_ptr<AshNotificationView> notification_view_;
 };
 
-TEST_F(AshNotificationViewMDTest, ExpandButtonVisibility) {
+TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   // Expand button should not be shown when it is not expandable.
   EXPECT_FALSE(GetExpandButton()->GetVisible());
 

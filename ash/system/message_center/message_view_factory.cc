@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/system/message_center/ash_notification_view_md.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/message_center/public/cpp/notification_types.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 namespace ash {
 
@@ -64,9 +64,8 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
   if (!notification_view) {
     notification_view =
         ash::features::IsNotificationsRefreshEnabled()
-            ? std::make_unique<AshNotificationViewMD>(notification)
-            : std::make_unique<message_center::NotificationViewMD>(
-                  notification);
+            ? std::make_unique<AshNotificationView>(notification)
+            : std::make_unique<message_center::NotificationView>(notification);
   }
 
   return notification_view;

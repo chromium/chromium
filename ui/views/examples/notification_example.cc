@@ -20,7 +20,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -79,7 +79,7 @@ void NotificationExample::CreateExampleView(View* container) {
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(notification));
   auto* const notification_view = container->AddChildView(
-      std::make_unique<message_center::NotificationViewMD>(notification));
+      std::make_unique<message_center::NotificationView>(notification));
   notification_view->SetProperty(
       views::kFlexBehaviorKey,
       FlexSpecification(MinimumFlexSizeRule::kPreferredSnapToMinimum,

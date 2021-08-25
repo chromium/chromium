@@ -15,7 +15,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -274,7 +274,7 @@ MessagePopupView* MessagePopupCollection::CreatePopup(
   bool a11_feedback_on_init =
       notification.rich_notification_data()
           .should_make_spoken_feedback_for_popup_updates;
-  return new MessagePopupView(new NotificationViewMD(notification), this,
+  return new MessagePopupView(new NotificationView(notification), this,
                               a11_feedback_on_init);
 }
 

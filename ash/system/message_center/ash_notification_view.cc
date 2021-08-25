@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/message_center/ash_notification_view_md.h"
+#include "ash/system/message_center/ash_notification_view.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -25,18 +25,18 @@ constexpr int kExpandButtonSize = 24;
 
 namespace ash {
 
-BEGIN_METADATA(AshNotificationViewMD, ExpandButton, views::ImageButton)
+BEGIN_METADATA(AshNotificationView, ExpandButton, views::ImageButton)
 END_METADATA
 
-AshNotificationViewMD::ExpandButton::ExpandButton(PressedCallback callback)
+AshNotificationView::ExpandButton::ExpandButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
   views::InstallCircleHighlightPathGenerator(this);
   TrayPopupUtils::ConfigureTrayPopupButton(this);
 }
 
-AshNotificationViewMD::ExpandButton::~ExpandButton() = default;
+AshNotificationView::ExpandButton::~ExpandButton() = default;
 
-void AshNotificationViewMD::ExpandButton::SetExpanded(bool expanded) {
+void AshNotificationView::ExpandButton::SetExpanded(bool expanded) {
   if (expanded_ == expanded)
     return;
   expanded_ = expanded;
@@ -46,11 +46,11 @@ void AshNotificationViewMD::ExpandButton::SetExpanded(bool expanded) {
   SchedulePaint();
 }
 
-gfx::Size AshNotificationViewMD::ExpandButton::CalculatePreferredSize() const {
+gfx::Size AshNotificationView::ExpandButton::CalculatePreferredSize() const {
   return gfx::Size(kExpandButtonSize, kExpandButtonSize);
 }
 
-void AshNotificationViewMD::ExpandButton::PaintButtonContents(
+void AshNotificationView::ExpandButton::PaintButtonContents(
     gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
@@ -60,7 +60,7 @@ void AshNotificationViewMD::ExpandButton::PaintButtonContents(
   canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
 }
 
-void AshNotificationViewMD::ExpandButton::OnThemeChanged() {
+void AshNotificationView::ExpandButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
 
   const gfx::ImageSkia image = gfx::CreateVectorIcon(
@@ -79,34 +79,34 @@ void AshNotificationViewMD::ExpandButton::OnThemeChanged() {
                                                    kTrayItemCornerRadius));
 }
 
-AshNotificationViewMD::AshNotificationViewMD(
+AshNotificationView::AshNotificationView(
     const message_center::Notification& notification)
-    : NotificationViewMD(notification) {
+    : NotificationView(notification) {
   auto expand_button = std::make_unique<ExpandButton>(base::BindRepeating(
-      &AshNotificationViewMD::ToggleExpand, base::Unretained(this)));
+      &AshNotificationView::ToggleExpand, base::Unretained(this)));
   expand_button->SetVisible(IsExpandable());
-  expand_button_ = GetViewByID(NotificationViewMD::kContentRow)
+  expand_button_ = GetViewByID(NotificationView::kContentRow)
                        ->AddChildView(std::move(expand_button));
 }
 
-AshNotificationViewMD::~AshNotificationViewMD() = default;
+AshNotificationView::~AshNotificationView() = default;
 
-void AshNotificationViewMD::UpdateWithNotification(
+void AshNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
-  NotificationViewMD::UpdateWithNotification(notification);
+  NotificationView::UpdateWithNotification(notification);
   expand_button_->SetVisible(IsExpandable());
 }
 
-void AshNotificationViewMD::ToggleExpand() {
+void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
 }
 
-void AshNotificationViewMD::SetExpanded(bool expanded) {
+void AshNotificationView::SetExpanded(bool expanded) {
   expand_button_->SetExpanded(expanded);
-  NotificationViewMD::SetExpanded(expanded);
+  NotificationView::SetExpanded(expanded);
 }
 
-void AshNotificationViewMD::SetExpandButtonEnabled(bool enabled) {
+void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
   expand_button_->SetVisible(enabled);
 }
 

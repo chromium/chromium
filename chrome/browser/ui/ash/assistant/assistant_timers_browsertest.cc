@@ -29,7 +29,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 
 namespace chromeos {
 namespace assistant {
@@ -121,12 +121,12 @@ message_center::MessageView* FindViewForNotification(
 }
 
 // Returns the action buttons for the specified |notification|.
-std::vector<message_center::NotificationMdTextButton*>
+std::vector<message_center::NotificationTextButton*>
 FindActionButtonsForNotification(
     const message_center::Notification* notification) {
   auto* notification_view = FindViewForNotification(notification);
 
-  std::vector<message_center::NotificationMdTextButton*> action_buttons;
+  std::vector<message_center::NotificationTextButton*> action_buttons;
   FindDescendentsOfClass(notification_view, &action_buttons);
 
   return action_buttons;

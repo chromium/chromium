@@ -31,7 +31,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/views/notification_header_view.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -55,20 +55,20 @@ const int kNotificationAppNameMaxWidth = 140;
 constexpr base::TimeDelta kInlineReplyDisableTime =
     base::TimeDelta::FromSeconds(1);
 
-class PhoneHubNotificationView : public message_center::NotificationViewMD {
+class PhoneHubNotificationView : public message_center::NotificationView {
  public:
   explicit PhoneHubNotificationView(
       const message_center::Notification& notification,
       const std::u16string& phone_name)
-      : message_center::NotificationViewMD(notification) {
+      : message_center::NotificationView(notification) {
     // Add customized header.
     message_center::NotificationHeaderView* header_row =
         static_cast<message_center::NotificationHeaderView*>(
-            GetViewByID(message_center::NotificationViewMD::kHeaderRow));
+            GetViewByID(message_center::NotificationView::kHeaderRow));
     views::View* app_name_view =
-        GetViewByID(message_center::NotificationViewMD::kAppNameView);
+        GetViewByID(message_center::NotificationView::kAppNameView);
     views::Label* summary_text_view = static_cast<views::Label*>(
-        GetViewByID(message_center::NotificationViewMD::kSummaryTextView));
+        GetViewByID(message_center::NotificationView::kSummaryTextView));
 
     // The app name should be displayed in full, leaving the rest of the space
     // for device name. App name will only be truncated when it reached it
@@ -81,23 +81,23 @@ class PhoneHubNotificationView : public message_center::NotificationViewMD {
                        device_name_width, gfx::ELIDE_TAIL));
 
     action_buttons_row_ =
-        GetViewByID(message_center::NotificationViewMD::kActionButtonsRow);
+        GetViewByID(message_center::NotificationView::kActionButtonsRow);
     if (!action_buttons_row_->children().empty())
-      reply_button_ = static_cast<message_center::NotificationMdTextButton*>(
+      reply_button_ = static_cast<message_center::NotificationTextButton*>(
           action_buttons_row_->children()[kReplyButtonIndex]);
 
-    inline_reply_ = static_cast<message_center::NotificationInputContainerMD*>(
-        GetViewByID(message_center::NotificationViewMD::kInlineReply));
+    inline_reply_ = static_cast<message_center::NotificationInputContainer*>(
+        GetViewByID(message_center::NotificationView::kInlineReply));
   }
 
   ~PhoneHubNotificationView() override = default;
   PhoneHubNotificationView(const PhoneHubNotificationView&) = delete;
   PhoneHubNotificationView& operator=(const PhoneHubNotificationView&) = delete;
 
-  // message_center::NotificationViewMD:
+  // message_center::NotificationView:
   void OnNotificationInputSubmit(size_t index,
                                  const std::u16string& text) override {
-    message_center::NotificationViewMD::OnNotificationInputSubmit(index, text);
+    message_center::NotificationView::OnNotificationInputSubmit(index, text);
 
     DCHECK(reply_button_);
 
@@ -124,8 +124,8 @@ class PhoneHubNotificationView : public message_center::NotificationViewMD {
  private:
   // Owned by view hierarchy.
   views::View* action_buttons_row_ = nullptr;
-  message_center::NotificationMdTextButton* reply_button_ = nullptr;
-  message_center::NotificationInputContainerMD* inline_reply_ = nullptr;
+  message_center::NotificationTextButton* reply_button_ = nullptr;
+  message_center::NotificationInputContainer* inline_reply_ = nullptr;
 
   // Timer that fires to enable reply button after a brief period of time.
   std::unique_ptr<base::OneShotTimer> enable_reply_timer_;

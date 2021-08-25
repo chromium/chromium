@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
-#define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
+#ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
+#define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ui/message_center/views/notification_view_md.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace message_center {
@@ -15,29 +15,28 @@ class Notification;
 
 namespace ash {
 
-// Customized NotificationViewMD for notification on ChromeOS. This view is used
+// Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
 // and list) except custom notification.
-class ASH_EXPORT AshNotificationViewMD
-    : public message_center::NotificationViewMD {
+class ASH_EXPORT AshNotificationView : public message_center::NotificationView {
  public:
-  explicit AshNotificationViewMD(
+  explicit AshNotificationView(
       const message_center::Notification& notification);
-  AshNotificationViewMD(const AshNotificationViewMD&) = delete;
-  AshNotificationViewMD& operator=(const AshNotificationViewMD&) = delete;
-  ~AshNotificationViewMD() override;
+  AshNotificationView(const AshNotificationView&) = delete;
+  AshNotificationView& operator=(const AshNotificationView&) = delete;
+  ~AshNotificationView() override;
 
   // Toggle the expand state of the notification.
   void ToggleExpand();
 
-  // message_center::NotificationViewMD:
+  // message_center::NotificationView:
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
   void SetExpanded(bool expanded) override;
   void SetExpandButtonEnabled(bool enabled) override;
 
  private:
-  friend class AshNotificationViewMDTest;
+  friend class AshNotificationViewTest;
 
   // Customized expand button for this notification view.
   class ExpandButton : public views::ImageButton {
@@ -66,4 +65,4 @@ class ASH_EXPORT AshNotificationViewMD
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
+#endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_

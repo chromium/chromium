@@ -137,7 +137,7 @@ std::unique_ptr<views::View> CreatePlayIconView() {
 CaptureModeNotificationView::CaptureModeNotificationView(
     const message_center::Notification& notification,
     CaptureModeType capture_type)
-    : message_center::NotificationViewMD(notification),
+    : message_center::NotificationView(notification),
       capture_type_(capture_type) {
   // Creates the extra view which will depend on the type of the notification.
   if (!notification.image().IsEmpty())
@@ -168,7 +168,7 @@ CaptureModeNotificationView::CreateForVideo(
 }
 
 void CaptureModeNotificationView::Layout() {
-  message_center::NotificationViewMD::Layout();
+  message_center::NotificationView::Layout();
   if (!extra_view_)
     return;
 
