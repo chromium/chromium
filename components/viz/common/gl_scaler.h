@@ -172,6 +172,22 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
       // Note 2: This requires a GL context that supports multiple render
       // targets with at least two draw buffers.
       DEINTERLEAVE_PAIRWISE,
+
+      // Select CHANNEL_1 and CHANNEL_2, packing each 2-channel pair from
+      // 4-pixel values into the 2 elements of one output quad. The channels
+      // will be selected at half-width and full height. This should be
+      // equivalent to the second texture produced by ExportFormat::NV61 (see
+      // above). If used on textures after they have gone through RGB→YUV color
+      // space conversion, the transformation is:
+      //
+      //             (interleaved quads)              (channels 1 & 2)
+      //   YUVx YUVx YUVx YUVx YUVx YUVx YUVx YUVx       UVUV UVUV
+      //   YUVx YUVx YUVx YUVx YUVx YUVx YUVx YUVx  -->  UVUV UVUV
+      //   YUVx YUVx YUVx YUVx YUVx YUVx YUVx YUVx       UVUV UVUV
+      //
+      // Note: Because of this packing, the horizontal coordinates of the
+      // |output_rect| used with Scale() should be divided by 4.
+      UV_CHANNELS,
     } export_format = ExportFormat::INTERLEAVED_QUADS;
 
     // Optionally swizzle the ordering of the values in each output quad. If the
@@ -287,6 +303,7 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
     PLANAR_CHANNEL_1,
     PLANAR_CHANNEL_2,
     PLANAR_CHANNEL_3,
+    PLANAR_CHANNELS_1_2,
     I422_NV61_MRT,
     DEINTERLEAVE_PAIRWISE_MRT,
   };

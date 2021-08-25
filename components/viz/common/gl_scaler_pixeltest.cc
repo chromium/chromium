@@ -451,7 +451,7 @@ TEST_F(GLScalerPixelTest, Example_ScaleAndExportForScreenVideoCapture) {
       CreateVerticallyFlippedBitmap(CreateSMPTETestImage(kSourceSize)));
   constexpr gfx::Size kOutputSize = gfx::Size(1280, 720);
   SkBitmap expected = CreateSMPTETestImage(kOutputSize);
-  ConvertBitmapToYUV(&expected);
+  ConvertRGBABitmapToYUV(&expected);
 
   // While the output size is 1280x720, the packing of 4 pixels into one RGBA
   // quad means that the texture width must be divided by 4, and that size

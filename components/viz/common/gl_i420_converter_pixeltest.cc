@@ -80,7 +80,7 @@ TEST_P(GLI420ConverterPixelTest, ScaleAndConvert) {
   constexpr gfx::Rect kOutputRect = gfx::Rect(0, 0, 1280, 720);
   ASSERT_EQ(kOutputRect, GLI420Converter::ToAlignedRect(kOutputRect));
   SkBitmap expected = CreateSMPTETestImage(kOutputRect.size());
-  ConvertBitmapToYUV(&expected);
+  ConvertRGBABitmapToYUV(&expected);
 
   // While the output size is 1280x720, the packing of 4 pixels into one RGBA
   // quad means that the texture width must be divided by 4 (for the Y

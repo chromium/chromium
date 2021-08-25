@@ -86,7 +86,7 @@ class GLScalerTestUtil {
   // DefaultRGBColorSpace() to DefaultYUVColorSpace(). The color channels (plus
   // one alpha) remain interleaved (i.e., no pixel blending or format transform
   // is being done).
-  static void ConvertBitmapToYUV(SkBitmap* image);
+  static void ConvertRGBABitmapToYUV(SkBitmap* image);
 
   // Performs an in-place swizzling of the red and blue color channels in the
   // given |image|.
@@ -102,10 +102,17 @@ class GLScalerTestUtil {
   // Performs the inverse operation to CreatePackedPlanarBitmap(). This takes
   // all of the data in |plane| and uses it to populate a single color channel
   // of all the pixels of |out|. The |plane| can be a full-size or half-size
-  // (subsampled) plane.
+  // (subsampled) plane. The channels other than the one specified via |channel|
+  // will be left unmodified.
   static void UnpackPlanarBitmap(const SkBitmap& plane,
                                  int channel,
                                  SkBitmap* out);
+
+  // This takes all of the data in |plane| and uses it to populate a green and
+  // blue color channels of all the pixels of |out|. The |plane| can be a
+  // full-size or half-size (subsampled) plane. This leaves the R and A channels
+  // of |out| unmodified.
+  static void UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out);
 
   // Returns the |source| bitmap, but with its content vertically flipped.
   static SkBitmap CreateVerticallyFlippedBitmap(const SkBitmap& source);

@@ -199,7 +199,9 @@ gfx::ColorSpace GLScalerTestUtil::DefaultYUVColorSpace() {
 }
 
 // static
-void GLScalerTestUtil::ConvertBitmapToYUV(SkBitmap* image) {
+void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
+  CHECK_EQ(image->colorType(), kRGBA_8888_SkColorType);
+
   const auto transform = gfx::ColorTransform::NewColorTransform(
       DefaultRGBColorSpace(), DefaultYUVColorSpace());
 
@@ -270,7 +272,8 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
   CHECK_GT(plane.width(), 0);
   CHECK_GT(plane.height(), 0);
   const int col_sampling_ratio = out->width() / plane.width();
-  CHECK_EQ(out->width() % plane.width(), 0);
+  CHECK_EQ(out->width() % plane.width(), 0)
+      << "out->width()=" << out->width() << ", plane.width()=" << plane.width();
   CHECK_GT(col_sampling_ratio, 0);
   const int row_sampling_ratio = out->height() / plane.height();
   CHECK_EQ(out->height() % plane.height(), 0);
@@ -301,6 +304,67 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
       const int x_src_ch = (x / ch_sampling_ratio) % 4;
       dst[x] |= ((src[x_src] >> kShiftForChannel[x_src_ch]) & 0xff)
                 << output_shift;
+    }
+  }
+}
+
+// static
+void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
+  CHECK_GT(plane.width(), 0);
+  CHECK_GT(plane.height(), 0);
+
+  // The format of data in |plane| is as follows:
+  //
+  //    UVUV UVUV UVUV
+  //    UVUV UVUV UVUV
+  //    UVUV UVUV UVUV
+  //
+  // One row of source of size |plane.width()| contains information about
+  // 2 * |plane.width()| texels, and we want to sample them to populate
+  // one row of |out->width()|, so we'll sample at the rate of
+  //
+  //     col_sampling_ratio = out->width() / (2 * plane.width())
+  //
+  // This will allow us to find which "half-texel" in the source row to look at
+  // for a corresponding texel in the output.
+
+  const int col_sampling_ratio = out->width() / (2 * plane.width());
+  CHECK_EQ(out->width() % (2 * plane.width()), 0);
+  CHECK_GT(col_sampling_ratio, 0);
+
+  const int row_sampling_ratio = out->height() / plane.height();
+  CHECK_EQ(out->height() % plane.height(), 0);
+  CHECK_GT(row_sampling_ratio, 0);
+
+  // These determine which single byte in each of |out|'s uint32_t-valued pixels
+  // will be modified.
+  constexpr int kShiftForChannel[4] = {kRedShift, kGreenShift, kBlueShift,
+                                       kAlphaShift};
+  constexpr uint32_t zero_green_mask = ~(UINT32_C(0xff) << kGreenShift);
+  constexpr uint32_t zero_blue_mask = ~(UINT32_C(0xff) << kBlueShift);
+  constexpr uint32_t zero_green_blue_mask = zero_green_mask & zero_blue_mask;
+
+  // Iterate over all the pixels of |out|, calculate where the data for that
+  // said pixel is.
+  for (int y = 0; y < out->height(); ++y) {
+    const uint32_t* const src = plane.getAddr32(0, y / row_sampling_ratio);
+    uint32_t* const dst = out->getAddr32(0, y);
+    for (int x = 0; x < out->width(); ++x) {
+      // Zero-out the existing byte (e.g., "RGBA" → "R00A").
+      dst[x] &= zero_green_blue_mask;
+
+      // Find which half-texel to look at:
+      const int src_half_texel = x / col_sampling_ratio;
+      // The |src_half_texel| belongs to a texel:
+      const int src_texel = src_half_texel / 2;
+      // The |src_half_texel| spans 2 channels and starts at channel:
+      const int src_channel = 2 * (src_half_texel % 2);
+
+      // Grab the 2 consecutive channels, starting at |src_channel|:
+      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel]) & 0xff)
+                << kGreenShift;
+      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel + 1]) & 0xff)
+                << kBlueShift;
     }
   }
 }
