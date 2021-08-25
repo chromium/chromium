@@ -12,7 +12,6 @@ import re
 import subprocess
 import tempfile
 
-_FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 _SSH_KEY_DIR = os.path.expanduser('~/.ssh')
 _DEFAULT_SSH_PORT = 22
 _DEVICE_PROTO_TEMPLATE = """
@@ -38,6 +37,7 @@ class EmulatorNetworkNotFoundError(Exception):
 
 class FvdlTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'aemu'
+  _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 
   def __init__(self, out_dir, target_cpu, system_log_file, require_kvm,
                enable_graphics, hardware_gpu, with_network, ram_size_mb):
@@ -74,7 +74,7 @@ class FvdlTarget(emu_target.EmuTarget):
                            help='Run emulator with emulated nic via tun/tap.')
 
   def _BuildCommand(self):
-    boot_data.ProvisionSSH(_SSH_KEY_DIR)
+    boot_data.ProvisionSSH()
     self._host_ssh_port = common.GetAvailableTcpPort()
     kernel_image = common.EnsurePathExists(
         boot_data.GetTargetFile('qemu-kernel.kernel', self._GetTargetSdkArch(),
@@ -90,7 +90,7 @@ class FvdlTarget(emu_target.EmuTarget):
                      'emulator'))
 
     emu_command = [
-        _FVDL_PATH,
+        self._FVDL_PATH,
         '--sdk',
         'start',
         '--nopackageserver',
@@ -186,7 +186,7 @@ class FvdlTarget(emu_target.EmuTarget):
       logging.error('%s did not start' % (self.EMULATOR_NAME))
       return
     femu_command = [
-        _FVDL_PATH, '--sdk', 'kill', '--launched-proto',
+        self._FVDL_PATH, '--sdk', 'kill', '--launched-proto',
         self._vdl_output_file.name
     ]
     femu_process = subprocess.Popen(femu_command)
@@ -201,4 +201,4 @@ class FvdlTarget(emu_target.EmuTarget):
     self._device_proto_file.close()
 
   def _GetSshConfigPath(self):
-    return boot_data.GetSSHConfigPath(_SSH_KEY_DIR)
+    return boot_data.GetSSHConfigPath()

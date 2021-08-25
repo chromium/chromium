@@ -35,20 +35,24 @@ TARGET_TYPE_QEMU = 'qemu'
 # Specifies boot files intended for use by anything (incl. physical devices).
 TARGET_TYPE_GENERIC = 'generic'
 
-def _GetPubKeyPath(output_dir):
+# Defaults used by Fuchsia SDK
+_SSH_DIR = os.path.expanduser('~/.ssh')
+_SSH_CONFIG_DIR = os.path.expanduser('~/.fuchsia')
+
+
+def _GetPubKeyPath():
   """Returns a path to the generated SSH public key."""
 
-  return os.path.join(output_dir, 'fuchsia_ed25519.pub')
+  return os.path.join(_SSH_DIR, 'fuchsia_ed25519.pub')
 
 
-def ProvisionSSH(output_dir):
-  """Generates a keypair and config file for SSH."""
+def ProvisionSSH():
+  """Generates a key pair and config file for SSH."""
 
-  fuchsia_authorized_keys_path = os.path.join(output_dir,
+  fuchsia_authorized_keys_path = os.path.join(_SSH_DIR,
                                               'fuchsia_authorized_keys')
-  id_key_path = os.path.join(output_dir, 'fuchsia_ed25519')
-  _GetPubKeyPath(output_dir)
-  ssh_config_path = os.path.join(output_dir, 'ssh_config')
+  id_key_path = os.path.join(_SSH_DIR, 'fuchsia_ed25519')
+  _GetPubKeyPath()
 
   logging.debug('Generating SSH credentials.')
 
@@ -63,6 +67,11 @@ def ProvisionSSH(output_dir):
     with open(fuchsia_authorized_keys_path, 'w') as out:
       out.write(result.decode('utf-8'))
 
+  if not os.path.exists(_SSH_CONFIG_DIR):
+    os.mkdir(_SSH_CONFIG_DIR)
+  elif not os.path.isdir(_SSH_CONFIG_DIR):
+    raise Exception(_SSH_CONFIG_DIR + ' is not a directory.')
+  ssh_config_path = os.path.join(_SSH_CONFIG_DIR, 'ssh_config')
   with open(ssh_config_path, "w") as ssh_config:
     ssh_config.write(
         _SSH_CONFIG_TEMPLATE.format(identity=id_key_path))
@@ -77,16 +86,15 @@ def GetTargetFile(filename, target_arch, target_type):
   return os.path.join(common.IMAGES_ROOT, target_arch, target_type, filename)
 
 
-def GetSSHConfigPath(output_dir):
-  return output_dir + '/ssh_config'
+def GetSSHConfigPath():
+  return os.path.join(_SSH_CONFIG_DIR, 'ssh_config')
 
 
 def GetBootImage(output_dir, target_arch, target_type):
   """"Gets a path to the Zircon boot image, with the SSH client public key
   added."""
-
-  ProvisionSSH(output_dir)
-  pubkey_path = _GetPubKeyPath(output_dir)
+  ProvisionSSH()
+  pubkey_path = _GetPubKeyPath()
   zbi_tool = common.GetHostToolPathFromPlatform('zbi')
   image_source_path = GetTargetFile('zircon-a.zbi', target_arch, target_type)
   image_dest_path = os.path.join(output_dir, 'gen', 'fuchsia-with-keys.zbi')

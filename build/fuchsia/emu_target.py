@@ -121,7 +121,7 @@ class EmuTarget(target.Target):
     return ('localhost', self._host_ssh_port)
 
   def _GetSshConfigPath(self):
-    return boot_data.GetSSHConfigPath(self._out_dir)
+    return boot_data.GetSSHConfigPath()
 
 
 def LogSystemStatistics(log_file_name):

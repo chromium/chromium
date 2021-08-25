@@ -12,7 +12,7 @@ import unittest
 import unittest.mock as mock
 
 from argparse import Namespace
-from fvdl_target import _FVDL_PATH, FvdlTarget, _SSH_KEY_DIR
+from fvdl_target import FvdlTarget, _SSH_KEY_DIR
 
 
 class TestBuildCommandFvdlTarget(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
       common.EnsurePathExists = mock.MagicMock(return_value='image')
       with mock.patch.object(boot_data, 'ProvisionSSH') as provision_mock:
         build_command = target._BuildCommand()
-        self.assertIn(_FVDL_PATH, build_command)
+        self.assertIn(target._FVDL_PATH, build_command)
         self.assertIn('--sdk', build_command)
         self.assertIn('start', build_command)
         self.assertNotIn('--noacceleration', target._BuildCommand())

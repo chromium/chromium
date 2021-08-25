@@ -5,19 +5,15 @@
 """Implements commands for running and interacting with Fuchsia on devices."""
 
 import boot_data
-import filecmp
 import logging
 import os
 import pkg_repo
 import re
 import subprocess
-import sys
 import target
-import tempfile
 import time
-import uuid
 
-from common import SDK_ROOT, EnsurePathExists, GetHostToolPathFromPlatform
+from common import EnsurePathExists, GetHostToolPathFromPlatform
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -26,12 +22,8 @@ BOOT_DISCOVERY_ATTEMPTS = 30
 # Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
-# Number of seconds to wait for device discovery.
-BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
-
-# The timeout limit for one call to the device-finder tool.
-_DEVICE_FINDER_TIMEOUT_LIMIT_SECS = \
-    BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
+# Number of seconds between each device discovery.
+BOOT_DISCOVERY_DELAY_SECS = 4
 
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
@@ -98,25 +90,25 @@ class DeviceTarget(target.Target):
     if self._host and self._node_name:
       raise Exception('Only one of "--host" or "--name" can be specified.')
 
-    if ssh_config:
-      if fuchsia_out_dir:
-        print('Warning: Ignoring "--fuchsia-out-dir" because "--ssh_config" '
-              'specified.')
+    if fuchsia_out_dir:
+      if ssh_config:
+        raise Exception('Only one of "--fuchsia-out-dir" or "--ssh_config" can '
+                        'be specified.')
 
-      # Use the SSH config provided via the commandline.
-      self._ssh_config_path = os.path.expanduser(ssh_config)
-
-    elif fuchsia_out_dir:
       self._fuchsia_out_dir = os.path.expanduser(fuchsia_out_dir)
       # Use SSH keys from the Fuchsia output directory.
       self._ssh_config_path = os.path.join(self._fuchsia_out_dir, 'ssh-keys',
                                            'ssh_config')
       self._os_check = 'ignore'
 
+    elif ssh_config:
+      # Use the SSH config provided via the commandline.
+      self._ssh_config_path = os.path.expanduser(ssh_config)
+
     else:
       # Default to using an automatically generated SSH config and keys.
-      boot_data.ProvisionSSH(out_dir)
-      self._ssh_config_path = boot_data.GetSSHConfigPath(out_dir)
+      boot_data.ProvisionSSH()
+      self._ssh_config_path = boot_data.GetSSHConfigPath()
 
   @staticmethod
   def CreateFromArgs(args):
@@ -178,21 +170,17 @@ class DeviceTarget(target.Target):
       command = [
           dev_finder_path,
           'resolve',
-          '-timeout',
-          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS,
           '-device-limit',
           '1',  # Exit early as soon as a host is found.
           self._node_name
       ]
+      proc = subprocess.Popen(command,
+                              stdout=subprocess.PIPE,
+                              stderr=open(os.devnull, 'w'))
     else:
-      command = [
-          dev_finder_path, 'list', '-full', '-timeout',
-          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS
-      ]
-
-    proc = subprocess.Popen(command,
-                            stdout=subprocess.PIPE,
-                            stderr=open(os.devnull, 'w'))
+      proc = self.RunFFXCommand(['target', 'list', '-f', 'simple'],
+                                stdout=subprocess.PIPE,
+                                stderr=open(os.devnull, 'w'))
 
     output = set(proc.communicate()[0].strip().split('\n'))
     if proc.returncode != 0:
@@ -201,21 +189,19 @@ class DeviceTarget(target.Target):
     if self._node_name:
       # Handle the result of "device-finder resolve".
       self._host = output.pop().strip()
-
     else:
       name_host_pairs = [x.strip().split(' ') for x in output]
 
-      # Handle the output of "device-finder list".
       if len(name_host_pairs) > 1:
-        print('More than one device was discovered on the network.')
-        print('Use --node-name <name> to specify the device to use.')
-        print('\nList of devices:')
-        for pair in name_host_pairs:
-          print('  ' + pair[1])
-        print()
+        logging.info('More than one device was discovered on the network. '
+                     'Use --node-name <name> to specify the device to use.')
+        logging.info('List of devices:')
+        logging.info(output)
         raise Exception('Ambiguous target device specification.')
-
       assert len(name_host_pairs) == 1
+      # Check if device has both address and name.
+      if len(name_host_pairs[0]) < 2:
+        return False
       self._host, self._node_name = name_host_pairs[0]
 
     logging.info('Found device "%s" at address %s.' % (self._node_name,
@@ -251,12 +237,14 @@ class DeviceTarget(target.Target):
     self._node_name = m.groupdict()['nodename']
     logging.info('Booted device "%s".' % self._node_name)
 
-    # Repeatdly query mDNS until we find the device, or we hit the timeout of
-    # DISCOVERY_TIMEOUT_SECS.
+    # Repeatedly search for a device for |BOOT_DISCOVERY_ATTEMPT|
+    # number of attempts. If a device isn't found, wait
+    # |BOOT_DISCOVERY_DELAY_SECS| before searching again.
     logging.info('Waiting for device to join network.')
     for _ in xrange(BOOT_DISCOVERY_ATTEMPTS):
       if self._Discover():
         break
+      time.sleep(BOOT_DISCOVERY_DELAY_SECS)
 
     if not self._host:
       raise Exception('Device %s couldn\'t be discovered via mDNS.' %
