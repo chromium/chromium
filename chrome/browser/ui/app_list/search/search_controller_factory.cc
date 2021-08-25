@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_provider.h"
-#include "chrome/browser/ui/app_list/search/assistant_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 #include "chrome/browser/ui/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
@@ -78,10 +77,6 @@ constexpr size_t kMaxPlayStoreResults = 12;
 // TODO(warx): Need UX spec.
 constexpr size_t kMaxAppShortcutResults = 4;
 
-// Assistant provides a single search result when launcher chip integration is
-// enabled from its internal cache of conversation starters.
-constexpr size_t kMaxAssistantChipResults = 1;
-
 constexpr size_t kMaxAssistantTextResults = 1;
 
 }  // namespace
@@ -120,14 +115,6 @@ std::unique_ptr<SearchController> CreateSearchController(
 
   controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
                                                 profile, list_controller));
-
-  // The Assistant search provider currently only contributes search results
-  // when launcher chip integration is enabled.
-  if (chromeos::assistant::features::IsLauncherChipIntegrationEnabled()) {
-    size_t assistant_group_id = controller->AddGroup(kMaxAssistantChipResults);
-    controller->AddProvider(assistant_group_id,
-                            std::make_unique<AssistantSearchProvider>());
-  }
 
   if (app_list_features::IsAssistantSearchEnabled()) {
     size_t assistant_group_id = controller->AddGroup(kMaxAssistantTextResults);

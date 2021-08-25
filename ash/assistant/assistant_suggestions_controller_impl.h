@@ -48,9 +48,6 @@ class AssistantSuggestionsControllerImpl
       override;
 
   void UpdateConversationStarters();
-  void FetchConversationStarters();
-  void ProvideConversationStarters();
-
   void UpdateOnboardingSuggestions();
 
   AssistantSuggestionsModel model_;
