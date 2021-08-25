@@ -306,7 +306,6 @@ vs-chromium-project.txt
 /tools/page_cycler/acid3
 /tools/reclient
 /tools/skia_goldctl/
-/tools/swarming_client
 /tools/tryserver
 /tools/win/link_limiter/build
 /ui/file_manager/internal

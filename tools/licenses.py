@@ -74,9 +74,6 @@ PRUNE_PATHS = set([
     os.path.join('third_party','pywebsocket'),
     os.path.join('third_party','syzygy'),
 
-    # Chromium code.
-    os.path.join('tools', 'swarming_client'),
-
     # Stuff pulled in from chrome-internal for official builds/tools.
     os.path.join('third_party', 'clear_cache'),
     os.path.join('third_party', 'gnu'),

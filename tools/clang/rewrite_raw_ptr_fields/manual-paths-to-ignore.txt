@@ -139,7 +139,6 @@ remoting/webapp/app_remoting/internal/
 skia/tools/clusterfuzz-data/
 tools/page_cycler/acid3/
 tools/perf/data/
-tools/swarming_client/
 ui/file_manager/internal/
 v8/
 webkit/data/bmp_decoder/
