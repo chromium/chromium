@@ -273,7 +273,14 @@ SiteInfo SiteInfo::CreateInternal(
     return CreateForErrorPage(storage_partition_config.value(),
                               web_exposed_isolation_info);
   }
+  // We should only set |is_origin_keyed| if we are actually creating separate
+  // SiteInstances for OAC isolation. When we do same-process OAC, we don't do
+  // that at present.
+  // TODO(wjmaclean): Once SiteInstanceGroups are fully implemented, we should
+  // be able to give spOAC origins their own SiteInstance.
+  // https://crbug.com/1195535
   bool is_origin_keyed =
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() &&
       ChildProcessSecurityPolicyImpl::GetInstance()
           ->ShouldOriginGetOptInIsolation(
               isolation_context, url::Origin::Create(url_info.url),
