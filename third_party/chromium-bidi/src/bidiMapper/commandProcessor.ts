@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IServer } from '../utils/iServer';
 import { CdpClient } from '../cdp';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { Context } from './domains/context/context';
 import { Protocol } from 'devtools-protocol';
-
-interface BidiCommandMessage {
-  id: number;
-  method: string;
-  params?: any;
-}
+import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
 
 export class CommandProcessor {
   private _contextProcessor: BrowsingContextProcessor;
 
-  static run(cdpClient: CdpClient, bidiServer: IServer, selfTargetId: string) {
+  static run(
+    cdpClient: CdpClient,
+    bidiServer: IBidiServer,
+    selfTargetId: string
+  ) {
     const commandProcessor = new CommandProcessor(
       cdpClient,
       bidiServer,
@@ -40,7 +38,7 @@ export class CommandProcessor {
 
   private constructor(
     private _cdpClient: CdpClient,
-    private _bidiServer: IServer,
+    private _bidiServer: IBidiServer,
     private _selfTargetId: string
   ) {
     this._contextProcessor = new BrowsingContextProcessor(
@@ -66,7 +64,7 @@ export class CommandProcessor {
       this._contextProcessor.handleDetachedFromTargetEvent(params);
     });
 
-    this._bidiServer.setOnMessage((messageObj) => {
+    this._bidiServer.on('message', (messageObj) => {
       return this._onBidiMessage(messageObj);
     });
   }
@@ -118,7 +116,7 @@ export class CommandProcessor {
     };
   }
 
-  private async _process_browsingContext_getTree(params: {}) {
+  private async _process_browsingContext_getTree(params: object) {
     const { targetInfos } = await this._cdpClient.Target.getTargets();
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
@@ -132,7 +130,7 @@ export class CommandProcessor {
     return {};
   }
 
-  private _process_session_status = async function (params: {}) {
+  private _process_session_status = async function (params: object) {
     return { ready: true, message: 'ready' };
   };
 
@@ -162,7 +160,7 @@ export class CommandProcessor {
         );
 
       case 'DEBUG.Page.close':
-        return await this._process_DEBUG_Page_close(commandData.params);
+        return await this._process_DEBUG_Page_close(commandData.params as any);
 
       default:
         throw new Error('unknown command');

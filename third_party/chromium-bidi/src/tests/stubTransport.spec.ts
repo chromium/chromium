@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 import { assert, spy, SinonSpy } from 'sinon';
-import { IServer } from '../utils/iServer';
+import { ITransport } from '../utils/transport';
 
-export class StubServer implements IServer {
-  setOnMessage: ((messageObj: any) => Promise<any>) & SinonSpy<any[], any>;
-  sendMessage: ((messageObj: any) => Promise<void>) & SinonSpy<any[], any>;
-  close: (() => void) & SinonSpy<any[], any>;
+type TypedSpy<T extends (...args: any[]) => any> = SinonSpy<
+  Parameters<T>,
+  ReturnType<T>
+>;
+
+function typedSpy<T extends SinonSpy>() {
+  return spy() as T;
+}
+
+export class StubTransport implements ITransport {
+  setOnMessage: TypedSpy<ITransport['setOnMessage']>;
+  sendMessage: TypedSpy<ITransport['sendMessage']>;
+  close: TypedSpy<ITransport['close']>;
 
   getOnMessage(): (string: string) => void {
     assert.called(this.setOnMessage);
-    const onMessage = this.setOnMessage.getCall(0).args[0] as any as (
-      string: string
-    ) => void;
-    return onMessage;
+    return this.setOnMessage.getCall(0).args[0];
   }
 
   constructor() {
-    this.sendMessage = spy() as any as ((messageObj: any) => Promise<any>) &
-      SinonSpy<any[], any>;
-    this.setOnMessage = spy() as any as ((messageObj: any) => Promise<void>) &
-      SinonSpy<any[], any>;
-    this.close = spy() as any as (() => void) & SinonSpy<any[], any>;
+    this.sendMessage = typedSpy();
+    this.setOnMessage = typedSpy();
+    this.close = typedSpy();
   }
 }

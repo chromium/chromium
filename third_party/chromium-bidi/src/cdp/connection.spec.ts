@@ -1,4 +1,4 @@
-import { StubServer } from '../tests/stubServer.spec';
+import { StubTransport } from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -13,7 +13,7 @@ const ANOTHER_SESSION_ID = 'EFGH';
 
 describe('Connection', function () {
   it('can send a command message for a CdpClient', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     const browserMessage = JSON.stringify({
@@ -29,7 +29,7 @@ describe('Connection', function () {
   });
 
   it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     let client = conn.sessionClient(SOME_SESSION_ID);
@@ -48,7 +48,7 @@ describe('Connection', function () {
   });
 
   it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     const onMessage = mockCdpServer.getOnMessage();
@@ -74,7 +74,7 @@ describe('Connection', function () {
   });
 
   it('routes event messages to the correct handler based on sessionId', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     const browserMessage = { method: 'Browser.downloadWillBegin' };
@@ -148,7 +148,7 @@ describe('Connection', function () {
   });
 
   it('closes the transport connection when closed', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
     conn.close();
     sinon.assert.calledOnce(mockCdpServer.close);

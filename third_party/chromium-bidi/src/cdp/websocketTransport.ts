@@ -1,7 +1,7 @@
-import { IServer } from '../utils/iServer';
+import { ITransport } from '../utils/transport';
 import WebSocket from 'ws';
 
-export class WebSocketTransport implements IServer {
+export class WebSocketTransport implements ITransport {
   private _onMessage: ((message: string) => void) | null = null;
 
   constructor(private _ws: WebSocket) {
@@ -12,7 +12,7 @@ export class WebSocketTransport implements IServer {
     });
   }
 
-  setOnMessage(onMessage: (messageObj: any) => void): void {
+  setOnMessage(onMessage: (message: string) => void): void {
     this._onMessage = onMessage;
   }
 

@@ -15,6 +15,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { ITransport } from '../utils/transport';
 import { Connection } from './connection';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
@@ -60,7 +61,7 @@ for (let domainInfo of mergedProtocol) {
   // Add methods to our Domain for each available command.
   for (let command of domainInfo.commands) {
     Object.defineProperty(ThisDomain.prototype, command.name, {
-      value: async function (params: {}) {
+      value: async function (params: object) {
         return await this._client.sendCommand(
           `${domainInfo.domain}.${command.name}`,
           params
@@ -70,6 +71,13 @@ for (let domainInfo of mergedProtocol) {
   }
 
   domainConstructorMap.set(domainInfo.domain, ThisDomain);
+}
+
+interface CdpClientImpl {
+  on<K extends keyof ProtocolMapping.Events>(
+    event: 'event',
+    listener: (method: K, params: object) => void
+  ): this;
 }
 
 class CdpClientImpl extends EventEmitter {
@@ -97,11 +105,11 @@ class CdpClientImpl extends EventEmitter {
    * @param method Name of the CDP command to call.
    * @param params Parameters to pass to the CDP command.
    */
-  sendCommand(method: string, params: {}): Promise<{}> {
+  sendCommand(method: string, params: object): Promise<object> {
     return this._connection._sendCommand(method, params, this._sessionId);
   }
 
-  _onCdpEvent(method: string, params: {}) {
+  _onCdpEvent(method: string, params: object) {
     // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
     this.emit('event', method, params);
 
@@ -111,14 +119,6 @@ class CdpClientImpl extends EventEmitter {
     if (domain) {
       domain.emit(eventName, params);
     }
-  }
-
-  public on<K extends keyof ProtocolMapping.Events>(
-    event: 'event',
-    listener: (message: { method: K; params: {} }) => void
-  ): this;
-  public on(event: string | symbol, listener: (...args: any[]) => void): this {
-    return super.on(event, listener);
   }
 }
 

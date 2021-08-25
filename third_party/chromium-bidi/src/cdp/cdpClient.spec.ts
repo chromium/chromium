@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Connection } from './connection';
-import { StubServer } from '../tests/stubServer.spec';
+import { StubTransport } from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -40,7 +40,7 @@ describe('CdpClient tests.', function () {
       },
     });
 
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     const cdpClient = conn.browserClient();
@@ -54,7 +54,7 @@ describe('CdpClient tests.', function () {
 
   it(`given some command is called, when CDP command is done, then
         'sendMessage' promise is resolved`, async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
 
     const cdpClient = conn.browserClient();
@@ -79,7 +79,7 @@ describe('CdpClient tests.', function () {
 
   it(`given some command is called 2 times, when CDP commands are done, then
         each command promise is resolved with proper results`, async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
     const cdpClient = conn.browserClient();
 
@@ -121,7 +121,7 @@ describe('CdpClient tests.', function () {
   });
 
   it('gets event callbacks when events are received from CDP', async function () {
-    const mockCdpServer = new StubServer();
+    const mockCdpServer = new StubTransport();
     const conn = new Connection(mockCdpServer);
     const cdpClient = conn.browserClient();
 
@@ -169,7 +169,7 @@ describe('CdpClient tests.', function () {
 
   describe('sendCommand()', function () {
     it('sends a raw CDP messages and returns a promise that will be resolved with the result', async function () {
-      const mockCdpServer = new StubServer();
+      const mockCdpServer = new StubTransport();
       const conn = new Connection(mockCdpServer);
       const cdpClient = conn.browserClient();
 
@@ -196,7 +196,7 @@ describe('CdpClient tests.', function () {
     });
 
     it('sends a raw CDP messages and returns a promise that will reject on error', async function () {
-      const mockCdpServer = new StubServer();
+      const mockCdpServer = new StubTransport();
       const conn = new Connection(mockCdpServer);
       const cdpClient = conn.browserClient();
 

@@ -17,7 +17,7 @@ import { CommandProcessor } from './commandProcessor';
 
 import { CdpClient, Connection } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
-import { ServerBinding, IServer } from '../utils/iServer';
+import { ITransport } from '../utils/transport';
 
 import { log } from '../utils/log';
 const logSystem = log('system');
@@ -35,7 +35,7 @@ declare global {
     sendBidiResponse: (response: string) => void;
 
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
-    onBidiMessage: (message: string) => void;
+    onBidiMessage: ((message: string) => void) | null;
 
     // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
     setSelfTargetId: (targetId: string) => void;
@@ -63,13 +63,13 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   logSystem('launched');
 
-  bidiServer.sendMessage('launched');
+  bidiServer.sendMessage({ launched: true });
 })();
 
 function _createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
-  class WindowCdpTransport implements IServer {
+  class WindowCdpTransport implements ITransport {
     private _onMessage: ((message: string) => void) | null = null;
 
     constructor() {
@@ -80,7 +80,7 @@ function _createCdpConnection() {
       };
     }
 
-    setOnMessage(onMessage: (messageObj: any) => Promise<void>): void {
+    setOnMessage(onMessage: (message: string) => Promise<void>): void {
       this._onMessage = onMessage;
     }
 
@@ -98,15 +98,32 @@ function _createCdpConnection() {
 }
 
 function _createBidiServer() {
-  const bidiBinding = new ServerBinding(
-    (message) => {
-      window.sendBidiResponse(message);
-    },
-    (handler) => {
-      window.onBidiMessage = handler;
+  class WindowBidiTransport implements ITransport {
+    private _onMessage: ((message: string) => void) | null = null;
+
+    constructor() {
+      window.onBidiMessage = (message: string) => {
+        if (this._onMessage) {
+          this._onMessage.call(null, message);
+        }
+      };
     }
-  );
-  return new BidiServer(bidiBinding);
+
+    setOnMessage(onMessage: (message: string) => Promise<void>): void {
+      this._onMessage = onMessage;
+    }
+
+    async sendMessage(message: string): Promise<void> {
+      window.sendBidiResponse(message);
+    }
+
+    close() {
+      this._onMessage = null;
+      window.onBidiMessage = null;
+    }
+  }
+
+  return new BidiServer(new WindowBidiTransport());
 }
 
 // Needed to filter out info related to BiDi target.

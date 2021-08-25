@@ -21,7 +21,7 @@ import puppeteer, { PuppeteerNode } from 'puppeteer';
 import mapperReader from './mapperReader';
 import { MapperServer } from './mapperServer';
 import { BidiServerRunner } from './bidiServerRunner';
-import { IServer } from './utils/iServer';
+import { ITransport } from './utils/transport';
 
 function parseArguments() {
   var parser = new argparse.ArgumentParser({
@@ -53,7 +53,7 @@ function parseArguments() {
     const bidiPort = args.port;
     const headless = args.headless !== 'false';
 
-    BidiServerRunner.run(bidiPort, (bidiServer: IServer) => {
+    BidiServerRunner.run(bidiPort, (bidiServer) => {
       return _onNewBidiConnectionOpen(headless, bidiServer);
     });
     console.log('BiDi server launched.');
@@ -73,7 +73,7 @@ function parseArguments() {
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
-  bidiServer: IServer
+  bidiTransport: ITransport
 ): Promise<() => void> {
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
@@ -94,11 +94,11 @@ async function _onNewBidiConnectionOpen(
   // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
   // Forward messages from BiDi Mapper to the client.
   mapperServer.setOnMessage(async (message) => {
-    await bidiServer.sendMessage(message);
+    await bidiTransport.sendMessage(message);
   });
 
   // Forward messages from the client to BiDi Mapper.
-  bidiServer.setOnMessage(async (message) => {
+  bidiTransport.setOnMessage(async (message) => {
     await mapperServer.sendMessage(message);
   });
 

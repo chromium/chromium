@@ -1,4 +1,4 @@
-import { IServer } from '../utils/iServer';
+import { ITransport } from '../utils/transport';
 import { CdpMessage } from './message';
 import { CdpClient, createClient } from './cdpClient';
 
@@ -6,8 +6,8 @@ import { log } from '../utils/log';
 const logCdp = log('cdp');
 
 interface CdpCallbacks {
-  resolve: (messageObj: {}) => void;
-  reject: (errorObj: {}) => void;
+  resolve: (messageObj: object) => void;
+  reject: (errorObj: object) => void;
 }
 
 /**
@@ -20,7 +20,7 @@ export class Connection {
   private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
   private _nextId: number;
 
-  constructor(private _transport: IServer) {
+  constructor(private _transport: ITransport) {
     this._nextId = 0;
     this._transport.setOnMessage(this._onMessage);
     this._browserCdpClient = createClient(this, null);
@@ -59,9 +59,9 @@ export class Connection {
    */
   _sendCommand(
     method: string,
-    params: {},
+    params: object,
     sessionId: string | null
-  ): Promise<{}> {
+  ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this._nextId++;
       this._commandCallbacks.set(id, { resolve, reject });

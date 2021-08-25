@@ -6,8 +6,8 @@ export interface CdpError {
 export interface CdpMessage {
   sessionId?: string;
   id?: number;
-  result?: {};
+  result?: object;
   error?: CdpError;
   method?: string;
-  params?: {};
+  params?: object;
 }

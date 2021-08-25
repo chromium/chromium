@@ -15,7 +15,7 @@
  */
 import websocket from 'websocket';
 import http from 'http';
-import { IServer } from './utils/iServer';
+import { ITransport } from './utils/transport';
 
 import debug from 'debug';
 const debugInternal = debug('bidiServer:internal');
@@ -33,7 +33,7 @@ export class BidiServerRunner {
    */
   static run(
     bidiPort: number,
-    onNewBidiConnectionOpen: (bidiServer: IServer) => Promise<() => void>
+    onNewBidiConnectionOpen: (bidiServer: ITransport) => Promise<() => void>
   ) {
     const self = this;
 
@@ -167,7 +167,7 @@ export class BidiServerRunner {
   }
 }
 
-class BidiServer implements IServer {
+class BidiServer implements ITransport {
   private _handlers: ((messageStr: string) => void)[] = new Array();
   private _sendBidiMessage: ((messageStr: string) => Promise<void>) | null =
     null;

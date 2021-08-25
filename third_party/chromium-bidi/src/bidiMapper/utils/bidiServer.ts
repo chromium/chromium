@@ -14,34 +14,81 @@
  * limitations under the License.
  */
 
-import { ServerBinding, AbstractServer } from '../../utils/iServer';
 import { log } from '../../utils/log';
 const logBidi = log('bidi');
 
-export class BidiServer extends AbstractServer {
-  private _bidiBindings: ServerBinding;
+import { EventEmitter } from 'events';
 
-  constructor(bidiBindings: ServerBinding) {
-    super(bidiBindings);
-    this._bidiBindings = bidiBindings;
-    this._bidiBindings.onmessage = (messageStr: string) => {
-      this._onBidiMessage(messageStr);
-    };
+import { ITransport } from '../../utils/transport';
+
+export interface BidiCommandMessage {
+  id: number;
+  method: string;
+  params: object;
+}
+
+export interface BidiResponseMessage {
+  id: number;
+  result?: object;
+}
+
+export interface BidiErrorMessage {
+  id?: number;
+}
+
+export interface BidiEventMessage {
+  method: string;
+  params?: object;
+}
+
+export type BidiOutgoingMessage =
+  | BidiResponseMessage
+  | BidiErrorMessage
+  | BidiEventMessage;
+
+export interface IBidiServer {
+  on(event: 'message', handler: (messageObj: BidiCommandMessage) => void): void;
+  sendMessage: (messageObj: BidiOutgoingMessage) => Promise<void>;
+  close(): void;
+}
+
+interface BidiServerEvents {
+  message: BidiCommandMessage;
+}
+
+export declare interface BidiServer {
+  on<U extends keyof BidiServerEvents>(
+    event: U,
+    listener: (params: BidiServerEvents[U]) => void
+  ): this;
+  emit<U extends keyof BidiServerEvents>(
+    event: U,
+    params: BidiServerEvents[U]
+  ): boolean;
+}
+
+export class BidiServer extends EventEmitter implements IBidiServer {
+  constructor(private _transport: ITransport) {
+    super();
+
+    this._transport.setOnMessage(this._onBidiMessage);
   }
 
   /**
    * Sends BiDi message. Returns resolved promise.
    * @param messageObj Message object to be sent. Will be automatically enriched with `id`.
    */
-  sendMessage(messageObj: any): Promise<any> {
+  async sendMessage(messageObj: object): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
     logBidi('sent > ' + messageStr);
-    this._bidiBindings.sendMessage(messageStr);
-
-    return Promise.resolve();
+    this._transport.sendMessage(messageStr);
   }
 
-  private _onBidiMessage(messageStr: string): void {
+  close(): void {
+    this._transport.close();
+  }
+
+  private _onBidiMessage = async (messageStr: string) => {
     logBidi('received < ' + messageStr);
 
     let messageObj;
@@ -51,11 +98,11 @@ export class BidiServer extends AbstractServer {
       this._respondWithError(messageStr, 'invalid argument', e.message);
       return;
     }
-    this.notifySubscribersOnMessage(messageObj);
-  }
+    this.emit('message', messageObj);
+  };
 
   private _respondWithError(
-    plainCommandData: any,
+    plainCommandData: string,
     errorCode: string,
     errorMessage: string
   ) {
@@ -100,7 +147,7 @@ export class BidiServer extends AbstractServer {
     };
   }
 
-  private _parseBidiMessage(messageStr: string) {
+  private _parseBidiMessage(messageStr: string): BidiCommandMessage {
     let messageObj: any;
     try {
       messageObj = JSON.parse(messageStr);
