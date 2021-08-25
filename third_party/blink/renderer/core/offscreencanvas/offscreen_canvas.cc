@@ -411,7 +411,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
       (IsWebGL() || IsWebGPU() ||
-       (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
+       (IsRenderingContext2D() &&
+        RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
         !context_->CreationAttributes().will_read_frequently));
   const bool composited_mode =
       IsWebGPU() ||
