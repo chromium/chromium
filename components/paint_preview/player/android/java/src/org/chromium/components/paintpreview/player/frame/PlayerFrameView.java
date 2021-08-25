@@ -188,6 +188,10 @@ public class PlayerFrameView extends FrameLayout {
         return (provider != null) ? provider : super.getAccessibilityNodeProvider();
     }
 
+    void destroy() {
+        mBitmapPainter.destroy();
+    }
+
     /**
      * Override onProvideVirtualStructure on API level 23.
      */
