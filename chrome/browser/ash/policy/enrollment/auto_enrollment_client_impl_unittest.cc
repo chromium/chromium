@@ -197,10 +197,10 @@ class AutoEnrollmentClientImplTest
           progress_callback, service_.get(), local_state_,
           shared_url_loader_factory_, kStateKey, power_initial, power_limit);
     } else {
-      // PSM RLWE testing client factory has to be always non-null whenever
-      // creating a client for initial enrollment when PSM is enabled.
-      DCHECK(psm_rlwe_test_client_factory_ ||
-             GetPsmState() == PsmState::kDisabled);
+      // PSM has to be enabled whenever creating a client for initial
+      // enrollment.
+      DCHECK_EQ(GetPsmState(), PsmState::kEnabled);
+      DCHECK(psm_rlwe_test_client_factory_);
 
       client_ =
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
