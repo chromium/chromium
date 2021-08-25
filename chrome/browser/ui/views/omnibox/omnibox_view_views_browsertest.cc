@@ -881,6 +881,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeChangedTest) {
   omnibox_view_views->OnInputMethodChanged();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, omnibox_view_views->GetTextInputType());
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
+  OmniboxMockInputMethod* input_method = new OmniboxMockInputMethod();
+  ui::SetUpInputMethodForTesting(input_method);
+  input_method->SetInputLocaleCJK(/*is_cjk=*/true);
+  Browser* browser_2 = CreateBrowser(browser()->profile());
+  OmniboxView* view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser_2, &view));
+  OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
+  EXPECT_EQ(omnibox_view_views->GetWidget()->GetInputMethod(), input_method);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_SEARCH, omnibox_view_views->GetTextInputType());
+  input_method->SetInputLocaleCJK(/*is_cjk=*/false);
+  omnibox_view_views->OnInputMethodChanged();
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, omnibox_view_views->GetTextInputType());
+}
 #endif  // OS_WIN
 
 // ClickOnView(VIEW_ID_OMNIBOX) does not set focus to omnibox on Mac.

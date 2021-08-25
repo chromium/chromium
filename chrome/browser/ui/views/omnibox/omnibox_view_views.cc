@@ -203,7 +203,7 @@ OmniboxViewViews::~OmniboxViewViews() {
 
 void OmniboxViewViews::Init() {
   set_controller(this);
-  SetTextInputType(ui::TEXT_INPUT_TYPE_URL);
+  SetTextInputType(GetPreferredTextInputType());
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   GetRenderText()->set_symmetric_selection_visual_bounds(true);
   InstallPlaceholderText();
@@ -531,6 +531,13 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
 
 void OmniboxViewViews::OnInputMethodChanged() {
 #if defined(OS_WIN)
+  // Update the input type with the input method on Windows for CJK.
+  SetTextInputType(GetPreferredTextInputType());
+#endif  // OS_WIN
+}
+
+ui::TextInputType OmniboxViewViews::GetPreferredTextInputType() const {
+#if defined(OS_WIN)
   // We'd like to set the text input type to TEXT_INPUT_TYPE_URL, because this
   // triggers URL-specific layout in software keyboards, e.g. adding top-level
   // "/" and ".com" keys for English.  However, this also causes IMEs to default
@@ -541,11 +548,10 @@ void OmniboxViewViews::OnInputMethodChanged() {
     ui::InputMethod* input_method =
         location_bar_view_->GetWidget()->GetInputMethod();
     if (input_method && input_method->IsInputLocaleCJK())
-      SetTextInputType(ui::TEXT_INPUT_TYPE_SEARCH);
-    else
-      SetTextInputType(ui::TEXT_INPUT_TYPE_URL);
+      return ui::TEXT_INPUT_TYPE_SEARCH;
   }
-#endif
+#endif  // OS_WIN
+  return ui::TEXT_INPUT_TYPE_URL;
 }
 
 void OmniboxViewViews::AddedToWidget() {
