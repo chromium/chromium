@@ -127,6 +127,9 @@ public class AccessorySheetRenderTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         FaviconHelper.setCreationStrategy(TestFaviconHelper::new);
         mActivityTestRule.launchActivity(null);
+        // Calling #setTheme() explicitly because the test rule doesn't have the @Rule annotation
+        // and won't apply the theme.
+        mActivityTestRule.getActivity().setTheme(R.style.ColorOverlay_ChromiumAndroid);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ViewStub sheetStub = initializeContentViewWithSheetStub();
 

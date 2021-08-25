@@ -260,8 +260,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                         -> handleItemClick(/*url=*/null, /*resultPosition=*/0,
                                 /*isProviderLabel=*/true));
         mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE,
-                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                              : R.style.TextAppearance_TextMedium_Primary_Light);
+                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                              : R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         if (label != null) {
             mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_LABEL,
                     mContext.getString(R.string.csn_provider_label, label));
@@ -385,8 +385,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         int itemBgColor = getBackgroundColorForParentBackgroundColor(color);
         boolean useDarkColors = shouldUseDarkElementColors(itemBgColor);
         mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE,
-                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                              : R.style.TextAppearance_TextMedium_Primary_Light);
+                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                              : R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         for (ListItem listItem : mModelList) {
             listItem.model.set(ListItemProperties.BACKGROUND_COLOR, itemBgColor);
             listItem.model.set(ListItemProperties.PRIMARY_TEXT_STYLE,

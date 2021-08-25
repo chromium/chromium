@@ -154,7 +154,7 @@
 
     <!-- Manage Space Activity styles -->
     <style name="ManageSpaceActionBarModern" parent="Widget.MaterialComponents.ActionBar.Primary">
-        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Light</item>
+        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Baseline.Light</item>
         <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193. -->
         <item name="background">@color/dark_action_bar_color</item>
     </style>

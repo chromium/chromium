@@ -105,9 +105,11 @@ public class TabUiThemeProvider {
     @ColorInt
     public static int getTitleTextColor(Context context, boolean isIncognito, boolean isSelected) {
         if (!themeRefactorEnabled()) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.tab_grid_card_title_text_color_incognito
-                                : R.color.tab_grid_card_title_text_color);
+            return AppCompatResources
+                    .getColorStateList(context,
+                            isIncognito ? R.color.tab_grid_card_title_text_color_incognito
+                                        : R.color.tab_grid_card_title_text_color)
+                    .getDefaultColor();
         }
 
         if (isIncognito) {
@@ -568,7 +570,7 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card description.
      */
     public static int getMessageCardDescriptionTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextMedium_Primary_Light
+        return isIncognito ? R.style.TextAppearance_TextMedium_Primary_Baseline_Light
                            : R.style.TextAppearance_TextMedium_Primary;
     }
 

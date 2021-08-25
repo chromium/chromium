@@ -49,7 +49,7 @@
             android:paddingEnd="4dp"
             android:background="@color/modern_grey_900"
             android:importantForAccessibility="no"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline.Light" />
 
         <TextView
             android:id="@+id/title"

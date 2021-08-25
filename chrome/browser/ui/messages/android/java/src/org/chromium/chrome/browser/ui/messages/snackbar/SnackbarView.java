@@ -266,7 +266,7 @@ public class SnackbarView {
 
     private static int getTextAppearance(Snackbar snackbar) {
         if (snackbar.getTheme() == Snackbar.Theme.GOOGLE) {
-            return R.style.TextAppearance_TextMedium_Primary_Inverse;
+            return R.style.TextAppearance_TextMedium_Primary_Baseline_Inverse;
         }
 
         assert snackbar.getTheme() == Snackbar.Theme.BASIC;

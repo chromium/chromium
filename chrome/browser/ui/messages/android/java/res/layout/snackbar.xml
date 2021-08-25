@@ -70,7 +70,7 @@
             android:layout_marginBottom="14dp"
             android:layout_weight="1"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/snackbar_button"

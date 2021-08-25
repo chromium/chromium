@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.junit.Before;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
+import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.components.signin.GAIAServiceType;
 
 /** Tests for {@link SignOutDialogFragment}. */
@@ -84,8 +84,10 @@ public class SignOutDialogFragmentTest {
     }
 
     private void setUpSignOutDialog() {
-        mFragmentManager =
-                Robolectric.setupActivity(FragmentActivity.class).getSupportFragmentManager();
+        mFragmentManager = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
+                                   .setup()
+                                   .get()
+                                   .getSupportFragmentManager();
         mFragmentManager.beginTransaction().add(mTargetFragment, null).commit();
         mSignOutDialog = SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         mSignOutDialog.setTargetFragment(mTargetFragment, 0);

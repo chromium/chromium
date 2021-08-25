@@ -1029,6 +1029,7 @@ junit_binary("chrome_junit_tests") {
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/commerce/core:proto_java",

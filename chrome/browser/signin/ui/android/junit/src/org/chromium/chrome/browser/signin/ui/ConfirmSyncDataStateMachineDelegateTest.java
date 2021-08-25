@@ -20,6 +20,7 @@ import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -32,7 +33,8 @@ public class ConfirmSyncDataStateMachineDelegateTest {
 
     @Before
     public void setUp() {
-        FragmentActivity activity = Robolectric.setupActivity(FragmentActivity.class);
+        FragmentActivity activity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
         mFragmentManager = activity.getSupportFragmentManager();
         mStateMachineDelegate = new ConfirmSyncDataStateMachineDelegate(activity, mFragmentManager,
                 new ModalDialogManager(new AppModalPresenter(activity), ModalDialogType.APP));

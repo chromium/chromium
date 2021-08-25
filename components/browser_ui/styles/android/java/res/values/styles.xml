@@ -77,9 +77,10 @@
     </style>
     <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
 
+    <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
     <!-- AlertDialog styles -->
     <style name="Base.Theme.Chromium.AlertDialog"
-        parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:textColorPrimary">@color/default_text_color</item>
         <item name="android:windowBackground">@drawable/popup_bg_tinted</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
@@ -255,4 +256,27 @@
     <style name="ThemeOverlay.DynamicColorOverrides" parent="">
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
     </style>
+
+    <!-- Text styles -->
+    <!-- Primary text styles -->
+    <style name="TextAppearance.Headline.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
 </resources>

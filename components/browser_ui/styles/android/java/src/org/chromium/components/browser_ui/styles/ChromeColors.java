@@ -61,7 +61,7 @@ public class ChromeColors {
      * @return The large text primary style.
      */
     public static int getLargeTextPrimaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Light
+        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
                                    : R.style.TextAppearance_TextLarge_Primary;
     }
 

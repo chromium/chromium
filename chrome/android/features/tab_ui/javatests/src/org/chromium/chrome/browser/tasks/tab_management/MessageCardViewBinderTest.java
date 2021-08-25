@@ -175,8 +175,10 @@ public class MessageCardViewBinderTest extends DummyUiChromeActivityTestCase {
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, false);
         assertThat(description.getCurrentTextColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mItemView.getResources(), R.color.default_text_color_list)));
+                equalTo(AppCompatResources
+                                .getColorStateList(
+                                        mItemView.getContext(), R.color.default_text_color_list)
+                                .getDefaultColor()));
         assertThat(actionButton.getCurrentTextColor(),
                 equalTo(ApiCompatibilityUtils.getColor(
                         mItemView.getResources(), R.color.default_text_color_link)));
