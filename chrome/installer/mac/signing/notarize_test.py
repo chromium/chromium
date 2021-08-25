@@ -164,7 +164,8 @@ class TestWaitForResults(unittest.TestCase):
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml'
-        ])
+        ],
+                                                   stderr=subprocess.STDOUT)
 
     @mock.patch('signing.commands.run_command_output')
     def test_success_with_asc_provider(self, run_command_output):
@@ -190,7 +191,8 @@ class TestWaitForResults(unittest.TestCase):
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
-        ])
+        ],
+                                                   stderr=subprocess.STDOUT)
 
     @mock.patch('signing.commands.run_command_output')
     def test_failure(self, run_command_output):
@@ -254,7 +256,8 @@ class TestWaitForResults(unittest.TestCase):
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
                 '--output-format', 'xml'
-            ])
+            ],
+                      stderr=subprocess.STDOUT)
         ])
 
     @mock.patch('signing.commands.run_command_output')
@@ -296,7 +299,37 @@ class TestWaitForResults(unittest.TestCase):
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
                 '--output-format', 'xml'
-            ])
+            ],
+                      stderr=subprocess.STDOUT)
+        ])
+
+    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
+    @mock.patch('signing.commands.run_command_output')
+    def test_notarization_info_exit_1(self, run_command_output, **kwargs):
+        run_command_output.side_effect = [
+            subprocess.CalledProcessError(1, 'altool', ''),
+            _make_plist({
+                'notarization-info': {
+                    'Date': '2021-08-24T19:28:21Z',
+                    'LogFileURL': 'https://example.com/log.json',
+                    'RequestUUID': 'a11980d4-24ef-4040-bddd-f8341859fb6e',
+                    'Status': 'success',
+                    'Status Code': 0
+                }
+            })
+        ]
+        uuid = 'a11980d4-24ef-4040-bddd-f8341859fb6e'
+        uuids = [uuid]
+        self.assertEqual(
+            [uuid],
+            list(notarize.wait_for_results(uuids, test_config.TestConfig())))
+        run_command_output.assert_has_calls(2 * [
+            mock.call([
+                'xcrun', 'altool', '--notarization-info', uuid, '--username',
+                '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+                '--output-format', 'xml'
+            ],
+                      stderr=subprocess.STDOUT)
         ])
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
@@ -326,7 +359,8 @@ class TestWaitForResults(unittest.TestCase):
                     'xcrun', 'altool', '--notarization-info', uuid,
                     '--username', '[NOTARY-USER]', '--password',
                     '[NOTARY-PASSWORD]', '--output-format', 'xml'
-                ]))
+                ],
+                          stderr=subprocess.STDOUT))
 
         total_time = sum([call[1][0] for call in kwargs['sleep'].mock_calls])
         self.assertLess(total_time, 61 * 60)
