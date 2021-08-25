@@ -3914,6 +3914,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",

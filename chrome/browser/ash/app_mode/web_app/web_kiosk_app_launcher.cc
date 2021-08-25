@@ -112,7 +112,6 @@ void WebKioskAppLauncher::CreateNewLacrosWindow() {
       GetCurrentApp()->GetLaunchableUrl(),
       base::BindOnce(&WebKioskAppLauncher::OnLacrosWindowCreated,
                      weak_ptr_factory_.GetWeakPtr()));
-  delegate_->OnAppWindowCreated();
 }
 
 void WebKioskAppLauncher::LaunchApp() {

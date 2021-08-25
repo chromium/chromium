@@ -105,8 +105,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // navigated to the given `url` once the window is launched.
   // NOTE: This method is used by Chrome OS web Kiosk session only. The behavior
   // may change and it shouldn't be used by anybody else.
-  void NewFullscreenWindow(const GURL& url,
-                           NewFullscreenWindowCallback callback);
+  // Virtual for testing.
+  virtual void NewFullscreenWindow(const GURL& url,
+                                   NewFullscreenWindowCallback callback);
 
   // Similar to NewWindow(), but opens a tab, instead.
   // See crosapi::mojom::BrowserService::NewTab for more details

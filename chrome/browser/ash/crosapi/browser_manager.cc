@@ -112,7 +112,7 @@ constexpr uint32_t kGetHistogramsMinVersion = 7;
 constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
 // The min version of BrowserService mojo interface that supports
 // NewFullscreenWindow API.
-constexpr uint32_t kNewFullscreenWindowMinVersion = 42;
+constexpr uint32_t kNewFullscreenWindowMinVersion = 11;
 
 const char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
@@ -243,6 +243,14 @@ const char* GetStatefulLacrosChannel() {
   return browser_util::kLacrosNoStabilitySwitchDefaultChannel;
 }
 
+// Returns the initial browser action. No browser will be opened when
+// lacros-chrome is initialized in the web Kiosk session.
+mojom::InitialBrowserAction GetInitialBrowserAction() {
+  return user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()
+             ? crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow
+             : mojom::InitialBrowserAction::kUseStartupPreference;
+}
+
 }  // namespace
 
 // To be sure the lacros is running with neutral priority.
@@ -358,7 +366,7 @@ bool BrowserManager::NewFullscreenWindowSupported() const {
 
 void BrowserManager::NewFullscreenWindow(const GURL& url,
                                          NewFullscreenWindowCallback callback) {
-  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  auto result = MaybeStart(mojom::InitialBrowserAction::kDoNotOpenWindow);
   if (result != MaybeStartResult::kRunning) {
     std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning);
     return;
@@ -933,7 +941,7 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path,
 
   if (state_ == State::STOPPED &&
       (browser_util::IsLacrosPrimaryBrowser() || GetLaunchOnLoginPref())) {
-    Start(mojom::InitialBrowserAction::kUseStartupPreference);
+    Start(GetInitialBrowserAction());
   }
 }
 

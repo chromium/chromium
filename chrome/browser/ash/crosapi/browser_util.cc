@@ -514,6 +514,11 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
   if (!IsLacrosEnabled(channel))
     return false;
 
+  // Lacros-chrome will always be the primary browser if Lacros is enabled in
+  // web Kiosk session.
+  if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp())
+    return true;
+
   if (!IsLacrosPrimaryBrowserAllowed(channel))
     return false;
 

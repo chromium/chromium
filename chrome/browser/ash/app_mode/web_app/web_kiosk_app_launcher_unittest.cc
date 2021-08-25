@@ -11,10 +11,12 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -26,6 +28,7 @@
 #include "url/gurl.h"
 
 using ::base::test::RunClosure;
+using ::testing::_;
 using ::testing::Return;
 
 namespace ash {
@@ -39,6 +42,7 @@ class MockAppLauncherDelegate : public WebKioskAppLauncher::Delegate {
   MOCK_METHOD0(OnAppInstalling, void());
   MOCK_METHOD0(OnAppPrepared, void());
   MOCK_METHOD0(OnAppLaunched, void());
+  MOCK_METHOD0(OnAppWindowCreated, void());
   MOCK_METHOD1(OnLaunchFailed, void(KioskAppLaunchError::Error));
 
   MOCK_CONST_METHOD0(IsNetworkReady, bool());
@@ -351,6 +355,101 @@ TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
   loop2.Run();
 
   CloseAppWindow();
+}
+
+class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
+ public:
+  WebKioskAppLauncherUsingLacrosTest()
+      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
+    crosapi::browser_util::SetLacrosEnabledForTest(true);
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  }
+
+  crosapi::FakeBrowserManager* browser_manager() const {
+    return browser_manager_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+};
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kSuccess);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // The browser manager is running before launching app. The
+  // `OnAppWindowCreated` method will be called after the lacros-chrome window
+  // is created successfully.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated())
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_)).Times(0);
+  browser_manager()->set_is_running(true);
+  launcher()->LaunchApp();
+  loop2.Run();
+}
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kSuccess);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // The browser manager is not running before launching app. The crosapi call
+  // will pend until it is ready. The `OnAppWindowCreated` method will be called
+  // after the lacros-chrome window is created successfully.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated())
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_)).Times(0);
+  browser_manager()->set_is_running(false);
+  launcher()->LaunchApp();
+  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
+  loop2.Run();
+}
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, FailToLaunchApp) {
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kBrowserNotRunning);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // If the lacros-chrome window fails to be created, the `OnLaunchFailed`
+  // method will be called instead.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated()).Times(0);
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_))
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+
+  browser_manager()->set_is_running(true);
+  launcher()->LaunchApp();
+  loop2.Run();
 }
 
 }  // namespace ash
