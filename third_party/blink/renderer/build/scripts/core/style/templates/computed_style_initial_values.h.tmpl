@@ -5,21 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
-#include "third_party/blink/renderer/platform/theme_types.h"
 {% for include in includes %}
 #include "{{include}}"
 {% endfor %}
 
 namespace blink {
 
-class ShapeValue;
 class StyleImage;
-class StyleInheritedVariables;
-class StyleNonInheritedVariables;
 {% for forward_declaration in forward_declarations %}
 class {{forward_declaration}};
 {% endfor %}
