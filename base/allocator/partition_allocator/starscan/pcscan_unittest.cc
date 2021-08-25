@@ -404,7 +404,13 @@ struct ListWithInnerReference {
 
 }  // namespace
 
-TEST_F(PartitionAllocPCScanTest, DanglingInnerReference) {
+// Disabled due to consistent failure http://crbug.com/1242407
+#if defined(OS_ANDROID)
+#define MAYBE_DanglingInnerReference DISABLED_DanglingInnerReference
+#else
+#define MAYBE_DanglingInnerReference DanglingInnerReference
+#endif
+TEST_F(PartitionAllocPCScanTest, MAYBE_DanglingInnerReference) {
   using SourceList = ListWithInnerReference<64>;
   using ValueList = SourceList;
 
