@@ -810,11 +810,12 @@ enum BoolAttribute {
   kTouchPassthrough = 20,
 };
 
-// Next version: 2
-// Next value: 17
+// Next version: 3
+// Next value: 20
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,
+
   // Ids of nodes that are children of this node logically, but are
   // not children of this node in the tree structure. As an example,
   // a table cell is a child of a row, and an 'indirect' child of a
@@ -836,6 +837,9 @@ enum IntListAttribute {
   kMarkerStarts = 9,
   kMarkerEnds = 10,
 
+  // Caret bounds in screen coordinates - [left, top, width, height].
+  [MinVersion=1] kCaretBounds = 16,
+
   // For inline text. This is the pixel position of the end of this
   // character within the bounding rectangle of this object, in the
   // direction given by StringAttribute::kTextDirection. For example,
@@ -844,14 +848,18 @@ enum IntListAttribute {
   // is the right coordinate of the second character, and so on.
   kCharacterOffsets = 11,
 
-  // Used for caching. Do not read directly. Use
-  // |AXNode::GetOrComputeLineStartOffsets|
-  // For all text fields and content editable roots: A list of the start
-  // offsets of each line inside this object.
-  kCachedLineStarts = 12,
+  // A list of the start and end character offsets of each line inside this
+  // node's on-screen text.
+  kLineStarts = 12,
+  [MinVersion=2] kLineEnds = 17,
 
-  // For inline text. These int lists must be the same size; they represent
-  // the start and end character offset of each word within this text.
+  // A list of the start and end character offsets of each sentence inside this
+  // node's on-screen text.
+  [MinVersion=2] kSentenceStarts = 18,
+  [MinVersion=2] kSentenceEnds = 19,
+
+  // A list of the start and end character offsets of each word inside this
+  // node's on-screen text.
   kWordStarts = 13,
   kWordEnds = 14,
 
@@ -860,9 +868,6 @@ enum IntListAttribute {
   // items. Developer can expose those actions as custom actions. Currently
   // custom actions are used only in Android window.
   kCustomActionIds = 15,
-
-  // Caret bounds in screen coordinates - [left, top, width, height].
-  [MinVersion=1] kCaretBounds = 16,
 };
 
 // Next value: 2

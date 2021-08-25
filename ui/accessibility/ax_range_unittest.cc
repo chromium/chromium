@@ -253,9 +253,8 @@ void AXRangeTest::SetUp() {
   text_field_.role = ax::mojom::Role::kTextField;
   text_field_.AddState(ax::mojom::State::kEditable);
   text_field_.SetValue(TEXT_FIELD);
-  text_field_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCachedLineStarts,
-      std::vector<int32_t>{0, 7});
+  text_field_.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
+                                  std::vector<int32_t>{0, 7});
   text_field_.child_ids.push_back(static_text1_.id);
   text_field_.child_ids.push_back(line_break1_.id);
   text_field_.child_ids.push_back(static_text2_.id);

@@ -1042,12 +1042,18 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "markerStarts";
     case ax::mojom::IntListAttribute::kMarkerEnds:
       return "markerEnds";
-    case ax::mojom::IntListAttribute::kCharacterOffsets:
-      return "characterOffsets";
-    case ax::mojom::IntListAttribute::kCachedLineStarts:
-      return "cachedLineStarts";
     case ax::mojom::IntListAttribute::kCaretBounds:
       return "caretBounds";
+    case ax::mojom::IntListAttribute::kCharacterOffsets:
+      return "characterOffsets";
+    case ax::mojom::IntListAttribute::kLineStarts:
+      return "lineStarts";
+    case ax::mojom::IntListAttribute::kLineEnds:
+      return "lineEnds";
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+      return "sentenceStarts";
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+      return "sentenceEnds";
     case ax::mojom::IntListAttribute::kWordStarts:
       return "wordStarts";
     case ax::mojom::IntListAttribute::kWordEnds:

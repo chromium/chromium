@@ -5,11 +5,15 @@
 #ifndef UI_ACCESSIBILITY_AX_COMPUTED_NODE_DATA_H_
 #define UI_ACCESSIBILITY_AX_COMPUTED_NODE_DATA_H_
 
+#include <stdint.h>
+
 #include <string>
+#include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node_data.h"
 
 namespace ui {
 
@@ -26,20 +30,39 @@ class AX_EXPORT AXComputedNodeData final {
   AXComputedNodeData(const AXComputedNodeData& other) = delete;
   AXComputedNodeData& operator=(const AXComputedNodeData& other) = delete;
 
-  // Given an accessibility string attribute, returns whether the attribute is
+  // If the associated node is unignored, i.e. exposed to the platform's
+  // assistive software, its position in the list of unignored children of its
+  // lowest unignored parent. Naturally, this value is not defined when the
+  // associated node is ignored.
+  int GetOrComputeUnignoredIndexInParent() const;
+
+  // If the associated node is unignored, i.e. exposed to the platform's
+  // assistive software, the number of its children that are also unignored.
+  // Naturally, this value is not defined when the associated node is ignored.
+  int GetOrComputeUnignoredChildCount() const;
+
+  // If the associated node is unignored, i.e. exposed to the platform's
+  // assistive software, the IDs of its children that are also unignored.
+  const std::vector<AXNodeID>& GetOrComputeUnignoredChildIDs() const;
+
+  // Given an accessibility attribute, returns whether the attribute is
   // currently present in the node's data, or if it can always be computed on
   // demand.
   bool HasOrCanComputeAttribute(
       const ax::mojom::StringAttribute attribute) const;
+  bool HasOrCanComputeAttribute(
+      const ax::mojom::IntListAttribute attribute) const;
 
-  // Given an accessibility string attribute, returns the attribute's value. The
+  // Given an accessibility attribute, returns the attribute's value. The
   // attribute is computed if not provided by the tree's source, otherwise it is
-  // simply returned from the node's data. String attributes are potentially the
-  // slowest to compute at the tree's source, e.g. in Blink.
+  // simply returned from the node's data. String and intlist attributes are
+  // potentially the slowest to compute at the tree's source, e.g. in Blink.
   const std::string& GetOrComputeAttributeUTF8(
       const ax::mojom::StringAttribute attribute) const;
   std::u16string GetOrComputeAttributeUTF16(
       const ax::mojom::StringAttribute attribute) const;
+  const std::vector<int32_t>& GetOrComputeAttribute(
+      const ax::mojom::IntListAttribute attribute) const;
 
   // Retrieves from the cache or computes the on-screen text that is found
   // inside the associated node and all its descendants, caches the result, and
@@ -54,6 +77,26 @@ class AX_EXPORT AXComputedNodeData final {
   int GetOrComputeInnerTextLengthUTF16() const;
 
  private:
+  // Computes and caches the `unignored_index_in_parent_`,
+  // `unignored_child_count_` and `unignored_child_ids_` for the associated
+  // node.
+  void ComputeUnignoredValues(int starting_index_in_parent = 0) const;
+
+  // Computes and caches (if not already in the cache) the character offsets
+  // where each line in the associated node's on-screen text starts and ends.
+  void ComputeLineOffsetsIfNeeded() const;
+
+  // Computes and caches (if not already in the cache) the character offsets
+  // where each sentence in the associated node's on-screen text starts and
+  // ends.
+  void ComputeSentenceOffsetsIfNeeded() const;
+
+  // Computes and caches (if not already in the cache) the character offsets
+  // where each word in the associated node's on-screen text starts and ends.
+  // Note that the end offsets are always after the last character of each word,
+  // so e.g. the end offset for the word "Hello" is 5, not 4.
+  void ComputeWordOffsetsIfNeeded() const;
+
   // Computes the on-screen text that is found inside the associated node and
   // all its descendants.
   std::string ComputeInnerTextUTF8() const;
@@ -62,9 +105,16 @@ class AX_EXPORT AXComputedNodeData final {
   // The node that is associated with this instance. Weak, owns us.
   const AXNode* const owner_;
 
-  // Stores the on-screen text that is found inside the associated node and all
-  // its descendants.
-  //
+  mutable absl::optional<int> unignored_index_in_parent_;
+  mutable absl::optional<int> unignored_child_count_;
+  mutable absl::optional<std::vector<AXNodeID>> unignored_child_ids_;
+  mutable absl::optional<std::vector<int32_t>> line_starts_;
+  mutable absl::optional<std::vector<int32_t>> line_ends_;
+  mutable absl::optional<std::vector<int32_t>> sentence_starts_;
+  mutable absl::optional<std::vector<int32_t>> sentence_ends_;
+  mutable absl::optional<std::vector<int32_t>> word_starts_;
+  mutable absl::optional<std::vector<int32_t>> word_ends_;
+
   // Only one copy (either UTF8 or UTF16) should be cached as each platform
   // should only need one of the encodings.
   mutable absl::optional<std::string> inner_text_utf8_;

@@ -640,14 +640,14 @@ bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
 std::vector<int> AXNode::GetOrComputeLineStartOffsets() {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   std::vector<int> line_offsets;
-  if (GetIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
+  if (GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
                           &line_offsets)) {
     return line_offsets;
   }
 
   int start_offset = 0;
   ComputeLineStartOffsets(&line_offsets, &start_offset);
-  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
                             line_offsets);
   return line_offsets;
 }

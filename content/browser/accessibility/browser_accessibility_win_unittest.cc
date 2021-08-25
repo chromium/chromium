@@ -360,7 +360,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.SetValue(text_value);
-  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
+  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
                                  {15});
   text_field.child_ids = {text_container.id};
 

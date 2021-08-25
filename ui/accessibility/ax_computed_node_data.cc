@@ -4,12 +4,14 @@
 
 #include "ui/accessibility/ax_computed_node_data.h"
 
+#include "base/check_op.h"
+#include "base/i18n/break_iterator.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 
@@ -18,6 +20,39 @@ namespace ui {
 AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 
 AXComputedNodeData::~AXComputedNodeData() = default;
+
+int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
+  DCHECK(owner_);
+  DCHECK(!owner_->IsIgnored());
+  if (unignored_index_in_parent_)
+    return *unignored_index_in_parent_;
+
+  if (const AXNode* unignored_parent = owner_->GetUnignoredParent()) {
+    unignored_parent->GetComputedNodeData().ComputeUnignoredValues();
+  } else {
+    // This should be the root node and, by convention, we assign it an
+    // index-in-parent of 0.
+    unignored_index_in_parent_ = 0;
+  }
+  return *unignored_index_in_parent_;
+}
+
+int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
+  DCHECK(owner_);
+  DCHECK(!owner_->IsIgnored());
+  if (!unignored_child_count_)
+    ComputeUnignoredValues();
+  return *unignored_child_count_;
+}
+
+const std::vector<AXNodeID>& AXComputedNodeData::GetOrComputeUnignoredChildIDs()
+    const {
+  DCHECK(owner_);
+  DCHECK(!owner_->IsIgnored());
+  if (!unignored_child_ids_)
+    ComputeUnignoredValues();
+  return *unignored_child_ids_;
+}
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
     const ax::mojom::StringAttribute attribute) const {
@@ -30,6 +65,25 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
       // The value attribute could be computed on the browser for content
       // editables and ARIA text/search boxes.
       return owner_->data().IsNonAtomicTextField();
+    default:
+      return false;
+  }
+}
+
+bool AXComputedNodeData::HasOrCanComputeAttribute(
+    const ax::mojom::IntListAttribute attribute) const {
+  DCHECK(owner_);
+  if (owner_->data().HasIntListAttribute(attribute))
+    return true;
+
+  switch (attribute) {
+    case ax::mojom::IntListAttribute::kLineStarts:
+    case ax::mojom::IntListAttribute::kLineEnds:
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+    case ax::mojom::IntListAttribute::kWordStarts:
+    case ax::mojom::IntListAttribute::kWordEnds:
+      return true;
     default:
       return false;
   }
@@ -62,6 +116,50 @@ std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
   return base::UTF8ToUTF16(GetOrComputeAttributeUTF8(attribute));
 }
 
+const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
+    const ax::mojom::IntListAttribute attribute) const {
+  DCHECK(owner_);
+  if (owner_->data().HasIntListAttribute(attribute))
+    return owner_->data().GetIntListAttribute(attribute);
+
+  const std::vector<int32_t>* result = nullptr;
+  switch (attribute) {
+    case ax::mojom::IntListAttribute::kLineStarts:
+      ComputeLineOffsetsIfNeeded();
+      result = &(*line_starts_);
+      break;
+    case ax::mojom::IntListAttribute::kLineEnds:
+      ComputeLineOffsetsIfNeeded();
+      result = &(*line_ends_);
+      break;
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+      ComputeSentenceOffsetsIfNeeded();
+      result = &(*sentence_starts_);
+      break;
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+      ComputeSentenceOffsetsIfNeeded();
+      result = &(*sentence_ends_);
+      break;
+    case ax::mojom::IntListAttribute::kWordStarts:
+      ComputeWordOffsetsIfNeeded();
+      result = &(*word_starts_);
+      break;
+    case ax::mojom::IntListAttribute::kWordEnds:
+      ComputeWordOffsetsIfNeeded();
+      result = &(*word_ends_);
+      break;
+    default:
+      return owner_->data().GetIntListAttribute(
+          ax::mojom::IntListAttribute::kNone);
+  }
+
+  DCHECK(HasOrCanComputeAttribute(attribute))
+      << "Code in `HasOrCanComputeAttribute` should be in sync with "
+         "'GetOrComputeAttribute`";
+  DCHECK(result);
+  return *result;
+}
+
 const std::string& AXComputedNodeData::GetOrComputeInnerTextUTF8() const {
   if (!inner_text_utf8_) {
     VLOG_IF(1, inner_text_utf16_)
@@ -88,34 +186,158 @@ int AXComputedNodeData::GetOrComputeInnerTextLengthUTF16() const {
   return static_cast<int>(GetOrComputeInnerTextUTF16().length());
 }
 
-std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
-  DCHECK(owner_);
+void AXComputedNodeData::ComputeUnignoredValues(
+    int starting_index_in_parent) const {
+  // Reset any previously computed values.
+  unignored_index_in_parent_ = absl::nullopt;
+  unignored_child_count_ = absl::nullopt;
+  unignored_child_ids_ = absl::nullopt;
 
+  int unignored_child_count = 0;
+  std::vector<AXNodeID> unignored_child_ids;
+  for (auto iter = owner_->AllChildrenBegin(); iter != owner_->AllChildrenEnd();
+       ++iter) {
+    const AXComputedNodeData& computed_data = iter->GetComputedNodeData();
+    int new_index_in_parent = starting_index_in_parent + unignored_child_count;
+
+    if (iter->IsIgnored()) {
+      // Skip the ignored node and recursively look at its children.
+      computed_data.ComputeUnignoredValues(new_index_in_parent);
+      DCHECK(computed_data.unignored_child_count_);
+      unignored_child_count += *computed_data.unignored_child_count_;
+      DCHECK(computed_data.unignored_child_ids_);
+      unignored_child_ids.insert(unignored_child_ids.end(),
+                                 computed_data.unignored_child_ids_->begin(),
+                                 computed_data.unignored_child_ids_->end());
+    } else {
+      ++unignored_child_count;
+      unignored_child_ids.push_back(iter->id());
+      computed_data.unignored_index_in_parent_ = new_index_in_parent;
+    }
+  }
+
+  // Ignored nodes store unignored child information in order to propagate it to
+  // their parents, but do not expose it directly.
+  unignored_child_count_ = unignored_child_count;
+  unignored_child_ids_ = unignored_child_ids;
+}
+
+void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
+  if (line_starts_ || line_ends_) {
+    DCHECK_EQ(line_starts_->size(), line_ends_->size());
+    return;  // Already cached.
+  }
+
+  line_starts_ = std::vector<int32_t>();
+  line_ends_ = std::vector<int32_t>();
+  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
+  if (inner_text.empty())
+    return;
+
+  // TODO(nektar): Using the `base::i18n::BreakIterator` class is not enough. We
+  // also need to pass information from Blink as to which inline text boxes
+  // start a new line and deprecate next/previous_on_line.
+  base::i18n::BreakIterator iter(inner_text,
+                                 base::i18n::BreakIterator::BREAK_NEWLINE);
+  if (!iter.Init())
+    return;
+
+  while (iter.Advance()) {
+    line_starts_->push_back(base::checked_cast<int32_t>(iter.prev()));
+    line_ends_->push_back(base::checked_cast<int32_t>(iter.pos()));
+  }
+}
+
+void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
+  if (sentence_starts_ || sentence_ends_) {
+    DCHECK_EQ(sentence_starts_->size(), sentence_ends_->size());
+    return;  // Already cached.
+  }
+
+  sentence_starts_ = std::vector<int32_t>();
+  sentence_ends_ = std::vector<int32_t>();
+  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
+  if (inner_text.empty())
+    return;
+
+  // Unlike in ICU, a sentence boundary is not valid in Blink if it falls within
+  // some whitespace that is used to separate sentences. We therefore need to
+  // filter the boundaries returned by ICU and return a subset of them. For
+  // example we should exclude a sentence boundary that is between two space
+  // characters, "Hello. | there.".
+  // TODO(nektar): The above is not accomplished simply by using the
+  // `base::i18n::BreakIterator` class.
+  base::i18n::BreakIterator iter(inner_text,
+                                 base::i18n::BreakIterator::BREAK_SENTENCE);
+  if (!iter.Init())
+    return;
+
+  while (iter.Advance()) {
+    sentence_starts_->push_back(base::checked_cast<int32_t>(iter.prev()));
+    sentence_ends_->push_back(base::checked_cast<int32_t>(iter.pos()));
+  }
+}
+
+void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
+  if (word_starts_ || word_ends_) {
+    DCHECK_EQ(word_starts_->size(), word_ends_->size());
+    return;  // Already cached.
+  }
+
+  word_starts_ = std::vector<int32_t>();
+  word_ends_ = std::vector<int32_t>();
+  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
+  if (inner_text.empty())
+    return;
+
+  // Unlike in ICU, a word boundary is valid in Blink only if it is before, or
+  // immediately preceded by, an alphanumeric character, a series of punctuation
+  // marks, an underscore or a line break. We therefore need to filter the
+  // boundaries returned by ICU and return a subset of them. For example we
+  // should exclude a word boundary that is between two space characters, "Hello
+  // | there".
+  // TODO(nektar): Fix the fact that the `base::i18n::BreakIterator` class does
+  // not take into account underscores as word separators.
+  base::i18n::BreakIterator iter(inner_text,
+                                 base::i18n::BreakIterator::BREAK_WORD);
+  if (!iter.Init())
+    return;
+
+  while (iter.Advance()) {
+    if (iter.IsWord()) {
+      word_starts_->push_back(base::checked_cast<int>(iter.prev()));
+      word_ends_->push_back(base::checked_cast<int>(iter.pos()));
+    }
+  }
+}
+
+std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
   // If a text field has no descendants, then we compute its inner text from its
   // value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
   // value attribute.
-  const bool is_plain_text_field_without_descendants =
-      (owner_->data().IsTextField() &&
-       !owner_->GetUnignoredChildCountCrossingTreeBoundary());
-  if (is_plain_text_field_without_descendants) {
+  const bool is_atomic_text_field_without_descendants =
+      (owner_->data().IsTextField() && !owner_->GetUnignoredChildCount());
+  if (is_atomic_text_field_without_descendants) {
     std::string value =
         owner_->data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
     // If the value is empty, then there might be some placeholder text in the
     // text field, or any other name that is derived from visible contents, even
-    // if the text field has no children.
+    // if the text field has no children, so we treat this as any other leaf
+    // node.
     if (!value.empty())
       return value;
   }
 
-  // Ordinarily, plain text fields are leaves. We need to exclude them from the
-  // set of leaf nodes when they expose any descendants. This is because we want
-  // to compute their inner text from their descendant text nodes as we don't
-  // always trust the "value" attribute provided by Blink.
-  const bool is_plain_text_field_with_descendants =
-      (owner_->data().IsTextField() &&
-       owner_->GetUnignoredChildCountCrossingTreeBoundary());
-  if (owner_->IsLeaf() && !is_plain_text_field_with_descendants) {
+  // Ordinarily, atomic text fields are leaves, and for all leaves we directly
+  // retrieve their inner text using the information provided by the tree
+  // source, such as Blink. However, for atomic text fields we need to exclude
+  // them from the set of leaf nodes when they expose any descendants. This is
+  // because we want to compute their inner text from their descendant text
+  // nodes as we don't always trust the "value" attribute provided by Blink.
+  const bool is_atomic_text_field_with_descendants =
+      (owner_->data().IsTextField() && owner_->GetUnignoredChildCount());
+  if (owner_->IsLeaf() && !is_atomic_text_field_with_descendants) {
     switch (owner_->data().GetNameFrom()) {
       case ax::mojom::NameFrom::kNone:
       case ax::mojom::NameFrom::kUninitialized:

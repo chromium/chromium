@@ -177,15 +177,15 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
   return false;
 }
 
-// Return true if |attr| contains a vector of node ids that would need
+// Returns true if |attr| contains a vector of node ids that would need
 // to be mapped when renumbering the ids in a combined tree.
 bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
   switch (attr) {
+    case ax::mojom::IntListAttribute::kIndirectChildIds:
     case ax::mojom::IntListAttribute::kControlsIds:
     case ax::mojom::IntListAttribute::kDetailsIds:
     case ax::mojom::IntListAttribute::kDescribedbyIds:
     case ax::mojom::IntListAttribute::kFlowtoIds:
-    case ax::mojom::IntListAttribute::kIndirectChildIds:
     case ax::mojom::IntListAttribute::kLabelledbyIds:
     case ax::mojom::IntListAttribute::kRadioGroupIds:
       return true;
@@ -198,17 +198,17 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kMarkerTypes:
     case ax::mojom::IntListAttribute::kMarkerStarts:
     case ax::mojom::IntListAttribute::kMarkerEnds:
-    case ax::mojom::IntListAttribute::kCharacterOffsets:
-    case ax::mojom::IntListAttribute::kCachedLineStarts:
     case ax::mojom::IntListAttribute::kCaretBounds:
+    case ax::mojom::IntListAttribute::kCharacterOffsets:
+    case ax::mojom::IntListAttribute::kLineStarts:
+    case ax::mojom::IntListAttribute::kLineEnds:
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+    case ax::mojom::IntListAttribute::kSentenceEnds:
     case ax::mojom::IntListAttribute::kWordStarts:
     case ax::mojom::IntListAttribute::kWordEnds:
     case ax::mojom::IntListAttribute::kCustomActionIds:
       return false;
   }
-
-  NOTREACHED();
-  return false;
 }
 
 AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
@@ -1669,17 +1669,19 @@ std::string AXNodeData::ToString() const {
            intlist_attribute : intlist_attributes) {
     const std::vector<int32_t>& values = intlist_attribute.second;
     switch (intlist_attribute.first) {
+      case ax::mojom::IntListAttribute::kNone:
+        break;
       case ax::mojom::IntListAttribute::kIndirectChildIds:
         result += " indirect_child_ids=" + IntVectorToString(values);
         break;
       case ax::mojom::IntListAttribute::kControlsIds:
         result += " controls_ids=" + IntVectorToString(values);
         break;
-      case ax::mojom::IntListAttribute::kDescribedbyIds:
-        result += " describedby_ids=" + IntVectorToString(values);
-        break;
       case ax::mojom::IntListAttribute::kDetailsIds:
         result += " details_ids=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kDescribedbyIds:
+        result += " describedby_ids=" + IntVectorToString(values);
         break;
       case ax::mojom::IntListAttribute::kFlowtoIds:
         result += " flowto_ids=" + IntVectorToString(values);
@@ -1726,14 +1728,23 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::IntListAttribute::kMarkerEnds:
         result += " marker_ends=" + IntVectorToString(values);
         break;
+      case ax::mojom::IntListAttribute::kCaretBounds:
+        result += " caret_bounds=" + IntVectorToString(values);
+        break;
       case ax::mojom::IntListAttribute::kCharacterOffsets:
         result += " character_offsets=" + IntVectorToString(values);
         break;
-      case ax::mojom::IntListAttribute::kCachedLineStarts:
-        result += " cached_line_start_offsets=" + IntVectorToString(values);
+      case ax::mojom::IntListAttribute::kLineStarts:
+        result += " line_start_offsets=" + IntVectorToString(values);
         break;
-      case ax::mojom::IntListAttribute::kCaretBounds:
-        result += " caret_bounds=" + IntVectorToString(values);
+      case ax::mojom::IntListAttribute::kLineEnds:
+        result += " line_end_offsets=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kSentenceStarts:
+        result += " sentence_start_offsets=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kSentenceEnds:
+        result += " sentence_end_offsets=" + IntVectorToString(values);
         break;
       case ax::mojom::IntListAttribute::kWordStarts:
         result += " word_starts=" + IntVectorToString(values);
@@ -1743,8 +1754,6 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::IntListAttribute::kCustomActionIds:
         result += " custom_action_ids=" + IntVectorToString(values);
-        break;
-      case ax::mojom::IntListAttribute::kNone:
         break;
     }
   }

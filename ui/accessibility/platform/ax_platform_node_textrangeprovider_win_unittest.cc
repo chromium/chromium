@@ -420,9 +420,8 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                   "input");
     text_field.SetValue(ALL_TEXT);
-    text_field.AddIntListAttribute(
-        ax::mojom::IntListAttribute::kCachedLineStarts,
-        std::vector<int32_t>{0, 7});
+    text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
+                                   std::vector<int32_t>{0, 7});
     text_field.child_ids.push_back(static_text1.id);
     text_field.child_ids.push_back(line_break.id);
     text_field.child_ids.push_back(static_text2.id);
