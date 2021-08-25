@@ -21,6 +21,7 @@ class UrlSelectionOperationHandler;
 class UnnamedOperationHandler;
 class Console;
 class SharedStorage;
+class ModuleScriptDownloader;
 
 // The global JS execution context for shared storage worklet. It holds a
 // v8::Isolate and a v8::Context to execute all worklet operations. Members are
@@ -32,6 +33,8 @@ class SharedStorageWorkletGlobalScope {
   ~SharedStorageWorkletGlobalScope();
 
   void AddModule(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
       mojom::SharedStorageWorkletServiceClient* client,
       const GURL& script_source_url,
       mojom::SharedStorageWorkletService::AddModuleCallback callback);
@@ -65,6 +68,8 @@ class SharedStorageWorkletGlobalScope {
   v8::Isolate* Isolate();
 
   v8::Local<v8::Context> LocalContext();
+
+  std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
 
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   v8::Global<v8::Context> global_context_;

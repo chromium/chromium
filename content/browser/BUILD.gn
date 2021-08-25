@@ -1794,6 +1794,8 @@ source_set("browser") {
     "service_worker/service_worker_updated_script_loader.h",
     "service_worker/service_worker_version.cc",
     "service_worker/service_worker_version.h",
+    "shared_storage/shared_storage_url_loader_factory_proxy.cc",
+    "shared_storage/shared_storage_url_loader_factory_proxy.h",
     "site_instance_group_manager.cc",
     "site_instance_group_manager.h",
     "site_instance_impl.cc",

@@ -8,6 +8,8 @@ source_set("shared_storage_worklet") {
   sources = [
     "console.cc",
     "console.h",
+    "module_script_downloader.cc",
+    "module_script_downloader.h",
     "shared_storage.cc",
     "shared_storage.h",
     "shared_storage_worklet_global_scope.cc",
@@ -30,6 +32,7 @@ source_set("shared_storage_worklet") {
     "//gin",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
+    "//third_party/blink/public/common",
     "//url",
     "//v8",
   ]
@@ -40,13 +43,17 @@ source_set("shared_storage_worklet") {
 source_set("tests") {
   testonly = true
 
-  sources = [ "shared_storage_worklet_global_scope_unittest.cc" ]
+  sources = [
+    "module_script_downloader_unittest.cc",
+    "shared_storage_worklet_global_scope_unittest.cc",
+  ]
 
   deps = [
     ":shared_storage_worklet",
     "public/mojom",
     "//base",
     "//base/test:test_support",
+    "//services/network:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

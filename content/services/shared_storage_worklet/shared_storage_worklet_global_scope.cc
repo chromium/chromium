@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "content/services/shared_storage_worklet/console.h"
+#include "content/services/shared_storage_worklet/module_script_downloader.h"
 #include "content/services/shared_storage_worklet/shared_storage.h"
 #include "content/services/shared_storage_worklet/unnamed_operation_handler.h"
 #include "content/services/shared_storage_worklet/url_selection_operation_handler.h"
@@ -17,6 +18,7 @@
 #include "gin/function_template.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace shared_storage_worklet {
 
@@ -54,12 +56,19 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope() = default;
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
 void SharedStorageWorkletGlobalScope::AddModule(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        pending_url_loader_factory,
     mojom::SharedStorageWorkletServiceClient* client,
     const GURL& script_source_url,
     mojom::SharedStorageWorkletService::AddModuleCallback callback) {
-  // TODO(yaoxia): handle script downloading
-  OnModuleScriptDownloaded(client, script_source_url, std::move(callback),
-                           nullptr, "addModule not implemented");
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
+      std::move(pending_url_loader_factory));
+
+  module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
+      url_loader_factory.get(), script_source_url,
+      base::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), client, script_source_url,
+                     std::move(callback)));
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
@@ -68,6 +77,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     mojom::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
+  module_script_downloader_.reset();
+
   if (!response_body) {
     std::move(callback).Run(false, error_message);
     return;
