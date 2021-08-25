@@ -49,7 +49,7 @@ class WebAppBrowserController : public AppBrowserController,
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
                           AppId app_id,
-                          absl::optional<SystemAppType> system_app_type,
+                          const SystemWebAppDelegate* system_app,
                           bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;

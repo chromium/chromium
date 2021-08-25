@@ -48,11 +48,11 @@ WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
     Browser* browser,
     AppId app_id,
-    absl::optional<SystemAppType> system_app_type,
+    const SystemWebAppDelegate* system_app,
     bool has_tab_strip)
     : AppBrowserController(browser,
                            std::move(app_id),
-                           std::move(system_app_type),
+                           system_app,
                            has_tab_strip),
       provider_(provider) {
   registrar_observation_.Observe(&provider_.registrar());
@@ -92,20 +92,20 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
-  if (system_app_type().has_value()) {
+  if (system_app()) {
     return provider_.system_web_app_manager().GetDefaultBounds(
-        system_app_type().value(), browser());
+        system_app()->GetType(), browser());
   }
 
   return gfx::Rect();
 }
 
 bool WebAppBrowserController::HasReloadButton() const {
-  if (!system_app_type())
+  if (!system_app())
     return true;
 
   return provider_.system_web_app_manager().ShouldHaveReloadButtonInMinimalUi(
-      system_app_type().value());
+      system_app()->GetType());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

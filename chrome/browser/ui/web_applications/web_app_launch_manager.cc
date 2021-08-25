@@ -108,9 +108,9 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
           bad_navigate->set_is_kiosk(is_kiosk);
           bad_navigate->set_has_hosted_app_controller(!!app_controller);
           bad_navigate->set_app_name(browser->app_name());
-          if (app_controller && app_controller->system_app_type()) {
+          if (app_controller && app_controller->system_app()) {
             bad_navigate->set_system_app_type(
-                static_cast<uint32_t>(*app_controller->system_app_type()));
+                static_cast<uint32_t>(app_controller->system_app()->GetType()));
           }
           bad_navigate->set_web_app_provider_registry_ready(
               web_app_provider->on_registry_ready().is_signaled());

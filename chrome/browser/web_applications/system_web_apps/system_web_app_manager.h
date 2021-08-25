@@ -110,6 +110,9 @@ class SystemWebAppManager {
   // Returns the System App Type for the given |app_id|.
   absl::optional<SystemAppType> GetSystemAppTypeForAppId(AppId app_id) const;
 
+  // Returns the System App Delegate for the given App |type|.
+  const SystemWebAppDelegate* GetSystemApp(SystemAppType type) const;
+
   // Returns the App Ids for all installed System Web Apps.
   std::vector<AppId> GetAppIds() const;
 

@@ -3300,13 +3300,13 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
         if (registrar.IsLocallyInstalled(app_id))
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
 
-        if (browser->app_controller()->is_for_system_web_app()) {
-          auto system_app_type = browser->app_controller()->system_app_type();
+        auto* system_app = browser->app_controller()->system_app();
+        if (system_app) {
           const web_app::SystemWebAppManager& system_web_app_manager =
               web_app_provider->system_web_app_manager();
           web_prefs->allow_scripts_to_close_windows =
               system_web_app_manager.AllowScriptsToCloseWindows(
-                  system_app_type.value());
+                  system_app->GetType());
         }
       }
     }

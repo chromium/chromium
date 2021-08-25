@@ -663,9 +663,10 @@ RenderViewContextMenu::RenderViewContextMenu(
   set_content_type(
       ContextMenuContentTypeFactory::Create(source_web_contents_, params));
 
-  system_app_type_ = GetBrowser() && GetBrowser()->app_controller()
-                         ? GetBrowser()->app_controller()->system_app_type()
-                         : absl::nullopt;
+  if (GetBrowser() && GetBrowser()->app_controller() &&
+      GetBrowser()->app_controller()->system_app()) {
+    system_app_type_ = GetBrowser()->app_controller()->system_app()->GetType();
+  }
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;

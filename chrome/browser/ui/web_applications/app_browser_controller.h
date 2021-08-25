@@ -35,8 +35,8 @@ class ImageModel;
 
 namespace web_app {
 
+class SystemWebAppDelegate;
 class WebAppBrowserController;
-enum class SystemAppType;
 
 // Returns true if |app_url| and |page_url| are the same origin. To avoid
 // breaking Hosted Apps and Bookmark Apps that might redirect to sites in the
@@ -166,12 +166,10 @@ class AppBrowserController : public TabStripModelObserver,
   void UpdateCustomTabBarVisibility(bool animate) const;
 
   // Returns true if this controller is for a System Web App.
-  bool is_for_system_web_app() const { return system_app_type_.has_value(); }
+  bool is_for_system_web_app() const { return system_app_; }
 
-  // Returns the SystemAppType for this controller.
-  const absl::optional<SystemAppType>& system_app_type() const {
-    return system_app_type_;
-  }
+  // Returns the SystemWebAppDelegate for this controller.
+  const SystemWebAppDelegate* system_app() const { return system_app_; }
 
   const AppId& app_id() const { return app_id_; }
 
@@ -211,7 +209,7 @@ class AppBrowserController : public TabStripModelObserver,
  protected:
   AppBrowserController(Browser* browser,
                        AppId app_id,
-                       absl::optional<SystemAppType> system_app_type,
+                       const SystemWebAppDelegate* system_app,
                        bool has_tab_strip);
   AppBrowserController(Browser* browser, AppId app_id);
 
@@ -233,7 +231,7 @@ class AppBrowserController : public TabStripModelObserver,
 
   Browser* const browser_;
   const AppId app_id_;
-  const absl::optional<SystemAppType> system_app_type_;
+  const SystemWebAppDelegate* system_app_;
   const bool has_tab_strip_;
   GURL initial_url_;
 

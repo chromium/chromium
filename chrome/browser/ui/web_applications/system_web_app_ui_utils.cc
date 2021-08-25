@@ -332,8 +332,8 @@ bool IsSystemWebApp(Browser* browser) {
 
 bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {
   DCHECK(browser);
-  return browser->app_controller() &&
-         browser->app_controller()->system_app_type() == type;
+  return browser->app_controller() && browser->app_controller()->system_app() &&
+         browser->app_controller()->system_app()->GetType() == type;
 }
 
 absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,

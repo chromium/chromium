@@ -374,6 +374,15 @@ absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
   return absl::nullopt;
 }
 
+const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
+    SystemAppType type) const {
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
+    return nullptr;
+
+  return it->second.get();
+}
+
 std::vector<AppId> SystemWebAppManager::GetAppIds() const {
   std::vector<AppId> app_ids;
   for (const auto& app_type_to_app_info : system_app_delegates_) {

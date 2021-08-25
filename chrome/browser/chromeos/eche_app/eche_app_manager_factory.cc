@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
@@ -45,11 +46,12 @@ void CloseEcheApp(Profile* profile) {
   for (auto* browser : *(BrowserList::GetInstance())) {
     if (browser->profile() != profile)
       continue;
-    if (!browser->app_controller())
+    if (!browser->app_controller() ||
+        !browser->app_controller()->system_app() ||
+        browser->app_controller()->system_app()->GetType() !=
+            web_app::SystemAppType::ECHE) {
       continue;
-    if (browser->app_controller()->system_app_type() !=
-        web_app::SystemAppType::ECHE)
-      continue;
+    }
     browser->window()->Close();
     return;
   }

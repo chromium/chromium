@@ -184,8 +184,13 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   auto* const provider =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id)) {
+    const SystemWebAppDelegate* system_app = nullptr;
     auto system_app_type =
         GetSystemWebAppTypeForAppId(browser->profile(), app_id);
+    if (system_app_type) {
+      system_app =
+          provider->system_web_app_manager().GetSystemApp(*system_app_type);
+    }
     const bool has_tab_strip =
         (system_app_type.has_value() &&
          provider->system_web_app_manager().ShouldHaveTabStrip(
@@ -193,7 +198,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
         (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
          provider->registrar().IsTabbedWindowModeEnabled(app_id));
     controller = std::make_unique<WebAppBrowserController>(
-        *provider, browser, app_id, std::move(system_app_type), has_tab_strip);
+        *provider, browser, app_id, system_app, has_tab_strip);
   } else {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(browser->profile())
