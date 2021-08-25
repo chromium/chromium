@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -143,7 +144,7 @@ void HoldingSpaceImage::OnBitmapLoaded(const base::FilePath& file_path,
       // Retry load if the backing file path has changed while the image load
       // was in progress.
       LoadBitmap(scale);
-    } else if (async_bitmap_resolver_error_ != error) {
+    } else {
       // A new `error` may mean a better file type image can be displayed. The
       // `error`, for example, may indicate that the file is in fact a folder in
       // which case there is a more appropriate icon that can be shown. Notify
@@ -243,12 +244,36 @@ bool HoldingSpaceImage::FireInvalidateTimerForTesting() {
 
 void HoldingSpaceImage::OnInvalidateTimer() {
   // Invalidate the existing pointers to:
-  // *   Invalidate previous `image_skia_`'s host pointer, and prevent it from
-  //     requesting bitmap loads.
+  // *   Invalidate the previous `image_skia_`'s host pointer, and prevent it
+  //     from requesting bitmap loads.
   // *   Prevent pending bitmap request callbacks from running.
   weak_factory_.InvalidateWeakPtrs();
+
+  // Cache scales for which the previous `image_skia_` has reps.
+  std::set<float> scales;
+  for (const gfx::ImageSkiaRep& image_rep : image_skia_.image_reps())
+    scales.insert(image_rep.scale());
+
+  // Create a new `image_skia_`.
   CreateImageSkia();
-  callback_list_.Notify();
+
+  // If the `async_bitmap_resolver_` has not previously failed, notify
+  // subscribers that the `image_skia_` has been invalidated. A new bitmap will
+  // be asynchronously resolved at the next `GetImageSkia()` invocation.
+  if (!async_bitmap_resolver_error_ ||
+      async_bitmap_resolver_error_ == base::File::FILE_OK) {
+    callback_list_.Notify();
+    return;
+  }
+
+  // If the `async_bitmap_resolver_` failed previously, force asynchronous
+  // resolution of new bitmaps. Failure to do so would cause `GetImageSkia()`
+  // invocations to continue returning placeholders. Note that subscribers will
+  // be notified of `image_skia_` invalidation when the `async_bitmap_resolver_`
+  // returns.
+  DCHECK(!scales.empty());
+  for (const float& scale : scales)
+    image_skia_.GetRepresentation(scale);
 }
 
 void HoldingSpaceImage::CreateImageSkia() {
