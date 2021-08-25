@@ -128,9 +128,7 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
             contents, handle->GetURL());
     std::string interstitial_html = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(handle->GetWebContents(),
-                              handle->GetNavigationId(),
-                              std::move(blocking_page));
+        AssociateBlockingPage(handle, std::move(blocking_page));
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
         interstitial_html);

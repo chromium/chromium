@@ -152,7 +152,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::ShowInterstitial(
       blocking_page->GetHTMLContents();
 
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      web_contents, handle->GetNavigationId(), std::move(blocking_page));
+      handle, std::move(blocking_page));
 
   // Store interstitial parameters in per-tab storage. Reloading the
   // interstitial once it's shown navigates to the final URL in the original

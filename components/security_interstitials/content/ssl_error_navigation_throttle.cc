@@ -150,8 +150,7 @@ void SSLErrorNavigationThrottle::ShowInterstitial(
   DCHECK(handle->IsInPrimaryMainFrame());
 
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      handle->GetWebContents(), handle->GetNavigationId(),
-      std::move(blocking_page));
+      handle, std::move(blocking_page));
 
   CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, static_cast<net::Error>(net_error),

@@ -159,7 +159,7 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
       return;
 
     security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(web_contents(), handle->GetNavigationId(),
+        AssociateBlockingPage(handle,
                               std::make_unique<UrlHidingInterstitialPage>(
                                   web_contents(), handle->GetURL()));
   }

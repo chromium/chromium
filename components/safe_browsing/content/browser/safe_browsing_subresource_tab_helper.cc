@@ -29,8 +29,7 @@ void SafeBrowsingSubresourceTabHelper::ReadyToCommitNavigation(
               navigation_handle->GetURL(), {resource},
               /*should_trigger_reporting=*/true);
       security_interstitials::SecurityInterstitialTabHelper::
-          AssociateBlockingPage(navigation_handle->GetWebContents(),
-                                navigation_handle->GetNavigationId(),
+          AssociateBlockingPage(navigation_handle,
                                 base::WrapUnique(blocking_page));
     }
   }

@@ -44,8 +44,7 @@ void AwSafeBrowsingSubresourceHelper::ReadyToCommitNavigation(
               manager, navigation_handle->GetWebContents(),
               navigation_handle->GetURL(), resource, std::move(request));
       security_interstitials::SecurityInterstitialTabHelper::
-          AssociateBlockingPage(navigation_handle->GetWebContents(),
-                                navigation_handle->GetNavigationId(),
+          AssociateBlockingPage(navigation_handle,
                                 base::WrapUnique(blocking_page));
     }
   }

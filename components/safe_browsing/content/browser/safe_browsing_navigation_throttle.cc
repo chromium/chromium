@@ -44,9 +44,7 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
         /*net_error_code=*/0);
     std::string error_page_content = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(handle->GetWebContents(),
-                              handle->GetNavigationId(),
-                              base::WrapUnique(blocking_page));
+        AssociateBlockingPage(handle, base::WrapUnique(blocking_page));
 
     return content::NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);

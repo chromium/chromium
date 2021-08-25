@@ -18,9 +18,7 @@ void HttpsOnlyModeTabHelper::ReadyToCommitNavigation(
         blocking_page = factory_->CreateHttpsOnlyModeBlockingPage(
             navigation_handle->GetWebContents(), fallback_url());
     security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(navigation_handle->GetWebContents(),
-                              navigation_handle->GetNavigationId(),
-                              std::move(blocking_page));
+        AssociateBlockingPage(navigation_handle, std::move(blocking_page));
   }
 }
 

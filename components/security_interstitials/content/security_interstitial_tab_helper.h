@@ -35,11 +35,11 @@ class SecurityInterstitialTabHelper
   void WebContentsDestroyed() override;
 
   // Associates |blocking_page| with an SecurityInterstitialTabHelper for the
-  // given |web_contents| and |navigation_id|, to manage the |blocking_page|'s
-  // lifetime.
+  // given |navigation_handle|, to manage the |blocking_page|'s lifetime. This
+  // method has no effect if called with a |navigation_handle| indicating
+  // pre-rendering navigation.
   static void AssociateBlockingPage(
-      content::WebContents* web_contents,
-      int64_t navigation_id,
+      content::NavigationHandle* navigation_handle,
       std::unique_ptr<security_interstitials::SecurityInterstitialPage>
           blocking_page);
 

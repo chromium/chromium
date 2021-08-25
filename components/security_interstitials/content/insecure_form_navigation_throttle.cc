@@ -150,7 +150,7 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
                                                              handle->GetURL());
   std::string interstitial_html = blocking_page->GetHTMLContents();
   SecurityInterstitialTabHelper::AssociateBlockingPage(
-      contents, handle->GetNavigationId(), std::move(blocking_page));
+      handle, std::move(blocking_page));
   return content::NavigationThrottle::ThrottleCheckResult(
       CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html);
 }

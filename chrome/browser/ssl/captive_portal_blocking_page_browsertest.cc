@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,8 +133,7 @@ CaptivePortalTestingNavigationThrottle::WillFailRequest() {
   // Hand the blocking page back to the WebContents's
   // security_interstitials::SecurityInterstitialTabHelper to own.
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      navigation_handle()->GetWebContents(),
-      navigation_handle()->GetNavigationId(), std::move(blocking_page));
+      navigation_handle(), std::move(blocking_page));
   return {CANCEL, net::ERR_CERT_COMMON_NAME_INVALID, html};
 }
 
