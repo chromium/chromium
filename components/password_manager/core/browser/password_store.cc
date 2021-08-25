@@ -341,8 +341,7 @@ void PasswordStore::ReportMetrics(const std::string& sync_username,
         custom_passphrase_sync_enabled,
         BulkCheckDone(prefs_ && prefs_->HasPrefPath(
                                     prefs::kLastTimePasswordCheckCompleted)));
-    background_task_runner_->PostDelayedTask(FROM_HERE, std::move(task),
-                                             base::TimeDelta::FromSeconds(30));
+    background_task_runner_->PostTask(FROM_HERE, std::move(task));
   }
 }
 

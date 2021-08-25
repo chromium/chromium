@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
+#include "ios/chrome/browser/passwords/ios_password_store_utils.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -130,7 +131,8 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
         GetApplicationContext()->GetNetworkConnectionTracker(),
         context->GetStatePath());
   }
-
+  DelayReportingPasswordStoreMetrics(
+      ChromeBrowserState::FromBrowserState(context));
   return store;
 }
 

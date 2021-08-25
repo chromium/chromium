@@ -38,6 +38,7 @@ class SyncUsernameTestBase : public testing::Test {
   void SetSyncingPasswords(bool syncing_passwords);
 
   const syncer::SyncService* sync_service() const { return &sync_service_; }
+  syncer::TestSyncService* test_sync_service() { return &sync_service_; }
 
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();

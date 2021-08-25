@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/supports_user_data.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 class PrefService;
@@ -23,27 +24,24 @@ class SyncService;
 
 namespace password_manager {
 
-class PasswordManagerClient;
+class PasswordReuseManager;
 
 // Instantiate this object to report metrics about the contents of the password
-// store. Create a static base::NoDestructor<StoreMetricsReporter> to ensure
-// that metrics are reported only once per process. This is thread-safe, because
-// C++11 guarantees that: "If control enters the declaration concurrently while
-// the variable is being initialized, the concurrent execution shall wait for
-// completion of the initialization." So the reporter is only initialised (and
-// hence reports) once.
+// store.
 class StoreMetricsReporter {
  public:
   // Reports various metrics based on whether password manager is enabled. Uses
-  // |client| to obtain the password store and password syncing state. Uses
-  // |sync_service| and |identity_manager| to obtain the sync username to report
-  // about its presence among saved credentials. Uses the |prefs| to obtain
-  // information whether the password manager and the leak detection feature is
-  // enabled.
-  StoreMetricsReporter(PasswordManagerClient* client,
+  // |sync_service| password syncing state. Uses |sync_service| and
+  // |identity_manager| to obtain the sync username to report about its presence
+  // among saved credentials. Uses the |prefs| to obtain information whether the
+  // password manager and the leak detection feature is enabled.
+  StoreMetricsReporter(PasswordStore* profile_store,
+                       PasswordStore* account_store,
                        const syncer::SyncService* sync_service,
                        const signin::IdentityManager* identity_manager,
-                       PrefService* prefs);
+                       PrefService* prefs,
+                       PasswordReuseManager* password_reuse_manager,
+                       bool is_under_advanced_protection);
 
   ~StoreMetricsReporter();
 
@@ -54,6 +52,11 @@ class StoreMetricsReporter {
                                scoped_refptr<PasswordStore> account_store,
                                bool is_opted_in);
   void MultiStoreMetricsDone();
+
+  // Since metrics reporting is run in a delayed task, we grab refptrs to the
+  // stores, to ensure they're still alive when the delayed task runs.
+  scoped_refptr<PasswordStore> profile_store_;
+  scoped_refptr<PasswordStore> account_store_;
 
   std::unique_ptr<MultiStoreMetricsReporter> multi_store_reporter_;
 

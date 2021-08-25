@@ -5,11 +5,10 @@
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -179,12 +178,16 @@ class StoreMetricsReporter::MultiStoreMetricsReporter {
 };
 
 StoreMetricsReporter::StoreMetricsReporter(
-    PasswordManagerClient* client,
+    PasswordStore* profile_store,
+    PasswordStore* account_store,
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager,
-    PrefService* prefs) {
-  for (PasswordStore* store :
-       {client->GetProfilePasswordStore(), client->GetAccountPasswordStore()}) {
+    PrefService* prefs,
+    password_manager::PasswordReuseManager* password_reuse_manager,
+    bool is_under_advanced_protection)
+    : profile_store_(profile_store), account_store_(account_store) {
+  DCHECK(prefs);
+  for (PasswordStore* store : {profile_store, account_store}) {
     // May be null in tests. The account store is also null if the
     // kEnablePasswordsAccountStorage feature is disabled.
     if (store) {
@@ -193,14 +196,13 @@ StoreMetricsReporter::StoreMetricsReporter(
               sync_service, identity_manager);
       store->ReportMetrics(
           sync_username,
-          client->GetPasswordSyncState() ==
+          password_manager_util::GetPasswordSyncState(sync_service) ==
               password_manager::SyncState::kSyncingWithCustomPassphrase,
-          client->IsUnderAdvancedProtection());
+          is_under_advanced_protection);
 
-      PasswordReuseManager* reuse_manager = client->GetPasswordReuseManager();
-      if (reuse_manager) {
-        reuse_manager->ReportMetrics(sync_username,
-                                     client->IsUnderAdvancedProtection());
+      if (password_reuse_manager) {
+        password_reuse_manager->ReportMetrics(sync_username,
+                                              is_under_advanced_protection);
       }
     }
   }
@@ -209,24 +211,10 @@ StoreMetricsReporter::StoreMetricsReporter(
       prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
 
   // If both stores exist, kick off the MultiStoreMetricsReporter.
-  PasswordStore* profile_store = client->GetProfilePasswordStore();
-  PasswordStore* account_store = client->GetAccountPasswordStore();
   if (profile_store && account_store) {
-    // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
-    // during the "hot phase" of Chrome startup. (This is what
-    // PasswordStore::ReportMetrics also does.)
-    // Grab refptrs to the stores, to ensure they're still alive when the
-    // delayed task runs.
-    scoped_refptr<PasswordStore> retained_profile_store = profile_store;
-    scoped_refptr<PasswordStore> retained_account_store = account_store;
-    bool is_opted_in =
-        client->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&StoreMetricsReporter::ReportMultiStoreMetrics,
-                       weak_ptr_factory_.GetWeakPtr(), retained_profile_store,
-                       retained_account_store, is_opted_in),
-        base::TimeDelta::FromSeconds(30));
+    ReportMultiStoreMetrics(
+        profile_store, account_store,
+        features_util::IsOptedInForAccountStorage(prefs, sync_service));
   }
 }
 

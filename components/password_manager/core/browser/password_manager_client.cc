@@ -164,11 +164,8 @@ network::mojom::NetworkContext* PasswordManagerClient::GetNetworkContext()
   return nullptr;
 }
 
-bool PasswordManagerClient::IsUnderAdvancedProtection() const {
-  return false;
-}
-
 bool PasswordManagerClient::IsWebAuthnAutofillEnabled() const {
   return false;
 }
+
 }  // namespace password_manager

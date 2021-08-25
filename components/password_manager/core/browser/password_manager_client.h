@@ -400,11 +400,6 @@ class PasswordManagerClient {
   // the current profile.
   virtual network::mojom::NetworkContext* GetNetworkContext() const;
 
-  // Whether the primary account of the current profile is under Advanced
-  // Protection - a type of Google Account that helps protect our most at-risk
-  // users.
-  virtual bool IsUnderAdvancedProtection() const;
-
   // Causes all live PasswordFormManager objects to query the password store
   // again. Results in updating the fill information on the page.
   virtual void UpdateFormManagers() {}

@@ -12,6 +12,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -40,18 +41,6 @@ PasswordForm CreateForm(const std::string& signon_realm,
   return form;
 }
 
-class MockPasswordManagerClient : public StubPasswordManagerClient {
- public:
-  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const, override));
-  MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (const, override));
-  MOCK_METHOD(PasswordReuseManager*,
-              GetPasswordReuseManager,
-              (),
-              (const, override));
-  MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
-  MOCK_METHOD(bool, IsUnderAdvancedProtection, (), (const, override));
-};
-
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
  public:
   StoreMetricsReporterTest() = default;
@@ -78,7 +67,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  MockPasswordManagerClient client_;
   TestingPrefServiceSimple prefs_;
 };
 
@@ -97,10 +85,11 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
   prefs_.SetBoolean(password_manager::prefs::kCredentialsEnableService,
                     password_manager_enabled);
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(client_, GetProfilePasswordStore())
-      .WillRepeatedly(Return(nullptr));
-  StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
-                                &prefs_);
+
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
+      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      /*is_under_advanced_protection=*/false);
 
   histogram_tester.ExpectUniqueSample("PasswordManager.Enabled",
                                       password_manager_enabled, 1);
@@ -112,30 +101,31 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreDependentMetrics) {
   const bool syncing_with_passphrase = std::get<0>(GetParam());
   const bool is_under_advanced_protection = std::get<1>(GetParam());
 
+  test_sync_service()->SetIsUsingExplicitPassphrase(syncing_with_passphrase);
+
   auto store = base::MakeRefCounted<MockPasswordStore>();
-  const auto sync_state =
-      syncing_with_passphrase
-          ? password_manager::SyncState::kSyncingWithCustomPassphrase
-          : password_manager::SyncState::kSyncingNormalEncryption;
-  EXPECT_CALL(client_, GetPasswordSyncState())
-      .WillRepeatedly(Return(sync_state));
-  EXPECT_CALL(client_, GetProfilePasswordStore())
-      .WillRepeatedly(Return(store.get()));
-  EXPECT_CALL(client_, IsUnderAdvancedProtection())
-      .WillRepeatedly(Return(is_under_advanced_protection));
   EXPECT_CALL(*store,
               ReportMetrics("some.user@gmail.com", syncing_with_passphrase,
                             is_under_advanced_protection));
+
   FakeSigninAs("some.user@gmail.com");
 
-  StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
-                                &prefs_);
+  StoreMetricsReporter reporter(
+      /*profile_store=*/store.get(), /*account_store=*/nullptr, sync_service(),
+      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      is_under_advanced_protection);
+
   store->ShutdownOnUIThread();
 }
 
 // A test that covers multi-store metrics, which are recorded by the
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
+  // This test is only relevant when the passwords accounts store is enabled.
+  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage))
+    return;
+  prefs_.registry()->RegisterDictionaryPref(
+      prefs::kAccountStoragePerAccountSettings);
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =
@@ -144,17 +134,12 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   profile_store->Init(&prefs_);
   account_store->Init(&prefs_);
 
-  EXPECT_CALL(client_, GetPasswordSyncState())
-      .WillRepeatedly(Return(password_manager::SyncState::
-                                 kAccountPasswordsActiveNormalEncryption));
-  EXPECT_CALL(client_, IsUnderAdvancedProtection())
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(client_, GetProfilePasswordStore())
-      .WillRepeatedly(Return(profile_store.get()));
-  EXPECT_CALL(client_, GetAccountPasswordStore())
-      .WillRepeatedly(Return(account_store.get()));
-  EXPECT_CALL(client_, GetPasswordReuseManager())
-      .WillRepeatedly(Return(nullptr));
+  // Simulate account store active.
+  AccountInfo account_info;
+  account_info.email = "account@gmail.com";
+  account_info.gaia = "account";
+  test_sync_service()->SetAuthenticatedAccountInfo(account_info);
+  test_sync_service()->SetIsAuthenticatedAccountPrimary(false);
 
   const std::string kRealm1 = "https://example.com";
   const std::string kRealm2 = "https://example2.com";
@@ -202,17 +187,22 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       CreateForm(kRealm2, "identicaluser1", "identicalpass1"));
 
   for (bool opted_in : {false, true}) {
-    EXPECT_CALL(*client_.GetPasswordFeatureManager(),
-                IsOptedInForAccountStorage())
-        .WillRepeatedly(Return(opted_in));
+    if (opted_in) {
+      features_util::OptInToAccountStorage(&prefs_, sync_service());
+    } else {
+      features_util::OptOutOfAccountStorageAndClearSettings(&prefs_,
+                                                            sync_service());
+    }
 
     base::HistogramTester histogram_tester;
 
-    StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
-                                  &prefs_);
-    // Wait for the metrics to get reported. This is delayed by 30 seconds, and
-    // then involves queries to the stores, i.e. to background task runners.
-    FastForwardBy(base::TimeDelta::FromSeconds(30));
+    StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                  sync_service(), identity_manager(), &prefs_,
+                                  /*password_reuse_manager=*/nullptr,
+                                  /*is_under_advanced_protection=*/false);
+
+    // Wait for the metrics to get reported, which involves queries to the
+    // stores, i.e. to background task runners.
     RunUntilIdle();
 
     // The original version of the metrics (without "2") is still recorded, even
@@ -269,27 +259,16 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   SetSyncingPasswords(true);
   FakeSigninAs(username);
 
-  EXPECT_CALL(client_, GetPasswordSyncState())
-      .WillRepeatedly(Return(password_manager::SyncState::
-                                 kAccountPasswordsActiveNormalEncryption));
-  EXPECT_CALL(client_, IsUnderAdvancedProtection())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, GetProfilePasswordStore())
-      .WillRepeatedly(Return(store.get()));
-  EXPECT_CALL(client_, GetAccountPasswordStore())
-      .WillRepeatedly(Return(nullptr));
-  EXPECT_CALL(client_, GetPasswordReuseManager())
-      .WillRepeatedly(Return(&reuse_manager));
-
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(reuse_manager, ReportMetrics(username, true));
-  StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
-                                &prefs_);
+  StoreMetricsReporter reporter(/*profile_store=*/store.get(),
+                                /*account_store=*/nullptr, sync_service(),
+                                identity_manager(), &prefs_, &reuse_manager,
+                                /*is_under_advanced_protection=*/true);
 
-  // Wait for the metrics to get reported. This is delayed by 30 seconds, and
-  // then involves queries to the stores, i.e. to background task runners.
-  FastForwardBy(base::TimeDelta::FromSeconds(30));
+  // Wait for the metrics to get reported, which involves queries to the stores,
+  // i.e. to background task runners.
   RunUntilIdle();
 
   store->ShutdownOnUIThread();

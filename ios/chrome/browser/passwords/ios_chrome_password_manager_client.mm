@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +21,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
-#include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -78,9 +76,6 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
-  static base::NoDestructor<password_manager::StoreMetricsReporter> reporter(
-      this, GetSyncService(bridge_.browserState), GetIdentityManager(),
-      GetPrefs());
   log_manager_ = autofill::LogManager::Create(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),

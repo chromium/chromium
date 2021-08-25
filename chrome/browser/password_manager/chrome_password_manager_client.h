@@ -226,7 +226,6 @@ class ChromePasswordManagerClient
   signin::IdentityManager* GetIdentityManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::NetworkContext* GetNetworkContext() const override;
-  bool IsUnderAdvancedProtection() const override;
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;

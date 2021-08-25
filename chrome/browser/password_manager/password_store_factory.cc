@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
+#include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -157,7 +158,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
             ->GetURLLoaderFactoryForBrowserProcess(),
         content::GetNetworkConnectionTracker(), profile->GetPath());
   }
-
+  DelayReportingPasswordStoreMetrics(profile);
   return ps;
 }
 

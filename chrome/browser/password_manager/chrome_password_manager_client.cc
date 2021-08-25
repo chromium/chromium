@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -71,7 +70,6 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
-#include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -908,16 +906,6 @@ network::mojom::NetworkContext* ChromePasswordManagerClient::GetNetworkContext()
   return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
-bool ChromePasswordManagerClient::IsUnderAdvancedProtection() const {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-             profile_)
-      ->IsUnderAdvancedProtection();
-#else
-  return false;
-#endif
-}
-
 void ChromePasswordManagerClient::UpdateFormManagers() {
   password_manager_.UpdateFormManagers();
 }
@@ -1225,8 +1213,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
 
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
-  static base::NoDestructor<password_manager::StoreMetricsReporter> reporter(
-      this, GetSyncService(profile_), GetIdentityManager(), GetPrefs());
   driver_factory_->RequestSendLoggingAvailability();
 
   auto* autofill_assistant_manager =
