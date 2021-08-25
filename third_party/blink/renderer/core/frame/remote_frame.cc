@@ -309,7 +309,6 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       request.RequestorOrigin()->CanAccess(
           GetSecurityContext()->GetSecurityOrigin()),
       initiator_frame_has_download_sandbox_flag,
-      RuntimeEnabledFeatures::BlockingDownloadsInSandboxEnabled(),
       initiator_frame_is_ad);
 
   GetRemoteFrameHostRemote().OpenURL(std::move(params));

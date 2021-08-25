@@ -93,7 +93,6 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
     bool has_gesture,
     bool can_access_current_origin,
     bool has_download_sandbox_flag,
-    bool is_blocking_downloads_in_sandbox_enabled,
     bool from_ad) {
   if (!has_gesture)
     SetAllowed(NavigationDownloadType::kNoGesture);
@@ -105,11 +104,7 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
   }
 
   if (has_download_sandbox_flag) {
-    if (is_blocking_downloads_in_sandbox_enabled) {
-      SetDisallowed(NavigationDownloadType::kSandbox);
-    } else {
-      SetAllowed(NavigationDownloadType::kSandbox);
-    }
+    SetDisallowed(NavigationDownloadType::kSandbox);
   }
 
   if (from_ad) {
@@ -123,9 +118,6 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
       }
     }
   }
-
-  blocking_downloads_in_sandbox_enabled =
-      is_blocking_downloads_in_sandbox_enabled;
 }
 
 }  // namespace blink

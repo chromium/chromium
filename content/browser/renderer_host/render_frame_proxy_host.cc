@@ -690,11 +690,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
        network::mojom::WebSandboxFlags::kDownloads) !=
       network::mojom::WebSandboxFlags::kNone) {
-    if (download_policy.blocking_downloads_in_sandbox_enabled) {
-      download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
-    } else {
-      download_policy.SetAllowed(blink::NavigationDownloadType::kSandbox);
-    }
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
   }
 
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from

@@ -81,7 +81,6 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
                                 bool has_gesture,
                                 bool can_access_current_origin,
                                 bool has_download_sandbox_flag,
-                                bool is_blocking_downloads_in_sandbox_enabled,
                                 bool from_ad);
 
   // An alias of a bitset of navigation types.
@@ -95,8 +94,6 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   // A bitset of navigation types observed where if the navigation turns into
   // a download, the download should be dropped.
   NavigationDownloadTypes disallowed_types;
-
-  bool blocking_downloads_in_sandbox_enabled = false;
 };
 
 }  // namespace blink
