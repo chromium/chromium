@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
@@ -568,6 +569,17 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
     WaitForPageLoad();
     ASSERT_EQ(current_page_, Page::kSignin)
         << "The Sign In dialog did not reload the account sign in page!";
+  }
+
+  bool GetUserNameFromSignInPage(std::string* result) {
+    DCHECK_EQ(current_page_, Page::kSignin);
+
+    const std::string get_login_value = R"(
+      window.domAutomationController.send(
+          document.getElementById('login').value);
+    )";
+    return ExecuteScriptAndExtractString(web_contents()->GetMainFrame(),
+                                         get_login_value, result);
   }
 
   void CloseSignInWidget() {
@@ -1535,6 +1547,47 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           DownloadServiceProvider::kLocal, need_to_link_box_account,
           "" /* No need to check mime. */, GetBoxAccountUserName(),
           GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       SignInDlg_PrepopulateAccount) {
+  const char kUserName[] = "Test User";
+  const char kLogin[] = "test_user@test.com";
+  base::DictionaryValue account_info;
+  account_info.SetStringKey(enterprise_connectors::kBoxNameFieldName,
+                            kUserName);
+  account_info.SetStringKey(enterprise_connectors::kBoxLoginFieldName, kLogin);
+  SetFileSystemAccountInfo(
+      browser()->profile()->GetPrefs(),
+      enterprise_connectors::kFileSystemServiceProviderPrefNameBox,
+      std::move(account_info));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+  ASSERT_NO_FATAL_FAILURE(
+      StartWprUsingFSCCaptureDir("box.com.sign.in.prepop.account.wpr"));
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/"
+      "small_download.zip");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  download_item_observer.WaitForSignInConfirmationDialog();
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+
+  std::string login_val;
+  ASSERT_TRUE(
+      download_item_observer.sign_in_observer()->GetUserNameFromSignInPage(
+          &login_val));
+  EXPECT_EQ(kLogin, login_val);
+
+  download_item_observer.sign_in_observer()->CloseSignInWidget();
+  EXPECT_FALSE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
 }
 
 }  // namespace enterprise_connectors
