@@ -20,6 +20,7 @@ suite('SearchSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       shouldShowQuickAnswersSettings: true,
+      quickAnswersSubToggleEnabled: true,
     });
   });
 

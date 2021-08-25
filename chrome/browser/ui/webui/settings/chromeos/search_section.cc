@@ -36,7 +36,8 @@ namespace settings {
 namespace {
 
 bool ShouldShowQuickAnswersSettings() {
-  return ash::features::IsQuickAnswersV2Enabled();
+  return ash::features::IsQuickAnswersV2Enabled() &&
+         ash::QuickAnswersState::Get()->is_eligible();
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
@@ -179,6 +180,8 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
       {"quickAnswersEnable", IDS_SETTINGS_QUICK_ANSWERS_ENABLE},
       {"quickAnswersEnableDescription",
        IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION},
+      {"quickAnswersEnableDescriptionWithLink",
+       IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION_WITH_LINK},
       {"quickAnswersDefinitionEnable",
        IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE},
       {"quickAnswersTranslationEnable",
@@ -193,6 +196,9 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("quickAnswersTranslationDisabled",
                           ash::features::IsQuickAnswersV2TranslationDisabled());
+  html_source->AddBoolean(
+      "quickAnswersSubToggleEnabled",
+      ash::features::IsQuickAnswersV2SettingsSubToggleEnabled());
 }
 
 void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
@@ -434,8 +440,10 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
-  if (ash::QuickAnswersState::Get()->settings_enabled())
+  if (ash::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
+      ash::QuickAnswersState::Get()->settings_enabled()) {
     updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
+  }
 }
 
 }  // namespace settings
