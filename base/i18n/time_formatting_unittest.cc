@@ -362,6 +362,8 @@ TEST(TimeFormattingTest, TimeDurationFormatWithSeconds) {
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
   EXPECT_EQ(u"125h 42m 30s",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"125:42:30",
+            TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NUMERIC));
 
   // Test edge case when minute = 0.
   delta = TimeDelta::FromSeconds(15 * 3600 + 0 * 60 + 30);

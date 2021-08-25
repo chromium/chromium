@@ -99,8 +99,8 @@ void MediaControlsProgressView::UpdateProgress(
   const base::TimeDelta duration = media_position.duration();
   SetBarProgress(current_position / duration);
 
-  // Time formatting can't yet represent durations greater than 24 hours in
-  // base::DURATION_WIDTH_NUMERIC format.
+  // For durations greater than 24 hours, prefer base::DURATION_WIDTH_NARROW for
+  // better readability (e.g., 27h 23m 10s rather than 27:23:10).
   base::DurationFormatWidth time_format =
       duration >= base::TimeDelta::FromDays(1) ? base::DURATION_WIDTH_NARROW
                                                : base::DURATION_WIDTH_NUMERIC;
