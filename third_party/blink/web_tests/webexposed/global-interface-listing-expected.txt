@@ -10590,6 +10590,11 @@ interface WebTransport
     method createBidirectionalStream
     method createUnidirectionalStream
     method setDatagramWritableQueueExpirationDuration
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter applicationProtocolCode
+    getter source
+    method constructor
 interface WheelEvent : MouseEvent
     attribute @@toStringTag
     attribute DOM_DELTA_LINE

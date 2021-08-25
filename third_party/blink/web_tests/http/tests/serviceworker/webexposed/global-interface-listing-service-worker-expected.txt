@@ -2969,6 +2969,11 @@ interface WebTransport
     method createBidirectionalStream
     method createUnidirectionalStream
     method setDatagramWritableQueueExpirationDuration
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter applicationProtocolCode
+    getter source
+    method constructor
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused

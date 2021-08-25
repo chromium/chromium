@@ -109,6 +109,9 @@ enum class DOMExceptionCode : ExceptionCode {
   kFramingError,
   kParityError,
 
+  // WebTransport - https://w3c.github.io/webtransport/
+  kWebTransportError,
+
   kNumOfCodes,
 };
 

@@ -1,0 +1,51 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+
+namespace blink {
+
+TEST(WebTransportErrorTest, DefaultConstruct) {
+  auto* error = WebTransportError::Create(WebTransportErrorInit::Create());
+
+  EXPECT_EQ(error->code(), 0);
+  EXPECT_EQ(error->applicationProtocolCode(), absl::nullopt);
+  EXPECT_EQ(error->message(), "");
+  EXPECT_EQ(error->source(), "stream");
+}
+
+TEST(WebTransportErrorTest, ConstructWithApplicationProtocolCode) {
+  auto* init = WebTransportErrorInit::Create();
+  init->setApplicationProtocolCode(11);
+  auto* error = WebTransportError::Create(init);
+
+  ASSERT_TRUE(error->applicationProtocolCode().has_value());
+  EXPECT_EQ(error->applicationProtocolCode().value(), 11);
+}
+
+TEST(WebTransportErrorTest, ConstructWithMessage) {
+  auto* init = WebTransportErrorInit::Create();
+  init->setMessage("wow");
+  auto* error = WebTransportError::Create(init);
+
+  EXPECT_EQ(error->message(), "wow");
+}
+
+TEST(WebTransportErrorTest, InternalCreate) {
+  V8TestingScope scope;
+  auto* error = WebTransportError::Create(scope.GetIsolate(), 27, "badness",
+                                          WebTransportError::Source::kSession);
+  EXPECT_EQ(error->code(), 0);
+  ASSERT_TRUE(error->applicationProtocolCode().has_value());
+  EXPECT_EQ(error->applicationProtocolCode().value(), 27);
+  EXPECT_EQ(error->message(), "badness");
+  EXPECT_EQ(error->source(), "session");
+}
+
+}  // namespace blink
