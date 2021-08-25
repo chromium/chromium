@@ -968,6 +968,29 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
                                       Metrics::OnBoarding::OB_SHOWN, 1u);
 }
 
+TEST_F(StarterTest, TriggerScriptAllowsHttpToHttpsRedirect) {
+  SetupPlatformDelegateForFirstTimeUser();
+  fake_platform_delegate_.feature_module_installed_ = true;
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  SimulateNavigateToUrl(GURL("http://www.example.com"));
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", "http://www.example.com"}};
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(1);
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, HideTriggerScript).Times(0);
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
+
+  // Redirects from http to https are allowed.
+  SimulateRedirectToUrl({GURL("https://www.example.com")});
+}
+
 TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
