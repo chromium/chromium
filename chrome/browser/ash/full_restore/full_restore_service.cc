@@ -201,6 +201,7 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   if (notification_ != nullptr && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
+    accelerator_controller_observer_.Reset();
   }
 
   if (allow_save) {
@@ -276,6 +277,26 @@ void FullRestoreService::Observe(int type,
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
 }
 
+void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
+  switch (action) {
+    case NEW_INCOGNITO_WINDOW:
+    case NEW_TAB:
+    case NEW_WINDOW:
+    case OPEN_CROSH:
+    case OPEN_DIAGNOSTICS:
+    case RESTORE_TAB:
+      MaybeCloseNotification();
+      return;
+    default:
+      return;
+  }
+}
+
+void FullRestoreService::OnAcceleratorControllerWillBeDestroyed(
+    AcceleratorController* controller) {
+  accelerator_controller_observer_.Reset();
+}
+
 void FullRestoreService::SetAppLaunchHanlderForTesting(
     std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler) {
   app_launch_handler_ = std::move(app_launch_handler);
@@ -288,6 +309,12 @@ void FullRestoreService::Shutdown() {
 void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
   if (!ShouldShowNotification())
     return;
+
+  auto* accelerator_controller = ash::AcceleratorController::Get();
+  if (accelerator_controller) {
+    DCHECK(!accelerator_controller_observer_.IsObserving());
+    accelerator_controller_observer_.Observe(accelerator_controller);
+  }
 
   message_center::RichNotificationData notification_data;
 
