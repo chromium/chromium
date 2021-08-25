@@ -80,9 +80,21 @@ void ProjectorOAuthTokenFetcher::GetAccessTokenFor(
   InitiateAccessTokenFetchFor(email, std::move(callback));
 }
 
+bool ProjectorOAuthTokenFetcher::HasCachedTokenForTest(
+    const std::string& email) {
+  return base::Contains(fetched_access_tokens_, email);
+}
+
+bool ProjectorOAuthTokenFetcher::HasPendingRequestForTest(
+    const std::string& email) {
+  return base::Contains(pending_oauth_token_fetch_, email);
+}
+
 void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
     const std::string& email,
     AccessTokenRequestCallback callback) {
+  DCHECK(!base::Contains(pending_oauth_token_fetch_, email));
+
   // There is no pending fetch for the email. Let's create a new fetch.
   // Let's start creating the oauth2 access token request.
   OAuth2AccessTokenManager::ScopeSet scopes;

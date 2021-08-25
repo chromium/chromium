@@ -53,7 +53,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "test/projector_message_handler_unittest.cc" ]
+  sources = [
+    "test/projector_message_handler_unittest.cc",
+    "test/projector_oauth_token_fetcher_unittest.cc",
+  ]
 
   deps = [
     ":test_support",

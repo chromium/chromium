@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_COMPONENTS_PROJECTOR_APP_TEST_MOCK_APP_CLIENT_H_
 #define CHROMEOS_COMPONENTS_PROJECTOR_APP_TEST_MOCK_APP_CLIENT_H_
 
+#include <string>
+
+#include "base/time/time.h"
 #include "chromeos/components/projector_app/projector_app_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 
@@ -26,6 +29,9 @@ class MockAppClient : public ProjectorAppClient {
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);
+  void GrantOAuthTokenFor(const std::string& account_email,
+                          const base::Time& expiry_time);
+  void AddSecondaryAccount(const std::string& account_email);
 
  private:
   signin::IdentityTestEnvironment identity_test_environment_;
