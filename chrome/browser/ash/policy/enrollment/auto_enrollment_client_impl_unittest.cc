@@ -1479,8 +1479,8 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     // PSM RLWE testing client factory.
     CreatePsmTestCase();
 
-    // Set up the base class AutoEnrollmentClientImplTest after the private set
-    // membership has been enabled.
+    // Set up the base class AutoEnrollmentClientImplTest after creating the PSM
+    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|.
     AutoEnrollmentClientImplTest::SetUp();
 
     // Override the stored PSM ID in the client.
