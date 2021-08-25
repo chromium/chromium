@@ -1048,25 +1048,31 @@ void MonitorExperimentalSettingsChanges() {
   __block NSString* hash = TestingPoliciesHash();
 
   auto monitor = ^(NSNotification* notification) {
-    // Check if observed settings have changed. Since source and destination
-    // are both user defaults, this is required to avoid cycling back here.
-    NSString* newHash = TestingPoliciesHash();
-    if (![newHash isEqualToString:hash]) {
-      hash = newHash;
+    // Can be called from any thread from where the notification was sent,
+    // but since it may change standardUserDefaults, and that has to be on main
+    // thread, dispatch to main thread.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // Check if observed settings have changed. Since source and destination
+      // are both user defaults, this is required to avoid cycling back here.
+      NSString* newHash = TestingPoliciesHash();
+      if (![newHash isEqualToString:hash]) {
+        hash = newHash;
 
-      // Publish update.
-      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-      NSMutableDictionary* testing_policies =
-          CreateExperimentalTestingPolicies();
-      [defaults setValue:testing_policies
-                  forKey:kPolicyLoaderIOSConfigurationKey];
-    }
+        // Publish update.
+        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+        NSMutableDictionary* testing_policies =
+            CreateExperimentalTestingPolicies();
+        NSDictionary* registration_defaults =
+            @{kPolicyLoaderIOSConfigurationKey : testing_policies};
+        [defaults registerDefaults:registration_defaults];
+      }
+    });
   };
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserverForName:NSUserDefaultsDidChangeNotification
                       object:nil
-                       queue:[NSOperationQueue mainQueue]
+                       queue:nil
                   usingBlock:monitor];
 }
 
