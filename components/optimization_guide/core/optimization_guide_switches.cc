@@ -85,6 +85,9 @@ const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 // accessible on Android, but may work.
 const char kModelOverride[] = "optimization-guide-model-override";
 
+// Triggers validation of the model. Used for manual testing.
+const char kModelValidate[] = "optimization-guide-model-validate";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -181,6 +184,11 @@ bool ShouldSkipModelDownloadVerificationForTesting() {
 bool IsModelOverridePresent() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kModelOverride);
+}
+
+bool ShouldValidateModel() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kModelValidate);
 }
 
 absl::optional<
