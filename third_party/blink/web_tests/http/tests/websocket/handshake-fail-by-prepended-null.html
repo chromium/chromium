@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/js-test-resources/js-test.js"></script>
+</head>
+<body>
+<div id="description"></div>
+<div id="console"></div>
+<script>
+description('Connection should fail immediately, rather than succeeding or staying in limbo until timeout, if a null byte is received before the handshake.');
+
+window.jsTestIsAsync = true;
+
+var timedOut = false;
+var connected = false;
+var wsOrigin;
+
+function endTest() {
+    shouldBeFalse('timedOut');
+    shouldBeFalse('connected');
+    shouldBeUndefined('wsOrigin');
+    clearTimeout(timeoutID);
+    finishJSTest();
+}
+
+var url = 'ws://localhost:8880/handshake-fail-by-prepended-null';
+var ws = new WebSocket(url);
+
+ws.onopen = function()
+{
+    debug('Connected');
+    connected = true;
+}
+
+ws.onmessage = function(messageEvent)
+{
+    wsOrigin = messageEvent.data;
+    debug('origin = ' + wsOrigin);
+    ws.close();
+}
+
+ws.onclose = function()
+{
+    endTest();
+}
+
+ws.onerror = function(errorEvent)
+{
+    testPassed("onerror() was called");
+}
+
+function timeoutCallback()
+{
+    debug('Timed out (state = ' + ws.readyState + ')');
+    timedOut = true;
+    endTest();
+}
+
+var timeoutID = setTimeout(timeoutCallback, 3000);
+
+</script>
+</body>
+</html>
