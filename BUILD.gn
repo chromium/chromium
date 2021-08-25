@@ -166,7 +166,6 @@ group("gn_all") {
       "//ppapi/examples/video_decode",
       "//ppapi/examples/video_encode",
       "//third_party/vulkan-deps/spirv-tools/src:SPIRV-Tools",
-      "//third_party/vulkan-deps/spirv-tools/src/test/fuzzers",
       "//tools/aggregation_service:aggregation_service_tool",
       "//tools/perf/clear_system_cache",
       "//tools/polymer:polymer_tools_python_unittests",
