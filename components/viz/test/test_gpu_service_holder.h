@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
@@ -21,11 +22,6 @@ class VulkanImplementation;
 #endif
 struct GpuPreferences;
 }  // namespace gpu
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace viz {
 class GpuServiceImpl;
@@ -92,11 +88,18 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
  private:
-  friend struct base::DefaultSingletonTraits<TestGpuServiceHolder>;
-
   void InitializeOnGpuThread(const gpu::GpuPreferences& preferences,
                              base::WaitableEvent* completion);
   void DeleteOnGpuThread();
+
+#if !defined(OS_CHROMEOS)
+  // TODO(crbug.com/1241161): This is equally applicable to Chrome OS there are
+  // just a number of tests that already override the feature list after it's no
+  // longer safe that need to be fixed first.
+  base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides{
+      "FeatureList overrides must happen before the GPU service thread has "
+      "been started."};
+#endif
 
   base::Thread gpu_thread_;
   base::Thread io_thread_;
