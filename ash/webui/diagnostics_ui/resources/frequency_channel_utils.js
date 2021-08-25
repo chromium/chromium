@@ -14,7 +14,21 @@ import {ChannelBand, ChannelProperties} from './diagnostics_types.js';
  * any country have been excluded.
  * @type {Map<number, ChannelProperties>}
  */
-const FIVE_GHZ_CHANNELS = new Map([
+const CHANNELS = new Map([
+  [2412, {channel: 1, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2417, {channel: 2, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2422, {channel: 3, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2427, {channel: 4, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2432, {channel: 5, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2437, {channel: 6, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2442, {channel: 7, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2447, {channel: 8, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2452, {channel: 9, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2457, {channel: 10, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2462, {channel: 11, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2467, {channel: 12, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2472, {channel: 13, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
+  [2484, {channel: 14, band: ChannelBand.TWO_DOT_FOUR_GHZ}],
   [5160, {channel: 32, band: ChannelBand.FIVE_GHZ}],
   [5170, {channel: 34, band: ChannelBand.FIVE_GHZ}],
   [5180, {channel: 36, band: ChannelBand.FIVE_GHZ}],
@@ -83,33 +97,13 @@ const FIVE_GHZ_CHANNELS = new Map([
 ]);
 
 /**
- * Determines 5GHz channel based on |frequency| which is expected to match the
+ * Determines channel based on |frequency| which is expected to match the
  * channel center frequency.  In all other cases return null.
- * @param {!number} frequency
- * @return {?number} channel
- */
-export function convertFrequencyToFiveGhzChannel(frequency) {
-  /** @type {ChannelProperties|undefined} */
-  const channelProperties = FIVE_GHZ_CHANNELS.get(frequency);
-  return channelProperties ? channelProperties.channel : null;
-}
-
-/**
- * Converts a MHz frequency into channel number. Should the frequency requested
- * not fall into the algorithm range null is returned.
  * @param {number} frequency Given in MHz.
  * @return {?number} channel
  */
 export function convertFrequencyToChannel(frequency) {
-  // Handle 2.4GHz channel calculation for channel 1-13.
-  if (frequency >= 2412 && frequency <= 2483) {
-    return Math.ceil(1 + ((frequency - 2412) / 5));
-  }
-  // Handle 2.4GHz channel 14 which is a special case for Japan.
-  if (frequency >= 2484 && frequency <= 2495) {
-    return 14;
-  }
-
-  // Return matching 5GHz channel or null.
-  return convertFrequencyToFiveGhzChannel(frequency);
+  /** @type {ChannelProperties|undefined} */
+  const channelProperties = CHANNELS.get(frequency);
+  return channelProperties ? channelProperties.channel : null;
 }
