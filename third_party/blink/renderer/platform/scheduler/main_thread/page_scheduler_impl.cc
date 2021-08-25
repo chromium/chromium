@@ -188,7 +188,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       is_main_frame_local_(false),
       is_cpu_time_throttled_(false),
       are_wake_ups_intensively_throttled_(false),
-      keep_active_(main_thread_scheduler_->SchedulerKeepActive()),
       had_recent_title_or_favicon_update_(false),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
@@ -371,28 +370,6 @@ void PageSchedulerImpl::SetUpIPCTaskDetection() {
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->SetOnIPCTaskPostedWhileInBackForwardCacheHandler();
   }
-}
-
-void PageSchedulerImpl::SetKeepActive(bool keep_active) {
-  if (keep_active) {
-    TRACE_EVENT_INSTANT("renderer.scheduler",
-                        "PageSchedulerImpl::SetKeepActive_True");
-  } else {
-    TRACE_EVENT_INSTANT("renderer.scheduler",
-                        "PageSchedulerImpl::SetKeepActive_False");
-  }
-  if (keep_active_ == keep_active)
-    return;
-  keep_active_ = keep_active;
-
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_)
-    frame_scheduler->SetPageKeepActiveForTracing(keep_active);
-
-  NotifyFrames();
-}
-
-bool PageSchedulerImpl::KeepActive() const {
-  return keep_active_;
 }
 
 bool PageSchedulerImpl::IsMainFrameLocal() const {

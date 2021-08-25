@@ -3305,7 +3305,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerCrossOriginIsolatedBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-// Tests with BackForwardCache and KeepActiveFreezing enabled.
+// Tests with BackForwardCache enabled.
 class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
     : public ServiceWorkerBrowserTest {
  protected:
@@ -3314,8 +3314,7 @@ class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
         {{{features::kBackForwardCache,
            {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
             {"enable_same_site", "true"},
-            {"process_binding_strength", "NORMAL"}}},
-          {blink::features::kFreezeWhileKeepActive, {}}}
+            {"process_binding_strength", "NORMAL"}}}}
 
         },
         {features::kBackForwardCacheMemoryControls});

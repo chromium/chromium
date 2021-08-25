@@ -58,7 +58,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(DidRunBeginMainFrame, void());
   MOCK_METHOD1(SetRendererHidden, void(bool));
   MOCK_METHOD1(SetRendererBackgrounded, void(bool));
-  MOCK_METHOD1(SetSchedulerKeepActive, void(bool));
   MOCK_METHOD0(PauseRenderer, std::unique_ptr<RendererPauseHandle>());
 #if defined(OS_ANDROID)
   MOCK_METHOD0(PauseTimersForAndroidWebView, void());

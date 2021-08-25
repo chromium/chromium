@@ -847,11 +847,6 @@ const base::Feature kWebAppNoteTaking{"WebAppNoteTaking",
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Makes freezing of frame-associated task queues happen even when KeepActive is
-// true.
-const base::Feature kFreezeWhileKeepActive{"FreezeWhileKeepActive",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill switch for the new behavior whereby anchors with target=_blank get
 // noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.
 const base::Feature kTargetBlankImpliesNoOpener{

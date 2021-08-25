@@ -394,11 +394,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
                             "RendererPriority",
                             &main_thread_scheduler_impl->tracing_controller_,
                             BackgroundStateToString),
-      keep_active_fetch_or_worker(
-          false,
-          "Scheduler.KeepRendererActive",
-          &main_thread_scheduler_impl->tracing_controller_,
-          YesNoStateToString),
       blocking_input_expected_soon(
           false,
           "Scheduler.BlockingInputExpectedSoon",
@@ -1086,20 +1081,9 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   memory_purge_manager_.SetRendererBackgrounded(backgrounded);
 }
 
-void MainThreadSchedulerImpl::SetSchedulerKeepActive(bool keep_active) {
-  main_thread_only().keep_active_fetch_or_worker = keep_active;
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    page_scheduler->SetKeepActive(keep_active);
-  }
-}
-
 void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
   SetPrioritizeCompositingAfterInput(
       scheduling_settings().prioritize_compositing_after_input);
-}
-
-bool MainThreadSchedulerImpl::SchedulerKeepActive() {
-  return main_thread_only().keep_active_fetch_or_worker;
 }
 
 #if defined(OS_ANDROID)
@@ -2054,8 +2038,6 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
       "have_reported_blocking_intervention_since_navigation",
       main_thread_only().have_reported_blocking_intervention_since_navigation);
   dict.Add("renderer_backgrounded", main_thread_only().renderer_backgrounded);
-  dict.Add("keep_active_fetch_or_worker",
-           main_thread_only().keep_active_fetch_or_worker);
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
   dict.Add(
       "fling_compositor_escalation_deadline",

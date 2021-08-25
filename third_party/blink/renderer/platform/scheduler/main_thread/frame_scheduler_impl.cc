@@ -71,14 +71,6 @@ const char* FrozenStateToString(bool is_frozen) {
   }
 }
 
-const char* KeepActiveStateToString(bool keep_active) {
-  if (keep_active) {
-    return "keep_active";
-  } else {
-    return "no_keep_active";
-  }
-}
-
 // Used to update the priority of task_queue. Note that this function is
 // used for queues associated with a frame.
 void UpdatePriority(MainThreadTaskQueue* task_queue) {
@@ -171,11 +163,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           "FrameScheduler.OptedOutFromBackForwardCache",
           &tracing_controller_,
           YesNoStateToString),
-      is_freeze_while_keep_active_enabled_(
-          IsFreezeWhileKeepActiveBackForwardCacheSupportEnabled(),
-          "FrameScheduler.FreezeWhileKeepActive",
-          &tracing_controller_,
-          YesNoStateToString),
       page_frozen_for_tracing_(
           parent_page_scheduler_ ? parent_page_scheduler_->IsFrozen() : true,
           "FrameScheduler.PageFrozen",
@@ -188,11 +175,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           "FrameScheduler.PageVisibility",
           &tracing_controller_,
           PageVisibilityStateToString),
-      page_keep_active_for_tracing_(
-          parent_page_scheduler_ ? parent_page_scheduler_->KeepActive() : false,
-          "FrameScheduler.KeepActive",
-          &tracing_controller_,
-          KeepActiveStateToString),
       waiting_for_dom_content_loaded_(
           true,
           "FrameScheduler.WaitingForDOMContentLoaded",
@@ -883,9 +865,6 @@ void FrameSchedulerImpl::SetPageFrozenForTracing(bool frozen) {
   page_frozen_for_tracing_ = frozen;
 }
 
-void FrameSchedulerImpl::SetPageKeepActiveForTracing(bool keep_active) {
-  page_keep_active_for_tracing_ = keep_active;
-}
 
 void FrameSchedulerImpl::UpdatePolicy() {
   bool task_queues_were_throttled = task_queues_throttled_;
@@ -924,16 +903,6 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
   // will be resumed when the page is visible.
   bool queue_frozen =
       parent_page_scheduler_->IsFrozen() && queue->CanBeFrozen();
-  // Check if we need to override freezing because of KeepActive.
-  if (queue_frozen && parent_page_scheduler_->KeepActive()) {
-    // When KeepActive is true, we can only freeze if the queue allows
-    // FreezeWhenKeepActive(), or the "FreezeWhileKeepActive" feature flag is
-    // enabled.
-    bool can_freeze =
-        queue->FreezeWhenKeepActive() || is_freeze_while_keep_active_enabled_;
-    if (!can_freeze)
-      queue_frozen = false;
-  }
   queue_disabled |= queue_frozen;
   // Per-frame freezable queues of tasks which are specified as getting frozen
   // immediately when their frame becomes invisible get frozen. They will be
@@ -954,9 +923,7 @@ SchedulingLifecycleState FrameSchedulerImpl::CalculateLifecycleState(
   // Detached frames are not throttled.
   if (!parent_page_scheduler_)
     return SchedulingLifecycleState::kNotThrottled;
-
-  if (parent_page_scheduler_->IsFrozen() &&
-      !parent_page_scheduler_->KeepActive()) {
+  if (parent_page_scheduler_->IsFrozen()) {
     DCHECK(!parent_page_scheduler_->IsPageVisible());
     return SchedulingLifecycleState::kStopped;
   }

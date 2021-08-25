@@ -93,13 +93,6 @@ void FrameTaskQueueController::CreateTaskQueue(
   queue_creation_params =
       queue_creation_params
           .SetQueueTraits(queue_traits)
-          // Freeze when keep active is currently only set for the
-          // throttleable queue.
-          // TODO(altimin): Figure out how to set this for new queues.
-          // Investigate which tasks must be kept alive, and if possible
-          // move them to an unfreezable queue and remove this override and
-          // the page scheduler KeepActive freezing override.
-          .SetFreezeWhenKeepActive(queue_traits.can_be_throttled)
           .SetFrameScheduler(frame_scheduler_impl_);
 
   scoped_refptr<MainThreadTaskQueue> task_queue =

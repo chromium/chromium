@@ -1354,10 +1354,6 @@ bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   return false;
 }
 
-void RenderThreadImpl::SetSchedulerKeepActive(bool keep_active) {
-  main_thread_scheduler_->SetSchedulerKeepActive(keep_active);
-}
-
 void RenderThreadImpl::SetProcessState(
     mojom::RenderProcessBackgroundState background_state,
     mojom::RenderProcessVisibleState visible_state) {

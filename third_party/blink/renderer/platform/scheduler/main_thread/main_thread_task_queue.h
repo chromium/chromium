@@ -279,13 +279,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
         : queue_type(queue_type),
           spec(NameForQueueType(queue_type)),
           agent_group_scheduler(nullptr),
-          frame_scheduler(nullptr),
-          freeze_when_keep_active(false) {}
-
-    QueueCreationParams SetFreezeWhenKeepActive(bool value) {
-      freeze_when_keep_active = value;
-      return *this;
-    }
+          frame_scheduler(nullptr) {}
 
     QueueCreationParams SetWebSchedulingPriority(
         absl::optional<WebSchedulingPriority> priority) {
@@ -378,7 +372,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     AgentGroupSchedulerImpl* agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
-    bool freeze_when_keep_active;
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
@@ -418,8 +411,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool CanRunWhenVirtualTimePaused() const {
     return queue_traits_.can_run_when_virtual_time_paused;
   }
-
-  bool FreezeWhenKeepActive() const { return freeze_when_keep_active_; }
 
   QueueTraits GetQueueTraits() const { return queue_traits_; }
 
@@ -533,7 +524,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
-  const bool freeze_when_keep_active_;
 
   // Warning: net_request_priority is not the same as the priority of the queue.
   // It is the priority (at the loading stack level) of the resource associated

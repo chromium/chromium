@@ -194,8 +194,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void DidRunBeginMainFrame() override;
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
-  void SetSchedulerKeepActive(bool keep_active) override;
-  bool SchedulerKeepActive();
   void OnMainFrameRequestedForInput() override;
 #if defined(OS_ANDROID)
   void PauseTimersForAndroidWebView() override;
@@ -857,8 +855,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_hidden;
     absl::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_backgrounded;
-    TraceableState<bool, TracingCategoryName::kDefault>
-        keep_active_fetch_or_worker;
     TraceableState<bool, TracingCategoryName::kDefault>
         blocking_input_expected_soon;
     TraceableState<bool, TracingCategoryName::kDebug>

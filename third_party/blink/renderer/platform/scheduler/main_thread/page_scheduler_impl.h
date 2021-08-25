@@ -68,7 +68,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void SetPageVisible(bool page_visible) override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
-  void SetKeepActive(bool) override;
   bool IsMainFrameLocal() const override;
   void SetIsMainFrameLocal(bool is_local) override;
   void OnLocalMainFrameNetworkAlmostIdle() override;
@@ -112,7 +111,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Returns whether CPU time is throttled for the page. Note: This is
   // independent from wake up rate throttling.
   bool IsCPUTimeThrottled() const;
-  bool KeepActive() const;
 
   bool IsLoading() const;
 
@@ -324,7 +322,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool is_main_frame_local_;
   bool is_cpu_time_throttled_;
   bool are_wake_ups_intensively_throttled_;
-  bool keep_active_;
   bool had_recent_title_or_favicon_update_;
   std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool_;
 

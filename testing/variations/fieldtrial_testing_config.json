@@ -1368,7 +1368,6 @@
                     },
                     "enable_features": [
                         "BackForwardCache",
-                        "FreezeWhileKeepActive",
                         "LoadingTasksUnfreezable"
                     ]
                 }
@@ -1404,7 +1403,6 @@
                     },
                     "enable_features": [
                         "BackForwardCache",
-                        "FreezeWhileKeepActive",
                         "LoadingTasksUnfreezable"
                     ]
                 }

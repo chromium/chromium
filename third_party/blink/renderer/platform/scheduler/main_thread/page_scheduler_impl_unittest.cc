@@ -1364,16 +1364,6 @@ TEST_F(PageSchedulerImplTest, BudgetBasedThrottlingForPageScheduler) {
   page_scheduler_->SetPageVisible(false);
 }
 
-TEST_F(PageSchedulerImplTest, KeepActiveSetForNewPages) {
-  scheduler_->SetSchedulerKeepActive(true);
-
-  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
-      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-
-  EXPECT_TRUE(page_scheduler_->KeepActive());
-  EXPECT_TRUE(page_scheduler2->KeepActive());
-}
-
 TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
   int counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(

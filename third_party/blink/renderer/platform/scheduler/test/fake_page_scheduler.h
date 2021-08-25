@@ -57,7 +57,6 @@ class FakePageScheduler final : public PageScheduler {
   void SetPageVisible(bool is_page_visible) override {}
   void SetPageFrozen(bool is_page_frozen) override {}
   void SetPageBackForwardCached(bool) override {}
-  void SetKeepActive(bool keep_active) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool is_local) override {}
   void OnLocalMainFrameNetworkAlmostIdle() override {}

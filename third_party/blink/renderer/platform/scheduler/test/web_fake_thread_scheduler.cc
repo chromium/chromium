@@ -91,8 +91,6 @@ void WebFakeThreadScheduler::SetRendererHidden(bool hidden) {}
 
 void WebFakeThreadScheduler::SetRendererBackgrounded(bool backgrounded) {}
 
-void WebFakeThreadScheduler::SetSchedulerKeepActive(bool keep_active) {}
-
 std::unique_ptr<WebFakeThreadScheduler::RendererPauseHandle>
 WebFakeThreadScheduler::PauseRenderer() {
   return nullptr;

@@ -158,10 +158,6 @@ void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
   NOTREACHED();
 }
 
-void WebThreadScheduler::SetSchedulerKeepActive(bool keep_active) {
-  NOTREACHED();
-}
-
 #if defined(OS_ANDROID)
 void WebThreadScheduler::PauseTimersForAndroidWebView() {
   NOTREACHED();
