@@ -3197,13 +3197,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RendererURLInfo renderer_url_info_;
 
   // Track this frame's last committed origin.
-  //
-  // WARNING: Until crbug.com/888079 is fixed, frame hosts for `about:blank`
-  // will inherit the origin of their parent document instead of the initiator
-  // document. This happens because Blink computes the origin incorrectly and we
-  // commit the origin given by Blink into this member.
-  //
-  // TODO(https://crbug.com/888079): Remove the above.
   url::Origin last_committed_origin_;
 
   // The storage key for the last committed document in this
