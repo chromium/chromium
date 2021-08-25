@@ -670,9 +670,14 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 // Tests that the print preview dialog can't be used to create popunders. The
 // test was added due to a bug in MacViews that causes dialogs to activate
 // their parents (https://crbug.com/1073587).
-// TODO(weili): investigate why this failed on Linux and ChromeOS bots.
-// This test is also flaky on Windows and Mac. https://crbug.com/1241815.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_PrintPreviewPopUnder) {
+// TODO(weili): investigate why this failed on Linux and ChromeOS bots,
+// and why it was flaky on Windows. https://crbug.com/1241815.
+#if defined(OS_MAC)
+#define MAYBE_PrintPreviewPopUnder PrintPreviewPopUnder
+#else
+#define MAYBE_PrintPreviewPopUnder DISABLED_PrintPreviewPopUnder
+#endif
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
   WebContents* original_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url(
