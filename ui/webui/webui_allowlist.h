@@ -54,13 +54,10 @@ class WebUIAllowlist : public base::RefCountedThreadSafe<WebUIAllowlist> {
       const url::Origin& origin,
       std::initializer_list<ContentSettingsType> types);
 
-  // Returns a content_settings::RuleIterator, this method is thread-safe.
-  //
-  // This method acquires `lock_` and transfers it to the returned iterator.
-  // NO_THREAD_SAFETY_ANALYSIS because the analyzer doesn't recognize acquiring
-  // the lock in a unique_ptr.
+  // Returns a content_settings::RuleIterator. The iterator keeps this list
+  // alive while it is alive. This method is thread-safe.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
-      ContentSettingsType content_type) const NO_THREAD_SAFETY_ANALYSIS;
+      ContentSettingsType content_type) const;
 
   void SetWebUIAllowlistProvider(WebUIAllowlistProvider* provider);
   void ResetWebUIAllowlistProvider();

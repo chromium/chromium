@@ -54,7 +54,19 @@ class AllowlistRuleIterator : public content_settings::RuleIterator {
   }
 
  private:
+  // Satisfies GUARDED_BY(lock_) on WebUIAllowlist::permissions_.
+  //
+  // `it_` is an iterator on `allowlist_`'s `permissions_` map. So, accesses to
+  // `it_` are implicit accesses on the map, and must only be performed while
+  // holding the associated lock.
+  //
+  // This detailed explanation is here because Clang's static analysis does not
+  // catch accesses through iterators, and does not account for locks held
+  // through std::unique_ptr<AutoLock>. So, it's on code reviewers to ensure
+  // this implementation remains thread-safe.
   const std::unique_ptr<base::AutoLock> auto_lock_;
+
+  // Keeps the map backing `it_` and `end_` alive.
   const scoped_refptr<const WebUIAllowlist> allowlist_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -107,10 +119,10 @@ void WebUIAllowlist::RegisterAutoGrantedPermission(const url::Origin& origin,
 
     // If the same permission is already registered, do nothing. We don't want
     // to notify the provider of ContentSettingChange when it is unnecessary.
-    if (permissions_[type][origin] == setting)
+    ContentSetting& map_setting = permissions_[type][origin];
+    if (map_setting == setting)
       return;
-
-    permissions_[type][origin] = setting;
+    map_setting = setting;
   }
 
   // Notify the provider. |provider_| can be nullptr if
@@ -150,7 +162,11 @@ void WebUIAllowlist::ResetWebUIAllowlistProvider() {
 }
 
 std::unique_ptr<content_settings::RuleIterator> WebUIAllowlist::GetRuleIterator(
-    ContentSettingsType content_type) const {
+    ContentSettingsType content_type) const NO_THREAD_SAFETY_ANALYSIS {
+  // This method acquires `lock_` and transfers it to the returned iterator.
+  // NO_THREAD_SAFETY_ANALYSIS because the analyzer doesn't recognize acquiring
+  // the lock in a unique_ptr.
+
   auto auto_lock_ = std::make_unique<base::AutoLock>(lock_);
 
   auto permissions_it = permissions_.find(content_type);
