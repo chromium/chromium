@@ -26,7 +26,6 @@ using chromeos::quick_answers::prefs::kQuickAnswersConsentStatus;
 using chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
-using chromeos::quick_answers::prefs::kQuickAnswersNoticeImpressionDuration;
 using chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
 
@@ -65,9 +64,8 @@ void MigrateQuickAnswersConsentStatus(PrefService* prefs) {
     } else {
       // Set the consent status to unknown for new users.
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kUnknown);
-      // Reset the impression count and duration for new users.
+      // Reset the impression count for new users.
       prefs->SetInteger(kQuickAnswersNoticeImpressionCount, 0);
-      prefs->SetInteger(kQuickAnswersNoticeImpressionDuration, 0);
     }
   }
 }
@@ -94,6 +92,9 @@ std::string ConsentResultTypeToString(ConsentResultType type) {
 void RecordConsentResult(ConsentResultType type,
                          int nth_impression,
                          const base::TimeDelta duration) {
+  base::UmaHistogramExactLinear(kQuickAnswersConsent, nth_impression,
+                                kConsentImpressionCap);
+
   std::string interaction_type = ConsentResultTypeToString(type);
   base::UmaHistogramExactLinear(
       base::StringPrintf("%s.%s", kQuickAnswersConsentImpression,
@@ -198,29 +199,25 @@ void QuickAnswersState::OnLocaleChanged(const std::string& locale) {
 }
 
 void QuickAnswersState::StartConsent() {
-  // Increments impression count.
-  IncrementPrefCounter(pref_change_registrar_->prefs(),
-                       kQuickAnswersNoticeImpressionCount, 1);
-
-  // Record how many times the user has seen the consent.
-  base::UmaHistogramExactLinear(kQuickAnswersConsent,
-                                pref_change_registrar_->prefs()->GetInteger(
-                                    kQuickAnswersNoticeImpressionCount),
-                                kConsentImpressionCap);
-
   consent_start_time_ = base::TimeTicks::Now();
 }
 
 void QuickAnswersState::OnConsentResult(ConsentResultType result) {
   auto* prefs = pref_change_registrar_->prefs();
 
-  // Increments impression duration.
   DCHECK(!consent_start_time_.is_null());
   auto duration = base::TimeTicks::Now() - consent_start_time_;
-  IncrementPrefCounter(prefs, kQuickAnswersNoticeImpressionDuration,
-                       duration.InSeconds());
-  RecordConsentResult(
-      result, prefs->GetInteger(kQuickAnswersNoticeImpressionCount), duration);
+
+  // Only increase the counter and record the impression if the minimum duration
+  // has been reached.
+  if (duration.InSeconds() >= kConsentImpressionMinimumDuration) {
+    // Increments impression count.
+    IncrementPrefCounter(pref_change_registrar_->prefs(),
+                         kQuickAnswersNoticeImpressionCount, 1);
+    RecordConsentResult(result,
+                        prefs->GetInteger(kQuickAnswersNoticeImpressionCount),
+                        duration);
+  }
 
   switch (result) {
     case ConsentResultType::kAllow:
@@ -231,15 +228,12 @@ void QuickAnswersState::OnConsentResult(ConsentResultType result) {
       prefs->SetBoolean(kQuickAnswersEnabled, false);
       break;
     case ConsentResultType::kDismiss:
-      // If the count or duration cap is reached, set the consented status to
+      // If the impression count cap is reached, set the consented status to
       // false;
       bool impression_cap_reached =
           prefs->GetInteger(kQuickAnswersNoticeImpressionCount) >=
           kConsentImpressionCap;
-      bool duration_cap_reached =
-          prefs->GetInteger(kQuickAnswersNoticeImpressionDuration) >=
-          kConsentDurationCap;
-      if (impression_cap_reached || duration_cap_reached) {
+      if (impression_cap_reached) {
         prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
         prefs->SetBoolean(kQuickAnswersEnabled, false);
       }
