@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
@@ -130,6 +131,7 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 }  // namespace
 
 CredentialProviderService::CredentialProviderService(
+    PrefService* prefs,
     scoped_refptr<PasswordStore> password_store,
     AuthenticationService* authentication_service,
     id<MutableCredentialStore> credential_store,
@@ -161,6 +163,15 @@ CredentialProviderService::CredentialProviderService(
   if (!is_sync_active) {
     RequestSyncAllCredentialsIfNeeded();
   }
+
+  saving_passwords_enabled_.Init(
+      password_manager::prefs::kCredentialsEnableService, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnSavingPasswordsEnabledChanged,
+          base::Unretained(this)));
+
+  // Make sure the initial value of the pref is stored.
+  OnSavingPasswordsEnabledChanged();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -342,4 +353,10 @@ void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
 void CredentialProviderService::OnSyncConfigurationCompleted(
     syncer::SyncService* sync) {
   RequestSyncAllCredentialsIfNeeded();
+}
+
+void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
+         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()];
 }

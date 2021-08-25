@@ -10,6 +10,9 @@
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -68,8 +71,12 @@ class CredentialProviderServiceTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
 
+    testing_pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableService, true);
+
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
-        password_store_, auth_service_, credential_store_, nullptr, nullptr);
+        &testing_pref_service_, password_store_, auth_service_,
+        credential_store_, nullptr, nullptr);
   }
 
   void TearDown() override {
@@ -89,6 +96,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   }
 
  protected:
+  TestingPrefServiceSimple testing_pref_service_;
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
   scoped_refptr<PasswordStoreImpl> password_store_;
@@ -232,6 +240,27 @@ TEST_F(CredentialProviderServiceTest, AndroidCredential) {
 
   // Expect the store to be populated with 1 credential.
   ASSERT_EQ(1u, credential_store_.credentials.count);
+}
+
+// Test that the CredentialProviderService observes changes in the preference
+// that controls password creation
+TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
+  // The test is initialized with the preference as true. Make sure the
+  // NSUserDefaults value is also true.
+  EXPECT_TRUE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+      boolValue]);
+
+  // Change the pref value to false.
+  testing_pref_service_.SetBoolean(
+      password_manager::prefs::kCredentialsEnableService, false);
+
+  // Make sure the NSUserDefaults value is now false.
+  EXPECT_FALSE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+      boolValue]);
 }
 
 }  // namespace

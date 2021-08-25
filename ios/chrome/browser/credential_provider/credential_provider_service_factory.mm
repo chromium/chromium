@@ -64,6 +64,6 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForBrowserState(browser_state);
 
   return std::make_unique<CredentialProviderService>(
-      password_store, authentication_service, credential_store,
-      identity_manager, sync_service);
+      browser_state->GetPrefs(), password_store, authentication_service,
+      credential_store, identity_manager, sync_service);
 }

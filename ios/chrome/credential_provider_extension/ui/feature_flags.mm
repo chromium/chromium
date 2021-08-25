@@ -6,6 +6,7 @@
 
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_field_trial_version.h"
+#import "ios/chrome/common/credential_provider/constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,4 +21,11 @@ BOOL IsPasswordCreationEnabled() {
     return NO;
   }
   return [featureData[kFieldTrialValueKey] boolValue];
+}
+
+BOOL IsPasswordCreationUserRestricted() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+      boolValue];
 }

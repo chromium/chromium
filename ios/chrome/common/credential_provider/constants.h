@@ -21,6 +21,10 @@ NSString* AppGroupUserDefaultsCredentialProviderUserEmail();
 // created in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
 
+// Key for the app group user defaults containing whether saving passwords is
+// currently enabled.
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled();
+
 // An array of deprecated keys to be removed if present.
 NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys();
 

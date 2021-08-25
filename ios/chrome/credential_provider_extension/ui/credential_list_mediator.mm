@@ -94,13 +94,15 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!IsPasswordCreationEnabled() && !self.allCredentials.count) {
+      BOOL canCreatePassword =
+          IsPasswordCreationEnabled() && IsPasswordCreationUserRestricted();
+      if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
       }
       [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                   allPasswords:self.allCredentials
-                         showNewPasswordOption:IsPasswordCreationEnabled()];
+                         showNewPasswordOption:canCreatePassword];
     });
   });
 }
@@ -140,7 +142,8 @@
       }
     }
   }
-  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled();
+  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled() &&
+                               IsPasswordCreationUserRestricted();
   [self.consumer presentSuggestedPasswords:suggested
                               allPasswords:all
                      showNewPasswordOption:showNewPasswordOption];
