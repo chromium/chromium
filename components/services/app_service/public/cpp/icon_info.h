@@ -34,6 +34,8 @@ struct IconInfo {
   IconInfo& operator=(IconInfo&&) noexcept;
   base::Value AsDebugValue() const;
 
+  bool operator==(const apps::IconInfo& other) const;
+
   // The source URL of the icon. Note that multiple icons can share a single
   // source URL, as some image formats can contain multiple sizes.
   GURL url;

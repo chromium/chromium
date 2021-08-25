@@ -51,7 +51,7 @@ void AddSquareIconsFromMap(std::vector<SkBitmap>* square_icons,
 // if they are also in |icon_infos|.
 void AddSquareIconsFromMapMatchingIconInfos(
     std::vector<SkBitmap>* square_icons,
-    const std::vector<WebApplicationIconInfo>& icon_infos,
+    const std::vector<apps::IconInfo>& icon_infos,
     const IconsMap& icons_map) {
   for (const auto& url_icon : icons_map) {
     for (const SkBitmap& icon : url_icon.second) {
@@ -321,18 +321,9 @@ apps::FileHandlers CreateFileHandlersFromManifest(
         for (const auto manifest_purpose : image_resource.purpose) {
           apps::IconInfo icon_info;
           icon_info.url = image_resource.src;
+          icon_info.purpose =
+              ManifestPurposeToIconInfoPurpose(manifest_purpose);
           // The sizes are not filled in until images are actually downloaded.
-          switch (manifest_purpose) {
-            case IconPurpose::ANY:
-              icon_info.purpose = apps::IconInfo::Purpose::kAny;
-              break;
-            case IconPurpose::MONOCHROME:
-              icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
-              break;
-            case IconPurpose::MASKABLE:
-              icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
-              break;
-          }
           web_app_file_handler.icons.push_back(std::move(icon_info));
         }
       }
@@ -384,14 +375,14 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   // Create the WebApplicationInfo icons list *outside* of |web_app_info|, so
   // that we can decide later whether or not to replace the existing icons.
-  std::vector<WebApplicationIconInfo> web_app_icons;
+  std::vector<apps::IconInfo> web_app_icons;
   for (const auto& icon : manifest.icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
     DCHECK(!icon.purpose.empty());
 
     for (IconPurpose purpose : icon.purpose) {
-      WebApplicationIconInfo info;
+      apps::IconInfo info;
 
       if (!icon.sizes.empty()) {
         // Filter out non-square or too large icons.
@@ -408,7 +399,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
       }
 
       info.url = icon.src;
-      info.purpose = purpose;
+      info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
       web_app_icons.push_back(std::move(info));
 
       // Limit the number of icons we store on the user's machine.
@@ -461,7 +452,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
     const WebApplicationInfo& web_app_info) {
   std::vector<GURL> web_app_info_icon_urls;
   // App icons.
-  for (const WebApplicationIconInfo& info : web_app_info.icon_infos) {
+  for (const apps::IconInfo& info : web_app_info.icon_infos) {
     if (!info.url.is_valid())
       continue;
     web_app_info_icon_urls.push_back(info.url);
@@ -499,18 +490,18 @@ void PopulateOtherIcons(WebApplicationInfo* web_app_info,
 
 void PopulateProductIcons(WebApplicationInfo* web_app_info,
                           const IconsMap* icons_map) {
-  std::vector<WebApplicationIconInfo> icon_infos_any;
-  std::vector<WebApplicationIconInfo> icon_infos_maskable;
-  std::vector<WebApplicationIconInfo> icon_infos_monochrome;
-  for (WebApplicationIconInfo& icon_info : web_app_info->icon_infos) {
+  std::vector<apps::IconInfo> icon_infos_any;
+  std::vector<apps::IconInfo> icon_infos_maskable;
+  std::vector<apps::IconInfo> icon_infos_monochrome;
+  for (apps::IconInfo& icon_info : web_app_info->icon_infos) {
     switch (icon_info.purpose) {
-      case IconPurpose::ANY:
+      case apps::IconInfo::Purpose::kAny:
         icon_infos_any.push_back(icon_info);
         break;
-      case IconPurpose::MASKABLE:
+      case apps::IconInfo::Purpose::kMaskable:
         icon_infos_maskable.push_back(icon_info);
         break;
-      case IconPurpose::MONOCHROME:
+      case apps::IconInfo::Purpose::kMonochrome:
         icon_infos_monochrome.push_back(icon_info);
         break;
     }

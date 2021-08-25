@@ -4,7 +4,15 @@
 
 #include "components/services/app_service/public/cpp/icon_info.h"
 
+#include <utility>
+
 namespace apps {
+
+namespace {
+
+const char* const kPurposeStrings[] = {"kAny", "kMonochrome", "kMaskable"};
+
+}  // namespace
 
 // IconInfo
 IconInfo::IconInfo() = default;
@@ -26,8 +34,13 @@ base::Value IconInfo::AsDebugValue() const {
   root.SetStringKey("url", url.spec());
   root.SetKey("square_size_px",
               square_size_px ? base::Value(*square_size_px) : base::Value());
-  root.SetKey("purpose", base::Value(static_cast<int>(purpose)));
+  root.SetStringKey("purpose", kPurposeStrings[static_cast<int>(purpose)]);
   return root;
+}
+
+bool IconInfo::operator==(const IconInfo& other) const {
+  return std::tie(url, square_size_px, purpose) ==
+         std::tie(other.url, other.square_size_px, other.purpose);
 }
 
 }  // namespace apps

@@ -47,9 +47,9 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
   app_info->manifest_url = GURL(kTestManifestUrl);
-  WebApplicationIconInfo icon;
+  apps::IconInfo icon;
   icon.square_size_px = 64;
-  icon.purpose = IconPurpose::ANY;
+  icon.purpose = apps::IconInfo::Purpose::kAny;
   icon.url = GURL(kTestAppIcon);
   app_info->icon_infos.push_back(icon);
 

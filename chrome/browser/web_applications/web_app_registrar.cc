@@ -612,11 +612,10 @@ base::Time WebAppRegistrar::GetAppInstallTime(const AppId& app_id) const {
   return web_app ? web_app->install_time() : base::Time();
 }
 
-std::vector<WebApplicationIconInfo> WebAppRegistrar::GetAppIconInfos(
+std::vector<apps::IconInfo> WebAppRegistrar::GetAppIconInfos(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->icon_infos()
-                 : std::vector<WebApplicationIconInfo>();
+  return web_app ? web_app->icon_infos() : std::vector<apps::IconInfo>();
 }
 
 SortedSizesPx WebAppRegistrar::GetAppDownloadedIconSizesAny(

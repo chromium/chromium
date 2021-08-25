@@ -23,13 +23,6 @@ enum class RunOnOsLoginMode;
 using RepeatedIconInfosProto =
     const ::google::protobuf::RepeatedPtrField<::sync_pb::WebAppIconInfo>;
 
-absl::optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
-    const char* container_name_for_logging,
-    RepeatedIconInfosProto icon_infos_proto);
-
-// As above, but uses the type defined in //components. TODO(estade): replace
-// `WebApplicationIconInfo` with `apps::IconInfo` and eliminate this
-// duplication.
 absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
     RepeatedIconInfosProto icon_infos_proto);
@@ -38,12 +31,6 @@ absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app);
 
 // Use the given |icon_info| to populate a |WebAppIconInfo| sync proto.
-sync_pb::WebAppIconInfo WebAppIconInfoToSyncProto(
-    const WebApplicationIconInfo& icon_info);
-
-// As above, but uses the type defined in //components. TODO(estade): replace
-// `WebApplicationIconInfo` with `apps::IconInfo` and eliminate this
-// duplication.
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(const apps::IconInfo& icon_info);
 
 absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(

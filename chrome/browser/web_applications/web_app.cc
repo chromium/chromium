@@ -209,7 +209,7 @@ void WebApp::SetIsUninstalling(bool is_uninstalling) {
   is_uninstalling_ = is_uninstalling;
 }
 
-void WebApp::SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos) {
+void WebApp::SetIconInfos(std::vector<apps::IconInfo> icon_infos) {
   icon_infos_ = std::move(icon_infos);
 }
 
@@ -359,7 +359,7 @@ base::Value WebApp::SyncFallbackData::AsDebugValue() const {
   root.SetStringKey("scope", scope.spec());
   base::Value& icon_infos_json =
       *root.SetKey("icon_infos", base::Value(base::Value::Type::LIST));
-  for (const WebApplicationIconInfo& icon_info : icon_infos)
+  for (const apps::IconInfo& icon_info : icon_infos)
     icon_infos_json.Append(icon_info.AsDebugValue());
   return root;
 }

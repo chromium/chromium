@@ -299,8 +299,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_from_sync_and_pending_installation(
       web_app.is_from_sync_and_pending_installation());
 
-  for (const WebApplicationIconInfo& icon_info : web_app.icon_infos())
-    *(local_data->add_icon_infos()) = WebAppIconInfoToSyncProto(icon_info);
+  for (const apps::IconInfo& icon_info : web_app.icon_infos())
+    *(local_data->add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
 
   for (SquareSizePx size : web_app.downloaded_icon_sizes(IconPurpose::ANY)) {
     local_data->add_downloaded_icon_sizes_purpose_any(size);
@@ -641,8 +641,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetSyncFallbackData(std::move(parsed_sync_fallback_data.value()));
 
-  absl::optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
-      ParseWebAppIconInfos("WebApp", local_data.icon_infos());
+  absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
+      ParseAppIconInfos("WebApp", local_data.icon_infos());
   if (!parsed_icon_infos.has_value()) {
     // ParseWebAppIconInfos() reports any errors.
     return nullptr;

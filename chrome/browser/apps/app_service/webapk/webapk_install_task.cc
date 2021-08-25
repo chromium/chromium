@@ -348,8 +348,9 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   const auto& icon_infos = registrar.GetAppIconInfos(app_id_);
   auto it = std::find_if(
       icon_infos.begin(), icon_infos.end(),
-      [&icon_size_and_purpose](const WebApplicationIconInfo& info) {
-        return info.purpose == icon_size_and_purpose->purpose;
+      [&icon_size_and_purpose](const apps::IconInfo& info) {
+        return info.purpose ==
+               ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
       });
 
   if (it == icon_infos.end()) {

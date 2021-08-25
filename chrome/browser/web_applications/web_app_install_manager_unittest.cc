@@ -77,10 +77,11 @@ std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
 std::vector<blink::Manifest::ImageResource> ConvertWebAppIconsToImageResources(
     const WebApp& app) {
   std::vector<blink::Manifest::ImageResource> icons;
-  for (const WebApplicationIconInfo& icon_info : app.icon_infos()) {
+  for (const apps::IconInfo& icon_info : app.icon_infos()) {
     blink::Manifest::ImageResource icon;
     icon.src = icon_info.url;
-    icon.purpose.push_back(icon_info.purpose);
+    // TODO(estade): remove this cast.
+    icon.purpose.push_back(static_cast<IconPurpose>(icon_info.purpose));
     icon.sizes.emplace_back(
         icon_info.square_size_px.value_or(kDefaultImageSize),
         icon_info.square_size_px.value_or(kDefaultImageSize));
@@ -106,7 +107,7 @@ blink::mojom::ManifestPtr ConvertWebAppToManifest(const WebApp& app) {
 
 IconsMap ConvertWebAppIconsToIconsMap(const WebApp& app) {
   IconsMap icons_map;
-  for (const WebApplicationIconInfo& icon_info : app.icon_infos()) {
+  for (const apps::IconInfo& icon_info : app.icon_infos()) {
     icons_map[icon_info.url] = {CreateSquareIcon(
         icon_info.square_size_px.value_or(kDefaultImageSize), SK_ColorBLACK)};
   }
@@ -227,7 +228,7 @@ class WebAppInstallManagerTest
   std::unique_ptr<WebApplicationInfo> CreateWebAppInfo(const GURL& url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = url;
-    WebApplicationIconInfo icon_info;
+    apps::IconInfo icon_info;
     icon_info.url = GURL(kIconUrl);
     icon_info.square_size_px = icon_size::k256;
     web_app_info->icon_infos.push_back(std::move(icon_info));
@@ -256,7 +257,7 @@ class WebAppInstallManagerTest
       SkColor theme_color,
       bool locally_installed,
       const GURL& scope,
-      const std::vector<WebApplicationIconInfo>& icon_infos) {
+      const std::vector<apps::IconInfo>& icon_infos) {
     auto web_app = CreateWebApp(start_url, Source::kSync, user_display_mode);
     web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(locally_installed);
@@ -708,10 +709,10 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
 
-  std::vector<WebApplicationIconInfo> icon_infos;
+  std::vector<apps::IconInfo> icon_infos;
   std::vector<int> sizes;
   for (int size : SizesToGenerate()) {
-    WebApplicationIconInfo icon_info;
+    apps::IconInfo icon_info;
     icon_info.square_size_px = size;
     icon_info.url =
         GURL{url_path + "/icon" + base::NumberToString(size) + ".png"};
@@ -785,10 +786,10 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   expected_app->SetThemeColor(SK_ColorRED);
   // |scope| and |description| are empty here. |display_mode| is |kUndefined|.
 
-  std::vector<WebApplicationIconInfo> icon_infos;
+  std::vector<apps::IconInfo> icon_infos;
   std::vector<int> sizes;
   for (int size : SizesToGenerate()) {
-    WebApplicationIconInfo icon_info;
+    apps::IconInfo icon_info;
     icon_info.square_size_px = size;
     icon_info.url =
         GURL{url.spec() + "/icon" + base::NumberToString(size) + ".png"};

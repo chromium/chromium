@@ -20,6 +20,18 @@ std::string ConvertToString(const T& value) {
 
 }  // namespace
 
+apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
+    IconPurpose manifest_purpose) {
+  switch (manifest_purpose) {
+    case IconPurpose::ANY:
+      return apps::IconInfo::Purpose::kAny;
+    case IconPurpose::MONOCHROME:
+      return apps::IconInfo::Purpose::kMonochrome;
+    case IconPurpose::MASKABLE:
+      return apps::IconInfo::Purpose::kMaskable;
+  }
+}
+
 // IconBitmaps
 IconBitmaps::IconBitmaps() = default;
 
@@ -107,35 +119,6 @@ void IconSizes::SetSizesForPurpose(IconPurpose purpose,
 
 bool IconSizes::empty() const {
   return any.empty() && maskable.empty() && monochrome.empty();
-}
-
-// WebApplicationIconInfo
-WebApplicationIconInfo::WebApplicationIconInfo() = default;
-WebApplicationIconInfo::WebApplicationIconInfo(const GURL& url,
-                                               SquareSizePx size)
-    : url(url), square_size_px(size) {}
-
-WebApplicationIconInfo::WebApplicationIconInfo(const WebApplicationIconInfo&) =
-    default;
-
-WebApplicationIconInfo::WebApplicationIconInfo(WebApplicationIconInfo&&) =
-    default;
-
-WebApplicationIconInfo::~WebApplicationIconInfo() = default;
-
-WebApplicationIconInfo& WebApplicationIconInfo::operator=(
-    const WebApplicationIconInfo&) = default;
-
-WebApplicationIconInfo& WebApplicationIconInfo::operator=(
-    WebApplicationIconInfo&&) = default;
-
-base::Value WebApplicationIconInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
-  root.SetStringKey("url", url.spec());
-  root.SetKey("square_size_px",
-              square_size_px ? base::Value(*square_size_px) : base::Value());
-  root.SetStringKey("purpose", ConvertToString(purpose));
-  return root;
 }
 
 // WebApplicationShortcutsMenuItemInfo::Icon
@@ -248,7 +231,7 @@ WebApplicationInfo::WebApplicationInfo(
       description(metadata.description),
       start_url(metadata.application_url) {
   for (const auto& icon : metadata.icons) {
-    WebApplicationIconInfo icon_info;
+    apps::IconInfo icon_info;
     icon_info.url = icon->url;
     if (icon->square_size_px > 0)
       icon_info.square_size_px = icon->square_size_px;
@@ -268,14 +251,6 @@ WebApplicationInfo::WebApplicationInfo(
 }
 
 WebApplicationInfo::~WebApplicationInfo() = default;
-
-bool operator==(const WebApplicationIconInfo& icon_info1,
-                const WebApplicationIconInfo& icon_info2) {
-  return std::tie(icon_info1.url, icon_info1.square_size_px,
-                  icon_info1.purpose) == std::tie(icon_info2.url,
-                                                  icon_info2.square_size_px,
-                                                  icon_info2.purpose);
-}
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,

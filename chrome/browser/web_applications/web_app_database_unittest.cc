@@ -400,17 +400,17 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp(base_url, /*seed=*/0);
   AppId app_id = app->app_id();
 
-  std::vector<WebApplicationIconInfo> icons;
+  std::vector<apps::IconInfo> icons;
 
   for (IconPurpose purpose : kIconPurposes) {
     std::vector<SquareSizePx> sizes;
     for (int i = 1; i <= num_icons; ++i) {
-      WebApplicationIconInfo icon;
+      apps::IconInfo icon;
       icon.url = base_url.Resolve("icon" + base::NumberToString(num_icons));
       // Let size equals the icon's number squared.
       icon.square_size_px = i * i;
 
-      icon.purpose = purpose;
+      icon.purpose = ManifestPurposeToIconInfoPurpose(purpose);
       sizes.push_back(*icon.square_size_px);
       icons.push_back(std::move(icon));
     }

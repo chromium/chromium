@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   }
   EXPECT_EQ(GetRegistrar(sourceProfile).GetAppShortName(app_id),
             "Favicon only");
-  std::vector<WebApplicationIconInfo> icon_infos =
+  std::vector<apps::IconInfo> icon_infos =
       GetRegistrar(sourceProfile).GetAppIconInfos(app_id);
   ASSERT_EQ(icon_infos.size(), 1u);
   EXPECT_FALSE(icon_infos[0].square_size_px.has_value());
@@ -350,10 +350,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   info.start_url = GURL("https://does-not-exist.org");
   info.theme_color = SK_ColorBLUE;
   info.scope = GURL("https://does-not-exist.org/scope");
-  WebApplicationIconInfo icon_info;
+  apps::IconInfo icon_info;
   icon_info.square_size_px = 192;
   icon_info.url = embedded_test_server()->GetURL("/web_apps/blue-192.png");
-  icon_info.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
+  icon_info.purpose = apps::IconInfo::Purpose::kAny;
   info.icon_infos.push_back(icon_info);
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   EXPECT_EQ(GetRegistrar(source_profile).GetAppShortName(app_id), "Blue icon");

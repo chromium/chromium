@@ -266,11 +266,11 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "action": "https://example.com/open-13087720410",
       "icons": [ {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
       }, {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ]
@@ -284,11 +284,11 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "action": "https://example.com/open-13087720411",
       "icons": [ {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
       }, {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ]
@@ -302,11 +302,11 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "action": "https://example.com/open-13087720412",
       "icons": [ {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
       }, {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ]
@@ -320,11 +320,11 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "action": "https://example.com/open-13087720413",
       "icons": [ {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
       }, {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ]
@@ -338,21 +338,21 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "action": "https://example.com/open-13087720414",
       "icons": [ {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
       }, {
-         "purpose": 0,
+         "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ]
    } ],
    "icon_infos": [ {
-      "purpose": "ANY",
+      "purpose": "kAny",
       "square_size_px": null,
       "url": "https://example.com/icon1783899413"
    }, {
-      "purpose": "ANY",
+      "purpose": "kAny",
       "square_size_px": null,
       "url": "https://example.com/icon3011162902"
    } ],
@@ -450,11 +450,11 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "start_url": "https://example.com/scope1234/start1234",
    "sync_fallback_data": {
       "icon_infos": [ {
-         "purpose": "ANY",
+         "purpose": "kAny",
          "square_size_px": null,
          "url": "https://example.com/icon1783899413"
       }, {
-         "purpose": "ANY",
+         "purpose": "kAny",
          "square_size_px": null,
          "url": "https://example.com/icon3011162902"
       } ],

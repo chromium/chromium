@@ -144,8 +144,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the "icons" field from the app manifest, use |WebAppIconManager| to
   // load icon bitmap data.
-  std::vector<WebApplicationIconInfo> GetAppIconInfos(
-      const AppId& app_id) const;
+  std::vector<apps::IconInfo> GetAppIconInfos(const AppId& app_id) const;
 
   // Represents which icon sizes we successfully downloaded from the IconInfos.
   SortedSizesPx GetAppDownloadedIconSizesAny(const AppId& app_id) const;

@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
@@ -41,6 +42,9 @@ constexpr std::array<IconPurpose,
                          static_cast<int>(IconPurpose::kMinValue) + 1>
     kIconPurposes{IconPurpose::ANY, IconPurpose::MONOCHROME,
                   IconPurpose::MASKABLE};
+
+apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
+    IconPurpose manifest_purpose);
 
 // Icon bitmaps for each IconPurpose.
 struct IconBitmaps {
@@ -102,23 +106,6 @@ struct IconSizes {
 };
 
 using ShortcutsMenuIconBitmaps = std::vector<IconBitmaps>;
-
-// TODO(https://crbug.com/1091473): Rename WebApplication* occurrences in this
-// file to WebApp*.
-struct WebApplicationIconInfo {
-  WebApplicationIconInfo();
-  WebApplicationIconInfo(const GURL& url, SquareSizePx size);
-  WebApplicationIconInfo(const WebApplicationIconInfo&);
-  WebApplicationIconInfo(WebApplicationIconInfo&&) noexcept;
-  ~WebApplicationIconInfo();
-  WebApplicationIconInfo& operator=(const WebApplicationIconInfo&);
-  WebApplicationIconInfo& operator=(WebApplicationIconInfo&&) noexcept;
-  base::Value AsDebugValue() const;
-
-  GURL url;
-  absl::optional<SquareSizePx> square_size_px;
-  IconPurpose purpose = IconPurpose::ANY;
-};
 
 // Structure used when creating app icon shortcuts menu and for downloading
 // associated shortcut icons when supported by OS platform (eg. Windows).
@@ -213,8 +200,10 @@ struct WebApplicationInfo {
   // https://www.w3.org/TR/appmanifest/#scope-member
   GURL scope;
 
-  // List of icon URLs with associated square size and purpose.
-  std::vector<WebApplicationIconInfo> icon_infos;
+  // List of icon URLs with associated square size and purpose. The size
+  // corresponds to what was specified in the manifest rather than any actual
+  // size of a downloaded icon.
+  std::vector<apps::IconInfo> icon_infos;
 
   // Icon bitmaps, keyed by their square size.
   IconBitmaps icon_bitmaps;
@@ -308,9 +297,6 @@ struct WebApplicationInfo {
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
-
-bool operator==(const WebApplicationIconInfo& icon_info1,
-                const WebApplicationIconInfo& icon_info2);
 
 bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
                 const WebApplicationShortcutsMenuItemInfo::Icon& icon2);

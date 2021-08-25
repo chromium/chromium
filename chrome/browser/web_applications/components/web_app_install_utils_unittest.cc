@@ -42,6 +42,18 @@ constexpr SquareSizePx kIconSize = 64;
 // This value is greater than kMaxIcons in web_app_install_utils.cc.
 constexpr unsigned int kNumTestIcons = 30;
 
+IconPurpose IconInfoPurposeToManifestPurpose(
+    apps::IconInfo::Purpose icon_info_purpose) {
+  switch (icon_info_purpose) {
+    case apps::IconInfo::Purpose::kAny:
+      return IconPurpose::ANY;
+    case apps::IconInfo::Purpose::kMonochrome:
+      return IconPurpose::MONOCHROME;
+    case apps::IconInfo::Purpose::kMaskable:
+      return IconPurpose::MASKABLE;
+  }
+}
+
 }  // namespace
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
@@ -53,7 +65,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
   web_app_info.start_url = GURL("http://www.notchromium.org");
-  WebApplicationIconInfo info;
+  apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
   info.url = kAppIcon1;
   web_app_info.icon_infos.push_back(info);
@@ -217,7 +229,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   EXPECT_EQ(4u, web_app_info.icon_infos.size());
   std::map<IconPurpose, int> purpose_to_count;
   for (const auto& icon_info : web_app_info.icon_infos) {
-    purpose_to_count[icon_info.purpose]++;
+    purpose_to_count[IconInfoPurposeToManifestPurpose(icon_info.purpose)]++;
   }
   EXPECT_EQ(1, purpose_to_count[IconPurpose::ANY]);
   EXPECT_EQ(1, purpose_to_count[IconPurpose::MONOCHROME]);
@@ -233,7 +245,7 @@ TEST(WebAppInstallUtils,
   manifest.icons.push_back(icon);
   // WebApplicationInfo has existing icons (simulating found in page metadata).
   WebApplicationInfo web_app_info;
-  WebApplicationIconInfo icon_info;
+  apps::IconInfo icon_info;
   web_app_info.icon_infos.push_back(icon_info);
   web_app_info.icon_infos.push_back(icon_info);
 
@@ -325,7 +337,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
   web_app_info.start_url = GURL("http://www.notchromium.org");
-  WebApplicationIconInfo info;
+  apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
   info.url = kAppIcon1;
   web_app_info.icon_infos.push_back(info);
@@ -553,7 +565,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
   EXPECT_EQ(10U, web_app_info.icon_infos.size());
-  for (const WebApplicationIconInfo& icon : web_app_info.icon_infos) {
+  for (const apps::IconInfo& icon : web_app_info.icon_infos) {
     EXPECT_LE(icon.square_size_px, 1024);
   }
 }
@@ -677,16 +689,16 @@ TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIcons) {
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
-  WebApplicationIconInfo info;
-  // Icon at URL 1 has both ANY and MASKABLE purpose.
+  apps::IconInfo info;
+  // Icon at URL 1 has both kAny and kMaskable purpose.
   info.url = kIconUrl1;
-  info.purpose = Purpose::ANY;
+  info.purpose = apps::IconInfo::Purpose::kAny;
   web_app_info.icon_infos.push_back(info);
-  info.purpose = Purpose::MASKABLE;
+  info.purpose = apps::IconInfo::Purpose::kMaskable;
   web_app_info.icon_infos.push_back(info);
-  // Icon at URL 2 has MASKABLE purpose only.
+  // Icon at URL 2 has kMaskable purpose only.
   info.url = kIconUrl2;
-  info.purpose = Purpose::MASKABLE;
+  info.purpose = apps::IconInfo::Purpose::kMaskable;
   web_app_info.icon_infos.push_back(info);
 
   PopulateProductIcons(&web_app_info, &icons_map);
@@ -711,9 +723,9 @@ TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIconsOnly) {
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
-  WebApplicationIconInfo info;
+  apps::IconInfo info;
   info.url = kIconUrl1;
-  info.purpose = Purpose::MASKABLE;
+  info.purpose = apps::IconInfo::Purpose::kMaskable;
   web_app_info.icon_infos.push_back(info);
 
   PopulateProductIcons(&web_app_info, &icons_map);

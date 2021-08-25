@@ -115,9 +115,7 @@ class WebApp {
   const base::Time& install_time() const { return install_time_; }
 
   // Represents the "icons" field in the manifest.
-  const std::vector<WebApplicationIconInfo>& icon_infos() const {
-    return icon_infos_;
-  }
+  const std::vector<apps::IconInfo>& icon_infos() const { return icon_infos_; }
 
   // Represents which icon sizes we successfully downloaded from the
   // |icon_infos| for the given |purpose|.
@@ -182,7 +180,7 @@ class WebApp {
     std::string name;
     absl::optional<SkColor> theme_color;
     GURL scope;
-    std::vector<WebApplicationIconInfo> icon_infos;
+    std::vector<apps::IconInfo> icon_infos;
   };
   const SyncFallbackData& sync_fallback_data() const {
     return sync_fallback_data_;
@@ -249,7 +247,7 @@ class WebApp {
   void SetIsFromSyncAndPendingInstallation(
       bool is_from_sync_and_pending_installation);
   void SetIsUninstalling(bool is_uninstalling);
-  void SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos);
+  void SetIconInfos(std::vector<apps::IconInfo> icon_infos);
   // Performs sorting and uniquifying of |sizes| if passed as vector.
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
@@ -317,7 +315,7 @@ class WebApp {
   // other places to save it to the database, and then make sure to continue
   // uninstallation on startup if any web apps have this field set to true.
   bool is_uninstalling_ = false;
-  std::vector<WebApplicationIconInfo> icon_infos_;
+  std::vector<apps::IconInfo> icon_infos_;
   SortedSizesPx downloaded_icon_sizes_any_;
   SortedSizesPx downloaded_icon_sizes_monochrome_;
   SortedSizesPx downloaded_icon_sizes_maskable_;

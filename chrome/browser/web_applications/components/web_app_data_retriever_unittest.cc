@@ -125,7 +125,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
   }
 
   void GetIconsCallback(base::OnceClosure quit_closure,
-                        std::vector<WebApplicationIconInfo> icons) {
+                        std::vector<apps::IconInfo> icons) {
     icons_ = std::move(icons);
     std::move(quit_closure).Run();
   }
@@ -139,12 +139,12 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     return web_app_info_.value();
   }
 
-  const std::vector<WebApplicationIconInfo>& icons() { return icons_; }
+  const std::vector<apps::IconInfo>& icons() { return icons_; }
 
  private:
   FakeWebPageMetadataAgent fake_chrome_render_frame_;
   absl::optional<std::unique_ptr<WebApplicationInfo>> web_app_info_;
-  std::vector<WebApplicationIconInfo> icons_;
+  std::vector<apps::IconInfo> icons_;
 };
 
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_NoEntry) {

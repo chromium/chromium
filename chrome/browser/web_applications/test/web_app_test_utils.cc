@@ -312,9 +312,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);
-  std::vector<WebApplicationIconInfo> icon_infos(num_icons);
+  std::vector<apps::IconInfo> icon_infos(num_icons);
   for (int i = 0; i < num_icons; i++) {
-    WebApplicationIconInfo icon;
+    apps::IconInfo icon;
     icon.url =
         base_url.Resolve("/icon" + base::NumberToString(random.next_uint()));
     if (random.next_bool())
@@ -322,11 +322,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
     int purpose = random.next_uint(4);
     if (purpose == 0)
-      icon.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
+      icon.purpose = apps::IconInfo::Purpose::kAny;
     if (purpose == 1)
-      icon.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+      icon.purpose = apps::IconInfo::Purpose::kMaskable;
     if (purpose == 2)
-      icon.purpose = blink::mojom::ManifestImageResource_Purpose::MONOCHROME;
+      icon.purpose = apps::IconInfo::Purpose::kMonochrome;
     // if (purpose == 3), leave purpose unset. Should default to ANY.
 
     icon_infos[i] = icon;
