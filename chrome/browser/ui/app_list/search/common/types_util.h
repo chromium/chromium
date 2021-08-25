@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_COMMON_TYPES_UTIL_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_COMMON_TYPES_UTIL_H_
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 
 namespace app_list {
 
 // Converts result type to a debug string.
 std::string ResultTypeToString(const ash::AppListSearchResultType result_type);
+
+// Converts metrics type to a debug string.
+std::string MetricsTypeToString(const ash::SearchResultType metrics_type);
 
 // Converts display type to a debug string.
 std::string DisplayTypeToString(

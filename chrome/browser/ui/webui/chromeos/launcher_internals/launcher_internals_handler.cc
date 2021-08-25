@@ -29,6 +29,7 @@ void LauncherInternalsHandler::OnResultsAdded(
         result->id(), base::UTF16ToUTF8(result->title()),
         base::UTF16ToUTF8(result->details()),
         app_list::ResultTypeToString(result->result_type()),
+        app_list::MetricsTypeToString(result->metrics_type()),
         app_list::DisplayTypeToString(result->display_type()),
         result->relevance(), result->ranker_scores()));
   }

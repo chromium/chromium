@@ -54,6 +54,106 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
   NOTREACHED();
 }
 
+std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
+  switch (metrics_type) {
+    case ash::SearchResultType::OMNIBOX_SEARCH_RESULT_DEPRECATED:
+      return "OMNIBOX_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::APP_SEARCH_RESULT_DEPRECATED:
+      return "APP_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::WEBSTORE_SEARCH_RESULT_DEPRECATED:
+      return "WEBSTORE_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::SEARCH_WEBSTORE_SEARCH_RESULT_DEPRECATED:
+      return "SEARCH_WEBSTORE_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::SEARCH_PEOPLE_SEARCH_RESULT_DEPRECATED:
+      return "SEARCH_PEOPLE_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::SUGGESTIONS_SEARCH_RESULT_DEPRECATED:
+      return "SUGGESTIONS_SEARCH_RESULT_DEPRECATED";
+    case ash::SearchResultType::LAUNCHER_SEARCH_PROVIDER_RESULT:
+      return "LAUNCHER_SEARCH_PROVIDER_RESULT";
+    case ash::SearchResultType::PLAY_STORE_UNINSTALLED_APP:
+      return "PLAY_STORE_UNINSTALLED_APP";
+    case ash::SearchResultType::PLAY_STORE_INSTANT_APP:
+      return "PLAY_STORE_INSTANT_APP";
+    case ash::SearchResultType::ANSWER_CARD:
+      return "ANSWER_CARD";
+    case ash::SearchResultType::PLAY_STORE_APP_SHORTCUT:
+      return "PLAY_STORE_APP_SHORTCUT";
+    case ash::SearchResultType::OMNIBOX_URL_WHAT_YOU_TYPED:
+      return "OMNIBOX_URL_WHAT_YOU_TYPED";
+    case ash::SearchResultType::OMNIBOX_BOOKMARK:
+      return "OMNIBOX_BOOKMARK";
+    case ash::SearchResultType::OMNIBOX_RECENTLY_VISITED_WEBSITE:
+      return "OMNIBOX_RECENTLY_VISITED_WEBSITE";
+    case ash::SearchResultType::OMNIBOX_RECENT_DOC_IN_DRIVE:
+      return "OMNIBOX_RECENT_DOC_IN_DRIVE";
+    case ash::SearchResultType::OMNIBOX_WEB_QUERY:
+      return "OMNIBOX_WEB_QUERY";
+    case ash::SearchResultType::OMNIBOX_HISTORY_DEPRECATED:
+      return "OMNIBOX_HISTORY_DEPRECATED";
+    case ash::SearchResultType::PLAY_STORE_APP:
+      return "PLAY_STORE_APP";
+    case ash::SearchResultType::PLAY_STORE_REINSTALL_APP:
+      return "PLAY_STORE_REINSTALL_APP";
+    case ash::SearchResultType::INTERNAL_APP:
+      return "INTERNAL_APP";
+    case ash::SearchResultType::EXTENSION_APP:
+      return "EXTENSION_APP";
+    case ash::SearchResultType::CROSTINI_APP:
+      return "CROSTINI_APP";
+    case ash::SearchResultType::SETTINGS_SHORTCUT:
+      return "SETTINGS_SHORTCUT";
+    case ash::SearchResultType::APP_DATA_RESULT_PERSON:
+      return "APP_DATA_RESULT_PERSON";
+    case ash::SearchResultType::APP_DATA_RESULT_NOTE_DOCUMENT:
+      return "APP_DATA_RESULT_NOTE_DOCUMENT";
+    case ash::SearchResultType::ASSISTANT_OMNIBOX_RESULT:
+      return "ASSISTANT_OMNIBOX_RESULT";
+    case ash::SearchResultType::OMNIBOX_SEARCH_HISTORY:
+      return "OMNIBOX_SEARCH_HISTORY";
+    case ash::SearchResultType::OMNIBOX_SEARCH_SUGGEST:
+      return "OMNIBOX_SEARCH_SUGGEST";
+    case ash::SearchResultType::OMNIBOX_SUGGEST_PERSONALIZED:
+      return "OMNIBOX_SUGGEST_PERSONALIZED";
+    case ash::SearchResultType::ZERO_STATE_FILE:
+      return "ZERO_STATE_FILE";
+    case ash::SearchResultType::ZERO_STATE_DRIVE:
+      return "ZERO_STATE_DRIVE";
+    case ash::SearchResultType::ASSISTANT:
+      return "ASSISTANT";
+    case ash::SearchResultType::OS_SETTINGS:
+      return "OS_SETTINGS";
+    case ash::SearchResultType::PLUGIN_VM_APP:
+      return "PLUGIN_VM_APP";
+    case ash::SearchResultType::LACROS:
+      return "LACROS";
+    case ash::SearchResultType::REMOTE_APP:
+      return "REMOTE_APP";
+    case ash::SearchResultType::BOREALIS_APP:
+      return "BOREALIS_APP";
+    case ash::SearchResultType::HELP_APP_DEFAULT:
+      return "HELP_APP_DEFAULT";
+    case ash::SearchResultType::OMNIBOX_SEARCH_SUGGEST_ENTITY:
+      return "OMNIBOX_SEARCH_SUGGEST_ENTITY";
+    case ash::SearchResultType::OMNIBOX_NAVSUGGEST:
+      return "OMNIBOX_NAVSUGGEST";
+    case ash::SearchResultType::OMNIBOX_RICH_ENTITY_ANSWER:
+      return "OMNIBOX_RICH_ENTITY_ANSWER";
+    case ash::SearchResultType::OMNIBOX_RICH_ENTITY_IMAGE_ENTITY:
+      return "OMNIBOX_RICH_ENTITY_IMAGE_ENTITY";
+    case ash::SearchResultType::FILE_SEARCH:
+      return "FILE_SEARCH";
+    case ash::SearchResultType::DRIVE_SEARCH:
+      return "DRIVE_SEARCH";
+    case ash::SearchResultType::HELP_APP_UPDATES:
+      return "HELP_APP_UPDATES";
+    case ash::SearchResultType::HELP_APP_DISCOVER:
+      return "HELP_APP_DISCOVER";
+    case ash::SearchResultType::SEARCH_RESULT_TYPE_BOUNDARY:
+      return "SEARCH_RESULT_TYPE_BOUNDARY";
+  }
+  NOTREACHED();
+}
+
 std::string DisplayTypeToString(
     const ash::SearchResultDisplayType display_type) {
   switch (display_type) {
