@@ -45,6 +45,12 @@ UpgradeParams DefaultUpgradeParams() {
   return params;
 }
 
+std::string ConvertToString(ArcSessionImpl::State state) {
+  std::stringstream ss;
+  ss << state;
+  return ss.str();
+}
+
 // An ArcClientAdapter implementation that does the same as the real ones but
 // without any D-Bus calls.
 class FakeArcClientAdapter : public ArcClientAdapter {
@@ -887,6 +893,23 @@ TEST_F(ArcSessionImplTest, DisableUreadahead) {
       GetClient(arc_session.get())->last_start_params().disable_ureadahead);
 }
 
+// Test "<<" operator for ArcSessionImpl::State type.
+TEST_F(ArcSessionImplTest, StateTypeStreamOutput) {
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::NOT_STARTED), "NOT_STARTED");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::WAITING_FOR_NUM_CORES),
+            "WAITING_FOR_NUM_CORES");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STARTING_MINI_INSTANCE),
+            "STARTING_MINI_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::RUNNING_MINI_INSTANCE),
+            "RUNNING_MINI_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STARTING_FULL_INSTANCE),
+            "STARTING_FULL_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::CONNECTING_MOJO),
+            "CONNECTING_MOJO");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::RUNNING_FULL_INSTANCE),
+            "RUNNING_FULL_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STOPPED), "STOPPED");
+}
 struct DalvikMemoryProfileVariant {
   // Memory stat file
   const char* file_name;
