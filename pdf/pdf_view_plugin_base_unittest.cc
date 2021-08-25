@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
@@ -21,10 +20,10 @@
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
-#include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/test/test_pdfium_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,79 +37,6 @@ namespace {
 // Keep it in-sync with the `kFinalFallbackName` returned by
 // net::GetSuggestedFilename().
 constexpr char kDefaultDownloadFileName[] = "download";
-
-// Dummy data to save.
-constexpr uint8_t kSaveData[] = {'1', '2', '3'};
-
-// Page number.
-constexpr uint32_t kPageNumber = 13u;
-
-class TestPDFiumEngine : public PDFiumEngine {
- public:
-  explicit TestPDFiumEngine(PDFEngine::Client* client)
-      : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
-
-  TestPDFiumEngine(const TestPDFiumEngine&) = delete;
-
-  TestPDFiumEngine& operator=(const TestPDFiumEngine&) = delete;
-
-  ~TestPDFiumEngine() override = default;
-
-  bool HasPermission(DocumentPermission permission) const override {
-    return base::Contains(permissions_, permission);
-  }
-
-  const std::vector<DocumentAttachmentInfo>& GetDocumentAttachmentInfoList()
-      const override {
-    return doc_attachment_info_list_;
-  }
-
-  const DocumentMetadata& GetDocumentMetadata() const override {
-    return metadata_;
-  }
-
-  int GetNumberOfPages() const override {
-    return static_cast<int>(kPageNumber);
-  }
-
-  base::Value GetBookmarks() override {
-    // Return an empty bookmark list.
-    return base::Value(base::Value::Type::LIST);
-  }
-
-  uint32_t GetLoadedByteSize() override { return sizeof(kSaveData); }
-
-  bool ReadLoadedBytes(uint32_t length, void* buffer) override {
-    DCHECK_LE(length, GetLoadedByteSize());
-    memcpy(buffer, kSaveData, length);
-    return true;
-  }
-
-  std::vector<uint8_t> GetSaveData() override {
-    return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
-  }
-
-  void SetPermissions(const std::vector<DocumentPermission>& permissions) {
-    permissions_.clear();
-
-    for (auto& permission : permissions)
-      permissions_.insert(permission);
-  }
-
- protected:
-  std::vector<DocumentAttachmentInfo>& doc_attachment_info_list() {
-    return doc_attachment_info_list_;
-  }
-
-  DocumentMetadata& metadata() { return metadata_; }
-
- private:
-  std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;
-
-  DocumentMetadata metadata_;
-
-  base::flat_set<DocumentPermission> permissions_;
-};
 
 class TestPDFiumEngineWithDocInfo : public TestPDFiumEngine {
  public:
@@ -413,8 +339,8 @@ base::Value CreateExpectedSaveToBufferResponse(const std::string& token) {
   expected_response.SetStringKey("type", "saveData");
   expected_response.SetStringKey("token", token);
   expected_response.SetStringKey("fileName", kDefaultDownloadFileName);
-  expected_response.SetKey("dataToSave",
-                           base::Value(base::make_span(kSaveData)));
+  expected_response.SetKey(
+      "dataToSave", base::Value(base::make_span(TestPDFiumEngine::kSaveData)));
   return expected_response;
 }
 
@@ -932,7 +858,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
   engine->SetPermissions({});
 
   AccessibilityDocInfo doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_FALSE(doc_info.text_accessible);
   EXPECT_FALSE(doc_info.text_copyable);
 
@@ -940,7 +866,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
   engine->SetPermissions({DocumentPermission::kCopy});
 
   doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_FALSE(doc_info.text_accessible);
   EXPECT_TRUE(doc_info.text_copyable);
 
@@ -948,7 +874,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
   engine->SetPermissions({DocumentPermission::kCopyAccessible});
 
   doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_TRUE(doc_info.text_accessible);
   EXPECT_FALSE(doc_info.text_copyable);
 
@@ -957,7 +883,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
       {DocumentPermission::kCopy, DocumentPermission::kCopyAccessible});
 
   doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_TRUE(doc_info.text_accessible);
   EXPECT_TRUE(doc_info.text_copyable);
 }

@@ -401,6 +401,8 @@ if (enable_pdf) {
       "test/test_document_loader.h",
       "test/test_helpers.cc",
       "test/test_helpers.h",
+      "test/test_pdfium_engine.cc",
+      "test/test_pdfium_engine.h",
     ]
 
     configs += [ ":common" ]
