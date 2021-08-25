@@ -120,6 +120,7 @@ cast_source_set("renderer_base") {
       "//chromecast/common",
       "//chromecast/common/extensions_api:api",
       "//chromecast/renderer:extensions_resources",
+      "//components/guest_view/renderer",
       "//components/version_info:version_info",
       "//extensions/common",
       "//extensions/common:mojom",

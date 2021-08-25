@@ -15,10 +15,13 @@ namespace blink {
 class WebURL;
 }  // namespace blink
 
+namespace guest_view {
+class GuestViewContainerDispatcher;
+}
+
 namespace extensions {
 
 class ExtensionsClient;
-class ExtensionsGuestViewContainerDispatcher;
 class ShellExtensionsRendererClient;
 
 // Renderer initialization and runtime support for app_shell.
@@ -54,7 +57,7 @@ class ShellContentRendererClient : public content::ContentRendererClient {
  private:
   std::unique_ptr<ExtensionsClient> extensions_client_;
   std::unique_ptr<ShellExtensionsRendererClient> extensions_renderer_client_;
-  std::unique_ptr<ExtensionsGuestViewContainerDispatcher>
+  std::unique_ptr<guest_view::GuestViewContainerDispatcher>
       guest_view_container_dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellContentRendererClient);

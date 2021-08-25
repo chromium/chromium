@@ -3,6 +3,7 @@ include_rules = [
   "+chromecast/crash",
   "+chromecast/media",
   "+components/cdm/renderer",
+  "+components/guest_view/renderer",
   "+components/media_control/renderer",
   "+components/media_control/mojom",
   "+components/network_hints/renderer",

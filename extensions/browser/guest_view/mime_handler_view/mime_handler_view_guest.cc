@@ -28,7 +28,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/guest_view/extensions_guest_view_messages.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

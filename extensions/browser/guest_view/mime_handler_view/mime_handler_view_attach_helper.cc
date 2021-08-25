@@ -21,7 +21,6 @@
 #include "content/public/common/webplugininfo.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "extensions/common/guest_view/extensions_guest_view_messages.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"

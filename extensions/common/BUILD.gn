@@ -274,7 +274,6 @@ if (enable_extensions) {
       "features/simple_feature.h",
       "file_util.cc",
       "file_util.h",
-      "guest_view/extensions_guest_view_messages.h",
       "hashed_extension_id.cc",
       "hashed_extension_id.h",
       "identifiability_metrics.cc",

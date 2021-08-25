@@ -38,7 +38,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/guest_view/extensions_guest_view_messages.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
