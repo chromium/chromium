@@ -286,34 +286,6 @@ TEST_F(FullscreenMagnifierControllerTest, PointOfInterest) {
   EXPECT_EQ("450,350", CurrentPointOfInterest());
 }
 
-// TODO(warx): move this test to unit_tests.
-TEST_F(FullscreenMagnifierControllerTest, FollowFocusChanged) {
-  // Enables magnifier and confirm the viewport is at center.
-  GetFullscreenMagnifierController()->SetEnabled(true);
-  EXPECT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
-  EXPECT_EQ("200,150 400x300", GetViewport().ToString());
-
-  // Don't move viewport when focusing edit box.
-  GetFullscreenMagnifierController()->HandleFocusedNodeChanged(
-      true, gfx::Rect(0, 0, 10, 10));
-  EXPECT_EQ("200,150 400x300", GetViewport().ToString());
-
-  // Move viewport to element in upper left.
-  GetFullscreenMagnifierController()->HandleFocusedNodeChanged(
-      false, gfx::Rect(0, 0, 10, 10));
-  EXPECT_EQ("0,0 400x300", GetViewport().ToString());
-
-  // Move viewport to element in lower right.
-  GetFullscreenMagnifierController()->HandleFocusedNodeChanged(
-      false, gfx::Rect(790, 590, 10, 10));
-  EXPECT_EQ("400,300 400x300", GetViewport().ToString());
-
-  // Don't follow focus onto empty rectangle.
-  GetFullscreenMagnifierController()->HandleFocusedNodeChanged(
-      false, gfx::Rect(0, 0, 0, 0));
-  EXPECT_EQ("400,300 400x300", GetViewport().ToString());
-}
-
 TEST_F(FullscreenMagnifierControllerTest, PanWindow2xLeftToRight) {
   const aura::Env* env = aura::Env::GetInstance();
 

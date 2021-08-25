@@ -116,11 +116,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Centers the viewport around the given point in screen coordinates.
   void CenterOnPoint(const gfx::Point& point_in_screen);
 
-  // Follows the focus on web page for non-editable controls. Called from Chrome
-  // when Fullscreen magnifier feature is enabled.
-  void HandleFocusedNodeChanged(bool is_editable_node,
-                                const gfx::Rect& node_bounds_in_screen);
-
   // Move |rect_in_screen| within the magnifier viewport. If |rect_in_screen| is
   // already completely within the viewport, do nothing. If any edge of
   // |rect_in_screen| is outside the viewport (e.g. if rect is larger than or

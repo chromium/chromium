@@ -252,25 +252,6 @@ void FullscreenMagnifierController::CenterOnPoint(
   MoveMagnifierWindowCenterPoint(point_in_root);
 }
 
-void FullscreenMagnifierController::HandleFocusedNodeChanged(
-    bool is_editable_node,
-    const gfx::Rect& node_bounds_in_screen) {
-  // The editable node is handled by OnCaretBoundsChanged.
-  if (is_editable_node)
-    return;
-
-  // Nothing to recenter on.
-  if (node_bounds_in_screen.IsEmpty())
-    return;
-
-  gfx::Rect node_bounds_in_root = node_bounds_in_screen;
-  ::wm::ConvertRectFromScreen(root_window_, &node_bounds_in_root);
-  if (GetViewportRect().Contains(node_bounds_in_root))
-    return;
-
-  MoveMagnifierWindowFollowRect(node_bounds_in_root);
-}
-
 void FullscreenMagnifierController::HandleMoveMagnifierToRect(
     const gfx::Rect& rect_in_screen) {
   gfx::Rect node_bounds_in_root = rect_in_screen;
