@@ -10,7 +10,6 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -299,7 +298,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             mCloseButtonIcon =
                     TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         } else {
-            mCloseButtonIcon = new BitmapDrawable(context.getResources(), bitmap);
+            mCloseButtonIcon = new TintedDrawable(context, bitmap);
         }
 
         List<Bundle> menuItems =
