@@ -21,6 +21,8 @@ component("webrtc") {
 
   deps = [
     "//base",
+    "//build:chromecast_buildflags",
+    "//media",
     "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -28,4 +30,14 @@ component("webrtc") {
 
 source_set("unit_tests") {
   testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/webrtc",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+  sources = [ "helpers_unittests.cc" ]
 }

@@ -329,7 +329,7 @@ void MediaStreamAudioProcessor::Stop() {
   if (!audio_processing_.get())
     return;
 
-  StopEchoCancellationDump(audio_processing_.get());
+  media::StopEchoCancellationDump(audio_processing_.get());
   worker_queue_.reset(nullptr);
 
   if (playout_data_source_) {
@@ -368,10 +368,10 @@ void MediaStreamAudioProcessor::OnStartDump(base::File dump_file) {
           CreateWebRtcTaskQueue(rtc::TaskQueue::Priority::LOW));
     }
     // Here tasks will be posted on the |worker_queue_|. It must be
-    // kept alive until StopEchoCancellationDump is called or the
+    // kept alive until media::StopEchoCancellationDump is called or the
     // webrtc::AudioProcessing instance is destroyed.
-    StartEchoCancellationDump(audio_processing_.get(), std::move(dump_file),
-                              worker_queue_.get());
+    media::StartEchoCancellationDump(audio_processing_.get(),
+                                     std::move(dump_file), worker_queue_.get());
   } else {
     // Post the file close to avoid blocking the main thread.
     worker_pool::PostTask(
@@ -383,7 +383,7 @@ void MediaStreamAudioProcessor::OnStartDump(base::File dump_file) {
 void MediaStreamAudioProcessor::OnStopDump() {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   if (audio_processing_)
-    StopEchoCancellationDump(audio_processing_.get());
+    media::StopEchoCancellationDump(audio_processing_.get());
 
   // Note that deleting an rtc::TaskQueue has to be done from the
   // thread that created it.
@@ -522,7 +522,7 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   absl::optional<int> agc_startup_min_volume =
       Platform::Current()->GetAgcStartupMinimumVolume();
 
-  audio_processing_ = CreateWebRtcAudioProcessingModule(
+  audio_processing_ = media::CreateWebRtcAudioProcessingModule(
       properties.ToAudioProcessingSettings(
           use_capture_multi_channel_processing_),
       agc_startup_min_volume);
