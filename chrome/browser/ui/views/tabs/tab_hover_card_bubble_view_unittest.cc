@@ -7,8 +7,8 @@
 #include <ostream>
 #include <string>
 
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -101,8 +101,7 @@ class TabHoverCardBubbleViewFilenameEliderTest {
  private:
   // Required for loading fallback fonts, as fallback font loading needs to
   // happen on the UI thread.
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 #define EM_SPACE u"\u2003"
