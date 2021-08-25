@@ -174,8 +174,10 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return GetGpuProcessSandbox(options.use_amd_specific_policies);
     case SandboxType::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
+#if BUILDFLAG(ENABLE_PLUGINS)
     case SandboxType::kPpapi:
       return std::make_unique<PpapiProcessPolicy>();
+#endif
     case SandboxType::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
     case SandboxType::kCdm:
@@ -218,7 +220,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
   switch (sandbox_type) {
     case SandboxType::kRenderer:
     case SandboxType::kGpu:
+#if BUILDFLAG(ENABLE_PLUGINS)
     case SandboxType::kPpapi:
+#endif
     case SandboxType::kPrintCompositor:
     case SandboxType::kCdm: {
       int syscall_ret;

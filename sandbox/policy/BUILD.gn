@@ -29,6 +29,7 @@ component("policy") {
     ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//ppapi/buildflags",
     "//printing/buildflags",
     "//sandbox:common",
     "//sandbox/policy/mojom",

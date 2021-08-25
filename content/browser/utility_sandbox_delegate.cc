@@ -55,7 +55,9 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
+#if BUILDFLAG(ENABLE_PLUGINS)
       sandbox_type_ == sandbox::policy::SandboxType::kPpapi ||
+#endif
 #if defined(OS_FUCHSIA)
       sandbox_type_ == sandbox::policy::SandboxType::kVideoCapture ||
 #endif

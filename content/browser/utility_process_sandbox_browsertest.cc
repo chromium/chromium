@@ -118,7 +118,9 @@ class UtilityProcessSandboxBrowserTest
         break;
 
       case SandboxType::kCdm:
+#if BUILDFLAG(ENABLE_PLUGINS)
       case SandboxType::kPpapi:
+#endif
       case SandboxType::kPrintCompositor:
       case SandboxType::kService:
       case SandboxType::kUtility: {

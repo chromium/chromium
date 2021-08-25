@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -65,8 +66,10 @@ enum class SandboxType {
   // GPU process.
   kGpu,
 
+#if BUILDFLAG(ENABLE_PLUGINS)
   // The PPAPI plugin process.
   kPpapi,
+#endif
 
   // The network service process.
   kNetwork,

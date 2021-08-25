@@ -38,8 +38,6 @@ const char* ProcessNameFromSandboxType(
       return "audio";
     case sandbox::policy::SandboxType::kCdm:
       return "cdm";
-    case sandbox::policy::SandboxType::kPpapi:
-      return "ppapi";
     case sandbox::policy::SandboxType::kPrintCompositor:
       return "print-compositor";
     case sandbox::policy::SandboxType::kSpeechRecognition:

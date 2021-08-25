@@ -528,8 +528,11 @@ void SandboxLinux::SealSandbox() {
 }
 
 void SandboxLinux::CheckForBrokenPromises(SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kRenderer &&
-      sandbox_type != SandboxType::kPpapi) {
+  if (sandbox_type != SandboxType::kRenderer
+#if BUILDFLAG(ENABLE_PLUGINS)
+      && sandbox_type != SandboxType::kPpapi
+#endif
+  ) {
     return;
   }
   // Make sure that any promise made with GetStatus() wasn't broken.

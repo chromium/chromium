@@ -127,7 +127,6 @@ const SandboxConfig* GetConfigForSandboxType(SandboxType type) {
     // Remaining types receive no-access-to-anything.
     case SandboxType::kAudio:
     case SandboxType::kCdm:
-    case SandboxType::kPpapi:
     case SandboxType::kPrintCompositor:
     case SandboxType::kService:
     case SandboxType::kSpeechRecognition:

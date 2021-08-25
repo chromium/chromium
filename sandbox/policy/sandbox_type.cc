@@ -44,7 +44,9 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kRenderer:
     case SandboxType::kUtility:
     case SandboxType::kGpu:
+#if BUILDFLAG(ENABLE_PLUGINS)
     case SandboxType::kPpapi:
+#endif
     case SandboxType::kCdm:
 #if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
@@ -99,6 +101,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kGpuProcess);
       break;
+#if BUILDFLAG(ENABLE_PLUGINS)
     case SandboxType::kPpapi:
       if (command_line->GetSwitchValueASCII(switches::kProcessType) ==
           switches::kUtilityProcess) {
@@ -109,6 +112,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
                switches::kPpapiPluginProcess);
       }
       break;
+#endif
     case SandboxType::kUtility:
     case SandboxType::kNetwork:
     case SandboxType::kCdm:
@@ -186,8 +190,10 @@ SandboxType SandboxTypeFromCommandLine(const base::CommandLine& command_line) {
     return SandboxType::kGpu;
   }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
   if (process_type == switches::kPpapiPluginProcess)
     return SandboxType::kPpapi;
+#endif
 
   // NaCl tests on all platforms use the loader process.
   if (process_type == switches::kNaClLoaderProcess) {
@@ -228,8 +234,10 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
       return switches::kNoneSandbox;
     case SandboxType::kNetwork:
       return switches::kNetworkSandbox;
+#if BUILDFLAG(ENABLE_PLUGINS)
     case SandboxType::kPpapi:
       return switches::kPpapiSandbox;
+#endif
     case SandboxType::kCdm:
       return switches::kCdmSandbox;
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -316,8 +324,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
   }
   if (sandbox_string == switches::kNetworkSandbox)
     return SandboxType::kNetwork;
+#if BUILDFLAG(ENABLE_PLUGINS)
   if (sandbox_string == switches::kPpapiSandbox)
     return SandboxType::kPpapi;
+#endif
   if (sandbox_string == switches::kCdmSandbox)
     return SandboxType::kCdm;
 #if BUILDFLAG(ENABLE_PRINTING)
