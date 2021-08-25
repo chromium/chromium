@@ -228,6 +228,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
+  // Callbacks for Animations
+  void OnAnimationAborted();
+  void OnAnimationEnded();
+
   // Applies transformations to the |layer()| to animate the view when
   // SetVisible(false) is called.
   void HideAnimation();
