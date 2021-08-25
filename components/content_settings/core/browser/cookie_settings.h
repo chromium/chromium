@@ -24,6 +24,10 @@
 class GURL;
 class PrefService;
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace content_settings {
 
 // This enum is used in prefs, do not change values.
@@ -127,7 +131,7 @@ class CookieSettings : public CookieSettingsBase,
                                        ContentSetting* setting) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const GURL& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies) const override;
 
   // Detaches the |CookieSettings| from |PrefService|. This methods needs to be
   // called before destroying the service. Afterwards, only const methods can be

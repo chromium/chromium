@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 
 #if defined(OS_IOS)
@@ -134,8 +135,8 @@ void CookieSettings::GetSettingForLegacyCookieAccess(
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
-    const GURL& site_for_cookies) const {
-  return site_for_cookies.SchemeIs(kChromeUIScheme) &&
+    const net::SiteForCookies& site_for_cookies) const {
+  return site_for_cookies.RepresentativeUrl().SchemeIs(kChromeUIScheme) &&
          url.SchemeIsCryptographic();
 }
 

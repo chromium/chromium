@@ -25,6 +25,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -355,8 +356,8 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(auction_party, GURL(),
-                                                     top_frame_origin);
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      auction_party, net::SiteForCookies(), top_frame_origin);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
@@ -368,8 +369,8 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
-    if (cookie_settings_->IsFullCookieAccessAllowed(party, GURL(),
-                                                    top_frame_origin)) {
+    if (cookie_settings_->IsFullCookieAccessAllowed(
+            party, net::SiteForCookies(), top_frame_origin)) {
       allowed_parties.push_back(party);
     }
   }

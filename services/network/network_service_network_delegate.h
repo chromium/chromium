@@ -15,6 +15,10 @@
 #include "services/network/network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace network {
 
 // TODO(mmenke):  Look into merging this with URLLoader, and removing the

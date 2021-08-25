@@ -26,6 +26,7 @@
 
 namespace net {
 class CookieStore;
+class SiteForCookies;
 }  // namespace net
 
 namespace network {

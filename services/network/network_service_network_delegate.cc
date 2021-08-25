@@ -199,7 +199,7 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
   if (!network_context_->cookie_manager()
            ->cookie_settings()
            .AnnotateAndMoveUserBlockedCookies(
-               request.url(), request.site_for_cookies().RepresentativeUrl(),
+               request.url(), request.site_for_cookies(),
                request.isolation_info().top_frame_origin().has_value()
                    ? &request.isolation_info().top_frame_origin().value()
                    : nullptr,
@@ -236,7 +236,7 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
   bool allowed =
       allowed_from_caller &&
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
-          cookie, request.url(), request.site_for_cookies().RepresentativeUrl(),
+          cookie, request.url(), request.site_for_cookies(),
           request.isolation_info().top_frame_origin());
   if (!allowed)
     return false;
@@ -258,8 +258,8 @@ bool NetworkServiceNetworkDelegate::OnForcePrivacyMode(
     net::SamePartyContext::Type same_party_context_type) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsPrivacyModeEnabled(url, site_for_cookies.RepresentativeUrl(),
-                            top_frame_origin, same_party_context_type);
+      .IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
+                            same_party_context_type);
 }
 
 bool NetworkServiceNetworkDelegate::
