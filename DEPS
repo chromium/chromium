@@ -234,6 +234,10 @@ vars = {
   # and whatever else without interference from each other.
   'v8_revision': 'c0333fd70f844cb5f36c263494c4fd3577c06bc9',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling swarming_client
+  # and whatever else without interference from each other.
+  'swarming_revision': 'a32a1607f6093d338f756c7e7c7b4333b0c50c9c',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
   'angle_revision': '28453e119e1b1ad6915a8e2e29d74c3074e7a811',
@@ -1669,6 +1673,9 @@ deps = {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
   },
+
+  'src/tools/swarming_client':
+    Var('chromium_git') + '/infra/luci/client-py.git' + '@' +  Var('swarming_revision'),
 
   'src/v8':
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
