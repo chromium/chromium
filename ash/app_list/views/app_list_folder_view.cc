@@ -46,9 +46,9 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/painter.h"
-#include "ui/views/view_model.h"
-#include "ui/views/view_model_utils.h"
 
 namespace ash {
 
@@ -57,12 +57,7 @@ namespace {
 constexpr int kFolderHeaderPadding = 12;
 constexpr int kOnscreenKeyboardTopPadding = 16;
 
-// Indexes of interesting views in ViewModel of AppListFolderView.
-constexpr int kIndexBackground = 0;
-constexpr int kIndexContentsContainer = 1;
-constexpr int kIndexChildItems = 2;
-constexpr int kIndexFolderHeader = 3;
-constexpr int kIndexPageSwitcher = 4;
+constexpr int kTileSpacingInFolder = 8;
 
 // Duration for fading in the target page when opening
 // or closing a folder, and the duration for the top folder icon animation
@@ -158,15 +153,11 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
         show_(show),
         animation_(this),
         folder_view_(folder_view) {
+    SkColor title_color = AppListColorProvider::Get()->GetAppListItemTextColor(
+        /*is_in_folder=*/false);
     // Calculate the source and target states.
-    from_color_ = show_
-                      ? AppListColorProvider::Get()->GetFolderTitleTextColor(
-                            folder_view_->GetAppListConfig().grid_title_color())
-                      : SK_ColorTRANSPARENT;
-    to_color_ = show_
-                    ? SK_ColorTRANSPARENT
-                    : AppListColorProvider::Get()->GetFolderTitleTextColor(
-                          folder_view_->GetAppListConfig().grid_title_color());
+    from_color_ = show_ ? title_color : SK_ColorTRANSPARENT;
+    to_color_ = show_ ? SK_ColorTRANSPARENT : title_color;
 
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(kFolderTransitionDuration);
@@ -458,10 +449,11 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
                                      AppListViewDelegate* view_delegate)
     : container_view_(container_view),
       a11y_announcer_(a11y_announcer),
-      view_model_(new views::ViewModel),
       model_(model) {
   DCHECK(a11y_announcer_);
   DCHECK(view_delegate);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
   // The background's corner radius cannot be changed in the same layer of the
   // contents container using layer animation, so use another layer to perform
   // such changes.
@@ -469,28 +461,33 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   background_view_->layer()->SetColor(SK_ColorTRANSPARENT);
   background_view_->layer()->SetFillsBoundsOpaquely(false);
-  view_model_->Add(background_view_, kIndexBackground);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  view_model_->Add(contents_container_, kIndexContentsContainer);
 
   items_grid_view_ = contents_container_->AddChildView(
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer, this));
+  items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
+                                        kTileSpacingInFolder / 2);
   items_grid_view_->Init();
   items_grid_view_->SetModel(model);
-  view_model_->Add(items_grid_view_, kIndexChildItems);
 
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
-  view_model_->Add(folder_header_view_, kIndexFolderHeader);
+  folder_header_view_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets(kFolderHeaderPadding, 0));
 
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view_->pagination_model(), false /* vertical */,
           view_delegate->IsInTabletMode(),
           AppListColorProvider::Get()->GetFolderBackgroundColor()));
-  view_model_->Add(page_switcher_, kIndexPageSwitcher);
+
+  contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(gfx::Insets(kTileSpacingInFolder))
+      .SetCollapseMargins(true)
+      .SetChildViewIgnoredByLayout(page_switcher_, true);
 
   model_->AddObserver(this);
 }
@@ -555,19 +552,30 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   contents_container_animation_->ScheduleAnimation();
 }
 
-gfx::Size AppListFolderView::CalculatePreferredSize() const {
-  gfx::Size size = items_grid_view_->GetTileGridSizeWithPadding();
-  gfx::Size header_size = folder_header_view_->GetPreferredSize();
-  const int folder_padding = GetAppListConfig().grid_tile_spacing_in_folder();
-  size.Enlarge(folder_padding * 2, folder_padding + kFolderHeaderPadding * 2 +
-                                       header_size.height());
-  return size;
+void AppListFolderView::Layout() {
+  views::View::Layout();
+
+  // Position page switcher independently of the layout manager, as its
+  // position does not fit with vertical layout alignment (it's expected to
+  // float over the header view in the bottom right corner).
+  const gfx::Size page_switcher_size = page_switcher_->GetPreferredSize();
+  const gfx::Rect folder_header_bounds = folder_header_view_->bounds();
+  const int page_switcher_x =
+      folder_header_bounds.right() - page_switcher_size.width();
+  // The page switcher has a different height than the folder header, but it
+  // still needs to be aligned with it.
+  const int page_switcher_y =
+      folder_header_bounds.y() -
+      (page_switcher_size.height() - folder_header_bounds.height()) / 2;
+  page_switcher_->SetBoundsRect(gfx::Rect(
+      gfx::Point(page_switcher_x, page_switcher_y), page_switcher_size));
+
+  background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
 }
 
-void AppListFolderView::Layout() {
-  CalculateIdealBounds();
-  views::ViewModelUtils::SetViewBoundsToIdealBounds(*view_model_);
-  background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+void AppListFolderView::ChildPreferredSizeChanged(views::View* child) {
+  UpdatePreferredBounds();
+  PreferredSizeChanged();
 }
 
 bool AppListFolderView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -605,7 +613,8 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
 void AppListFolderView::UpdatePreferredBounds() {
   const AppListItemView* activated_folder_item_view =
       GetActivatedFolderItemView();
-  DCHECK(activated_folder_item_view);
+  if (!activated_folder_item_view)
+    return;
 
   // Calculate the folder icon's bounds relative to AppsContainerView.
   gfx::RectF rect(activated_folder_item_view->GetIconBounds());
@@ -763,8 +772,8 @@ void AppListFolderView::HideViewImmediately() {
   if (activated_folder_item_view) {
     activated_folder_item_view->SetIconVisible(true);
     activated_folder_item_view->title()->SetEnabledColor(
-        AppListColorProvider::Get()->GetFolderTitleTextColor(
-            GetAppListConfig().grid_title_color()));
+        AppListColorProvider::Get()->GetAppListItemTextColor(
+            /*is_in_folder=*/false));
     activated_folder_item_view->title()->SetVisible(true);
   }
 }
@@ -800,16 +809,6 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
                                                             key_code);
 }
 
-void AppListFolderView::UpdateFolderBounds() {
-  if (!GetActivatedFolderItemView())
-    return;
-
-  // Update the bounds of the folder view and mark the layout invalidated for
-  // relayout. Note that there is no animation when the folder view shrinks.
-  UpdatePreferredBounds();
-  PreferredSizeChanged();
-}
-
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
 }
@@ -821,43 +820,6 @@ void AppListFolderView::SetItemName(AppListFolderItem* item,
 
 const AppListConfig& AppListFolderView::GetAppListConfig() const {
   return items_grid_view_->GetAppListConfig();
-}
-
-void AppListFolderView::CalculateIdealBounds() {
-  gfx::Rect rect(GetContentsBounds());
-  if (rect.IsEmpty())
-    return;
-
-  view_model_->set_ideal_bounds(kIndexBackground, GetContentsBounds());
-  view_model_->set_ideal_bounds(kIndexContentsContainer, GetContentsBounds());
-
-  const int folder_padding = GetAppListConfig().grid_tile_spacing_in_folder();
-  rect.Inset(folder_padding, folder_padding);
-
-  // Calculate bounds for items grid view.
-  gfx::Rect grid_frame(rect);
-  grid_frame.set_height(items_grid_view_->GetPreferredSize().height());
-  view_model_->set_ideal_bounds(kIndexChildItems, grid_frame);
-
-  // Calculate bounds for folder header view.
-  gfx::Rect header_frame(rect);
-  header_frame.set_y(GetContentsBounds().bottom() - kFolderHeaderPadding -
-                     folder_header_view_->GetPreferredSize().height());
-  header_frame.set_height(folder_header_view_->GetPreferredSize().height());
-  view_model_->set_ideal_bounds(kIndexFolderHeader, header_frame);
-
-  // Calculate bounds for page_switcher.
-  gfx::Rect page_switcher_frame(rect);
-  gfx::Size page_switcher_size = page_switcher_->GetPreferredSize();
-  page_switcher_frame.set_x(page_switcher_frame.right() -
-                            page_switcher_size.width());
-  // The page switcher has a different height than the folder header, but it
-  // still needs to be aligned with it.
-  page_switcher_frame.set_y(
-      header_frame.y() -
-      (page_switcher_size.height() - header_frame.height()) / 2);
-  page_switcher_frame.set_size(page_switcher_size);
-  view_model_->set_ideal_bounds(kIndexPageSwitcher, page_switcher_frame);
 }
 
 ui::Compositor* AppListFolderView::GetCompositor() {

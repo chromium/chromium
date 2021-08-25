@@ -72,8 +72,7 @@ SkColor TestAppListColorProvider::GetSearchBoxIconColor(
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetFolderTitleTextColor(
-    SkColor default_color) const {
+SkColor TestAppListColorProvider::GetFolderTitleTextColor() const {
   return gfx::kGoogleGrey200;
 }
 

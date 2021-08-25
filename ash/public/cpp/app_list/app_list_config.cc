@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "ui/gfx/color_palette.h"
 
 namespace ash {
 
@@ -264,14 +263,12 @@ AppListConfig::AppListConfig(AppListConfigType type)
       scale_y_(1),
       grid_tile_width_(GridTileWidthForType(type)),
       grid_tile_height_(GridTileHeightForType(type)),
-      grid_tile_spacing_(0),
       grid_icon_dimension_(GridIconDimensionForType(type)),
       grid_icon_bottom_padding_(24),
       grid_title_top_padding_(GridTitleTopPaddingForType(type)),
       grid_title_bottom_padding_(GridTitleBottomPaddingForType(type)),
       grid_title_horizontal_padding_(GridTitleHorizontalPaddingForType(type)),
       grid_title_width_(grid_tile_width_),
-      grid_title_color_(SK_ColorWHITE),
       grid_focus_dimension_(GridFocusDimensionForType(type)),
       grid_focus_corner_radius_(GridFocusCornerRadiusForType(type)),
       grid_fadeout_zone_height_(24),
@@ -304,11 +301,9 @@ AppListConfig::AppListConfig(AppListConfigType type)
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
       folder_dropping_circle_radius_(folder_bubble_radius_),
       page_flip_zone_size_(20),
-      grid_tile_spacing_in_folder_(8),
       blur_radius_(30),
       max_folder_pages_(3),
-      max_folder_items_per_page_(16),
-      max_folder_name_chars_(28) {
+      max_folder_items_per_page_(16) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }
@@ -327,7 +322,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
               (min_y_scale ? MinYScaleHeightAdjustmentForType(type_) : 0),
           scale_y,
           1)),
-      grid_tile_spacing_(base_config.grid_tile_spacing_),
       grid_icon_dimension_(MinScale(base_config.grid_icon_dimension_,
                                     scale_x,
                                     inner_tile_scale_y)),
@@ -348,7 +342,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       grid_title_horizontal_padding_(
           MinScale(base_config.grid_title_horizontal_padding_, scale_x, 1)),
       grid_title_width_(base_config.grid_tile_width_),
-      grid_title_color_(base_config.grid_title_color_),
       grid_focus_dimension_(MinScale(base_config.grid_focus_dimension_,
                                      scale_x,
                                      inner_tile_scale_y)),
@@ -414,14 +407,9 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                    scale_x,
                    inner_tile_scale_y)),
       page_flip_zone_size_(base_config.page_flip_zone_size_),
-      grid_tile_spacing_in_folder_(
-          MinScale(base_config.grid_tile_spacing_in_folder_,
-                   scale_x,
-                   inner_tile_scale_y)),
       blur_radius_(base_config.blur_radius_),
       max_folder_pages_(base_config.max_folder_pages_),
-      max_folder_items_per_page_(base_config.max_folder_items_per_page_),
-      max_folder_name_chars_(base_config.max_folder_name_chars_) {
+      max_folder_items_per_page_(base_config.max_folder_items_per_page_) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }

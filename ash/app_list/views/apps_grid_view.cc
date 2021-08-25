@@ -338,6 +338,13 @@ void AppsGridView::SetLayout(int cols, int rows_per_page) {
   rows_per_page_ = rows_per_page;
 }
 
+void AppsGridView::SetFixedTilePadding(int horizontal_padding,
+                                       int vertical_padding) {
+  has_fixed_tile_padding_ = true;
+  horizontal_tile_padding_ = horizontal_padding;
+  vertical_tile_padding_ = vertical_padding;
+}
+
 gfx::Size AppsGridView::GetTotalTileSize() const {
   gfx::Rect rect(GetTileViewSize());
   rect.Inset(GetTilePadding());
@@ -348,18 +355,8 @@ gfx::Size AppsGridView::GetTileGridSizeWithPadding() const {
   gfx::Size size(GetTileViewSize());
   size.SetSize(size.width() * cols_, size.height() * rows_per_page_);
 
-  int horizontal_padding = horizontal_tile_padding_ * 2;
-  int vertical_padding = vertical_tile_padding_ * 2;
-
-  if (folder_delegate_) {
-    const int tile_padding_in_folder =
-        GetAppListConfig().grid_tile_spacing_in_folder();
-    horizontal_padding = tile_padding_in_folder;
-    vertical_padding = tile_padding_in_folder;
-  }
-
-  size.Enlarge(horizontal_padding * (cols_ - 1),
-               vertical_padding * (rows_per_page_ - 1));
+  size.Enlarge(horizontal_tile_padding_ * 2 * (cols_ - 1),
+               vertical_tile_padding_ * 2 * (rows_per_page_ - 1));
   return size;
 }
 
@@ -904,8 +901,7 @@ void AppsGridView::Update() {
   UpdateColsAndRowsForFolder();
   UpdatePaging();
   UpdatePulsingBlockViews();
-  Layout();
-  SchedulePaint();
+  InvalidateLayout();
 
   if (!folder_delegate_)
     RecordPageMetrics();
@@ -1619,9 +1615,8 @@ void AppsGridView::UpdateColsAndRowsForFolder() {
   rows_per_page_ = (items_in_one_page - 1) / cols_ + 1;
 
   // Update the folder bounds if the number of columns or rows changed.
-  if (prev_cols != cols_ || prev_rows != rows_per_page_) {
-    folder_delegate_->UpdateFolderBounds();
-  }
+  if (prev_cols != cols_ || prev_rows != rows_per_page_)
+    PreferredSizeChanged();
 }
 
 void AppsGridView::DispatchDragEventForReparent(Pointer pointer,

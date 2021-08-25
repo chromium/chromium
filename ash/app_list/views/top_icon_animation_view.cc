@@ -49,7 +49,8 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
       grid_->GetAppListConfig().app_title_max_line_height());
   title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_label->SetEnabledColor(
-      AppListColorProvider::Get()->GetFolderTitleTextColor(SK_ColorBLACK));
+      AppListColorProvider::Get()->GetAppListItemTextColor(
+          /*is_in_folder=*/true));
   title_label->SetText(title);
   if (item_in_folder_icon_) {
     // The title's opacity of the item should be changed separately if it is in

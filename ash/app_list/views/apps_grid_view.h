@@ -114,6 +114,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   int cols() const { return cols_; }
   int rows_per_page() const { return rows_per_page_; }
 
+  // Sets padding for apps grid items to use during layout if fixed padding
+  // should be used. Otherwise, for paged apps grid, the padding will be
+  // calculated to evenly space the items within the current apps grid view
+  // bounds.
+  void SetFixedTilePadding(int horizontal_tile_padding,
+                           int vertical_tile_padding);
+
   // Returns the size of a tile view including its padding.
   gfx::Size GetTotalTileSize() const;
 
@@ -479,6 +486,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Tile spacing between the tile views.
   int horizontal_tile_padding_ = 0;
   int vertical_tile_padding_ = 0;
+
+  // Whether tile padding within the apps grid is fixed.
+  bool has_fixed_tile_padding_ = false;
 
   // True if an extra page is opened after the user drags an app to the bottom
   // of last page with intention to put it in a new page. This is only used for

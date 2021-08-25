@@ -21,7 +21,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
@@ -79,8 +78,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
     set_placeholder_text_color(
         AppListColorProvider::Get()->GetFolderHintTextColor());
-    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor(
-        gfx::kGoogleGrey700));
+    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor());
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
@@ -98,8 +96,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         GetFolderBackgroundColor(is_active), kFolderNameBorderRadius));
 
     AppListColorProvider* color_provider = AppListColorProvider::Get();
-    const SkColor text_color =
-        color_provider->GetFolderTitleTextColor(gfx::kGoogleGrey700);
+    const SkColor text_color = color_provider->GetFolderTitleTextColor();
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
     SetSelectionBackgroundColor(color_provider->GetFolderNameSelectionColor());

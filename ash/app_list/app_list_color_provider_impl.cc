@@ -130,10 +130,10 @@ SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
       SkColorSetA(gfx::kGoogleGrey100, 0x7A));
 }
 
-SkColor AppListColorProviderImpl::GetFolderTitleTextColor(
-    SkColor default_color) const {
+SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
   return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary, default_color);
+      AshColorProvider::ContentLayerType::kTextColorPrimary,
+      gfx::kGoogleGrey700);
 }
 
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {

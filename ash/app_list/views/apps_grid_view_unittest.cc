@@ -212,7 +212,6 @@ class TestAppsGridViewFolderDelegate : public AppsGridViewFolderDelegate {
 
   void HandleKeyboardReparent(AppListItemView* reparented_item,
                               ui::KeyboardCode key_code) override {}
-  void UpdateFolderBounds() override {}
 };
 
 class AppsGridViewTest : public views::ViewsTestBase {

@@ -498,11 +498,6 @@ gfx::Size PagedAppsGridView::GetTileViewSize() const {
 }
 
 gfx::Insets PagedAppsGridView::GetTilePadding() const {
-  if (IsInFolder()) {
-    const int tile_padding_in_folder =
-        GetAppListConfig().grid_tile_spacing_in_folder() / 2;
-    return gfx::Insets(-tile_padding_in_folder, -tile_padding_in_folder);
-  }
   return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
 }
 
@@ -1167,6 +1162,9 @@ void PagedAppsGridView::SetHighlightedBackgroundCard(int new_highlighted_page) {
 }
 
 void PagedAppsGridView::UpdateTilePadding() {
+  if (has_fixed_tile_padding_)
+    return;
+
   gfx::Size content_size = GetContentsBounds().size();
   const gfx::Size tile_size = GetTileViewSize();
   if (cardified_state_)
@@ -1177,6 +1175,7 @@ void PagedAppsGridView::UpdateTilePadding() {
       cols() > 1 ? (content_size.width() - cols() * tile_size.width()) /
                        ((cols() - 1) * 2)
                  : 0;
+
   vertical_tile_padding_ =
       rows_per_page() > 1
           ? (content_size.height() - rows_per_page() * tile_size.height()) /

@@ -73,8 +73,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void CloseFolderPage();
 
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
+  void ChildPreferredSizeChanged(View* child) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // AppListModelObserver
@@ -142,13 +142,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
   bool IsOEMFolder() const override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
-  void UpdateFolderBounds() override;
 
   const AppListConfig& GetAppListConfig() const;
 
  private:
-  void CalculateIdealBounds();
-
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
@@ -168,8 +165,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   FolderHeaderView* folder_header_view_;  // Owned by views hierarchy.
   PagedAppsGridView* items_grid_view_;    // Owned by views hierarchy.
   PageSwitcher* page_switcher_;           // Owned by views hierarchy.
-
-  std::unique_ptr<views::ViewModel> view_model_;
 
   AppListModel* model_;                       // Not owned.
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.

@@ -244,7 +244,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   float scale_y() const { return scale_y_; }
   int grid_tile_width() const { return grid_tile_width_; }
   int grid_tile_height() const { return grid_tile_height_; }
-  int grid_tile_spacing() const { return grid_tile_spacing_; }
   int grid_icon_dimension() const { return grid_icon_dimension_; }
   int grid_icon_bottom_padding() const { return grid_icon_bottom_padding_; }
   int grid_title_top_padding() const { return grid_title_top_padding_; }
@@ -255,7 +254,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int grid_title_width() const { return grid_title_width_; }
   int grid_focus_dimension() const { return grid_focus_dimension_; }
   int grid_focus_corner_radius() const { return grid_focus_corner_radius_; }
-  SkColor grid_title_color() const { return grid_title_color_; }
   int grid_fadeout_zone_height() const { return grid_fadeout_zone_height_; }
   int grid_fadeout_mask_height() const { return grid_fadeout_mask_height_; }
   int grid_to_page_switcher_margin() const {
@@ -305,15 +303,11 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return folder_dropping_circle_radius_;
   }
   int page_flip_zone_size() const { return page_flip_zone_size_; }
-  int grid_tile_spacing_in_folder() const {
-    return grid_tile_spacing_in_folder_;
-  }
   int blur_radius() const { return blur_radius_; }
   size_t max_folder_pages() const { return max_folder_pages_; }
   size_t max_folder_items_per_page() const {
     return max_folder_items_per_page_;
   }
-  size_t max_folder_name_chars() const { return max_folder_name_chars_; }
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -366,9 +360,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   const int grid_tile_width_;
   const int grid_tile_height_;
 
-  // The spacing between tile views in apps grid view.
-  const int grid_tile_spacing_;
-
   // The icon dimension of tile views in apps grid view.
   const int grid_icon_dimension_;
 
@@ -381,9 +372,8 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   const int grid_title_bottom_padding_;
   const int grid_title_horizontal_padding_;
 
-  // The title width and color of tile views in apps grid view.
+  // The title width of tile views in apps grid view.
   const int grid_title_width_;
-  const SkColor grid_title_color_;
 
   // The focus dimension and corner radius of tile views in apps grid view.
   const int grid_focus_dimension_;
@@ -472,9 +462,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // Width in pixels of the area on the sides that triggers a page flip.
   const int page_flip_zone_size_;
 
-  // The spacing between tile views in folder.
-  const int grid_tile_spacing_in_folder_;
-
   // The blur radius used in the app list.
   const int blur_radius_;
 
@@ -483,9 +470,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Max items per page allowed in a folder.
   const size_t max_folder_items_per_page_;
-
-  // Maximum length of the folder name in chars.
-  const size_t max_folder_name_chars_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListConfig);
 };
