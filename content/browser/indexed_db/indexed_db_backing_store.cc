@@ -1134,8 +1134,8 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
   if (IsPathTooLong(filesystem.get(), info_path))
     return false;
 
-  base::DictionaryValue root_dict;
-  root_dict.SetString("message", message);
+  base::Value root_dict(base::Value::Type::DICTIONARY);
+  root_dict.SetStringKey("message", message);
   std::string output_js;
 
   base::JSONWriter::Write(root_dict, &output_js);

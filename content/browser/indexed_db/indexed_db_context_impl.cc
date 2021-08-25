@@ -341,27 +341,26 @@ void IndexedDBContextImpl::GetAllStorageKeysDetails(
 
   std::sort(storage_keys.begin(), storage_keys.end());
 
-  base::ListValue list;
+  base::Value list(base::Value::Type::LIST);
   for (const auto& storage_key : storage_keys) {
-    std::unique_ptr<base::DictionaryValue> info(
-        std::make_unique<base::DictionaryValue>());
+    base::Value info(base::Value::Type::DICTIONARY);
     // TODO(https://crbug.com/1199077): Serialize storage key directly
     // once supported by OriginDetails.
-    info->SetString("url", storage_key.origin().Serialize());
-    info->SetDouble("size",
-                    static_cast<double>(GetStorageKeyDiskUsage(storage_key)));
-    info->SetDouble("last_modified",
-                    GetStorageKeyLastModified(storage_key).ToJsTime());
+    info.SetStringKey("url", storage_key.origin().Serialize());
+    info.SetDoubleKey("size",
+                      static_cast<double>(GetStorageKeyDiskUsage(storage_key)));
+    info.SetDoubleKey("last_modified",
+                      GetStorageKeyLastModified(storage_key).ToJsTime());
 
-    auto paths = std::make_unique<base::ListValue>();
+    base::Value paths(base::Value::Type::LIST);
     if (!is_incognito()) {
       for (const base::FilePath& path : GetStoragePaths(storage_key))
-        paths->AppendString(path.AsUTF8Unsafe());
+        paths.Append(path.AsUTF8Unsafe());
     } else {
-      paths->AppendString("N/A");
+      paths.Append("N/A");
     }
-    info->Set("paths", std::move(paths));
-    info->SetDouble("connection_count", GetConnectionCountSync(storage_key));
+    info.SetKey("paths", std::move(paths));
+    info.SetDoubleKey("connection_count", GetConnectionCountSync(storage_key));
 
     // This ends up being O(NlogN), where N = number of open databases. We
     // iterate over all open databases to extract just those in the storage_key,
@@ -374,88 +373,83 @@ void IndexedDBContextImpl::GetAllStorageKeysDetails(
     std::vector<IndexedDBDatabase*> databases =
         indexeddb_factory_->GetOpenDatabasesForStorageKey(storage_key);
     // TODO(jsbell): Sort by name?
-    std::unique_ptr<base::ListValue> database_list(
-        std::make_unique<base::ListValue>());
+    base::Value database_list(base::Value::Type::LIST);
 
     for (IndexedDBDatabase* db : databases) {
-      std::unique_ptr<base::DictionaryValue> db_info(
-          std::make_unique<base::DictionaryValue>());
+      base::Value db_info(base::Value::Type::DICTIONARY);
 
-      db_info->SetString("name", db->name());
-      db_info->SetDouble("connection_count", db->ConnectionCount());
-      db_info->SetDouble("active_open_delete", db->ActiveOpenDeleteCount());
-      db_info->SetDouble("pending_open_delete", db->PendingOpenDeleteCount());
+      db_info.SetStringKey("name", db->name());
+      db_info.SetDoubleKey("connection_count", db->ConnectionCount());
+      db_info.SetDoubleKey("active_open_delete", db->ActiveOpenDeleteCount());
+      db_info.SetDoubleKey("pending_open_delete", db->PendingOpenDeleteCount());
 
-      std::unique_ptr<base::ListValue> transaction_list(
-          std::make_unique<base::ListValue>());
+      base::Value transaction_list(base::Value::Type::LIST);
 
       for (IndexedDBConnection* connection : db->connections()) {
         for (const auto& transaction_id_pair : connection->transactions()) {
           const auto* transaction = transaction_id_pair.second.get();
-          std::unique_ptr<base::DictionaryValue> transaction_info(
-              std::make_unique<base::DictionaryValue>());
+          base::Value transaction_info(base::Value::Type::DICTIONARY);
 
           switch (transaction->mode()) {
             case blink::mojom::IDBTransactionMode::ReadOnly:
-              transaction_info->SetString("mode", "readonly");
+              transaction_info.SetStringKey("mode", "readonly");
               break;
             case blink::mojom::IDBTransactionMode::ReadWrite:
-              transaction_info->SetString("mode", "readwrite");
+              transaction_info.SetStringKey("mode", "readwrite");
               break;
             case blink::mojom::IDBTransactionMode::VersionChange:
-              transaction_info->SetString("mode", "versionchange");
+              transaction_info.SetStringKey("mode", "versionchange");
               break;
           }
 
           switch (transaction->state()) {
             case IndexedDBTransaction::CREATED:
-              transaction_info->SetString("status", "blocked");
+              transaction_info.SetStringKey("status", "blocked");
               break;
             case IndexedDBTransaction::STARTED:
               if (transaction->diagnostics().tasks_scheduled > 0)
-                transaction_info->SetString("status", "running");
+                transaction_info.SetStringKey("status", "running");
               else
-                transaction_info->SetString("status", "started");
+                transaction_info.SetStringKey("status", "started");
               break;
             case IndexedDBTransaction::COMMITTING:
-              transaction_info->SetString("status", "committing");
+              transaction_info.SetStringKey("status", "committing");
               break;
             case IndexedDBTransaction::FINISHED:
-              transaction_info->SetString("status", "finished");
+              transaction_info.SetStringKey("status", "finished");
               break;
           }
 
-          transaction_info->SetDouble("tid", transaction->id());
-          transaction_info->SetDouble(
+          transaction_info.SetDoubleKey("tid", transaction->id());
+          transaction_info.SetDoubleKey(
               "age",
               (base::Time::Now() - transaction->diagnostics().creation_time)
                   .InMillisecondsF());
-          transaction_info->SetDouble(
+          transaction_info.SetDoubleKey(
               "runtime",
               (base::Time::Now() - transaction->diagnostics().start_time)
                   .InMillisecondsF());
-          transaction_info->SetDouble(
+          transaction_info.SetDoubleKey(
               "tasks_scheduled", transaction->diagnostics().tasks_scheduled);
-          transaction_info->SetDouble(
+          transaction_info.SetDoubleKey(
               "tasks_completed", transaction->diagnostics().tasks_completed);
 
-          std::unique_ptr<base::ListValue> scope(
-              std::make_unique<base::ListValue>());
+          base::Value scope(base::Value::Type::LIST);
           for (const auto& id : transaction->scope()) {
             const auto& stores_it = db->metadata().object_stores.find(id);
             if (stores_it != db->metadata().object_stores.end())
-              scope->AppendString(stores_it->second.name);
+              scope.Append(stores_it->second.name);
           }
 
-          transaction_info->Set("scope", std::move(scope));
-          transaction_list->Append(std::move(transaction_info));
+          transaction_info.SetKey("scope", std::move(scope));
+          transaction_list.Append(std::move(transaction_info));
         }
       }
-      db_info->Set("transactions", std::move(transaction_list));
+      db_info.SetKey("transactions", std::move(transaction_list));
 
-      database_list->Append(std::move(db_info));
+      database_list.Append(std::move(db_info));
     }
-    info->Set("databases", std::move(database_list));
+    info.SetKey("databases", std::move(database_list));
     list.Append(std::move(info));
   }
 

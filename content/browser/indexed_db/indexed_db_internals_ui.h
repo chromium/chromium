@@ -12,14 +12,11 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace blink {
 class StorageKey;
@@ -52,11 +49,11 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void GetAllStorageKeys(const base::ListValue* args);
+  void GetAllStorageKeys(base::Value::ConstListView args);
   void OnStorageKeysReady(const base::Value& storage_keys,
                           const base::FilePath& path);
 
-  void DownloadStorageKeyData(const base::ListValue* args);
+  void DownloadStorageKeyData(base::Value::ConstListView args);
   void OnDownloadDataReady(const std::string& callback_id,
                            uint64_t connection_count,
                            bool success,
@@ -68,13 +65,13 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
                          download::DownloadItem* item,
                          download::DownloadInterruptReason interrupt_reason);
 
-  void ForceCloseStorageKey(const base::ListValue* args);
+  void ForceCloseStorageKey(base::Value::ConstListView args);
   void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
   bool GetStorageKeyControl(const base::FilePath& path,
                             const blink::StorageKey& storage_key,
                             storage::mojom::IndexedDBControl** control);
-  bool GetStorageKeyData(const base::ListValue* args,
+  bool GetStorageKeyData(base::Value::ConstListView args,
                          std::string* callback_id,
                          base::FilePath* path,
                          blink::StorageKey* storage_key,

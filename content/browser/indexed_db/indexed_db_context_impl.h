@@ -36,9 +36,9 @@
 
 namespace base {
 class Clock;
-class ListValue;
 class FilePath;
 class SequencedTaskRunner;
+class Value;
 }
 
 namespace blink {
@@ -180,7 +180,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool HasStorageKey(const blink::StorageKey& storage_key);
 
   // Used by IndexedDBInternalsUI to populate internals page.
-  base::ListValue* GetAllStorageKeysDetails();
+  base::Value* GetAllStorageKeysDetails();
 
   // GetStoragePaths returns all paths owned by this database, in arbitrary
   // order.

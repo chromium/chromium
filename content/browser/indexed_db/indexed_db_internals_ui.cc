@@ -67,17 +67,17 @@ IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 void IndexedDBInternalsHandler::RegisterMessages() {
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAllOrigins",
       base::BindRepeating(&IndexedDBInternalsHandler::GetAllStorageKeys,
                           base::Unretained(this)));
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "downloadOriginData",
       base::BindRepeating(&IndexedDBInternalsHandler::DownloadStorageKeyData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "forceClose",
       base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseStorageKey,
                           base::Unretained(this)));
@@ -87,7 +87,8 @@ void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void IndexedDBInternalsHandler::GetAllStorageKeys(const base::ListValue* args) {
+void IndexedDBInternalsHandler::GetAllStorageKeys(
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowJavascript();
@@ -137,27 +138,18 @@ static void FindControl(const base::FilePath& partition_path,
 }
 
 bool IndexedDBInternalsHandler::GetStorageKeyData(
-    const base::ListValue* args,
+    base::Value::ConstListView args,
     std::string* callback_id,
     base::FilePath* partition_path,
     blink::StorageKey* storage_key,
     storage::mojom::IndexedDBControl** control) {
-  std::string callback_string;
-  if (!args->GetString(0, &callback_string)) {
-    return false;
-  }
-  *callback_id = callback_string;
-
-  std::string path_string;
-  if (!args->GetString(1, &path_string))
-    return false;
-  *partition_path = base::FilePath::FromUTF8Unsafe(path_string);
-
-  std::string url_string;
-  if (!args->GetString(2, &url_string))
+  if (args.size() < 3)
     return false;
 
-  *storage_key = blink::StorageKey(url::Origin::Create(GURL(url_string)));
+  *callback_id = args[0].GetString();
+  *partition_path = base::FilePath::FromUTF8Unsafe(args[1].GetString());
+  *storage_key =
+      blink::StorageKey(url::Origin::Create(GURL(args[2].GetString())));
 
   return GetStorageKeyControl(*partition_path, *storage_key, control);
 }
@@ -182,7 +174,7 @@ bool IndexedDBInternalsHandler::GetStorageKeyControl(
 }
 
 void IndexedDBInternalsHandler::DownloadStorageKeyData(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
@@ -227,7 +219,7 @@ void IndexedDBInternalsHandler::DownloadStorageKeyData(
 }
 
 void IndexedDBInternalsHandler::ForceCloseStorageKey(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
