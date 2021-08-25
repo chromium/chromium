@@ -84,12 +84,12 @@ class FileRemoverTest : public ::testing::Test {
 
     VerifyRemoveNowFailure(path, remover);
     EXPECT_EQ(removal_status_updater->GetRemovalStatus(path),
-              REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+              REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
 
     removal_status_updater->Clear();
     VerifyRegisterPostRebootRemovalFailure(path, remover);
     EXPECT_EQ(removal_status_updater->GetRemovalStatus(path),
-              REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+              REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
 
     EXPECT_TRUE(base::PathExists(path));
     EXPECT_FALSE(IsFileRegisteredForPostRebootRemoval(path));
@@ -266,7 +266,7 @@ TEST_F(FileRemoverTest, RemoveNowDoesNotDeleteFolders) {
   VerifyRemoveNowFailure(subfolder_path, &default_file_remover_);
   EXPECT_EQ(
       FileRemovalStatusUpdater::GetInstance()->GetRemovalStatus(subfolder_path),
-      REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+      REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
   EXPECT_TRUE(base::PathExists(subfolder_path));
   EXPECT_TRUE(base::PathExists(file_path1));
 }
@@ -337,7 +337,7 @@ TEST_F(FileRemoverTest, RegisterPostRebootRemoval) {
   base::FilePath exe_path = PreFetchedPaths::GetInstance()->GetExecutablePath();
   VerifyRegisterPostRebootRemovalFailure(exe_path, &default_file_remover_);
   EXPECT_EQ(removal_status_updater->GetRemovalStatus(exe_path),
-            REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+            REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
   EXPECT_FALSE(reboot_required_);
 
   base::ScopedTempDir temp;
@@ -376,7 +376,7 @@ TEST_F(FileRemoverTest, RegisterPostRebootRemoval_Directories) {
   VerifyRegisterPostRebootRemovalFailure(subfolder_path,
                                          &default_file_remover_);
   EXPECT_EQ(removal_status_updater->GetRemovalStatus(subfolder_path),
-            REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+            REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
 
   // Put a file into the directory and ensure the non-empty directory still
   // isn't registered for removal.
@@ -386,7 +386,7 @@ TEST_F(FileRemoverTest, RegisterPostRebootRemoval_Directories) {
   VerifyRegisterPostRebootRemovalFailure(subfolder_path,
                                          &default_file_remover_);
   EXPECT_EQ(removal_status_updater->GetRemovalStatus(subfolder_path),
-            REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+            REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
 }
 
 namespace {

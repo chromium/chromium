@@ -270,7 +270,7 @@ void FileRemover::ValidateAndQuarantineFile(
       break;
     case DeletionValidationStatus::FORBIDDEN:
       removal_status_updater->UpdateRemovalStatus(
-          normalized_path, REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+          normalized_path, REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
       std::move(done_callback).Run(false);
       return;
     case DeletionValidationStatus::ALLOWED:
