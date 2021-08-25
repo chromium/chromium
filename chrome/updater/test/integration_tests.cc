@@ -221,7 +221,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
-TEST_F(IntegrationTest, QualifyUpdater) {
+TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
