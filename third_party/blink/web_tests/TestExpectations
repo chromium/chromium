@@ -5140,9 +5140,6 @@ crbug.com/1014810 [ Mac ] virtual/threaded/external/wpt/animation-worklet/statef
 # Temporarily disabled to a breakpoint non-determinism issue.
 crbug.com/1019613 http/tests/devtools/sources/debugger/debug-inlined-scripts.js [ Failure Pass ]
 
-# Temporarily disabled to land a DevTools change
-crbug.com/782442 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
-
 # First frame not always painted in time
 crbug.com/1024976 media/controls/paint-controls-webkit-appearance-none-custom-bg.html [ Failure Pass ]
 
