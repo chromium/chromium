@@ -92,6 +92,19 @@
   <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
   </message>
+  <if expr="use_titlecase">
+    <then>
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+        Accuracy Check
+      </message>
+    </then>
+    <else>
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+        Accuracy check
+      </message>
+    </else>
+  </if>
+
 
   <!-- Omnibox Pedals -->
   <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="The button text contents to suggest pedal action, clear browsing data.">

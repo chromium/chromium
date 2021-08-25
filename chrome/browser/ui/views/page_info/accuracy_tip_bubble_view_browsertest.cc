@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,10 +36,12 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
@@ -70,19 +74,7 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-
-    const base::FieldTrialParams accuracy_tips_params = {
-        {accuracy_tips::features::kSampleUrl.name,
-         GetUrl(kAccuracyTipUrl).spec()},
-        {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
-    const base::FieldTrialParams accuracy_survey_params = {
-        {accuracy_tips::features::kMinPromptCountRequiredForSurvey.name, "2"},
-        {"probability", "1.000"}};
-    feature_list_.InitWithFeaturesAndParameters(
-        {{safe_browsing::kAccuracyTipsFeature, accuracy_tips_params},
-         {accuracy_tips::features::kAccuracyTipsSurveyFeature,
-          accuracy_survey_params}},
-        {});
+    SetUpFeatureList(feature_list_);
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.
@@ -108,6 +100,21 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
+  virtual void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) {
+    const base::FieldTrialParams accuracy_tips_params = {
+        {accuracy_tips::features::kSampleUrl.name,
+         GetUrl(kAccuracyTipUrl).spec()},
+        {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
+    const base::FieldTrialParams accuracy_survey_params = {
+        {accuracy_tips::features::kMinPromptCountRequiredForSurvey.name, "2"},
+        {"probability", "1.000"}};
+    feature_list.InitWithFeaturesAndParameters(
+        {{safe_browsing::kAccuracyTipsFeature, accuracy_tips_params},
+         {accuracy_tips::features::kAccuracyTipsSurveyFeature,
+          accuracy_survey_params}},
+        {});
+  }
+
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -193,6 +200,12 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
   ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
   EXPECT_TRUE(IsUIShowing());
 
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  LocationBarView* location_bar_view = browser_view->GetLocationBarView();
+  EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
+  EXPECT_EQ(location_bar_view->location_icon_view()->GetText(),
+            l10n_util::GetStringUTF16(IDS_ACCURACY_CHECK_VERBOSE_STATE));
+
   auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
   views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
   // Simulate esc key pressed.
@@ -200,6 +213,9 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
   view->GetWidget()->OnKeyEvent(&key_event);
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
+
+  EXPECT_FALSE(location_bar_view->location_icon_view()->ShouldShowLabel());
+  EXPECT_TRUE(location_bar_view->location_icon_view()->GetText().empty());
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
@@ -252,6 +268,14 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
       AccuracyTipInteraction::kNoAction, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
+                       CloseBrowserWhileTipIsOpened) {
+  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  EXPECT_TRUE(IsUIShowing());
+
+  CloseAllBrowsers();
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
@@ -357,6 +381,43 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   base::RunLoop().RunUntilIdle();
   // ...and because of that, a survey won't be shown.
   EXPECT_FALSE(hats_service->hats_next_dialog_exists_for_testing());
+}
+
+class AccuracyTipBubbleViewHttpBrowserTest
+    : public AccuracyTipBubbleViewBrowserTest {
+ public:
+  GURL GetHttpUrl(const std::string& host) {
+    return embedded_test_server()->GetURL(host, "/title1.html");
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    AccuracyTipBubbleViewBrowserTest::SetUp();
+  }
+
+ private:
+  void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) override {
+    const base::FieldTrialParams accuraty_tips_params = {
+        {accuracy_tips::features::kSampleUrl.name,
+         GetHttpUrl(kAccuracyTipUrl).spec()},
+        {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
+    feature_list.InitWithFeaturesAndParameters(
+        {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params}}, {});
+  }
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewHttpBrowserTest,
+                       ShowOnBadUrlHttpNotSecure) {
+  ui_test_utils::NavigateToURL(browser(), GetHttpUrl(kAccuracyTipUrl));
+  EXPECT_FALSE(IsUIShowing());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  LocationBarView* location_bar_view = browser_view->GetLocationBarView();
+  EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
+  EXPECT_EQ(location_bar_view->location_icon_view()->GetText(),
+            l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE));
 }
 
 // Render test for accuracy tip ui.

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/command_updater.h"
@@ -83,6 +84,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
@@ -183,6 +185,12 @@ LocationBarView::LocationBarView(Browser* browser,
     geolocation_permission_observation_.Observe(
         g_browser_process->platform_part()->geolocation_manager());
 #endif
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature)) {
+      if (auto* accuracy_service =
+              AccuracyServiceFactory::GetForProfile(profile))
+        accuracy_service_observation_.Observe(accuracy_service);
+    }
   }
 }
 
@@ -877,6 +885,14 @@ LocationBarView::GetContentSettingBubbleModelDelegate() {
 void LocationBarView::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   UpdateContentSettingsIcons();
+}
+
+void LocationBarView::OnAccuracyTipShown() {
+  location_icon_view_->Update(/*suppress_animations=*/false);
+}
+
+void LocationBarView::OnAccuracyTipClosed() {
+  location_icon_view_->Update(/*suppress_animations=*/false);
 }
 
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {
