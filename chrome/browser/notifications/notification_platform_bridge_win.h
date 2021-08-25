@@ -12,6 +12,7 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -83,7 +84,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // Simulates a click/dismiss event. Only for use in testing.
   // Note: Ownership of |notification| and |args| is retained by the caller.
   void ForwardHandleEventForTesting(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       ABI::Windows::UI::Notifications::IToastNotification* notification,
       ABI::Windows::UI::Notifications::IToastActivatedEventArgs* args,
       const absl::optional<bool>& by_user);

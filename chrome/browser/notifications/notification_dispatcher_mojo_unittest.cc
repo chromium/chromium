@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -150,7 +151,7 @@ mac_notifications::mojom::NotificationActionInfoPtr
 CreateNotificationActionInfo() {
   auto meta = CreateNotificationMetadata();
   return mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
+      std::move(meta), NotificationOperation::kClick,
       /*button_index=*/-1, /*reply=*/absl::nullopt);
 }
 

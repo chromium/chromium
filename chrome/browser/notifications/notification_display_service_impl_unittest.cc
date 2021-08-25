@@ -18,6 +18,7 @@
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -324,7 +325,7 @@ TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
 
   // Emulate the user clicking on the "Snooze" action button.
   service().ProcessNotificationOperation(
-      NotificationCommon::OPERATION_CLICK,
+      NotificationOperation::kClick,
       NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
       kMuteNotificationId, /*action_index=*/0, /*reply=*/absl::nullopt,
       /*by_user=*/true);

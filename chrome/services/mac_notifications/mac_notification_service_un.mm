@@ -16,9 +16,9 @@
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "ui/gfx/image/image.h"
 
@@ -51,21 +51,21 @@ NotificationOperation GetNotificationOperationFromAction(
   if ([actionIdentifier isEqual:UNNotificationDismissActionIdentifier] ||
       [actionIdentifier
           isEqualToString:mac_notifications::kNotificationCloseButtonTag]) {
-    return NotificationOperation::NOTIFICATION_CLOSE;
+    return NotificationOperation::kClose;
   }
   if ([actionIdentifier isEqual:UNNotificationDefaultActionIdentifier] ||
       [actionIdentifier
           isEqualToString:mac_notifications::kNotificationButtonOne] ||
       [actionIdentifier
           isEqualToString:mac_notifications::kNotificationButtonTwo]) {
-    return NotificationOperation::NOTIFICATION_CLICK;
+    return NotificationOperation::kClick;
   }
   if ([actionIdentifier
           isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
-    return NotificationOperation::NOTIFICATION_SETTINGS;
+    return NotificationOperation::kSettings;
   }
   NOTREACHED();
-  return NotificationOperation::NOTIFICATION_CLICK;
+  return NotificationOperation::kClick;
 }
 
 int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
@@ -77,7 +77,7 @@ int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
           isEqualToString:mac_notifications::kNotificationButtonTwo]) {
     return 1;
   }
-  return notification_constants::kNotificationInvalidButtonIndex;
+  return kNotificationInvalidButtonIndex;
 }
 
 }  // namespace
@@ -310,7 +310,7 @@ void MacNotificationServiceUN::OnNotificationAction(
     mojom::NotificationActionInfoPtr action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (action->operation == NotificationOperation::NOTIFICATION_CLOSE)
+  if (action->operation == NotificationOperation::kClose)
     OnNotificationsClosed({DeriveMacNotificationId(action->meta->id)});
 
   action_handler_->OnNotificationAction(std::move(action));

@@ -17,6 +17,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -55,7 +56,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   //
   // TODO(peter): Remove this in favor of multiple targeted methods.
   virtual void ProcessNotificationOperation(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
@@ -84,7 +85,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  static void ProfileLoadedCallback(NotificationCommon::Operation operation,
+  static void ProfileLoadedCallback(NotificationOperation operation,
                                     NotificationHandler::Type notification_type,
                                     const GURL& origin,
                                     const std::string& notification_id,

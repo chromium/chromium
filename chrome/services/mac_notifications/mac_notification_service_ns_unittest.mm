@@ -14,10 +14,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -299,25 +299,24 @@ struct NotificationActionParams {
 const NotificationActionParams kNotificationActionParams[] = {
     {NSUserNotificationActivationTypeNone,
      /*has_settings_button=*/@NO, @[ @"A", @"B" ],
-     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLOSE,
-     notification_constants::kNotificationInvalidButtonIndex},
+     /*alternate_action_index=*/@0, NotificationOperation::kClose,
+     kNotificationInvalidButtonIndex},
     {NSUserNotificationActivationTypeContentsClicked,
      /*has_settings_button=*/@NO, @[ @"A", @"B" ],
-     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLICK,
-     notification_constants::kNotificationInvalidButtonIndex},
+     /*alternate_action_index=*/@0, NotificationOperation::kClick,
+     kNotificationInvalidButtonIndex},
     {NSUserNotificationActivationTypeActionButtonClicked,
      /*has_settings_button=*/@NO, @[ @"A", @"B" ],
-     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLICK,
+     /*alternate_action_index=*/@0, NotificationOperation::kClick,
      /*button_index=*/0},
     {NSUserNotificationActivationTypeActionButtonClicked,
      /*has_settings_button=*/@YES, @[ @"A", @"B", @"Settings" ],
-     /*alternate_action_index=*/@1, NotificationOperation::NOTIFICATION_CLICK,
+     /*alternate_action_index=*/@1, NotificationOperation::kClick,
      /*button_index=*/1},
     {NSUserNotificationActivationTypeActionButtonClicked,
      /*has_settings_button=*/@YES, @[ @"A", @"B", @"Settings" ],
-     /*alternate_action_index=*/@2,
-     NotificationOperation::NOTIFICATION_SETTINGS,
-     notification_constants::kNotificationInvalidButtonIndex},
+     /*alternate_action_index=*/@2, NotificationOperation::kSettings,
+     kNotificationInvalidButtonIndex},
 };
 
 class MacNotificationServiceNSTestNotificationAction

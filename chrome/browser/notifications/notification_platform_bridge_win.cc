@@ -93,7 +93,7 @@ HRESULT CreateActivationFactory(wchar_t const (&class_name)[size],
 }
 
 void ForwardNotificationOperationOnUiThread(
-    NotificationCommon::Operation operation,
+    NotificationOperation operation,
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
@@ -618,7 +618,7 @@ class NotificationPlatformBridgeWinImpl
     for (const auto& notification : displayed_notifications_) {
       if (!displayed_notifications.count(notification.first)) {
         HandleEvent(/*launch_id=*/notification.second,
-                    NotificationCommon::OPERATION_CLOSE,
+                    NotificationOperation::kClose,
                     /*action_index=*/absl::nullopt, /*by_user=*/true);
         key_to_remove.push_back(notification.first);
       }
@@ -723,12 +723,13 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void HandleEvent(NotificationLaunchId launch_id,
-                   NotificationCommon::Operation operation,
+                   NotificationOperation operation,
                    const absl::optional<int>& action_index,
                    const absl::optional<bool>& by_user) {
     if (!launch_id.is_valid()) {
       LogHandleEventStatus(HandleEventStatus::kHandleEventLaunchIdInvalid);
-      DLOG(ERROR) << "Failed to decode launch ID for operation " << operation;
+      DLOG(ERROR) << "Failed to decode launch ID for operation "
+                  << static_cast<int>(operation);
       return;
     }
 
@@ -757,7 +758,7 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void ForwardHandleEventForTesting(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       winui::Notifications::IToastNotification* notification,
       winui::Notifications::IToastActivatedEventArgs* args,
       const absl::optional<bool>& by_user) {
@@ -989,13 +990,13 @@ bool NotificationPlatformBridgeWin::HandleActivation(
   if (!inline_reply.empty())
     reply = base::AsString16(inline_reply);
 
-  NotificationCommon::Operation operation;
+  NotificationOperation operation;
   if (launch_id.is_for_dismiss_button())
-    operation = NotificationCommon::OPERATION_CLOSE;
+    operation = NotificationOperation::kClose;
   else if (launch_id.is_for_context_menu())
-    operation = NotificationCommon::OPERATION_SETTINGS;
+    operation = NotificationOperation::kSettings;
   else
-    operation = NotificationCommon::OPERATION_CLICK;
+    operation = NotificationOperation::kClick;
 
   absl::optional<int> action_index;
   if (launch_id.button_index() != -1)
@@ -1025,7 +1026,7 @@ bool NotificationPlatformBridgeWin::SystemNotificationEnabled() {
 }
 
 void NotificationPlatformBridgeWin::ForwardHandleEventForTesting(
-    NotificationCommon::Operation operation,
+    NotificationOperation operation,
     winui::Notifications::IToastNotification* notification,
     winui::Notifications::IToastActivatedEventArgs* args,
     const absl::optional<bool>& by_user) {

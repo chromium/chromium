@@ -12,11 +12,11 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -376,19 +376,16 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     // We can't use TEST_P and INSTANTIATE_TEST_SUITE_P as we can't access
     // UNNotificationDefaultActionIdentifier etc. outside an @available block.
     NotificationActionParams kNotificationActionParams[] = {
-        {UNNotificationDismissActionIdentifier,
-         NotificationOperation::NOTIFICATION_CLOSE,
-         notification_constants::kNotificationInvalidButtonIndex},
-        {UNNotificationDefaultActionIdentifier,
-         NotificationOperation::NOTIFICATION_CLICK,
-         notification_constants::kNotificationInvalidButtonIndex},
-        {kNotificationButtonOne, NotificationOperation::NOTIFICATION_CLICK,
+        {UNNotificationDismissActionIdentifier, NotificationOperation::kClose,
+         kNotificationInvalidButtonIndex},
+        {UNNotificationDefaultActionIdentifier, NotificationOperation::kClick,
+         kNotificationInvalidButtonIndex},
+        {kNotificationButtonOne, NotificationOperation::kClick,
          /*button_index=*/0},
-        {kNotificationButtonTwo, NotificationOperation::NOTIFICATION_CLICK,
+        {kNotificationButtonTwo, NotificationOperation::kClick,
          /*button_index=*/1},
-        {kNotificationSettingsButtonTag,
-         NotificationOperation::NOTIFICATION_SETTINGS,
-         notification_constants::kNotificationInvalidButtonIndex},
+        {kNotificationSettingsButtonTag, NotificationOperation::kSettings,
+         kNotificationInvalidButtonIndex},
     };
 
     for (const auto& params : kNotificationActionParams) {

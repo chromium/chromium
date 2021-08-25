@@ -28,7 +28,6 @@ source_set("mac_notifications") {
   ]
 
   public_deps = [
-    "//chrome/services/mac_notifications/public/cpp",
     "//chrome/services/mac_notifications/public/mojom",
     "//mojo/public/mojom/base",
   ]

@@ -25,6 +25,8 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,10 +47,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
-
-// Value used to represent the absence of a button index following a user
-// interaction with a notification.
-constexpr int kNotificationInvalidButtonIndex = -1;
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.notifications
@@ -193,9 +191,9 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   profile_manager->LoadProfile(
       profile_id, incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     NotificationCommon::OPERATION_CLICK, notification_type,
-                     origin, notification_id, std::move(action_index),
-                     std::move(reply), absl::nullopt /* by_user */));
+                     NotificationOperation::kClick, notification_type, origin,
+                     notification_id, std::move(action_index), std::move(reply),
+                     absl::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::
@@ -242,7 +240,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
   profile_manager->LoadProfile(
       profile_id, incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     NotificationCommon::OPERATION_CLOSE, notification_type,
+                     NotificationOperation::kClose, notification_type,
                      GURL(ConvertJavaStringToUTF8(env, java_origin)),
                      notification_id, absl::nullopt /* action index */,
                      absl::nullopt /* reply */, by_user));

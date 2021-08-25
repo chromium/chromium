@@ -15,7 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,19 +37,16 @@ void DoProcessMacNotificationResponse(
   DCHECK(profile_manager);
 
   absl::optional<int> action_index;
-  if (info->button_index !=
-      notification_constants::kNotificationInvalidButtonIndex) {
+  if (info->button_index != kNotificationInvalidButtonIndex)
     action_index = info->button_index;
-  }
 
   profile_manager->LoadProfile(
       info->meta->id->profile->id, info->meta->id->profile->incognito,
-      base::BindOnce(
-          &NotificationDisplayServiceImpl::ProfileLoadedCallback,
-          static_cast<NotificationCommon::Operation>(info->operation),
-          static_cast<NotificationHandler::Type>(info->meta->type),
-          info->meta->origin_url, info->meta->id->id, action_index,
-          absl::nullopt /* reply */, true /* by_user */));
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     static_cast<NotificationOperation>(info->operation),
+                     static_cast<NotificationHandler::Type>(info->meta->type),
+                     info->meta->origin_url, info->meta->id->id, action_index,
+                     absl::nullopt /* reply */, true /* by_user */));
 }
 
 }  // namespace
@@ -120,17 +118,9 @@ bool VerifyMacNotificationData(
     return false;
   }
 
-  if (info->button_index <
-          notification_constants::kNotificationInvalidButtonIndex ||
+  if (info->button_index < kNotificationInvalidButtonIndex ||
       info->button_index >= static_cast<int>(blink::kNotificationMaxActions)) {
     LOG(ERROR) << "Invalid number of buttons supplied " << info->button_index;
-    return false;
-  }
-
-  if (static_cast<int32_t>(info->operation) >
-      NotificationCommon::OPERATION_MAX) {
-    LOG(ERROR) << static_cast<int32_t>(info->operation)
-               << " does not correspond to a valid operation.";
     return false;
   }
 
@@ -167,10 +157,8 @@ void ProcessMacNotificationResponse(
     return;
 
   absl::optional<int> actionIndex;
-  if (info->button_index !=
-      notification_constants::kNotificationInvalidButtonIndex) {
+  if (info->button_index != kNotificationInvalidButtonIndex)
     actionIndex = info->button_index;
-  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
