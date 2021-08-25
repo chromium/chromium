@@ -122,12 +122,10 @@ const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {
 AppBrowserController::AppBrowserController(
     Browser* browser,
     AppId app_id,
-    const SystemWebAppDelegate* system_app,
     bool has_tab_strip)
     : content::WebContentsObserver(nullptr),
       browser_(browser),
       app_id_(std::move(app_id)),
-      system_app_(system_app),
       has_tab_strip_(has_tab_strip),
       theme_provider_(
           ThemeService::CreateBoundThemeProvider(browser_->profile(), this)) {
@@ -135,7 +133,7 @@ AppBrowserController::AppBrowserController(
 }
 
 AppBrowserController::AppBrowserController(Browser* browser, AppId app_id)
-    : AppBrowserController(browser, std::move(app_id), nullptr, false) {}
+    : AppBrowserController(browser, std::move(app_id), false) {}
 
 void AppBrowserController::Init() {
   UpdateThemePack();
@@ -192,7 +190,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
              !webapps::InstallableManager::IsOriginConsideredSecure(url);
     }
 
-    if (is_for_system_web_app()) {
+    if (system_app()) {
       DCHECK(url.scheme_piece() == content::kChromeUIScheme ||
              url.scheme_piece() == content::kChromeUIUntrustedScheme);
       return false;
@@ -228,24 +226,24 @@ bool AppBrowserController::has_tab_strip() const {
 
 bool AppBrowserController::HasTitlebarMenuButton() const {
   // Hide for system apps.
-  return !is_for_system_web_app();
+  return !system_app();
 }
 
 bool AppBrowserController::HasTitlebarAppOriginText() const {
   // Do not show origin text for System Apps.
-  bool hide = is_for_system_web_app() ||
+  bool hide = system_app() ||
               base::FeatureList::IsEnabled(features::kHideWebAppOriginText);
   return !hide;
 }
 
 bool AppBrowserController::HasTitlebarContentSettings() const {
   // Do not show content settings for System Apps.
-  return !is_for_system_web_app();
+  return !system_app();
 }
 
 std::vector<PageActionIconType> AppBrowserController::GetTitleBarPageActions()
     const {
-  if (is_for_system_web_app()) {
+  if (system_app()) {
     return {PageActionIconType::kFind, PageActionIconType::kZoom};
   }
 
@@ -268,7 +266,7 @@ bool AppBrowserController::IsInstalled() const {
 
 std::unique_ptr<TabMenuModelFactory>
 AppBrowserController::GetTabMenuModelFactory() const {
-  if (system_app_ && system_app_->GetType() == SystemAppType::TERMINAL) {
+  if (system_app() && system_app()->GetType() == SystemAppType::TERMINAL) {
     // TODO(crbug.com/1061822) move terminal specific code out.
     return std::make_unique<TerminalTabMenuModelFactory>();
   }
@@ -291,6 +289,10 @@ gfx::Rect AppBrowserController::GetDefaultBounds() const {
 
 bool AppBrowserController::HasReloadButton() const {
   return true;
+}
+
+const SystemWebAppDelegate* AppBrowserController::system_app() const {
+  return nullptr;
 }
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
@@ -329,7 +331,7 @@ bool AppBrowserController::ShouldShowTabContextMenuShortcut(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1061822): Generalize ShouldShowTabContextMenuShortcut as
   // a SystemWebApp capability.
-  if (system_app_ && system_app_->GetType() == SystemAppType::TERMINAL &&
+  if (system_app() && system_app()->GetType() == SystemAppType::TERMINAL &&
       command_id == TabStripModel::CommandCloseTab) {
     return crostini::GetTerminalSettingPassCtrlW(browser()->profile());
   }

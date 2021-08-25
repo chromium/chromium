@@ -323,8 +323,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
 
 bool IsSystemWebApp(Browser* browser) {
   DCHECK(browser);
-  return browser->app_controller() &&
-         browser->app_controller()->is_for_system_web_app();
+  return browser->app_controller() && browser->app_controller()->system_app();
 }
 
 bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {

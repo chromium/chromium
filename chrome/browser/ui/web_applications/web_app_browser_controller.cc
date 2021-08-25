@@ -50,11 +50,9 @@ WebAppBrowserController::WebAppBrowserController(
     AppId app_id,
     const SystemWebAppDelegate* system_app,
     bool has_tab_strip)
-    : AppBrowserController(browser,
-                           std::move(app_id),
-                           system_app,
-                           has_tab_strip),
-      provider_(provider) {
+    : AppBrowserController(browser, std::move(app_id), has_tab_strip),
+      provider_(provider),
+      system_app_(system_app) {
   registrar_observation_.Observe(&provider_.registrar());
   PerformDigitalAssetLinkVerification(browser);
 }
@@ -92,18 +90,22 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
-  if (system_app()) {
-    return system_app()->GetDefaultBounds(browser());
+  if (system_app_) {
+    return system_app_->GetDefaultBounds(browser());
   }
 
   return gfx::Rect();
 }
 
 bool WebAppBrowserController::HasReloadButton() const {
-  if (!system_app())
+  if (!system_app_)
     return true;
 
-  return system_app()->ShouldHaveReloadButtonInMinimalUi();
+  return system_app_->ShouldHaveReloadButtonInMinimalUi();
+}
+
+const SystemWebAppDelegate* WebAppBrowserController::system_app() const {
+  return system_app_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -177,7 +179,7 @@ ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
 
 absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   // System App popups (settings pages) always use default theme.
-  if (is_for_system_web_app() && browser()->is_type_app_popup())
+  if (system_app_ && browser()->is_type_app_popup())
     return absl::nullopt;
 
   absl::optional<SkColor> web_theme_color =

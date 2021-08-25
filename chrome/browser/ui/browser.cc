@@ -1069,7 +1069,7 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
   // Suppress for System Apps.
-  if (app_controller_ && app_controller_->is_for_system_web_app()) {
+  if (app_controller_ && app_controller_->system_app()) {
     return false;
   }
 

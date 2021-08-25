@@ -26,7 +26,7 @@ WindowType GetWindowType(content::WebContents* web_contents) {
     return WindowType::kNoBrowser;
   if (!browser->app_controller())
     return WindowType::kRegularTabbed;
-  if (browser->app_controller()->is_for_system_web_app())
+  if (browser->app_controller()->system_app())
     return WindowType::kSystemWebApp;
   return WindowType::kWebApp;
 }

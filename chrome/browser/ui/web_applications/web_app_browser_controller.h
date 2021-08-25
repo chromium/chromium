@@ -34,6 +34,7 @@ class DigitalAssetLinksHandler;
 
 namespace web_app {
 
+class SystemWebAppDelegate;
 class WebAppRegistrar;
 class WebAppProvider;
 
@@ -77,6 +78,7 @@ class WebAppBrowserController : public AppBrowserController,
   void ToggleWindowControlsOverlayEnabled() override;
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
+  const SystemWebAppDelegate* system_app() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldShowCustomTabBar() const override;
@@ -110,6 +112,7 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   WebAppProvider& provider_;
+  const SystemWebAppDelegate* system_app_;
   mutable absl::optional<ui::ImageModel> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

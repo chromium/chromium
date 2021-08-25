@@ -160,16 +160,13 @@ class AppBrowserController : public TabStripModelObserver,
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
+  // Returns the SystemWebAppDelegate if any for this controller.
+  virtual const SystemWebAppDelegate* system_app() const;
+
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
   // animated.
   void UpdateCustomTabBarVisibility(bool animate) const;
-
-  // Returns true if this controller is for a System Web App.
-  bool is_for_system_web_app() const { return system_app_; }
-
-  // Returns the SystemWebAppDelegate for this controller.
-  const SystemWebAppDelegate* system_app() const { return system_app_; }
 
   const AppId& app_id() const { return app_id_; }
 
@@ -209,7 +206,6 @@ class AppBrowserController : public TabStripModelObserver,
  protected:
   AppBrowserController(Browser* browser,
                        AppId app_id,
-                       const SystemWebAppDelegate* system_app,
                        bool has_tab_strip);
   AppBrowserController(Browser* browser, AppId app_id);
 
@@ -231,7 +227,6 @@ class AppBrowserController : public TabStripModelObserver,
 
   Browser* const browser_;
   const AppId app_id_;
-  const SystemWebAppDelegate* system_app_;
   const bool has_tab_strip_;
   GURL initial_url_;
 

@@ -2169,7 +2169,7 @@ void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
 
 bool TabStrip::ShowDomainInHoverCards() const {
   const auto* app_controller = controller_->GetBrowser()->app_controller();
-  return !app_controller || !app_controller->is_for_system_web_app();
+  return !app_controller || !app_controller->system_app();
 }
 
 bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
