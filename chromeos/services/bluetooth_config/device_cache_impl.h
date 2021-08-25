@@ -31,11 +31,25 @@ class DeviceCacheImpl : public DeviceCache,
   ~DeviceCacheImpl() override;
 
  private:
+  // Wrapper for unpaired BluetoothDevicePropertiesPtrs that contains the
+  // device's inquiry_rssi. This is used for sorting unpaired devices based on
+  // their signal strength.
+  struct UnpairedDevice {
+    explicit UnpairedDevice(const device::BluetoothDevice* device);
+    ~UnpairedDevice();
+
+    mojom::BluetoothDevicePropertiesPtr device_properties;
+    absl::optional<int8_t> inquiry_rssi;
+  };
+
   friend class DeviceCacheImplTest;
 
   // DeviceCache:
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
   PerformGetPairedDevices() const override;
+
+  std::vector<mojom::BluetoothDevicePropertiesPtr> PerformGetUnpairedDevices()
+      const override;
 
   // AdapterStateController::Observer:
   void OnAdapterStateChanged() override;
@@ -58,8 +72,9 @@ class DeviceCacheImpl : public DeviceCache,
       device::BluetoothDevice* device,
       absl::optional<uint8_t> new_battery_percentage) override;
 
-  // Fetches all known devices from BluetoothAdapter.
-  void FetchInitialPairedDeviceList();
+  // Fetches all known devices from BluetoothAdapter and populates them into
+  // |paired_devices_| and |unpaired_devices_|.
+  void FetchInitialDeviceLists();
 
   // Sorts |paired_devices_| based on connection state. This function is called
   // each time a device is added to the list. This is not particularly
@@ -79,10 +94,31 @@ class DeviceCacheImpl : public DeviceCache,
   // Attempts to add updated metadata about |device| to |paired_devices_|.
   void AttemptUpdatePairedDeviceMetadata(device::BluetoothDevice* device);
 
+  // Sorts |unpaired_devices_| based on signal strength. This function is called
+  // each time a device is added to the list. This is not particularly
+  // efficient, but the list is expected to be small and is only sorted when its
+  // contents change.
+  void SortUnpairedDeviceList();
+
+  // Adds |device| to |unpaired_devices_|, but only if |device| is unpaired. If
+  // the device was already present in the list, this function updates its
+  // metadata to reflect up-to-date values. This function sorts the list after a
+  // new element is inserted.
+  void AttemptSetDeviceInUnpairedDeviceList(device::BluetoothDevice* device);
+
+  // Removes |device| from |unpaired_devices_| if it exists in the list.
+  void RemoveFromUnpairedDeviceList(device::BluetoothDevice* device);
+
+  // Attempts to add updated metadata about |device| to |unpaired_devices_|.
+  void AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
+
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;
+
+  // Sorted by signal strength.
+  std::vector<std::unique_ptr<UnpairedDevice>> unpaired_devices_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

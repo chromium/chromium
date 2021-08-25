@@ -27,6 +27,19 @@ DeviceCache::GetPairedDevices() const {
   return PerformGetPairedDevices();
 }
 
+std::vector<mojom::BluetoothDevicePropertiesPtr>
+DeviceCache::GetUnpairedDevices() const {
+  // If Bluetooth is not enabled or enabling, return an empty list. This
+  // addresses an edge case: when the user disables Bluetooth, there is a short
+  // amount of time in which Bluetooth is still enabled but is in the process of
+  // turning off. We should still return an empty list in this case to ensure
+  // that the UI does not show a list of devices when the toggle is off.
+  if (!IsBluetoothEnabledOrEnabling())
+    return {};
+
+  return PerformGetUnpairedDevices();
+}
+
 void DeviceCache::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -38,6 +51,11 @@ void DeviceCache::RemoveObserver(Observer* observer) {
 void DeviceCache::NotifyPairedDevicesListChanged() {
   for (auto& observer : observers_)
     observer.OnPairedDevicesListChanged();
+}
+
+void DeviceCache::NotifyUnpairedDevicesListChanged() {
+  for (auto& observer : observers_)
+    observer.OnUnpairedDevicesListChanged();
 }
 
 bool DeviceCache::IsBluetoothEnabledOrEnabling() const {

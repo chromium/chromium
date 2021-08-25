@@ -23,6 +23,13 @@ GeneratePairedBluetoothDeviceProperties(const device::BluetoothDevice* device) {
 
 }  // namespace
 
+DeviceCacheImpl::UnpairedDevice::UnpairedDevice(
+    const device::BluetoothDevice* device)
+    : device_properties(GenerateBluetoothDeviceMojoProperties(device)),
+      inquiry_rssi(device->GetInquiryRSSI()) {}
+
+DeviceCacheImpl::UnpairedDevice::~UnpairedDevice() = default;
+
 DeviceCacheImpl::DeviceCacheImpl(
     AdapterStateController* adapter_state_controller_param,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
@@ -31,7 +38,7 @@ DeviceCacheImpl::DeviceCacheImpl(
   adapter_state_controller_observation_.Observe(adapter_state_controller());
   adapter_observation_.Observe(bluetooth_adapter_.get());
 
-  FetchInitialPairedDeviceList();
+  FetchInitialDeviceLists();
 }
 
 DeviceCacheImpl::~DeviceCacheImpl() = default;
@@ -44,38 +51,60 @@ DeviceCacheImpl::PerformGetPairedDevices() const {
   return paired_devices;
 }
 
+std::vector<mojom::BluetoothDevicePropertiesPtr>
+DeviceCacheImpl::PerformGetUnpairedDevices() const {
+  std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices;
+  for (const auto& unpaired_device : unpaired_devices_)
+    unpaired_devices.push_back(unpaired_device->device_properties.Clone());
+  return unpaired_devices;
+}
+
 void DeviceCacheImpl::OnAdapterStateChanged() {
   NotifyPairedDevicesListChanged();
+  NotifyUnpairedDevicesListChanged();
 }
 
 void DeviceCacheImpl::DeviceAdded(device::BluetoothAdapter* adapter,
                                   device::BluetoothDevice* device) {
-  AttemptSetDeviceInPairedDeviceList(device);
+  if (device->IsPaired())
+    AttemptSetDeviceInPairedDeviceList(device);
+  else
+    AttemptSetDeviceInUnpairedDeviceList(device);
 }
 
 void DeviceCacheImpl::DeviceRemoved(device::BluetoothAdapter* adapter,
                                     device::BluetoothDevice* device) {
-  RemoveFromPairedDeviceList(device);
+  if (device->IsPaired())
+    RemoveFromPairedDeviceList(device);
+  else
+    RemoveFromUnpairedDeviceList(device);
 }
 
 void DeviceCacheImpl::DeviceChanged(device::BluetoothAdapter* adapter,
                                     device::BluetoothDevice* device) {
-  AttemptUpdatePairedDeviceMetadata(device);
+  if (device->IsPaired())
+    AttemptUpdatePairedDeviceMetadata(device);
+  else
+    AttemptUpdateUnpairedDeviceMetadata(device);
 }
 
 void DeviceCacheImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
                                           device::BluetoothDevice* device,
                                           bool new_paired_status) {
-  if (new_paired_status)
+  if (new_paired_status) {
+    RemoveFromUnpairedDeviceList(device);
     AttemptUpdatePairedDeviceMetadata(device);
-  else
-    RemoveFromPairedDeviceList(device);
+    return;
+  }
+  RemoveFromPairedDeviceList(device);
+  AttemptUpdateUnpairedDeviceMetadata(device);
 }
 
 void DeviceCacheImpl::DeviceConnectedStateChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool is_now_connected) {
+  DCHECK(device->IsPaired());
   AttemptUpdatePairedDeviceMetadata(device);
 }
 
@@ -83,18 +112,22 @@ void DeviceCacheImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     absl::optional<uint8_t> new_battery_percentage) {
-  AttemptUpdatePairedDeviceMetadata(device);
+  DeviceChanged(adapter, device);
 }
 
-void DeviceCacheImpl::FetchInitialPairedDeviceList() {
+void DeviceCacheImpl::FetchInitialDeviceLists() {
   for (const device::BluetoothDevice* device :
        bluetooth_adapter_->GetDevices()) {
-    if (!device->IsPaired())
-      continue;
-    paired_devices_.push_back(GeneratePairedBluetoothDeviceProperties(device));
+    if (device->IsPaired()) {
+      paired_devices_.push_back(
+          GeneratePairedBluetoothDeviceProperties(device));
+    } else {
+      unpaired_devices_.push_back(std::make_unique<UnpairedDevice>(device));
+    }
   }
 
   SortPairedDeviceList();
+  SortUnpairedDeviceList();
 }
 
 void DeviceCacheImpl::AttemptSetDeviceInPairedDeviceList(
@@ -140,6 +173,58 @@ void DeviceCacheImpl::SortPairedDeviceList() {
               return first->device_properties->connection_state >
                      second->device_properties->connection_state;
             });
+}
+
+void DeviceCacheImpl::AttemptSetDeviceInUnpairedDeviceList(
+    device::BluetoothDevice* device) {
+  if (device->IsPaired())
+    return;
+
+  // Remove the old (stale) properties, if they exist.
+  RemoveFromUnpairedDeviceList(device);
+
+  unpaired_devices_.push_back(std::make_unique<UnpairedDevice>(device));
+  SortUnpairedDeviceList();
+  NotifyUnpairedDevicesListChanged();
+}
+
+void DeviceCacheImpl::RemoveFromUnpairedDeviceList(
+    device::BluetoothDevice* device) {
+  auto it = unpaired_devices_.begin();
+  while (it != unpaired_devices_.end()) {
+    if (device->GetIdentifier() == (*it)->device_properties->id) {
+      unpaired_devices_.erase(it);
+      NotifyUnpairedDevicesListChanged();
+      return;
+    }
+
+    ++it;
+  }
+}
+
+void DeviceCacheImpl::AttemptUpdateUnpairedDeviceMetadata(
+    device::BluetoothDevice* device) {
+  // Remove existing metadata about |device|.
+  RemoveFromUnpairedDeviceList(device);
+
+  // Now, add updated metadata.
+  AttemptSetDeviceInUnpairedDeviceList(device);
+}
+
+void DeviceCacheImpl::SortUnpairedDeviceList() {
+  std::sort(
+      unpaired_devices_.begin(), unpaired_devices_.end(),
+      [](const std::unique_ptr<UnpairedDevice>& first,
+         const std::unique_ptr<UnpairedDevice>& second) {
+        int8_t first_inquiry_rssi = first->inquiry_rssi.has_value()
+                                        ? first->inquiry_rssi.value()
+                                        : std::numeric_limits<int8_t>::min();
+        int8_t second_inquiry_rssi = second->inquiry_rssi.has_value()
+                                         ? second->inquiry_rssi.value()
+                                         : std::numeric_limits<int8_t>::min();
+        // A higher RSSI value means a stronger signal.
+        return first_inquiry_rssi > second_inquiry_rssi;
+      });
 }
 
 }  // namespace bluetooth_config

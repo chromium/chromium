@@ -12,18 +12,26 @@ namespace bluetooth_config {
 
 class FakeDeviceCache : public DeviceCache {
  public:
-  FakeDeviceCache(AdapterStateController* adapter_state_controller);
+  explicit FakeDeviceCache(AdapterStateController* adapter_state_controller);
   ~FakeDeviceCache() override;
 
   void SetPairedDevices(
       std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices);
+
+  void SetUnpairedDevices(
+      std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices);
 
  private:
   // DeviceCache:
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
   PerformGetPairedDevices() const override;
 
+  std::vector<mojom::BluetoothDevicePropertiesPtr> PerformGetUnpairedDevices()
+      const override;
+
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;
+
+  std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices_;
 };
 
 }  // namespace bluetooth_config

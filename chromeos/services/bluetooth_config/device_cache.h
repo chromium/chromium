@@ -27,7 +27,12 @@ class DeviceCache {
     // Invoked when the list of paired devices has changed. This callback is
     // used when a device has been added/removed from the list, or when one or
     // more properties of a device in the list has changed.
-    virtual void OnPairedDevicesListChanged() = 0;
+    virtual void OnPairedDevicesListChanged() {}
+
+    // Invoked when the list of unpaired devices has changed. This callback is
+    // used when a device has been added/removed from the list, or when one or
+    // more properties of a device in the list has changed.
+    virtual void OnUnpairedDevicesListChanged() {}
   };
 
   virtual ~DeviceCache();
@@ -39,22 +44,33 @@ class DeviceCache {
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> GetPairedDevices()
       const;
 
+  // Returns a sorted list of unpaired devices. This list is sorted by signal
+  // strength.
+  std::vector<mojom::BluetoothDevicePropertiesPtr> GetUnpairedDevices() const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  protected:
-  DeviceCache(AdapterStateController* adapter_state_controller);
+  explicit DeviceCache(AdapterStateController* adapter_state_controller);
 
   // Implementation-specific version of GetPairedDevices(), which is invoked
   // only if Bluetooth is enabled or enabling.
   virtual std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
   PerformGetPairedDevices() const = 0;
 
+  // Implementation-specific version of GetUnpairedDevices(), which is invoked
+  // only if Bluetooth is enabled or enabling.
+  virtual std::vector<mojom::BluetoothDevicePropertiesPtr>
+  PerformGetUnpairedDevices() const = 0;
+
   AdapterStateController* adapter_state_controller() {
     return adapter_state_controller_;
   }
 
   void NotifyPairedDevicesListChanged();
+
+  void NotifyUnpairedDevicesListChanged();
 
  private:
   bool IsBluetoothEnabledOrEnabling() const;
