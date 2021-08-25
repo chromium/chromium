@@ -22,9 +22,12 @@ def ClangRevision():
     return update.PACKAGE_VERSION
 
 def NaclRevision():
+    nacl_dir = os.path.join(THIS_DIR, '..', '..', 'native_client')
+    if not os.path.exists(nacl_dir):
+      return None
     return subprocess.check_output(
         ['git', 'log', '-1', '--format=%H'],
-        cwd=os.path.join(THIS_DIR, '..', '..', 'native_client'),
+        cwd= nacl_dir,
     ).decode('utf-8').strip()
 
 def CipdInstall(pkg_name, ref, directory):
