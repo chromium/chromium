@@ -1331,7 +1331,7 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
 
   wtf_size_t item_index = layout_object.FirstInlineFragmentItemIndex();
   if (UNLIKELY(!item_index)) {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     const LayoutBlockFlow* root = layout_object.FragmentItemsContainer();
     NGInlineCursor check_cursor(*root);
     check_cursor.SlowMoveToFirstFor(layout_object);
@@ -1353,7 +1353,7 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
         return;
     }
     item_index -= fragment_items_->SizeOfEarlierFragments();
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     NGInlineCursor check_cursor(*root_block_flow_);
     check_cursor.SlowMoveToFirstFor(layout_object);
     DCHECK_EQ(check_cursor.Current().Item(),
@@ -1380,7 +1380,7 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
         }
       }
     }
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     const LayoutBlockFlow* root = layout_object.FragmentItemsContainer();
     NGInlineCursor check_cursor(*root);
     check_cursor.SlowMoveToFirstFor(layout_object);
