@@ -262,9 +262,12 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
     return;
   }
 
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    // When the split settings sync flag is on, the user must have opted into
-    // OS-level sync as a whole and wallpaper sync must be enabled.
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    // When the sync settings categorization is on, the wallpaper sync status is
+    // stored in the kSyncOsWallpaper pref. The pref value essentially means
+    // "themes sync is on" && "apps sync is on".
+    // TODO(https://crbug.com/1243218): Figure out if we need to check
+    // IsOsSyncFeatureEnabled here.
     bool os_wallpaper_sync_enabled =
         sync_service->GetUserSettings()->IsOsSyncFeatureEnabled() &&
         profile->GetPrefs()->GetBoolean(
@@ -282,8 +285,8 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
   }
 
   if (sync_service->GetUserSettings()->IsFirstSetupComplete()) {
-    // When sync split is disabled, wallpaper is synced as a group with
-    // browser themes.
+    // When sync settings categorization is disabled, wallpaper is synced as a
+    // group with browser themes.
     dict->SetBoolean(kSyncThemes,
                      sync_service->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kThemes));
