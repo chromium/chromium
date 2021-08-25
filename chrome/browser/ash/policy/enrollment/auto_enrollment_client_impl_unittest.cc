@@ -1462,12 +1462,11 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   }
 
   void SetUp() override {
-    // Verify that PsmState has value kEnabled, then enable PSM switch
-    // prefs::kEnterpriseEnablePsm.
+    // Verify that PSM is enabled by default (i.e. PSM switch
+    // prefs::kEnterpriseEnablePsm is enabled). And the PsmState has value
+    // kEnable.
     ASSERT_EQ(GetPsmState(), PsmState::kEnabled);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        chromeos::switches::kEnterpriseEnablePsm,
-        ash::AutoEnrollmentController::kEnablePsmAlways);
+    EXPECT_TRUE(ash::AutoEnrollmentController::IsPsmEnabled());
 
     // Verify that all PSM prefs have not been set before.
     ASSERT_EQ(local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState),
@@ -1489,8 +1488,7 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   }
 
   void CreatePsmTestCase() {
-    // Verify that PSM is enabled, and the test case index is valid.
-    EXPECT_TRUE(ash::AutoEnrollmentController::IsPsmEnabled());
+    // Verify PSM test case index is valid.
     ASSERT_GE(GetPsmTestCaseIndex(), 0);
 
     // Retrieve the PSM test case.
