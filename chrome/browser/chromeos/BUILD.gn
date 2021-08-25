@@ -511,8 +511,6 @@ source_set("chromeos") {
     "../ash/accessibility/accessibility_event_rewriter_delegate_impl.h",
     "../ash/accessibility/accessibility_extension_loader.cc",
     "../ash/accessibility/accessibility_extension_loader.h",
-    "../ash/accessibility/accessibility_input_method_observer.cc",
-    "../ash/accessibility/accessibility_input_method_observer.h",
     "../ash/accessibility/accessibility_manager.cc",
     "../ash/accessibility/accessibility_manager.h",
     "../ash/accessibility/accessibility_panel.cc",
