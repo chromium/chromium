@@ -61,8 +61,10 @@ namespace enterprise_connectors {
 FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
     content::BrowserContext* browser_context,
     const FileSystemSettings& settings,
+    absl::optional<std::string> account_login,
     AuthorizationCompletedCallback callback)
     : settings_(settings),
+      account_login_(std::move(account_login)),
       web_view_(std::make_unique<views::WebView>(browser_context)),
       callback_(std::move(callback)) {
   SetHasWindowSizeControls(true);
@@ -273,7 +275,9 @@ std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
   // If an email domain is specified, use it as a hint in the box authn URL.
   // Make sure the domain has an @ prefix.
   if (settings_.service_provider == kFileSystemServiceProviderPrefNameBox) {
-    if (!settings_.email_domain.empty()) {
+    if (account_login_ && !account_login_->empty()) {
+      return base::StringPrintf("box_login=%s", account_login_->c_str());
+    } else if (!settings_.email_domain.empty()) {
       // If the domain does not already start with an @ sign, prepend the
       // escaped version of it.
       return base::StringPrintf(

@@ -118,6 +118,7 @@ absl::optional<FileSystemSettings> GetFileSystemSettings(
 void OnConfirmationModalClosed(gfx::NativeWindow context,
                                content::BrowserContext* browser_context,
                                const FileSystemSettings& settings,
+                               PrefService* prefs,
                                AuthorizationCompletedCallback callback,
                                SigninExperienceTestObserver* test_observer,
                                bool user_confirmed_to_proceed) {
@@ -125,9 +126,14 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
     return ReturnCancellation(std::move(callback));
   }
 
+  auto account_info = GetFileSystemAccountInfoFromPrefs(settings, prefs);
+  auto account_login = account_info
+                           ? absl::make_optional(account_info->account_login)
+                           : absl::nullopt;
   std::unique_ptr<FileSystemSigninDialogDelegate> delegate =
       std::make_unique<FileSystemSigninDialogDelegate>(
-          browser_context, settings, std::move(callback));
+          browser_context, settings, std::move(account_login),
+          std::move(callback));
   content::WebContents* dialog_web_contents = delegate->web_contents();
 
   // We want a dialog whose lifetime is independent from that of |web_contents|,
@@ -147,6 +153,7 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
+    PrefService* prefs,
     AuthorizationCompletedCallback callback,
     SigninExperienceTestObserver* test_observer) {
   gfx::NativeWindow context = FindMostRelevantContextWindow(web_contents);
@@ -158,7 +165,7 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
 
   base::OnceCallback<void(bool)> confirmed_to_sign_in = base::BindOnce(
       &OnConfirmationModalClosed, context, web_contents->GetBrowserContext(),
-      settings, std::move(callback), test_observer);
+      settings, prefs, std::move(callback), test_observer);
   FileSystemConfirmationModal::Show(
       context,
       l10n_util::GetStringFUTF16(
@@ -194,8 +201,9 @@ void OnConfirmationModalClosedForSettingsPage(
       },
       profile->GetPrefs(), settings.service_provider,
       std::move(settings_page_callback));
-  OnConfirmationModalClosed(context, profile, settings, std::move(converted_cb),
-                            test_observer, user_confirmed_to_proceed);
+  OnConfirmationModalClosed(context, profile, settings, profile->GetPrefs(),
+                            std::move(converted_cb), test_observer,
+                            user_confirmed_to_proceed);
 }
 
 // Start the sign in experience as triggered by the settings page. Similar to
@@ -250,35 +258,18 @@ std::vector<std::string> GetFileSystemConnectorPrefsForSettingsPage(
   return std::vector<std::string>();
 }
 
-AccountInfo::AccountInfo() = default;
-AccountInfo::~AccountInfo() = default;
-AccountInfo::AccountInfo(const AccountInfo& other) = default;
-
 absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
     const FileSystemSettings& settings,
     PrefService* prefs) {
   const std::string& provider = settings.service_provider;
-  base::Value stored_account_info = GetFileSystemAccountInfo(prefs, provider);
   std::string refresh_token;
-  std::string *account_name, *account_login;
-  if (stored_account_info.DictEmpty() ||
-      !(account_name = stored_account_info.FindStringPath("name")) ||
-      !(account_login = stored_account_info.FindStringPath("login")) ||
-      !GetFileSystemOAuth2Tokens(prefs, provider, /* access_token = */ nullptr,
+  if (!GetFileSystemOAuth2Tokens(prefs, provider, /* access_token = */ nullptr,
                                  &refresh_token) ||
       refresh_token.empty()) {
     return absl::nullopt;
   }
 
-  AccountInfo account_info;
-  account_info.account_name = *account_name;
-  account_info.account_login = *account_login;
-  account_info.folder_name = GetDefaultFolderName(prefs, provider);
-  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
-  DCHECK(!account_info.account_name.empty());
-  DCHECK(!account_info.account_login.empty());
-  DCHECK(!account_info.folder_name.empty());
-  return absl::make_optional<AccountInfo>(std::move(account_info));
+  return GetFileSystemAccountInfoFromPrefs(settings, prefs);
 }
 
 void SetFileSystemConnectorAccountLinkForSettingsPage(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SIGNIN_EXPERIENCE_H_
 
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 
 namespace content {
@@ -32,6 +33,7 @@ using AuthorizationCompletedCallback =
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
+    PrefService* prefs,
     AuthorizationCompletedCallback callback,
     SigninExperienceTestObserver* test_observer = nullptr);
 
@@ -42,17 +44,6 @@ void SetFileSystemConnectorAccountLinkForSettingsPage(
     Profile* profile,
     base::OnceCallback<void(bool)> callback,
     SigninExperienceTestObserver* test_observer = nullptr);
-
-struct AccountInfo {
-  std::string account_name;
-  std::string account_login;
-  std::string folder_link;
-  std::string folder_name;
-
-  AccountInfo();
-  ~AccountInfo();
-  AccountInfo(const AccountInfo& other);
-};
 
 // Prefs for the settings page to observe to refresh the connection section.
 std::vector<std::string> GetFileSystemConnectorPrefsForSettingsPage(

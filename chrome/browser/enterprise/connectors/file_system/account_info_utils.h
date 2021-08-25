@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_ACCOUNT_INFO_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_ACCOUNT_INFO_UTILS_H_
 
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
@@ -70,6 +71,21 @@ bool ClearFileSystemAccountInfo(PrefService* prefs,
                                 const std::string& service_provider);
 base::Value GetFileSystemAccountInfo(PrefService* prefs,
                                      const std::string& service_provider);
+
+struct AccountInfo {
+  std::string account_name;
+  std::string account_login;
+  std::string folder_link;
+  std::string folder_name;
+
+  AccountInfo();
+  ~AccountInfo();
+  AccountInfo(const AccountInfo& other);
+};
+
+absl::optional<AccountInfo> GetFileSystemAccountInfoFromPrefs(
+    const FileSystemSettings& settings,
+    PrefService* prefs);
 
 }  // namespace enterprise_connectors
 

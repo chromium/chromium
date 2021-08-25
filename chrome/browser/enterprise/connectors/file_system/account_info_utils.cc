@@ -246,4 +246,31 @@ base::Value GetFileSystemAccountInfo(PrefService* prefs,
   return val->Clone();
 }
 
+AccountInfo::AccountInfo() = default;
+AccountInfo::~AccountInfo() = default;
+AccountInfo::AccountInfo(const AccountInfo& other) = default;
+
+absl::optional<AccountInfo> GetFileSystemAccountInfoFromPrefs(
+    const FileSystemSettings& settings,
+    PrefService* prefs) {
+  const std::string& provider = settings.service_provider;
+  base::Value stored_account_info = GetFileSystemAccountInfo(prefs, provider);
+  std::string *account_name, *account_login;
+  if (stored_account_info.DictEmpty() ||
+      !(account_name = stored_account_info.FindStringPath("name")) ||
+      !(account_login = stored_account_info.FindStringPath("login"))) {
+    return absl::nullopt;
+  }
+
+  AccountInfo account_info;
+  account_info.account_name = *account_name;
+  account_info.account_login = *account_login;
+  account_info.folder_name = GetDefaultFolderName(prefs, provider);
+  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
+  DCHECK(!account_info.account_name.empty());
+  DCHECK(!account_info.account_login.empty());
+  DCHECK(!account_info.folder_name.empty());
+  return absl::make_optional<AccountInfo>(std::move(account_info));
+}
+
 }  // namespace enterprise_connectors

@@ -117,7 +117,7 @@ void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
     content::WebContents* contents) {
   StartFileSystemConnectorSigninExperienceForDownloadItem(
-      contents, settings_,
+      contents, settings_, GetPrefs(),
       base::BindOnce(&FileSystemRenameHandler::OnAuthorization,
                      weak_factory_.GetWeakPtr()),
       signin_observer_);

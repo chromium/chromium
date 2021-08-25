@@ -40,6 +40,7 @@ class FileSystemSigninDialogDelegate
   ~FileSystemSigninDialogDelegate() override;
   FileSystemSigninDialogDelegate(content::BrowserContext* browser_context,
                                  const FileSystemSettings& settings,
+                                 absl::optional<std::string> account_login,
                                  AuthorizationCompletedCallback callback);
   // Visible for testing.
  protected:
@@ -88,6 +89,7 @@ class FileSystemSigninDialogDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   const FileSystemSettings settings_;
+  absl::optional<std::string> account_login_;
   std::string access_token_;
   std::string refresh_token_;
   std::unique_ptr<views::WebView> web_view_;
