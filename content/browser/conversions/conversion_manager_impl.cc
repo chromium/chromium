@@ -72,6 +72,12 @@ void RecordCreateReportStatus(ConversionStorage::CreateReportStatus result) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", result);
 }
 
+// We measure this in order to be able to count reports that weren't
+// successfully deleted, which can lead to duplicate reports.
+void RecordDeleteEvent(ConversionManagerImpl::DeleteEvent event) {
+  base::UmaHistogramEnumeration("Conversions.DeleteSentReportOperation", event);
+}
+
 }  // namespace
 
 const constexpr base::TimeDelta kConversionManagerQueueReportsInterval =
@@ -311,9 +317,13 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   const bool should_retry =
       ShouldRetryReport(*conversion_policy_, clock_->Now(), info);
   if (!should_retry) {
+    RecordDeleteEvent(DeleteEvent::kStarted);
     conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
         .WithArgs(info.conversion_id)
-        .Then(base::DoNothing::Once<bool>());
+        .Then(base::BindOnce([](bool succeeded) {
+          RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded
+                                      : DeleteEvent::kFailed);
+        }));
   }
 
   DCHECK_EQ(send_reports_for_web_ui_callback_.is_null(),

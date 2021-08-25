@@ -690,4 +690,23 @@ TEST_F(ConversionManagerImplTest, HandleConversion_RecordsMetric) {
       ConversionStorage::CreateReportStatus::kNoMatchingImpressions, 1);
 }
 
+TEST_F(ConversionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+  base::HistogramTester histograms;
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+  ExpectNumStoredReports(1);
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  ExpectNumStoredReports(0);
+
+  static constexpr char kMetric[] = "Conversions.DeleteSentReportOperation";
+  histograms.ExpectTotalCount(kMetric, 2);
+  histograms.ExpectBucketCount(kMetric,
+                               ConversionManagerImpl::DeleteEvent::kStarted, 1);
+  histograms.ExpectBucketCount(
+      kMetric, ConversionManagerImpl::DeleteEvent::kSucceeded, 1);
+}
+
 }  // namespace content

@@ -59,6 +59,15 @@ class ConversionManagerProviderImpl : public ConversionManager::Provider {
 // storage. Owned by the storage partition.
 class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DeleteEvent {
+    kStarted = 0,
+    kSucceeded = 1,
+    kFailed = 2,
+    kMaxValue = kFailed,
+  };
+
   // Interface which manages the ownership, queuing, and sending of pending
   // conversion reports. Owned by |this|.
   class ConversionReporter {

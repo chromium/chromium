@@ -3728,6 +3728,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DeleteSentReportOperation"
+    enum="ConversionPostSendReportDeleteEvent" expires_after="M98">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often conversions are deleted after being sent. Recorded once
+    for each deletion started and each deletion completed. Deletion may fail if
+    the browser was shut down before the deletion completed, or if there was an
+    error during storage.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ExtraReportDelay" units="ms"
     expires_after="2021-12-19">
   <obsolete>

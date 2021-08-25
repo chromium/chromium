@@ -14660,6 +14660,12 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="UI button shown"/>
 </enum>
 
+<enum name="ConversionPostSendReportDeleteEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Failed"/>
+</enum>
+
 <enum name="ConversionReportStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Internal network error"/>

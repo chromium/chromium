@@ -118,7 +118,7 @@ TEST_F(ConversionStorageTest,
             storage->MaybeCreateAndStoreConversionReport(DefaultConversion()));
   EXPECT_TRUE(storage->GetConversionsToReport(clock()->Now()).empty());
   EXPECT_TRUE(storage->GetActiveImpressions().empty());
-  EXPECT_EQ(0, storage->DeleteConversion(ConversionReport::Id(0)));
+  EXPECT_TRUE(storage->DeleteConversion(ConversionReport::Id(0)));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
 }

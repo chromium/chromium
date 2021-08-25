@@ -162,7 +162,7 @@ class ConversionStorage {
       WARN_UNUSED_RESULT = 0;
 
   // Deletes the conversion report with the given |conversion_id|. Returns
-  // whether the deletion was successful.
+  // false if an error occurred.
   virtual bool DeleteConversion(ConversionReport::Id conversion_id) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between

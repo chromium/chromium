@@ -805,10 +805,8 @@ bool ConversionStorageSql::DeleteConversion(
     ConversionReport::Id conversion_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return false;
-  if (!DeleteConversionInternal(conversion_id))
-    return false;
-  return db_->GetLastChangeCount() > 0;
+    return true;
+  return DeleteConversionInternal(conversion_id);
 }
 
 bool ConversionStorageSql::DeleteConversionInternal(
