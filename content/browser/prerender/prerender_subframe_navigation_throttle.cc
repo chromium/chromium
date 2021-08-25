@@ -63,9 +63,12 @@ NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+
+  if (!frame_tree_node->frame_tree()->is_prerendering())
+    return NavigationThrottle::PROCEED;
+
   // Disallow downloads during prerendering and cancel the prerender.
-  if (navigation_handle()->IsDownload() &&
-      frame_tree_node->frame_tree()->is_prerendering()) {
+  if (navigation_handle()->IsDownload()) {
     PrerenderHostRegistry* prerender_host_registry =
         frame_tree_node->current_frame_host()
             ->delegate()
@@ -77,14 +80,14 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
     return CANCEL;
   }
 
-  // Here GetOriginToCommit() is used, which is different from the result of
-  // using url::Origin::Create(). The value from GetOriginToCommit() will be the
-  // origin of the final frame host, and the value will be accurate.
+  // Defer cross-origin subframe navigation until page activation. The check is
+  // added here, because this is the first place that the throttle can properly
+  // check for cross-origin using GetOriginToCommit(). See comments in
+  // WillStartOrRedirectRequest() for more details.
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
-  if (frame_tree_node->frame_tree()->is_prerendering() &&
-      !main_origin.IsSameOriginWith(navigation_request->GetOriginToCommit())) {
-    DeferCrossOriginSubframeNavigation(frame_tree_node);
+  if (!main_origin.IsSameOriginWith(navigation_request->GetOriginToCommit())) {
+    DeferCrossOriginSubframeNavigation(*frame_tree_node);
     return NavigationThrottle::DEFER;
   }
 
@@ -120,15 +123,15 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
       prerender_root_ftn_id_)
     return;
 
+  // The activation is finished. There is no need to listen to the WebContents
+  // anymore.
+  Observe(nullptr);
+
   // If the finished navigation did not commit, do not Resume(). We expect that
   // the prerendered page and therefore the subframe navigation will eventually
   // be cancelled.
   if (!finished_navigation->HasCommitted())
     return;
-
-  // The activation is finished. There is no need to listen to the WebContents
-  // anymore.
-  Observe(nullptr);
 
   // Resume the subframe navigation.
   if (!is_deferred_)
@@ -139,14 +142,10 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
 }
 
 void PrerenderSubframeNavigationThrottle::DeferCrossOriginSubframeNavigation(
-    FrameTreeNode* frame_tree_node) {
-  // This function should be called for prerendering when the
-  // return state is NavigationThrottle::DEFER to properly
-  // handle the status.
-  //
+    const FrameTreeNode& frame_tree_node) {
   // Look up the PrerenderHost.
-  DCHECK(!frame_tree_node->IsMainFrame());
-  PrerenderHostRegistry* registry = frame_tree_node->current_frame_host()
+  DCHECK(!frame_tree_node.IsMainFrame());
+  PrerenderHostRegistry* registry = frame_tree_node.current_frame_host()
                                         ->delegate()
                                         ->GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
@@ -177,8 +176,8 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   if (!frame_tree_node->frame_tree()->is_prerendering())
     return NavigationThrottle::PROCEED;
 
-  // Proceed for same-origin subframe navigation.
-  // url::Origin::Create() might not be
+  // Defer cross-origin subframe navigation until page activation.
+  // Using url::Origin::Create() to check same-origin might not be
   // completely accurate for cases such as sandboxed iframes, which have a
   // different origin from the main frame even when the URL is same-origin.
   // There is another check in WillProcessResponse to fix this issue.
@@ -191,7 +190,7 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
   if (!main_origin.IsSameOriginWith(
           url::Origin::Create(navigation_handle()->GetURL()))) {
-    DeferCrossOriginSubframeNavigation(frame_tree_node);
+    DeferCrossOriginSubframeNavigation(*frame_tree_node);
     return NavigationThrottle::DEFER;
   }
 

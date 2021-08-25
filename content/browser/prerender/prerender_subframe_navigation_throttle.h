@@ -41,7 +41,10 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
   void DidFinishNavigation(NavigationHandle* nav_handle) override;
 
   ThrottleCheckResult WillStartOrRedirectRequest();
-  void DeferCrossOriginSubframeNavigation(FrameTreeNode* frame_tree_node);
+
+  // Called when this throttle defers a navigation. Observes the PrerenderHost
+  // so that the throttle can resume the navigation upon activation.
+  void DeferCrossOriginSubframeNavigation(const FrameTreeNode& frame_tree_node);
 
   bool is_deferred_ = false;
   const int prerender_root_ftn_id_;
