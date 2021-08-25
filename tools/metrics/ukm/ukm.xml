@@ -17837,7 +17837,7 @@ be describing additional metrics about the same event.
   <summary>
     Features of a web app recorded at most once per day if a user interacted
     with the web app. Recorded for installed and/or promotable (installable) web
-    apps unless noted otherwise on the metric.
+    apps unless noted otherwise on the metric. Keyed by start_url of the app.
   </summary>
   <metric name="BackgroundDuration">
     <summary>
