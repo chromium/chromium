@@ -63,6 +63,10 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       int listener_process_id,
       content::WebContents* web_contents);
 
+  // The following two methods should only be called by Lacros.
+  void NotifyAllAutomationExtensionsGone();
+  void NotifyExtensionListenerAdded();
+
   void AddObserver(AutomationEventRouterObserver* observer);
   void RemoveObserver(AutomationEventRouterObserver* observer);
 

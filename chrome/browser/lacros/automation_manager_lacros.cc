@@ -116,3 +116,13 @@ void AutomationManagerLacros::PerformAction(
   extensions::AutomationInternalPerformActionFunction::PerformAction(
       action_data, /*extension=*/nullptr, /*automation_info=*/nullptr);
 }
+
+void AutomationManagerLacros::NotifyAllAutomationExtensionsGone() {
+  extensions::AutomationEventRouter::GetInstance()
+      ->NotifyAllAutomationExtensionsGone();
+}
+
+void AutomationManagerLacros::NotifyExtensionListenerAdded() {
+  extensions::AutomationEventRouter::GetInstance()
+      ->NotifyExtensionListenerAdded();
+}

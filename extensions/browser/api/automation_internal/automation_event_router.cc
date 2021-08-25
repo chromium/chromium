@@ -177,6 +177,16 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
       ->DispatchEventToExtension(data.source_extension_id, std::move(event));
 }
 
+void AutomationEventRouter::NotifyAllAutomationExtensionsGone() {
+  for (AutomationEventRouterObserver& observer : observers_)
+    observer.AllAutomationExtensionsGone();
+}
+
+void AutomationEventRouter::NotifyExtensionListenerAdded() {
+  for (AutomationEventRouterObserver& observer : observers_)
+    observer.ExtensionListenerAdded();
+}
+
 void AutomationEventRouter::AddObserver(
     AutomationEventRouterObserver* observer) {
   observers_.AddObserver(observer);
