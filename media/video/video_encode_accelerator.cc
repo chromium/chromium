@@ -13,13 +13,6 @@
 
 namespace media {
 
-H264Metadata::H264Metadata() = default;
-H264Metadata::~H264Metadata() = default;
-H264Metadata::H264Metadata(const H264Metadata&) = default;
-
-Vp8Metadata::Vp8Metadata()
-    : non_reference(false), temporal_idx(0), layer_sync(false) {}
-
 Vp9Metadata::Vp9Metadata() = default;
 Vp9Metadata::~Vp9Metadata() = default;
 Vp9Metadata::Vp9Metadata(const Vp9Metadata&) = default;

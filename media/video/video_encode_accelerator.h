@@ -36,10 +36,6 @@ class VideoFrame;
 //                  reference any reference buffer containing a frame with
 //                  temporal_idx > 0.
 struct MEDIA_EXPORT H264Metadata final {
-  H264Metadata();
-  ~H264Metadata();
-  H264Metadata(const H264Metadata&);
-
   uint8_t temporal_idx = 0;
   bool layer_sync = false;
 };
@@ -53,10 +49,9 @@ struct MEDIA_EXPORT H264Metadata final {
 //                  reference any reference buffer containing a frame with
 //                  temporal_idx > 0.
 struct MEDIA_EXPORT Vp8Metadata final {
-  Vp8Metadata();
-  bool non_reference;
-  uint8_t temporal_idx;
-  bool layer_sync;
+  bool non_reference = false;
+  uint8_t temporal_idx = 0;
+  bool layer_sync = false;
 };
 
 // Metadata for a VP9 bitstream buffer, this struct resembles
