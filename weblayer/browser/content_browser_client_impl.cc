@@ -466,9 +466,10 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
   context_params->allow_any_cors_exempt_header_for_browser = true;
   context_params->accept_language = GetAcceptLangs(context);
   if (!context->IsOffTheRecord()) {
-    base::FilePath cookie_path = context->GetPath();
-    cookie_path = cookie_path.Append(FILE_PATH_LITERAL("Cookies"));
-    context_params->cookie_path = cookie_path;
+    context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+    context_params->file_paths->data_path = context->GetPath();
+    context_params->file_paths->cookie_database_name =
+        base::FilePath(FILE_PATH_LITERAL("Cookies"));
     context_params->http_cache_path =
         ProfileImpl::GetCachePath(context).Append(FILE_PATH_LITERAL("Cache"));
   }

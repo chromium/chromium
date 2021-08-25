@@ -225,8 +225,11 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
 
   auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
   DCHECK(browser_context);
-  network_context_params->cookie_path =
-      browser_context->GetPath().Append(kCookieStoreFile);
+  network_context_params->file_paths =
+      network::mojom::NetworkContextFilePaths::New();
+  network_context_params->file_paths->data_path = browser_context->GetPath();
+  network_context_params->file_paths->cookie_database_name =
+      base::FilePath(kCookieStoreFile);
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
   network_context_params->cookie_manager_params = CreateCookieManagerParams();

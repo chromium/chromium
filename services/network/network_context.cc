@@ -393,6 +393,29 @@ void GetCTPolicyConfigForCTLogInfo(
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
+// Obtains a full data file path from a NetworkContextFilePaths, a class member
+// pointer to the data file. If valid, then returns true and places the full
+// path into `full_path` otherwise returns false.
+bool GetFullDataFilePath(
+    const mojom::NetworkContextFilePathsPtr& file_paths,
+    absl::optional<base::FilePath> network::mojom::NetworkContextFilePaths::*
+        field_name,
+    base::FilePath& full_path) {
+  if (!file_paths)
+    return false;
+
+  absl::optional<base::FilePath> relative_file_path =
+      file_paths.get()->*field_name;
+  if (!relative_file_path.has_value())
+    return false;
+
+  // Path to a data file should always be a plain filename.
+  DCHECK_EQ(relative_file_path->BaseName(), *relative_file_path);
+
+  full_path = file_paths->data_path.Append(relative_file_path->value());
+  return true;
+}
+
 }  // namespace
 
 constexpr uint32_t NetworkContext::kMaxOutstandingRequestsPerProcess;
@@ -420,12 +443,7 @@ NetworkContext::NetworkContext(
       receiver_(this, std::move(receiver)),
       cors_preflight_controller_(network_service) {
 #if defined(OS_WIN) && DCHECK_IS_ON()
-  if (params_->cookie_path.has_value() ||
-      params_->http_cache_path.has_value() ||
-      params_->http_server_properties_path.has_value() ||
-      params_->transport_security_persister_file_path.has_value() ||
-      params_->reporting_and_nel_store_path.has_value() ||
-      params_->trust_token_path.has_value()) {
+  if (params_->file_paths) {
     DCHECK(params_->win_permissions_set)
         << "Permissions not set on files. Call "
            "CreateNetworkContextInNetworkService or "
@@ -2170,12 +2188,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (base::FeatureList::IsEnabled(features::kTrustTokens)) {
     trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
 
-    if (params_->trust_token_path) {
+    base::FilePath trust_token_path;
+    if (GetFullDataFilePath(
+            params_->file_paths,
+            &network::mojom::NetworkContextFilePaths::trust_token_database_name,
+            trust_token_path)) {
       SQLiteTrustTokenPersister::CreateForFilePath(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), kTrustTokenDatabaseTaskPriority,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          *params_->trust_token_path, kTrustTokenWriteBufferingWindow,
+          trust_token_path, kTrustTokenWriteBufferingWindow,
           base::BindOnce(&NetworkContext::FinishConstructingTrustTokenStore,
                          weak_factory_.GetWeakPtr()));
     } else {
@@ -2248,9 +2270,14 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_pac_quick_check_enabled(params_->pac_quick_check_enabled);
 
   std::unique_ptr<PrefService> pref_service;
-  if (params_->http_server_properties_path) {
+
+  base::FilePath http_server_properties_file_name;
+  if (GetFullDataFilePath(params_->file_paths,
+                          &network::mojom::NetworkContextFilePaths::
+                              http_server_properties_file_name,
+                          http_server_properties_file_name)) {
     scoped_refptr<JsonPrefStore> json_pref_store(new JsonPrefStore(
-        *params_->http_server_properties_path, nullptr,
+        http_server_properties_file_name, nullptr,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
              base::TaskPriority::BEST_EFFORT})));
@@ -2271,9 +2298,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             pref_service.get(), network_service_->network_quality_estimator());
   }
 
-  if (params_->transport_security_persister_file_path) {
+  base::FilePath transport_security_persister_file_name;
+  if (GetFullDataFilePath(params_->file_paths,
+                          &network::mojom::NetworkContextFilePaths::
+                              transport_security_persister_file_name,
+                          transport_security_persister_file_name)) {
     builder.set_transport_security_persister_file_path(
-        *params_->transport_security_persister_file_path);
+        transport_security_persister_file_name);
   }
   builder.set_hsts_policy_bypass_list(params_->hsts_policy_bypass_list);
 
@@ -2296,7 +2327,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       base::FeatureList::IsEnabled(features::kNetworkErrorLogging);
   builder.set_network_error_logging_enabled(nel_enabled);
 
-  if (params_->reporting_and_nel_store_path &&
+  base::FilePath reporting_and_nel_store_database_name;
+  if (GetFullDataFilePath(params_->file_paths,
+                          &network::mojom::NetworkContextFilePaths::
+                              reporting_and_nel_store_database_name,
+                          reporting_and_nel_store_database_name) &&
       (reporting_enabled || nel_enabled)) {
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
         base::ThreadTaskRunnerHandle::Get();
@@ -2307,7 +2342,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     std::unique_ptr<net::SQLitePersistentReportingAndNelStore> sqlite_store(
         new net::SQLitePersistentReportingAndNelStore(
-            params_->reporting_and_nel_store_path.value(), client_task_runner,
+            reporting_and_nel_store_database_name, client_task_runner,
             background_task_runner));
     builder.set_persistent_reporting_and_nel_store(std::move(sqlite_store));
   } else {
@@ -2467,7 +2502,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 scoped_refptr<SessionCleanupCookieStore>
 NetworkContext::MakeSessionCleanupCookieStore() const {
-  if (!params_->cookie_path) {
+  base::FilePath cookie_path;
+  if (!GetFullDataFilePath(
+          params_->file_paths,
+          &network::mojom::NetworkContextFilePaths::cookie_database_name,
+          cookie_path)) {
     DCHECK(!params_->restore_old_session_cookies);
     DCHECK(!params_->persist_session_cookies);
     return nullptr;
@@ -2489,11 +2528,11 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
 #endif
     crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   }
+
   scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
       new net::SQLitePersistentCookieStore(
-          params_->cookie_path.value(), client_task_runner,
-          background_task_runner, params_->restore_old_session_cookies,
-          crypto_delegate));
+          cookie_path, client_task_runner, background_task_runner,
+          params_->restore_old_session_cookies, crypto_delegate));
 
   return base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store);
 }

@@ -197,12 +197,14 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->http_server_properties_path =
-      browser()->profile()->GetPath().Append(
-          FILE_PATH_LITERAL("Temp Network Persistent State"));
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  base::FilePath full_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("Temp Network Persistent State"));
+  context_params->file_paths->data_path = full_path.DirName();
+  context_params->file_paths->http_server_properties_file_name =
+      full_path.BaseName();
 
-  auto state = base::MakeRefCounted<JsonPrefStore>(
-      context_params->http_server_properties_path.value());
+  auto state = base::MakeRefCounted<JsonPrefStore>(full_path);
 
   base::DictionaryValue pref_value;
   base::Value value("2G");

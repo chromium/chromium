@@ -144,8 +144,6 @@ TEST_F(NetworkServiceTest, DestroyingServiceDestroysContext) {
 
 TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   mojom::NetworkContextParamsPtr params = CreateContextParams();
-  params->cookie_path = base::FilePath();
-  params->enable_encrypted_cookies = false;
   mojo::Remote<mojom::NetworkContext> network_context;
   service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
                                   std::move(params));

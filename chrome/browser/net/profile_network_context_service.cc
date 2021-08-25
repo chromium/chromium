@@ -687,25 +687,22 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->http_cache_max_size =
         local_state->GetInteger(prefs::kDiskCacheSize);
 
+    network_context_params->file_paths =
+        ::network::mojom::NetworkContextFilePaths::New();
+
+    network_context_params->file_paths->data_path = path;
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
-    network_context_params->http_server_properties_path =
-        path.Append(chrome::kNetworkPersistentStateFilename);
-
-    base::FilePath cookie_path = path;
-    cookie_path = cookie_path.Append(chrome::kCookieFilename);
-    network_context_params->cookie_path = cookie_path;
-
-    base::FilePath trust_token_path = path;
-    trust_token_path = trust_token_path.Append(chrome::kTrustTokenFilename);
-    network_context_params->trust_token_path = std::move(trust_token_path);
+    network_context_params->file_paths->http_server_properties_file_name =
+        base::FilePath(chrome::kNetworkPersistentStateFilename);
+    network_context_params->file_paths->cookie_database_name =
+        base::FilePath(chrome::kCookieFilename);
+    network_context_params->file_paths->trust_token_database_name =
+        base::FilePath(chrome::kTrustTokenFilename);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-    base::FilePath reporting_and_nel_store_path = path;
-    reporting_and_nel_store_path = reporting_and_nel_store_path.Append(
-        chrome::kReportingAndNelStoreFilename);
-    network_context_params->reporting_and_nel_store_path =
-        reporting_and_nel_store_path;
+    network_context_params->file_paths->reporting_and_nel_store_database_name =
+        base::FilePath(chrome::kReportingAndNelStoreFilename);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
     if (relative_partition_path.empty()) {  // This is the main partition.
@@ -719,12 +716,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       network_context_params->persist_session_cookies = false;
     }
 
-    base::FilePath transport_security_persister_file_path = path;
-    transport_security_persister_file_path =
-        transport_security_persister_file_path.Append(
-            chrome::kTransportSecurityPersisterFilename);
-    network_context_params->transport_security_persister_file_path =
-        std::move(transport_security_persister_file_path);
+    network_context_params->file_paths->transport_security_persister_file_name =
+        base::FilePath(chrome::kTransportSecurityPersisterFilename);
   }
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);

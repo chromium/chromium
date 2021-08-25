@@ -190,6 +190,47 @@ struct CTPolicy {
   array<string> excluded_legacy_spkis;
 };
 
+struct NetworkContextFilePaths {
+  // Points to a path that will contain all the network service data including
+  // those files/databases represented in `cookie_database_name`,
+  // `trust_token_database_name`, `http_server_properties_file_name`,
+  // `transport_security_persister_file_name` and
+  // `reporting_and_nel_store_database_name`.
+  mojo_base.mojom.FilePath data_path;
+
+  // Points to the cookie database file name inside `data_path`. An in-memory
+  // cookie store is used if it's empty, or if `data_path` is empty.
+  mojo_base.mojom.FilePath? cookie_database_name;
+
+  // Points to the Trust Token database file name inside `data_path`. An
+  // in-memory trust token store is used if it's empty, or if `data_path` is
+  // empty, or (through a fallback in the initialization logic; see
+  // SQLiteTrustTokenPersister's comments) if initialization fails.
+  //
+  // Initializing the on-disk database takes place asynchronously, so requests
+  // near startup may not support Trust Tokens protocol operations.
+  mojo_base.mojom.FilePath? trust_token_database_name;
+
+  // The name of the file to store cached server properties (Like HTTP2 and QUIC
+  // support) inside `data_path`. This information is used as a performance
+  // optimization in connection logic. If empty, or if `data_path` is empty, an
+  // in-memory cache will be used instead.
+  mojo_base.mojom.FilePath? http_server_properties_file_name;
+
+  // The name of the file to store cached transport security properties (like
+  // HSTS) inside `data_path`. If empty, or `data_path` is empty, or the file
+  // can't be opened, an in-memory store will be used instead.
+  mojo_base.mojom.FilePath? transport_security_persister_file_name;
+
+  // Points to a sqlite database contained within `data_path` containing
+  // persisted Reporting clients and NEL policies. If Reporting and NEL
+  // persistence is disabled, then this field is ignored. If this field is
+  // empty, or `data_path` is empty, then persistence will be disabled
+  // regardless. This field should not be used if the ENABLE_REPORTING build
+  // flag is false.
+  mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
+};
+
 // Parameters for constructing a network context.
 struct NetworkContextParams {
   // Name used by memory tools to identify the context.
@@ -228,17 +269,6 @@ struct NetworkContextParams {
   [EnableIf=is_chromeos_ash]
   pending_remote<DhcpWpadUrlClient>? dhcp_wpad_url_client;
 
-  // Points to the cookie file. An in-memory cookie store is used if it's empty.
-  mojo_base.mojom.FilePath? cookie_path;
-
-  // Points to the Trust Token database. An in-memory trust token store is used
-  // if it's empty, or (through a fallback in the initialization logic; see
-  // SQLiteTrustTokenPersister's comments) if initialization fails.
-  //
-  // Initializing the on-disk database takes place asynchronously, so requests
-  // near startup may not support Trust Tokens protocol operations.
-  mojo_base.mojom.FilePath? trust_token_path;
-
   // If true, cookies will be stored encrypted.
   bool enable_encrypted_cookies = true;
 
@@ -258,15 +288,6 @@ struct NetworkContextParams {
   // Points to the HTTP cache directory. Ignored if the cache is disabled.
   // If null and the cache is enabled, an in-memory database is used.
   mojo_base.mojom.FilePath? http_cache_path;
-
-  // The file to store cached server properties (Like HTTP2 and QUIC support).
-  // This information is used as a performance optimization in connection
-  // logic. If null, an in-memory cache will be used instead.
-  mojo_base.mojom.FilePath? http_server_properties_path;
-
-  // The file to store cached transport security properties (like HSTS). If
-  // null, or the file can't be opened, an in-memory store will be used instead.
-  mojo_base.mojom.FilePath? transport_security_persister_file_path;
 
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled
@@ -412,13 +433,6 @@ struct NetworkContextParams {
   // policy.
   array<string> hsts_policy_bypass_list;
 
-  // Points to a sqlite database containing persisted Reporting clients and NEL
-  // policies. If Reporting and NEL persistence is disabled, then we'll ignore
-  // this field. If this field is null then persistence will be disabled
-  // regardless. This field should not be used if the ENABLE_REPORTING build
-  // flag is false.
-  mojo_base.mojom.FilePath? reporting_and_nel_store_path;
-
   // The params are network context specific which will be merged with
   // the dynamic preference from NetworkService side, to populate
   // HttpAuthPreference.
@@ -441,6 +455,14 @@ struct NetworkContextParams {
   // files and sandbox can be enabled for this network context.
   [EnableIf=win_permissions_validation]
   bool win_permissions_set = false;
+
+  // The paths to data files used by this network context, except for the disk
+  // cache which is specified by the `http_cache_path` parameter. If empty then
+  // persistent storage for all of the files within this parameter will be
+  // disabled for the network context and some data may be stored in memory or
+  // disabled. See the above definition of each inner field for details of these
+  // behaviors.
+  NetworkContextFilePaths? file_paths;
 };
 
 struct NetworkConditions {
