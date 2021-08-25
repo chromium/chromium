@@ -6,6 +6,19 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.m.js';
+// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+// #import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
+// #import {loadTimeData} from './i18n_setup.js';
+// #import {OobeTypes} from './components/oobe_types.m.js';
+
+
+// #import {RESET_AVAILABLE_SCREEN_GROUP, SCREEN_APP_LAUNCH_SPLASH, SCREEN_GAIA_SIGNIN, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, ACCELERATOR_APP_LAUNCH_BAILOUT, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+// #import {MultiTapDetector} from './multi_tap_detector.m.js';
+// #import {keyboard} from './keyboard_utils.m.js'
+// #import {DisplayManagerScreenAttributes} from './components/display_manager_types.m.js'
+
 cr.define('cr.ui.login', function() {
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
@@ -26,9 +39,13 @@ cr.define('cr.ui.login', function() {
    * callbacks are called.
    * @param {Element} element
    * @param {string} name function name
-   * @param {...*} arguments arguments for the function
+   * @param {...*} args arguments for the function
+   *
+   * @suppress {missingProperties}
+   * element.behaviors
+   * TODO(crbug.com/1229130) - Remove this suppression.
    */
-  function invokePolymerMethod(element, name, ...args) {
+  /* #export */ function invokePolymerMethod(element, name, ...args) {
     let method = element[name];
     if (!method || typeof method !== 'function')
       return;
@@ -53,7 +70,7 @@ cr.define('cr.ui.login', function() {
    * A display manager that manages initialization of screens,
    * transitions, error messages display.
    */
-  class DisplayManager {
+  /* #export */ class DisplayManager {
     constructor() {
       /**
        * Registered screens.
@@ -107,7 +124,7 @@ cr.define('cr.ui.login', function() {
 
       /**
        * Stored OOBE configuration for newly registered screens.
-       * @type {!OobeTypes.OobeConfiguration}
+       * @type {OobeTypes.OobeConfiguration|undefined}
        */
       this.oobe_configuration_ = undefined;
 
@@ -169,7 +186,7 @@ cr.define('cr.ui.login', function() {
     setClientAreaSize(width, height) {
       if (!cr.isChromeOS) {
         var clientArea = $('outer-container');
-        var bottom = parseInt(window.getComputedStyle(clientArea).bottom);
+        var bottom = parseInt(window.getComputedStyle(clientArea).bottom, 10);
         clientArea.style.minHeight = cr.ui.toCssPx(height - bottom);
       }
     }
@@ -200,7 +217,7 @@ cr.define('cr.ui.login', function() {
 
     /**
      * Sets the hint for calculating OOBE dialog inner padding.
-     * @param {OobeTypes.DialogPaddingMode} mode.
+     * @param {OobeTypes.DialogPaddingMode} mode
      */
     setDialogPaddingMode(mode) {
       document.documentElement.setAttribute('dialog-padding', mode);
@@ -238,7 +255,7 @@ cr.define('cr.ui.login', function() {
 
     /**
      * Returns current OOBE configuration.
-     * @return {!OobeTypes.OobeConfiguration}
+     * @return {OobeTypes.OobeConfiguration|undefined}
      */
     getOobeConfiguration() {
       return this.oobe_configuration_;
@@ -265,6 +282,10 @@ cr.define('cr.ui.login', function() {
     /**
      * Handle accelerators.
      * @param {string} name Accelerator name.
+     *
+     * @suppress {missingProperties}
+     * $('reset').userActed(...)
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     handleAccelerator(name) {
       if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
@@ -299,6 +320,10 @@ cr.define('cr.ui.login', function() {
     /**
      * Switches to the next OOBE step.
      * @param {number} nextStepIndex Index of the next step.
+     *
+     * @suppress {missingProperties}
+     * newStep.defaultControl
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     toggleStep_(nextStepIndex, screenData) {
       let currentStepId = this.screens_[this.currentStep_];
@@ -490,7 +515,11 @@ cr.define('cr.ui.login', function() {
       }
     }
 
-    /** Initializes demo mode start listener. */
+    /** Initializes demo mode start listener.
+     * @suppress {missingProperties}
+     * currentScreen.onSetupDemoModeGesture()
+     * TODO(crbug.com/1229130) - Remove this suppression.
+     */
     initializeDemoModeMultiTapListener() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
@@ -616,7 +645,7 @@ cr.define('cr.ui.login', function() {
       $('bluetooth-name').textContent = bluetoothName;
     }
   }
-
+  // #cr_define_end
   // Export
   return {
     DisplayManager: DisplayManager,

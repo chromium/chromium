@@ -8,14 +8,24 @@
  * shared between all *two* screens here.
  */
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {$} from 'chrome://resources/js/util.m.js';
+// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
+// #import {DisplayManager} from './display_manager.m.js';
+// #import {DISPLAY_TYPE} from './components/display_manager_types.m.js';
+// #import {DemoModeTestHelper} from './demo_mode_test_helper.m.js';
+// #import {loadTimeData} from './i18n_setup.js';
+// #import {OobeTypes} from './components/oobe_types.m.js';
+
 cr.define('cr.ui', function() {
-  var DisplayManager = cr.ui.login.DisplayManager;
+  /* #ignore */ var DisplayManager = cr.ui.login.DisplayManager;
 
   /**
    * Out of box controller. It manages initialization of screens,
    * transitions, error messages display.
    */
-  class Oobe extends DisplayManager {
+  /* #export */ class Oobe extends DisplayManager {
     /**
      * OOBE initialization coordination. Used by tests to wait for OOBE
      * to fully load when using the HTLImports polyfill.
@@ -41,9 +51,9 @@ cr.define('cr.ui', function() {
      * @param {boolean} reverse Is focus returned in reverse order?
      */
     static focusReturned(reverse) {
-      if (Oobe.getInstance().currentScreen &&
-          Oobe.getInstance().currentScreen.onFocusReturned) {
-        Oobe.getInstance().currentScreen.onFocusReturned(reverse);
+      const screen = Oobe.getInstance().currentScreen;
+      if (screen && screen.onFocusReturned) {
+        screen.onFocusReturned(reverse);
       }
     }
 
@@ -136,7 +146,7 @@ cr.define('cr.ui', function() {
         chrome.send('hideOobeDialog');
         return;
       }
-      this.showSigninUI();
+      this.showSigninUI("");
       this.resetSigninUI(true);
     }
 
@@ -172,7 +182,7 @@ cr.define('cr.ui', function() {
 
     /**
      * Sets the hint for calculating OOBE dialog margins.
-     * @param {OobeTypes.DialogPaddingMode} mode.
+     * @param {OobeTypes.DialogPaddingMode} mode
      */
     static setDialogPaddingMode(mode) {
       Oobe.getInstance().setDialogPaddingMode(mode);
@@ -286,6 +296,10 @@ cr.define('cr.ui', function() {
      *
      *  TODO(crbug.com/1111387) - Remove inline values from
      *  ENROLLMENT_STEP once fully migrated to JS modules.
+     *
+     * @suppress {missingProperties}
+     * $('enterprise-enrollment').uiStep
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     static isEnrollmentSuccessfulForTest() {
       const step = $('enterprise-enrollment').uiStep;
@@ -314,8 +328,6 @@ cr.define('cr.ui', function() {
      * Same as the displayInfo.name parameter returned by
      * chrome.system.display.getInfo(), but unlike chrome.system it's available
      * during OOBE.
-     *
-     * @return {string} The name of the primary display.
      */
     static getPrimaryDisplayNameForTesting() {
       return cr.sendWithPromise('getPrimaryDisplayNameForTesting');
@@ -324,6 +336,10 @@ cr.define('cr.ui', function() {
     /**
      * Click on the primary action button ("Next" usually) for Gaia. On the
      * Login or Enterprise Enrollment screen.
+     *
+     * @suppress {missingProperties}
+     * $('...').clickPrimaryButtonForTesting()
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     static clickGaiaPrimaryButtonForTesting() {
       if (!$('gaia-signin').hidden) {
@@ -351,7 +367,7 @@ cr.define('cr.ui', function() {
     static reloadContent(data) {
       // Reload global local strings, process DOM tree again.
       loadTimeData.overrideValues(data);
-      i18nTemplate.process(document, loadTimeData);
+      /* #ignore */ i18nTemplate.process(document, loadTimeData);
 
       // Update localized content of the screens.
       Oobe.getInstance().updateLocalizedContent_();
@@ -389,6 +405,7 @@ cr.define('cr.ui', function() {
 
   cr.addSingletonGetter(Oobe);
 
+  // #cr_define_end
   // Export
   return {Oobe: Oobe};
 });
