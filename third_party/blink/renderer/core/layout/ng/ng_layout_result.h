@@ -529,11 +529,13 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
               /* is_pushed_by_floats */ false,
               /* adjoining_object_types */ kAdjoiningNone,
               /* has_descendant_that_depends_on_percentage_block_size */
-              false) {}
+              false,
+              /* subtree_modified_margin_strut */ false) {}
     Bitfields(bool is_self_collapsing,
               bool is_pushed_by_floats,
               NGAdjoiningObjectTypes adjoining_object_types,
-              bool has_descendant_that_depends_on_percentage_block_size)
+              bool has_descendant_that_depends_on_percentage_block_size,
+              bool subtree_modified_margin_strut)
         : has_rare_data(false),
           has_rare_data_exclusion_space(false),
           has_oof_positioned_offset(false),
@@ -546,7 +548,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           is_initial_block_size_indefinite(false),
           has_descendant_that_depends_on_percentage_block_size(
               has_descendant_that_depends_on_percentage_block_size),
-          subtree_modified_margin_strut(false),
+          subtree_modified_margin_strut(subtree_modified_margin_strut),
           initial_break_before(static_cast<unsigned>(EBreakBetween::kAuto)),
           final_break_after(static_cast<unsigned>(EBreakBetween::kAuto)),
           status(static_cast<unsigned>(kSuccess)) {}

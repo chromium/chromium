@@ -1150,10 +1150,17 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
     line_breaker.NextLine(&line_info);
 
     const auto* block_in_inline_result = line_info.BlockInInlineLayoutResult();
-    if (UNLIKELY(block_in_inline_result && block_in_inline_result->Status() !=
-                                               NGLayoutResult::kSuccess)) {
-      items_builder->ReleaseCurrentLogicalLineItems();
-      return block_in_inline_result;
+    if (block_in_inline_result) {
+      if (UNLIKELY(block_in_inline_result->Status() !=
+                   NGLayoutResult::kSuccess)) {
+        items_builder->ReleaseCurrentLogicalLineItems();
+        return block_in_inline_result;
+      }
+
+      if (block_in_inline_result->IsPushedByFloats())
+        container_builder_.SetIsPushedByFloats();
+      else if (block_in_inline_result->SubtreeModifiedMarginStrut())
+        container_builder_.SetSubtreeModifiedMarginStrut();
     }
 
     // Set our BFC block-offset if we aren't an empty line.
@@ -1161,11 +1168,8 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       if (block_in_inline_result && block_in_inline_result->BfcBlockOffset()) {
         const auto result_bfc_block_offset =
             block_in_inline_result->BfcBlockOffset();
-        DCHECK(result_bfc_block_offset);
         container_builder_.SetBfcBlockOffset(*result_bfc_block_offset);
         container_builder_.SetLineBoxBfcBlockOffset(*result_bfc_block_offset);
-        if (block_in_inline_result->IsPushedByFloats())
-          container_builder_.SetIsPushedByFloats();
       } else {
         container_builder_.SetBfcBlockOffset(bfc_block_offset);
         container_builder_.SetLineBoxBfcBlockOffset(

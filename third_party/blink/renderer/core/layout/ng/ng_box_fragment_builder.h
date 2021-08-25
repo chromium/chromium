@@ -351,13 +351,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     previous_break_after_ = break_after;
   }
 
-  // Set when this subtree has modified the incoming margin-strut, such that it
-  // may change our final position.
-  void SetSubtreeModifiedMarginStrut() {
-    DCHECK(!BfcBlockOffset());
-    subtree_modified_margin_strut_ = true;
-  }
-
   // Join/"collapse" the previous (stored) break-after value with the next
   // break-before value, to determine how to deal with breaking between two
   // in-flow siblings.
@@ -621,7 +614,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool has_float_break_inside_ = false;
   bool has_forced_break_ = false;
   bool is_new_fc_ = false;
-  bool subtree_modified_margin_strut_ = false;
   bool has_seen_all_children_ = false;
   bool is_math_fraction_ = false;
   bool is_math_operator_ = false;

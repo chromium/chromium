@@ -58,8 +58,6 @@ NGLayoutResult::NGLayoutResult(
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
-  bitfields_.subtree_modified_margin_strut =
-      builder->subtree_modified_margin_strut_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
   if (builder->custom_layout_data_) {
     EnsureRareData()->custom_layout_data =
@@ -197,12 +195,11 @@ NGLayoutResult::NGLayoutResult(
     : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
                              : NGConstraintSpace()),
       physical_fragment_(std::move(physical_fragment)),
-      bitfields_(
-          /* is_self_collapsing */ builder->is_self_collapsing_,
-          /* is_pushed_by_floats */ builder->is_pushed_by_floats_,
-          /* adjoining_object_types */ builder->adjoining_object_types_,
-          /* has_descendant_that_depends_on_percentage_block_size */
-          builder->has_descendant_that_depends_on_percentage_block_size_) {
+      bitfields_(builder->is_self_collapsing_,
+                 builder->is_pushed_by_floats_,
+                 builder->adjoining_object_types_,
+                 builder->has_descendant_that_depends_on_percentage_block_size_,
+                 builder->subtree_modified_margin_strut_) {
 #if DCHECK_IS_ON()
   if (bitfields_.is_self_collapsing && physical_fragment_) {
     // A new formatting-context shouldn't be self-collapsing.

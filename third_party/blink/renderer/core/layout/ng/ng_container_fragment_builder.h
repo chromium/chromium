@@ -235,6 +235,13 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void SetIsPushedByFloats() { is_pushed_by_floats_ = true; }
   bool IsPushedByFloats() const { return is_pushed_by_floats_; }
 
+  // Set when this subtree has modified the incoming margin-strut, such that it
+  // may change our final position.
+  void SetSubtreeModifiedMarginStrut() {
+    DCHECK(!BfcBlockOffset());
+    subtree_modified_margin_strut_ = true;
+  }
+
   void ResetAdjoiningObjectTypes() {
     adjoining_object_types_ = kAdjoiningNone;
     has_adjoining_object_descendants_ = false;
@@ -378,6 +385,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   bool is_self_collapsing_ = false;
   bool is_pushed_by_floats_ = false;
+  bool subtree_modified_margin_strut_ = false;
   bool is_legacy_layout_root_ = false;
   bool is_block_in_inline_ = false;
 
