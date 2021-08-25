@@ -2800,7 +2800,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/nearby_share/public/mojom",
-      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chrome/browser/web_applications",
@@ -3001,6 +3000,10 @@ static_library("ui") {
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
     ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {

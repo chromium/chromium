@@ -166,7 +166,7 @@
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
     <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
         <cr-link-row id="openChromeOSSecureDnsSettings"
             on-click="onOpenChromeOSSecureDnsSettingsClicked_"

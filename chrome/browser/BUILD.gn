@@ -2418,7 +2418,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/chromeos/enterprise_casting:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/launcher_internals:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
-      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chromeos/components/camera_app_ui",
@@ -4986,6 +4985,7 @@ static_library("browser") {
       "platform_keys/platform_keys.h",
     ]
     deps += [
+      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",

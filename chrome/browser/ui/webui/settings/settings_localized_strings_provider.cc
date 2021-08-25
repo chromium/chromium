@@ -103,13 +103,16 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 #include "ui/accessibility/accessibility_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #endif
 
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1345,6 +1348,8 @@ bool ShouldLinkSecureDnsOsSettings() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(chromeos::features::kEnableDnsProxy) &&
          base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return true;
 #else
   return false;
 #endif
@@ -1455,7 +1460,7 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC},
     {"networkPredictionEnabledDescCookiesPage",
      IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {"openChromeOSSecureDnsSettingsLabel",
      IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL},
 #endif
@@ -1490,7 +1495,7 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();
   html_source->AddBoolean("showSecureDnsSetting",
                           show_secure_dns && !link_secure_dns);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("showSecureDnsSettingLink",
                           show_secure_dns && link_secure_dns);
   html_source->AddString(

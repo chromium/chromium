@@ -96,7 +96,7 @@ export class SettingsSecurityPageElement extends
         },
       },
 
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       /**
        * Whether a link to secure DNS OS setting should be displayed.
        * @private
@@ -336,7 +336,7 @@ export class SettingsSecurityPageElement extends
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /** @private */
   onOpenChromeOSSecureDnsSettingsClicked_() {
     const path =

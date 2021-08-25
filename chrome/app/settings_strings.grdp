@@ -1246,7 +1246,7 @@
   <message name="IDS_SETTINGS_PRIVACY_MORE" desc="Label on the expansion button to show more privacy settings.">
     More
   </message>
-  <if expr="chromeos">
+  <if expr="chromeos or lacros">
     <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
       Manage secure DNS in Chrome OS settings
     </message>
