@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/platform/ax_platform_node_mac.h"
 
 namespace content {
 
@@ -66,7 +67,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // object. The renderer converts webkit's accessibility tree into a
 // WebAccessibility tree and passes it to the browser process over IPC.
 // This class converts it into a format Cocoa can query.
-@interface BrowserAccessibilityCocoa : NSAccessibilityElement {
+@interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa {
  @private
   content::BrowserAccessibility* _owner;
   // An array of children of this object. Cached to avoid re-computing.
