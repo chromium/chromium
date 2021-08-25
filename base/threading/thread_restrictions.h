@@ -110,6 +110,7 @@ class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
+class WebEngineBrowserMainParts;
 
 Profile* GetLastProfileMac();
 
@@ -449,6 +450,7 @@ class BASE_EXPORT ScopedAllowBlocking {
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
   friend class web::WebSubThread;
+  friend class ::WebEngineBrowserMainParts;
   friend class weblayer::BrowserContextImpl;
   friend class weblayer::ContentBrowserClientImpl;
   friend class weblayer::ProfileImpl;

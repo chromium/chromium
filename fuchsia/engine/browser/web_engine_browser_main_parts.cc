@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -321,11 +322,17 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
       base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
   base::i18n::SetICUDefaultLocale(primary_locale);
 
-  // Reload locale-specific resources.
-  std::string loaded_locale =
-      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
-          base::i18n::GetConfiguredLocale());
-  VLOG(1) << "Reloaded locale resources: " << loaded_locale;
+  {
+    // Reloading locale-specific resources requires synchronous blocking.
+    // Locale changes should not be frequent enough for this to cause jank.
+    base::ScopedAllowBlocking allow_blocking;
+
+    std::string loaded_locale =
+        ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
+            base::i18n::GetConfiguredLocale());
+
+    VLOG(1) << "Reloaded locale resources: " << loaded_locale;
+  }
 
   // Reconfigure each web.Context's NetworkContext with the new setting.
   for (auto& binding : context_bindings_.bindings()) {
