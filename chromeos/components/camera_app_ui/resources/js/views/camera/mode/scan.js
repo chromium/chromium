@@ -34,7 +34,7 @@ export let DocumentResult;
  * captured result photo.
  * @interface
  */
-export class ScannerHandler {
+export class ScanHandler {
   /**
    * Plays UI effect shutter effect blocking all UI operation.
    */
@@ -90,11 +90,11 @@ export class ScannerHandler {
  */
 class DocumentPhotoHandler {
   /**
-   * @param {!ScannerHandler} handler
+   * @param {!ScanHandler} handler
    */
   constructor(handler) {
     /**
-     * @const {!ScannerHandler}
+     * @const {!ScanHandler}
      */
     this.handler_ = handler;
   }
@@ -148,39 +148,39 @@ class DocumentPhotoHandler {
 /**
  * Photo mode capture controller.
  */
-export class Scanner extends Photo {
+export class Scan extends Photo {
   /**
    * @param {!MediaStream} stream
    * @param {!Facing} facing
    * @param {?Resolution} captureResolution
-   * @param {!ScannerHandler} handler
+   * @param {!ScanHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {
     super(stream, facing, captureResolution, new DocumentPhotoHandler(handler));
 
     /**
-     * @const {!ScannerHandler}
+     * @const {!ScanHandler}
      * @protected
      */
-    this.scannerHandler_ = handler;
+    this.scanHandler_ = handler;
   }
 }
 
 /**
  * Factory for creating photo mode capture object.
  */
-export class ScannerFactory extends ModeFactory {
+export class ScanFactory extends ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
    * @param {?Resolution} captureResolution
-   * @param {!ScannerHandler} handler
+   * @param {!ScanHandler} handler
    */
   constructor(constraints, captureResolution, handler) {
     super(constraints, captureResolution);
 
     /**
-     * @const {!ScannerHandler}
+     * @const {!ScanHandler}
      * @protected
      */
     this.handler_ = handler;
@@ -190,7 +190,7 @@ export class ScannerFactory extends ModeFactory {
    * @override
    */
   produce() {
-    return new Scanner(
+    return new Scan(
         this.previewStream_,
         this.facing_,
         this.captureResolution_,

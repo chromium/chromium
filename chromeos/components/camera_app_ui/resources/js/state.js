@@ -60,7 +60,7 @@ export const State = {
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
   SHOW_SCAN_DOCUMENT_OPTIONS: 'show-scan-document-options',
-  SHOW_SCANNER_MODE: 'show-scanner-mode',
+  SHOW_SCAN_MODE: 'show-scan-mode',
   SCREEN_OFF_AUTO: 'screen-off-auto',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',
