@@ -478,6 +478,11 @@ interface FrameBindingsControl {
   // This is used for WebUI only at this time.
   EnableMojoJsBindings();
 
+  // Used to enable MojoJS bindings, exposing only the interfaces provided
+  // by `broker`.
+  EnableMojoJsBindingsWithBroker(
+    pending_remote<blink.mojom.BrowserInterfaceBroker> broker);
+
   // Used to bind WebUI and WebUIHost mojo connections.
   BindWebUI(pending_associated_receiver<content.mojom.WebUI> receiver,
             pending_associated_remote<content.mojom.WebUIHost> remote);

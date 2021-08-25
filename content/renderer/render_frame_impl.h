@@ -76,6 +76,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -376,6 +377,8 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) override;
   int GetEnabledBindings() override;
+  void EnableMojoJsBindingsWithBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override;
   void SetAccessibilityModeForTest(ui::AXMode new_mode) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   const RenderFrameMediaPlaybackOptions& GetRenderFrameMediaPlaybackOptions()
@@ -1214,6 +1217,11 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
 
   blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;
+
+  // If valid, the next ExecutionContext created will enable MojoJS bindings and
+  // use this broker to handle Mojo.bindInterface calls.
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      mojo_js_interface_broker_;
 
   // Valid during the entire life time of the RenderFrame.
   std::unique_ptr<RenderAccessibilityManager> render_accessibility_manager_;

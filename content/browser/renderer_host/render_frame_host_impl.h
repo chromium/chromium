@@ -771,6 +771,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // will have the JS bindings enabled.
   void EnableMojoJsBindings();
 
+  // Enable Mojo JavaScript bindings in the renderer process, and use the
+  // provided BrowserInterfaceBroker to handle JavaScript calls to
+  // Mojo.bindInterface. This method should be called in
+  // ReadyToCommitNavigation.
+  void EnableMojoJsBindingsWithBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker);
+
   // Returns true if this is a main RenderFrameHost. True if and only if this
   // RenderFrameHost doesn't have a parent.
   bool is_main_frame() const { return !parent_; }

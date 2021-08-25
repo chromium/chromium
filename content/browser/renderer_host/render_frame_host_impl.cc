@@ -11747,6 +11747,16 @@ void RenderFrameHostImpl::EnableMojoJsBindings() {
   GetFrameBindingsControl()->EnableMojoJsBindings();
 }
 
+void RenderFrameHostImpl::EnableMojoJsBindingsWithBroker(
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
+  // This method should only be called on RenderFrameHost that has an associated
+  // WebUI, because it needs to transfer the broker's ownership to its
+  // WebUIController. EnableMojoJsBindings does this differently and can be
+  // called before the WebUI object is created.
+  DCHECK(GetWebUI());
+  GetFrameBindingsControl()->EnableMojoJsBindingsWithBroker(std::move(broker));
+}
+
 BackForwardCacheMetrics* RenderFrameHostImpl::GetBackForwardCacheMetrics() {
   NavigationEntryImpl* navigation_entry =
       frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id());

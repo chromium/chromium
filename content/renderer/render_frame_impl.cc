@@ -2549,6 +2549,11 @@ void RenderFrameImpl::EnableMojoJsBindings() {
   enable_mojo_js_bindings_ = true;
 }
 
+void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
+  mojo_js_interface_broker_ = std::move(broker);
+}
+
 void RenderFrameImpl::BindWebUI(
     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
@@ -4442,6 +4447,14 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
     // We only allow these bindings to be installed when creating the main
     // world context of the main frame.
     blink::WebV8Features::EnableMojoJS(context, true);
+  }
+
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL &&
+      mojo_js_interface_broker_.is_valid()) {
+    // MojoJS interface broker can be enabled on subframes, and will limit the
+    // interfaces JavaScript can request to those provided in the broker.
+    blink::WebV8Features::EnableMojoJSAndUseBroker(
+        context, std::move(mojo_js_interface_broker_));
   }
 
   for (auto& observer : observers_)
