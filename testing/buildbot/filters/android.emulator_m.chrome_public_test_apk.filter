@@ -95,3 +95,6 @@
 
 # crbug.com/1180466
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElement
+
+# crbug.com/1139524
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPersonalDataManagerTest.testCreateAndEditProfileMultipleTimes
