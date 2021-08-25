@@ -115,7 +115,7 @@ suite('PrivacyReviewPage', function() {
     assertWelcomeCardVisible();
 
     // Advance to the MSBB card.
-    page.shadowRoot.querySelector('#nextButton').click();
+    page.shadowRoot.querySelector('#startButton').click();
     flush();
     assertMsbbCardVisible();
 

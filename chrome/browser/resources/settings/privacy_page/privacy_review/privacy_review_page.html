@@ -7,17 +7,17 @@
     font-size: 123%;  /* Should be 16px when 100% is 13px. */
   }
 
-  .privacy-review-card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-  }
-
   .footer {
     align-items: center;
     display: flex;
     justify-content: space-between;
     padding: 16px;
+  }
+
+  .privacy-review-card {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
   }
 </style>
 <div class="privacy-review-card">
@@ -26,26 +26,28 @@
       [[computeHeaderString_(privacyReviewStep_)]]
     </div>
   </div>
-  <div id="welcomeFragment"
-      hidden="[[!showWelcomeFragment_(privacyReviewStep_)]]">
-    <div>$i18n{privacyReviewWelcomeCardHeader}</div>
-    <div class="footer">
-      <cr-button class="action-button" role="button" tabindex="0"
-          on-click="onNextButtonClick_">
-        $i18n{privacyReviewWelcomeCardStartButton}
-      </cr-button>
+  <template is="dom-if" if="[[showWelcomeFragment_(privacyReviewStep_)]]">
+    <div id="welcomeFragment">
+      <div>$i18n{privacyReviewWelcomeCardHeader}</div>
+      <div class="footer">
+        <cr-button class="action-button" id="startButton" role="button"
+            tabindex="0" on-click="onNextButtonClick_">
+          $i18n{privacyReviewWelcomeCardStartButton}
+        </cr-button>
+      </div>
     </div>
-  </div>
-  <div id="completionFragment"
-       hidden="[[!showCompletionFragment_(privacyReviewStep_)]]">
-    <div>$i18n{privacyReviewCompletionCardHeader}</div>
-    <div class="footer">
-      <cr-button class="action-button" role="button" tabindex="0"
-          on-click="onNextButtonClick_">
-        $i18n{privacyReviewCompletionCardLeaveButton}
-      </cr-button>
+  </template>
+  <template is="dom-if" if="[[showCompletionFragment_(privacyReviewStep_)]]">
+    <div id="completionFragment">
+      <div>$i18n{privacyReviewCompletionCardHeader}</div>
+      <div class="footer">
+        <cr-button class="action-button" id="completeButton" role="button"
+            tabindex="0" on-click="onNextButtonClick_">
+          $i18n{privacyReviewCompletionCardLeaveButton}
+        </cr-button>
+      </div>
     </div>
-  </div>
+  </template>
   <template is="dom-if" if="[[showMsbbFragment_(privacyReviewStep_)]]">
     <privacy-review-msbb-fragment id="msbbFragment" prefs="{{prefs}}">
     </privacy-review-msbb-fragment>
@@ -55,16 +57,17 @@
         prefs="{{prefs}}">
     </privacy-review-clear-on-exit-fragment>
   </template>
-  <div id="settingFooter" class="footer hr"
-      hidden="[[!showAnySettingFragment_(privacyReviewStep_)]]">
-    <cr-button class="cr-button" id="backButton" role="button"
-        on-click="onBackButtonClick_">
-      $i18n{privacyReviewBackButton}
-    </cr-button>
-    <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
-    <cr-button class="action-button" id="nextButton" role="button"
-        tabindex="0" on-click="onNextButtonClick_">
-      $i18n{privacyReviewNextButton}
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
+    <div id="settingFooter" class="footer hr">
+      <cr-button class="cr-button" id="backButton" role="button"
+          on-click="onBackButtonClick_">
+        $i18n{privacyReviewBackButton}
+      </cr-button>
+      <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
+      <cr-button class="action-button" id="nextButton" role="button"
+          tabindex="0" on-click="onNextButtonClick_">
+        $i18n{privacyReviewNextButton}
+      </cr-button>
+    </div>
+  </template>
 </div>
