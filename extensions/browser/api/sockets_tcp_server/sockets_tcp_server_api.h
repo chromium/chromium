@@ -134,9 +134,6 @@ class SocketsTcpServerGetInfoFunction : public TCPServerSocketApiFunction {
 
   // SocketApiFunction:
   ResponseAction Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::GetInfo::Params> params_;
 };
 
 class SocketsTcpServerGetSocketsFunction : public TCPServerSocketApiFunction {
