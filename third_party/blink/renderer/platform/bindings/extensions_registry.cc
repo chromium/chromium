@@ -8,7 +8,7 @@ namespace blink {
 
 // static
 ExtensionsRegistry& ExtensionsRegistry::GetInstance() {
-  DEFINE_STATIC_LOCAL(ExtensionsRegistry, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ExtensionsRegistry, instance, ());
   return instance;
 }
 
