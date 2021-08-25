@@ -56,29 +56,30 @@ bool RankingContains(const std::vector<std::string>& ranking,
   return false;
 }
 
-std::vector<std::string> RankByUses(const std::map<std::string, int>& uses) {
-  std::vector<std::string> ranked_uses;
-  std::transform(uses.begin(), uses.end(), std::back_inserter(ranked_uses),
-                 [](const auto& entry) { return entry.first; });
-  std::sort(ranked_uses.begin(), ranked_uses.end(),
-            [&](const std::string& a, const std::string& b) {
-              return uses.at(a) < uses.at(b);
+std::vector<std::string> OrderByUses(const std::vector<std::string>& ranking,
+                                     const std::map<std::string, int>& uses) {
+  std::vector<std::string> ordered_ranking(ranking.begin(), ranking.end());
+  std::sort(ordered_ranking.begin(), ordered_ranking.end(),
+            [&](const std::string& a, const std::string& b) -> bool {
+              int ua = uses.count(a) > 0 ? uses.at(a) : 0;
+              int ub = uses.count(b) > 0 ? uses.at(b) : 0;
+              return ua > ub;
             });
-  return ranked_uses;
+  return ordered_ranking;
 }
 
-std::string HighestUnshown(const std::vector<std::string>& shown,
+std::string HighestUnshown(const std::vector<std::string>& ranking,
                            const std::map<std::string, int>& uses,
                            unsigned int length) {
-  std::vector<std::string> ranked = RankByUses(uses);
-  auto in_shown_above_fold = [&](const std::string& e) {
-    return RankingContains(shown, e, length);
-  };
+  std::vector<std::string> unshown(ranking.begin() + length, ranking.end());
+  return !unshown.empty() ? OrderByUses(unshown, uses).front() : "";
+}
 
-  ranked.erase(
-      std::remove_if(ranked.begin(), ranked.end(), in_shown_above_fold),
-      ranked.end());
-  return ranked.empty() ? "" : ranked.front();
+std::string LowestShown(const std::vector<std::string>& ranking,
+                        const std::map<std::string, int>& uses,
+                        unsigned int length) {
+  std::vector<std::string> shown(ranking.begin(), ranking.begin() + length);
+  return !shown.empty() ? OrderByUses(shown, uses).back() : "";
 }
 
 void SwapRankingElement(std::vector<std::string>& ranking,
@@ -130,10 +131,12 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
     const std::map<std::string, int>& recent_share_history,
     const std::map<std::string, int>& all_share_history,
     unsigned int length) {
-  const double RECENCY_WEIGHT = 2.0;
   const double DAMPENING = 1.1;
 
-  const std::string lowest_shown = old_ranking[length - 1];
+  const std::string lowest_shown_recent =
+      LowestShown(old_ranking, recent_share_history, length);
+  const std::string lowest_shown_all =
+      LowestShown(old_ranking, all_share_history, length);
   const std::string highest_unshown_recent =
       HighestUnshown(old_ranking, recent_share_history, length);
   const std::string highest_unshown_all =
@@ -151,13 +154,14 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
   };
 
   if (highest_unshown_recent != "" &&
-      recent_count_for(highest_unshown_recent) * RECENCY_WEIGHT >
-          recent_count_for(lowest_shown) * DAMPENING) {
-    SwapRankingElement(new_ranking, lowest_shown, highest_unshown_recent);
+      recent_count_for(highest_unshown_recent) >
+          recent_count_for(lowest_shown_recent) * DAMPENING) {
+    SwapRankingElement(new_ranking, lowest_shown_recent,
+                       highest_unshown_recent);
   } else if (highest_unshown_all != "" &&
              all_count_for(highest_unshown_all) >
-                 all_count_for(lowest_shown) * DAMPENING) {
-    SwapRankingElement(new_ranking, lowest_shown, highest_unshown_all);
+                 all_count_for(lowest_shown_all) * DAMPENING) {
+    SwapRankingElement(new_ranking, lowest_shown_all, highest_unshown_all);
   }
 
   DCHECK_EQ(old_ranking.size(), new_ranking.size());
@@ -226,22 +230,6 @@ std::map<std::string, int> BuildHistoryMap(
   return result;
 }
 
-void InsertIntoRankingOrderedByUsage(
-    std::vector<std::string>* ranking,
-    const std::string& item,
-    unsigned int length,
-    const std::map<std::string, int>& history) {
-  DCHECK_GT(history.count(item), 0U);
-  for (unsigned int i = length; i < ranking->size(); ++i) {
-    const std::string this_item = ranking->at(i);
-    if (!history.count(this_item) || history.at(item) > history.at(this_item)) {
-      ranking->insert(ranking->begin() + i, item);
-      return;
-    }
-  }
-  ranking->push_back(item);
-}
-
 std::vector<std::string> AddMissingItemsFromHistory(
     const std::vector<std::string> existing,
     const std::map<std::string, int> history,
@@ -249,7 +237,7 @@ std::vector<std::string> AddMissingItemsFromHistory(
   std::vector<std::string> updated = existing;
   for (const auto& item : history) {
     if (!RankingContains(updated, item.first))
-      InsertIntoRankingOrderedByUsage(&updated, item.first, length, history);
+      updated.push_back(item.first);
   }
   return updated;
 }
