@@ -94,7 +94,9 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
     if (gained_active != window_)
       return;
     RemoveAllObservers();
-    std::move(on_activated_).Run();
+    // To avoid nested-activation, here we post the task to the queue.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(on_activated_));
     delete this;
   }
 
