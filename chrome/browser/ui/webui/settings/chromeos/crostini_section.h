@@ -46,6 +46,7 @@ class CrostiniSection : public OsSettingsSection {
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  Profile* const profile_;
 };
 
 }  // namespace settings

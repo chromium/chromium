@@ -2203,7 +2203,7 @@ class CrostiniManagerUpgradeContainerTest
 
 TEST_F(CrostiniManagerUpgradeContainerTest, UpgradeContainerSuccess) {
   crostini_manager()->UpgradeContainer(
-      container_id_, ContainerVersion::STRETCH, ContainerVersion::BUSTER,
+      container_id_, ContainerVersion::BUSTER,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
 
@@ -2218,7 +2218,7 @@ TEST_F(CrostiniManagerUpgradeContainerTest, UpgradeContainerSuccess) {
 
 TEST_F(CrostiniManagerUpgradeContainerTest, CancelUpgradeContainerSuccess) {
   crostini_manager()->UpgradeContainer(
-      container_id_, ContainerVersion::STRETCH, ContainerVersion::BUSTER,
+      container_id_, ContainerVersion::BUSTER,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
 

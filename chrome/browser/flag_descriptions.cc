@@ -4073,6 +4073,10 @@ const char kCrosRegionsModeDefault[] = "Default";
 const char kCrosRegionsModeOverride[] = "Override VPD values.";
 const char kCrosRegionsModeHide[] = "Hide VPD values.";
 
+const char kCrostiniBullseyeUpgradeName[] = "Upgrade Crostini to Bullseye";
+const char kCrostiniBullseyeUpgradeDescription[] =
+    "Offer to upgrade Crostini containers on older versions to bullseye.";
+
 const char kCrostiniDiskResizingName[] = "Allow resizing Crostini disks";
 const char kCrostiniDiskResizingDescription[] =
     "Use preallocated user-resizeable disks for Crostini instead of sparse "

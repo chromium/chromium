@@ -148,6 +148,7 @@ enum class ContainerVersion {
   UNKNOWN,
   STRETCH,
   BUSTER,
+  BULLSEYE,
 };
 
 struct VmInfo {

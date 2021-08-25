@@ -458,6 +458,7 @@ void AddNewLxdContainerToPrefs(Profile* profile,
                        base::Value(container_id.container_name));
   new_container.SetIntKey(prefs::kContainerOsVersionKey,
                           static_cast<int>(ContainerOsVersion::kUnknown));
+  new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
 
   ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->Append(std::move(new_container));

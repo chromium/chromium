@@ -1761,8 +1761,11 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_MESSAGE" desc="Message shown when an upgrade to Debian 10 (codenamed Buster) is available.">
     An upgrade to Debian 10 (Buster) is available
   </message>
+  <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE" desc="Message shown when an upgrade to Debian 11 (codenamed Bullseye) is available.">
+    An upgrade to Debian 11 (Bullseye) is available
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT" desc="The current version the user has.">
-    Current version is Debian 9 (Stretch)
+    Current version is <ph name="CURRENT_VERSION">$1<ex>Debian GNU/Linux 9 (stretch)</ex></ph>
   </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BUTTON" desc="Label for the button that launches the upgrade to Debian 10 for Crostini.">
     Upgrade

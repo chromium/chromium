@@ -48065,6 +48065,7 @@ from previous Chrome versions.
   <int value="-1198304634"
       label="ProcessSharingWithDefaultSiteInstances:disabled"/>
   <int value="-1197916855" label="WindowNaming:enabled"/>
+  <int value="-1197817692" label="CrostiniBullseyeUpgrade:enabled"/>
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
@@ -51474,6 +51475,7 @@ from previous Chrome versions.
   <int value="1561781431" label="VirtualKeyboardBorderedKey:enabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
   <int value="1563255033" label="memlog-stack-mode"/>
+  <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>
   <int value="1568172566"

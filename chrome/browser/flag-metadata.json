@@ -864,6 +864,11 @@
       "expiry_milestone": 96
   },
   {
+    "name": "crostini-bullseye-upgrade",
+    "owners": [ "sidereal@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "crostini-container-install",
     "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 109

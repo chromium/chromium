@@ -208,7 +208,8 @@ CrostiniSection::CrostiniSection(Profile* profile,
                                  SearchTagRegistry* search_tag_registry,
                                  PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      profile_(profile) {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       crostini::prefs::kUserCrostiniAllowedByPolicy,
@@ -263,10 +264,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_TITLE_ENABLE},
       {"crostiniArcAdbConfirmationTitleDisable",
        IDS_SETTINGS_CROSTINI_ARC_ADB_CONFIRMATION_TITLE_DISABLE},
-      {"crostiniContainerUpgrade",
-       IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_MESSAGE},
-      {"crostiniContainerUpgradeSubtext",
-       IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT},
       {"crostiniContainerUpgradeButton",
        IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BUTTON},
       {"crostiniPortForwarding", IDS_SETTINGS_CROSTINI_PORT_FORWARDING},
@@ -350,6 +347,34 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniRemove", IDS_SETTINGS_CROSTINI_REMOVE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrostiniBullseyeUpgrade)) {
+    html_source->AddString(
+        "crostiniContainerUpgrade",
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE));
+  } else {
+    html_source->AddString(
+        "crostiniContainerUpgrade",
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_MESSAGE));
+  }
+
+  if (auto* pretty_name_value = crostini::GetContainerPrefValue(
+          profile_, crostini::DefaultContainerId(),
+          crostini::prefs::kContainerOsPrettyNameKey)) {
+    std::string pretty_name = pretty_name_value->GetString();
+    html_source->AddString("crostiniContainerUpgradeSubtext",
+                           l10n_util::GetStringFUTF16(
+                               IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT,
+                               base::UTF8ToUTF16(pretty_name)));
+  } else {
+    // Blank the subtext if we don't know what the pretty version name is. This
+    // is just a fallback for users that haven't opened crostini since before we
+    // started recording that.
+    html_source->AddString("crostiniContainerUpgradeSubtext", "");
+  }
 
   // Should the crostini section in settings be displayed?
   html_source->AddBoolean(

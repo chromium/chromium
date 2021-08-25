@@ -774,6 +774,11 @@ ContainerOsVersion VersionFromOsRelease(
 }
 
 bool IsUpgradableContainerVersion(ContainerOsVersion version) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrostiniBullseyeUpgrade)) {
+    return version == ContainerOsVersion::kDebianStretch ||
+           version == ContainerOsVersion::kDebianBuster;
+  }
   return version == ContainerOsVersion::kDebianStretch;
 }
 
@@ -787,6 +792,8 @@ void CrostiniManager::SetContainerOsRelease(
   // an upgrade can be offered.
   UpdateContainerPref(profile_, container_id, prefs::kContainerOsVersionKey,
                       base::Value(static_cast<int>(version)));
+  UpdateContainerPref(profile_, container_id, prefs::kContainerOsPrettyNameKey,
+                      base::Value(os_release.pretty_name()));
 
   absl::optional<ContainerOsVersion> old_version;
   auto it = container_os_releases_.find(container_id);
@@ -1593,6 +1600,8 @@ vm_tools::cicerone::UpgradeContainerRequest::Version ConvertVersion(
       return vm_tools::cicerone::UpgradeContainerRequest::DEBIAN_STRETCH;
     case ContainerVersion::BUSTER:
       return vm_tools::cicerone::UpgradeContainerRequest::DEBIAN_BUSTER;
+    case ContainerVersion::BULLSEYE:
+      return vm_tools::cicerone::UpgradeContainerRequest::DEBIAN_BULLSEYE;
     case ContainerVersion::UNKNOWN:
     default:
       return vm_tools::cicerone::UpgradeContainerRequest::UNKNOWN;
@@ -1602,7 +1611,6 @@ vm_tools::cicerone::UpgradeContainerRequest::Version ConvertVersion(
 }  // namespace
 
 void CrostiniManager::UpgradeContainer(const ContainerId& key,
-                                       ContainerVersion source_version,
                                        ContainerVersion target_version,
                                        CrostiniResultCallback callback) {
   const auto& vm_name = key.vm_name;
@@ -1629,7 +1637,6 @@ void CrostiniManager::UpgradeContainer(const ContainerId& key,
   request.set_owner_id(owner_id_);
   request.set_vm_name(vm_name);
   request.set_container_name(container_name);
-  request.set_source_version(ConvertVersion(source_version));
   request.set_target_version(ConvertVersion(target_version));
 
   CrostiniResultCallback do_upgrade_container = base::BindOnce(

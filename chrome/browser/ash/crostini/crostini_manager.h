@@ -347,7 +347,6 @@ class CrostiniManager : public KeyedService,
   // CiceroneClient::UpgradeContainer. An UpgradeProgressObserver should be used
   // to monitor further results.
   void UpgradeContainer(const ContainerId& key,
-                        ContainerVersion source_version,
                         ContainerVersion target_version,
                         CrostiniResultCallback callback);
 

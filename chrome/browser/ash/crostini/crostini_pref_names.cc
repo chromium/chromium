@@ -29,6 +29,7 @@ const char kCrostiniTerminalSettings[] = "crostini.terminal_settings";
 const char kVmKey[] = "vm_name";
 const char kContainerKey[] = "container_name";
 const char kContainerOsVersionKey[] = "container_os_version";
+const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
 // Boolean preferences indicating whether Crostini is allowed to use mic.
 const char kCrostiniMicAllowed[] = "crostini.mic_allowed";
 

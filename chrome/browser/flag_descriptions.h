@@ -2328,6 +2328,9 @@ extern const char kCrosRegionsModeDefault[];
 extern const char kCrosRegionsModeOverride[];
 extern const char kCrosRegionsModeHide[];
 
+extern const char kCrostiniBullseyeUpgradeName[];
+extern const char kCrostiniBullseyeUpgradeDescription[];
+
 extern const char kCrostiniDiskResizingName[];
 extern const char kCrostiniDiskResizingDescription[];
 
