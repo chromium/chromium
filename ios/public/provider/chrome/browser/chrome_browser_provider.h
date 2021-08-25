@@ -21,7 +21,6 @@ class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
 class OmahaServiceProvider;
-class OverridesProvider;
 class UserFeedbackProvider;
 class VoiceSearchProvider;
 
@@ -128,9 +127,6 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the BrowserURLRewriter provider.
   virtual BrowserURLRewriterProvider* GetBrowserURLRewriterProvider() const;
-
-  // Returns an instance of the Overrides provider;
-  virtual OverridesProvider* GetOverridesProvider() const;
 
   // Returns an instance of the DiscoverFeed provider;
   virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;

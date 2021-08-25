@@ -19,7 +19,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
   id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state)
       const override NS_RETURNS_RETAINED;
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
-  OverridesProvider* GetOverridesProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
   std::unique_ptr<ios::ChromeIdentityService> CreateChromeIdentityService()
       override;
@@ -27,7 +26,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
  private:
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
   std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
-  std::unique_ptr<OverridesProvider> overrides_provider_;
   std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
 };
 

@@ -11,8 +11,6 @@ source_set("browser") {
     "browser_url_rewriter_provider.mm",
     "chrome_browser_provider.h",
     "chrome_browser_provider.mm",
-    "overrides_provider.h",
-    "overrides_provider.mm",
   ]
   deps = [
     ":font_size_java_script_feature",

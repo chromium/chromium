@@ -98,10 +98,6 @@ ChromeBrowserProvider::GetBrowserURLRewriterProvider() const {
   return nullptr;
 }
 
-OverridesProvider* ChromeBrowserProvider::GetOverridesProvider() const {
-  return nullptr;
-}
-
 DiscoverFeedProvider* ChromeBrowserProvider::GetDiscoverFeedProvider() const {
   return nullptr;
 }
