@@ -227,7 +227,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private void finishUpdateShareSheet(List<PropertyModel> firstPartyApps,
             List<PropertyModel> thirdPartyApps, @Nullable Runnable onUpdateFinished) {
         mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes,
-                mShareParams.getFileContentType(), mShareSheetLinkToggleCoordinator);
+                mShareParams.getFileContentType(), mChromeShareExtras.getDetailedContentType(),
+                mShareSheetLinkToggleCoordinator);
         if (onUpdateFinished != null) {
             onUpdateFinished.run();
         }

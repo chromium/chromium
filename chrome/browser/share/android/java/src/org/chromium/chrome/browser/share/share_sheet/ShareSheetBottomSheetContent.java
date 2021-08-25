@@ -35,6 +35,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
@@ -130,13 +131,16 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param thirdPartyModels The PropertyModels used to build the bottom row.
      * @param contentTypes The {@link Set} of {@link ContentType}s to build the preview.
      * @param fileContentType The MIME type of the file(s) being shared.
+     * @param detailedContentType The {@link DetailedContentType} of the content being shared.
      * @param shareSheetLinkToggleCoordinator The {@link ShareSheetLinkToggleCoordinator} for
      *         whether to show the toggle and the default enabled status.
      */
     void createRecyclerViews(List<PropertyModel> firstPartyModels,
             List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes, String fileContentType,
+            @DetailedContentType int detailedContentType,
             ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
-        createPreview(contentTypes, fileContentType, shareSheetLinkToggleCoordinator);
+        createPreview(contentTypes, fileContentType, detailedContentType,
+                shareSheetLinkToggleCoordinator);
         createFirstPartyRecyclerViews(firstPartyModels);
 
         RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);
@@ -225,6 +229,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     private void createPreview(Set<Integer> contentTypes, String fileContentType,
+            @DetailedContentType int detailedContentType,
             ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
         // Default preview is to show title + url.
         String title = mParams.getTitle();
@@ -260,7 +265,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                 setDefaultToggleStatus(
                         shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
             }
-            setLinkToggleForPreview(contentTypes.contains(ContentType.HIGHLIGHTED_TEXT));
+            setLinkToggleForPreview(detailedContentType);
         }
 
         if ((contentTypes.contains(ContentType.TEXT)
@@ -334,14 +339,14 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         centerIcon(imageView);
     }
 
-    private void updateLinkToggleState() {
+    private void updateLinkToggleState(@DetailedContentType int detailedContentType) {
         int toastMessage;
         if (mLinkToggleState == LinkToggleState.NO_LINK) {
             mLinkToggleState = LinkToggleState.LINK;
-            toastMessage = R.string.link_to_text_success_link_toast_message;
+            toastMessage = R.string.link_toggle_include_link;
         } else {
             mLinkToggleState = LinkToggleState.NO_LINK;
-            toastMessage = R.string.link_to_text_success_text_toast_message;
+            toastMessage = getExcludeLinkToast(detailedContentType);
         }
         showToast(toastMessage);
         mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
@@ -375,7 +380,25 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mLinkToggleState = enableToggleByDefault ? LinkToggleState.LINK : LinkToggleState.NO_LINK;
     }
 
-    private void setLinkToggleForPreview(boolean isHighlightedText) {
+    private int getExcludeLinkToast(@DetailedContentType int detailedContentType) {
+        switch (detailedContentType) {
+            case DetailedContentType.IMAGE:
+                return R.string.link_toggle_share_image_only;
+            case DetailedContentType.GIF:
+                return R.string.link_toggle_share_gif_only;
+            case DetailedContentType.SCREENSHOT:
+                return R.string.link_toggle_share_screenshot_only;
+            case DetailedContentType.WEB_NOTES:
+                return R.string.link_toggle_share_webnote_only;
+            case DetailedContentType.HIGHLIGHTED_TEXT:
+            case DetailedContentType.NOT_SPECIFIED:
+                return R.string.link_toggle_share_content_only;
+            default:
+                return 0;
+        }
+    }
+
+    private void setLinkToggleForPreview(@DetailedContentType int detailedContentType) {
         int drawable;
         int contentDescription;
         int skillColor;
@@ -383,15 +406,14 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         if (mLinkToggleState == LinkToggleState.LINK) {
             drawable = R.drawable.link;
             skillColor = R.color.default_icon_color_blue;
-            // TODO(sophey): update contentDescription with correct text
-            contentDescription = R.string.link_to_text_success_link_toast_message;
+            contentDescription = R.string.link_toggle_include_link;
         } else {
             drawable = R.drawable.link_off;
             skillColor = R.color.default_icon_color;
-            contentDescription = R.string.link_to_text_success_text_toast_message;
+            contentDescription = getExcludeLinkToast(detailedContentType);
         }
 
-        if (isHighlightedText) {
+        if (detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT) {
             if (mLinkGenerationState == LinkGeneration.LINK) {
                 contentDescription = R.string.link_to_text_success_link_toast_message;
             } else if (mLinkGenerationState == LinkGeneration.TEXT) {
@@ -417,10 +439,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         linkToggleView.setOnClickListener(v -> {
             mFeatureEngagementTracker.notifyEvent(EventConstants.SHARING_HUB_LINK_TOGGLE_CLICKED);
-            if (isHighlightedText) {
+            if (detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT) {
                 updateLinkGenerationState();
             } else {
-                updateLinkToggleState();
+                updateLinkToggleState(detailedContentType);
             }
         });
     }

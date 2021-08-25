@@ -4759,6 +4759,30 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Include a link to the page
       </message>
 
+      <message name="IDS_LINK_TOGGLE_INCLUDE_LINK" desc="Toast displayed when the toggle is clicked for a generic share and a link is included.">
+        Include link
+      </message>
+
+      <message name="IDS_LINK_TOGGLE_SHARE_WEBNOTE_ONLY" desc="Toast displayed when the toggle is clicked for a Webnote share and a link is excluded.">
+        Share Webnote only
+      </message>
+
+      <message name="IDS_LINK_TOGGLE_SHARE_SCREENSHOT_ONLY" desc="Toast displayed when the toggle is clicked for a screenshot share and a link is excluded.">
+        Share screenshot only
+      </message>
+
+      <message name="IDS_LINK_TOGGLE_SHARE_IMAGE_ONLY" desc="Toast displayed when the toggle is clicked for a image share and a link is excluded.">
+        Share image only
+      </message>
+
+      <message name="IDS_LINK_TOGGLE_SHARE_GIF_ONLY" desc="Toast displayed when the toggle is clicked for a GIF share and a link is excluded.">
+        Share GIF only
+      </message>
+
+      <message name="IDS_LINK_TOGGLE_SHARE_CONTENT_ONLY" desc="Fallback toast displayed when the toggle is clicked for a generic share and a link is excluded.">
+        Share content only
+      </message>
+
       <!-- Share Screenshot strings -->
       <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
         Edit
