@@ -73,6 +73,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
     private OfflinePageBridge mOfflinePageBridge;
     private SuggestionsNavigationDelegate mNavigationDelegate;
     private boolean mInitializationComplete;
+    private ImageFetcher mImageFetcher;
 
     public MostVisitedListCoordinator(Activity activity, MvTilesLayout mvTilesLayout,
             PropertyModel propertyModel, Supplier<Tab> parentTabSupplier,
@@ -110,29 +111,30 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         }
     }
 
+    /**
+     * Called before the TasksSurface is showing to initialize MV tiles.
+     * {@link MostVisitedListCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
+     */
     public void initWithNative() {
         Profile profile = Profile.getLastUsedRegularProfile();
-        if (!mInitializationComplete) {
-            ImageFetcher imageFetcher = new ImageFetcher(profile);
-            if (mRenderer == null) {
-                // This function is never called in incognito mode.
-                mRenderer = new TileRenderer(
-                        mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
-            } else {
-                mRenderer.setImageFetcher(imageFetcher);
-            }
-            mNavigationDelegate = new MostVisitedTileNavigationDelegate(
-                    mActivity, profile, null, null, null, mParentTabSupplier);
-            mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
-                    mNavigationDelegate, profile, mSnackbarManager);
-            Runnable closeContextMenuCallback = mActivity::closeContextMenu;
-            mContextMenuManager = new ContextMenuManager(
-                    mSuggestionsUiDelegate.getNavigationDelegate(),
-                    (enabled) -> {}, closeContextMenuCallback, CONTEXT_MENU_USER_ACTION_PREFIX);
-            mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
-            mOfflinePageBridge =
-                    SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
+        mImageFetcher = new ImageFetcher(profile);
+        if (mRenderer == null) {
+            // This function is never called in incognito mode.
+            mRenderer = new TileRenderer(
+                    mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, mImageFetcher);
+        } else {
+            mRenderer.setImageFetcher(mImageFetcher);
         }
+        mNavigationDelegate = new MostVisitedTileNavigationDelegate(
+                mActivity, profile, null, null, null, mParentTabSupplier);
+        mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
+                mNavigationDelegate, profile, mSnackbarManager);
+        Runnable closeContextMenuCallback = mActivity::closeContextMenu;
+        mContextMenuManager = new ContextMenuManager(mSuggestionsUiDelegate.getNavigationDelegate(),
+                (enabled) -> {}, closeContextMenuCallback, CONTEXT_MENU_USER_ACTION_PREFIX);
+        mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
+        mOfflinePageBridge =
+                SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         mTileGroupDelegate = new TileGroupDelegateImpl(
                 mActivity, profile, mNavigationDelegate, mSnackbarManager);
         mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, mContextMenuManager,
@@ -261,12 +263,32 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
 
     /** Called when the TasksSurface is hidden. */
     public void destroyMVTiles() {
+        mMvTilesLayout.destroy();
+
+        if (mTileGroup != null) {
+            mTileGroup.destroy();
+            mTileGroup = null;
+        }
         if (mTileGroupDelegate != null) {
             mTileGroupDelegate.destroy();
             mTileGroupDelegate = null;
         }
-        mTileGroup = null;
-        mMvTilesLayout.removeAllViews();
+        mOfflinePageBridge = null;
+
+        if (mWindowAndroid != null) {
+            mWindowAndroid.removeContextMenuCloseListener(mContextMenuManager);
+            mContextMenuManager = null;
+        }
+        if (mSuggestionsUiDelegate != null) {
+            ((SuggestionsUiDelegateImpl) mSuggestionsUiDelegate).onDestroy();
+            mSuggestionsUiDelegate = null;
+        }
+
+        mRenderer = null;
+
+        if (mImageFetcher != null) {
+            mImageFetcher.onDestroy();
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

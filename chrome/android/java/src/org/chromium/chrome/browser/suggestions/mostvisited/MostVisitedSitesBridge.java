@@ -50,6 +50,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         MostVisitedSitesBridgeJni.get().destroy(
                 mNativeMostVisitedSitesBridge, MostVisitedSitesBridge.this);
         mNativeMostVisitedSitesBridge = 0;
+        mWrappedObserver = null;
     }
 
     @Override

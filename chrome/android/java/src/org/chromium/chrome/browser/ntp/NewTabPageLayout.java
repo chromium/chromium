@@ -924,6 +924,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             mCallbackController = null;
         }
 
+        if (mTileGroup != null) {
+            mTileGroup.destroy();
+        }
+
         VrModuleProvider.unregisterVrModeObserver(this);
 
         if (mSearchProviderLogoView != null) {
