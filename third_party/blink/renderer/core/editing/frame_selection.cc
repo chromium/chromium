@@ -158,6 +158,10 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
     const {
   // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.
+  DisplayLockUtilities::ScopedForcedUpdate base_scope(
+      GetSelectionInDOMTree().Base().AnchorNode());
+  DisplayLockUtilities::ScopedForcedUpdate extent_scope(
+      GetSelectionInDOMTree().Extent().AnchorNode());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   return ComputeVisibleSelectionInDOMTree();
 }
