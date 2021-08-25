@@ -1231,10 +1231,16 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
-      implied_by: ["LayoutNGPrinting"],
+      implied_by: ["LayoutNGFlexFragmentation", "LayoutNGPrinting"],
     },
     {
       name: "LayoutNGBlockInInline",
+      depends_on: ["LayoutNG"],
+    },
+    {
+      // Block fragmentation support in the flex layout algorithm.
+      // https://drafts.csswg.org/css-flexbox-1/#pagination
+      name: "LayoutNGFlexFragmentation",
       depends_on: ["LayoutNG"],
     },
     {
