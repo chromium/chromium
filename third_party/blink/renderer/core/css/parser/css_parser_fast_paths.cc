@@ -920,6 +920,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kFontSynthesisWeight:
       DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kFontSynthesisStyle:
+      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kWebkitFontSmoothing:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kAntialiased ||
@@ -1097,6 +1100,7 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kFontKerning:
     case CSSPropertyID::kFontOpticalSizing:
     case CSSPropertyID::kFontSynthesisWeight:
+    case CSSPropertyID::kFontSynthesisStyle:
     case CSSPropertyID::kWebkitFontSmoothing:
     case CSSPropertyID::kLineBreak:
     case CSSPropertyID::kWebkitLineBreak:

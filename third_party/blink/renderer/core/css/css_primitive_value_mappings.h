@@ -822,6 +822,39 @@ inline FontDescription::FontSynthesisWeight CSSIdentifierValue::ConvertTo()
 }
 
 template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontSynthesisStyle font_synthesis_style)
+    : CSSValue(kIdentifierClass) {
+  switch (font_synthesis_style) {
+    case FontDescription::kAutoFontSynthesisStyle:
+      value_id_ = CSSValueID::kAuto;
+      return;
+    case FontDescription::kNoneFontSynthesisStyle:
+      value_id_ = CSSValueID::kNone;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontDescription::FontSynthesisStyle CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoFontSynthesisStyle;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneFontSynthesisStyle;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kAutoFontSynthesisStyle;
+}
+
+template <>
 inline CSSIdentifierValue::CSSIdentifierValue(EFillSizeType fill_size)
     : CSSValue(kIdentifierClass) {
   switch (fill_size) {

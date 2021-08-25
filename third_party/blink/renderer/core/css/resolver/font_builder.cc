@@ -183,6 +183,13 @@ void FontBuilder::SetFontSynthesisWeight(
   font_description_.SetFontSynthesisWeight(font_synthesis_weight);
 }
 
+void FontBuilder::SetFontSynthesisStyle(
+    FontDescription::FontSynthesisStyle font_synthesis_style) {
+  Set(PropertySetFlag::kFontSynthesisStyle);
+
+  font_description_.SetFontSynthesisStyle(font_synthesis_style);
+}
+
 void FontBuilder::SetTextRendering(TextRenderingMode text_rendering_mode) {
   Set(PropertySetFlag::kTextRendering);
 
@@ -402,6 +409,10 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
   if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {
     description.SetFontSynthesisWeight(
         font_description_.GetFontSynthesisWeight());
+  }
+  if (IsSet(PropertySetFlag::kFontSynthesisStyle)) {
+    description.SetFontSynthesisStyle(
+        font_description_.GetFontSynthesisStyle());
   }
   if (IsSet(PropertySetFlag::kTextRendering))
     description.SetTextRendering(font_description_.TextRendering());

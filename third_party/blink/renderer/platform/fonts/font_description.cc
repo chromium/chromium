@@ -108,6 +108,7 @@ FontDescription::FontDescription()
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
   fields_.hash_category_ = kHashRegularValue;
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
+  fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -618,6 +619,16 @@ String FontDescription::ToString(FontSynthesisWeight font_synthesis_weight) {
     case FontSynthesisWeight::kAutoFontSynthesisWeight:
       return "Auto";
     case FontSynthesisWeight::kNoneFontSynthesisWeight:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisStyle font_synthesis_style) {
+  switch (font_synthesis_style) {
+    case FontSynthesisStyle::kAutoFontSynthesisStyle:
+      return "Auto";
+    case FontSynthesisStyle::kNoneFontSynthesisStyle:
       return "None";
   }
   return "Unknown";

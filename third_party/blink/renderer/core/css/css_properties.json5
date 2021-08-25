@@ -970,6 +970,18 @@
       typedom_types: ["Keyword"]
     },
     {
+      name: "font-synthesis-style",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      runtime_flag: "FontSynthesis",
+      font: true,
+      name_for_methods: "FontSynthesisStyle",
+      type_name: "FontDescription::FontSynthesisStyle",
+      priority: "High",
+      keywords: ["auto", "none"],
+      typedom_types: ["Keyword"]
+    },
+    {
       name: "font-feature-settings",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,

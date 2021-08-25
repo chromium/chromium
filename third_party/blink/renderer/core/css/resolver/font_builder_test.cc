@@ -164,6 +164,13 @@ static void FontSynthesisWeightValue(FontBuilder& b) {
   b.SetFontSynthesisWeight(FontDescription::kNoneFontSynthesisWeight);
 }
 
+static void FontSynthesisStyleBase(FontDescription& d) {
+  d.SetFontSynthesisStyle(FontDescription::kAutoFontSynthesisStyle);
+}
+static void FontSynthesisStyleValue(FontBuilder& b) {
+  b.SetFontSynthesisStyle(FontDescription::kNoneFontSynthesisStyle);
+}
+
 static void FontTextRenderingBase(FontDescription& d) {
   d.SetTextRendering(kGeometricPrecision);
 }
@@ -222,6 +229,7 @@ INSTANTIATE_TEST_SUITE_P(
         FunctionPair(FontVariantLigaturesBase, FontVariantLigaturesValue),
         FunctionPair(FontVariantNumericBase, FontVariantNumericValue),
         FunctionPair(FontSynthesisWeightBase, FontSynthesisWeightValue),
+        FunctionPair(FontSynthesisStyleBase, FontSynthesisStyleValue),
         FunctionPair(FontTextRenderingBase, FontTextRenderingValue),
         FunctionPair(FontKerningBase, FontKerningValue),
         FunctionPair(FontFontSmoothingBase, FontFontSmoothingValue),

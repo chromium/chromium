@@ -3144,6 +3144,15 @@ const CSSValue* FontSynthesisWeight::CSSValueFromComputedStyleInternal(
       style.GetFontDescription().GetFontSynthesisWeight());
 }
 
+const CSSValue* FontSynthesisStyle::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
+  return CSSIdentifierValue::Create(
+      style.GetFontDescription().GetFontSynthesisStyle());
+}
+
 const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

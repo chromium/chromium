@@ -103,6 +103,9 @@ class PLATFORM_EXPORT FontDescription {
   };
   static String ToString(FontSynthesisWeight);
 
+  enum FontSynthesisStyle { kAutoFontSynthesisStyle, kNoneFontSynthesisStyle };
+  static String ToString(FontSynthesisStyle);
+
   FontDescription();
   FontDescription(const FontDescription&);
 
@@ -260,6 +263,9 @@ class PLATFORM_EXPORT FontDescription {
   FontSynthesisWeight GetFontSynthesisWeight() const {
     return static_cast<FontSynthesisWeight>(fields_.font_synthesis_weight_);
   }
+  FontSynthesisStyle GetFontSynthesisStyle() const {
+    return static_cast<FontSynthesisStyle>(fields_.font_synthesis_style_);
+  }
 
   FontSelectionRequest GetFontSelectionRequest() const;
   float WordSpacing() const { return word_spacing_; }
@@ -343,6 +349,9 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetFontSynthesisWeight(FontSynthesisWeight font_synthesis_weight) {
     fields_.font_synthesis_weight_ = font_synthesis_weight;
+  }
+  void SetFontSynthesisStyle(FontSynthesisStyle font_synthesis_style) {
+    fields_.font_synthesis_style_ = font_synthesis_style;
   }
   void SetFeatureSettings(scoped_refptr<FontFeatureSettings> settings) {
     feature_settings_ = std::move(settings);
@@ -476,6 +485,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned synthetic_italic_ : 1;
     unsigned synthetic_oblique_ : 1;
     unsigned font_synthesis_weight_ : 1;
+    unsigned font_synthesis_style_ : 1;
     unsigned subpixel_text_position_ : 1;
     unsigned typesetting_features_ : 3;
     unsigned variant_numeric_ : 8;

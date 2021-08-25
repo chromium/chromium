@@ -7,6 +7,7 @@ font-size: 16px;
 font-size-adjust: none;
 font-stretch: 100%;
 font-style: normal;
+font-synthesis-style: auto;
 font-synthesis-weight: auto;
 font-variant: normal;
 font-variant-caps: normal;
