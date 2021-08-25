@@ -66,6 +66,9 @@
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/crosapi/automation_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
@@ -5154,7 +5157,19 @@ AutotestPrivateDisableAutomationFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateDisableAutomationFunction::Run() {
+  // This disables accessibility for Chrome Views.
   AutomationManagerAura::GetInstance()->Disable();
+
+  // This disables accessibility for all other accessibility trees including
+  // ARC++, Ash web contents.
+  AutomationEventRouter::GetInstance()->NotifyAllAutomationExtensionsGone();
+
+  // Finally, this disables accessibility in Lacros.
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->automation_ash()
+      ->AllAutomationExtensionsGone();
+
   return RespondNow(NoArguments());
 }
 
