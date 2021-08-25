@@ -182,7 +182,6 @@ TEST_F(WebBundleParserTest, UnknownVersion) {
   mojom::BundleMetadataParseErrorPtr error = ParseBundle(&data_source).second;
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kVersionError);
-  EXPECT_EQ(error->fallback_url, kFallbackUrl);
 }
 
 TEST_F(WebBundleParserTest, FallbackURLIsNotUTF8) {
@@ -720,6 +719,49 @@ TEST_F(WebBundleParserTest, ParseSignedFile) {
   ASSERT_EQ(hashes->resource_integrities.size(), 1u);
   EXPECT_EQ(hashes->resource_integrities[0]->payload_integrity_header,
             "digest/mi-sha256-03");
+}
+
+TEST_F(WebBundleParserTest, B2BundleSingleEntry) {
+  test::WebBundleBuilder builder(kFallbackUrl, kManifestUrl,
+                                 BundleVersion::kB2);
+  builder.AddExchange("https://test.example.com/",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+  ASSERT_EQ(metadata->requests.size(), 1u);
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->response_headers.size(), 1u);
+  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+  EXPECT_EQ(data_source.GetPayload(response), "payload");
+  EXPECT_EQ(metadata->primary_url, kFallbackUrl);
+}
+
+TEST_F(WebBundleParserTest, B2BundleNoPrimaryUrlSingleEntry) {
+  test::WebBundleBuilder builder("", kManifestUrl, BundleVersion::kB2);
+  builder.AddExchange("https://test.example.com/",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+  ASSERT_EQ(metadata->requests.size(), 1u);
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->response_headers.size(), 1u);
+  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+  EXPECT_EQ(data_source.GetPayload(response), "payload");
+  EXPECT_TRUE(metadata->primary_url.is_empty());
 }
 
 // TODO(crbug.com/969596): Add a test case that loads a wbn file with variants,

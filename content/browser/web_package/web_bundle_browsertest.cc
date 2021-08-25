@@ -1974,8 +1974,10 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidWebBundleFile) {
   std::string console_message = ExpectNavigationFailureAndReturnConsoleMessage(
       shell()->web_contents(), test_data_url);
 
-  EXPECT_EQ("Failed to read metadata of Web Bundle file: Wrong magic bytes.",
-            console_message);
+  EXPECT_EQ(
+      "Failed to read metadata of Web Bundle file: Wrong CBOR array size of "
+      "the top-level structure",
+      console_message);
 }
 
 // TODO(https://crbug.com/1225178): flaky
@@ -2512,9 +2514,9 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, InvalidFile) {
   SetContents("This is an invalid Web Bundle file.");
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  TestNavigationFailure(
-      embedded_test_server()->GetURL(wbn_path),
-      "Failed to read metadata of Web Bundle file: Wrong magic bytes.");
+  TestNavigationFailure(embedded_test_server()->GetURL(wbn_path),
+                        "Failed to read metadata of Web Bundle file: Wrong "
+                        "CBOR array size of the top-level structure");
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, DataDecoderRestart) {
@@ -2849,7 +2851,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
 
   SetContents("This is an invalid Web Bundle file.");
   HistoryBackAndWaitUntilConsoleError(
-      "Failed to read metadata of Web Bundle file: Wrong magic bytes.");
+      "Failed to read metadata of Web Bundle file: Wrong CBOR array size of "
+      "the top-level structure");
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,

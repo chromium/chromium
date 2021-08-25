@@ -13,6 +13,12 @@
 #include "components/cbor/writer.h"
 
 namespace web_package {
+
+enum class BundleVersion {
+  kB1,
+  kB2,
+};
+
 namespace test {
 
 // This class can be used to create a Web Bundle binary in tests.
@@ -26,7 +32,9 @@ class WebBundleBuilder {
   };
 
   WebBundleBuilder(const std::string& fallback_url,
-                   const std::string& manifest_url);
+                   const std::string& manifest_url,
+                   BundleVersion version = BundleVersion::kB1);
+
   ~WebBundleBuilder();
 
   void AddExchange(base::StringPiece url,
@@ -69,6 +77,7 @@ class WebBundleBuilder {
   cbor::Value::ArrayValue responses_;
   cbor::Value::ArrayValue authorities_;
   cbor::Value::ArrayValue vouched_subsets_;
+  BundleVersion version_;
 
   // 1 for the CBOR header byte. See the comment at the top of AddResponse().
   int64_t current_responses_offset_ = 1;
