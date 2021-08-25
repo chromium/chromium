@@ -1474,7 +1474,7 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
         root_window, drag_view_->GetImage(), screen_location, gfx::Vector2d(),
         /*scale_factor=*/1.0f,
-        /*blur_radius=*/0);
+        /*use_blurred_background=*/false);
   }
 }
 
@@ -1606,7 +1606,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
             root_window, drag_view_->GetImage(), screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
             kDragAndDropProxyScale,
-            /*blur_radius=*/0);
+            /*use_blurred_background=*/false);
       }
 
       // Re-insert the item and return simply false since the caller will handle
@@ -1633,7 +1633,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
           root_window, drag_view_->GetImage(), screen_location,
           cursor_offset_from_center, kDragAndDropProxyScale,
-          /*blur_radius=*/0);
+          /*use_blurred_background=*/false);
       delegate_->CancelScrollForItemDrag();
     }
 

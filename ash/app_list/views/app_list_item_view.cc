@@ -17,6 +17,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -928,10 +929,16 @@ void AppListItemView::OnDraggedViewExit() {
 
 void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
   DCHECK(is_folder_);
-  if (enabled)
-    icon_->EnsureLayer();
-  icon_->layer()->SetBackgroundBlur(enabled ? GetAppListConfig().blur_radius()
-                                            : 0);
+  if (!enabled) {
+    if (icon_->layer())
+      icon_->layer()->SetBackgroundBlur(0);
+    return;
+  }
+  icon_->EnsureLayer();
+  icon_->layer()->SetBackgroundBlur(
+      static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+  icon_->layer()->SetBackdropFilterQuality(
+      ColorProvider::kBackgroundBlurQuality);
 }
 
 void AppListItemView::EnsureLayer() {

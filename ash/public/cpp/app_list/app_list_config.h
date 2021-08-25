@@ -303,7 +303,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return folder_dropping_circle_radius_;
   }
   int page_flip_zone_size() const { return page_flip_zone_size_; }
-  int blur_radius() const { return blur_radius_; }
   size_t max_folder_pages() const { return max_folder_pages_; }
   size_t max_folder_items_per_page() const {
     return max_folder_items_per_page_;
@@ -461,9 +460,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Width in pixels of the area on the sides that triggers a page flip.
   const int page_flip_zone_size_;
-
-  // The blur radius used in the app list.
-  const int blur_radius_;
 
   // Max pages allowed in a folder.
   const size_t max_folder_pages_;

@@ -516,25 +516,17 @@ class AppListBackgroundShieldView : public views::View {
   ~AppListBackgroundShieldView() override = default;
 
   void UpdateBackground(bool use_blur) {
-    if (blur_value_ == use_blur)
+    if (use_blur_ == use_blur)
       return;
-    blur_value_ = use_blur;
+    use_blur_ = use_blur;
 
     if (use_blur) {
-      layer()->SetBackgroundBlur(preferred_blur_radius_);
+      layer()->SetBackgroundBlur(
+          static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     } else {
       layer()->SetBackgroundBlur(0);
     }
-  }
-
-  void UpdatePreferredBlurRadius(double preferred_blur_radius) {
-    if (preferred_blur_radius_ == preferred_blur_radius)
-      return;
-
-    preferred_blur_radius_ = preferred_blur_radius;
-    if (blur_value_)
-      layer()->SetBackgroundBlur(preferred_blur_radius);
   }
 
   void UpdateBackgroundRadius(
@@ -595,10 +587,7 @@ class AppListBackgroundShieldView : public views::View {
 
  private:
   // Whether the background blur has been set on the background shield.
-  bool blur_value_ = false;
-
-  // The blur radius to use for blur when blur is enabled.
-  double preferred_blur_radius_ = 0;
+  bool use_blur_ = false;
 
   float corner_radius_ = 0.0f;
 
@@ -707,8 +696,6 @@ void AppListView::InitContents() {
           delegate_->GetShelfSize() / 2, delegate_->IsInTabletMode());
   app_list_background_shield->UpdateBackground(
       /*use_blur*/ !delegate_->IsInTabletMode() && is_background_blur_enabled_);
-  app_list_background_shield->UpdatePreferredBlurRadius(
-      app_list_config_->blur_radius());
   app_list_background_shield_ =
       AddChildView(std::move(app_list_background_shield));
 
@@ -1004,11 +991,6 @@ void AppListView::UpdateAppListConfig(aura::Window* parent_window) {
 
   // Initial config should be set before the app list main view is initialized.
   DCHECK(!is_initial_config || !app_list_main_view_);
-
-  if (app_list_background_shield_) {
-    app_list_background_shield_->UpdatePreferredBlurRadius(
-        app_list_config_->blur_radius());
-  }
 
   // If the config changed, notify apps container the config has changed, so
   // root and folder apps grids are updated for the new config.

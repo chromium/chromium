@@ -49,7 +49,7 @@ TEST_F(AppDragIconProxyTest, UpdatingLocationRespectsIconOffset) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -76,7 +76,7 @@ TEST_F(AppDragIconProxyTest, SecondaryDisplay) {
       /*pointer_location_in_screen=*/gfx::Point(1100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(1065, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -101,7 +101,7 @@ TEST_F(AppDragIconProxyTest, ScaledBounds) {
       /*pointer_location_in_screen=*/gfx::Point(200, 400),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/2.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(140, 330), gfx::Size(100, 100)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -118,14 +118,14 @@ TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/2);
+      /*use_blurred_background=*/true);
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(25.0f).ToString(),
             drag_icon_proxy->GetImageLayerForTesting()
                 ->rounded_corner_radii()
                 .ToString());
-  EXPECT_EQ(2.0f,
+  EXPECT_EQ(30.0f,
             drag_icon_proxy->GetImageLayerForTesting()->background_blur());
 
   // Test that background corner radii are scaled with the image.
@@ -135,14 +135,14 @@ TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/2.0f,
-      /*blur_radius=*/2);
+      /*use_blurred_background=*/true);
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(50.0f).ToString(),
             drag_icon_proxy->GetImageLayerForTesting()
                 ->rounded_corner_radii()
                 .ToString());
-  EXPECT_EQ(2.0f,
+  EXPECT_EQ(30.0f,
             drag_icon_proxy->GetImageLayerForTesting()->background_blur());
 }
 
@@ -153,7 +153,7 @@ TEST_F(AppDragIconProxyTest, AnimateBoundsForClosure) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -188,7 +188,7 @@ TEST_F(AppDragIconProxyTest, CloseAnimationCallbackCalledWithZeroAnimation) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -220,7 +220,7 @@ TEST_F(AppDragIconProxyTest,
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -278,7 +278,7 @@ TEST_F(AppDragIconProxyTest, ProxyResetDuringCloseAnimation) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -306,7 +306,7 @@ TEST_F(AppDragIconProxyTest, UpdatePositionDuringCloseIsNoOp) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*blur_radius=*/0);
+      /*use_blurred_background=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 

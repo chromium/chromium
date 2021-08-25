@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/drag_drop/drag_image_view.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
@@ -26,7 +27,7 @@ AppDragIconProxy::AppDragIconProxy(
     const gfx::Point& pointer_location_in_screen,
     const gfx::Vector2d& pointer_offset_from_center,
     float scale_factor,
-    size_t blur_radius) {
+    bool use_blurred_background) {
   drag_image_widget_ =
       DragImageView::Create(root_window, ui::mojom::DragEventSource::kMouse);
 
@@ -51,11 +52,14 @@ AppDragIconProxy::AppDragIconProxy(
   drag_image->SetPaintToLayer();
   drag_image->layer()->SetFillsBoundsOpaquely(false);
 
-  if (blur_radius) {
+  if (use_blurred_background) {
     const float radius = size.width() / 2.0f;
     drag_image->layer()->SetRoundedCornerRadius(
         {radius, radius, radius, radius});
-    drag_image->layer()->SetBackgroundBlur(blur_radius);
+    drag_image->layer()->SetBackgroundBlur(
+        static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+    drag_image->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
   }
 
   drag_image_widget_->SetVisibilityAnimationTransition(
