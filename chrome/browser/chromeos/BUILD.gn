@@ -3304,6 +3304,8 @@ source_set("chromeos") {
       "extensions/printing_metrics/printing_metrics_api.cc",
       "extensions/printing_metrics/printing_metrics_api.h",
       "printing/cups_print_job_manager_impl.cc",
+      "printing/cups_print_job_manager_utils.cc",
+      "printing/cups_print_job_manager_utils.h",
       "printing/cups_proxy_service_delegate_impl.cc",
       "printing/cups_proxy_service_delegate_impl.h",
       "printing/cups_proxy_service_manager.cc",
@@ -4410,6 +4412,7 @@ source_set("unit_tests") {
       "extensions/printing_metrics/print_job_finished_event_dispatcher_unittest.cc",
       "extensions/printing_metrics/print_job_info_idl_conversions_unittest.cc",
       "extensions/printing_metrics/printing_metrics_api_unittest.cc",
+      "printing/cups_print_job_manager_utils_unittest.cc",
     ]
   }
 

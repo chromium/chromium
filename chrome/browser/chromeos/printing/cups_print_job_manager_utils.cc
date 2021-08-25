@@ -1,0 +1,140 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/printing/cups_print_job_manager_utils.h"
+
+#include <algorithm>
+
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/printing/cups_print_job.h"
+#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "printing/backend/cups_jobs.h"
+#include "printing/printer_status.h"
+
+namespace chromeos {
+
+namespace {
+
+// The amount of time elapsed from print job creation before a timeout is
+// acknowledged.
+constexpr base::TimeDelta kMinElaspedPrintJobTimeout =
+    base::TimeDelta::FromMilliseconds(5000);
+
+// job state reason values
+const char kJobCompletedWithErrors[] = "job-completed-with-errors";
+
+// Returns the equivalient CupsPrintJob#State from a CupsJob#JobState.
+CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {
+  switch (state) {
+    case ::printing::CupsJob::PENDING:
+      return CupsPrintJob::State::STATE_WAITING;
+    case ::printing::CupsJob::HELD:
+      return CupsPrintJob::State::STATE_SUSPENDED;
+    case ::printing::CupsJob::PROCESSING:
+      return CupsPrintJob::State::STATE_STARTED;
+    case ::printing::CupsJob::CANCELED:
+      return CupsPrintJob::State::STATE_CANCELLED;
+    case ::printing::CupsJob::COMPLETED:
+      return CupsPrintJob::State::STATE_DOCUMENT_DONE;
+    case ::printing::CupsJob::STOPPED:
+      return CupsPrintJob::State::STATE_SUSPENDED;
+    case ::printing::CupsJob::ABORTED:
+      return CupsPrintJob::State::STATE_FAILED;
+    case ::printing::CupsJob::UNKNOWN:
+      break;
+  }
+
+  NOTREACHED();
+
+  return CupsPrintJob::State::STATE_NONE;
+}
+
+// Returns true if |job|.state_reasons contains |reason|
+bool JobContainsReason(const ::printing::CupsJob& job,
+                       base::StringPiece reason) {
+  return base::Contains(job.state_reasons, reason);
+}
+
+// Update the current printed page.  Returns true of the page has been updated.
+bool UpdateCurrentPage(const ::printing::CupsJob& job,
+                       CupsPrintJob* print_job) {
+  bool pages_updated = false;
+  if (job.current_pages <= 0 ||
+      print_job->state() == CupsPrintJob::State::STATE_WAITING) {
+    print_job->set_printed_page_number(std::max(job.current_pages, 0));
+    print_job->set_state(CupsPrintJob::State::STATE_STARTED);
+  } else {
+    pages_updated = job.current_pages != print_job->printed_page_number();
+    print_job->set_printed_page_number(job.current_pages);
+    print_job->set_state(CupsPrintJob::State::STATE_PAGE_DONE);
+  }
+
+  return pages_updated;
+}
+
+}  // namespace
+
+bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
+                    const ::printing::CupsJob& job,
+                    CupsPrintJob* print_job) {
+  DCHECK_EQ(job.id, print_job->job_id());
+
+  CupsPrintJob::State old_state = print_job->state();
+
+  bool pages_updated = false;
+  switch (job.state) {
+    case ::printing::CupsJob::PROCESSING: {
+      pages_updated = UpdateCurrentPage(job, print_job);
+
+      const PrinterErrorCode printer_error_code =
+          PrinterErrorCodeFromPrinterStatusReasons(printer_status);
+      const bool delay_print_job_timeout =
+          printer_error_code == PrinterErrorCode::PRINTER_UNREACHABLE &&
+          (base::Time::Now() - print_job->creation_time() <
+           kMinElaspedPrintJobTimeout);
+
+      if (printer_error_code != PrinterErrorCode::NO_ERROR &&
+          !delay_print_job_timeout) {
+        print_job->set_error_code(printer_error_code);
+        print_job->set_state(printer_error_code ==
+                                     PrinterErrorCode::PRINTER_UNREACHABLE
+                                 ? CupsPrintJob::State::STATE_FAILED
+                                 : CupsPrintJob::State::STATE_ERROR);
+      } else {
+        print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+      }
+      break;
+    }
+    case ::printing::CupsJob::COMPLETED:
+      DCHECK_GE(job.current_pages, print_job->total_page_number());
+      print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+      print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
+      break;
+    case ::printing::CupsJob::STOPPED:
+      // If cups job STOPPED but with filter failure, treat as ERROR
+      if (JobContainsReason(job, kJobCompletedWithErrors)) {
+        print_job->set_error_code(PrinterErrorCode::FILTER_FAILED);
+        print_job->set_state(CupsPrintJob::State::STATE_FAILED);
+      } else {
+        print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+        print_job->set_state(ConvertState(job.state));
+      }
+      break;
+    case ::printing::CupsJob::ABORTED:
+    case ::printing::CupsJob::CANCELED:
+      print_job->set_error_code(
+          PrinterErrorCodeFromPrinterStatusReasons(printer_status));
+      FALLTHROUGH;
+    default:
+      print_job->set_state(ConvertState(job.state));
+      break;
+  }
+
+  return print_job->state() != old_state || pages_updated;
+}
+
+}  // namespace chromeos
