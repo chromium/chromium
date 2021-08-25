@@ -60,7 +60,7 @@ syncer::SyncData CreatePrefSyncData(const std::string& name,
   json.Serialize(value);
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref =
-      features::IsSplitSettingsSyncEnabled()
+      features::IsSyncSettingsCategorizationEnabled()
           ? specifics.mutable_os_preference()->mutable_preference()
           : specifics.mutable_preference();
   pref->set_name(name);
@@ -159,9 +159,9 @@ class FullRestoreServiceTest : public testing::Test {
   // Simulates the initial sync of preferences.
   syncer::SyncableService* SyncPreferences(
       const syncer::SyncDataList& sync_data_list) {
-    syncer::ModelType model_type = features::IsSplitSettingsSyncEnabled()
-                                       ? syncer::OS_PREFERENCES
-                                       : syncer::PREFERENCES;
+    syncer::ModelType model_type =
+        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
+                                                        : syncer::PREFERENCES;
     syncer::SyncableService* sync =
         profile()->GetTestingPrefService()->GetSyncableService(model_type);
     sync->MergeDataAndStartSyncing(

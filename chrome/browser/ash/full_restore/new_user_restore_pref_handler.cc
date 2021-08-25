@@ -46,7 +46,7 @@ void NewUserRestorePrefHandler::OnStartedSyncing(const std::string& path) {
 void NewUserRestorePrefHandler::OnIsSyncingChanged() {
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile_);
-  bool is_syncing = features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = features::IsSyncSettingsCategorizationEnabled()
                         ? pref_service->AreOsPrefsSyncing()
                         : pref_service->IsSyncing();
   if (!is_syncing)
