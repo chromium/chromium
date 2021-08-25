@@ -3131,6 +3131,15 @@ TEST_P(ShelfLayoutManagerDragDropTest, AutoHideShelfOnDragDropEvents) {
   ASSERT_TRUE(TriggerAutoHideTimeout());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
+  // Verify that dragging does nothing when the shelf is not in auto-hide mode.
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
+  MoveDragBy(-drag_distance);
+  MoveDragBy(drag_distance);
+  ASSERT_FALSE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+  // If the dragging had been observed, the shelf would be shown.
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
   // TODO(crbug.com/1240332): Test screen exits when behavior is consistent.
 }
 

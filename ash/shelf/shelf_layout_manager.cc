@@ -1807,6 +1807,7 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
 
 void ShelfLayoutManager::UpdateAutoHideForDragDrop(
     const ui::DropTargetEvent* event) {
+  DCHECK_EQ(visibility_state(), SHELF_AUTO_HIDE);
   if (!event) {
     // If this is a gesture drag, `in_mouse_drag_` will already be false here.
     // If this is a mouse drag, the mouse event handler will not receive a
@@ -1816,9 +1817,6 @@ void ShelfLayoutManager::UpdateAutoHideForDragDrop(
     in_drag_drop_ = false;
     return;
   }
-
-  if (visibility_state() != SHELF_AUTO_HIDE)
-    return;
 
   in_drag_drop_ = true;
   last_drag_drop_position_in_screen_ = event->root_location();
