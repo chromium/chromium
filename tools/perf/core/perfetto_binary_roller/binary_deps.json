@@ -17,8 +17,8 @@
             "remote_path": "perfetto_binaries/trace_processor_shell/linux_arm64/49b4b5dcbc312d8d2c3751cf29238b8efeb4e494/trace_processor_shell"
         },
         "linux": {
-            "hash": "b046b79ab0f391707f6e806d3e95d9feeb6930c5",
-            "remote_path": "perfetto_binaries/trace_processor_shell/linux/d8cb3edb8932396042a276e61bb9909f4eb3f905/trace_processor_shell"
+            "hash": "a24f2a1c26bf48e73a4f70b04c185c7fe7e1c995",
+            "remote_path": "perfetto_binaries/trace_processor_shell/linux/33844dfd71484096ed7b0023a161bb13704bc8ab/trace_processor_shell"
         }
     },
     "power_profile.sql": {
