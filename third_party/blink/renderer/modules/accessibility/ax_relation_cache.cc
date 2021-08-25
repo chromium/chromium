@@ -189,6 +189,12 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   if (child->IsImageMapLink())
     return false;  // An area can't be owned, only parented by <img usemap>.
 
+  // <select> options can only be children of AXMenuListPopup or AXListBox.
+  if (IsA<HTMLOptionElement>(child->GetNode()) ||
+      IsA<HTMLOptGroupElement>(child->GetNode())) {
+    return false;
+  }
+
   return true;
 }
 
