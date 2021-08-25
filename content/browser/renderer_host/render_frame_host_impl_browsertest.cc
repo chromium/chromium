@@ -5907,9 +5907,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
+class RenderFrameHostImplAnonymousIframeBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+
+    // Enable parsing the iframe 'anonymous' attribute.
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
+  }
+};
+
 // This test checks that the initial empty document in an anonymous iframe whose
 // parent document is not anonymous is also not anonymous.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
                        InitialEmptyDocumentInAnonymousIframe) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -5922,13 +5933,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                      "child.anonymous = true;"
                      "document.body.appendChild(child);"));
   WaitForLoadStop(web_contents());
+
+  EXPECT_FALSE(main_rfh->anonymous());
+  EXPECT_FALSE(main_rfh->storage_key().nonce().has_value());
+
   EXPECT_EQ(1U, main_rfh->child_count());
-  EXPECT_FALSE(main_rfh->child_at(0)->anonymous());
+  EXPECT_TRUE(main_rfh->child_at(0)->anonymous());
+  EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->anonymous());
+  EXPECT_FALSE(main_rfh->child_at(0)
+                   ->current_frame_host()
+                   ->storage_key()
+                   .nonce()
+                   .has_value());
 }
 
 // Check that a page's anonymous_iframes_nonce is re-initialized after
 // navigations.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
                        NewAnonymousNonceOnNavigation) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
