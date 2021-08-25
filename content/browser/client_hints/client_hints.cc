@@ -36,6 +36,7 @@
 #include "net/nqe/network_quality_estimator_params.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
@@ -792,26 +793,38 @@ ParseAndPersistAcceptCHForNavigation(
   for (const WebClientHintsType type : parsed_headers->accept_ch.value()) {
     enabled_hints.SetIsEnabled(url, response_headers, type, true);
   }
+
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
-
-  base::TimeDelta persist_duration;
-  if (IsPermissionsPolicyForClientHintsEnabled()) {
-    // JSON cannot store "non-finite" values (i.e. NaN or infinite) so
-    // base::TimeDelta::Max cannot be used. As this will be removed once
-    // the FeaturePolicyForClientHints feature is shipped, a reasonably
-    // large was chosen instead
-    persist_duration = base::TimeDelta::FromDays(1000000);
-  } else {
-    persist_duration = parsed_headers->accept_ch_lifetime;
-    if (persist_duration.is_zero())
-      return persisted_hints;
-  }
-
-  delegate->PersistClientHints(url::Origin::Create(url), persisted_hints,
-                               persist_duration);
-
+  PersistAcceptCH(url, delegate, persisted_hints,
+                  &parsed_headers->accept_ch_lifetime);
   return persisted_hints;
+}
+
+void PersistAcceptCH(const GURL& url,
+                     ClientHintsControllerDelegate* delegate,
+                     const std::vector<WebClientHintsType>& hints,
+                     base::TimeDelta* persist_duration) {
+  DCHECK(delegate);
+
+  // TODO(https://crbug.com/1243060): Remove the checking and persistence of the
+  // expiration time.
+  const bool use_persist_duration =
+      persist_duration && !IsPermissionsPolicyForClientHintsEnabled();
+
+  if (use_persist_duration && persist_duration->is_zero())
+    return;
+
+  // JSON cannot store "non-finite" values (i.e. NaN or infinite) so
+  // base::TimeDelta::Max cannot be used. As this will be removed once the
+  // FeaturePolicyForClientHints feature is shipped, a reasonably large value
+  // was chosen instead.
+  base::TimeDelta duration = use_persist_duration
+                                 ? *persist_duration
+                                 : base::TimeDelta::FromDays(1000000);
+
+  delegate->PersistClientHints(url::Origin::Create(url), hints,
+                               std::move(duration));
 }
 
 CONTENT_EXPORT std::vector<WebClientHintsType> LookupAcceptCHForCommit(

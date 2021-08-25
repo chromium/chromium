@@ -2702,6 +2702,10 @@ class SameOriginUaReducedOriginTrialBrowserTest
         {kOriginUrl, "/critical_ch_ua_reduced_iframe_request.html"}));
   }
 
+  GURL simple_request_url() const {
+    return GURL(base::StrCat({kOriginUrl, "/simple.html"}));
+  }
+
   GURL last_request_url() const {
     return url_loader_interceptor_->GetLastRequestURL();
   }
@@ -2895,6 +2899,22 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   CheckUaReducedClientHint(/*ch_ua_reduced_expected=*/false);
   // Make sure the overridden UA string is the one sent.
   CheckUserAgentString(user_agent_override);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
+                       NoAcceptCHRemovesSecChUaReducedFromStorage) {
+  // The first navigation sets Sec-CH-UA-Reduced in the client hints storage for
+  // the origin.
+  NavigateAndCheckHeaders(ua_reduced_with_valid_origin_trial_token_url(),
+                          /*ch_ua_reduced_expected=*/false);
+  // The second navigation doesn't contain an Accept-CH header in the response,
+  // so Sec-CH-UA-Reduced is removed from the storage.
+  NavigateAndCheckHeaders(simple_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // The third navigation doesn't contain a Sec-CH-UA-Reduced in the request
+  // header because the second navigation caused it to get removed.
+  NavigateAndCheckHeaders(ua_reduced_with_valid_origin_trial_token_url(),
+                          /*ch_ua_reduced_expected=*/false);
 }
 
 // Tests that the Sec-CH-UA-Reduced client hint and the reduced User-Agent

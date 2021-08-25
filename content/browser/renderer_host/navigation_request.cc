@@ -11,6 +11,8 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -4237,6 +4239,23 @@ void NavigationRequest::CommitNavigation() {
     }
     commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
         common_params_->url, client_hints_delegate, frame_tree_node_);
+
+    if (response() && !response()->parsed_headers->accept_ch &&
+        base::Contains(commit_params_->enabled_client_hints,
+                       network::mojom::WebClientHintsType::kUAReduced)) {
+      // For Chrome to continue to send Sec-CH-UA-Reduced, the server must
+      // continue replying with:
+      //  - a valid OriginTrial
+      //  - Accept-CH with "Sec-CH-UA-Reduced.
+      //
+      // Here, it did not. So it gets removed from the persisted client hints
+      // for the next request.
+      base::Erase(commit_params_->enabled_client_hints,
+                  network::mojom::WebClientHintsType::kUAReduced);
+      PersistAcceptCH(common_params_->url, client_hints_delegate,
+                      commit_params_->enabled_client_hints,
+                      /*persist_duration=*/nullptr);
+    }
 
     // We may need to add hints that were parsed this time in case they were
     // not permitted to persist in legacy accept-ch-lifetime mode.
