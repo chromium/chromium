@@ -2245,6 +2245,14 @@ def chrome_internal_verifier(
     )
 
 chrome_internal_verifier(
+    builder = "android-internal-binary-size",
+)
+
+chrome_internal_verifier(
+    builder = "android-internal-rel",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-chrome",
 )
 
