@@ -10,8 +10,6 @@ namespace signin {
 // Do not merge the two feature flags.
 // Experiments for MICE will be run independently per platform (Android, iOS).
 #if defined(OS_ANDROID)
-const base::Feature kMobileIdentityConsistency{
-    "MobileIdentityConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
 // Feature flag for FRE related changes as part of MICE.
 const base::Feature kMobileIdentityConsistencyFRE{
     "MobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -20,9 +18,6 @@ const base::Feature kMobileIdentityConsistencyPromos{
 #endif
 
 #if defined(OS_IOS)
-const base::Feature kMobileIdentityConsistency{
-    "MobileIdentityConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kMICEWebSignIn{"MICEWebSignIn",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 bool IsMICEWebSignInEnabled() {

@@ -910,9 +910,6 @@ extern const char kMixedFormsDisableAutofillDescription[];
 extern const char kMixedFormsInterstitialName[];
 extern const char kMixedFormsInterstitialDescription[];
 
-extern const char kMobileIdentityConsistencyName[];
-extern const char kMobileIdentityConsistencyDescription[];
-
 extern const char kMobileIdentityConsistencyFREName[];
 extern const char kMobileIdentityConsistencyFREDescription[];
 

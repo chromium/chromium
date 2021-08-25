@@ -15,10 +15,6 @@
 namespace signin {
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
-// Mice is similar to Mirror but also works when the user is not opted into
-// Sync.
-extern const base::Feature kMobileIdentityConsistency;
-
 // Feature flag for FRE related changes as part of MICE.
 extern const base::Feature kMobileIdentityConsistencyFRE;
 
