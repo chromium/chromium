@@ -353,14 +353,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // routing logic, i.e. allowing multiple routes and non-proxied UDP.
   virtual bool ShouldEnforceWebRTCRoutingPreferences();
 
-  // Provides a default configuration of WebRTC audio processing, in JSON format
-  // with fields corresponding to webrtc::AudioProcessing::Config. Allows for a
-  // more functional tuning on platforms with known implementation and hardware
-  // limitations.
-  // This is currently not supported when running the Chrome audio service.
-  virtual absl::optional<std::string>
-  WebRTCPlatformSpecificAudioProcessingConfiguration();
-
   // Notifies that a worker context has been created. This function is called
   // from the worker thread.
   virtual void DidInitializeWorkerContextOnWorkerThread(

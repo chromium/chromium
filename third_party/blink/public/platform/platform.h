@@ -666,10 +666,6 @@ class BLINK_PLATFORM_EXPORT Platform {
     return media::AudioLatency::LATENCY_PLAYBACK;
   }
 
-  virtual absl::optional<std::string> GetWebRTCAudioProcessingConfiguration() {
-    return absl::nullopt;
-  }
-
   virtual bool ShouldEnforceWebRTCRoutingPreferences() { return true; }
 
   virtual media::MediaPermission* GetWebRTCMediaPermission(

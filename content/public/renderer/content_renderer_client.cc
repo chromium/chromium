@@ -215,11 +215,6 @@ bool ContentRendererClient::ShouldEnforceWebRTCRoutingPreferences() {
   return true;
 }
 
-absl::optional<std::string>
-ContentRendererClient::WebRTCPlatformSpecificAudioProcessingConfiguration() {
-  return absl::optional<std::string>();
-}
-
 GURL ContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
   return GURL();
 }

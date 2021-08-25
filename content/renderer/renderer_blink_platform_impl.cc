@@ -628,13 +628,6 @@ RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
   return blink::WebAudioDeviceFactory::GetSourceLatencyType(source_type);
 }
 
-absl::optional<std::string>
-RendererBlinkPlatformImpl::GetWebRTCAudioProcessingConfiguration() {
-  return GetContentClient()
-      ->renderer()
-      ->WebRTCPlatformSpecificAudioProcessingConfiguration();
-}
-
 bool RendererBlinkPlatformImpl::ShouldEnforceWebRTCRoutingPreferences() {
   return GetContentClient()
       ->renderer()
