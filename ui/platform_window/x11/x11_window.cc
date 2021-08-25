@@ -1227,9 +1227,9 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
         (event->IsTouchEvent() && event->type() == ui::ET_TOUCH_PRESSED)) {
       // Another X11Window has installed itself as capture. Translate the
       // event's location and dispatch to the other.
-      ConvertEventLocationToTargetLocation(located_events_grabber->GetBounds(),
-                                           GetBounds(),
-                                           event->AsLocatedEvent());
+      ConvertEventLocationToTargetWindowLocation(
+          located_events_grabber->GetBounds().origin(), GetBounds().origin(),
+          event->AsLocatedEvent());
     }
     return located_events_grabber->DispatchUiEvent(event, xev);
   }
@@ -1557,24 +1557,6 @@ gfx::Size X11Window::AdjustSizeForDisplay(
   size_in_pixels.SetToMax(gfx::Size(1, 1));
   return size_in_pixels;
 #endif
-}
-
-void X11Window::ConvertEventLocationToTargetLocation(
-    const gfx::Rect& target_window_bounds,
-    const gfx::Rect& current_window_bounds,
-    LocatedEvent* located_event) {
-  // TODO(msisov): for ozone, we need to access PlatformScreen instead and get
-  // the displays.
-  auto* display = display::Screen::GetScreen();
-  DCHECK(display);
-  auto display_window_target =
-      display->GetDisplayMatching(target_window_bounds);
-  auto display_window_current =
-      display->GetDisplayMatching(current_window_bounds);
-
-  ConvertEventLocationToTargetWindowLocation(target_window_bounds.origin(),
-                                             current_window_bounds.origin(),
-                                             located_event);
 }
 
 void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {

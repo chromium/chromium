@@ -37,7 +37,6 @@ namespace ui {
 class PlatformWindowDelegate;
 class X11ExtensionDelegate;
 class X11MoveLoop;
-class LocatedEvent;
 class WorkspaceExtensionDelegate;
 
 // PlatformWindow implementation for X11.
@@ -212,13 +211,6 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   // the window size to the monitor size causes the WM to set the EWMH for
   // fullscreen.
   gfx::Size AdjustSizeForDisplay(const gfx::Size& requested_size_in_pixels);
-
-  // Converts the location of the |located_event| from the
-  // |current_window_bounds| to the |target_window_bounds|.
-  void ConvertEventLocationToTargetLocation(
-      const gfx::Rect& target_window_bounds,
-      const gfx::Rect& current_window_bounds,
-      ui::LocatedEvent* located_event);
 
   // Creates the X window with the given properties.
   // Depending on presence of the compositing manager and window type, may
