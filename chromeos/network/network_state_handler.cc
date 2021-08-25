@@ -1151,7 +1151,7 @@ void NetworkStateHandler::SetWakeOnLanEnabled(bool enabled) {
 }
 
 void NetworkStateHandler::SetHostname(const std::string& hostname) {
-  NET_LOG(EVENT) << "SetHostname: " << hostname;
+  NET_LOG(EVENT) << "SetHostname";
   shill_property_handler_->SetHostname(hostname);
 }
 
@@ -1612,7 +1612,7 @@ void NetworkStateHandler::CheckPortalListChanged(
 }
 
 void NetworkStateHandler::HostnameChanged(const std::string& hostname) {
-  NET_LOG(EVENT) << "HostnameChanged: " << hostname;
+  NET_LOG(EVENT) << "HostnameChanged";
   hostname_ = hostname;
   for (auto& observer : observers_)
     observer.HostnameChanged(hostname);
