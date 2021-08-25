@@ -86,9 +86,9 @@ struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
 
   static void ConstructDeletedValue(PersistentType& slot, bool) {
 #if BUILDFLAG(USE_V8_OILPAN)
-    slot = cppgc::kSentinelPointer;
+    new (&slot) PersistentType(cppgc::kSentinelPointer);
 #else   // !USE_V8_OILPAN
-    slot = WTF::kHashTableDeletedValue;
+    new (&slot) PersistentType(WTF::kHashTableDeletedValue);
 #endif  // !USE_V8_OILPAN
   }
 
