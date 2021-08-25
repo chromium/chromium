@@ -1571,6 +1571,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_element_nodelist.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_element_text.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_element_text.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_event_string.cc",
