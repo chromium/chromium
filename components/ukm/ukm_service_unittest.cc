@@ -1456,7 +1456,9 @@ TEST_F(UkmServiceTest, MarkSourceForDeletion) {
   EXPECT_EQ(id2, proto_report.sources(1).id());
 }
 
-TEST_F(UkmServiceTest, PurgeNonNavigationSources) {
+// Verifies that sources of some types are deleted at the end of reporting
+// cycle.
+TEST_F(UkmServiceTest, PurgeNonCarriedOverSources) {
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
   TestRecordingHelper recorder(&service);
@@ -1500,11 +1502,12 @@ TEST_F(UkmServiceTest, PurgeNonNavigationSources) {
   service.Flush();
   EXPECT_EQ(++logs_count, GetPersistedLogCount());
 
-  // Sources of APP_ID, HISTORY_ID, WEBAPK_ID and PAYMENT_APP_ID types are not
-  // kept between reporting cycles, thus only 1 navigation type source remains.
+  // Sources of HISTORY_ID, WEBAPK_ID, and PAYMENT_APP_ID types are not kept
+  // between reporting cycles, thus only 2 sources remain.
   proto_report = GetPersistedReport();
-  ASSERT_EQ(1, proto_report.sources_size());
+  ASSERT_EQ(2, proto_report.sources_size());
   EXPECT_EQ(navigation_id, proto_report.sources(0).id());
+  EXPECT_EQ(app_id, proto_report.sources(1).id());
 }
 
 TEST_F(UkmServiceTest, IdentifiabilityMetricsDontExplode) {
