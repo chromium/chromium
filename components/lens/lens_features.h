@@ -33,6 +33,12 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
 // Enables UKM logging for the LensStandalone feature.
 extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 
+// Enables the side panel for Lens Region Search.
+extern const base::FeatureParam<bool> kEnableSidePanelForLensRegionSearch;
+
+// Enables the side panel for Lens Image Search.
+extern const base::FeatureParam<bool> kEnableSidePanelForLensImageSearch;
+
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();
 

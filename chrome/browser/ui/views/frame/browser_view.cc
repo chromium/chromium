@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
@@ -158,6 +159,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -675,6 +677,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
     right_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
+  }
+
+  if (lens::features::kEnableSidePanelForLensRegionSearch.Get() ||
+      lens::features::kEnableSidePanelForLensImageSearch.Get()) {
+    lens_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    lens_side_panel_controller_ =
+        std::make_unique<lens::LensSidePanelController>(lens_side_panel_, this);
   }
 
   if (browser_->is_type_normal() &&
@@ -3049,8 +3058,8 @@ void BrowserView::AddedToWidget() {
       tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
       contents_container_, left_aligned_side_panel_,
       left_aligned_side_panel_separator_, right_aligned_side_panel_,
-      right_aligned_side_panel_separator_, immersive_mode_controller_.get(),
-      contents_separator_));
+      right_aligned_side_panel_separator_, lens_side_panel_,
+      immersive_mode_controller_.get(), contents_separator_));
 
   EnsureFocusOrder();
 

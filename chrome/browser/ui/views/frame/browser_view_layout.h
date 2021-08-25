@@ -62,6 +62,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* left_aligned_side_panel_separator,
                     views::View* right_aligned_side_panel,
                     views::View* right_aligned_side_panel_separator,
+                    views::View* lens_side_panel,
                     ImmersiveModeController* immersive_mode_controller,
                     views::View* contents_separator);
   ~BrowserViewLayout() override;
@@ -159,6 +160,7 @@ class BrowserViewLayout : public views::LayoutManager {
   views::View* const left_aligned_side_panel_separator_;
   views::View* const right_aligned_side_panel_;
   views::View* const right_aligned_side_panel_separator_;
+  views::View* const lens_side_panel_;
   ImmersiveModeController* const immersive_mode_controller_;
   views::View* const contents_separator_;
 

@@ -145,6 +145,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* left_aligned_side_panel_separator,
     views::View* right_aligned_side_panel,
     views::View* right_aligned_side_panel_separator,
+    views::View* lens_side_panel,
     ImmersiveModeController* immersive_mode_controller,
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
@@ -159,6 +160,7 @@ BrowserViewLayout::BrowserViewLayout(
       left_aligned_side_panel_separator_(left_aligned_side_panel_separator),
       right_aligned_side_panel_(right_aligned_side_panel),
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
+      lens_side_panel_(lens_side_panel),
       immersive_mode_controller_(immersive_mode_controller),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
@@ -538,6 +540,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 
   LayoutSidePanelView(right_aligned_side_panel_, contents_container_bounds);
   LayoutSidePanelView(left_aligned_side_panel_, contents_container_bounds);
+  LayoutSidePanelView(lens_side_panel_, contents_container_bounds);
 
   contents_container_->SetBoundsRect(contents_container_bounds);
 }
@@ -549,8 +552,10 @@ void BrowserViewLayout::LayoutSidePanelView(
     return;
 
   DCHECK(side_panel == right_aligned_side_panel_ ||
-         side_panel == left_aligned_side_panel_);
-  const bool is_right_aligned = side_panel == right_aligned_side_panel_;
+         side_panel == left_aligned_side_panel_ ||
+         side_panel == lens_side_panel_);
+  const bool is_right_aligned =
+      side_panel == right_aligned_side_panel_ || side_panel == lens_side_panel_;
   views::View* side_panel_separator = is_right_aligned
                                           ? right_aligned_side_panel_separator_
                                           : left_aligned_side_panel_separator_;

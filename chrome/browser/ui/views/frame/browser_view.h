@@ -81,6 +81,10 @@ class TopControlsSlideControllerTest;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
+namespace lens {
+class LensSidePanelController;
+}  // namespace lens
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -178,12 +182,18 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* right_aligned_side_panel() { return right_aligned_side_panel_; }
 
+  SidePanel* lens_side_panel() { return lens_side_panel_; }
+
   SidePanel* left_aligned_side_panel_for_testing() {
     return left_aligned_side_panel_;
   }
 
   ExtensionsSidePanelController* extensions_side_panel_controller() {
     return extensions_side_panel_controller_.get();
+  }
+
+  lens::LensSidePanelController* lens_side_panel_controller() {
+    return lens_side_panel_controller_.get();
   }
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
@@ -926,6 +936,12 @@ class BrowserView : public BrowserWindow,
   // A controller that handles extensions hosted in the left aligned side panel.
   std::unique_ptr<ExtensionsSidePanelController>
       extensions_side_panel_controller_;
+
+  // The Lens side panel.
+  SidePanel* lens_side_panel_ = nullptr;
+
+  // A controller that handles content hosted in the Lens side panel.
+  std::unique_ptr<lens::LensSidePanelController> lens_side_panel_controller_;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

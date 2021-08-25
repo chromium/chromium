@@ -4035,6 +4035,8 @@ static_library("ui") {
       "views/javascript_tab_modal_dialog_view_views.h",
       "views/layout/interpolating_layout_manager.cc",
       "views/layout/interpolating_layout_manager.h",
+      "views/lens/lens_side_panel_controller.cc",
+      "views/lens/lens_side_panel_controller.h",
       "views/location_bar/content_setting_image_view.cc",
       "views/location_bar/content_setting_image_view.h",
       "views/location_bar/cookie_controls_bubble_view.cc",
