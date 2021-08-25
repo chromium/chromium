@@ -70,6 +70,10 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // copying to the clipboard or saving.
   void Start(ScreenshotCaptureCallback flow_callback);
 
+  // Runs the screen capture flow, capturing the entire viewport rather than
+  // a region selected by the user.
+  void StartFullscreenCapture(ScreenshotCaptureCallback flow_callback);
+
  private:
   // ui:EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -97,6 +101,10 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // Completes the capture process for |region| and runs the callback provided
   // to Start().
   void CompleteCapture(const gfx::Rect& region);
+
+  // Completes the capture process for a whole viewport capture. Primarily
+  // used when the user has a screenreader enabled.
+  void CompleteFullscreenCapture(gfx::Image img);
 
   // Paints the screenshot selection layer. The user's selection is left
   // unpainted to be hollowed out. |invalidation_region| specifies an optional

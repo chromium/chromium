@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sharing_hub/screenshot/screenshot_captured_bubble_controller.h"
 
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -64,7 +65,11 @@ void ScreenshotCapturedBubbleController::Capture(Browser* browser) {
           },
           web_contents->GetWeakPtr());
 
-  screenshot_flow_->Start(std::move(callback));
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    screenshot_flow_->StartFullscreenCapture(std::move(callback));
+  } else {
+    screenshot_flow_->Start(std::move(callback));
+  }
 }
 
 ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController() =

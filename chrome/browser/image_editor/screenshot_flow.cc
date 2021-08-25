@@ -158,6 +158,33 @@ void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
 #endif
 }
 
+void ScreenshotFlow::StartFullscreenCapture(
+    ScreenshotCaptureCallback flow_callback) {
+  flow_callback_ = std::move(flow_callback);
+#if defined(OS_MAC)
+  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
+  gfx::Image img;
+  bool rval = ui::GrabViewSnapshot(native_view,
+                                   gfx::Rect(web_contents_->GetSize()), &img);
+  // If |img| is empty, clients should treat it as a canceled action, but
+  // we have a DCHECK for development as we expected this call to succeed.
+  DCHECK(rval);
+  CompleteFullscreenCapture(img);
+#else
+  // Start the capture process by capturing the entire window, then allow
+  // the user to drag out a selection mask.
+  ui::GrabWindowSnapshotAsyncCallback screenshot_callback =
+      base::BindOnce(&ScreenshotFlow::CompleteFullscreenCapture, weak_this_);
+  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
+  // TODO(skare): Evaluate against other screenshot capture methods.
+  // The synchronous variant mentions support is different between platforms
+  // and another library might be better if there is a browser process.
+  ui::GrabWindowSnapshotAsync(native_window,
+                              gfx::Rect(web_contents_->GetSize()),
+                              std::move(screenshot_callback));
+#endif
+}
+
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_PRESSED &&
       event->key_code() == ui::VKEY_ESCAPE) {
@@ -221,6 +248,15 @@ void ScreenshotFlow::CompleteCapture(const gfx::Rect& region) {
   }
 
   RemoveUIOverlay();
+
+  std::move(flow_callback_).Run(result);
+}
+
+void ScreenshotFlow::CompleteFullscreenCapture(gfx::Image img) {
+  ScreenshotCaptureResult result;
+
+  result.image = img;
+  result.screen_bounds = web_contents_->GetViewBounds();
 
   std::move(flow_callback_).Run(result);
 }
