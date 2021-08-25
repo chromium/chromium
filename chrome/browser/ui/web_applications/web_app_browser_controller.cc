@@ -93,8 +93,7 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
   if (system_app()) {
-    return provider_.system_web_app_manager().GetDefaultBounds(
-        system_app()->GetType(), browser());
+    return system_app()->GetDefaultBounds(browser());
   }
 
   return gfx::Rect();
@@ -104,8 +103,7 @@ bool WebAppBrowserController::HasReloadButton() const {
   if (!system_app())
     return true;
 
-  return provider_.system_web_app_manager().ShouldHaveReloadButtonInMinimalUi(
-      system_app()->GetType());
+  return system_app()->ShouldHaveReloadButtonInMinimalUi();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -26,7 +26,11 @@ SystemWebAppDelegate::SystemWebAppDelegate(
       internal_name_(internal_name),
       install_url_(install_url),
       profile_(profile),
-      origin_trials_map_(origin_trials_map) {}
+      origin_trials_map_(origin_trials_map) {
+  DCHECK(!(ShouldShowNewWindowMenuOption() && ShouldBeSingleWindow()))
+      << "App can't show 'new window' menu option and be a single window at "
+         "the same time.";
+}
 
 SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 

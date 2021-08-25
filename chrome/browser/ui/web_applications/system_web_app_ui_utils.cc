@@ -225,16 +225,14 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   Browser::Type browser_type = Browser::TYPE_APP;
   if (params.disposition == WindowOpenDisposition::NEW_POPUP)
     browser_type = Browser::TYPE_APP_POPUP;
+  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
   if (browser_type == Browser::TYPE_APP_POPUP ||
-      provider->system_web_app_manager().IsSingleWindow(app_type)) {
+      (system_app && system_app->ShouldBeSingleWindow())) {
     browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
   }
 
-  bool can_resize =
-      provider->system_web_app_manager().IsResizeableWindow(app_type);
-
-  bool can_maximize =
-      provider->system_web_app_manager().IsMaximizableWindow(app_type);
+  bool can_resize = system_app && system_app->ShouldAllowResize();
+  bool can_maximize = system_app && system_app->ShouldAllowMaximize();
 
   // System Web App windows can't be properly restored without storing the app
   // type. Until that is implemented, skip them for session restore.
@@ -262,8 +260,7 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   // Send launch files.
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
-    if (provider->system_web_app_manager().AppShouldReceiveLaunchDirectory(
-            app_type)) {
+    if (system_app && system_app->ShouldIncludeLaunchDirectory()) {
       web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
           web_contents, web_contents->GetURL(),
           GetLaunchDirectory(params.launch_files), params.launch_files);
@@ -348,16 +345,10 @@ absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   DCHECK(browser);
-  auto* app_controller = browser->app_controller();
-  if (!app_controller)
-    return gfx::Size();  // Not an app.
+  if (browser->app_controller() && browser->app_controller()->system_app())
+    return browser->app_controller()->system_app()->GetMinimumWindowSize();
 
-  auto* provider = WebAppProvider::GetForSystemWebApps(browser->profile());
-  if (!provider)
-    return gfx::Size();
-
-  return provider->system_web_app_manager().GetMinimumWindowSize(
-      app_controller->app_id());
+  return gfx::Size();
 }
 
 }  // namespace web_app

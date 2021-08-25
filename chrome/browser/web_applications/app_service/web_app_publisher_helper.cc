@@ -1073,16 +1073,15 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   auto system_app_type =
       provider_->system_web_app_manager().GetSystemAppTypeForAppId(app->app_id);
   if (system_app_type.has_value()) {
-    app->show_in_launcher =
-        provider_->system_web_app_manager().ShouldShowInLauncher(
-            system_app_type.value())
-            ? apps::mojom::OptionalBool::kTrue
-            : apps::mojom::OptionalBool::kFalse;
-    app->show_in_search =
-        provider_->system_web_app_manager().ShouldShowInSearch(
-            system_app_type.value())
-            ? apps::mojom::OptionalBool::kTrue
-            : apps::mojom::OptionalBool::kFalse;
+    auto* system_app =
+        provider_->system_web_app_manager().GetSystemApp(*system_app_type);
+    DCHECK(system_app);
+    app->show_in_launcher = system_app->ShouldShowInLauncher()
+                                ? apps::mojom::OptionalBool::kTrue
+                                : apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = system_app->ShouldShowInSearch()
+                              ? apps::mojom::OptionalBool::kTrue
+                              : apps::mojom::OptionalBool::kFalse;
   }
 #endif
 }

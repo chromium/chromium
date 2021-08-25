@@ -523,9 +523,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
   WaitForTestSystemAppInstall();
 
   // Check system_web_app_manager has the correct attributes for Media App.
-  EXPECT_FALSE(
-      GetManager().ShouldShowInLauncher(web_app::SystemAppType::MEDIA));
-  EXPECT_FALSE(GetManager().ShouldShowInSearch(web_app::SystemAppType::MEDIA));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::MEDIA);
+  EXPECT_FALSE(system_app->ShouldShowInLauncher());
+  EXPECT_FALSE(system_app->ShouldShowInSearch());
 }
 
 // Note: Error reporting tests are limited to one per test instance otherwise we

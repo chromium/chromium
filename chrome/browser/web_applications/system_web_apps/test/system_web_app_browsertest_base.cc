@@ -43,6 +43,10 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
   if (maybe_installation_) {
     maybe_installation_->WaitForAppInstall();
   } else {
+    // Avoid recreating system apps in tests since AppBrowserController keeps a
+    // reference to SystemWebAppDelegates.
+    if (!GetManager().GetRegisteredSystemAppsForTesting().empty())
+      return;
     GetManager().InstallSystemAppsForTesting();
   }
 

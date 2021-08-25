@@ -399,41 +399,11 @@ bool SystemWebAppManager::IsSystemWebApp(const AppId& app_id) const {
   return GetSystemAppTypeForAppId(app_id).has_value();
 }
 
-bool SystemWebAppManager::IsSingleWindow(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldBeSingleWindow();
-}
-
-bool SystemWebAppManager::ShouldShowNewWindowMenuOption(
-    SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  DCHECK(!(it->second->ShouldShowNewWindowMenuOption() &&
-           it->second->ShouldBeSingleWindow()))
-      << "App can't show 'new window' menu option and be single window same "
-         "time.";
-
-  return it->second->ShouldShowNewWindowMenuOption();
-}
-
-bool SystemWebAppManager::AppShouldReceiveLaunchDirectory(
-    SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-  return it->second->ShouldIncludeLaunchDirectory();
-}
-
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
-    const SystemAppType type,
+    const SystemWebAppDelegate* system_app,
     const GURL& url) const {
-  const auto& origin_to_origin_trials =
-      system_app_delegates_.at(type)->GetEnabledOriginTrials();
+  DCHECK(system_app);
+  const auto& origin_to_origin_trials = system_app->GetEnabledOriginTrials();
   auto iter_trials = origin_to_origin_trials.find(url::Origin::Create(url));
 
   if (iter_trials == origin_to_origin_trials.end())
@@ -442,10 +412,10 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
   return &iter_trials->second;
 }
 
-bool SystemWebAppManager::AppHasFileHandlingOriginTrial(SystemAppType type) {
-  const auto& info = system_app_delegates_.at(type);
+bool SystemWebAppManager::AppHasFileHandlingOriginTrial(
+    const SystemWebAppDelegate* system_app) {
   const std::vector<std::string>* trials =
-      GetEnabledOriginTrials(type, info->GetInstallUrl());
+      GetEnabledOriginTrials(system_app, system_app->GetInstallUrl());
   return trials && base::Contains(*trials, kFileHandlingOriginTrial);
 }
 
@@ -461,82 +431,14 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   // System App. So the |app_id| should always have a valid associated System
   // App type.
   DCHECK(type.has_value());
+  auto* system_app = GetSystemApp(type.value());
+  DCHECK(system_app);
 
   const std::vector<std::string>* trials =
-      GetEnabledOriginTrials(type.value(), navigation_handle->GetURL());
+      GetEnabledOriginTrials(system_app, navigation_handle->GetURL());
   if (trials) {
     navigation_handle->ForceEnableOriginTrials(*trials);
   }
-}
-
-std::vector<std::string> SystemWebAppManager::GetAdditionalSearchTerms(
-    SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return {};
-
-  const auto& search_terms = it->second->GetAdditionalSearchTerms();
-
-  std::vector<std::string> search_terms_strings;
-  std::transform(search_terms.begin(), search_terms.end(),
-                 std::back_inserter(search_terms_strings),
-                 [](int term) { return l10n_util::GetStringUTF8(term); });
-  return search_terms_strings;
-}
-
-bool SystemWebAppManager::ShouldShowInLauncher(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-  return it->second->ShouldShowInLauncher();
-}
-
-bool SystemWebAppManager::ShouldShowInSearch(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-  return it->second->ShouldShowInSearch();
-}
-
-bool SystemWebAppManager::IsResizeableWindow(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldAllowResize();
-}
-
-bool SystemWebAppManager::IsMaximizableWindow(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldAllowMaximize();
-}
-
-bool SystemWebAppManager::ShouldHaveReloadButtonInMinimalUi(
-    SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldHaveReloadButtonInMinimalUi();
-}
-
-bool SystemWebAppManager::AllowScriptsToCloseWindows(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldAllowScriptsToCloseWindows();
-}
-
-bool SystemWebAppManager::ShouldHaveTabStrip(SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->ShouldHaveTabStrip();
 }
 
 absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
@@ -573,30 +475,6 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
-}
-
-gfx::Rect SystemWebAppManager::GetDefaultBounds(SystemAppType type,
-                                                Browser* browser) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end()) {
-    return gfx::Rect();
-  }
-
-  return it->second->GetDefaultBounds(browser);
-}
-
-gfx::Size SystemWebAppManager::GetMinimumWindowSize(const AppId& app_id) const {
-  absl::optional<SystemAppType> app_type = GetSystemAppTypeForAppId(app_id);
-
-  if (!app_type.has_value())
-    return gfx::Size();
-  auto app_type_to_app_info = system_app_delegates_.find(app_type.value());
-
-  if (app_type_to_app_info == system_app_delegates_.end()) {
-    return gfx::Size();
-  }
-
-  return app_type_to_app_info->second->GetMinimumWindowSize();
 }
 
 void SystemWebAppManager::SetSystemAppsForTesting(
@@ -710,7 +588,7 @@ void SystemWebAppManager::OnAppsSynchronized(
     if (!app_id)
       continue;
 
-    if (AppHasFileHandlingOriginTrial(type)) {
+    if (AppHasFileHandlingOriginTrial(it.second.get())) {
       os_integration_manager_->ForceEnableFileHandlingOriginTrial(
           app_id.value());
     } else {

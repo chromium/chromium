@@ -28,8 +28,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-class Browser;
-
 namespace base {
 class Version;
 }
@@ -119,55 +117,14 @@ class SystemWebAppManager {
   // Returns whether |app_id| points to an installed System App.
   bool IsSystemWebApp(const AppId& app_id) const;
 
-  // Returns whether the given System App |type| should use a single window.
-  bool IsSingleWindow(SystemAppType type) const;
-
-  // Returns whether the given System App |type| should get launch directory in
-  // launch parameter.
-  bool AppShouldReceiveLaunchDirectory(SystemAppType type) const;
-
   // Perform tab-specific setup when a navigation in a System Web App is about
   // to be committed.
   void OnReadyToCommitNavigation(const AppId& app_id,
                                  content::NavigationHandle* navigation_handle);
 
-  // Returns terms to be used when searching for the app.
-  std::vector<std::string> GetAdditionalSearchTerms(SystemAppType type) const;
-
-  // Returns whether the app should be shown in the launcher.
-  bool ShouldShowInLauncher(SystemAppType type) const;
-
-  // Returns whether the app should be shown in search.
-  bool ShouldShowInSearch(SystemAppType type) const;
-
-  // Returns whether the app should be resizeable.
-  bool IsResizeableWindow(SystemAppType type) const;
-
-  // Returns whether the surface of app can be maximizable.
-  bool IsMaximizableWindow(SystemAppType type) const;
-
-  // Returns whether the app should have the reload button in minimal ui mode.
-  bool ShouldHaveReloadButtonInMinimalUi(SystemAppType type) const;
-
-  // Returns whether the app is allowed to close the window through scripts.
-  bool AllowScriptsToCloseWindows(SystemAppType type) const;
-
-  // Returns whether the app window should have the tab-strip.
-  bool ShouldHaveTabStrip(SystemAppType type) const;
-
   // Returns the SystemAppType that should capture the navigation to |url|.
   absl::optional<SystemAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
-
-  // Return the default bound of App's window.
-  gfx::Rect GetDefaultBounds(SystemAppType type, Browser* browser) const;
-
-  // Returns the minimum window size for |app_id| or an empty size if the app
-  // doesn't specify a minimum.
-  gfx::Size GetMinimumWindowSize(const AppId& app_id) const;
-
-  // Returns whether to show "New Window" menu item in App's shelf context menu.
-  bool ShouldShowNewWindowMenuOption(SystemAppType type) const;
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
@@ -209,10 +166,11 @@ class SystemWebAppManager {
   // Returns the list of origin trials to enable for |url| loaded in System
   // App |type|. Returns an empty vector if the App does not specify origin
   // trials for |url|.
-  const std::vector<std::string>* GetEnabledOriginTrials(SystemAppType type,
-                                                         const GURL& url) const;
+  const std::vector<std::string>* GetEnabledOriginTrials(
+      const SystemWebAppDelegate* system_app,
+      const GURL& url) const;
 
-  bool AppHasFileHandlingOriginTrial(SystemAppType type);
+  bool AppHasFileHandlingOriginTrial(const SystemWebAppDelegate* system_app);
 
   void StopBackgroundTasks();
 

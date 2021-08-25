@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -663,10 +664,9 @@ RenderViewContextMenu::RenderViewContextMenu(
   set_content_type(
       ContextMenuContentTypeFactory::Create(source_web_contents_, params));
 
-  if (GetBrowser() && GetBrowser()->app_controller() &&
-      GetBrowser()->app_controller()->system_app()) {
-    system_app_type_ = GetBrowser()->app_controller()->system_app()->GetType();
-  }
+  system_app_ = GetBrowser() && GetBrowser()->app_controller()
+                    ? GetBrowser()->app_controller()->system_app()
+                    : nullptr;
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
@@ -1262,16 +1262,14 @@ void RenderViewContextMenu::AppendLinkItems() {
     Profile* profile = GetProfile();
     absl::optional<web_app::SystemAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
-    if (system_app_type_ && link_system_app_type) {
+    if (system_app_ && link_system_app_type) {
       // Show "Open in new tab" if this link points to the current app, and the
       // app has a tab strip.
       //
       // We don't show "open in tab" for links to a different SWA, because two
       // SWAs can't share the same browser window.
-      if (system_app_type_ == link_system_app_type &&
-          web_app::WebAppProvider::GetForSystemWebApps(profile)
-              ->system_web_app_manager()
-              .ShouldHaveTabStrip(system_app_type_.value())) {
+      if (system_app_->GetType() == link_system_app_type &&
+          system_app_->ShouldHaveTabStrip()) {
         menu_model_.AddItemWithStringId(
             IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
             IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP);
@@ -1496,12 +1494,10 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
 
   // Don't show "Open link in new app window", if the link points to the
   // current app, and the app is single windowed.
-  if (system_app_type_ &&
-      system_app_type_ ==
+  if (system_app_ &&
+      system_app_->GetType() ==
           web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
-      web_app::WebAppProvider::GetForSystemWebApps(GetProfile())
-          ->system_web_app_manager()
-          .IsSingleWindow(*system_app_type_)) {
+      system_app_->ShouldBeSingleWindow()) {
     return;
   }
 

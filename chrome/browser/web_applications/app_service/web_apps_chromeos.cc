@@ -124,9 +124,10 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
     SystemAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
-    if (WebAppProvider::GetForSystemWebApps(profile())
-            ->system_web_app_manager()
-            .ShouldShowNewWindowMenuOption(swa_type)) {
+    auto* system_app = WebAppProvider::GetForSystemWebApps(profile())
+                           ->system_web_app_manager()
+                           .GetSystemApp(swa_type);
+    if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
       apps::AddCommandItem(ash::MENU_OPEN_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
     }

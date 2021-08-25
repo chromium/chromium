@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -103,8 +104,9 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
   WaitForTestSystemAppInstall();
 
   // Check system_web_app_manager has the correct attributes for Eche App.
-  EXPECT_FALSE(GetManager().ShouldShowInLauncher(web_app::SystemAppType::ECHE));
-  EXPECT_FALSE(GetManager().ShouldShowInSearch(web_app::SystemAppType::ECHE));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::ECHE);
+  EXPECT_FALSE(system_app->ShouldShowInLauncher());
+  EXPECT_FALSE(system_app->ShouldShowInSearch());
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
@@ -133,9 +135,9 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
   WaitForTestSystemAppInstall();
   Browser* browser;
   LaunchApp(web_app::SystemAppType::ECHE, &browser);
-  EXPECT_TRUE(web_app::WebAppProvider::GetForTest(browser->profile())
-                  ->system_web_app_manager()
-                  .AllowScriptsToCloseWindows(web_app::SystemAppType::ECHE));
+  EXPECT_TRUE(browser->app_controller()
+                  ->system_app()
+                  ->ShouldAllowScriptsToCloseWindows());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

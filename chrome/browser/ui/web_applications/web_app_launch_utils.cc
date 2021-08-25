@@ -192,9 +192,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
           provider->system_web_app_manager().GetSystemApp(*system_app_type);
     }
     const bool has_tab_strip =
-        (system_app_type.has_value() &&
-         provider->system_web_app_manager().ShouldHaveTabStrip(
-             system_app_type.value())) ||
+        (system_app && system_app->ShouldHaveTabStrip()) ||
         (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
          provider->registrar().IsTabbedWindowModeEnabled(app_id));
     controller = std::make_unique<WebAppBrowserController>(

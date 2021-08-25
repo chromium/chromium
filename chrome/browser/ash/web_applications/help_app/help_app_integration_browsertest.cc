@@ -53,6 +53,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -110,16 +111,21 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
 // Test that the Help App is searchable by additional strings.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
   WaitForTestSystemAppInstall();
-  EXPECT_EQ(
-      std::vector<std::string>({"Get Help", "Perks", "Offers"}),
-      GetManager().GetAdditionalSearchTerms(web_app::SystemAppType::HELP));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  std::vector<int> search_terms = system_app->GetAdditionalSearchTerms();
+  std::vector<std::string> search_terms_strings;
+  std::transform(search_terms.begin(), search_terms.end(),
+                 std::back_inserter(search_terms_strings),
+                 [](int term) { return l10n_util::GetStringUTF8(term); });
+  EXPECT_EQ(std::vector<std::string>({"Get Help", "Perks", "Offers"}),
+            search_terms_strings);
 }
 
 // Test that the Help App has a minimum window size of 600x320.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2MinWindowSize) {
   WaitForTestSystemAppInstall();
-  auto app_id = LaunchParamsForApp(web_app::SystemAppType::HELP).app_id;
-  EXPECT_EQ(GetManager().GetMinimumWindowSize(app_id), gfx::Size(600, 320));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  EXPECT_EQ(system_app->GetMinimumWindowSize(), gfx::Size(600, 320));
 }
 
 // Test that the Help App has a default size of 960x600 and is in the center of

@@ -3302,11 +3302,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
         auto* system_app = browser->app_controller()->system_app();
         if (system_app) {
-          const web_app::SystemWebAppManager& system_web_app_manager =
-              web_app_provider->system_web_app_manager();
           web_prefs->allow_scripts_to_close_windows =
-              system_web_app_manager.AllowScriptsToCloseWindows(
-                  system_app->GetType());
+              system_app->ShouldAllowScriptsToCloseWindows();
         }
       }
     }

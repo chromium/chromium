@@ -143,10 +143,13 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   if (is_system_web_app) {
     absl::optional<web_app::SystemAppType> swa_type =
         web_app::GetSystemWebAppTypeForAppId(profile_, app_id);
-    is_multi_instance_window =
-        swa_type && web_app::WebAppProvider::GetForSystemWebApps(profile_)
-                        ->system_web_app_manager()
-                        .ShouldShowNewWindowMenuOption(*swa_type);
+    if (swa_type.has_value()) {
+      auto* system_app = web_app::WebAppProvider::GetForSystemWebApps(profile_)
+                             ->system_web_app_manager()
+                             .GetSystemApp(*swa_type);
+      DCHECK(system_app);
+      is_multi_instance_window = system_app->ShouldShowNewWindowMenuOption();
+    }
   } else {
     // Check the extensions registry to see if the app is a platform app. No
     // need to do this check if the app is a system web app.
