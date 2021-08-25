@@ -1227,9 +1227,7 @@ class CaptureVisiblePageTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(CaptureVisiblePageTest);
 };
 
-// TODO(crbug.com/1004573) Disabled due to flake
-TEST_F(CaptureVisiblePageTest,
-       DISABLED_URLsCapturableWithEitherActiveTabOrAllURLs) {
+TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
   const GURL test_urls[] = {
       // Normal web page.
       GURL("https://example.com"),
