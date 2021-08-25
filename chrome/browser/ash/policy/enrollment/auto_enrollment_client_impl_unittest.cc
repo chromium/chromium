@@ -1666,25 +1666,6 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
         network_error, /*expected_count=*/1);
   }
 
-  // Expects a sample for kUMAPsmHashDanceComparison to be recorded once with
-  // value |comparison|.
-  void ExpectPsmHashDanceComparisonRecorded(
-      PsmHashDanceComparison comparison) const {
-    histogram_tester_.ExpectUniqueSample(kUMAPsmHashDanceComparison, comparison,
-                                         /*expected_count=*/1);
-  }
-
-  // Expects a sample for kUMAPsmHashDanceDifferentResultsComparison to be
-  // recorded once with value |different_results_comparison|.
-  void ExpectPsmHashDanceDifferentResultsComparisonRecorded(
-      PsmHashDanceDifferentResultsComparison different_results_comparison)
-      const {
-    histogram_tester_.ExpectUniqueSample(
-        kUMAPsmHashDanceDifferentResultsComparison,
-        different_results_comparison,
-        /*expected_count=*/1);
-  }
-
   void VerifyPsmLastRequestJobType() const {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::
                   TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
