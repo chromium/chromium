@@ -330,7 +330,6 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
   // Invalidate the frame to ensure that it is re-laid out (even if the bounds
   // don't change) so that the frame sets the bounds of the client view.
   widget()->non_client_view()->frame_view()->InvalidateLayout();
-  widget()->non_client_view()->Layout();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::SetActivateOnPointer(
