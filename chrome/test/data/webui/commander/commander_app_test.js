@@ -67,19 +67,6 @@ suite('CommanderWebUIBrowserTest', () => {
     await flushTasks();
   });
 
-  test('input is focused when invoked', () => {
-    assertEquals(getDeepActiveElement(), app.$.input);
-  });
-
-  test('input is focused when reinitialized', async () => {
-    app.$.input.blur();
-    await flushTasks();
-    assertNotEquals(getDeepActiveElement(), app.$.input);
-    webUIListenerCallback('initialize');
-    await waitAfterNextRender();
-    assertEquals(getDeepActiveElement(), app.$.input);
-  });
-
   test('esc dismisses', () => {
     assertEquals(0, testProxy.getCallCount('dismiss'));
     const input = app.$.input;
