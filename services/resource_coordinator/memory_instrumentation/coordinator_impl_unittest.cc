@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -72,13 +73,13 @@ class CoordinatorImplTest : public testing::Test {
   CoordinatorImplTest() = default;
 
   void SetUp() override {
+    TracingObserverProto::RegisterForTesting();
     coordinator_ = std::make_unique<NiceMock<FakeCoordinatorImpl>>();
-    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
-        base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME);
+    tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+        base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override {
-    task_environment_.reset();
     coordinator_.reset();
   }
 
@@ -136,8 +137,13 @@ class CoordinatorImplTest : public testing::Test {
   }
 
  protected:
+  // Note that |coordinator_| must outlive |task_environment_|, because
+  // otherwise a worker thread owned by the task environment may try to access
+  // the coordinator after it has been destroyed.
   std::unique_ptr<NiceMock<FakeCoordinatorImpl>> coordinator_;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 class MockClientProcess : public mojom::ClientProcess {
@@ -307,7 +313,7 @@ TEST_F(CoordinatorImplTest, QueuedRequest) {
   // This variable to be static as the lambda below has to convert to a function
   // pointer rather than a functor.
   static base::test::TaskEnvironment* task_environment = nullptr;
-  task_environment = task_environment_.get();
+  task_environment = &task_environment_;
 
   NiceMock<MockClientProcess> client_process_1(this, 1,
                                                mojom::ProcessType::BROWSER);
@@ -785,7 +791,7 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
   ASSERT_TRUE(coordinator->use_proto_writer_);
-  tracing::DataSourceTester trace_data_tester(
+  tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
 
@@ -810,20 +816,20 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
                                  IsEmpty()))))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  trace_log->SetEnabled(
-      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
-                                     base::trace_event::RECORD_UNTIL_FULL),
-      TraceLog::RECORDING_MODE);
-  trace_data_tester.BeginTrace();
+  base::trace_event::TraceConfig trace_config(
+      std::string(MemoryDumpManager::kTraceCategory) + ",-*",
+      base::trace_event::RECORD_UNTIL_FULL);
+  data_source_tester.BeginTrace(trace_config);
   RequestGlobalMemoryDump(MemoryDumpType::EXPLICITLY_TRIGGERED,
                           MemoryDumpLevelOfDetail::DETAILED,
                           MemoryDumpDeterminism::NONE, {}, callback.Get());
   run_loop.Run();
-  trace_data_tester.EndTracing();
-  trace_log->SetDisabled();
+  data_source_tester.EndTracing();
 
-  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 0u);
+  for (size_t i = 0; i < data_source_tester.GetFinalizedPacketCount(); i++) {
+    EXPECT_FALSE(data_source_tester.GetFinalizedPacket(i)
+                     ->has_memory_tracker_snapshot());
+  }
 }
 
 // crbug.com: 1238428: flaky on Linux.
@@ -837,7 +843,7 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
 TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
   ASSERT_TRUE(coordinator->use_proto_writer_);
-  tracing::DataSourceTester trace_data_tester(
+  tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
 
@@ -858,19 +864,16 @@ TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
   EXPECT_CALL(callback, OnCall(true, Ne(0ul)))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  trace_log->SetEnabled(
-      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
-                                     base::trace_event::RECORD_UNTIL_FULL),
-      TraceLog::RECORDING_MODE);
-  trace_data_tester.BeginTrace();
+  base::trace_event::TraceConfig trace_config(
+      std::string(MemoryDumpManager::kTraceCategory) + ",-*",
+      base::trace_event::RECORD_UNTIL_FULL);
+  data_source_tester.BeginTrace(trace_config);
   RequestGlobalMemoryDumpAndAppendToTrace(callback.Get());
   run_loop.Run();
-  trace_data_tester.EndTracing();
-  trace_log->SetDisabled();
+  data_source_tester.EndTracing();
 
-  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 1u);
-  const auto* packet = trace_data_tester.producer()->GetFinalizedPacket();
+  EXPECT_GE(data_source_tester.GetFinalizedPacketCount(), 1u);
+  const auto* packet = data_source_tester.GetFinalizedPacket();
   EXPECT_EQ(packet->memory_tracker_snapshot().level_of_detail(),
             perfetto::protos::MemoryTrackerSnapshot::DETAIL_FULL);
 }
