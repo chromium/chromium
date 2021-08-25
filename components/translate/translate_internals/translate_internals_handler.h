@@ -41,9 +41,23 @@ class TranslateInternalsHandler {
   virtual TranslateClient* GetTranslateClient() = 0;
   virtual variations::VariationsService* GetVariationsService() = 0;
   // Registers to handle |message| from JavaScript with |callback|.
-  using MessageCallback = base::RepeatingCallback<void(const base::ListValue*)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(base::Value::ConstListView)>;
   virtual void RegisterMessageCallback(const std::string& message,
-                                       const MessageCallback& callback) = 0;
+                                       MessageCallback callback) = 0;
+
+  // Always use RegisterMessageCallback() above in new code.
+  //
+  // TODO(crbug.com/1243386): Existing callers of
+  // RegisterDeprecatedMessageCallback() should be migrated to
+  // RegisterMessageCallback() if possible.
+  //
+  // Registers to handle |message| from JavaScript with |callback|.
+  using DeprecatedMessageCallback =
+      base::RepeatingCallback<void(const base::ListValue*)>;
+  virtual void RegisterDeprecatedMessageCallback(
+      const std::string& message,
+      const DeprecatedMessageCallback& callback) = 0;
   // Calls a Javascript function with the given name and arguments.
   virtual void CallJavascriptFunction(
       const std::string& function_name,

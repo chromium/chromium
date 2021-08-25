@@ -23,12 +23,12 @@ HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
 HistoryLoginHandler::~HistoryLoginHandler() {}
 
 void HistoryLoginHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "otherDevicesInitialized",
       base::BindRepeating(&HistoryLoginHandler::HandleOtherDevicesInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startSignInFlow",
       base::BindRepeating(&HistoryLoginHandler::HandleStartSignInFlow,
                           base::Unretained(this)));

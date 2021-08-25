@@ -27,7 +27,7 @@ NotificationsInternalsUIMessageHandler::
     ~NotificationsInternalsUIMessageHandler() = default;
 
 void NotificationsInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "scheduleNotification",
       base::BindRepeating(
           &NotificationsInternalsUIMessageHandler::HandleScheduleNotification,

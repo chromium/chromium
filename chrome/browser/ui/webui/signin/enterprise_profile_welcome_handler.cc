@@ -117,20 +117,20 @@ EnterpriseProfileWelcomeHandler::~EnterpriseProfileWelcomeHandler() {
 
 void EnterpriseProfileWelcomeHandler::RegisterMessages() {
   profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialized",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializedWithSize",
       base::BindRepeating(
           &EnterpriseProfileWelcomeHandler::HandleInitializedWithSize,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "proceed",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleProceed,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancel",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleCancel,
                           base::Unretained(this)));

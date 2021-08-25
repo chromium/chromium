@@ -52,24 +52,24 @@ FeedbackHandler::FeedbackHandler(const FeedbackDialog* dialog)
 FeedbackHandler::~FeedbackHandler() = default;
 
 void FeedbackHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showDialog", base::BindRepeating(&FeedbackHandler::HandleShowDialog,
                                         base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showAssistantLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowAssistantLogsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showBluetoothLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowBluetoothLogsInfo,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showSystemInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowSystemInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showMetrics", base::BindRepeating(&FeedbackHandler::HandleShowMetrics,
                                          base::Unretained(this)));
 }

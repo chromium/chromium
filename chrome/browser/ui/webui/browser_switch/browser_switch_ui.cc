@@ -249,32 +249,32 @@ BrowserSwitchHandler::BrowserSwitchHandler() {}
 BrowserSwitchHandler::~BrowserSwitchHandler() = default;
 
 void BrowserSwitchHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchAlternativeBrowserAndCloseTab",
       base::BindRepeating(
           &BrowserSwitchHandler::HandleLaunchAlternativeBrowserAndCloseTab,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "gotoNewTabPage",
       base::BindRepeating(&BrowserSwitchHandler::HandleGotoNewTabPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllRulesets",
       base::BindRepeating(&BrowserSwitchHandler::HandleGetAllRulesets,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getDecision",
       base::BindRepeating(&BrowserSwitchHandler::HandleGetDecision,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTimestamps",
       base::BindRepeating(&BrowserSwitchHandler::HandleGetTimestamps,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getRulesetSources",
       base::BindRepeating(&BrowserSwitchHandler::HandleGetRulesetSources,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshXml", base::BindRepeating(&BrowserSwitchHandler::HandleRefreshXml,
                                         base::Unretained(this)));
 }

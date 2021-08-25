@@ -75,19 +75,19 @@ PowerMessageHandler::~PowerMessageHandler() {
 }
 
 void PowerMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestBatteryChargeDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetBatteryChargeData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestCpuIdleDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetCpuIdleData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestCpuFreqDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetCpuFreqData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestProcessUsageDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetProcessUsageData,
                           base::Unretained(this)));

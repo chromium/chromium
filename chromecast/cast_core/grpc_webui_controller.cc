@@ -102,26 +102,26 @@ void GrpcWebUIController::LaunchTutorial(const base::ListValue* args) {}
 void GrpcWebUIController::GetQRCode(const base::ListValue* args) {}
 
 void GrpcWebUIController::RegisterMessageCallbacks() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncStartPingNotify,
       base::BindRepeating(&GrpcWebUIController::StartPingNotify,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncStopPingNotify,
       base::BindRepeating(&GrpcWebUIController::StopPingNotify,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncSetOobeFinished,
       base::BindRepeating(&GrpcWebUIController::SetOobeFinished,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncRecordAction, base::BindRepeating(&GrpcWebUIController::RecordAction,
                                              base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncLaunchTutorial,
       base::BindRepeating(&GrpcWebUIController::LaunchTutorial,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kFuncGetQRCode, base::BindRepeating(&GrpcWebUIController::GetQRCode,
                                           base::Unretained(this)));
 }

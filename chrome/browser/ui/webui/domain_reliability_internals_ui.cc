@@ -47,7 +47,7 @@ DomainReliabilityInternalsHandler::~DomainReliabilityInternalsHandler() =
     default;
 
 void DomainReliabilityInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "updateData",
       base::BindRepeating(&DomainReliabilityInternalsHandler::HandleUpdateData,
                           base::Unretained(this)));

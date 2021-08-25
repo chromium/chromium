@@ -62,27 +62,27 @@ SecureDnsHandler::SecureDnsHandler() = default;
 SecureDnsHandler::~SecureDnsHandler() = default;
 
 void SecureDnsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSecureDnsResolverList",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsResolverList,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSecureDnsSetting",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsSetting,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "parseCustomDnsEntry",
       base::BindRepeating(&SecureDnsHandler::HandleParseCustomDnsEntry,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "probeCustomDnsTemplate",
       base::BindRepeating(&SecureDnsHandler::HandleProbeCustomDnsTemplate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordUserDropdownInteraction",
       base::BindRepeating(
           &SecureDnsHandler::HandleRecordUserDropdownInteraction,

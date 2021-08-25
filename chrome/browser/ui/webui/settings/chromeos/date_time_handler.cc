@@ -69,18 +69,18 @@ DateTimeHandler::DateTimeHandler() {}
 DateTimeHandler::~DateTimeHandler() = default;
 
 void DateTimeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "dateTimePageReady",
       base::BindRepeating(&DateTimeHandler::HandleDateTimePageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTimeZones", base::BindRepeating(&DateTimeHandler::HandleGetTimeZones,
                                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showSetDateTimeUI",
       base::BindRepeating(&DateTimeHandler::HandleShowSetDateTimeUI,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleShowParentAccessForTimeZone",
       base::BindRepeating(&DateTimeHandler::HandleShowParentAccessForTimeZone,
                           base::Unretained(this)));

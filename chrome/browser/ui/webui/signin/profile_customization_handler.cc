@@ -39,11 +39,11 @@ ProfileCustomizationHandler::~ProfileCustomizationHandler() = default;
 
 void ProfileCustomizationHandler::RegisterMessages() {
   profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialized",
       base::BindRepeating(&ProfileCustomizationHandler::HandleInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "done", base::BindRepeating(&ProfileCustomizationHandler::HandleDone,
                                   base::Unretained(this)));
 }

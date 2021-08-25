@@ -247,12 +247,12 @@ void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
 }
 
 void IdentityInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "identityInternalsGetTokens",
       base::BindRepeating(
           &IdentityInternalsUIMessageHandler::GetInfoForAllTokens,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "identityInternalsRevokeToken",
       base::BindRepeating(&IdentityInternalsUIMessageHandler::RevokeToken,
                           base::Unretained(this)));

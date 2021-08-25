@@ -34,40 +34,40 @@ WebRTCInternalsMessageHandler::~WebRTCInternalsMessageHandler() {
 }
 
 void WebRTCInternalsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getStandardStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetStandardStats,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLegacyStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetLegacyStats,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "enableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "disableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "enableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "disableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "finishedDOMLoad",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnDOMLoadDone,
                           base::Unretained(this)));

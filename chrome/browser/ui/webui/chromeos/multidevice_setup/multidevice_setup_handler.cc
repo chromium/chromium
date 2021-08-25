@@ -24,11 +24,11 @@ MultideviceSetupHandler::MultideviceSetupHandler() = default;
 MultideviceSetupHandler::~MultideviceSetupHandler() = default;
 
 void MultideviceSetupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProfileInfo",
       base::BindRepeating(&MultideviceSetupHandler::HandleGetProfileInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openMultiDeviceSettings",
       base::BindRepeating(
           &MultideviceSetupHandler::HandleOpenMultiDeviceSettings,

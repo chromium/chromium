@@ -92,11 +92,11 @@ void WelcomeHandler::RegisterMessages() {
   // constructor, because web_ui hasn't loaded yet at that time.
   is_redirected_welcome_impression_ = isValidRedirectUrl();
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleActivateSignIn",
       base::BindRepeating(&WelcomeHandler::HandleActivateSignIn,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleUserDecline",
       base::BindRepeating(&WelcomeHandler::HandleUserDecline,
                           base::Unretained(this)));

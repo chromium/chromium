@@ -42,11 +42,11 @@ void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
 }
 
 void UrgentPasswordExpiryNotificationHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "continue", base::BindRepeating(
                       &UrgentPasswordExpiryNotificationHandler::HandleContinue,
                       weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTitleText",
       base::BindRepeating(
           &UrgentPasswordExpiryNotificationHandler::HandleGetTitleText,

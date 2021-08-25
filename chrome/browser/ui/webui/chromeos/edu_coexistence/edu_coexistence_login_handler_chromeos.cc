@@ -177,22 +177,22 @@ void EduCoexistenceLoginHandler::RegisterMessages() {
       web_ui(), /* is_onboarding */ session_manager::SessionManager::Get()
                     ->IsUserSessionBlocked());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeEduArgs",
       base::BindRepeating(&EduCoexistenceLoginHandler::InitializeEduArgs,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "consentValid",
       base::BindRepeating(&EduCoexistenceLoginHandler::ConsentValid,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "consentLogged",
       base::BindRepeating(&EduCoexistenceLoginHandler::ConsentLogged,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "error", base::BindRepeating(&EduCoexistenceLoginHandler::OnError,
                                    base::Unretained(this)));
 }

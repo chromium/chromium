@@ -94,18 +94,18 @@ class CrashesDOMHandler : public WebUIMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(const base::ListValue* args);
+  void HandleRequestCrashes(base::Value::ConstListView args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Asynchronously triggers crash uploading. Called from JS.
-  void HandleRequestUploads(const base::ListValue* args);
+  void HandleRequestUploads(base::Value::ConstListView args);
 #endif
 
   // Sends the recent crashes list JS.
   void UpdateUI();
 
   // Asynchronously requests a user triggered upload. Called from JS.
-  void HandleRequestSingleCrashUpload(const base::ListValue* args);
+  void HandleRequestSingleCrashUpload(base::Value::ConstListView args);
 
   scoped_refptr<UploadList> upload_list_;
   bool list_available_;
@@ -144,7 +144,7 @@ void CrashesDOMHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
+void CrashesDOMHandler::HandleRequestCrashes(base::Value::ConstListView args) {
   AllowJavascript();
   if (first_load_) {
     first_load_ = false;
@@ -158,7 +158,7 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void CrashesDOMHandler::HandleRequestUploads(const base::ListValue* args) {
+void CrashesDOMHandler::HandleRequestUploads(base::Value::ConstListView args) {
   chromeos::DebugDaemonClient* debugd_client =
       chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
   DCHECK(debugd_client);
@@ -234,18 +234,14 @@ void CrashesDOMHandler::UpdateUI() {
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(
-    const base::ListValue* args) {
-  DCHECK(args);
-
-  std::string local_id;
-  bool success = args->GetString(0, &local_id);
-  DCHECK(success);
-
+    base::Value::ConstListView args) {
   // Only allow manual uploads if crash uploads aren’t disabled by policy.
   if (!ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
       IsMetricsReportingPolicyManaged()) {
     return;
   }
+
+  std::string local_id = args[0].GetString();
   upload_list_->RequestSingleUploadAsync(local_id);
 }
 

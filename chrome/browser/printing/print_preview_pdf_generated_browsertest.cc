@@ -250,12 +250,12 @@ class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
     // 'UIFailedLoadingForTest' is sent when the setting could not be set. This
     // causes the browser test to fail.
     void RegisterMessages() override {
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "UILoadedForTest",
           base::BindRepeating(&UIDoneLoadingMessageHandler::HandleDone,
                               base::Unretained(this)));
 
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "UIFailedLoadingForTest",
           base::BindRepeating(&UIDoneLoadingMessageHandler::HandleFailure,
                               base::Unretained(this)));

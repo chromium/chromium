@@ -63,11 +63,11 @@ void PasswordChangeHandler::HandleChangePassword(
 }
 
 void PasswordChangeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize",
       base::BindRepeating(&PasswordChangeHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "changePassword",
       base::BindRepeating(&PasswordChangeHandler::HandleChangePassword,
                           weak_factory_.GetWeakPtr()));

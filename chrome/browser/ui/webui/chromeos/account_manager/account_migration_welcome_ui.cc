@@ -41,12 +41,12 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "reauthenticateAccount",
         base::BindRepeating(
             &MigrationMessageHandler::HandleReauthenticateAccount,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "closeDialog",
         base::BindRepeating(&MigrationMessageHandler::HandleCloseDialog,
                             base::Unretained(this)));

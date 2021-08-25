@@ -32,21 +32,21 @@ ScanningMetricsHandler::ScanningMetricsHandler() = default;
 ScanningMetricsHandler::~ScanningMetricsHandler() = default;
 
 void ScanningMetricsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordNumScanSettingChanges",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordNumScanSettingChanges,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordScanCompleteAction",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordScanCompleteAction,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordScanJobSettings",
       base::BindRepeating(&ScanningMetricsHandler::HandleRecordScanJobSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordNumCompletedScans",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordNumCompletedScans,

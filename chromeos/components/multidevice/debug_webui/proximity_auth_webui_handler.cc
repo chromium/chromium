@@ -168,47 +168,47 @@ ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
 }
 
 void ProximityAuthWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onWebContentsInitialized",
       base::BindRepeating(&ProximityAuthWebUIHandler::OnWebContentsInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearLogBuffer",
       base::BindRepeating(&ProximityAuthWebUIHandler::ClearLogBuffer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLogMessages",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLogMessages,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "toggleUnlockKey",
       base::BindRepeating(&ProximityAuthWebUIHandler::ToggleUnlockKey,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "findEligibleUnlockDevices",
       base::BindRepeating(&ProximityAuthWebUIHandler::FindEligibleUnlockDevices,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLocalState",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLocalState,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "forceEnrollment",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceEnrollment,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "forceDeviceSync",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceDeviceSync,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "toggleConnection",
       base::BindRepeating(&ProximityAuthWebUIHandler::ToggleConnection,
                           base::Unretained(this)));

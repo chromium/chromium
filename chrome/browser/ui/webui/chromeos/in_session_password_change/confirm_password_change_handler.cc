@@ -93,11 +93,11 @@ void ConfirmPasswordChangeHandler::OnEvent(
 }
 
 void ConfirmPasswordChangeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getInitialState",
       base::BindRepeating(&ConfirmPasswordChangeHandler::HandleGetInitialState,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "changePassword",
       base::BindRepeating(&ConfirmPasswordChangeHandler::HandleChangePassword,
                           weak_factory_.GetWeakPtr()));

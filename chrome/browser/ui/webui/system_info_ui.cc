@@ -109,7 +109,7 @@ void SystemInfoHandler::OnJavascriptDisallowed() {
 }
 
 void SystemInfoHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestSystemInfo",
       base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
                           base::Unretained(this)));

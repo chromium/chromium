@@ -130,7 +130,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "testResult",
         base::BindRepeating(&WebUITestMessageHandler::HandleTestResult,
                             base::Unretained(this)));

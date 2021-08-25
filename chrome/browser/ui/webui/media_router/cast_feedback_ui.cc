@@ -172,7 +172,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
 
   content::WebUIDataSource::Add(profile_, source);
 
-  web_ui->RegisterMessageCallback(
+  web_ui->RegisterDeprecatedMessageCallback(
       "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,
                                    base::Unretained(this)));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());

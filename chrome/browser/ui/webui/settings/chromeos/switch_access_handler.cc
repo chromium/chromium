@@ -86,18 +86,18 @@ SwitchAccessHandler::~SwitchAccessHandler() {
 }
 
 void SwitchAccessHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshAssignmentsFromPrefs",
       base::BindRepeating(
           &SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifySwitchAccessActionAssignmentPaneActive",
       base::BindRepeating(
           &SwitchAccessHandler::
               HandleNotifySwitchAccessActionAssignmentPaneActive,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifySwitchAccessActionAssignmentPaneInactive",
       base::BindRepeating(
           &SwitchAccessHandler::

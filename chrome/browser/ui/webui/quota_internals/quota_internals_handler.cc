@@ -41,10 +41,10 @@ QuotaInternalsHandler::~QuotaInternalsHandler() {
 }
 
 void QuotaInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestInfo", base::BindRepeating(&QuotaInternalsHandler::OnRequestInfo,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "triggerStoragePressure",
       base::BindRepeating(&QuotaInternalsHandler::OnTriggerStoragePressure,
                           base::Unretained(this)));

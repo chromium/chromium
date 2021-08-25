@@ -35,17 +35,17 @@ NtpBackgroundHandler::NtpBackgroundHandler() {}
 NtpBackgroundHandler::~NtpBackgroundHandler() {}
 
 void NtpBackgroundHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearBackground",
       base::BindRepeating(&NtpBackgroundHandler::HandleClearBackground,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getBackgrounds",
       base::BindRepeating(&NtpBackgroundHandler::HandleGetBackgrounds,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setBackground",
       base::BindRepeating(&NtpBackgroundHandler::HandleSetBackground,
                           base::Unretained(this)));

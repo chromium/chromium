@@ -81,7 +81,7 @@ void SignInInternalsHandler::OnJavascriptDisallowed() {
 }
 
 void SignInInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandler::HandleGetSignInInfo,
                           base::Unretained(this)));

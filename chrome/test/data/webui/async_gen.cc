@@ -27,10 +27,10 @@ void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::HandleCallJS(
 }
 
 void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "callJS", base::BindRepeating(&AsyncWebUIMessageHandler::HandleCallJS,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "tearDown", base::BindRepeating(&AsyncWebUIMessageHandler::HandleTearDown,
                                       base::Unretained(this)));
 }

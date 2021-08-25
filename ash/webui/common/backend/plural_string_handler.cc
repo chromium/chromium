@@ -17,7 +17,7 @@ PluralStringHandler::PluralStringHandler() = default;
 PluralStringHandler::~PluralStringHandler() = default;
 
 void PluralStringHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralString",
       base::BindRepeating(&PluralStringHandler::HandleGetPluralString,
                           base::Unretained(this)));

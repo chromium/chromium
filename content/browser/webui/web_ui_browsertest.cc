@@ -87,15 +87,15 @@ const char kLoadDedicatedWorkerScript[] = R"(
 class TestWebUIMessageHandler : public WebUIMessageHandler {
  public:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "messageRequiringGesture",
         base::BindRepeating(&TestWebUIMessageHandler::OnMessageRequiringGesture,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "notifyFinish",
         base::BindRepeating(&TestWebUIMessageHandler::OnNotifyFinish,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "sendMessage",
         base::BindRepeating(&TestWebUIMessageHandler::OnSendMessase,
                             base::Unretained(this)));

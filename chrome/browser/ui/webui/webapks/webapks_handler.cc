@@ -21,11 +21,11 @@ WebApksHandler::WebApksHandler()
 WebApksHandler::~WebApksHandler() {}
 
 void WebApksHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestWebApksInfo",
       base::BindRepeating(&WebApksHandler::HandleRequestWebApksInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestWebApkUpdate",
       base::BindRepeating(&WebApksHandler::HandleRequestWebApkUpdate,
                           base::Unretained(this)));

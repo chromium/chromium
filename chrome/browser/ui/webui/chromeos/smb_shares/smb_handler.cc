@@ -42,15 +42,15 @@ SmbHandler::SmbHandler(Profile* profile,
 SmbHandler::~SmbHandler() = default;
 
 void SmbHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "smbMount",
       base::BindRepeating(&SmbHandler::HandleSmbMount, base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startDiscovery", base::BindRepeating(&SmbHandler::HandleStartDiscovery,
                                             base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "updateCredentials",
       base::BindRepeating(&SmbHandler::HandleUpdateCredentials,
                           base::Unretained(this)));

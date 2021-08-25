@@ -23,7 +23,7 @@ NearbyInternalsPrefsHandler::NearbyInternalsPrefsHandler(
 NearbyInternalsPrefsHandler::~NearbyInternalsPrefsHandler() = default;
 
 void NearbyInternalsPrefsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearNearbyPrefs",
       base::BindRepeating(&NearbyInternalsPrefsHandler::HandleClearNearbyPrefs,
                           base::Unretained(this)));

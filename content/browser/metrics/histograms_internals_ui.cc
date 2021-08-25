@@ -124,17 +124,17 @@ void HistogramsMessageHandler::RegisterMessages() {
 
   // We can use base::Unretained() here, as both the callback and this class are
   // owned by HistogramsInternalsUI.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIRequestHistograms,
       base::BindRepeating(&HistogramsMessageHandler::HandleRequestHistograms,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIStartMonitoring,
       base::BindRepeating(&HistogramsMessageHandler::HandleStartMoninoring,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIFetchDiff,
       base::BindRepeating(&HistogramsMessageHandler::HandleFetchDiff,
                           base::Unretained(this)));

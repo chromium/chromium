@@ -17,12 +17,12 @@ BookmarkHandler::BookmarkHandler(PrefService* prefs) : prefs_(prefs) {}
 BookmarkHandler::~BookmarkHandler() {}
 
 void BookmarkHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "toggleBookmarkBar",
       base::BindRepeating(&BookmarkHandler::HandleToggleBookmarkBar,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "isBookmarkBarShown",
       base::BindRepeating(&BookmarkHandler::HandleIsBookmarkBarShown,
                           base::Unretained(this)));

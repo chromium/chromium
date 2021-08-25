@@ -25,7 +25,7 @@ CryptohomeWebUIHandler::CryptohomeWebUIHandler() {}
 CryptohomeWebUIHandler::~CryptohomeWebUIHandler() {}
 
 void CryptohomeWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "pageLoaded", base::BindRepeating(&CryptohomeWebUIHandler::OnPageLoaded,
                                         weak_ptr_factory_.GetWeakPtr()));
 }

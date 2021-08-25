@@ -92,12 +92,12 @@ GoogleAppsHandler::GoogleAppsHandler() {
 GoogleAppsHandler::~GoogleAppsHandler() {}
 
 void GoogleAppsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cacheGoogleAppIcon",
       base::BindRepeating(&GoogleAppsHandler::HandleCacheGoogleAppIcon,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getGoogleAppsList",
       base::BindRepeating(&GoogleAppsHandler::HandleGetGoogleAppsList,
                           base::Unretained(this)));

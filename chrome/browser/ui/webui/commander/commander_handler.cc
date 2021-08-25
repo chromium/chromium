@@ -34,22 +34,22 @@ CommanderHandler::CommanderHandler() = default;
 CommanderHandler::~CommanderHandler() = default;
 
 void CommanderHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kTextChangedMessage,
       base::BindRepeating(&CommanderHandler::HandleTextChanged,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kOptionSelectedMessage,
       base::BindRepeating(&CommanderHandler::HandleOptionSelected,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kCompositeCommandCancelledMessage,
       base::BindRepeating(&CommanderHandler::HandleCompositeCommandCancelled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kDismissMessage, base::BindRepeating(&CommanderHandler::HandleDismiss,
                                            base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHeightChangedMessage,
       base::BindRepeating(&CommanderHandler::HandleHeightChanged,
                           base::Unretained(this)));

@@ -20,7 +20,7 @@ ConflictsHandler::~ConflictsHandler() = default;
 void ConflictsHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestModuleList",
       base::BindRepeating(&ConflictsHandler::HandleRequestModuleList,
                           base::Unretained(this)));

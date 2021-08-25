@@ -59,26 +59,26 @@ base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
 }
 
 void ProjectorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAccounts", base::BindRepeating(&ProjectorMessageHandler::GetAccounts,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "canStartProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::CanStartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
                                      base::Unretained(this)));
 }

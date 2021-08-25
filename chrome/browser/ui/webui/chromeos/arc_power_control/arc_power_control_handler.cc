@@ -126,22 +126,22 @@ ArcPowerControlHandler::~ArcPowerControlHandler() {
 }
 
 void ArcPowerControlHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "ready", base::BindRepeating(&ArcPowerControlHandler::HandleReady,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setWakefulnessMode",
       base::BindRepeating(&ArcPowerControlHandler::HandleSetWakefulnessMode,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setThrottling",
       base::BindRepeating(&ArcPowerControlHandler::HandleSetThrottling,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startTracing",
       base::BindRepeating(&ArcPowerControlHandler::HandleStartTracing,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "stopTracing",
       base::BindRepeating(&ArcPowerControlHandler::HandleStopTracing,
                           base::Unretained(this)));

@@ -52,25 +52,25 @@ SyncFileSystemInternalsHandler::~SyncFileSystemInternalsHandler() {
 }
 
 void SyncFileSystemInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &SyncFileSystemInternalsHandler::HandleGetServiceStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLog",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleGetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearLogs",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleClearLogs,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getNotificationSource",
       base::BindRepeating(
           &SyncFileSystemInternalsHandler::HandleGetNotificationSource,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "observeTaskLog",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleObserveTaskLog,
                           base::Unretained(this)));

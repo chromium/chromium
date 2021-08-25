@@ -60,10 +60,10 @@ SessionLogHandler::SessionLogHandler(
 SessionLogHandler::~SessionLogHandler() = default;
 
 void SessionLogHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize", base::BindRepeating(&SessionLogHandler::HandleInitialize,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "saveSessionLog",
       base::BindRepeating(&SessionLogHandler::HandleSaveSessionLogRequest,
                           base::Unretained(this)));

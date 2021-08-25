@@ -51,8 +51,14 @@ ChromeTranslateInternalsHandler::GetVariationsService() {
 
 void ChromeTranslateInternalsHandler::RegisterMessageCallback(
     const std::string& message,
-    const MessageCallback& callback) {
-  web_ui()->RegisterMessageCallback(message, callback);
+    MessageCallback callback) {
+  web_ui()->RegisterMessageCallback(message, std::move(callback));
+}
+
+void ChromeTranslateInternalsHandler::RegisterDeprecatedMessageCallback(
+    const std::string& message,
+    const DeprecatedMessageCallback& callback) {
+  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
 }
 
 void ChromeTranslateInternalsHandler::CallJavascriptFunction(

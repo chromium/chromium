@@ -544,99 +544,99 @@ void OfflineInternalsUIMessageHandler::HandleSavePageLaterCallback(
 }
 
 void OfflineInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "deleteSelectedPages",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "deleteSelectedRequests",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleDeleteSelectedRequests,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getRequestQueue",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGetRequestQueue,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getStoredPages",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGetStoredPages,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEventLogs",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::HandleGetEventLogs,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setRecordRequestQueue",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleSetRecordRequestQueue,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setRecordPageModel",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleSetRecordPageModel,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setRecordPrefetchService",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleSetRecordPrefetchService,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setLimitlessPrefetchingEnabled",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::
                               HandleSetLimitlessPrefetchingEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLimitlessPrefetchingEnabled",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::
                               HandleGetLimitlessPrefetchingEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setPrefetchTestingHeader",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleSetPrefetchTestingHeader,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPrefetchTestingHeader",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGetPrefetchTestingHeader,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLoggingState",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGetLoggingState,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "addToRequestQueue",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleAddToRequestQueue,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getNetworkStatus",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGetNetworkStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "scheduleNwake",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleScheduleNwake,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancelNwake",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::HandleCancelNwake,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "generatePageBundle",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleGeneratePageBundle,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getOperation",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::HandleGetOperation,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "downloadArchive",
       base::BindRepeating(
           &OfflineInternalsUIMessageHandler::HandleDownloadArchive,

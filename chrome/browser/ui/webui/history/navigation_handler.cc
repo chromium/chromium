@@ -19,7 +19,7 @@ NavigationHandler::NavigationHandler() {}
 NavigationHandler::~NavigationHandler() {}
 
 void NavigationHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "navigateToUrl",
       base::BindRepeating(&NavigationHandler::HandleNavigateToUrl,
                           base::Unretained(this)));

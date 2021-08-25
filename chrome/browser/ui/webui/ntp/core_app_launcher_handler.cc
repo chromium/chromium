@@ -56,7 +56,7 @@ void CoreAppLauncherHandler::RecordAppLaunchByUrl(
 }
 
 void CoreAppLauncherHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordAppLaunchByURL",
       base::BindRepeating(&CoreAppLauncherHandler::HandleRecordAppLaunchByUrl,
                           base::Unretained(this)));

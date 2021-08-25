@@ -67,17 +67,17 @@ IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 void IndexedDBInternalsHandler::RegisterMessages() {
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllOrigins",
       base::BindRepeating(&IndexedDBInternalsHandler::GetAllStorageKeys,
                           base::Unretained(this)));
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "downloadOriginData",
       base::BindRepeating(&IndexedDBInternalsHandler::DownloadStorageKeyData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "forceClose",
       base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseStorageKey,
                           base::Unretained(this)));

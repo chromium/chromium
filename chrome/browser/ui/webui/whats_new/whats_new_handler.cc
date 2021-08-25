@@ -53,7 +53,7 @@ WhatsNewHandler::WhatsNewHandler() = default;
 WhatsNewHandler::~WhatsNewHandler() = default;
 
 void WhatsNewHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize", base::BindRepeating(&WhatsNewHandler::HandleInitialize,
                                         base::Unretained(this)));
 }

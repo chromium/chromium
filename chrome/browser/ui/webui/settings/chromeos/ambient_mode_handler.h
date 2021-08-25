@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
@@ -17,10 +18,6 @@
 namespace ash {
 struct AmbientSettings;
 }  // namespace ash
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace gfx {
 class ImageSkia;
@@ -53,16 +50,16 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   void OnEnabledPrefChanged();
 
   // WebUI call to request topic source and temperature unit related data.
-  void HandleRequestSettings(const base::ListValue* args);
+  void HandleRequestSettings(base::Value::ConstListView args);
 
   // WebUI call to request albums related data.
-  void HandleRequestAlbums(const base::ListValue* args);
+  void HandleRequestAlbums(base::Value::ConstListView args);
 
   // WebUI call to sync temperature unit with server.
-  void HandleSetSelectedTemperatureUnit(const base::ListValue* args);
+  void HandleSetSelectedTemperatureUnit(base::Value::ConstListView args);
 
   // WebUI call to sync albums with server.
-  void HandleSetSelectedAlbums(const base::ListValue* args);
+  void HandleSetSelectedAlbums(base::Value::ConstListView args);
 
   // Send the "temperature-unit-changed" WebUIListener event to update the
   // WebUI.

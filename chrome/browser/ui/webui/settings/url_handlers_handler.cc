@@ -208,12 +208,12 @@ void UrlHandlersHandler::OnJavascriptDisallowed() {
 }
 
 void UrlHandlersHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getUrlHandlers",
       base::BindRepeating(&UrlHandlersHandler::HandleGetUrlHandlers,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetUrlHandlerSavedChoice",
       base::BindRepeating(&UrlHandlersHandler::HandleResetUrlHandlerSavedChoice,
                           base::Unretained(this)));

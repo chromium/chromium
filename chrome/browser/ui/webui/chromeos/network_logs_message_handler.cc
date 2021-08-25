@@ -66,10 +66,10 @@ NetworkLogsMessageHandler::~NetworkLogsMessageHandler() = default;
 
 void NetworkLogsMessageHandler::RegisterMessages() {
   out_dir_ = GetDownloadsDirectory(web_ui());
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "storeLogs", base::BindRepeating(&NetworkLogsMessageHandler::OnStoreLogs,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setShillDebugging",
       base::BindRepeating(&NetworkLogsMessageHandler::OnSetShillDebugging,
                           base::Unretained(this)));

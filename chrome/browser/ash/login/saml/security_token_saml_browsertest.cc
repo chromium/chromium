@@ -213,7 +213,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
 
   // Subscribes for the notifications from the Login Screen UI,
   void StartObservingLoginUiMessages() {
-    GetLoginUI()->RegisterMessageCallback(
+    GetLoginUI()->RegisterDeprecatedMessageCallback(
         "securityTokenPinDialogShownForTest",
         base::BindRepeating(&SecurityTokenSamlTest::OnPinDialogShownMessage,
                             weak_factory_.GetWeakPtr()));

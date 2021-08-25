@@ -93,21 +93,20 @@ class AmbientModeHandlerTest : public testing::Test {
   }
 
   void RequestSettings() {
-    base::ListValue args;
-    handler_->HandleRequestSettings(&args);
+    handler_->HandleRequestSettings(base::Value::ConstListView());
   }
 
   void RequestAlbums(ash::AmbientModeTopicSource topic_source) {
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(static_cast<int>(topic_source));
-    handler_->HandleRequestAlbums(&args);
+    handler_->HandleRequestAlbums(args.GetList());
   }
 
-  void HandleSetSelectedTemperatureUnit(const base::ListValue* args) {
+  void HandleSetSelectedTemperatureUnit(base::Value::ConstListView args) {
     handler_->HandleSetSelectedTemperatureUnit(args);
   }
 
-  void HandleSetSelectedAlbums(const base::ListValue* args) {
+  void HandleSetSelectedAlbums(base::Value::ConstListView args) {
     handler_->HandleSetSelectedAlbums(args);
   }
 
@@ -763,7 +762,7 @@ TEST_F(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
   dictionary.SetKey("albums", std::move(albums));
 
   args.Append(std::move(dictionary));
-  HandleSetSelectedAlbums(&args);
+  HandleSetSelectedAlbums(args.GetList());
 
   histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
                                       /*count=*/1);
@@ -777,10 +776,10 @@ TEST_F(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
 
-  base::ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("fahrenheit");
 
-  HandleSetSelectedTemperatureUnit(&args);
+  HandleSetSelectedTemperatureUnit(args.GetList());
 
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
@@ -797,10 +796,10 @@ TEST_F(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
 
-  base::ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("celsius");
 
-  HandleSetSelectedTemperatureUnit(&args);
+  HandleSetSelectedTemperatureUnit(args.GetList());
 
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());

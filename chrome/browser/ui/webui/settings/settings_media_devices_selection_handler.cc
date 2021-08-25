@@ -45,12 +45,12 @@ void MediaDevicesSelectionHandler::OnJavascriptDisallowed() {
 }
 
 void MediaDevicesSelectionHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getDefaultCaptureDevices",
       base::BindRepeating(
           &MediaDevicesSelectionHandler::GetDefaultCaptureDevices,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setDefaultCaptureDevice",
       base::BindRepeating(
           &MediaDevicesSelectionHandler::SetDefaultCaptureDevice,

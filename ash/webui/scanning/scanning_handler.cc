@@ -40,46 +40,46 @@ ScanningHandler::ScanningHandler(
 ScanningHandler::~ScanningHandler() = default;
 
 void ScanningHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize", base::BindRepeating(&ScanningHandler::HandleInitialize,
                                         base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestScanToLocation",
       base::BindRepeating(&ScanningHandler::HandleRequestScanToLocation,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showFileInLocation",
       base::BindRepeating(&ScanningHandler::HandleShowFileInLocation,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralString",
       base::BindRepeating(&ScanningHandler::HandleGetPluralString,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getMyFilesPath",
       base::BindRepeating(&ScanningHandler::HandleGetMyFilesPath,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openFilesInMediaApp",
       base::BindRepeating(&ScanningHandler::HandleOpenFilesInMediaApp,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "saveScanSettings",
       base::BindRepeating(&ScanningHandler::HandleSaveScanSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getScanSettings",
       base::BindRepeating(&ScanningHandler::HandleGetScanSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "ensureValidFilePath",
       base::BindRepeating(&ScanningHandler::HandleEnsureValidFilePath,
                           base::Unretained(this)));

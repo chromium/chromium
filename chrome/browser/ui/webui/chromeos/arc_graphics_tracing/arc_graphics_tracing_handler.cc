@@ -347,22 +347,22 @@ ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "ready", base::BindRepeating(&ArcGraphicsTracingHandler::HandleReady,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "loadFromText",
       base::BindRepeating(&ArcGraphicsTracingHandler::HandleLoadFromText,
                           base::Unretained(this)));
   switch (mode_) {
     case ArcGraphicsTracingMode::kFull:
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "setStopOnJank",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetStopOnJank,
                               base::Unretained(this)));
       break;
     case ArcGraphicsTracingMode::kOverview:
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "setMaxTime",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetMaxTime,
                               base::Unretained(this)));

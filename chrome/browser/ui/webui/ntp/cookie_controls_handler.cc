@@ -30,12 +30,12 @@ CookieControlsHandler::~CookieControlsHandler() {
 }
 
 void CookieControlsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cookieControlsToggleChanged",
       base::BindRepeating(
           &CookieControlsHandler::HandleCookieControlsToggleChanged,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "observeCookieControlsSettingsChanges",
       base::BindRepeating(
           &CookieControlsHandler::HandleObserveCookieControlsSettingsChanges,

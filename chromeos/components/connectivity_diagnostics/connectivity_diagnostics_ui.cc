@@ -51,13 +51,13 @@ class ConnectivityDiagnosticsMessageHandler
   ~ConnectivityDiagnosticsMessageHandler() override = default;
 
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "sendFeedbackReport",
         base::BindRepeating(
             &ConnectivityDiagnosticsMessageHandler::SendFeedbackReportRequest,
             base::Unretained(this)));
 
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "getShowFeedbackButton",
         base::BindRepeating(
             &ConnectivityDiagnosticsMessageHandler::GetShowFeedbackButton,

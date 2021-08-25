@@ -384,32 +384,32 @@ ServiceWorkerInternalsUI::~ServiceWorkerInternalsUI() = default;
 ServiceWorkerInternalsHandler::ServiceWorkerInternalsHandler() = default;
 
 void ServiceWorkerInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "GetOptions",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleGetOptions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOption",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleSetOption,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllRegistrations",
       base::BindRepeating(
           &ServiceWorkerInternalsHandler::HandleGetAllRegistrations,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "stop",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleStopWorker,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "inspect",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleInspectWorker,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "unregister",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleUnregister,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "start",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleStartWorker,
                           base::Unretained(this)));

@@ -25,23 +25,23 @@ MetricsHandler::MetricsHandler() {}
 MetricsHandler::~MetricsHandler() {}
 
 void MetricsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordAction",
       base::BindRepeating(&MetricsHandler::HandleRecordAction,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordInHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordInHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordBooleanHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordBooleanHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordTime",
       base::BindRepeating(&MetricsHandler::HandleRecordTime,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordMediumTime",
       base::BindRepeating(&MetricsHandler::HandleRecordMediumTime,
                           base::Unretained(this)));

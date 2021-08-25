@@ -32,12 +32,12 @@ PredictorsHandler::PredictorsHandler(Profile* profile) {
 PredictorsHandler::~PredictorsHandler() { }
 
 void PredictorsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestAutocompleteActionPredictorDb",
       base::BindRepeating(
           &PredictorsHandler::RequestAutocompleteActionPredictorDb,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestResourcePrefetchPredictorDb",
       base::BindRepeating(
           &PredictorsHandler::RequestResourcePrefetchPredictorDb,

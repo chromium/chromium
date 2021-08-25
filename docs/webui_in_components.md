@@ -236,11 +236,8 @@ You probably want your new WebUI page to be able to do something or get informat
 
 `src/components/hello_world/hello_world_ui.h:`
 ```c++
+#include "base/values.h"
 #include "content/public/browser/web_ui.h"
-+
-+ namespace base {
-+   class ListValue;
-+ }  // namespace base
 
 // The WebUI for chrome://hello-world
 ...
@@ -258,7 +255,7 @@ You probably want your new WebUI page to be able to do something or get informat
 +
 +  private:
 +   // Add two numbers together using integer arithmetic.
-+   void AddNumbers(const base::ListValue* args);
++   void AddNumbers(base::Value::ConstListView args);
   };
 ```
 
@@ -272,14 +269,14 @@ You probably want your new WebUI page to be able to do something or get informat
   HelloWorldUI::~HelloWorldUI() {
   }
 +
-+ void HelloWorldUI::AddNumbers(const base::ListValue* args) {
-+   int term1, term2;
-+   if (!args->GetInteger(0, &term1) || !args->GetInteger(1, &term2))
++ void HelloWorldUI::AddNumbers(base::Value::ConstListView args) {
++   if (args.size() != 3)
 +     return;
++   int term1 = args[1].GetInt();
++   int term2 = args[2].GetInt();
 +   base::FundamentalValue result(term1 + term2);
 +   AllowJavascript();
-+   std::string callback_id;
-+   args->GetString(0, &callback_id);
++   std::string callback_id = args[0].GetString();
 +   ResolveJavascriptCallback(base::Value(callback_id), result);
 + }
 ```

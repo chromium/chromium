@@ -30,7 +30,7 @@ void ThemeHandler::RegisterMessages() {
   // constructor since they need the web_ui value to be set, which is done
   // post-construction, but before registering messages.
   InitializeCSSCaches();
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "observeThemeChanges",
       base::BindRepeating(&ThemeHandler::HandleObserveThemeChanges,
                           base::Unretained(this)));

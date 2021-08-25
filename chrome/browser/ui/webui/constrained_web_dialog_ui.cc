@@ -66,7 +66,7 @@ ConstrainedWebDialogUI::~ConstrainedWebDialogUI() = default;
 void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Add a "dialogClose" callback which matches WebDialogUI behavior.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "dialogClose",
       base::BindRepeating(&ConstrainedWebDialogUI::OnDialogCloseMessage,
                           base::Unretained(this)));

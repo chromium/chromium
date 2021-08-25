@@ -33,19 +33,19 @@ void SigninErrorHandler::OnBrowserRemoved(Browser* browser) {
 }
 
 void SigninErrorHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "confirm", base::BindRepeating(&SigninErrorHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "switchToExistingProfile",
       base::BindRepeating(&SigninErrorHandler::HandleSwitchToExistingProfile,
                           base::Unretained(this)));
   if (!is_system_profile_) {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "learnMore", base::BindRepeating(&SigninErrorHandler::HandleLearnMore,
                                          base::Unretained(this)));
   }
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializedWithSize",
       base::BindRepeating(&SigninErrorHandler::HandleInitializedWithSize,
                           base::Unretained(this)));

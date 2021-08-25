@@ -44,10 +44,10 @@ base::Value GetFlocIdInformation(Profile* profile) {
 }  // namespace
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
                           base::Unretained(this)));

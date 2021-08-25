@@ -37,7 +37,7 @@ AppIconWebUIHandler::AppIconWebUIHandler() {
 AppIconWebUIHandler::~AppIconWebUIHandler() {}
 
 void AppIconWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAppIconDominantColor",
       base::BindRepeating(&AppIconWebUIHandler::HandleGetAppIconDominantColor,
                           base::Unretained(this)));

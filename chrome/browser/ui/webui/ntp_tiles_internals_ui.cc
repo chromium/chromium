@@ -53,6 +53,10 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
       const std::string& message,
+      base::RepeatingCallback<void(base::Value::ConstListView)> callback)
+      override;
+  void RegisterDeprecatedMessageCallback(
+      const std::string& message,
       const base::RepeatingCallback<void(const base::ListValue*)>& callback)
       override;
   void CallJavascriptFunctionVector(
@@ -111,8 +115,15 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
     const std::string& message,
-    const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
-  web_ui()->RegisterMessageCallback(message, callback);
+    base::RepeatingCallback<void(base::Value::ConstListView)> callback) {
+  web_ui()->RegisterMessageCallback(message, std::move(callback));
+}
+
+void ChromeNTPTilesInternalsMessageHandlerClient::
+    RegisterDeprecatedMessageCallback(
+        const std::string& message,
+        const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
+  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionVector(

@@ -61,7 +61,7 @@ OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
 OmahaDOMHandler::~OmahaDOMHandler() {}
 
 void OmahaDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestOmahaDebugInformation",
       base::BindRepeating(&OmahaDOMHandler::HandleRequestDebugInformation,
                           base::Unretained(this)));

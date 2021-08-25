@@ -129,71 +129,71 @@ MultidevicePhoneHubHandler::~MultidevicePhoneHubHandler() {
 }
 
 void MultidevicePhoneHubHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setFakePhoneHubManagerEnabled",
       base::BindRepeating(
           &MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setFeatureStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFeatureStatus,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setShowOnboardingFlow",
       base::BindRepeating(
           &MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setFakePhoneName",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneName,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setFakePhoneStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneStatus,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setBrowserTabs",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetBrowserTabs,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setNotification",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetNotification,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeNotification",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleRemoveNotification,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "enableDnd",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleEnableDnd,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setFindMyDeviceStatus",
       base::BindRepeating(
           &MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setTetherStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetTetherStatus,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetShouldShowOnboardingUi",
       base::BindRepeating(
           &MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetHasNotificationSetupUiBeenDismissed",
       base::BindRepeating(&MultidevicePhoneHubHandler::
                               HandleResetHasNotificationSetupUiBeenDismissed,

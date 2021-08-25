@@ -91,13 +91,13 @@ SlowHandler::~SlowHandler() {
 }
 
 void SlowHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiDisableTracing,
       base::BindRepeating(&SlowHandler::HandleDisable, base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiEnableTracing,
       base::BindRepeating(&SlowHandler::HandleEnable, base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiLoadComplete,
       base::BindRepeating(&SlowHandler::LoadComplete, base::Unretained(this)));
 

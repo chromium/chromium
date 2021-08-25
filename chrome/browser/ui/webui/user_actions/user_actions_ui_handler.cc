@@ -18,7 +18,7 @@ UserActionsUIHandler::~UserActionsUIHandler() {
 }
 
 void UserActionsUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "pageLoaded", base::BindRepeating(&UserActionsUIHandler::HandlePageLoaded,
                                         base::Unretained(this)));
 }

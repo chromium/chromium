@@ -74,19 +74,19 @@ NearbyInternalsHttpHandler::NearbyInternalsHttpHandler(
 NearbyInternalsHttpHandler::~NearbyInternalsHttpHandler() = default;
 
 void NearbyInternalsHttpHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeHttp",
       base::BindRepeating(&NearbyInternalsHttpHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "updateDevice",
       base::BindRepeating(&NearbyInternalsHttpHandler::UpdateDevice,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "listContactPeople",
       base::BindRepeating(&NearbyInternalsHttpHandler::ListContactPeople,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "listPublicCertificates",
       base::BindRepeating(&NearbyInternalsHttpHandler::ListPublicCertificates,
                           base::Unretained(this)));

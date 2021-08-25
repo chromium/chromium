@@ -60,13 +60,13 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 };
 
 ash::AmbientModeTemperatureUnit ExtractTemperatureUnit(
-    const base::ListValue* args) {
-  auto temperature_unit = args->GetList()[0].GetString();
-  if (temperature_unit == kCelsius) {
+    base::Value::ConstListView args) {
+  auto temperature_unit = args[0].GetString();
+  if (temperature_unit == kCelsius)
     return ash::AmbientModeTemperatureUnit::kCelsius;
-  } else if (temperature_unit == kFahrenheit) {
+  if (temperature_unit == kFahrenheit)
     return ash::AmbientModeTemperatureUnit::kFahrenheit;
-  }
+
   NOTREACHED() << "Unknown temperature unit";
   return ash::AmbientModeTemperatureUnit::kFahrenheit;
 }
@@ -90,9 +90,10 @@ ash::AmbientModeTopicSource ExtractTopicSource(const base::Value& value) {
   return topic_source;
 }
 
-ash::AmbientModeTopicSource ExtractTopicSource(const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 1U);
-  return ExtractTopicSource(args->GetList()[0]);
+ash::AmbientModeTopicSource ExtractTopicSource(
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 1U);
+  return ExtractTopicSource(args[0]);
 }
 
 void EncodeImage(const gfx::ImageSkia& image,
@@ -179,9 +180,9 @@ void AmbientModeHandler::OnEnabledPrefChanged() {
     UpdateSettings();
 }
 
-void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
-  CHECK(args);
-  CHECK(args->GetList().empty());
+void AmbientModeHandler::HandleRequestSettings(
+    base::Value::ConstListView args) {
+  CHECK(args.empty());
 
   AllowJavascript();
 
@@ -192,9 +193,8 @@ void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
   RequestSettingsAndAlbums(/*topic_source=*/absl::nullopt);
 }
 
-void AmbientModeHandler::HandleRequestAlbums(const base::ListValue* args) {
-  CHECK(args);
-  CHECK_EQ(args->GetSize(), 1U);
+void AmbientModeHandler::HandleRequestAlbums(base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 1U);
 
   AllowJavascript();
 
@@ -206,9 +206,9 @@ void AmbientModeHandler::HandleRequestAlbums(const base::ListValue* args) {
 }
 
 void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK(settings_);
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args.size());
 
   auto temperature_unit = ExtractTemperatureUnit(args);
   if (settings_->temperature_unit != temperature_unit) {
@@ -217,17 +217,15 @@ void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
   }
 }
 
-void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
-  const base::DictionaryValue* dictionary = nullptr;
-  CHECK(!args->GetList().empty());
-  args->GetList()[0].GetAsDictionary(&dictionary);
-  CHECK(dictionary);
-
-  const base::Value* topic_source_value = dictionary->FindKey("topicSource");
+void AmbientModeHandler::HandleSetSelectedAlbums(
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 1U);
+  const base::Value& dictionary = args[0];
+  const base::Value* topic_source_value = dictionary.FindKey("topicSource");
   CHECK(topic_source_value);
   ash::AmbientModeTopicSource topic_source =
       ExtractTopicSource(*topic_source_value);
-  const base::Value* albums = dictionary->FindKey("albums");
+  const base::Value* albums = dictionary.FindKey("albums");
   CHECK(albums);
   switch (topic_source) {
     case ash::AmbientModeTopicSource::kGooglePhotos:

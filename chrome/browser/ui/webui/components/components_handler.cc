@@ -23,12 +23,12 @@ ComponentsHandler::ComponentsHandler(
 ComponentsHandler::~ComponentsHandler() = default;
 
 void ComponentsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestComponentsData",
       base::BindRepeating(&ComponentsHandler::HandleRequestComponentsData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "checkUpdate", base::BindRepeating(&ComponentsHandler::HandleCheckUpdate,
                                          base::Unretained(this)));
 }

@@ -74,7 +74,7 @@ ExtensionStatusesHandler::ExtensionStatusesHandler(Profile* profile)
 ExtensionStatusesHandler::~ExtensionStatusesHandler() {}
 
 void ExtensionStatusesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getExtensionStatuses",
       base::BindRepeating(&ExtensionStatusesHandler::HandleGetExtensionStatuses,
                           base::Unretained(this)));

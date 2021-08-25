@@ -126,7 +126,7 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 }
 
 void InspectDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setLoggingEnabled",
       base::BindRepeating(&InspectDOMHandler::HandleSetLoggingEnabled,
                           base::Unretained(this)));

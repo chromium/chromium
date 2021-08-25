@@ -126,19 +126,19 @@ FamilyLinkUserInternalsMessageHandler::
 void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getBasicInfo",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "tryURL",
       base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
                           base::Unretained(this)));

@@ -51,19 +51,19 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
   // WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimePageReady",
         base::BindRepeating(&SetTimeMessageHandler::OnPageReady,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimeInSeconds",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTime,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimezone",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTimezone,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "doneClicked", base::BindRepeating(&SetTimeMessageHandler::DoneClicked,
                                            base::Unretained(this)));
   }

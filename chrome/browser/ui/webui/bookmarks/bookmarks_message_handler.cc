@@ -17,12 +17,12 @@ BookmarksMessageHandler::BookmarksMessageHandler() {}
 BookmarksMessageHandler::~BookmarksMessageHandler() {}
 
 void BookmarksMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getIncognitoAvailability",
       base::BindRepeating(
           &BookmarksMessageHandler::HandleGetIncognitoAvailability,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getCanEditBookmarks",
       base::BindRepeating(&BookmarksMessageHandler::HandleGetCanEditBookmarks,
                           base::Unretained(this)));

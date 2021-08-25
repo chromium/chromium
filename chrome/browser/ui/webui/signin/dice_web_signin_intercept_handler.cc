@@ -46,18 +46,18 @@ DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
 DiceWebSigninInterceptHandler::~DiceWebSigninInterceptHandler() = default;
 
 void DiceWebSigninInterceptHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "accept",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleAccept,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancel",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));

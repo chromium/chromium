@@ -41,10 +41,10 @@ InvalidationsMessageHandler::~InvalidationsMessageHandler() {
 }
 
 void InvalidationsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "doneLoading", base::BindRepeating(&InvalidationsMessageHandler::UIReady,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestDetailedStatus",
       base::BindRepeating(
           &InvalidationsMessageHandler::HandleRequestDetailedStatus,

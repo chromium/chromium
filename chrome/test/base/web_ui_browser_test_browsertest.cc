@@ -141,19 +141,19 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
 
    private:
     void RegisterMessages() override {
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "startAsyncTest",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleStartAsyncTest,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testContinues",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestContinues,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testFails",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestFails,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testPasses",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestPasses,
                               base::Unretained(this)));

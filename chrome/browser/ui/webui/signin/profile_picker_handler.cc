@@ -220,81 +220,81 @@ void ProfilePickerHandler::EnableStartupMetrics() {
 }
 
 void ProfilePickerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "mainViewInitialize",
       base::BindRepeating(&ProfilePickerHandler::HandleMainViewInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchSelectedProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchSelectedProfile,
                           base::Unretained(this), /*open_settings=*/false));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openManageProfileSettingsSubPage",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchSelectedProfile,
                           base::Unretained(this), /*open_settings=*/true));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchGuestProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchGuestProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "askOnStartupChanged",
       base::BindRepeating(&ProfilePickerHandler::HandleAskOnStartupChanged,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getNewProfileSuggestedThemeInfo",
       base::BindRepeating(
           &ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProfileThemeInfo",
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileThemeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleRemoveProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProfileStatistics",
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileStatistics,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "loadSignInProfileCreationFlow",
       base::BindRepeating(
           &ProfilePickerHandler::HandleLoadSignInProfileCreationFlow,
           base::Unretained(this)));
   // TODO(crbug.com/1115056): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAvailableIcons",
       base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSwitchProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleGetSwitchProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "confirmProfileSwitch",
       base::BindRepeating(&ProfilePickerHandler::HandleConfirmProfileSwitch,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancelProfileSwitch",
       base::BindRepeating(&ProfilePickerHandler::HandleCancelProfileSwitch,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileName",
       base::BindRepeating(&ProfilePickerHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "recordSignInPromoImpression",
       base::BindRepeating(
           &ProfilePickerHandler::HandleRecordSignInPromoImpression,
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getUnassignedAccounts",
       base::BindRepeating(&ProfilePickerHandler::HandleGetUnassignedAccounts,
                           base::Unretained(this)));

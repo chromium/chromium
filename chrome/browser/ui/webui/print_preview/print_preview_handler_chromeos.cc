@@ -128,34 +128,34 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;
 
 void PrintPreviewHandlerChromeOS::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setupPrinter",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandlePrinterSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAccessToken",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetAccessToken,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "grantExtensionPrinterAccess",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEulaUrl",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetEulaUrl,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestPrinterStatus",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "choosePrintServers",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleChoosePrintServers,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPrintServersConfig",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig,

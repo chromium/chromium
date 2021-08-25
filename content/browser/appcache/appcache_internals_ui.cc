@@ -353,22 +353,22 @@ AppCacheInternalsHandler::AppCacheInternalsHandler() = default;
 AppCacheInternalsHandler::~AppCacheInternalsHandler() = default;
 
 void AppCacheInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllAppCache",
       base::BindRepeating(&AppCacheInternalsHandler::HandleGetAllAppCache,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "deleteAppCache",
       base::BindRepeating(&AppCacheInternalsHandler::HandleDeleteAppCache,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAppCacheDetails",
       base::BindRepeating(&AppCacheInternalsHandler::HandleGetAppCacheDetails,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getFileDetails",
       base::BindRepeating(&AppCacheInternalsHandler::HandleGetFileDetails,
                           base::Unretained(this)));

@@ -67,18 +67,18 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
     NTPTilesInternalsMessageHandlerClient* client) {
   client_ = client;
 
-  client_->RegisterMessageCallback(
+  client_->RegisterDeprecatedMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  client_->RegisterMessageCallback(
+  client_->RegisterDeprecatedMessageCallback(
       "update",
       base::BindRepeating(&NTPTilesInternalsMessageHandler::HandleUpdate,
                           base::Unretained(this)));
 
-  client_->RegisterMessageCallback(
+  client_->RegisterDeprecatedMessageCallback(
       "viewPopularSitesJson",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson,

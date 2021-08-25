@@ -73,13 +73,13 @@ PeripheralDataAccessHandler::PeripheralDataAccessHandler() {
 PeripheralDataAccessHandler::~PeripheralDataAccessHandler() = default;
 
 void PeripheralDataAccessHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "isThunderboltSupported",
       base::BindRepeating(
           &PeripheralDataAccessHandler::HandleThunderboltSupported,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPolicyState",
       base::BindRepeating(&PeripheralDataAccessHandler::HandleGetPolicyState,
                           base::Unretained(this)));

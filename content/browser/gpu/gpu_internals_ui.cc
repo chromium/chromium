@@ -734,11 +734,11 @@ GpuMessageHandler::~GpuMessageHandler() {
 void GpuMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "browserBridgeInitialized",
       base::BindRepeating(&GpuMessageHandler::OnBrowserBridgeInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "callAsync", base::BindRepeating(&GpuMessageHandler::OnCallAsync,
                                        base::Unretained(this)));
 }

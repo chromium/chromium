@@ -68,19 +68,19 @@ base::Value TranslateInternalsHandler::GetLanguages() {
 }
 
 void TranslateInternalsHandler::RegisterMessageCallbacks() {
-  RegisterMessageCallback(
+  RegisterDeprecatedMessageCallback(
       "removePrefItem",
       base::BindRepeating(&TranslateInternalsHandler::OnRemovePrefItem,
                           base::Unretained(this)));
-  RegisterMessageCallback(
+  RegisterDeprecatedMessageCallback(
       "setRecentTargetLanguage",
       base::BindRepeating(&TranslateInternalsHandler::OnSetRecentTargetLanguage,
                           base::Unretained(this)));
-  RegisterMessageCallback(
+  RegisterDeprecatedMessageCallback(
       "requestInfo",
       base::BindRepeating(&TranslateInternalsHandler::OnRequestInfo,
                           base::Unretained(this)));
-  RegisterMessageCallback(
+  RegisterDeprecatedMessageCallback(
       "overrideCountry",
       base::BindRepeating(&TranslateInternalsHandler::OnOverrideCountry,
                           base::Unretained(this)));

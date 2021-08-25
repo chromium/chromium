@@ -26,7 +26,7 @@ OncImportMessageHandler::OncImportMessageHandler() = default;
 OncImportMessageHandler::~OncImportMessageHandler() = default;
 
 void OncImportMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "importONC", base::BindRepeating(&OncImportMessageHandler::OnImportONC,
                                        base::Unretained(this)));
 }

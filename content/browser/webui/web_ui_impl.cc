@@ -257,8 +257,14 @@ void WebUIImpl::CallJavascriptFunctionUnsafe(
 }
 
 void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
-                                        const MessageCallback& callback) {
-  message_callbacks_.emplace(std::string(message), callback);
+                                        MessageCallback callback) {
+  message_callbacks_.emplace(std::string(message), std::move(callback));
+}
+
+void WebUIImpl::RegisterDeprecatedMessageCallback(
+    base::StringPiece message,
+    const DeprecatedMessageCallback& callback) {
+  deprecated_message_callbacks_.emplace(std::string(message), callback);
 }
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
@@ -271,10 +277,19 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
   auto callback_pair = message_callbacks_.find(message);
   if (callback_pair != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback_pair->second.Run(&args);
-  } else {
-    NOTREACHED() << "Unhandled chrome.send(\"" << message << "\");";
+    callback_pair->second.Run(args.GetList());
+    return;
   }
+
+  // Look up the deprecated callback for this message.
+  auto deprecated_callback_pair = deprecated_message_callbacks_.find(message);
+  if (deprecated_callback_pair != deprecated_message_callbacks_.end()) {
+    // Forward this message and content on.
+    deprecated_callback_pair->second.Run(&args);
+    return;
+  }
+
+  NOTREACHED() << "Unhandled chrome.send(\"" << message << "\");";
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*
