@@ -12,14 +12,15 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
@@ -37,11 +37,7 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests {@link ShareSheetLinkToggleCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION,
-        ChromeFeatureList.SHARING_HUB_LINK_TOGGLE})
 public class ShareSheetLinkToggleCoordinatorTest {
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker jniMocker = new JniMocker();
 
@@ -69,6 +65,21 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build();
         when(mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK))
                 .thenReturn(shareParamsWithTextOnly);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION, true);
+        testValues.addFeatureFlagOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE,
+                ShareSheetLinkToggleCoordinator.IMAGE_ENABLED_BY_DEFAULT, "true");
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE,
+                ShareSheetLinkToggleCoordinator.SCREENSHOT_ENABLED_BY_DEFAULT, "true");
+        FeatureList.setTestValues(testValues);
+    }
+
+    @After
+    public void tearDown() {
+        FeatureList.setTestValues(null);
     }
 
     @Test
