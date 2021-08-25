@@ -478,33 +478,27 @@ void Data(perfetto::TracedValue context,
 
 namespace inspector_compile_script_event {
 
-struct V8CacheResult {
-  struct ProduceResult {
-    explicit ProduceResult(int cache_size);
-    int cache_size;
-  };
-  struct ConsumeResult {
-    ConsumeResult(v8::ScriptCompiler::CompileOptions consume_options,
-                  int cache_size,
-                  bool rejected);
-    v8::ScriptCompiler::CompileOptions consume_options;
-    int cache_size;
-    bool rejected;
-  };
-  V8CacheResult() = default;
-  V8CacheResult(absl::optional<ProduceResult>, absl::optional<ConsumeResult>);
-
-  absl::optional<ProduceResult> produce_result;
-  absl::optional<ConsumeResult> consume_result;
+struct V8ConsumeCacheResult {
+  V8ConsumeCacheResult(int cache_size, bool rejected);
+  int cache_size;
+  bool rejected;
 };
 
 void Data(perfetto::TracedValue context,
           const String& url,
           const WTF::TextPosition&,
-          const V8CacheResult&,
+          absl::optional<V8ConsumeCacheResult>,
+          bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);
 }  // namespace inspector_compile_script_event
+
+namespace inspector_produce_script_cache_event {
+void Data(perfetto::TracedValue context,
+          const String& url,
+          const WTF::TextPosition&,
+          int cache_size);
+}
 
 namespace inspector_function_call_event {
 void Data(perfetto::TracedValue context,

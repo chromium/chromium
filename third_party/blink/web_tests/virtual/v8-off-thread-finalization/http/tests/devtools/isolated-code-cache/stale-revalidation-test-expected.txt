@@ -30,26 +30,10 @@ v8.compile Properties:
     type : "v8.compile"
 }
 Text details for v8.compile: v8-cache-revalidated-script.cgi:1
-v8.compile Properties:
-{
-    data : {
-        columnNumber : 0
-        lineNumber : 0
-        notStreamedReason : "already used streamed data"
-        producedCacheSize : <number>
-        streamed : <boolean>
-        url : .../devtools/resources/v8-cache-revalidated-script.cgi
-    }
-    endTime : <number>
-    startTime : <number>
-    type : "v8.compile"
-}
-Text details for v8.compile: v8-cache-revalidated-script.cgi:1
 3rd load. Consume code cache. -->
 v8.compile Properties:
 {
     data : {
-        cacheConsumeOptions : "code"
         cacheRejected : false
         columnNumber : 0
         consumedCacheSize : <number>

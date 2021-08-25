@@ -406,19 +406,6 @@ String UrlForFrame(LocalFrame* frame) {
   return url.GetString();
 }
 
-const char* CompileOptionsString(v8::ScriptCompiler::CompileOptions options) {
-  switch (options) {
-    case v8::ScriptCompiler::kNoCompileOptions:
-      return "code";
-    case v8::ScriptCompiler::kConsumeCodeCache:
-      return "code";
-    case v8::ScriptCompiler::kEagerCompile:
-      return "full code";
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
   switch (reason) {
     case ScriptStreamer::NotStreamingReason::kNotHTTP:
@@ -1229,52 +1216,45 @@ void inspector_parse_script_event::Data(perfetto::TracedValue context,
   dict.Add("url", url);
 }
 
-inspector_compile_script_event::V8CacheResult::ProduceResult::ProduceResult(
-    int cache_size)
-    : cache_size(cache_size) {}
-
-inspector_compile_script_event::V8CacheResult::ConsumeResult::ConsumeResult(
-    v8::ScriptCompiler::CompileOptions consume_options,
+inspector_compile_script_event::V8ConsumeCacheResult::V8ConsumeCacheResult(
     int cache_size,
     bool rejected)
-    : consume_options(consume_options),
-      cache_size(cache_size),
-      rejected(rejected) {
-  DCHECK_EQ(consume_options, v8::ScriptCompiler::kConsumeCodeCache);
-}
-
-inspector_compile_script_event::V8CacheResult::V8CacheResult(
-    absl::optional<ProduceResult> produce_result,
-    absl::optional<ConsumeResult> consume_result)
-    : produce_result(std::move(produce_result)),
-      consume_result(std::move(consume_result)) {}
+    : cache_size(cache_size), rejected(rejected) {}
 
 void inspector_compile_script_event::Data(
     perfetto::TracedValue context,
     const String& url,
     const TextPosition& text_position,
-    const V8CacheResult& cache_result,
+    absl::optional<V8ConsumeCacheResult> consume_cache_result,
+    bool eager,
     bool streamed,
     ScriptStreamer::NotStreamingReason not_streaming_reason) {
   auto dict = std::move(context).WriteDictionary();
   FillLocation(dict, url, text_position);
 
-  if (cache_result.produce_result) {
-    dict.Add("producedCacheSize", cache_result.produce_result->cache_size);
+  if (consume_cache_result) {
+    dict.Add("consumedCacheSize", consume_cache_result->cache_size);
+    dict.Add("cacheRejected", consume_cache_result->rejected);
   }
-
-  if (cache_result.consume_result) {
-    dict.Add(
-        "cacheConsumeOptions",
-        CompileOptionsString(cache_result.consume_result->consume_options));
-    dict.Add("consumedCacheSize", cache_result.consume_result->cache_size);
-    dict.Add("cacheRejected", cache_result.consume_result->rejected);
+  if (eager) {
+    // Eager compilation is rare so only add this key when it's set.
+    dict.Add("eager", true);
   }
   dict.Add("streamed", streamed);
   if (!streamed) {
     dict.Add("notStreamedReason",
              NotStreamedReasonString(not_streaming_reason));
   }
+}
+
+void inspector_produce_script_cache_event::Data(
+    perfetto::TracedValue context,
+    const String& url,
+    const TextPosition& text_position,
+    int cache_size) {
+  auto dict = std::move(context).WriteDictionary();
+  FillLocation(dict, url, text_position);
+  dict.Add("producedCacheSize", cache_size);
 }
 
 void inspector_function_call_event::Data(

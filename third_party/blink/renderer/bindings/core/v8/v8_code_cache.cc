@@ -201,10 +201,8 @@ static void ProduceCacheInternal(
     size_t source_text_length,
     const KURL& source_url,
     const TextPosition& source_start_position,
-    bool is_streamed,
     const char* trace_name,
-    V8CodeCache::ProduceCacheOptions produce_cache_options,
-    ScriptStreamer::NotStreamingReason not_streaming_reason) {
+    V8CodeCache::ProduceCacheOptions produce_cache_options) {
   TRACE_EVENT0("v8", trace_name);
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
@@ -243,19 +241,13 @@ static void ProduceCacheInternal(
             length);
       }
 
-      TRACE_EVENT_END1(
-          kTraceEventCategoryGroup, trace_name, "data",
-          [&](perfetto::TracedValue context) {
-            inspector_compile_script_event::Data(
-                std::move(context), source_url.GetString(),
-                source_start_position,
-                inspector_compile_script_event::V8CacheResult(
-                    inspector_compile_script_event::V8CacheResult::
-                        ProduceResult(cached_data ? cached_data->length : 0),
-                    absl::optional<inspector_compile_script_event::
-                                       V8CacheResult::ConsumeResult>()),
-                is_streamed, not_streaming_reason);
-          });
+      TRACE_EVENT_END1(kTraceEventCategoryGroup, trace_name, "data",
+                       [&](perfetto::TracedValue context) {
+                         inspector_produce_script_cache_event::Data(
+                             std::move(context), source_url.GetString(),
+                             source_start_position,
+                             cached_data ? cached_data->length : 0);
+                       });
       break;
     }
     case V8CodeCache::ProduceCacheOptions::kNoProduceCache:
@@ -270,9 +262,8 @@ void V8CodeCache::ProduceCache(v8::Isolate* isolate,
                                ProduceCacheOptions produce_cache_options) {
   ProduceCacheInternal(isolate, code_cache_host, script->GetUnboundScript(),
                        source.CacheHandler(), source.Source().length(),
-                       source.Url(), source.StartPosition(), source.Streamer(),
-                       "v8.compile", produce_cache_options,
-                       source.NotStreamingReason());
+                       source.Url(), source.StartPosition(), "v8.produceCache",
+                       produce_cache_options);
 }
 
 void V8CodeCache::ProduceCache(v8::Isolate* isolate,
@@ -284,9 +275,8 @@ void V8CodeCache::ProduceCache(v8::Isolate* isolate,
   ProduceCacheInternal(
       isolate, code_cache_host, produce_cache_data->UnboundScript(isolate),
       produce_cache_data->CacheHandler(), source_text_length, source_url,
-      source_start_position, false, "v8.compileModule",
-      produce_cache_data->GetProduceCacheOptions(),
-      ScriptStreamer::NotStreamingReason::kModuleScript);
+      source_start_position, "v8.produceModuleCache",
+      produce_cache_data->GetProduceCacheOptions());
 }
 
 uint32_t V8CodeCache::TagForCodeCache(
@@ -344,34 +334,43 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   v8::Local<v8::String> code(V8String(isolate, script_string));
   v8::ScriptCompiler::Source source(code, origin);
   scoped_refptr<CachedMetadata> cached_metadata;
-  std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data;
 
-  v8::Local<v8::UnboundScript> unbound_script;
-  // When failed to compile the script with syntax error, the exceptions is
-  // suppressed by the v8::TryCatch, and returns null.
-  if (v8::ScriptCompiler::CompileUnboundScript(
-          isolate, &source, v8::ScriptCompiler::kEagerCompile)
-          .ToLocal(&unbound_script)) {
-    cached_data.reset(v8::ScriptCompiler::CreateCodeCache(unbound_script));
-    if (cached_data && cached_data->length) {
-      cached_metadata =
-          CachedMetadata::Create(CacheTag(kCacheTagCode, encoding.GetName()),
-                                 cached_data->data, cached_data->length);
-    }
-  }
+  v8::MaybeLocal<v8::UnboundScript> maybe_unbound_script =
+      v8::ScriptCompiler::CompileUnboundScript(
+          isolate, &source, v8::ScriptCompiler::kEagerCompile);
 
   TRACE_EVENT_END1(
       kTraceEventCategoryGroup, "v8.compile", "data",
       [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
             std::move(context), file_name, TextPosition::MinimumPosition(),
-            inspector_compile_script_event::V8CacheResult(
-                inspector_compile_script_event::V8CacheResult::ProduceResult(
-                    cached_data ? cached_data->length : 0),
-                absl::optional<inspector_compile_script_event::V8CacheResult::
-                                   ConsumeResult>()),
-            false, ScriptStreamer::NotStreamingReason::kHasCodeCache);
+            absl::nullopt, true, false,
+            ScriptStreamer::NotStreamingReason::kStreamingDisabled);
       });
+
+  v8::Local<v8::UnboundScript> unbound_script;
+  // When failed to compile the script with syntax error, the exceptions is
+  // suppressed by the v8::TryCatch, and returns null.
+  if (maybe_unbound_script.ToLocal(&unbound_script)) {
+    TRACE_EVENT_BEGIN1(kTraceEventCategoryGroup, "v8.produceCache", "fileName",
+                       file_name.Utf8());
+
+    std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
+        v8::ScriptCompiler::CreateCodeCache(unbound_script));
+    if (cached_data && cached_data->length) {
+      cached_metadata =
+          CachedMetadata::Create(CacheTag(kCacheTagCode, encoding.GetName()),
+                                 cached_data->data, cached_data->length);
+    }
+
+    TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.produceCache", "data",
+                     [&](perfetto::TracedValue context) {
+                       inspector_produce_script_cache_event::Data(
+                           std::move(context), file_name,
+                           TextPosition::MinimumPosition(),
+                           cached_data ? cached_data->length : 0);
+                     });
+  }
 
   return cached_metadata;
 }

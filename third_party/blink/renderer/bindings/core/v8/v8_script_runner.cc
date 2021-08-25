@@ -119,7 +119,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     v8::ScriptOrigin origin,
     v8::ScriptCompiler::CompileOptions compile_options,
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
-    inspector_compile_script_event::V8CacheResult* cache_result) {
+    absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
+        cache_result) {
   v8::Local<v8::String> code = V8String(isolate, source_code.Source());
 
   // TODO(kouhei): Plumb the ScriptState into this function and replace all
@@ -190,10 +191,9 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
             CachedMetadataHandler::kDiscardLocally);
       }
       if (cache_result) {
-        cache_result->consume_result = absl::make_optional(
-            inspector_compile_script_event::V8CacheResult::ConsumeResult(
-                v8::ScriptCompiler::kConsumeCodeCache, cached_data->length,
-                cached_data->rejected));
+        *cache_result = absl::make_optional(
+            inspector_compile_script_event::V8ConsumeCacheResult(
+                cached_data->length, cached_data->rejected));
       }
       return script;
     }
@@ -256,7 +256,8 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
                                  compile_options, no_cache_reason, nullptr);
   }
 
-  inspector_compile_script_event::V8CacheResult cache_result;
+  absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>
+      cache_result;
   v8::MaybeLocal<v8::Script> script =
       CompileScriptInternal(isolate, script_state, source, origin,
                             compile_options, no_cache_reason, &cache_result);
@@ -264,8 +265,9 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
                    [&](perfetto::TracedValue context) {
                      inspector_compile_script_event::Data(
                          std::move(context), file_name, script_start_position,
-                         cache_result, source.Streamer(),
-                         source.NotStreamingReason());
+                         cache_result,
+                         compile_options == v8::ScriptCompiler::kEagerCompile,
+                         source.Streamer(), source.NotStreamingReason());
                    });
   return script;
 }
@@ -297,7 +299,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
       referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
-  inspector_compile_script_event::V8CacheResult cache_result;
+  absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>
+      cache_result;
   v8::MaybeLocal<v8::Module> script;
   ScriptStreamer* streamer = params.GetScriptStreamer();
   if (streamer) {
@@ -346,9 +349,9 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
               ExecutionContext::GetCodeCacheHostFromContext(execution_context),
               CachedMetadataHandler::kDiscardLocally);
         }
-        cache_result.consume_result = absl::make_optional(
-            inspector_compile_script_event::V8CacheResult::ConsumeResult(
-                compile_options, cached_data->length, cached_data->rejected));
+        cache_result = absl::make_optional(
+            inspector_compile_script_event::V8ConsumeCacheResult(
+                cached_data->length, cached_data->rejected));
         break;
       }
     }
@@ -358,7 +361,9 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
                    [&](perfetto::TracedValue context) {
                      inspector_compile_script_event::Data(
                          std::move(context), file_name, start_position,
-                         cache_result, streamer, params.NotStreamingReason());
+                         cache_result,
+                         compile_options == v8::ScriptCompiler::kEagerCompile,
+                         streamer, params.NotStreamingReason());
                    });
   return script;
 }
