@@ -14,7 +14,7 @@
 #include "media/base/media_export.h"
 
 #if defined(OS_WIN)
-#include "media/cdm/cdm_preference_data.h"
+#include "media/cdm/media_foundation_cdm_data.h"
 #endif  // defined(OS_WIN)
 
 namespace media {
@@ -36,8 +36,8 @@ class MEDIA_EXPORT CdmDocumentService {
                               const std::vector<uint8_t>& storage_id)>;
 
 #if defined(OS_WIN)
-  using GetCdmPreferenceDataCB =
-      base::OnceCallback<void(std::unique_ptr<CdmPreferenceData>)>;
+  using GetMediaFoundationCdmDataCB =
+      base::OnceCallback<void(std::unique_ptr<MediaFoundationCdmData>)>;
 #endif  // defined(OS_WIN)
 
   // Allows authorized services to verify that the underlying platform is
@@ -66,8 +66,9 @@ class MEDIA_EXPORT CdmDocumentService {
   virtual void GetStorageId(uint32_t version, StorageIdCB callback) = 0;
 
 #if defined(OS_WIN)
-  // Gets the cdm preference data for the origin associated with the CDM.
-  virtual void GetCdmPreferenceData(GetCdmPreferenceDataCB callback) = 0;
+  // Gets the Media Foundation cdm data for the origin associated with the CDM.
+  virtual void GetMediaFoundationCdmData(
+      GetMediaFoundationCdmDataCB callback) = 0;
 
   // Sets the client token for the origin associated with the CDM. The token is
   // set by the content during license exchange. The token is then saved in the

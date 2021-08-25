@@ -125,8 +125,8 @@ source_set("cdm") {
 
   if (is_win) {
     sources += [
-      "cdm_preference_data.cc",
-      "cdm_preference_data.h",
+      "media_foundation_cdm_data.cc",
+      "media_foundation_cdm_data.h",
       "win/media_foundation_cdm.cc",
       "win/media_foundation_cdm.h",
       "win/media_foundation_cdm_factory.cc",
@@ -179,9 +179,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  configs += [
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
 
   data_deps = []
 

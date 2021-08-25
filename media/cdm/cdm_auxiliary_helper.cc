@@ -8,7 +8,7 @@
 #include "media/cdm/cdm_helpers.h"
 
 #if defined(OS_WIN)
-#include "media/cdm/cdm_preference_data.h"
+#include "media/cdm/media_foundation_cdm_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // defined(OS_WIN)
 
@@ -55,8 +55,9 @@ void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
 }
 
 #if defined(OS_WIN)
-void CdmAuxiliaryHelper::GetCdmPreferenceData(GetCdmPreferenceDataCB callback) {
-  std::move(callback).Run(std::make_unique<CdmPreferenceData>(
+void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCB callback) {
+  std::move(callback).Run(std::make_unique<MediaFoundationCdmData>(
       base::UnguessableToken::Null(), absl::nullopt));
 }
 

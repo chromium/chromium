@@ -645,13 +645,13 @@ mojom("mojom") {
       {
         types = [
           {
-            mojom = "media.mojom.CdmPreferenceData"
-            cpp = "::std::unique_ptr<::media::CdmPreferenceData>"
+            mojom = "media.mojom.MediaFoundationCdmData"
+            cpp = "::std::unique_ptr<::media::MediaFoundationCdmData>"
             move_only = true
           },
         ]
-        traits_headers = [ "cdm_preference_data_mojom_traits.h" ]
-        traits_sources = [ "cdm_preference_data_mojom_traits.cc" ]
+        traits_headers = [ "media_foundation_cdm_data_mojom_traits.h" ]
+        traits_sources = [ "media_foundation_cdm_data_mojom_traits.cc" ]
         traits_public_deps = [ "//media" ]
       },
     ]

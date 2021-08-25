@@ -50,9 +50,10 @@ url::Origin MojoCdmHelper::GetCdmOrigin() {
 }
 
 #if defined(OS_WIN)
-void MojoCdmHelper::GetCdmPreferenceData(GetCdmPreferenceDataCB callback) {
+void MojoCdmHelper::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCB callback) {
   ConnectToCdmDocumentService();
-  cdm_document_service_->GetCdmPreferenceData(std::move(callback));
+  cdm_document_service_->GetMediaFoundationCdmData(std::move(callback));
 }
 
 void MojoCdmHelper::SetCdmClientToken(

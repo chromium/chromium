@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "media/cdm/media_foundation_cdm_data.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
@@ -254,8 +255,8 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
-void CdmDocumentServiceImpl::GetCdmPreferenceData(
-    GetCdmPreferenceDataCallback callback) {
+void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCallback callback) {
   const url::Origin cdm_origin = origin();
   if (cdm_origin.opaque()) {
     mojo::ReportBadMessage("EME use is not allowed on opaque origin");
@@ -266,8 +267,14 @@ void CdmDocumentServiceImpl::GetCdmPreferenceData(
       content::WebContents::FromRenderFrameHost(render_frame_host())
           ->GetBrowserContext());
 
-  std::move(callback).Run(
-      CdmPrefServiceHelper::GetCdmPreferenceData(user_prefs, cdm_origin));
+  std::unique_ptr<media::MediaFoundationCdmData> cdm_data = nullptr;
+  std::unique_ptr<CdmPrefData> pref_data =
+      CdmPrefServiceHelper::GetCdmPrefData(user_prefs, cdm_origin);
+  if (pref_data) {
+    cdm_data = std::make_unique<media::MediaFoundationCdmData>(
+        pref_data->origin_id(), pref_data->client_token());
+  }
+  std::move(callback).Run(std::move(cdm_data));
 }
 
 void CdmDocumentServiceImpl::SetCdmClientToken(

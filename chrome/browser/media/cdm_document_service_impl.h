@@ -46,7 +46,8 @@ class CdmDocumentServiceImpl final
   void IsVerifiedAccessEnabled(IsVerifiedAccessEnabledCallback callback) final;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_WIN)
-  void GetCdmPreferenceData(GetCdmPreferenceDataCallback callback) final;
+  void GetMediaFoundationCdmData(
+      GetMediaFoundationCdmDataCallback callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
 #endif  // defined(OS_WIN)
 

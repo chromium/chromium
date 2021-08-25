@@ -62,7 +62,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb,
-      const std::unique_ptr<CdmPreferenceData> cdm_preference_data);
+      const std::unique_ptr<MediaFoundationCdmData> media_foundation_cdm_data);
 
   HRESULT GetCdmFactory(
       const std::string& key_system,

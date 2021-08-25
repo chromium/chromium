@@ -7,10 +7,10 @@ module media.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
-// Contains data linked to an origin that the CDM stores in the Preference
-// Service.
+// Contains data linked to an origin that the CDM stores in the browser
+// process.
 [EnableIf=is_win]
-struct CdmPreferenceData {
+struct MediaFoundationCdmData {
   // The origin ID of the document associated with the CDM. The origin ID
   // is used in place of the origin when hiding the concrete origin is needed.
   // The origin ID is also user resettable by clearing the browsing data.
@@ -55,11 +55,11 @@ interface CdmDocumentService {
   [EnableIf=is_chromeos]
   IsVerifiedAccessEnabled() => (bool enabled);
 
-  // Gets the CDM preference data for the origin associated with the CDM.
-  // - `cdm_preference_data`: The CDM preference data for the origin associated
-  //                          with the CDM.
+  // Gets the Media FoundationCDM data for the origin associated with the CDM.
+  // - `media_foundation_cdm_data`: The CDM data for the origin associated with
+  //                                the CDM.
   [EnableIf=is_win]
-  GetCdmPreferenceData() => (CdmPreferenceData cdm_preference_data);
+  GetMediaFoundationCdmData() => (MediaFoundationCdmData cdm_data);
 
   // Sets the client token for the origin associated with the CDM. The token is
   // set by the CDM. The token is then saved in the Pref Service so that it can

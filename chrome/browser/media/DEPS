@@ -4,7 +4,7 @@ include_rules = [
   "+media/audio",
   "+media/base",
   "+media/cast",
-  "+media/cdm/cdm_preference_data.h",
+  "+media/cdm/media_foundation_cdm_data.h",
   "+media/cdm/supported_cdm_versions.h",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",

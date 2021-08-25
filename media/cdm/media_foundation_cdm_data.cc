@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cdm/cdm_preference_data.h"
+#include "media/cdm/media_foundation_cdm_data.h"
 
 namespace media {
 
-CdmPreferenceData::CdmPreferenceData() = default;
+MediaFoundationCdmData::MediaFoundationCdmData() = default;
 
-CdmPreferenceData::CdmPreferenceData(
+MediaFoundationCdmData::MediaFoundationCdmData(
     base::UnguessableToken origin_id,
     absl::optional<std::vector<uint8_t>> client_token)
     : origin_id(origin_id), client_token(client_token) {}
 
-CdmPreferenceData::~CdmPreferenceData() = default;
+MediaFoundationCdmData::~MediaFoundationCdmData() = default;
 
 }  // namespace media

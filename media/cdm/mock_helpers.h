@@ -54,8 +54,8 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
 
 #if defined(OS_WIN)
   MOCK_METHOD(void,
-              GetCdmPreferenceData,
-              (GetCdmPreferenceDataCB callback),
+              GetMediaFoundationCdmData,
+              (GetMediaFoundationCdmDataCB callback),
               (override));
 #endif  // defined(OS_WIN)
 

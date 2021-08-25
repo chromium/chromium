@@ -5,15 +5,40 @@
 #ifndef CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "media/cdm/cdm_preference_data.h"
+#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 class PrefService;
 class PrefRegistrySimple;
+
+class CdmPrefData {
+ public:
+  CdmPrefData(const base::UnguessableToken& origin_id,
+              base::Time origin_id_time);
+
+  ~CdmPrefData();
+
+  const base::UnguessableToken& origin_id() const;
+  base::Time origin_id_creation_time() const;
+  const absl::optional<std::vector<uint8_t>> client_token() const;
+  base::Time client_token_creation_time() const;
+
+  void SetClientToken(const std::vector<uint8_t>& client_token,
+                      const base::Time creation_time);
+
+ private:
+  base::UnguessableToken origin_id_;
+  base::Time origin_id_creation_time_;
+
+  absl::optional<std::vector<uint8_t>> client_token_;
+  base::Time client_token_creation_time_;
+};
 
 // Manages reads and writes to the user prefs service related to CDM usage.
 // Updates to the CDM Origin ID dictionary will be infrequent (ie. every time
@@ -39,7 +64,7 @@ class CdmPrefServiceHelper {
   // preference data exist for the current origin, an entry is created with a
   // new origin id and an empty client token. Returns nullptr if the preference
   // could not be retrieved.
-  static std::unique_ptr<media::CdmPreferenceData> GetCdmPreferenceData(
+  static std::unique_ptr<CdmPrefData> GetCdmPrefData(
       PrefService* user_prefs,
       const url::Origin& cdm_origin);
 
