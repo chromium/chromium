@@ -49,8 +49,8 @@ class WebAppHoverButton : public HoverButton {
   WebAppHoverButton& operator=(const WebAppHoverButton&) = delete;
   ~WebAppHoverButton() override;
 
-  void MarkAsUnselected(const ui::Event* event);
-  void MarkAsSelected(const ui::Event* event);
+  virtual void MarkAsUnselected(const ui::Event* event);
+  virtual void MarkAsSelected(const ui::Event* event);
 
   const web_app::AppId& app_id() const { return app_id_; }
 
