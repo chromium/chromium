@@ -492,6 +492,46 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   FreePages(buffer, size);
 }
 
+TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
+  size_t size = PageAllocationGranularity();
+  void* buffer = AllocPages(nullptr, size, PageAllocationGranularity(),
+                            PageReadWrite, PageTag::kChromium);
+  ASSERT_TRUE(buffer);
+
+  memset(buffer, 42, size);
+
+  DecommitAndZeroSystemPages(buffer, size);
+
+// Test permission setting on POSIX, where we can set a trap handler.
+#if defined(OS_POSIX)
+
+  FAULT_TEST_BEGIN()
+
+  // Reading from buffer should now fault.
+  int* buffer0 = reinterpret_cast<int*>(buffer);
+  int buffer0_contents = *buffer0;
+  EXPECT_EQ(buffer0_contents, *buffer0);
+  EXPECT_TRUE(false);
+
+  FAULT_TEST_END()
+
+#endif
+
+  // Clients of the DecommitAndZero API (in particular, V8), currently just
+  // call SetSystemPagesAccess to mark the region as accessible again, so we
+  // use that here as well.
+  SetSystemPagesAccess(buffer, size, PageReadWrite);
+
+  uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
+  uint32_t sum = 0;
+  for (size_t i = 0; i < size; i++) {
+    sum += recommitted_buffer[i];
+  }
+  EXPECT_EQ(0u, sum) << "Data was not erased";
+
+  FreePages(buffer, size);
+}
+
 TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
   size_t size = PageAllocationGranularity();
   // Ask for a large alignment to make sure that trimming doesn't change the

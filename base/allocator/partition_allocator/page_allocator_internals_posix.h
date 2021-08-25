@@ -284,6 +284,18 @@ void DecommitSystemPagesInternal(
   }
 }
 
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  // https://pubs.opengroup.org/onlinepubs/9699919799/functions/mmap.html: "If
+  // a MAP_FIXED request is successful, then any previous mappings [...] for
+  // those whole pages containing any part of the address range [pa,pa+len)
+  // shall be removed, as if by an appropriate call to munmap(), before the
+  // new mapping is established." As a consequence, the memory will be
+  // zero-initialized on next access.
+  void* ptr = mmap(address, length, PROT_NONE,
+                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  PA_CHECK(ptr == address);
+}
+
 void RecommitSystemPagesInternal(
     void* address,
     size_t length,

@@ -282,6 +282,13 @@ class PageAllocator : public v8::PageAllocator {
     base::DiscardSystemPages(address, size);
     return true;
   }
+
+  bool DecommitPages(void* address, size_t size) override {
+    // V8 expects the pages to be inaccessible and zero-initialized upon next
+    // access.
+    base::DecommitAndZeroSystemPages(address, size);
+    return true;
+  }
 };
 
 base::LazyInstance<PageAllocator>::Leaky g_page_allocator =

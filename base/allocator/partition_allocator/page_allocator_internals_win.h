@@ -114,6 +114,18 @@ void DecommitSystemPagesInternal(
   SetSystemPagesAccess(address, length, PageInaccessible);
 }
 
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree:
+  // "If a page is decommitted but not released, its state changes to reserved.
+  // Subsequently, you can call VirtualAlloc to commit it, or VirtualFree to
+  // release it. Attempts to read from or write to a reserved page results in an
+  // access violation exception."
+  // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc
+  // for MEM_COMMIT: "The function also guarantees that when the caller later
+  // initially accesses the memory, the contents will be zero."
+  PA_CHECK(VirtualFree(address, length, MEM_DECOMMIT));
+}
+
 void RecommitSystemPagesInternal(
     void* address,
     size_t length,

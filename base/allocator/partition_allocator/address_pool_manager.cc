@@ -41,19 +41,10 @@ namespace {
 
 // This will crash if the range cannot be decommitted.
 void DecommitPages(void* address, size_t size) {
-#if defined(OS_APPLE)
-  // MAP_FIXED replaces an existing mapping with a new one, when the address is
-  // already part of a mapping. Since newly-created mappings are guaranteed to
-  // be zero-filled, this has the desired effect. It is only required on macOS,
-  // as on other operating systems, |DecommitSystemPages()| provides the same
-  // behavior.
-  void* ptr = mmap(address, size, PROT_NONE,
-                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-  PA_CHECK(ptr == address);
-#else
-  static_assert(DecommittedMemoryIsAlwaysZeroed(), "");
-  DecommitSystemPages(address, size, PageUpdatePermissions);
-#endif
+  // Callers rely on the pages being zero-initialized when recommitting them.
+  // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
+  // particular on macOS, but |DecommitAndZeroSystemPages| does.
+  DecommitAndZeroSystemPages(address, size);
 }
 
 }  // namespace

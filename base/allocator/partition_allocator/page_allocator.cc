@@ -266,6 +266,12 @@ void DecommitSystemPages(
   DecommitSystemPagesInternal(address, length, accessibility_disposition);
 }
 
+void DecommitAndZeroSystemPages(void* address, size_t length) {
+  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
+  DecommitAndZeroSystemPagesInternal(address, length);
+}
+
 void RecommitSystemPages(
     void* address,
     size_t length,

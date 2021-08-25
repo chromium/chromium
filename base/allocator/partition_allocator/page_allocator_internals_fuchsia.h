@@ -196,6 +196,15 @@ void DecommitSystemPagesInternal(
   DiscardSystemPagesInternal(address, length);
 }
 
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  SetSystemPagesAccess(address, length, PageInaccessible);
+
+  // TODO(https://crbug.com/1022062): this implementation will likely no longer
+  // be appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
+  // discardable API.
+  DiscardSystemPagesInternal(address, length);
+}
+
 void RecommitSystemPagesInternal(
     void* address,
     size_t length,
