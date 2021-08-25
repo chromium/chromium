@@ -213,13 +213,20 @@ static bool ConvertFontFamilyName(
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
     auto cssValueID = To<CSSIdentifierValue>(value).GetValueID();
     generic_family = ConvertGenericFamily(cssValueID);
-    if (generic_family != FontDescription::kNoFamily)
+    if (generic_family != FontDescription::kNoFamily) {
       family_name = font_builder->GenericFontFamilyName(generic_family);
-    else if (cssValueID == CSSValueID::kSystemUi)
+      if (cssValueID == CSSValueID::kWebkitBody && !family_name.IsEmpty()) {
+        // TODO(crbug.com/1065468): Remove this counter when it's no longer
+        // necessary.
+        document_for_count->CountUse(
+            WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody);
+      }
+    } else if (cssValueID == CSSValueID::kSystemUi) {
       family_name = font_family_names::kSystemUi;
-    else if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
-             cssValueID == CSSValueID::kMath)
+    } else if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
+               cssValueID == CSSValueID::kMath) {
       family_name = font_family_names::kMath;
+    }
   }
 
   return !family_name.IsEmpty();

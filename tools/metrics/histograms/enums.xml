@@ -34244,6 +34244,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3984" label="HighlightAPIRegisterHighlight"/>
   <int value="3985" label="ReadOrWriteWebDatabaseThirdPartyContext"/>
   <int value="3986" label="FontSelectorCSSFontFamilyWebKitPrefixPictograph"/>
+  <int value="3987" label="FontSelectorCSSFontFamilyWebKitPrefixStandard"/>
+  <int value="3988" label="FontSelectorCSSFontFamilyWebKitPrefixBody"/>
+  <int value="3989" label="FontBuilderCSSFontFamilyWebKitPrefixBody"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

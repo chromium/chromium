@@ -33,6 +33,27 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
     Compositor().BeginFrame();
     test::RunPendingTasks();
   }
+
+  GenericFontFamilySettings& GetGenericGenericFontFamilySettings() {
+    return GetDocument()
+        .GetFrame()
+        ->GetPage()
+        ->GetSettings()
+        .GetGenericFontFamilySettings();
+  }
+
+  void SetUp() override {
+    SimTest::SetUp();
+    m_standard_font = GetGenericGenericFontFamilySettings().Standard();
+  }
+
+  void TearDown() override {
+    GetGenericGenericFontFamilySettings().UpdateStandard(m_standard_font);
+    SimTest::TearDown();
+  }
+
+ private:
+  AtomicString m_standard_font;
 };
 
 TEST_F(CSSFontFamilyWebKitPrefixTest,
@@ -47,6 +68,67 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   ASSERT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
 #endif
+}
+
+TEST_F(CSSFontFamilyWebKitPrefixTest,
+       CSSFontFamilyWebKitPrefixTest_WebKitStandard) {
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
+  LoadPageWithFontFamilyValue("-webkit-standard, serif");
+  ASSERT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
+}
+
+TEST_F(CSSFontFamilyWebKitPrefixTest,
+       CSSFontFamilyWebKitPrefixTest_WebKitBodyFontBuilder) {
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
+
+  // If empty standard font is specified, counter is never triggered.
+  LoadPageWithFontFamilyValue("-webkit-body");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
+  LoadPageWithFontFamilyValue("-webkit-body, serif");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
+  LoadPageWithFontFamilyValue("serif, -webkit-body");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
+
+  // This counter is triggered in FontBuilder when -webkit-body is replaced with
+  // a non-empty GenericFontFamilySettings's standard font.
+  GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("-webkit-body, serif");
+  ASSERT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
+}
+
+TEST_F(CSSFontFamilyWebKitPrefixTest,
+       CSSFontFamilyWebKitPrefixTest_WebKitBodyFontSelector) {
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+
+  // If empty standard font is specified, counter is never triggered.
+  LoadPageWithFontFamilyValue("-webkit-body");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+  LoadPageWithFontFamilyValue("-webkit-body, serif");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+  LoadPageWithFontFamilyValue("serif, -webkit-body");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+
+  // Implementation via FontDescription::GenericFamilyType is weird, here the
+  // last specified generic family is set by FontBuilder. So FontSelector will
+  // only trigger the counter if -webkit-body is at the last position.
+  GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("-webkit-body, serif");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+  LoadPageWithFontFamilyValue("serif, -webkit-body");
+  ASSERT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
 }
 
 }  // namespace blink

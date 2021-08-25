@@ -30,6 +30,26 @@ AtomicString FontSelector::FamilyNameFromSettings(
       generic_family_name != font_family_names::kWebkitPictograph &&
       generic_family_name != font_family_names::kWebkitStandard)
     return g_empty_atom;
+
+  if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
+    // FontDescription::kStandardFamily is only set internally via
+    // ConvertFontFamilyName/ConvertGenericFamily and so correspond to a
+    // -webkit-body CSS identifier.
+    // TODO(crbug.com/1065468): Remove this counter when it's no longer
+    // necessary.
+    UseCounter::Count(use_counter,
+                      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody);
+  } else if (generic_family_name == font_family_names::kWebkitStandard &&
+             !generic_family.FamilyIsGeneric()) {
+    // -webkit-standard is set internally only with a kGenericFamily type in
+    // FontFallbackList::GetFontData. So that non-generic -webkit-standard has
+    // been specified on the page.
+    // TODO(crbug.com/1065468): Remove this counter when it's no longer
+    // necessary.
+    UseCounter::Count(
+        use_counter,
+        WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard);
+  }
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1228189): Android does not have pre-installed math font.
   // https://github.com/googlefonts/noto-fonts/issues/330
@@ -62,6 +82,8 @@ AtomicString FontSelector::FamilyNameFromSettings(
   if (generic_family_name == font_family_names::kMonospace)
     return settings.Fixed(script);
   if (generic_family_name == font_family_names::kWebkitPictograph) {
+    // TODO(crbug.com/1065468): Remove this counter when it's no longer
+    // necessary.
     UseCounter::Count(
         use_counter,
         WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph);
