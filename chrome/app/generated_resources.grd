@@ -8511,6 +8511,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
+      <message name="IDS_APPS_PAGE_DEPRECATED_APP_TITLE" desc="Title text for deprecated apps in the apps page.">
+        <ph name="APP_NAME">$1<ex>GMail</ex></ph> (unsupported app)
+      </message>
+
       <!--  Sync Confirmation section of the tab modal signin flow -->
       <message name="IDS_SYNC_CONFIRMATION_TITLE" desc="Title of the sync confirmation dialog in the tab modal signin flow when Dice is enabled">
         Turn on sync?

@@ -312,6 +312,13 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
       "kioskMode",
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode));
 
+  bool is_deprecated_app = false;
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
+      extension_service_->GetBrowserContext(), extension->id());
+#endif
+  value->SetBoolean("is_deprecated_app", is_deprecated_app);
+
   // The Extension class 'helpfully' wraps bidi control characters that
   // impede our ability to determine directionality.
   std::u16string short_name = base::UTF8ToUTF16(extension->short_name());
@@ -323,6 +330,8 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
 
   std::u16string name = base::UTF8ToUTF16(extension->name());
   base::i18n::UnadjustStringForLocaleDirection(&name);
+  if (is_deprecated_app)
+    name = l10n_util::GetStringFUTF16(IDS_APPS_PAGE_DEPRECATED_APP_TITLE, name);
   NewTabUI::SetFullNameAndDirection(name, value);
 
   bool enabled = extension_service_->IsExtensionEnabled(extension->id()) &&
