@@ -1322,7 +1322,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceRestrictedManagedGuestSessionEnabled) {
       ->set_enabled(true);
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(true),
-            *provider_->Get(kRestrictedManagedGuestSessionEnabled));
+            *provider_->Get(kDeviceRestrictedManagedGuestSessionEnabled));
 }
 
 TEST_F(DeviceSettingsProviderTest,
@@ -1332,7 +1332,7 @@ TEST_F(DeviceSettingsProviderTest,
       ->set_enabled(false);
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(false),
-            *provider_->Get(kRestrictedManagedGuestSessionEnabled));
+            *provider_->Get(kDeviceRestrictedManagedGuestSessionEnabled));
 }
 
 }  // namespace ash

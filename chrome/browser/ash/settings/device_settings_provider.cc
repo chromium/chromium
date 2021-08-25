@@ -98,6 +98,7 @@ const char* const kKnownSettings[] = {
     kDevicePowerwashAllowed,
     kDeviceQuirksDownloadEnabled,
     kDeviceRebootOnUserSignout,
+    kDeviceRestrictedManagedGuestSessionEnabled,
     kDeviceScheduledReboot,
     kDeviceScheduledUpdateCheck,
     kDeviceSecondFactorAuthenticationMode,
@@ -149,7 +150,6 @@ const char* const kKnownSettings[] = {
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,
-    kRestrictedManagedGuestSessionEnabled,
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
@@ -1123,7 +1123,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DeviceRestrictedManagedGuestSessionEnabledProto& container(
         policy.device_restricted_managed_guest_session_enabled());
     if (container.has_enabled()) {
-      new_values_cache->SetValue(kRestrictedManagedGuestSessionEnabled,
+      new_values_cache->SetValue(kDeviceRestrictedManagedGuestSessionEnabled,
                                  base::Value(container.enabled()));
     }
   }

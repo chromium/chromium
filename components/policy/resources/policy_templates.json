@@ -27166,11 +27166,12 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
        Setting the policy to False removes the sharing icon from the omnibox and the entry from the 3-dot menu.''',
     },
     {
-      'name': 'RestrictedManagedGuestSessionEnabled',
+      'name': 'DeviceRestrictedManagedGuestSessionEnabled',
       'owners': ['mpetrisor@chromium.org', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'future_on': ['chrome_os'],
+      'device_only': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -27187,7 +27188,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       ],
       'default': False,
       'example_value': True,
-      'id': 872,
+      'id': 894,
       'caption': '''Restricted managed guest sessions''',
       'tags': [],
       'desc': '''The policy only applies to managed guest sessions. It has to be enabled for Imprivata's shared workstation mode to allow in-session user switches.
@@ -27215,7 +27216,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'caption': '''Configure the list of extension IDs exempt from the restricted managed guest session clean-up procedure''',
       'tags': [],
       'desc': '''The policy only applies to managed guest sessions.
-      Setting the policy specifies a list of extension IDs that are exempt from the restricted managed guest session clean-up procedure (see <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME">RestrictedManagedGuestSessionEnabled</ph>).
+      Setting the policy specifies a list of extension IDs that are exempt from the restricted managed guest session clean-up procedure (see <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME">DeviceRestrictedManagedGuestSessionEnabled</ph>).
       Leaving the policy unset means no extensions are exempt from the reset procedure.''',
     },
     {
@@ -27763,6 +27764,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceDebugPacketCaptureAllowed': 'device_debug_packet_capture_allowed.allowed',
     'DeviceScheduledReboot': 'device_scheduled_reboot.device_scheduled_reboot_settings',
     'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled_v2.enabled',
+    'DeviceRestrictedManagedGuestSessionEnabled': 'device_restricted_managed_guest_session_enabled.enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -28265,8 +28267,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 893,
+  'highest_id_currently_used': 894,
   'highest_atomic_group_id_currently_used': 41
 }

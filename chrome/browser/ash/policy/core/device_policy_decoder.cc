@@ -1990,7 +1990,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DeviceRestrictedManagedGuestSessionEnabledProto& container(
         policy.device_restricted_managed_guest_session_enabled());
     if (container.has_enabled()) {
-      policies->Set(key::kRestrictedManagedGuestSessionEnabled,
+      policies->Set(key::kDeviceRestrictedManagedGuestSessionEnabled,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                     POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
                     nullptr);

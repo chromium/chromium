@@ -1057,7 +1057,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
 }
 
 TEST_F(DeviceLocalAccountPolicyProviderTest,
-       RestrictedManagedGuestSessionEnabled) {
+       DeviceRestrictedManagedGuestSessionEnabled) {
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   InstallDeviceLocalAccountPolicy(kAccount1);
@@ -1068,12 +1068,12 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
 
-  // Disabled RestrictedManagedGuestSessionEnabled policy does not
+  // Disabled DeviceRestrictedManagedGuestSessionEnabled policy does not
   // change other policy values.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   cros_settings_helper_->SetBoolean(
-      chromeos::kRestrictedManagedGuestSessionEnabled, false);
+      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
   InstallDeviceLocalAccountPolicy(kAccount1);
   broker->core()->store()->Load();
   FlushDeviceSettings();
@@ -1084,12 +1084,12 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
       POLICY_DOMAIN_CHROME, std::string())) = expected_policy_map_.Clone();
   EXPECT_TRUE(expected_policy_bundle.Equals(provider_->policies()));
 
-  // Enabled RestrictedManagedGuestSessionEnabled policy overrides
+  // Enabled DeviceRestrictedManagedGuestSessionEnabled policy overrides
   // certain policies.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   cros_settings_helper_->SetBoolean(
-      chromeos::kRestrictedManagedGuestSessionEnabled, true);
+      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, true);
   device_local_account_policy_.payload()
       .mutable_passwordmanagerenabled()
       ->set_value(true);
