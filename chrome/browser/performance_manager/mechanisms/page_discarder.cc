@@ -28,8 +28,7 @@ namespace {
 // TODO(crbug/1241049): Returns the remaining reclaim target so
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
-bool DiscardPagesOnUIThread(
-    const std::vector<const WebContentsProxy>& proxies) {
+bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool result = false;
   for (auto proxy : proxies) {
@@ -55,7 +54,7 @@ bool DiscardPagesOnUIThread(
 void PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,
     base::OnceCallback<void(bool)> post_discard_cb) {
-  std::vector<const WebContentsProxy> proxies;
+  std::vector<WebContentsProxy> proxies;
   proxies.reserve(page_nodes.size());
   for (auto* page_node : page_nodes) {
     proxies.push_back(page_node->GetContentsProxy());
