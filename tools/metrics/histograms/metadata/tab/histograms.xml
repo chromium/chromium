@@ -390,11 +390,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
-    expires_after="M77">
-  <owner>pkl@chromium.org</owner>
+    expires_after="M106">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     [iOS] A count of the number of alive renderers when a renderer termination
-    occurs.
+    occurs. Expired for M78-94.
   </summary>
 </histogram>
 

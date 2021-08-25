@@ -727,6 +727,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)loadCurrentURLIfNecessary {
   if (self.navigationHandler.webProcessCrashed) {
+    // Log a user reloading a previously crashed renderer.
+    base::RecordAction(
+        base::UserMetricsAction("IOSMobileReloadCrashedRenderer"));
     [self loadCurrentURLWithRendererInitiatedNavigation:NO];
   } else if (!_currentURLLoadWasTrigerred) {
     [self ensureContainerViewCreated];
