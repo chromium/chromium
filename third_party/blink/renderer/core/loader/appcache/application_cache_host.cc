@@ -95,8 +95,10 @@ void ApplicationCacheHost::SetHostID(const base::UnguessableToken& host_id) {
 void ApplicationCacheHost::SelectCacheForWorker(
     int64_t app_cache_id,
     base::OnceClosure completion_callback) {
-  if (!backend_host_.is_bound())
+  if (!backend_host_.is_bound()) {
+    NOTREACHED();
     return;
+  }
 
   select_cache_for_worker_completion_callback_ = std::move(completion_callback);
   backend_host_->SelectCacheForWorker(app_cache_id);

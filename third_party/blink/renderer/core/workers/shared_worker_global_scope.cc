@@ -62,9 +62,11 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     const base::UnguessableToken& appcache_host_id)
     : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
       token_(token) {
-  appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
-      appcache_host_id, GetBrowserInterfaceBroker(),
-      GetTaskRunner(TaskType::kInternalLoading));
+  if (base::FeatureList::IsEnabled(blink::features::kAppCache)) {
+    appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
+        appcache_host_id, GetBrowserInterfaceBroker(),
+        GetTaskRunner(TaskType::kInternalLoading));
+  }
 }
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
@@ -120,10 +122,13 @@ void SharedWorkerGlobalScope::Initialize(
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();
 
-  DCHECK(appcache_host_);
-  appcache_host_->SelectCacheForWorker(
-      appcache_id, WTF::Bind(&SharedWorkerGlobalScope::OnAppCacheSelected,
-                             WrapWeakPersistent(this)));
+  if (appcache_host_) {
+    appcache_host_->SelectCacheForWorker(
+        appcache_id, WTF::Bind(&SharedWorkerGlobalScope::OnAppCacheSelected,
+                               WrapWeakPersistent(this)));
+  } else {
+    ReadyToRunWorkerScript();
+  }
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
