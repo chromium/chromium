@@ -4154,7 +4154,7 @@ void NavigationRequest::CommitNavigation() {
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
       render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          origin);
+          origin, anonymous());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
@@ -6208,7 +6208,7 @@ net::IsolationInfo NavigationRequest::GetIsolationInfo() {
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   return frame_tree_node_->current_frame_host()
-      ->ComputeIsolationInfoForNavigation(common_params_->url);
+      ->ComputeIsolationInfoForNavigation(common_params_->url, anonymous());
 }
 
 bool NavigationRequest::HasSubframeNavigationEntryCommitted() {

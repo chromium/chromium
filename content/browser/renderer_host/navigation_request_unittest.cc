@@ -640,6 +640,30 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
       child_document->storage_key());
 }
 
+TEST_F(NavigationRequestTest,
+       NavigationToAnonymousDocumentNetworkIsolationInfo) {
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+  child_frame->frame_tree_node()->set_anonymous(true);
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/navigation.html"), child_frame);
+  navigation->ReadyToCommit();
+
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->isolation_info_for_subresources()
+                .network_isolation_key()
+                .GetNonce());
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->GetIsolationInfo()
+                .network_isolation_key()
+                .GetNonce());
+}
+
 // Test that the required CSP of every frame is computed/inherited correctly and
 // that the Sec-Required-CSP header is set.
 class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {

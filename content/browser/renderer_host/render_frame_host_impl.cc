@@ -3454,7 +3454,8 @@ void RenderFrameHostImpl::DidNavigate(
   if (!origin.IsSameOriginWith(
           GetIsolationInfoForSubresources().frame_origin().value())) {
     isolation_info_ =
-        ComputeIsolationInfoInternal(origin, isolation_info_.request_type());
+        ComputeIsolationInfoInternal(origin, isolation_info_.request_type(),
+                                     navigation_request->anonymous());
   }
 
   // Separately, update the frame's last successful URL except for net error
@@ -3568,20 +3569,27 @@ void RenderFrameHostImpl::SetStorageKey(const blink::StorageKey& storage_key) {
 }
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
-    const GURL& destination) const {
+    const GURL& destination) {
+  return ComputeIsolationInfoForNavigation(destination, anonymous());
+}
+
+net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
+    const GURL& destination,
+    bool anonymous) {
   net::IsolationInfo::RequestType request_type =
       frame_tree_node_->IsMainFrame()
           ? net::IsolationInfo::RequestType::kMainFrame
           : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
-                                      request_type);
+                                      request_type, anonymous);
 }
 
 net::IsolationInfo
 RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
-    const url::Origin& main_world_origin) const {
-  return ComputeIsolationInfoInternal(main_world_origin,
-                                      net::IsolationInfo::RequestType::kOther);
+    const url::Origin& main_world_origin,
+    bool anonymous) {
+  return ComputeIsolationInfoInternal(
+      main_world_origin, net::IsolationInfo::RequestType::kOther, anonymous);
 }
 
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
@@ -3590,7 +3598,8 @@ net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
-    net::IsolationInfo::RequestType request_type) const {
+    net::IsolationInfo::RequestType request_type,
+    bool anonymous) {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
@@ -3633,9 +3642,12 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
+  const base::UnguessableToken* nonce =
+      anonymous ? &GetPage().anonymous_iframes_nonce() : nullptr;
+
   return net::IsolationInfo::Create(request_type, top_frame_origin,
                                     frame_origin, candidate_site_for_cookies,
-                                    std::move(party_context));
+                                    std::move(party_context), nonce);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
@@ -3654,7 +3666,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
                                      : new_frame_creator;
   isolation_info_ = ComputeIsolationInfoInternal(
-      new_frame_origin, net::IsolationInfo::RequestType::kOther);
+      new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
 
   // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
@@ -9534,7 +9546,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
-      origin, net::IsolationInfo::RequestType::kOther);
+      origin, net::IsolationInfo::RequestType::kOther, anonymous());
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create

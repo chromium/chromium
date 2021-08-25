@@ -729,14 +729,23 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const url::Origin& ComputeTopFrameOrigin(
       const url::Origin& frame_origin) const;
 
-  // Computes the IsolationInfo this frame to |destination|.
-  net::IsolationInfo ComputeIsolationInfoForNavigation(
-      const GURL& destination) const;
+  // Computes the IsolationInfo for this frame to `destination`. Set `anonymous`
+  // to true if the navigation will be loaded as anonymous document (note that
+  // the navigation might be committing an anonymous document even if the
+  // document currently loaded in this RFH is not anonymous, and vice versa).
+  net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination,
+                                                       bool anonymous);
+
+  // Computes the IsolationInfo for this frame to |destination|.
+  net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination);
 
   // Computes the IsolationInfo that should be used for subresources, if
-  // |main_world_origin_for_url_loader_factory| is committed to this frame.
+  // |main_world_origin_for_url_loader_factory| is committed to this frame. The
+  // boolean `anonymous` specifies whether this frame will commit an anonymous
+  // document.
   net::IsolationInfo ComputeIsolationInfoForSubresourcesForPendingCommit(
-      const url::Origin& main_world_origin_for_url_loader_factory) const;
+      const url::Origin& main_world_origin_for_url_loader_factory,
+      bool anonymous);
 
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
@@ -2484,10 +2493,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Computes the IsolationInfo for both navigations and subresources.
   //
   // For navigations, |frame_origin| is the origin being navigated to. For
-  // subresources, |frame_origin| is the value of |last_committed_origin_|.
+  // subresources, |frame_origin| is the value of |last_committed_origin_|. The
+  // boolean `anonymous` specifies whether this resource should be loaded with
+  // the restrictions of an anonymous iframe.
   net::IsolationInfo ComputeIsolationInfoInternal(
       const url::Origin& frame_origin,
-      net::IsolationInfo::RequestType request_type) const;
+      net::IsolationInfo::RequestType request_type,
+      bool anonymous);
 
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,

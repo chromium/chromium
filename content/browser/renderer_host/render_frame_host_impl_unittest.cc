@@ -317,6 +317,11 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   EXPECT_TRUE(child_frame->anonymous());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
+  // An anonymous document sets a nonce on its network isolation key.
+  EXPECT_TRUE(child_frame->GetNetworkIsolationKey().GetNonce().has_value());
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            child_frame->GetNetworkIsolationKey().GetNonce().value());
+
   // A child of an anonymous RFH is anonymous.
   auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(child_frame)
@@ -327,6 +332,13 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   // The two anonymous RFH's storage keys should have the same nonce.
   EXPECT_EQ(child_frame->storage_key().nonce().value(),
             grandchild_frame->storage_key().nonce().value());
+
+  // Also the anonymous initial empty document sets a nonce on its network
+  // isolation key.
+  EXPECT_TRUE(
+      grandchild_frame->GetNetworkIsolationKey().GetNonce().has_value());
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
 }
 
 }  // namespace content
