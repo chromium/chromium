@@ -57,5 +57,6 @@ html_to_js("web_components") {
     "privacy_review_msbb_fragment.js",
     "privacy_review_page.js",
     "privacy_review_shared_css.js",
+    "step_indicator.js",
   ]
 }

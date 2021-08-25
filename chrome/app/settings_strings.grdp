@@ -1352,6 +1352,12 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
     Review my settings
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_BACK_BUTTON" desc="Text of a button in the privacy review that reverses to the previous step in the review.">
+    Back
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_STEPS" is_accessibility_with_no_ui="true" desc="Spoken by screenreaders indicating what step the user is in and how many steps there are in total.">
+    Step <ph name="CURRENT_STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>2</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON" desc="Text of a button in the privacy review that advances to the next step in the review.">
     Next
   </message>
