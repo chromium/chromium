@@ -53,7 +53,18 @@ Polymer({
       value: false,
       reflectToAttribute: true,
       observer: 'updateAnchorTagTabIndex_',
-    }
+    },
+
+    /**
+     * localizedString, with aria attributes and the optionally provided link.
+     * @private
+     */
+    containerInnerHTML_: {
+      type: String,
+      value: '',
+      computed: 'getAriaLabelledContent_(localizedString, linkUrl)',
+      observer: 'setContainerInnerHTML_',
+    },
   },
 
   /**
@@ -106,6 +117,7 @@ Polymer({
         'settings-localized-link should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
+    anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
 
     if (linkUrl !== '') {
       anchorTag.href = linkUrl;
@@ -115,8 +127,11 @@ Polymer({
     return tempEl.innerHTML;
   },
 
-  /** @override */
-  attached() {
+  /**
+   * @private
+   */
+  setContainerInnerHTML_() {
+    this.$.container.innerHTML = this.containerInnerHTML_;
     const anchorTag = this.$$('a');
     if (anchorTag) {
       anchorTag.addEventListener('click', this.onAnchorTagClick_.bind(this));

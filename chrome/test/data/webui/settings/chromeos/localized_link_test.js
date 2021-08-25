@@ -64,8 +64,8 @@ suite('localized_link', function() {
         document.body.querySelector('settings-localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a id="id0" aria-labelledby="id0" href="http://google.com" ` +
-            `target="_blank" tabindex="0">populated link</a>`);
+        `<a id="id0" aria-labelledby="id0" tabindex="0" ` +
+            `href="http://google.com" target="_blank">populated link</a>`);
   });
 
   test('PrepopulatedLink', function() {
@@ -121,5 +121,33 @@ suite('localized_link', function() {
     localizedLink.linkDisabled = true;
     await flushAsync();
     assertEquals(anchorTag.getAttribute('tabindex'), '-1');
+  });
+
+  test('change localizedString', async function() {
+    document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
+        `Text with a <a href='#'>link</a>`, ``);
+    await flushAsync();
+
+    const localizedLink =
+        document.body.querySelector('settings-localized-link');
+    localizedLink.linkDisabled = true;
+    const localizedLinkPromise =
+        test_util.eventToPromise('link-clicked', localizedLink);
+    await flushAsync();
+
+    localizedLink.localizedString = `Different text with <a href='#'>link</a>`;
+    await flushAsync();
+
+    // Tab index is still -1 due to it being disabled.
+    const anchorTag = localizedLink.$$('a');
+    assertTrue(!!anchorTag);
+    assertEquals(anchorTag.getAttribute('tabindex'), '-1');
+
+    localizedLink.linkDisabled = false;
+    await flushAsync();
+
+    // Clicking the link still fires the link-clicked event.
+    anchorTag.click();
+    await Promise.all([localizedLinkPromise, test_util.flushTasks()]);
   });
 });
