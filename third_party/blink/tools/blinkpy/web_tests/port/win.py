@@ -199,7 +199,17 @@ class WinPort(base.Port):
         raise WindowsError('Unable to find a valid python3 command name')
 
     def relative_test_filename(self, filename):
-        path = filename[len(self.web_tests_dir()) + 1:]
+        # If this is a path we won't be able to make relative, we create a
+        # path in the form /drive_letter:/path/to/file, e.g. /c:/path/to/file.
+        # This is technically a valid Unix-style path, but can still be
+        # converted into a usable Windows-style path if necessary, unlike if we
+        # dropped the drive letter.
+        is_abspath = False
+        if not filename.startswith(self.web_tests_dir()):
+            is_abspath = True
+        path = super(WinPort, self).relative_test_filename(filename)
+        if is_abspath:
+            path = '/' + path
         return path.replace('\\', '/')
 
     def uses_apache(self):
