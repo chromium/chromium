@@ -109,7 +109,7 @@ class ESimProfile : public mojom::ESimProfile {
                              HermesResponseStatus status);
   void OnProfileNicknameSet(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-      bool success);
+      HermesResponseStatus status);
   bool ProfileExistsOnEuicc();
   bool IsProfileInstalled();
 

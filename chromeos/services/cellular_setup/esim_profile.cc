@@ -378,10 +378,8 @@ void ESimProfile::PerformSetProfileNickname(
     return;
   }
 
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(path_);
-  properties->nick_name().Set(
-      base::UTF16ToUTF8(nickname),
+  HermesProfileClient::Get()->RenameProfile(
+      path_, base::UTF16ToUTF8(nickname),
       base::BindOnce(&ESimProfile::OnProfileNicknameSet,
                      weak_ptr_factory_.GetWeakPtr(), std::move(inhibit_lock)));
 }
@@ -460,13 +458,14 @@ void ESimProfile::OnESimOperationResult(ESimOperationResultCallback callback,
 
 void ESimProfile::OnProfileNicknameSet(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-    bool success) {
-  if (!success) {
-    NET_LOG(ERROR) << "ESimProfile property set error.";
+    HermesResponseStatus status) {
+  if (status != HermesResponseStatus::kSuccess) {
+    NET_LOG(ERROR) << "ESimProfile rename error.";
   }
   std::move(set_profile_nickname_callback_)
-      .Run(success ? mojom::ESimOperationResult::kSuccess
-                   : mojom::ESimOperationResult::kFailure);
+      .Run(status == HermesResponseStatus::kSuccess
+               ? mojom::ESimOperationResult::kSuccess
+               : mojom::ESimOperationResult::kFailure);
   // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
