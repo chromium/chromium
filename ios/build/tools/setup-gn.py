@@ -127,13 +127,6 @@ class GnGenerator(object):
         'target_environment',
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
 
-    if self._target == 'maccatalyst':
-      # TODO(crbug.com/1173902): Remove when support for iOS 13.0 is dropped.
-      # The "catalyst" environment is only supported from iOS 13.1+. Until
-      # Chrome builds with this deployment target, overrides it when building
-      # for "catalyst".
-      args.append(('ios_deployment_target', '"13.1"'))
-
     # If extra arguments are passed to the function, pass them before the
     # user overrides (if any).
     if extra_args is not None:
