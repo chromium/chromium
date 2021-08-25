@@ -210,13 +210,10 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 
   const AtomicString& family = creation_params.Family();
   DCHECK_NE(family, font_family_names::kSystemUi);
-  // TODO(crbug.com/1241875) Can this be simplified?
-  if (!family.length()) {
-    name = GetFallbackFontFamily(font_description).GetString().Utf8();
-  } else {
-    // convert the name to utf8
-    name = family.Utf8();
-  }
+  DCHECK(!family.IsEmpty() ||
+         font_description.GenericFamily() == FontDescription::kNoFamily ||
+         font_description.GenericFamily() == FontDescription::kStandardFamily);
+  name = family.Utf8();
 
 #if defined(OS_ANDROID)
   // If this is a locale-specific family, try looking up locale-specific
