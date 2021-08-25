@@ -404,12 +404,6 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   ~DeviceLocalAccountTest() override {}
 
-  void SetUp() override {
-    BrowserList::AddObserver(this);
-
-    DevicePolicyCrosBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(chromeos::switches::kLoginManager);
@@ -433,6 +427,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    BrowserList::AddObserver(this);
 
     initial_locale_ = g_browser_process->GetApplicationLocale();
     initial_language_ = l10n_util::GetLanguage(initial_locale_);
