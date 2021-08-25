@@ -100,9 +100,8 @@
           'has_native_resultdb_integration',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
           'gtest_tests': 'lacros_all_tast_tests_eve',
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic',
+          'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
