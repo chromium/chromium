@@ -4,18 +4,25 @@
 # found in the LICENSE file.
 """Runs captured sites framework recording and tests.
 
+  $ tools/captured_sites/control.py [command] [arguments]
+Commands:
+  chrome  Starts a Chrome instance with autofill hooks
+  wpr     Starts a WPR server instance to record or replay
+  run     Starts a test for a single site or "*" for all sites
+Use "captured_sites [command] -h" for more information about each command.',
+
 This script attempts to simplify the various configuration and override options
 that are available in creating and executing the Captured Sites Framework for
 Autofill and Password Manager.
 
 This script assumes execution location is the src folder of the chromium
-checkout.
+checkout. Commands should be run from chromium/src directory.
 
-Commands should be run from chromium/src directory.
-Also assumes that built targets are in :  out/Default for is_debug = true
+Also assumes that built targets are in :
+  out/Default for is_debug = true
   out/Release for is_debug = false
 
-Some environment variables should be set in order to use this script to it's
+Some environment variables should be set in order to use this script to its
 full potential.
 
   CAPTURED_SITES_USER_DATA_DIR - a location to store local information about the
@@ -49,8 +56,9 @@ from __future__ import print_function
 import argparse
 import json
 import os
-import sys
+import signal
 import subprocess
+import sys
 
 # Checking for environment variables.
 _HOME_DIR = os.environ['HOME']
@@ -217,21 +225,8 @@ def _add_scenario_site_args(parser):
 
 def _parse_command_args(command_names):
   parser = argparse.ArgumentParser(
-      description='Shortcuts to run captured sites commands.\n\n\
-Usage: captured_sites [command] [arguments]\n\n\
-Commands:\n\
-  chrome  starts a chrome instance with autofill hooks\n\
-  wpr     starts a wpr server instance to record or replay\n\
-  run     starts a test for a single site or "*" for all\n\n\
-Environment Variables:\n\
-  CAPTURED_SITES_USER_DATA_DIR  stored chrome profile information, required for\
-  "chrome" \ command. Defaults to hardcoded "' + _DEFAULT_USER_DATA_DIR + '" \
-  when not set. \n\
-  CAPTURED_SITES_LOG_DATA_DIR   location to write test log information, \
-  required for "run" command. Defaults to hardcoded "' + _DEFAULT_LOG_DATA_DIR +
-      '" when not set. \n\n\
-Use "captured_sites [command] -h" for more information about a command.',
       formatter_class=argparse.RawTextHelpFormatter)
+  parser.usage = __doc__
   parser.add_argument('name', choices=command_names)
   parser.add_argument('args', nargs=argparse.REMAINDER)
   return parser.parse_args()
@@ -364,7 +359,25 @@ def _launch_run(options, forward_args):
   _make_process_call(command_args, options.print_only)
 
 
+def _handle_signal(sig, _):
+  """Handles received signals to make sure spawned test process are killed.
+
+  sig (int): An integer representing the received signal, for example SIGTERM.
+  """
+
+  # Don't do any cleanup here, instead, leave it to the finally blocks.
+  # Assumption is based on https://docs.python.org/3/library/sys.html#sys.exit:
+  # cleanup actions specified by finally clauses of try statements are honored.
+
+  # https://tldp.org/LDP/abs/html/exitcodes.html:
+  # Exit code 128+n -> Fatal error signal "n".
+  sys.exit(128 + sig)
+
+
 def main():
+  for sig in (signal.SIGTERM, signal.SIGINT):
+    signal.signal(sig, _handle_signal)
+
   all_commands = {
       'chrome':
       Command('Start a Chrome instance with autofill hooks.',
