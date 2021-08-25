@@ -74,19 +74,20 @@
 }
 
 - (void)cancelSignin {
-  if (self.isAuthenticationInProgress) {
-    [self cancelAndDismissAuthenticationFlowAnimated:NO];
-  } else {
+  // Cancelling the authentication flow has the side effect of setting
+  // |self.isAuthenticationInProgress| to false.
+  // Ensure these conditions are handled separately by using a BOOL which
+  // retains the initial authentication state. This way, the mediator does not
+  // call sign-in finished if sign-in was in progress.
+  BOOL shouldNotCallSigninFinishedOnDelegate = self.isAuthenticationInProgress;
+  [self cancelAndDismissAuthenticationFlowAnimated:NO];
+  if (!shouldNotCallSigninFinishedOnDelegate) {
     [self.delegate userSigninMediatorSigninFinishedWithResult:
                        SigninCoordinatorResultCanceledByUser];
   }
 }
 
 - (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated {
-  if (!self.isAuthenticationInProgress) {
-    return;
-  }
-
   [self.authenticationFlow cancelAndDismissAnimated:animated];
   [self revertToSigninStateOnStart];
 }

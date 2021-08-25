@@ -24238,6 +24238,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_CancelCancelAdvancedSyncSettings">
+  <obsolete>
+    Deprecated as the advanced settings can no longer be canceled.
+  </obsolete>
   <owner>tangltom@chromium.org</owner>
   <description>
     Recorded when the user clicks the 'Back' button on the 'Cancel sync?' dialog

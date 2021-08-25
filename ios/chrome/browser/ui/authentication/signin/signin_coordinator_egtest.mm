@@ -416,9 +416,9 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
                             "www.example.com")];
 }
 
-// Verifies that advanced sign-in shows an alert dialog when being swiped to
-// dismiss.
-- (void)testSwipeDownToCancelAdvancedSignin {
+// Verifies that the user is signed in when selecting "Yes I'm In", after the
+// advanced settings were swiped to dismiss.
+- (void)testSwipeDownInAdvancedSettings {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:YES];
@@ -427,12 +427,9 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kManageSyncTableViewAccessibilityIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-  [[EarlGrey
-      selectElementWithMatcher:
-          ButtonWithAccessibilityLabel(GetNSString(
-              IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_CANCEL_SYNC_BUTTON))]
-      performAction:grey_tap()];
-  [SigninEarlGrey verifySignedOut];
+
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 #pragma mark - Utils

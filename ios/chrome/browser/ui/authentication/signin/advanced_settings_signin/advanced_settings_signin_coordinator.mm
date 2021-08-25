@@ -29,7 +29,6 @@
 #error "This file requires ARC support."
 #endif
 
-using base::RecordAction;
 using base::UserMetricsAction;
 using l10n_util::GetNSString;
 
@@ -47,9 +46,6 @@ using l10n_util::GetNSString;
 // Coordinator to present Sync settings.
 @property(nonatomic, strong)
     ChromeCoordinator<SyncSettingsViewState>* syncSettingsCoordinator;
-// Confirm cancel sign-in/sync dialog.
-@property(nonatomic, strong)
-    ActionSheetCoordinator* cancelConfirmationAlertCoordinator;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 // State used to revert to if the user action is canceled during sign-in.
@@ -88,17 +84,13 @@ using l10n_util::GetNSString;
   [self startSyncSettingsCoordinator];
 
   // Create the mediator.
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.advancedSettingsSigninMediator = [[AdvancedSettingsSigninMediator alloc]
-      initWithSyncSetupService:syncSetupService
-         authenticationService:authenticationService
-                   syncService:syncService
-                   prefService:self.browser->GetBrowserState()->GetPrefs()
-               identityManager:self.identityManager];
+      initWithAuthenticationService:authenticationService
+                        syncService:syncService
+                        prefService:self.browser->GetBrowserState()->GetPrefs()
+                    identityManager:self.identityManager];
   self.advancedSettingsSigninNavigationController.presentationController
       .delegate = self;
 
@@ -159,26 +151,6 @@ using l10n_util::GetNSString;
   [self.syncSettingsCoordinator start];
 }
 
-// Called when a button of |self.cancelConfirmationAlertCoordinator| is pressed.
-- (void)cancelConfirmationWithShouldCancelSignin:(BOOL)shouldCancelSignin {
-  DCHECK(self.cancelConfirmationAlertCoordinator);
-  // -[ActionSheetCoordinator stop] should not be called since the action sheet
-  // has been already dismissed. If it is called, the action sheet might dismiss
-  // the advanced settings sign-in view controller (instead of doing nothing).
-  // This case happens when tapping on the background of the action sheet on
-  // iPad.
-  self.cancelConfirmationAlertCoordinator = nil;
-  if (shouldCancelSignin) {
-    [self dismissViewControllerAndFinishWithResult:
-              SigninCoordinatorResultCanceledByUser
-                                          animated:YES
-                                        completion:nil];
-  } else {
-    RecordAction(
-        UserMetricsAction("Signin_Signin_CancelCancelAdvancedSyncSettings"));
-  }
-}
-
 // Dismisses the current view controller with |animated|, triggers the
 // coordinator cleanup and then calls |completion|.
 - (void)dismissViewControllerAndFinishWithResult:(SigninCoordinatorResult)result
@@ -201,6 +173,7 @@ using l10n_util::GetNSString;
 // calls |runCompletionCallbackWithSigninResult:completionInfo:| to finish the
 // sign-in.
 - (void)finishedWithSigninResult:(SigninCoordinatorResult)signinResult {
+  DCHECK_NE(SigninCoordinatorResultCanceledByUser, signinResult);
   DCHECK(self.advancedSettingsSigninNavigationController);
   DCHECK(self.advancedSettingsSigninMediator);
   [self.advancedSettingsSigninMediator
@@ -229,46 +202,9 @@ using l10n_util::GetNSString;
                                completionInfo:completionInfo];
 }
 
-- (void)showCancelConfirmationAlert {
-  DCHECK(!self.cancelConfirmationAlertCoordinator);
-  RecordAction(UserMetricsAction("Signin_Signin_CancelAdvancedSyncSettings"));
-  self.cancelConfirmationAlertCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.advancedSettingsSigninNavigationController
-                         browser:self.browser
-                           title:nil
-                         message:
-                             GetNSString(
-                                 IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE)
-                   barButtonItem:self.syncSettingsCoordinator.navigationItem
-                                     .leftBarButtonItem];
-  __weak __typeof(self) weakSelf = self;
-  [self.cancelConfirmationAlertCoordinator
-      addItemWithTitle:
-          GetNSString(
-              IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_BACK_BUTTON)
-                action:^{
-                  [weakSelf cancelConfirmationWithShouldCancelSignin:NO];
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.cancelConfirmationAlertCoordinator
-      addItemWithTitle:
-          GetNSString(
-              IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_CANCEL_SYNC_BUTTON)
-                action:^{
-                  [weakSelf cancelConfirmationWithShouldCancelSignin:YES];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [self.cancelConfirmationAlertCoordinator start];
-}
-
 #pragma mark - AdvancedSettingsSigninNavigationControllerNavigationDelegate
 
-- (void)navigationCancelButtonWasTapped {
-  [self showCancelConfirmationAlert];
-}
-
-- (void)navigationConfirmButtonWasTapped {
-  DCHECK(!self.cancelConfirmationAlertCoordinator);
+- (void)navigationDoneButtonWasTapped {
   [self dismissViewControllerAndFinishWithResult:SigninCoordinatorResultSuccess
                                         animated:YES
                                       completion:nil];
@@ -276,17 +212,9 @@ using l10n_util::GetNSString;
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
-- (BOOL)presentationControllerShouldDismiss:
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  return NO;
-}
-
-- (void)presentationControllerDidAttemptToDismiss:
-    (UIPresentationController*)presentationController {
-  // Only show cancel confirmation when "Sync and Google Services" is displayed.
-  if (self.syncSettingsCoordinator.isSettingsViewShown) {
-    [self showCancelConfirmationAlert];
-  }
+  [self finishedWithSigninResult:SigninCoordinatorResultSuccess];
 }
 
 #pragma mark - ManageSyncSettingsCoordinatorDelegate

@@ -24,8 +24,8 @@
 #endif
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 using chrome_test_util::SettingsLink;
-using chrome_test_util::SyncSettingsConfirmButton;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::MatchInBlockerWindowWithNumber;
 using chrome_test_util::FakeOmnibox;
@@ -157,16 +157,25 @@ id<GREYMatcher> SkipSigninButton() {
   // Tap Settings link.
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
-  // Check Sync hasn't started yet, allowing the user to change some settings.
+  // Check Sync hasn't started yet, allowing the user to change some
+  //  settings.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't have finished its original setup yet");
 
-  // Close Settings, user is still signed in and sync is now starting.
-  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+  // Close Settings, user is still signed in and sync shouldn't start.
+  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
+
+  // Check sync did not start.
+  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                  @"Sync shouldn't start when discarding advanced settings.");
+
+  // Tap "Yes, I'm in." button
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
+  // Check sync started.
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should have finished its original setup");
 }

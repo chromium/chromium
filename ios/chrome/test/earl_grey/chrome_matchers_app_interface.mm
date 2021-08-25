@@ -500,10 +500,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsDoneButtonId);
 }
 
-+ (id<GREYMatcher>)syncSettingsConfirmButton {
-  return grey_accessibilityID(kSyncSettingsConfirmButtonId);
-}
-
 + (id<GREYMatcher>)autofillCreditCardEditTableView {
   return grey_accessibilityID(kAutofillCreditCardEditTableViewId);
 }

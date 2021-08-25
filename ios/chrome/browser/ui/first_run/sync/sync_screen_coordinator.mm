@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
@@ -191,7 +192,10 @@
   if (self.advancedSettingsRequested) {
     base::UmaHistogramEnumeration(
         "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
-    [self.delegate skipAllAndShowSyncSettings];
+    id<ApplicationCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [handler showAdvancedSigninSettingsFromViewController:
+                 self.baseNavigationController];
   } else {
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kSyncScreenCompletionWithSync);

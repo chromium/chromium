@@ -8,7 +8,5 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kSyncSettingsConfirmButtonId =
-    @"kAdvancedSyncSettingsConfirmButtonId";
-NSString* const kSyncSettingsCancelButtonId =
-    @"kAdvancedSyncSettingsCancelButtonId";
+NSString* const kAdvancedSyncSettingsDoneButtonMatcherId =
+    @"AdvancedSyncSettingsDoneButtonId";

@@ -13,7 +13,6 @@
 @class AdvancedSettingsSigninNavigationController;
 class AuthenticationService;
 class PrefService;
-class SyncSetupService;
 namespace signin {
 class IdentityManager;
 }
@@ -27,11 +26,10 @@ class SyncService;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)
-    initWithSyncSetupService:(SyncSetupService*)syncSetupService
-       authenticationService:(AuthenticationService*)authenticationService
-                 syncService:(syncer::SyncService*)syncService
-                 prefService:(PrefService*)prefService
-             identityManager:(signin::IdentityManager*)identityManager
+    initWithAuthenticationService:(AuthenticationService*)authenticationService
+                      syncService:(syncer::SyncService*)syncService
+                      prefService:(PrefService*)prefService
+                  identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 // Saves the user sync preferences.

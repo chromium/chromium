@@ -111,14 +111,6 @@
   [self willFinishPresentingScreens];
 }
 
-- (void)skipAllAndShowSyncSettings {
-  [self skipAll];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler
-      showAdvancedSigninSettingsFromViewController:self.baseViewController];
-}
-
 #pragma mark - Helper
 
 // Presents the screen of certain |type|.

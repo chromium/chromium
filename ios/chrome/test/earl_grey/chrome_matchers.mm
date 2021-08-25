@@ -272,10 +272,6 @@ id<GREYMatcher> SettingsDoneButton() {
   return [ChromeMatchersAppInterface settingsDoneButton];
 }
 
-id<GREYMatcher> SyncSettingsConfirmButton() {
-  return [ChromeMatchersAppInterface syncSettingsConfirmButton];
-}
-
 id<GREYMatcher> AutofillCreditCardEditTableView() {
   return [ChromeMatchersAppInterface autofillCreditCardEditTableView];
 }

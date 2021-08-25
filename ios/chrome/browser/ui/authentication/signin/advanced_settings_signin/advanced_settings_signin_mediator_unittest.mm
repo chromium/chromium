@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/platform_test.h"
@@ -63,20 +61,14 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
 
     mediator_ = [[AdvancedSettingsSigninMediator alloc]
-        initWithSyncSetupService:sync_setup_service()
-           authenticationService:authentication_service()
-                     syncService:sync_service()
-                     prefService:GetPrefService()
-                 identityManager:identity_manager()];
+        initWithAuthenticationService:authentication_service()
+                          syncService:sync_service()
+                          prefService:GetPrefService()
+                      identityManager:identity_manager()];
 
-    sync_setup_service_mock_ =
-        static_cast<SyncSetupServiceMock*>(sync_setup_service());
     authentication_service_fake_ =
         static_cast<AuthenticationServiceFake*>(authentication_service());
   }
@@ -100,10 +92,6 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
         browser_state_.get());
   }
 
-  SyncSetupService* sync_setup_service() {
-    return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
-  }
-
   SyncService* sync_service() {
     return SyncServiceFactory::GetForBrowserState(browser_state_.get());
   }
@@ -124,69 +112,8 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
 
   AdvancedSettingsSigninMediator* mediator_ = nil;
 
-  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
   AuthenticationServiceFake* authentication_service_fake_ = nullptr;
 };
-
-// Tests that a user is authenticated and synced when sync is enabled and
-// sign-in is successful.
-TEST_F(AdvancedSettingsSigninMediatorTest,
-       saveUserPreferenceSigninSuccessSyncEnabled) {
-  EXPECT_CALL(*sync_setup_service_mock_,
-              SetFirstSetupComplete(
-                  syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM));
-
-  authentication_service_fake_->SignIn(identity_);
-  [mediator_ saveUserPreferenceForSigninResult:SigninCoordinatorResultSuccess
-                           originalSigninState:IdentitySigninStateSignedOut];
-
-  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-}
-
-// Tests that a user is authenticated but not synced when sync is disabled and
-// sign-in is successful.
-TEST_F(AdvancedSettingsSigninMediatorTest,
-       saveUserPreferenceSigninSuccessSyncDisabled) {
-  EXPECT_CALL(*sync_setup_service_mock_,
-              SetFirstSetupComplete(
-                  syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
-      .Times(1);
-
-  authentication_service_fake_->SignIn(identity_);
-  [mediator_ saveUserPreferenceForSigninResult:SigninCoordinatorResultSuccess
-                           originalSigninState:IdentitySigninStateSignedOut];
-
-  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-}
-
-// Tests that a signed-out user is not authenticated when sync is canceled.
-TEST_F(AdvancedSettingsSigninMediatorTest,
-       saveUserPreferenceSigninCanceledWithSignedOutUser) {
-  authentication_service_fake_->SignIn(identity_);
-  [mediator_
-      saveUserPreferenceForSigninResult:SigninCoordinatorResultCanceledByUser
-                    originalSigninState:IdentitySigninStateSignedOut];
-
-  ASSERT_FALSE(authentication_service_fake_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-}
-
-// Tests that a signed-in user remains authenticated when sync is canceled.
-TEST_F(AdvancedSettingsSigninMediatorTest,
-       saveUserPreferenceSigninCanceledWithSignedInUser) {
-  authentication_service_fake_->SignIn(identity_);
-  [mediator_
-      saveUserPreferenceForSigninResult:SigninCoordinatorResultCanceledByUser
-                    originalSigninState:
-                        IdentitySigninStateSignedInWithSyncDisabled];
-
-  ASSERT_TRUE(authentication_service_fake_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(authentication_service_fake_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSync));
-}
 
 // Tests that a user's authentication does not change when sign-in is
 // interrupted.

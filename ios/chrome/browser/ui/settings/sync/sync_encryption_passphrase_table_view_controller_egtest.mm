@@ -29,7 +29,7 @@ using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
-using chrome_test_util::SyncSettingsConfirmButton;
+using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 using chrome_test_util::PrimarySignInButton;
 
 namespace {
@@ -118,8 +118,10 @@ NSString* const kPassphrase = @"hello";
   // Type and submit the sync passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
 
-  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
+
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
 
   // Test the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];

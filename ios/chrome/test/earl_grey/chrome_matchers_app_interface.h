@@ -199,10 +199,6 @@
 // Returns matcher for the "Done" button in the settings' navigation bar.
 + (id<GREYMatcher>)settingsDoneButton;
 
-// Returns matcher for the "Confirm" button in the Sync and Google services
-// settings' navigation bar.
-+ (id<GREYMatcher>)syncSettingsConfirmButton;
-
 // Returns matcher for the Autofill Credit Card "Payment Methods" edit view.
 + (id<GREYMatcher>)autofillCreditCardEditTableView;
 

@@ -1531,11 +1531,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:mainBrowser
                                                   signinState:signinState];
-  [self startSigninCoordinatorWithCompletion:^(BOOL success) {
-    if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
-      [self showLocationPermissionsFromViewController:baseViewController];
-    }
-  }];
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 - (void)showLocationPermissionsFromViewController:

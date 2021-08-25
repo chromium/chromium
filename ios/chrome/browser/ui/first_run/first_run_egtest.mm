@@ -33,7 +33,7 @@
 #endif
 
 using chrome_test_util::IdentityCellMatcherForEmail;
-using chrome_test_util::SyncSettingsConfirmButton;
+using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 
 namespace {
 
@@ -529,8 +529,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
-// Checks that the FRE is dismissed when the user taps on the advanced sync
-// settings button and that sync is turned on after the user chose to turn on
+// Checks that sync is turned on after the user chose to turn on
 // sync in the advanced sync settings screen.
 - (void)testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
@@ -554,71 +553,30 @@ GREYLayoutConstraint* BelowConstraint() {
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  [self verifyFREIsDismissed];
-
   // Check that Sync hasn't started yet, allowing the user to change some
   // settings.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't have finished its original setup yet");
 
-  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
 
+  // Check sync did not start yet.
+  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                  @"Sync shouldn't start when discarding advanced settings.");
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_text(l10n_util::GetNSString(
+                                IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Check sync did start.
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
-                 @"Sync should have finished its original setup");
+                 @"Sync should start when turning on sync in FRE.");
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
-}
-
-// Checks that the user is signed in and sync is turned off after the user chose
-// to cancel sync in the advanced sync setting screen.
-- (void)testCustomSyncOff {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [self verifyWelcomeScreenIsDisplayed];
-  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
-  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
-      performAction:grey_tap()];
-
-  [self verifySignInScreenIsDisplayed];
-  [[EarlGrey
-      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
-      performAction:grey_tap()];
-
-  [self verifySyncScreenIsDisplayed];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  [self verifyFREIsDismissed];
-
-  // Check that Sync hasn't started yet, allowing the user to change some
-  // settings.
-  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
-                  @"Sync shouldn't have finished its original setup yet");
-
-  // Cancel sync.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_text(l10n_util::GetNSString(
-                  IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_CANCEL_SYNC_BUTTON)),
-              grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-
-  // Check that the user is signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
 // Tests that metrics collection is enabled when the checkmark is checked on

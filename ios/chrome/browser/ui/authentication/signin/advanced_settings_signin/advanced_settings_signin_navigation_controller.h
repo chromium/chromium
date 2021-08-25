@@ -12,11 +12,8 @@
 @protocol
     AdvancedSettingsSigninNavigationControllerNavigationDelegate <NSObject>
 
-// Called when the navigation canceled button was tapped.
-- (void)navigationCancelButtonWasTapped;
-
-// Called when the navigation confirm button was tapped.
-- (void)navigationConfirmButtonWasTapped;
+// Called when the navigation done button was tapped.
+- (void)navigationDoneButtonWasTapped;
 
 @end
 

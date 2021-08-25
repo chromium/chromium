@@ -330,6 +330,7 @@ TEST_F(UserSigninMediatorTest, CancelAuthenticationNotInProgress) {
   OCMExpect(
       [mediator_delegate_mock_ userSigninMediatorSigninFinishedWithResult:
                                    SigninCoordinatorResultCanceledByUser]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ cancelSignin];
   ExpectNoConsent();
@@ -352,6 +353,7 @@ TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
 // Tests a user sign-in operation cancel and dismiss when authentication has not
 // begun.
 TEST_F(UserSigninMediatorTest, CancelAndDismissAuthenticationNotInProgress) {
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:NO];
   ExpectNoConsent();
 }
