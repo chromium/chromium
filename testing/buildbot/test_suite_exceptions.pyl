@@ -3449,6 +3449,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
         ],
+        'swarming': {
+          'shards': 9,
+        },
       },
     },
   },
