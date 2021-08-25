@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // Necessary to convert async media::VideoDecoder to sync CdmVideoDecoder.
 // Typically not recommended for production code, but is ok here since
@@ -149,8 +150,17 @@ void SetupGlobalEnvironmentIfNeeded() {
     static base::NoDestructor<base::SingleThreadTaskExecutor> task_executor;
   }
 
-  if (!base::CommandLine::InitializedForCurrentProcess())
+  // Initialize CommandLine if not already initialized. Since this is a DLL,
+  // just use empty arguments.
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+#if defined(OS_WIN)
+    // Use InitUsingArgvForTesting() instead of Init() to avoid dependency on
+    // shell32 API which might not work in the sandbox. See crbug.com/1242710.
+    base::CommandLine::InitUsingArgvForTesting(0, nullptr);
+#else
     base::CommandLine::Init(0, nullptr);
+#endif
+  }
 }
 
 // Adapts a media::VideoDecoder to a CdmVideoDecoder. Media VideoDecoders
