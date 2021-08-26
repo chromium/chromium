@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1256,13 +1257,31 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     uint32_t framerate) {
   DVLOG(3) << __func__;
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK(imf_output_media_type_);
+  DCHECK(imf_input_media_type_);
+  DCHECK(encoder_);
   RETURN_ON_FAILURE(bitrate.mode() == bitrate_.mode(),
                     "Invalid bitrate mode", );
 
-  frame_rate_ =
-      framerate
-          ? std::min(framerate, static_cast<uint32_t>(kMaxFrameRateNumerator))
-          : 1;
+  framerate = base::clamp(framerate, 1u, uint32_t{kMaxFrameRateNumerator});
+  if (frame_rate_ != framerate) {
+    HRESULT hr = MFSetAttributeRatio(imf_output_media_type_.Get(),
+                                     MF_MT_FRAME_RATE, framerate, 1);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate for output type", );
+
+    hr = MFSetAttributeRatio(imf_input_media_type_.Get(), MF_MT_FRAME_RATE,
+                             framerate, 1);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate for input type", );
+
+    hr = encoder_->SetOutputType(output_stream_id_,
+                                 imf_output_media_type_.Get(), 0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set output media type", );
+
+    hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(),
+                                0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set input media type", );
+    frame_rate_ = framerate;
+  }
 
   if (bitrate_ != bitrate) {
     bitrate_ = bitrate;
