@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -134,6 +135,11 @@ WorkletGlobalScope::WorkletGlobalScope(
 
   // WorkletGlobalScopes are not currently provided with UKM source IDs.
   DCHECK_EQ(creation_params->ukm_source_id, ukm::kInvalidSourceId);
+
+  if (creation_params->code_cache_host_interface.is_valid()) {
+    code_cache_host_.Bind(std::move(creation_params->code_cache_host_interface),
+                          GetTaskRunner(TaskType::kInternalDefault));
+  }
 }
 
 WorkletGlobalScope::~WorkletGlobalScope() = default;
@@ -221,6 +227,14 @@ const base::UnguessableToken& WorkletGlobalScope::GetDevToolsToken() const {
     return frame_->GetDevToolsFrameToken();
   }
   return GetThread()->GetDevToolsWorkerToken();
+}
+
+blink::mojom::CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
+  if (IsMainThreadWorkletGlobalScope())
+    return frame_->Loader().GetDocumentLoader()->GetCodeCacheHost();
+  if (!code_cache_host_)
+    return nullptr;
+  return code_cache_host_.get();
 }
 
 CoreProbeSink* WorkletGlobalScope::GetProbeSink() {

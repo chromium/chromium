@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -63,6 +64,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       WorkletModuleResponsesMap*,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           browser_interface_broker = mojo::NullRemote(),
+      mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cahe_host =
+          mojo::NullRemote(),
       BeginFrameProviderParams begin_frame_provider_params = {},
       const PermissionsPolicy* parent_permissions_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
@@ -161,6 +164,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
       browser_interface_broker;
+
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_interface;
 
   BeginFrameProviderParams begin_frame_provider_params;
 

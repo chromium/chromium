@@ -2760,6 +2760,16 @@ blink::mojom::CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
   return code_cache_host_.get();
 }
 
+mojo::PendingRemote<blink::mojom::CodeCacheHost>
+DocumentLoader::CreateWorkerCodeCacheHost() {
+  if (GetDisableCodeCacheForTesting())
+    return mojo::NullRemote();
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host;
+  GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
+      pending_code_cache_host.InitWithNewPipeAndPassReceiver());
+  return pending_code_cache_host;
+}
+
 void DocumentLoader::OnCodeCacheHostClosed() {
   code_cache_host_.reset();
 }

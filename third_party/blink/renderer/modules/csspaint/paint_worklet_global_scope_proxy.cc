@@ -50,6 +50,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       base::UnguessableToken::Create(), nullptr /* worker_settings */,
       mojom::blink::V8CacheOptions::kDefault, module_responses_map,
       mojo::NullRemote() /* browser_interface_broker */,
+      window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
       BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       window->GetAgentClusterID(), ukm::kInvalidSourceId,
       window->GetExecutionContextToken(),

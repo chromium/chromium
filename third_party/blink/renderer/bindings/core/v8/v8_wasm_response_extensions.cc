@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -274,14 +275,7 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     if (serialized_data.size() < serialized_module.size)
       return;
 
-    // TODO(mythria): Add support for worklets and remove this code that uses
-    // per-process interface.
-    if (!main_thread_task_runner_.get()) {
-      SendCachedData(response_url_, response_time_, execution_context_.Lock(),
-                     std::move(serialized_data));
-      return;
-    }
-
+    DCHECK(main_thread_task_runner_.get());
     main_thread_task_runner_->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
                        &SendCachedData, response_url_, response_time_,
@@ -318,7 +312,16 @@ scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
   }
 
   DCHECK(execution_context.IsWorkletGlobalScope());
-  return nullptr;
+  WorkletGlobalScope& worklet_global_scope =
+      To<WorkletGlobalScope>(execution_context);
+  if (worklet_global_scope.IsMainThreadWorkletGlobalScope()) {
+    return Thread::MainThread()->GetTaskRunner();
+  }
+
+  return worklet_global_scope.GetThread()
+      ->GetWorkerBackingThread()
+      .BackingThread()
+      .GetTaskRunner();
 }
 
 void StreamFromResponseCallback(

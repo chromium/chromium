@@ -74,6 +74,7 @@ class CORE_EXPORT WorkletGlobalScope
   WorkerThread* GetThread() const final;
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return true; }
+  blink::mojom::CodeCacheHost* GetCodeCacheHost() override;
 
   virtual LocalFrame* GetFrame() const;
 
@@ -197,6 +198,11 @@ class CORE_EXPORT WorkletGlobalScope
   //
   // TODO(mkwst): We need a spec for this capability.
   const bool parent_direct_socket_capability_;
+
+  // This is the interface that handles generated code cache
+  // requests both to fetch code cache when loading resources
+  // and to store generated code cache to disk.
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
 };
 
 template <>

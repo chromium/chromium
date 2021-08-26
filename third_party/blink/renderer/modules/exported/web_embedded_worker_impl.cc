@@ -224,8 +224,9 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       // Generate the full code cache in the first execution of the script.
       mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,
       nullptr /* worklet_module_respones_map */,
-      std::move(browser_interface_broker), BeginFrameProviderParams(),
-      nullptr /* parent_permissions_policy */,
+      std::move(browser_interface_broker),
+      mojo::NullRemote() /* code_cache_host_interface */,
+      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
       worker_start_data->ukm_source_id);
 

@@ -262,9 +262,10 @@ void WebSharedWorkerImpl::StartWorkerContext(
       nullptr /* origin_trial_tokens */, devtools_worker_token,
       std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_response_map */,
-      std::move(browser_interface_broker), BeginFrameProviderParams(),
-      nullptr /* parent_permissions_policy */, base::UnguessableToken(),
-      ukm_source_id);
+      std::move(browser_interface_broker),
+      mojo::NullRemote() /* code_cache_host_interface */,
+      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+      base::UnguessableToken(), ukm_source_id);
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =

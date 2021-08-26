@@ -367,6 +367,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host);
   static void DisableCodeCacheForTesting();
 
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+
   HashSet<KURL> GetEarlyHintsPreloadedResources();
 
  protected:

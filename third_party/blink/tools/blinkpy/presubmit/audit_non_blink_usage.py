@@ -925,6 +925,8 @@ _CONFIG = [
             'third_party/blink/renderer/bindings/core/v8/v8_code_cache.h',
             'third_party/blink/renderer/core/loader/document_loader.cc',
             'third_party/blink/renderer/core/loader/document_loader.h',
+            'third_party/blink/renderer/core/workers/worklet_global_scope.h',
+            'third_party/blink/renderer/core/workers/worklet_global_scope.cc',
             'third_party/blink/renderer/core/workers/worker_global_scope.cc',
             'third_party/blink/renderer/core/workers/worker_global_scope.h',
             'third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h',

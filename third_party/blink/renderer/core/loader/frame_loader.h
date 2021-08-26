@@ -231,6 +231,8 @@ class CORE_EXPORT FrameLoader final {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
   WebFrameLoadType HandleInitialEmptyDocumentReplacementIfNeeded(
