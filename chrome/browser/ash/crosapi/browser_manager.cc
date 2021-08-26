@@ -59,8 +59,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -223,24 +221,6 @@ void SetLaunchOnLoginPref(bool launch_on_login) {
 bool GetLaunchOnLoginPref() {
   return ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       browser_util::kLaunchOnLoginPref);
-}
-
-const char* GetStatefulLacrosChannel() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
-    std::string value =
-        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    if (value == browser_util::kLacrosStabilityLeastStable)
-      return "canary";
-    if (value == browser_util::kLacrosStabilityLessStable)
-      return "dev";
-    // Marked as "beta" channel since it gets updated every 2 weeks from beta
-    // branch.
-    if (value == browser_util::kLacrosStabilityMoreStable)
-      return "beta";
-  }
-
-  return browser_util::kLacrosNoStabilitySwitchDefaultChannel;
 }
 
 // Returns the initial browser action. No browser will be opened when
@@ -587,72 +567,19 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
   // update.
   bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(user_id_hash);
 
-  // TODO(crbug.com/1241632): Investigate if performing the update channel query
-  // and background pre-launch work in parallel yields any benefits.
-  GetUpdateChannel(base::BindOnce(
-      [](base::WeakPtr<BrowserManager> weak_this,
-         mojom::InitialBrowserAction initial_browser_action,
-         bool cleared_user_data_dir, const std::string& channel) {
-        if (weak_this) {
-          weak_this->PostStartWithLogFileTask(initial_browser_action,
-                                              cleared_user_data_dir, channel);
-        }
-      },
-      weak_factory_.GetWeakPtr(), initial_browser_action,
-      cleared_user_data_dir));
-}
-
-void BrowserManager::GetUpdateChannel(ChannelCallback callback) {
-  switch (lacros_selection_.value()) {
-    case LacrosSelection::kRootfs: {
-      // For 'rootfs' Lacros use the same channel as ash/OS. This may require an
-      // asynchronous dbus query, although the result is cached and will usually
-      // be synchronous.
-      chromeos::UpdateEngineClient* update_engine_client =
-          ash::DBusThreadManager::Get()->GetUpdateEngineClient();
-      update_engine_client->GetChannel(
-          true,
-          base::BindOnce(
-              [](ChannelCallback callback, const std::string& current_channel) {
-                // TODO(crbug.com/1241631): Leverage release channel constants
-                // defined in the update_engine_client class instead of
-                // performing string manipulation.
-
-                // Split the provided channel name (e.g. 'beta-channel') into
-                // parts and leverage the relevant portion.
-                std::vector<std::string> channel_name_parts = base::SplitString(
-                    current_channel, "-", base::TRIM_WHITESPACE,
-                    base::SPLIT_WANT_ALL);
-                std::move(callback).Run(channel_name_parts[0]);
-              },
-              std::move(callback)));
-    } break;
-    case LacrosSelection::kStateful: {
-      // For 'stateful' Lacros directly check the channel of stateful-lacros
-      // that the user is on.
-      std::move(callback).Run(GetStatefulLacrosChannel());
-    } break;
-    default:
-      NOTREACHED();
-  }
-}
-
-void BrowserManager::PostStartWithLogFileTask(
-    mojom::InitialBrowserAction initial_browser_action,
-    bool cleared_user_data_dir,
-    std::string update_channel) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
                      cleared_user_data_dir),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr(), initial_browser_action,
-                     update_channel));
+                     browser_util::GetLacrosSelectionUpdateChannel(
+                         lacros_selection_.value())));
 }
 
 void BrowserManager::StartWithLogFile(
     mojom::InitialBrowserAction initial_browser_action,
-    std::string update_channel,
+    version_info::Channel update_channel,
     LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
@@ -674,10 +601,15 @@ void BrowserManager::StartWithLogFile(
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
 
+  // If we don't have channel information, we default to the "dev" channel.
+  if (update_channel == version_info::Channel::UNKNOWN)
+    update_channel = browser_util::kLacrosDefaultChannel;
+
   base::LaunchOptions options;
   options.environment["EGL_PLATFORM"] = "surfaceless";
   options.environment["XDG_RUNTIME_DIR"] = GetXdgRuntimeDir();
-  options.environment["CHROME_VERSION_EXTRA"] = update_channel;
+  options.environment["CHROME_VERSION_EXTRA"] =
+      version_info::GetChannelString(update_channel);
 
   std::string additional_env =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -1044,10 +976,6 @@ void BrowserManager::RecordLacrosLaunchMode() {
   }
 
   UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.Mode", lacros_mode);
-}
-
-void BrowserManager::SetLacrosSelectionForTesting(LacrosSelection selection) {
-  lacros_selection_ = absl::optional<LacrosSelection>(selection);
 }
 
 }  // namespace crosapi

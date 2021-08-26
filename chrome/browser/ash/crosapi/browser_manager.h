@@ -213,13 +213,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for tests.
   virtual void Start(mojom::InitialBrowserAction initial_browser_action);
 
-  // Obtains the update channel name based on the loaded lacros selection and
-  // triggers the callback with it.
-  using ChannelCallback = base::OnceCallback<void(const std::string&)>;
-  void GetUpdateChannel(ChannelCallback callback);
-
-  void SetLacrosSelectionForTesting(LacrosSelection selection);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
 
@@ -284,16 +277,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   MaybeStartResult MaybeStart(
       mojom::InitialBrowserAction initial_browser_action);
 
-  // Triggers Pre-Launch work and posts StartWithLogFile to the thread pool.
-  void PostStartWithLogFileTask(
-      mojom::InitialBrowserAction initial_browser_action,
-      bool cleared_user_data_dir,
-      std::string update_channel);
-
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
   void StartWithLogFile(mojom::InitialBrowserAction initial_browser_action,
-                        std::string update_channel,
+                        version_info::Channel update_channel,
                         LaunchParamsFromBackground params);
 
   // BrowserServiceHostObserver:

@@ -76,9 +76,9 @@ enum class LacrosSelection {
 extern const base::Feature kLacrosAllowOnStableChannel;
 extern const base::Feature kLacrosGooglePolicyRollout;
 
-// The default update channel to leverage for 'stateful' Lacros when no
-// stability switch value has been configured.
-extern const char kLacrosNoStabilitySwitchDefaultChannel[];
+// The default update channel to leverage for Lacros when the channel is
+// unknown.
+extern const version_info::Channel kLacrosDefaultChannel;
 
 // A command-line switch that can also be set from chrome://flags that affects
 // the frequency of Lacros updates.
@@ -237,6 +237,10 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // To be called at primary user login, to cache the policy value for launch
 // switch.
 void CacheLacrosLaunchSwitch(const policy::PolicyMap& map);
+
+// Returns the update channel associated with the given loaded lacros selection.
+version_info::Channel GetLacrosSelectionUpdateChannel(
+    LacrosSelection selection);
 
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.

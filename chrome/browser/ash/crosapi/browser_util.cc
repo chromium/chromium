@@ -361,7 +361,7 @@ const base::Feature kLacrosAllowOnStableChannel{
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const char kLacrosNoStabilitySwitchDefaultChannel[] = "dev";
+const Channel kLacrosDefaultChannel = Channel::DEV;
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
 const char kLacrosStabilityLeastStable[] = "least-stable";
@@ -471,7 +471,7 @@ bool IsLacrosEnabledWithUser(const User* user) {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
-bool IsLacrosSupportFlagAllowed(version_info::Channel channel) {
+bool IsLacrosSupportFlagAllowed(Channel channel) {
   return IsLacrosAllowedToBeEnabled(channel) &&
          (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
@@ -484,7 +484,7 @@ bool IsAshWebBrowserEnabled() {
   return IsAshWebBrowserEnabled(chrome::GetChannel());
 }
 
-bool IsAshWebBrowserEnabled(version_info::Channel channel) {
+bool IsAshWebBrowserEnabled(Channel channel) {
   // If Lacros is not allowed or is not enabled, Ash browser is always enabled.
   if (!IsLacrosEnabled(channel))
     return true;
@@ -562,7 +562,7 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
   return true;
 }
 
-bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel) {
+bool IsLacrosPrimaryFlagAllowed(Channel channel) {
   return IsLacrosPrimaryBrowserAllowed(channel) &&
          (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
@@ -865,6 +865,37 @@ void CacheLacrosLaunchSwitch(const policy::PolicyMap& map) {
   }
 
   g_lacros_launch_switch_cache = result;
+}
+
+Channel GetStatefulLacrosChannel() {
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
+    std::string value =
+        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
+    if (value == browser_util::kLacrosStabilityLeastStable)
+      return Channel::CANARY;
+    if (value == browser_util::kLacrosStabilityLessStable)
+      return Channel::DEV;
+    // Marked as "beta" channel since it gets updated every 2 weeks from beta
+    // branch.
+    if (value == browser_util::kLacrosStabilityMoreStable)
+      return Channel::BETA;
+  }
+
+  return Channel::UNKNOWN;
+}
+
+Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {
+  switch (selection) {
+    case LacrosSelection::kRootfs:
+      // For 'rootfs' Lacros use the same channel as ash/OS. Obtained from
+      // the LSB's release track property.
+      return chrome::GetChannel();
+    case LacrosSelection::kStateful:
+      // For 'stateful' Lacros directly check the channel of stateful-lacros
+      // that the user is on.
+      return GetStatefulLacrosChannel();
+  }
 }
 
 LacrosLaunchSwitch GetLaunchSwitchForTesting() {

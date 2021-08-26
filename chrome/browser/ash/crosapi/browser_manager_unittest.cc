@@ -25,34 +25,20 @@ namespace crosapi {
 namespace {
 class BrowserManagerFake : public BrowserManager {
  public:
-  explicit BrowserManagerFake(LacrosSelection selection)
-      : BrowserManager(nullptr) {
-    SetLacrosSelectionForTesting(selection);
-  }
+  BrowserManagerFake() : BrowserManager(nullptr) {}
   ~BrowserManagerFake() override = default;
   void Start(mojom::InitialBrowserAction initial_browser_action) override {
     ++start_count_;
     SetState(State::STARTING);
-
-    GetUpdateChannel(base::BindOnce(
-        [](const std::string& expected_channel, const std::string& channel) {
-          if (!expected_channel.empty())
-            ASSERT_EQ(expected_channel, channel);
-        },
-        expected_update_channel_));
   }
   int start_count() { return start_count_; }
   void SetStatePublic(State state) { SetState(state); }
-  void SetExpectedUpdateChannel(std::string channel) {
-    expected_update_channel_ = channel;
-  }
 
   // Make the State enum publicly available.
   using BrowserManager::State;
 
  private:
   int start_count_ = 0;
-  std::string expected_update_channel_;
 };
 }  // namespace
 
@@ -65,10 +51,7 @@ class BrowserManagerTest : public testing::Test {
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
-    fake_browser_manager_ =
-        std::make_unique<BrowserManagerFake>(LacrosSelection::kStateful);
-    fake_browser_manager_->SetExpectedUpdateChannel(
-        browser_util::kLacrosNoStabilitySwitchDefaultChannel);
+    fake_browser_manager_ = std::make_unique<BrowserManagerFake>();
   }
 
   void AddRegularUser(const std::string& email) {
@@ -125,8 +108,5 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   fake_browser_manager_->SetStatePublic(State::STOPPED);
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
 }
-
-// TODO(romanarora): Add tests for update channels for different lacros
-// selections.
 
 }  // namespace crosapi
