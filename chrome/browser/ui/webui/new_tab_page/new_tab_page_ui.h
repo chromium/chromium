@@ -54,7 +54,7 @@ class NewTabPageHandler;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
-class PromoBrowserCommandHandler;
+class BrowserCommandHandler;
 class RealboxHandler;
 class TaskModuleHandler;
 class CartHandler;
@@ -201,7 +201,7 @@ class NewTabPageUI
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
-  std::unique_ptr<PromoBrowserCommandHandler> promo_browser_command_handler_;
+  std::unique_ptr<BrowserCommandHandler> promo_browser_command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   std::unique_ptr<RealboxHandler> realbox_handler_;

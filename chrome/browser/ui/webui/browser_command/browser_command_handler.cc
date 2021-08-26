@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
+#include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -25,10 +25,10 @@ using browser_command::mojom::Command;
 using browser_command::mojom::CommandHandler;
 
 // static
-const char PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
+const char BrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
     "NewTabPage.Promos.PromoBrowserCommand";
 
-PromoBrowserCommandHandler::PromoBrowserCommandHandler(
+BrowserCommandHandler::BrowserCommandHandler(
     mojo::PendingReceiver<CommandHandler> pending_page_handler,
     Profile* profile,
     std::vector<browser_command::mojom::Command> supported_commands)
@@ -42,9 +42,9 @@ PromoBrowserCommandHandler::PromoBrowserCommandHandler(
   EnableSupportedCommands();
 }
 
-PromoBrowserCommandHandler::~PromoBrowserCommandHandler() = default;
+BrowserCommandHandler::~BrowserCommandHandler() = default;
 
-void PromoBrowserCommandHandler::CanExecuteCommand(
+void BrowserCommandHandler::CanExecuteCommand(
     browser_command::mojom::Command command_id,
     CanExecuteCommandCallback callback) {
   if (!base::Contains(supported_commands_, command_id)) {
@@ -78,10 +78,9 @@ void PromoBrowserCommandHandler::CanExecuteCommand(
   std::move(callback).Run(can_execute);
 }
 
-void PromoBrowserCommandHandler::ExecuteCommand(
-    Command command_id,
-    ClickInfoPtr click_info,
-    ExecuteCommandCallback callback) {
+void BrowserCommandHandler::ExecuteCommand(Command command_id,
+                                           ClickInfoPtr click_info,
+                                           ExecuteCommandCallback callback) {
   if (!base::Contains(supported_commands_, command_id)) {
     std::move(callback).Run(false);
     return;
@@ -96,7 +95,7 @@ void PromoBrowserCommandHandler::ExecuteCommand(
   std::move(callback).Run(command_executed);
 }
 
-void PromoBrowserCommandHandler::ExecuteCommandWithDisposition(
+void BrowserCommandHandler::ExecuteCommandWithDisposition(
     int id,
     WindowOpenDisposition disposition) {
   const auto command = static_cast<Command>(id);
@@ -128,7 +127,7 @@ void PromoBrowserCommandHandler::ExecuteCommandWithDisposition(
   }
 }
 
-void PromoBrowserCommandHandler::OpenFeedbackForm() {
+void BrowserCommandHandler::OpenFeedbackForm() {
   chrome::ShowFeedbackPage(feedback_settings_.url, profile_,
                            feedback_settings_.source,
                            std::string() /* description_template */,
@@ -137,12 +136,12 @@ void PromoBrowserCommandHandler::OpenFeedbackForm() {
                            std::string() /* extra_diagnostics */);
 }
 
-void PromoBrowserCommandHandler::ConfigureFeedbackCommand(
+void BrowserCommandHandler::ConfigureFeedbackCommand(
     FeedbackCommandSettings settings) {
   feedback_settings_ = settings;
 }
 
-void PromoBrowserCommandHandler::EnableSupportedCommands() {
+void BrowserCommandHandler::EnableSupportedCommands() {
   // Explicitly enable supported commands.
   GetCommandUpdater()->UpdateCommandEnabled(
       static_cast<int>(Command::kUnknownCommand), true);
@@ -151,13 +150,12 @@ void PromoBrowserCommandHandler::EnableSupportedCommands() {
   }
 }
 
-CommandUpdater* PromoBrowserCommandHandler::GetCommandUpdater() {
+CommandUpdater* BrowserCommandHandler::GetCommandUpdater() {
   return command_updater_.get();
 }
 
-void PromoBrowserCommandHandler::NavigateToURL(
-    const GURL& url,
-    WindowOpenDisposition disposition) {
+void BrowserCommandHandler::NavigateToURL(const GURL& url,
+                                          WindowOpenDisposition disposition) {
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = disposition;
   Navigate(&params);

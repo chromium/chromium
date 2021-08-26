@@ -22,12 +22,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
-#include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -531,7 +531,7 @@ void NewTabPageUI::CreateBrowserCommandHandler(
       Command::kOpenSafetyCheck,
       Command::kOpenSafeBrowsingEnhancedProtectionSettings,
   };
-  promo_browser_command_handler_ = std::make_unique<PromoBrowserCommandHandler>(
+  promo_browser_command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
 }
 

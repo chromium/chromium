@@ -21,7 +21,7 @@ namespace content {
 class WebUI;
 }
 
-class PromoBrowserCommandHandler;
+class BrowserCommandHandler;
 class PrefRegistrySimple;
 class Profile;
 
@@ -51,7 +51,7 @@ class WhatsNewUI : public ui::MojoWebUIController,
   void CreateBrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_handler) override;
-  std::unique_ptr<PromoBrowserCommandHandler> command_handler_;
+  std::unique_ptr<BrowserCommandHandler> command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   Profile* profile_;

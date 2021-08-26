@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROMO_BROWSER_COMMAND_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROMO_BROWSER_COMMAND_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_
 
 #include <memory>
 
@@ -34,18 +34,17 @@ struct FeedbackCommandSettings {
 };
 
 // Handles browser commands send from JS.
-class PromoBrowserCommandHandler
-    : public CommandUpdaterDelegate,
-      public browser_command::mojom::CommandHandler {
+class BrowserCommandHandler : public CommandUpdaterDelegate,
+                              public browser_command::mojom::CommandHandler {
  public:
   static const char kPromoBrowserCommandHistogramName[];
 
-  PromoBrowserCommandHandler(
+  BrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_page_handler,
       Profile* profile,
       std::vector<browser_command::mojom::Command> supported_commands);
-  ~PromoBrowserCommandHandler() override;
+  ~BrowserCommandHandler() override;
 
   // browser_command::mojom::CommandHandler:
   void CanExecuteCommand(browser_command::mojom::Command command_id,
@@ -78,4 +77,4 @@ class PromoBrowserCommandHandler
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROMO_BROWSER_COMMAND_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_
