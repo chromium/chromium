@@ -165,6 +165,9 @@ crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/1183090 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Skip ]
 crbug.com/1183090 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Skip ]
 
+# Videos with rounded corners have zero-copy mismatch failures on AMD RX 5500 XT.
+crbug.com/1183090 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
+
 # WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
 crbug.com/1213170 [ mac ] TraceTest_WebGPU* [ Skip ]
 
