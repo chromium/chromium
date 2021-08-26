@@ -13,22 +13,38 @@
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace rulebased = chromeos::ime::rulebased;
+namespace mojom = chromeos::ime::mojom;
 
 namespace {
 
 // Must match chromeos/services/ime/public/cpp/rulebased/rulebased_fuzzer.proto
-constexpr const char* kKeyCodes[] = {
-    "Backquote",    "Digit1", "Digit2",    "Digit3",        "Digit4",
-    "Digit5",       "Digit6", "Digit7",    "Digit8",        "Digit9",
-    "Digit0",       "Minus",  "Equal",     "Backspace",     "KeyQ",
-    "KeyW",         "KeyE",   "KeyR",      "KeyT",          "KeyY",
-    "KeyU",         "KeyI",   "KeyO",      "KeyP",          "BracketLeft",
-    "BracketRight", "KeyA",   "KeyS",      "KeyD",          "KeyF",
-    "KeyG",         "KeyH",   "KeyJ",      "KeyK",          "KeyL",
-    "Semicolon",    "Quote",  "Backslash", "IntlBackslash", "Enter",
-    "KeyZ",         "KeyX",   "KeyC",      "KeyV",          "KeyB",
-    "KeyN",         "KeyM",   "Comma",     "Period",        "Slash",
-    "Space"};
+constexpr mojom::DomCode kKeyCodes[] = {
+    mojom::DomCode::kBackquote,     mojom::DomCode::kDigit1,
+    mojom::DomCode::kDigit2,        mojom::DomCode::kDigit3,
+    mojom::DomCode::kDigit4,        mojom::DomCode::kDigit5,
+    mojom::DomCode::kDigit6,        mojom::DomCode::kDigit7,
+    mojom::DomCode::kDigit8,        mojom::DomCode::kDigit9,
+    mojom::DomCode::kDigit0,        mojom::DomCode::kMinus,
+    mojom::DomCode::kEqual,         mojom::DomCode::kBackspace,
+    mojom::DomCode::kKeyQ,          mojom::DomCode::kKeyW,
+    mojom::DomCode::kKeyE,          mojom::DomCode::kKeyR,
+    mojom::DomCode::kKeyT,          mojom::DomCode::kKeyY,
+    mojom::DomCode::kKeyU,          mojom::DomCode::kKeyI,
+    mojom::DomCode::kKeyO,          mojom::DomCode::kKeyP,
+    mojom::DomCode::kBracketLeft,   mojom::DomCode::kBracketRight,
+    mojom::DomCode::kKeyA,          mojom::DomCode::kKeyS,
+    mojom::DomCode::kKeyD,          mojom::DomCode::kKeyF,
+    mojom::DomCode::kKeyG,          mojom::DomCode::kKeyH,
+    mojom::DomCode::kKeyJ,          mojom::DomCode::kKeyK,
+    mojom::DomCode::kKeyL,          mojom::DomCode::kSemicolon,
+    mojom::DomCode::kQuote,         mojom::DomCode::kBackslash,
+    mojom::DomCode::kIntlBackslash, mojom::DomCode::kEnter,
+    mojom::DomCode::kKeyZ,          mojom::DomCode::kKeyX,
+    mojom::DomCode::kKeyC,          mojom::DomCode::kKeyV,
+    mojom::DomCode::kKeyB,          mojom::DomCode::kKeyN,
+    mojom::DomCode::kKeyM,          mojom::DomCode::kComma,
+    mojom::DomCode::kPeriod,        mojom::DomCode::kSlash,
+    mojom::DomCode::kSpace};
 
 // Must match chromeos/services/ime/public/cpp/rulebased/rulebased_fuzzer.proto
 constexpr const char* kEngineIds[] = {
