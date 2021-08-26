@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -438,8 +439,11 @@ void OmniboxResult::UpdateTitleAndDetails() {
     }
 
     if (AutocompleteMatch::IsSearchType(match_.type)) {
+      std::u16string accessible_name =
+          details().empty() ? title()
+                            : base::StrCat({title(), u", ", details()});
       SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
+          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, accessible_name,
           GetDefaultSearchEngineName(
               TemplateURLServiceFactory::GetForProfile(profile_))));
     }
