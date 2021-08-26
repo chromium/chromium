@@ -20,6 +20,7 @@ import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -36,8 +37,13 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ViewUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** A widget for showing a list of omnibox suggestions. */
 public class OmniboxSuggestionsDropdown extends RecyclerView {
+    private static final long DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS = 300;
+
     private final int mStandardBgColor;
     private final int mIncognitoBgColor;
 
@@ -55,6 +61,21 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
+
+    @IntDef({InitialResizeState.WAITING_FOR_FIRST_MEASURE, InitialResizeState.WAITING_FOR_SHRINKING,
+            InitialResizeState.IGNORING_SHRINKING, InitialResizeState.HANDLED_INITIAL_SIZING})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface InitialResizeState {
+        int WAITING_FOR_FIRST_MEASURE = 0;
+        int WAITING_FOR_SHRINKING = 1;
+        int IGNORING_SHRINKING = 2;
+        int HANDLED_INITIAL_SIZING = 3;
+    }
+
+    @InitialResizeState
+    private int mInitialResizeState = InitialResizeState.WAITING_FOR_FIRST_MEASURE;
+    private int mWidthMeasureSpec;
+    private int mHeightMeasureSpec;
 
     /** Interface that will receive notifications and callbacks from OmniboxSuggestionsDropdown. */
     public interface Observer {
@@ -248,6 +269,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mInitialResizeState = InitialResizeState.WAITING_FOR_FIRST_MEASURE;
         mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(mAnchorViewLayoutListener);
         if (mAlignmentView != null) {
             adjustSidePadding();
@@ -275,13 +297,49 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
             int availableViewportHeight =
                     calculateAvailableViewportHeight(anchorBottomRelativeToContent);
+            int desiredWidth = mAnchorView.getMeasuredWidth();
+            // Suppress the initial requests to shrink the viewport of the omnibox suggestion
+            // dropdown. The viewport will decrease when the keyboard is triggered, but the request
+            // to resize happens when the keyboard starts showing before it has had the chance to
+            // animate in. Because the resizing is triggered early, the dropdown shrinks earlier
+            // then the keyboard is fully visible, which leaves a hole in the UI showing the content
+            // where the keyboard will eventually go.
+            //
+            // The work around is to suppress these initial shrinking layout requests and defer them
+            // for enough time for the keyboard to hopefully be visible.
+            //
+            // This does not use getMeasuredHeight() as a means of comparison against the available
+            // viewport because on tablets the measured height can be smaller than the viewport as
+            // tablets use AT_MOST for the measure spec vs EXACTLY on phones.
+            if ((mInitialResizeState == InitialResizeState.WAITING_FOR_SHRINKING
+                        || mInitialResizeState == InitialResizeState.IGNORING_SHRINKING)
+                    && availableViewportHeight < mListViewMaxHeight
+                    && getMeasuredWidth() == desiredWidth) {
+                super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
+                if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) return;
+
+                mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
+                PostTask.postDelayedTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
+                    if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
+                    requestLayout();
+                    mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
+                }, DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS);
+                return;
+            } else if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) {
+                // The dimensions changed in an unexpected way (either by increasing height or
+                // a change in width), so just mark the initial sizing as completed and accept
+                // the new measurements and suppress the pending posted layout request.
+                mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
+            }
             notifyObserversIfViewportHeightChanged(availableViewportHeight);
 
-            int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-                    mAnchorView.getMeasuredWidth(), MeasureSpec.EXACTLY);
-            int newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(availableViewportHeight,
+            mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY);
+            mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(availableViewportHeight,
                     mEmbedder.isTablet() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
-            super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
+            super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
+            if (mInitialResizeState == InitialResizeState.WAITING_FOR_FIRST_MEASURE) {
+                mInitialResizeState = InitialResizeState.WAITING_FOR_SHRINKING;
+            }
         }
     }
 
