@@ -204,8 +204,6 @@ source_set("remote_open_url_support") {
 }
 source_set("host_settings") {
   sources = [
-    "file_host_settings.cc",
-    "file_host_settings.h",
     "host_setting_keys.h",
     "host_settings.cc",
     "host_settings.h",
@@ -215,17 +213,24 @@ source_set("host_settings") {
     "//remoting/base",
   ]
 
+  if (is_win) {
+    sources += [
+      "host_settings_win.cc",
+      "host_settings_win.h",
+    ]
+  } else {
+    sources += [
+      "file_host_settings.cc",
+      "file_host_settings.h",
+    ]
+  }
+
   if (is_linux || is_chromeos) {
     # This isn't used on ChromeOS, but otherwise the GN checker would complain
     # about missing dependencies.
     deps += [ "//remoting/host/linux:file_path_util" ]
   } else if (is_mac) {
     deps += [ "//remoting/host/mac:constants" ]
-  } else if (is_win) {
-    sources += [
-      "host_settings_win.cc",
-      "host_settings_win.h",
-    ]
   }
 }
 

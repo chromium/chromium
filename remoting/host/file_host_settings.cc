@@ -43,7 +43,9 @@ void FileHostSettings::InitializeInstance() {
   HOST_LOG << "Host settings loaded.";
 }
 
-std::string FileHostSettings::GetString(const HostSettingKey key) const {
+std::string FileHostSettings::GetString(
+    const HostSettingKey key,
+    const std::string& default_value) const {
 #if !defined(NDEBUG)
   if (task_runner_for_checking_sequence_) {
     DCHECK(task_runner_for_checking_sequence_->RunsTasksInCurrentSequence());
@@ -53,11 +55,11 @@ std::string FileHostSettings::GetString(const HostSettingKey key) const {
   if (!settings_) {
     VLOG(1) << "Either Initialize() has not been called, or the settings file "
                "doesn't exist.";
-    return std::string();
+    return default_value;
   }
   std::string* string_value = settings_->FindStringKey(key);
   if (!string_value) {
-    return std::string();
+    return default_value;
   }
   return *string_value;
 }

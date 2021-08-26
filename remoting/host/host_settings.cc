@@ -27,8 +27,9 @@ namespace {
 
 class EmptyHostSettings : public HostSettings {
  public:
-  std::string GetString(const HostSettingKey key) const override {
-    return std::string();
+  std::string GetString(const HostSettingKey key,
+                        const std::string& default_value) const override {
+    return default_value;
   }
 
   void SetString(const HostSettingKey key, const std::string& value) override {}

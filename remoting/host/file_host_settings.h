@@ -22,15 +22,15 @@ namespace remoting {
 class FileHostSettings final : public HostSettings {
  public:
   explicit FileHostSettings(const base::FilePath& settings_file);
+  FileHostSettings(const FileHostSettings&) = delete;
+  FileHostSettings& operator=(const FileHostSettings&) = delete;
   ~FileHostSettings() override;
 
   // HostSettings implementation.
   void InitializeInstance() override;
-  std::string GetString(const HostSettingKey key) const override;
+  std::string GetString(const HostSettingKey key,
+                        const std::string& default_value) const override;
   void SetString(const HostSettingKey key, const std::string& value) override;
-
-  FileHostSettings(const FileHostSettings&) = delete;
-  FileHostSettings& operator=(const FileHostSettings&) = delete;
 
  private:
   base::FilePath settings_file_;

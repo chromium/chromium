@@ -22,9 +22,11 @@ class HostSettings {
 
   static HostSettings* GetInstance();
 
-  // Gets the value of the setting. Returns empty string if the value is not
-  // found.
-  virtual std::string GetString(const HostSettingKey key) const = 0;
+  // Gets the value associated with |key|. Returns |default_value| if the value
+  // is not found.
+  virtual std::string GetString(
+      const HostSettingKey key,
+      const std::string& default_value = std::string()) const = 0;
 
   // Sets a string value for |key| and writes it into the settings file.
   //

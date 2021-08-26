@@ -22,7 +22,8 @@ class HostSettingsWin final : public HostSettings {
 
   // HostSettings implementation.
   void InitializeInstance() override;
-  std::string GetString(const HostSettingKey key) const override;
+  std::string GetString(const HostSettingKey key,
+                        const std::string& default_value) const override;
   void SetString(const HostSettingKey key, const std::string& value) override;
 
  private:

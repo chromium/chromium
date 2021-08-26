@@ -47,15 +47,16 @@ void HostSettingsWin::InitializeInstance() {
   }
 }
 
-std::string HostSettingsWin::GetString(const HostSettingKey key) const {
+std::string HostSettingsWin::GetString(const HostSettingKey key,
+                                       const std::string& default_value) const {
   std::wstring value;
   std::wstring wide_key = base::UTF8ToWide(key);
   LONG result = settings_root_key_.ReadValue(wide_key.c_str(), &value);
   if (result == ERROR_FILE_NOT_FOUND) {
-    return std::string();
+    return default_value;
   } else if (result != ERROR_SUCCESS) {
     LOG(ERROR) << "Failed to read value for " << key << ", result: " << result;
-    return std::string();
+    return default_value;
   }
   return base::WideToUTF8(value);
 }
