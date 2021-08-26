@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
@@ -370,6 +371,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       recorder->UniteVisualRect(EnclosingIntRect(physical_selection));
   }
 
+  NGTextDecorationPainter decoration_painter(
+      text_painter, text_item, paint_info, style, text_style, rotated_box,
+      highlight_painter.Selection());
+
   // 2. Now paint the foreground, including text and decorations.
   // TODO(dazabani@igalia.com): suppress text proper where one or more highlight
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
@@ -389,19 +394,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const unsigned end_offset = fragment_paint_info.to;
 
   if (LIKELY(!highlight_painter.Selection())) {
-    bool has_line_through_decoration = false;
-    text_painter.PaintDecorationsExceptLineThrough(
-        text_item, paint_info, style, text_style, rotated_box, absl::nullopt,
-        &has_line_through_decoration);
+    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+    decoration_painter.PaintExceptLineThrough();
     text_painter.Paint(start_offset, end_offset, length, text_style, node_id);
-    if (has_line_through_decoration) {
-      DCHECK(!text_combine);
-      text_painter.PaintDecorationsOnlyLineThrough(
-          text_item, paint_info, style, text_style, rotated_box, absl::nullopt);
-    }
+    decoration_painter.PaintOnlyLineThrough();
   } else if (!highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
+    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+    decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
         text_painter, start_offset, end_offset, length, text_style, node_id);
+    decoration_painter.PaintOnlyLineThrough();
   }
 
   // 3. Paint CSS highlight overlays, such as ::selection and ::target-text.
@@ -417,21 +419,12 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           context, node, document, style, rotation);
     }
 
-    bool has_line_through_decoration = false;
-    text_painter.PaintDecorationsExceptLineThrough(
-        text_item, paint_info, style, text_style, rotated_box,
-        highlight_painter.SelectionDecoration(), &has_line_through_decoration);
-
     // Paint only the text that is selected.
+    decoration_painter.Begin(NGTextDecorationPainter::kSelection);
+    decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSelectedText(text_painter, length,
                                                      text_style, node_id);
-
-    if (has_line_through_decoration) {
-      DCHECK(!text_combine);
-      text_painter.PaintDecorationsOnlyLineThrough(
-          text_item, paint_info, style, text_style, rotated_box,
-          highlight_painter.SelectionDecoration());
-    }
+    decoration_painter.PaintOnlyLineThrough();
   }
 
   if (paint_info.phase != PaintPhase::kForeground)

@@ -139,6 +139,8 @@ blink_core_sources_paint = [
   "ng/ng_table_painters.h",
   "ng/ng_text_combine_painter.cc",
   "ng/ng_text_combine_painter.h",
+  "ng/ng_text_decoration_painter.cc",
+  "ng/ng_text_decoration_painter.h",
   "ng/ng_text_fragment_painter.cc",
   "ng/ng_text_fragment_painter.h",
   "ng/ng_text_painter.cc",

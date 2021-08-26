@@ -112,22 +112,6 @@ bool SetupPaintForSvgText(const LayoutSVGInlineText& svg_inline_text,
   return true;
 }
 
-absl::optional<TextDecorationInfo> DecorationsForLayer(
-    const NGFragmentItem& text_item,
-    const PhysicalRect& decoration_rect,
-    const ComputedStyle& style,
-    const absl::optional<AppliedTextDecoration>& selection_text_decoration) {
-  if (style.TextDecorationsInEffect() == TextDecoration::kNone ||
-      // Ellipsis should not have text decorations. This is not defined, but
-      // 4 impls do this.
-      text_item.IsEllipsis()) {
-    return absl::nullopt;
-  }
-  return TextDecorationInfo(decoration_rect.offset, decoration_rect.Width(),
-                            style.GetFontBaseline(), style,
-                            selection_text_decoration, nullptr);
-}
-
 }  // namespace
 
 void NGTextPainter::Paint(unsigned start_offset,
@@ -211,47 +195,33 @@ void NGTextPainter::PaintSelectedText(unsigned start_offset,
   }
 }
 
-// Based on legacy TextPainter.
 void NGTextPainter::PaintDecorationsExceptLineThrough(
     const NGFragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
+    TextDecorationInfo& decoration_info,
     const PhysicalRect& decoration_rect,
-    const absl::optional<AppliedTextDecoration>& selection_decoration,
     bool* has_line_through_decoration) {
   *has_line_through_decoration = false;
 
-  absl::optional<TextDecorationInfo> decoration_info = DecorationsForLayer(
-      text_item, decoration_rect, style, selection_decoration);
-
-  if (!decoration_info) {
-    return;
-  }
-
-  const NGTextDecorationOffset decoration_offset(decoration_info->Style(),
+  const NGTextDecorationOffset decoration_offset(decoration_info.Style(),
                                                  text_item.Style(), nullptr);
 
   TextPainterBase::PaintDecorationsExceptLineThrough(
-      decoration_offset, *decoration_info, paint_info,
+      decoration_offset, decoration_info, paint_info,
       style.AppliedTextDecorations(), text_style, has_line_through_decoration);
 }
 
-// Based on legacy TextPainter.
 void NGTextPainter::PaintDecorationsOnlyLineThrough(
     const NGFragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
-    const PhysicalRect& decoration_rect,
-    const absl::optional<AppliedTextDecoration>& selection_decoration) {
-  absl::optional<TextDecorationInfo> decoration_info = DecorationsForLayer(
-      text_item, decoration_rect, style, selection_decoration);
-
-  DCHECK(decoration_info);
-
+    TextDecorationInfo& decoration_info,
+    const PhysicalRect& decoration_rect) {
   TextPainterBase::PaintDecorationsOnlyLineThrough(
-      *decoration_info, paint_info, style.AppliedTextDecorations(), text_style);
+      decoration_info, paint_info, style.AppliedTextDecorations(), text_style);
 }
 
 template <NGTextPainter::PaintInternalStep step>

@@ -91,22 +91,20 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                          const PhysicalRect& selection_rect,
                          DOMNodeId node_id);
 
-  void PaintDecorationsExceptLineThrough(
-      const NGFragmentItem& text_item,
-      const PaintInfo& paint_info,
-      const ComputedStyle& style,
-      const TextPaintStyle& text_style,
-      const PhysicalRect& decoration_rect,
-      const absl::optional<AppliedTextDecoration>& selection_decoration,
-      bool* has_line_through_decoration);
+  void PaintDecorationsExceptLineThrough(const NGFragmentItem& text_item,
+                                         const PaintInfo& paint_info,
+                                         const ComputedStyle& style,
+                                         const TextPaintStyle& text_style,
+                                         TextDecorationInfo& decoration_info,
+                                         const PhysicalRect& decoration_rect,
+                                         bool* has_line_through_decoration);
 
-  void PaintDecorationsOnlyLineThrough(
-      const NGFragmentItem& text_item,
-      const PaintInfo& paint_info,
-      const ComputedStyle& style,
-      const TextPaintStyle& text_style,
-      const PhysicalRect& decoration_rect,
-      const absl::optional<AppliedTextDecoration>& selection_decoration);
+  void PaintDecorationsOnlyLineThrough(const NGFragmentItem& text_item,
+                                       const PaintInfo& paint_info,
+                                       const ComputedStyle& style,
+                                       const TextPaintStyle& text_style,
+                                       TextDecorationInfo& decoration_info,
+                                       const PhysicalRect& decoration_rect);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,

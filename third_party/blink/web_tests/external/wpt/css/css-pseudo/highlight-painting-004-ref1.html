@@ -11,29 +11,27 @@
         margin: 0.5em;
         width: min-content;
     }
-    .background {
-        width: 100%;
-        height: 0.25em;
-        background: #707070C0;
-    }
     .unselected {
-        color: #E03838C0;
-        text-decoration: #C0C000C0 solid line-through;
+        text-decoration: #E03838C0 wavy underline;
+        color: #C0C000C0;
     }
     .selected {
         background: #38E038C0;
-        text-decoration: #663399C0 solid line-through;
+        text-decoration: #3838E0C0 wavy underline;
     }
     .selected, .selected * {
-        color: #663399C0;
+        color: #3838E0C0;
     }
     .selection {
-        text-decoration: #3838E0C0 solid underline;
+        text-decoration: #663399C0 wavy line-through;
     }
 </style>
+<!--
+    In this ref, three separate wavy lines are painted, with two
+    spanning the selected part and one spanning the unselected part.
+-->
 <main class="highlight_reftest">
     <div class="hrt_layers">
-        <div class="background"></div>
         <div>qui<span class="unselected">ck</span></div>
         <div><span class="selected"><span class="selection">qui</span></span>ck</div>
         quick

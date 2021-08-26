@@ -126,11 +126,6 @@ class CORE_EXPORT NGHighlightPainter {
   void Paint(Phase phase);
 
   SelectionPaintState* Selection() { return selection_; }
-  absl::optional<AppliedTextDecoration> SelectionDecoration() {
-    return selection_
-               ? selection_->GetSelectionStyle().selection_text_decoration
-               : absl::nullopt;
-  }
 
  private:
   NGTextPainter& text_painter_;
