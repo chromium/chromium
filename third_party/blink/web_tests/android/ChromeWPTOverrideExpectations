@@ -1008,7 +1008,7 @@ crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-mode-disabled.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-by-setting-innerHTML.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-embed-element/embed-dimension.html [ Crash Pass ]
-crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_anchor_download_allow_downloads.sub.tentative.html [ Timeout ]
+crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_anchor_download_allow_downloads.tentative.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_navigation_download_block_downloads.sub.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_popups_escaping-2.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_popups_escaping-3.html [ Crash Pass ]

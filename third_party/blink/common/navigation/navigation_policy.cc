@@ -91,7 +91,7 @@ void NavigationDownloadPolicy::RecordHistogram() const {
 void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
     bool is_opener_navigation,
     bool has_gesture,
-    bool can_access_current_origin,
+    bool openee_can_access_opener_origin,
     bool has_download_sandbox_flag,
     bool from_ad) {
   if (!has_gesture)
@@ -99,7 +99,7 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
 
   // Disallow downloads on an opener if the requestor is cross origin.
   // See crbug.com/632514.
-  if (is_opener_navigation && !can_access_current_origin) {
+  if (is_opener_navigation && !openee_can_access_opener_origin) {
     SetDisallowed(NavigationDownloadType::kOpenerCrossOrigin);
   }
 

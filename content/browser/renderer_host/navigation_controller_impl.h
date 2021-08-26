@@ -503,7 +503,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool should_replace_current_entry,
       bool has_user_gesture,
       network::mojom::SourceLocationPtr source_location,
-      blink::NavigationDownloadPolicy download_policy,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
       FrameNavigationEntry* frame_entry);

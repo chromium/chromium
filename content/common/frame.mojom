@@ -39,6 +39,7 @@ import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
@@ -529,6 +530,9 @@ struct CreateNewWindowParams {
   // The impression associated with the navigation in the new window, if
   // one is specified.
   blink.mojom.Impression? impression;
+
+  // Governs how downloads are handled if `target_url` results in a download.
+  blink.mojom.NavigationDownloadPolicy download_policy;
 };
 
 // Operation result when the renderer asks the browser to create a new window.

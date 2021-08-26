@@ -3833,6 +3833,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
           new_contents_impl->should_override_user_agent_in_new_tabs_
               ? NavigationController::UA_OVERRIDE_TRUE
               : NavigationController::UA_OVERRIDE_FALSE;
+      load_params->download_policy = params.download_policy;
 
       if (delegate_ && !is_guest &&
           !delegate_->ShouldResumeRequestsForCreatedWindow()) {
