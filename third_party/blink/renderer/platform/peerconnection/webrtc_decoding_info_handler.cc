@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
@@ -87,17 +88,30 @@ void WebrtcDecodingInfoHandler::DecodingInfo(
     const webrtc::SdpVideoFormat::Parameters parameters =
         ConvertToSdpVideoFormatParameters(video_content_type.GetParameters());
     webrtc::SdpVideoFormat sdp_video_format(codec_name.Utf8(), parameters);
-    absl::optional<std::string> scalability_mode =
-        video_scalability_mode
-            ? absl::make_optional(video_scalability_mode->Utf8())
-            : absl::nullopt;
-    webrtc::VideoDecoderFactory::CodecSupport support =
-        video_decoder_factory_->QueryCodecSupport(sdp_video_format,
-                                                  scalability_mode);
+    bool reference_scaling = false;
+    if (video_scalability_mode) {
+      absl::optional<int> dependent_spatial_layers =
+          WebRtcScalabilityModeDependentSpatialLayers(
+              video_scalability_mode->Utf8());
+      if (dependent_spatial_layers) {
+        // Reference scaling must be supported to be able to decode a stream
+        // with more than one dependent spatial layers.
+        reference_scaling = *dependent_spatial_layers > 1;
+      } else {
+        // We were not able to decode the scalability mode string. Return
+        // unsupported.
+        supported = false;
+        power_efficient = false;
+      }
+    }
 
-    supported = support.is_supported;
-    power_efficient = support.is_power_efficient;
-
+    if (supported) {
+      webrtc::VideoDecoderFactory::CodecSupport support =
+          video_decoder_factory_->QueryCodecSupport(sdp_video_format,
+                                                    reference_scaling);
+      supported = support.is_supported;
+      power_efficient = support.is_power_efficient;
+    }
     DVLOG(1) << "Video MIME type:" << codec_name << " supported:" << supported
              << " power_efficient:" << power_efficient;
   }

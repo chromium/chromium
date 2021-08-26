@@ -261,30 +261,21 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
 }
 
 webrtc::VideoDecoderFactory::CodecSupport
-RTCVideoDecoderFactory::QueryCodecSupport(
-    const webrtc::SdpVideoFormat& format,
-    absl::optional<std::string> scalability_mode) const {
+RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
+                                          bool reference_scaling) const {
   media::VideoCodec codec =
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
-  if (scalability_mode) {
-    absl::optional<int> spatial_layers =
-        WebRtcScalabilityModeSpatialLayers(*scalability_mode);
-
-    // Check that the scalability mode was correctly parsed and that the
-    // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
-    // doesn't support spatial layers).
-    if (!spatial_layers ||
-        (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
-         codec != media::VideoCodec::kAV1) ||
-        (codec == media::VideoCodec::kVP8 && *spatial_layers > 1)) {
-      // Ivalid scalability_mode, return unsupported.
+  if (reference_scaling) {
+    // Check that the configuration is valid (e.g., H264 doesn't support SVC at
+    // all and VP8 doesn't support spatial layers).
+    if (codec != media::VideoCodec::kVP9 && codec != media::VideoCodec::kAV1) {
+      // Invalid reference_scaling, return unsupported.
       return {false, false};
     }
-    DCHECK(spatial_layers);
-    // Most HW decoders cannot handle spatial layers, so return false if the
-    // configuration contains spatial layers unless we explicitly know that the
-    // HW decoder can handle spatial layers.
-    if (codec == media::VideoCodec::kVP9 && *spatial_layers > 1 &&
+    // Most HW decoders cannot handle reference scaling/spatial layers, so
+    // return false if the configuration requires reference scaling unless we
+    // explicitly know that the HW decoder can handle this.
+    if (codec == media::VideoCodec::kVP9 &&
         !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
       return {false, false};
     }

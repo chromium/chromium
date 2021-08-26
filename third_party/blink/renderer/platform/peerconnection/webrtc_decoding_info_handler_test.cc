@@ -36,8 +36,7 @@ class MockVideoDecoderFactory : public webrtc::VideoDecoderFactory {
               (const));
   MOCK_METHOD(webrtc::VideoDecoderFactory::CodecSupport,
               QueryCodecSupport,
-              (const webrtc::SdpVideoFormat& format,
-               absl::optional<std::string> scalability_mode),
+              (const webrtc::SdpVideoFormat& format, bool reference_scaling),
               (const, override));
 };
 
@@ -82,20 +81,16 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
       const absl::optional<String> video_mime_type,
       const absl::optional<String> video_scalability_mode,
       const absl::optional<webrtc::SdpVideoFormat> expected_format,
+      const bool expected_reference_scaling,
       const CodecSupport support) {
     if (expected_format) {
-      const absl::optional<std::string> expected_scalability_mode =
-          video_scalability_mode
-              ? absl::make_optional(video_scalability_mode->Utf8())
-              : absl::nullopt;
-
       ON_CALL(*mock_video_decoder_factory_, QueryCodecSupport)
-          .WillByDefault(testing::Invoke(
-              [expected_format, expected_scalability_mode, support](
-                  const webrtc::SdpVideoFormat& format,
-                  absl::optional<std::string> scalability_mode) {
-                format.IsSameCodec(*expected_format);
-                EXPECT_EQ(scalability_mode, expected_scalability_mode);
+          .WillByDefault(
+              testing::Invoke([expected_format, expected_reference_scaling,
+                               support](const webrtc::SdpVideoFormat& format,
+                                        bool reference_scaling) {
+                EXPECT_TRUE(format.IsSameCodec(*expected_format));
+                EXPECT_EQ(reference_scaling, expected_reference_scaling);
                 return support;
               }));
       EXPECT_CALL(*mock_video_decoder_factory_, QueryCodecSupport)
@@ -129,7 +124,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, BasicAudio) {
   VerifyDecodingInfo(
       "audio/opus", /*video_mime_type=*/absl::nullopt,
       /*video_scalability_mode=*/absl::nullopt,
-      /*expected_format=*/absl::nullopt,
+      /*expected_format=*/absl::nullopt, /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
@@ -137,7 +132,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedAudio) {
   VerifyDecodingInfo(
       "audio/foo", /*video_mime_type=*/absl::nullopt,
       /*video_scalability_mode=*/absl::nullopt,
-      /*expected_format=*/absl::nullopt,
+      /*expected_format=*/absl::nullopt, /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
@@ -150,6 +145,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideo) {
   VerifyDecodingInfo(
       /*audio_mime_type=*/absl::nullopt, "video/VP9",
       /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
@@ -158,6 +154,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideoPowerEfficient) {
   VerifyDecodingInfo(
       /*audio_mime_type=*/absl::nullopt, "video/VP9",
       /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
@@ -167,13 +164,15 @@ TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedVideo) {
   VerifyDecodingInfo(
       /*audio_mime_type=*/absl::nullopt, "video/VP9; profile-level=5",
       /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
-TEST_F(WebrtcDecodingInfoHandlerTests, VideoWithScalabilityMode) {
+TEST_F(WebrtcDecodingInfoHandlerTests, VideoWithReferenceScaling) {
   const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyDecodingInfo(
-      /*audio_mime_type=*/absl::nullopt, "video/VP9", "L1T3", kExpectedFormat,
+      /*audio_mime_type=*/absl::nullopt, "video/VP9", "L3T3", kExpectedFormat,
+      /*expected_reference_scaling=*/true,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
@@ -181,7 +180,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, SupportedAudioUnsupportedVideo) {
   const webrtc::SdpVideoFormat kExpectedFormat("foo");
   VerifyDecodingInfo(
       "audio/opus", "video/foo", /*video_scalability_mode=*/absl::nullopt,
-      kExpectedFormat,
+      kExpectedFormat, /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
@@ -189,7 +188,7 @@ TEST_F(WebrtcDecodingInfoHandlerTests, SupportedVideoUnsupportedAudio) {
   const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyDecodingInfo(
       "audio/foo", "video/VP9", /*video_scalability_mode=*/absl::nullopt,
-      kExpectedFormat,
+      kExpectedFormat, /*expected_reference_scaling=*/false,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 

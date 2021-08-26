@@ -188,15 +188,15 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
 
   webrtc::VideoDecoderFactory::CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      absl::optional<std::string> scalability_mode) const override {
+      bool reference_scaling) const override {
     webrtc::VideoDecoderFactory::CodecSupport codec_support =
         hardware_decoder_factory_
             ? hardware_decoder_factory_->QueryCodecSupport(format,
-                                                           scalability_mode)
+                                                           reference_scaling)
             : webrtc::VideoDecoderFactory::CodecSupport();
     if (!codec_support.is_supported) {
-      codec_support =
-          software_decoder_factory_.QueryCodecSupport(format, scalability_mode);
+      codec_support = software_decoder_factory_.QueryCodecSupport(
+          format, reference_scaling);
     }
     return codec_support;
   }
