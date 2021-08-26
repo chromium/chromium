@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinato
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.SaveBitmapDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
@@ -38,15 +39,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -257,6 +261,7 @@ public class ChromeProvidedSharingOptionsProvider {
         if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
         }
+        mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
     }
 
     /**
@@ -433,6 +438,27 @@ public class ChromeProvidedSharingOptionsProvider {
                             mActivity, mTabProvider.get(), mUrl, title,
                             mShareParams.getRawText().trim(), mChromeOptionShareCallback);
                     coordinator.showDialog();
+                })
+                .build();
+    }
+
+    private FirstPartyOption createSaveImageFirstPartyOption() {
+        return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
+                .setIcon(R.drawable.ic_file_download_24dp, R.string.sharing_save_image)
+                .setFeatureNameForMetrics("SharingHubAndroid.SaveImageSelected")
+                .setOnClickCallback((view) -> {
+                    if (mShareParams.getFileUris().isEmpty()) return;
+
+                    ShareImageFileUtils.getBitmapFromUriAsync(
+                            mActivity, mShareParams.getFileUris().get(0), (bitmap) -> {
+                                ActivityAndroidPermissionDelegate permissionDelegate =
+                                        new ActivityAndroidPermissionDelegate(
+                                                new WeakReference<Activity>(mActivity));
+                                SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(
+                                        mActivity, bitmap, R.string.save_image_filename_prefix,
+                                        null, permissionDelegate);
+                                saveBitmapDelegate.save();
+                            });
                 })
                 .build();
     }

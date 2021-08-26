@@ -13,11 +13,14 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -27,6 +30,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -203,6 +207,42 @@ public class ShareImageFileUtils {
                 (fos)
                         -> { writeBitmap(fos, bitmap); },
                 false, bitmap.hasAlpha() ? PNG_EXTENSION : JPEG_EXTENSION);
+    }
+
+    public static void getBitmapFromUriAsync(
+            Context context, Uri imageUri, Callback<Bitmap> callback) {
+        new BackgroundOnlyAsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = ApiCompatibilityUtils.getBitmapByUri(
+                            context.getContentResolver(), imageUri);
+                    // We don't want to use hardware bitmaps in case of software rendering. See
+                    // https://crbug.com/1172883.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                            && isHardwareBitmap(bitmap)) {
+                        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /*mutable=*/false);
+                    }
+                } catch (IOException e) {
+                }
+                final Bitmap result = bitmap;
+                // Run the callback on main thread.
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onResult(result);
+                    }
+                });
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private static boolean isHardwareBitmap(Bitmap bitmap) {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+        return bitmap.getConfig() == Bitmap.Config.HARDWARE;
     }
 
     /**

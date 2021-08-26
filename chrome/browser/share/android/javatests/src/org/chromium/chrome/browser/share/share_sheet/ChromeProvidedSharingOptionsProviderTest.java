@@ -150,7 +150,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
+                        mActivity.getResources().getString(R.string.sharing_save_image)));
     }
 
     @Test
@@ -173,7 +174,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
                         mActivity.getResources().getString(R.string.qr_code_share_icon_label),
-                        mActivity.getResources().getString(R.string.print_share_activity_title)));
+                        mActivity.getResources().getString(R.string.print_share_activity_title),
+                        mActivity.getResources().getString(R.string.sharing_save_image)));
     }
 
     @Test
@@ -265,7 +267,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
+                        mActivity.getResources().getString(R.string.sharing_save_image)));
     }
 
     @Test
@@ -303,7 +306,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
+                        mActivity.getResources().getString(R.string.sharing_save_image)));
     }
 
     @Test

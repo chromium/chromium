@@ -32,7 +32,7 @@ public class SaveBitmapDelegate {
     private final Bitmap mBitmap;
     private final int mFileNameResource;
     private final AndroidPermissionDelegate mPermissionDelegate;
-    private final Runnable mCloseDialogRunnable;
+    private final Runnable mCallback;
     private Dialog mDialog;
 
     /**
@@ -40,16 +40,16 @@ public class SaveBitmapDelegate {
      * @param context The context to use.
      * @param bitmap The bitmap to save.
      * @param fileNameResource The file name resource id to use when saving the image.
-     * @param closeDialogRunnable The callback to run to close sharing hub.
+     * @param callback The callback to run when download is complete.
      * @param permissionDelegate The permission delegate for requesting storage permissions.
      */
     public SaveBitmapDelegate(Context context, Bitmap bitmap, int fileNameResource,
-            Runnable closeDialogRunnable, AndroidPermissionDelegate permissionDelegate) {
+            Runnable callback, AndroidPermissionDelegate permissionDelegate) {
         mContext = context;
         mBitmap = bitmap;
         mFileNameResource = fileNameResource;
         mPermissionDelegate = permissionDelegate;
-        mCloseDialogRunnable = closeDialogRunnable;
+        mCallback = callback;
     }
 
     /**
@@ -103,7 +103,8 @@ public class SaveBitmapDelegate {
             String fileName = mContext.getString(
                     mFileNameResource, dateFormat.format(new Date(System.currentTimeMillis())));
             BitmapDownloadRequest.downloadBitmap(fileName, mBitmap);
-            mCloseDialogRunnable.run();
+
+            if (mCallback != null) mCallback.run();
         }
     }
 

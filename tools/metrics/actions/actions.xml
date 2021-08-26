@@ -23162,6 +23162,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.SaveImageSelected">
+  <owner>gayane@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The &quot;Save Image&quot; option was selected in the sharing hub.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.ScreenshotSelected">
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>

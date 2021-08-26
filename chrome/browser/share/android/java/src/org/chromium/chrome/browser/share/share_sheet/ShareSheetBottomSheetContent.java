@@ -4,13 +4,11 @@
 //
 package org.chromium.chrome.browser.share.share_sheet;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -42,6 +40,7 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuil
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -61,7 +60,6 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -283,29 +281,19 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     private void setImageForPreviewFromUri(Uri imageUri) {
-        try {
-            Bitmap bitmap =
-                    ApiCompatibilityUtils.getBitmapByUri(mActivity.getContentResolver(), imageUri);
-            // We don't want to use hardware bitmaps in case of software rendering. See
-            // https://crbug.com/1172883.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isHardwareBitmap(bitmap)) {
-                bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /*mutable=*/false);
-            }
-            RoundedCornerImageView imageView =
-                    this.getContentView().findViewById(R.id.image_preview);
-            imageView.setImageBitmap(bitmap);
-            imageView.setRoundedFillColor(ApiCompatibilityUtils.getColor(
-                    mActivity.getResources(), R.color.default_icon_color));
-            imageView.setScaleType(ScaleType.FIT_CENTER);
-        } catch (IOException e) {
-            // If no image preview available, don't show a preview.
-        }
+        ShareImageFileUtils.getBitmapFromUriAsync(
+                mActivity, imageUri, this::setImageForPreviewFromBitmap);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private boolean isHardwareBitmap(Bitmap bitmap) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        return bitmap.getConfig() == Bitmap.Config.HARDWARE;
+    private void setImageForPreviewFromBitmap(Bitmap bitmap) {
+        // If no image preview available, don't show a preview.
+        if (bitmap == null) return;
+
+        RoundedCornerImageView imageView = this.getContentView().findViewById(R.id.image_preview);
+        imageView.setImageBitmap(bitmap);
+        imageView.setRoundedFillColor(ApiCompatibilityUtils.getColor(
+                mActivity.getResources(), R.color.default_icon_color));
+        imageView.setScaleType(ScaleType.FIT_CENTER);
     }
 
     private void setTitleStyle(int resId) {
