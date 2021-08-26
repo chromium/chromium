@@ -56,6 +56,7 @@ void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   DCHECK_EQ(style.GetWritingMode(), WritingMode::kHorizontalTb);
   DCHECK_EQ(style.LetterSpacing(), 0.0f);
   DCHECK_EQ(style.TextDecorationsInEffect(), TextDecoration::kNone);
+  DCHECK_EQ(style.TextIndent(), Length::Fixed());
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
 #endif

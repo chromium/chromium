@@ -272,6 +272,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
   style.SetWritingMode(WritingMode::kHorizontalTb);
 
   style.ClearAppliedTextDecorations();
+  style.ResetTextIndent();
   style.UpdateFontOrientation();
 
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),

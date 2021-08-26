@@ -300,6 +300,8 @@ class PLATFORM_EXPORT Length {
 
   Length Zoom(double factor) const;
 
+  String ToString() const;
+
  private:
   int GetIntValue() const {
     DCHECK(!IsNone());
@@ -325,6 +327,8 @@ class PLATFORM_EXPORT Length {
   unsigned char type_;
   bool is_float_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const Length&);
 
 }  // namespace blink
 

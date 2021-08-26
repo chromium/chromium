@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -187,6 +188,33 @@ bool Length::IsCalculatedEqual(const Length& o) const {
   return IsCalculated() &&
          (&GetCalculationValue() == &o.GetCalculationValue() ||
           GetCalculationValue() == o.GetCalculationValue());
+}
+
+String Length::ToString() const {
+  StringBuilder builder;
+  builder.Append("Length(");
+  static const char* const kTypeNames[] = {
+      "Auto",       "Percent",      "Fixed",         "MinContent",
+      "MaxContent", "MinIntrinsic", "FillAvailable", "FitContent",
+      "Calculated", "ExtendToZoom", "DeviceWidth",   "DeviceHeight",
+      "None",       "Content"};
+  if (type_ < base::size(kTypeNames))
+    builder.Append(kTypeNames[type_]);
+  else
+    builder.Append("?");
+  builder.Append(", ");
+  if (is_float_)
+    builder.AppendNumber(float_value_);
+  else
+    builder.AppendNumber(int_value_);
+  if (quirk_)
+    builder.Append(", Quirk");
+  builder.Append(")");
+  return builder.ToString();
+}
+
+std::ostream& operator<<(std::ostream& ostream, const Length& value) {
+  return ostream << value.ToString();
 }
 
 struct SameSizeAsLength {

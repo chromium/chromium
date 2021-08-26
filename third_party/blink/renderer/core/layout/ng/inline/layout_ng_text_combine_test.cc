@@ -1416,6 +1416,24 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1242755
+TEST_F(LayoutNGTextCombineTest, WithTextIndent) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 20px/30px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }"
+      "#root { text-indent: 100px; }");
+  SetBodyInnerHTML("<div id=root>ab<c id=combine>XYZ</c>de</div>");
+  const auto& text_xyz = *To<Text>(GetElementById("combine")->firstChild());
+
+  NGInlineCursor cursor;
+  cursor.MoveTo(*text_xyz.GetLayoutObject());
+
+  EXPECT_EQ(PhysicalRect(0, 0, 60, 20),
+            cursor.Current().RectInContainerFragment());
+}
+
 TEST_F(LayoutNGTextCombineTest, WithWordBreak) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
