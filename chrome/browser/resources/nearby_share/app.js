@@ -94,6 +94,20 @@ Polymer({
   },
 
   /**
+   * Called whenever view changes.
+   * ChromeVox screen reader requires focus on #pageContainer to read
+   * dialog.
+   * @param {string} page
+   * @private
+   */
+  focusOnPageContainer_(page) {
+    this.$$(`nearby-${page}-page`)
+        .$$('nearby-page-template')
+        .$$('#pageContainer')
+        .focus();
+  },
+
+  /**
    * Called when component is attached and all settings values have been
    * retrieved.
    */
@@ -106,14 +120,10 @@ Polymer({
         this.set('settings.enabled', true);
       }
       this.getViewManager_().switchView(Page.DISCOVERY);
-      // ChromeVox screen reader requires focus on #pageContainer to read
-      // dialog.
-      this.$$('nearby-discovery-page')
-          .$$('nearby-page-template')
-          .$$('#pageContainer')
-          .focus();
+      this.focusOnPageContainer_(Page.DISCOVERY);
     } else {
       this.getViewManager_().switchView(Page.ONBOARDING);
+      this.focusOnPageContainer_(Page.ONBOARDING);
     }
   },
 
@@ -124,6 +134,7 @@ Polymer({
    */
   onChangePage_(event) {
     this.getViewManager_().switchView(event.detail.page);
+    this.focusOnPageContainer_(event.detail.page);
   },
 
   /**
@@ -142,5 +153,6 @@ Polymer({
    */
   onOnboardingComplete_(event) {
     this.getViewManager_().switchView(Page.DISCOVERY);
+    this.focusOnPageContainer_(Page.DISCOVERY);
   },
 });
