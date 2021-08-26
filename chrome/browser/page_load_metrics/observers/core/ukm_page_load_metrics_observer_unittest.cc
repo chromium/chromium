@@ -927,6 +927,78 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   TestLCP(4780, LargestContentType::kImage, true /* test_main_frame */);
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest,
+       LargestContentfulPaintAllFrames_CrossSiteSubFrame) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size =
+      100u;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  // Subframe timing for same-site
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4790);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 110u;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  // Subframe timing for cross-site
+  page_load_metrics::mojom::PageLoadTiming subframe_timing2;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing2);
+  subframe_timing2.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing2.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4800);
+  subframe_timing2.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 50u;
+  PopulateExperimentalLCP(subframe_timing2.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing2);
+
+  // Commit the main frame and a subframe.
+  const char kSameSiteSubframeTestUrl[] =
+      "https://sub.google.com/subframe.html";
+  const char kCrossSiteSubframeTestUrl[] = "https://example.com/subframe.html";
+  NavigateAndCommit(GURL(kTestUrl1));
+  RenderFrameHost* same_site_subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("same_site_subframe"));
+  RenderFrameHost* cross_site_subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("cross_site_subframe"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, same_site_subframe);
+  tester()->SimulateTimingUpdate(subframe_timing2, cross_site_subframe);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Now test that there is a cross site subframe lcp.
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry,
+      PageLoad::
+          kPaintTiming_NavigationToLargestContentfulPaint2_CrossSiteSubFrameName,
+      4800);
+}
+
 // This is to test whether LargestContentfulPaintAllFrames can merge the
 // candidates from different frames correctly. The metric should pick the larger
 // candidate during merging.

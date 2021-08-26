@@ -613,6 +613,21 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
   }
+  const page_load_metrics::ContentfulPaintTimingInfo&
+      cross_site_sub_frame_largest_contentful_paint =
+          GetDelegate()
+              .GetLargestContentfulPaintHandler()
+              .CrossSiteSubframesLargestContentfulPaint();
+  if (cross_site_sub_frame_largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          cross_site_sub_frame_largest_contentful_paint.Time(),
+          GetDelegate())) {
+    builder
+        .SetPaintTiming_NavigationToLargestContentfulPaint2_CrossSiteSubFrame(
+            cross_site_sub_frame_largest_contentful_paint.Time()
+                .value()
+                .InMilliseconds());
+  }
   // TODO(crbug.com/1045640): Stop reporting the experimental obsolete versions.
   const page_load_metrics::ContentfulPaintTimingInfo&
       main_frame_experimental_largest_contentful_paint =
