@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "url/gurl.h"
 
 class Browser;
+class Profile;
 
 namespace web_app {
-class SystemWebAppDelegate;
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 
@@ -124,6 +129,10 @@ class SystemWebAppDelegate {
 
   // If false, the application will not be installed.
   virtual bool IsAppEnabled() const;
+
+  // Returns whether the specified Tab Context Menu shortcut should be shown.
+  virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,
+                                                int command_id) const;
 
  protected:
   SystemAppType type_;

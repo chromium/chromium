@@ -51,7 +51,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #endif
 
 namespace {
@@ -324,19 +323,6 @@ void AppBrowserController::Uninstall(
 void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {
   browser()->window()->UpdateCustomTabBarVisibility(ShouldShowCustomTabBar(),
                                                     animate);
-}
-
-bool AppBrowserController::ShouldShowTabContextMenuShortcut(
-    int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1061822): Generalize ShouldShowTabContextMenuShortcut as
-  // a SystemWebApp capability.
-  if (system_app() && system_app()->GetType() == SystemAppType::TERMINAL &&
-      command_id == TabStripModel::CommandCloseTab) {
-    return crostini::GetTerminalSettingPassCtrlW(browser()->profile());
-  }
-#endif
-  return true;
 }
 
 void AppBrowserController::DidStartNavigation(

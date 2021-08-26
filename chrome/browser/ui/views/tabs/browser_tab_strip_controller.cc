@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -167,11 +168,14 @@ class BrowserTabStripController::TabContextMenuContents
 
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {
-    auto* app_controller =
-        controller_->browser_view_->browser()->app_controller();
-    if (app_controller &&
-        !app_controller->ShouldShowTabContextMenuShortcut(command_id))
+    auto* browser = controller_->browser_view_->browser();
+    auto* system_app = browser->app_controller()
+                           ? browser->app_controller()->system_app()
+                           : nullptr;
+    if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
+                          browser->profile(), command_id)) {
       return false;
+    }
 
     int browser_cmd;
     return TabStripModel::ContextMenuCommandToBrowserCommand(command_id,

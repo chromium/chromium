@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -67,4 +68,13 @@ bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
 
 gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForTerminal(browser);
+}
+
+bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(
+    Profile* profile,
+    int command_id) const {
+  if (command_id == TabStripModel::CommandCloseTab) {
+    return crostini::GetTerminalSettingPassCtrlW(profile);
+  }
+  return true;
 }

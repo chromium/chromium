@@ -108,4 +108,10 @@ gfx::Rect SystemWebAppDelegate::GetDefaultBounds(Browser* browser) const {
   return {};
 }
 
+bool SystemWebAppDelegate::ShouldShowTabContextMenuShortcut(
+    Profile* profile,
+    int command_id) const {
+  return true;
+}
+
 }  // namespace web_app

@@ -24,6 +24,8 @@ class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldBeSingleWindow() const override;
   bool ShouldHaveTabStrip() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  bool ShouldShowTabContextMenuShortcut(Profile* profile,
+                                        int command_id) const override;
 };
 
 // Returns a WebApplicationInfo used to install the app.

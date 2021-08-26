@@ -176,9 +176,6 @@ class AppBrowserController : public TabStripModelObserver,
   // may be empty until the web contents begins navigating.
   const GURL& initial_url() const { return initial_url_; }
 
-  // Returns whether the specified Tab Context Menu shortcut should be shown.
-  bool ShouldShowTabContextMenuShortcut(int command_id) const;
-
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void ReadyToCommitNavigation(
