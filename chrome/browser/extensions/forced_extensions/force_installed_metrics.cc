@@ -517,9 +517,10 @@ void ForceInstalledMetrics::ReportMetrics() {
                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
     ReportUserType(profile_, is_stuck_in_initial_creation_stage);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    VLOG(2) << "Forced extension " << extension_id
-            << " failed to install with data="
-            << InstallStageTracker::GetFormattedInstallationData(installation);
+    LOG(WARNING) << "Forced extension " << extension_id
+                 << " failed to install with data="
+                 << InstallStageTracker::GetFormattedInstallationData(
+                        installation);
     ReportDetailedFailureReasons(profile_, installation, is_from_store);
   }
   bool non_misconfigured_failure_occurred =
