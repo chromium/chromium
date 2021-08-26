@@ -104,7 +104,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         CustomTabNavigationBarController.update(getWindow(), mIntentDataProvider, getResources());
 
         CustomTabHeightStrategy.createStrategy(this, mIntentDataProvider.getInitialActivityHeight(),
-                getLifecycleDispatcher(), getMultiWindowModeStateDispatcher());
+                getMultiWindowModeStateDispatcher(), mConnection, mSession,
+                getLifecycleDispatcher());
     }
 
     @Override

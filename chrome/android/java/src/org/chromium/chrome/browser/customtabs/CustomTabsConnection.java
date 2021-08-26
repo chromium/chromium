@@ -163,6 +163,9 @@ public class CustomTabsConnection {
     static final String RESOURCE_PREFETCH_URL_LIST_KEY =
             "androidx.browser.RESOURCE_PREFETCH_URL_LIST";
 
+    private static final String ON_RESIZED_CALLBACK = "onResized";
+    private static final String ON_RESIZED_SIZE_EXTRA = "size";
+
     @IntDef({ParallelRequestStatus.NO_REQUEST, ParallelRequestStatus.SUCCESS,
             ParallelRequestStatus.FAILURE_NOT_INITIALIZED,
             ParallelRequestStatus.FAILURE_NOT_AUTHORIZED, ParallelRequestStatus.FAILURE_INVALID_URL,
@@ -1124,6 +1127,18 @@ public class CustomTabsConnection {
 
         if (safeExtraCallback(session, BOTTOM_BAR_SCROLL_STATE_CALLBACK, args) && mLogRequests) {
             logCallback("extraCallback(" + BOTTOM_BAR_SCROLL_STATE_CALLBACK + ")", hidden);
+        }
+    }
+
+    /**
+     * Called when a resizable Custom Tab is resized.
+     */
+    public void onResized(@Nullable CustomTabsSessionToken session, int size) {
+        Bundle args = new Bundle();
+        args.putInt(ON_RESIZED_SIZE_EXTRA, size);
+
+        if (safeExtraCallback(session, ON_RESIZED_CALLBACK, args) && mLogRequests) {
+            logCallback("extraCallback(" + ON_RESIZED_CALLBACK + ")", args);
         }
     }
 
