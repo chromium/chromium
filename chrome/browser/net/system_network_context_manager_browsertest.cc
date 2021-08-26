@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -20,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -29,6 +31,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,6 +160,63 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->allow_gssapi_library_load);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+int64_t GetFirstPartySetEntriesCountFromNetworkService() {
+  // The test interface isn't supported in the in-process case.
+  DCHECK(!content::IsInProcessNetworkService());
+
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+  content::GetNetworkService()->BindTestInterface(
+      network_service_test.BindNewPipeAndPassReceiver());
+  network_service_test.FlushForTesting();
+
+  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+
+  int64_t count = 0;
+  EXPECT_TRUE(network_service_test->GetFirstPartySetEntriesCount(&count));
+
+  return count;
+}
+
+class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
+    : public SystemNetworkContextManagerBrowsertest {
+ public:
+  SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest() = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    component_updater::FirstPartySetsComponentInstallerPolicy::
+        WriteComponentForTesting(component_dir_.GetPath(), R"([{
+          "owner": "https://example.test",
+          "members": [
+            "https://member1.test",
+            "https://member2.test"
+            ]
+          }])");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir component_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
+    ReloadsFirstPartySetsAfterCrash) {
+  // Network service is not running out of process, so cannot be crashed.
+  if (!content::IsOutOfProcessNetworkService())
+    return;
+
+  EXPECT_EQ(GetFirstPartySetEntriesCountFromNetworkService(), 3);
+
+  SimulateNetworkServiceCrash();
+
+  EXPECT_EQ(GetFirstPartySetEntriesCountFromNetworkService(), 3);
 }
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
