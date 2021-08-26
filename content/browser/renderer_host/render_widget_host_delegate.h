@@ -295,7 +295,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The widget is identified by the route_id passed to CreateNewWidget.
   virtual void ShowCreatedWidget(int process_id,
                                  int widget_route_id,
-                                 const gfx::Rect& initial_rect_in_dips) {}
+                                 const gfx::Rect& initial_rect_in_dips,
+                                 const gfx::Rect& initial_anchor_rect_in_dips) {
+  }
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

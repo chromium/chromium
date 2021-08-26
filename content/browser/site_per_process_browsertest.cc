@@ -7106,6 +7106,7 @@ class ShowCreatedPopupWidgetInterceptor
   }
 
   void ShowPopup(const gfx::Rect& initial_rect,
+                 const gfx::Rect& initial_anchor_rect,
                  ShowPopupCallback callback) override {
     show_callback_ = std::move(callback);
     initial_rect_ = initial_rect;
@@ -7113,7 +7114,13 @@ class ShowCreatedPopupWidgetInterceptor
   }
 
   void ResumeShowPopupWidget() {
-    GetForwardingInterface()->ShowPopup(initial_rect_,
+    // Let anchor have same origin as bounds, but its width and height should be
+    // 1,1 as RenderWidgetHostViewAura sets OwnedWindowAnchorPosition as
+    // kBottomLeft. Otherwise, the bottom left point of the |initial_rect|'s
+    // size is going to be used as the origin of a popup.
+    gfx::Rect anchor = initial_rect_;
+    anchor.set_size({1, 1});
+    GetForwardingInterface()->ShowPopup(initial_rect_, anchor,
                                         std::move(show_callback_));
   }
 

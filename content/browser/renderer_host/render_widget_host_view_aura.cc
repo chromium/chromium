@@ -357,7 +357,8 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
 
 void RenderWidgetHostViewAura::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
-    const gfx::Rect& bounds_in_screen) {
+    const gfx::Rect& bounds_in_screen,
+    const gfx::Rect& anchor_rect) {
   DCHECK_EQ(widget_type_, WidgetType::kPopup);
   DCHECK(!static_cast<RenderWidgetHostViewBase*>(parent_host_view)
               ->IsRenderWidgetHostViewChildFrame());
@@ -395,6 +396,12 @@ void RenderWidgetHostViewAura::InitAsPopup(
     transient_window_client->AddTransientChild(
         popup_parent_host_view_->window_, window_);
   }
+
+  ui::OwnedWindowAnchor owned_window_anchor = {
+      anchor_rect, ui::OwnedWindowAnchorPosition::kBottomLeft,
+      ui::OwnedWindowAnchorGravity::kBottomRight,
+      ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
+  window_->SetProperty(aura::client::kOwnedWindowAnchor, owned_window_anchor);
 
   aura::Window* root = popup_parent_host_view_->window_->GetRootWindow();
   aura::client::ParentWindowWithContext(window_, root, bounds_in_screen);

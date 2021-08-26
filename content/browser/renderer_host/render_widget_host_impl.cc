@@ -2542,9 +2542,10 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
 }
 
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_rect,
+                                     const gfx::Rect& anchor_rect,
                                      ShowPopupCallback callback) {
   delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                               initial_rect);
+                               initial_rect, anchor_rect);
   std::move(callback).Run();
 }
 

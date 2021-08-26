@@ -298,7 +298,7 @@ interface PopupWidgetHost {
   RequestClosePopup();
 
   // Request the popup be shown.
-  ShowPopup(gfx.mojom.Rect initial_rect) => ();
+  ShowPopup(gfx.mojom.Rect initial_rect, gfx.mojom.Rect anchor_rect) => ();
 
   // Request that the browser change the bounds of the widget.
   SetPopupBounds(gfx.mojom.Rect bounds) => ();

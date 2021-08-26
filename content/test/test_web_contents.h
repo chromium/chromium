@@ -176,7 +176,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                          bool user_gesture) override;
   void ShowCreatedWidget(int process_id,
                          int route_id,
-                         const gfx::Rect& initial_rect) override;
+                         const gfx::Rect& initial_rect,
+                         const gfx::Rect& initial_anchor_rect) override;
   void SaveFrameWithHeaders(const GURL& url,
                             const Referrer& referrer,
                             const std::string& headers,

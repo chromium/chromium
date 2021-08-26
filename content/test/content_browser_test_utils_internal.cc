@@ -546,8 +546,10 @@ blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
 }
 
 void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
+                                      const gfx::Rect& initial_anchor_rect,
                                       ShowPopupCallback callback) {
-  GetForwardingInterface()->ShowPopup(initial_rect, std::move(callback));
+  GetForwardingInterface()->ShowPopup(initial_rect, initial_anchor_rect,
+                                      std::move(callback));
   initial_rect_ = initial_rect;
   run_loop_.Quit();
 }

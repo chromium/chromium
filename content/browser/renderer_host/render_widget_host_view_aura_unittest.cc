@@ -569,7 +569,12 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   void InitViewForPopup(RenderWidgetHostViewAura* parent_view,
                         const gfx::Rect& bounds_in_screen) {
     view_->SetWidgetType(WidgetType::kPopup);
-    view_->InitAsPopup(parent_view, bounds_in_screen);
+    // Let anchor have same origin as bounds, but its width and height should be
+    // 1,1 as RenderWidgetHostViewAura sets OwnedWindowAnchorPosition as
+    // kBottomLeft.
+    gfx::Rect anchor = bounds_in_screen;
+    anchor.set_size({1, 1});
+    view_->InitAsPopup(parent_view, bounds_in_screen, anchor);
 
     widget_host_->RendererWidgetCreated(/*for_frame_widget=*/false);
     // The RenderWidgetHostImpl sets up additional connections over mojo to the

@@ -123,7 +123,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Overridden from RenderWidgetHostViewBase:
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
-                   const gfx::Rect& pos) override;
+                   const gfx::Rect& pos,
+                   const gfx::Rect& anchor_rect) override;
   void Focus() override;
   void UpdateCursor(const WebCursor& cursor) override;
   void DisplayCursor(const WebCursor& cursor) override;

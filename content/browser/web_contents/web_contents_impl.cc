@@ -3953,7 +3953,8 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
 
 void WebContentsImpl::ShowCreatedWidget(int process_id,
                                         int widget_route_id,
-                                        const gfx::Rect& initial_rect) {
+                                        const gfx::Rect& initial_rect,
+                                        const gfx::Rect& initial_anchor_rect) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWidget",
                         "process_id", process_id, "widget_route_id",
                         widget_route_id);
@@ -3978,6 +3979,7 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
                          outermost_web_contents != outer_web_contents;
 
   gfx::Rect transformed_rect(initial_rect);
+  gfx::Rect transformed_anchor_rect(initial_anchor_rect);
   RenderWidgetHostView* this_view = GetRenderWidgetHostView();
   if (needs_transform) {
     // We need to transform the coordinates of initial_rect.
@@ -3988,9 +3990,18 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
     transformed_rect =
         gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
                   bottom_right.y() - origin.y());
+
+    origin =
+        this_view->TransformPointToRootCoordSpace(initial_anchor_rect.origin());
+    bottom_right = this_view->TransformPointToRootCoordSpace(
+        initial_anchor_rect.bottom_right());
+    transformed_anchor_rect =
+        gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
+                  bottom_right.y() - origin.y());
   }
 
-  widget_host_view->InitAsPopup(view, transformed_rect);
+  widget_host_view->InitAsPopup(view, transformed_rect,
+                                transformed_anchor_rect);
 
   RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
   // Renderer-owned popup widgets wait for the renderer to request for them

@@ -330,6 +330,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // blink::mojom::PopupWidgetHost implementation.
   void RequestClosePopup() override;
   void ShowPopup(const gfx::Rect& initial_rect,
+                 const gfx::Rect& anchor_rect,
                  ShowPopupCallback callback) override;
   void SetPopupBounds(const gfx::Rect& bounds,
                       SetPopupBoundsCallback callback) override;

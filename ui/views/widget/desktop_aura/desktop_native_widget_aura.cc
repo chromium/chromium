@@ -32,6 +32,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -125,6 +126,13 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     // to parent this newly created toplevel native widget to. Please refer to
     // https://crrev.com/c/2831291 for more details.
     init_params.context = context;
+
+    auto* anchor = child_window->GetProperty(aura::client::kOwnedWindowAnchor);
+    if (anchor) {
+      init_params.init_properties_container.SetProperty(
+          aura::client::kOwnedWindowAnchor, *anchor);
+      child_window->ClearProperty(aura::client::kOwnedWindowAnchor);
+    }
 
     // This widget instance will get deleted when the window is
     // destroyed.

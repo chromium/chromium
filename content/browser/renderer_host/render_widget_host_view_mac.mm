@@ -365,7 +365,8 @@ void RenderWidgetHostViewMac::InitAsChild(gfx::NativeView parent_view) {
 
 void RenderWidgetHostViewMac::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
-    const gfx::Rect& pos) {
+    const gfx::Rect& pos,
+    const gfx::Rect& anchor_rect) {
   DCHECK_EQ(widget_type_, WidgetType::kPopup);
 
   popup_parent_host_view_ =
