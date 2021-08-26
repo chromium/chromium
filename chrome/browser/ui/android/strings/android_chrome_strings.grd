@@ -995,6 +995,14 @@ Your Google account may have other forms of browsing history like searches and a
         <ph name="NUMBER_OF_ITEMS">%1$s<ex>3</ex></ph> items deleted
       </message>
 
+      <!-- Privacy Review -->
+      <message name="IDS_PREFS_PRIVACY_REVIEW_TITLE" desc="The title of the privacy review menu item.">
+        Privacy guide
+      </message>
+      <message name="IDS_PREFS_PRIVACY_REVIEW_SUMMARY" desc="The summary of the privacy menu item.">
+        Review privacy and security settings
+      </message>
+
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
         Safety check
