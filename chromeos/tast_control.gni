@@ -42,4 +42,7 @@ tast_disabled_tests_from_chrome_all = [
   "policy.AccessibilityPolicies.sticky_keys",
   "policy.AllowDinosaurEasterEgg",
   "policy.DisableScreenshotsExtension",
+
+  # crbug.com/1238654
+  "lockscreen.KeyboardShortcut",
 ]
