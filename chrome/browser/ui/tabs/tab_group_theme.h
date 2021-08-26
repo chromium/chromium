@@ -14,4 +14,6 @@ int GetTabGroupDialogColorId(tab_groups::TabGroupColorId group_color_id);
 
 int GetTabGroupContextMenuColorId(tab_groups::TabGroupColorId group_color_id);
 
+int GetTabGroupBookmarkColorId(tab_groups::TabGroupColorId group_color_id);
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_THEME_H_

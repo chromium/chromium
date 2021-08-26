@@ -33,43 +33,90 @@ using TP = ThemeProperties;
 // unpacked on the filesystem.)
 constexpr char kDefaultThemeGalleryID[] = "hkacjpbfdknhflllbcmjibkdeoafencn";
 
+// Dark mode saved group chip colors are calculated by blending the default dark
+// mode toolbar color with the tab strip group colors at 24% alpha.
+constexpr float kTabGroupChipAlpha = 0.24f;
+
 const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
+  const SkColor default_dark_toolbar_color =
+      TP::GetDefaultColor(TP::COLOR_TOOLBAR, false, true);
+
   switch (color_id) {
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE:
     case TP::COLOR_TAB_GROUP_DIALOG_BLUE:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_BLUE:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_BLUE:
       return {gfx::kGoogleBlue600, gfx::kGoogleBlue300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_BLUE:
+      return {gfx::kGoogleBlue050,
+              color_utils::AlphaBlend(gfx::kGoogleBlue600,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_RED:
     case TP::COLOR_TAB_GROUP_DIALOG_RED:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_RED:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_RED:
       return {gfx::kGoogleRed600, gfx::kGoogleRed300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_RED:
+      return {gfx::kGoogleRed050,
+              color_utils::AlphaBlend(gfx::kGoogleRed600,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW:
     case TP::COLOR_TAB_GROUP_DIALOG_YELLOW:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_YELLOW:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_YELLOW:
       return {gfx::kGoogleYellow900, gfx::kGoogleYellow300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_YELLOW:
+      return {gfx::kGoogleYellow100,
+              color_utils::AlphaBlend(gfx::kGoogleYellow900,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN:
     case TP::COLOR_TAB_GROUP_DIALOG_GREEN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREEN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREEN:
       return {gfx::kGoogleGreen700, gfx::kGoogleGreen300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREEN:
+      return {gfx::kGoogleGreen050,
+              color_utils::AlphaBlend(gfx::kGoogleGreen700,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK:
     case TP::COLOR_TAB_GROUP_DIALOG_PINK:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PINK:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_PINK:
       return {gfx::kGooglePink700, gfx::kGooglePink300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PINK:
+      return {gfx::kGooglePink050,
+              color_utils::AlphaBlend(gfx::kGooglePink700,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE:
     case TP::COLOR_TAB_GROUP_DIALOG_PURPLE:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PURPLE:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_PURPLE:
       return {gfx::kGooglePurple600, gfx::kGooglePurple200};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PURPLE:
+      return {gfx::kGooglePurple050,
+              color_utils::AlphaBlend(gfx::kGooglePurple600,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN:
     case TP::COLOR_TAB_GROUP_DIALOG_CYAN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_CYAN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_CYAN:
       return {gfx::kGoogleCyan900, gfx::kGoogleCyan300};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN:
+      return {gfx::kGoogleCyan050,
+              color_utils::AlphaBlend(gfx::kGoogleCyan900,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
+    case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREY:
+      return {gfx::kGoogleGrey050,
+              color_utils::AlphaBlend(gfx::kGoogleGrey700,
+                                      default_dark_toolbar_color,
+                                      kTabGroupChipAlpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY:
     case TP::COLOR_TAB_GROUP_DIALOG_GREY:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY:
@@ -303,7 +350,7 @@ SkColor ThemeHelper::GetDefaultColor(
     bool incognito,
     const CustomThemeSupplier* theme_supplier) const {
   if (TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY <= id &&
-      id <= TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN)
+      id <= TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN)
     return GetTabGroupColor(id, incognito, theme_supplier);
 
   // For backward compat with older themes, some newer colors are generated from
@@ -715,5 +762,17 @@ SkColor ThemeHelper::GetTabGroupColor(
   }
 
   // Deal with the rest of the tab group colors.
-  return GetTabGroupColors(id)[UseDarkModeColors(theme_supplier)];
+  bool use_dark_mode_colors;
+  if (id >= TP::COLOR_TAB_GROUP_DIALOG_GREY &&
+      id <= TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN) {
+    // To support custom themes, assume that the dark mode palette is more
+    // appropriate for bookmark chips, tab group dialog bubble, and context sub
+    // menu when the bookmark bar appears to be light text on dark bookmark bar.
+    bool has_custom_color = true;
+    use_dark_mode_colors = !color_utils::IsDark(GetColor(
+        TP::COLOR_BOOKMARK_TEXT, incognito, theme_supplier, &has_custom_color));
+  } else {
+    use_dark_mode_colors = UseDarkModeColors(theme_supplier);
+  }
+  return GetTabGroupColors(id)[incognito || use_dark_mode_colors];
 }

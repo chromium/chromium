@@ -398,8 +398,8 @@ class BookmarkTabGroupButton : public BookmarkMenuButtonBase {
   bool OnMousePressed(const ui::MouseEvent& event) override { return true; }
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
-    SkColor color =
-        GetThemeProvider()->GetColor(GetTabGroupDialogColorId(tab_group_id_));
+    SkColor color = GetThemeProvider()->GetColor(
+        GetTabGroupDialogColorId(tab_group_color_id_));
     SetBorder(
         views::CreatePaddedBorder(views::CreateRoundedRectBorder(
                                       border_thickness_, border_radius_, color),
@@ -423,7 +423,8 @@ class BookmarkTabGroupButton : public BookmarkMenuButtonBase {
 
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
-  tab_groups::TabGroupColorId tab_group_id_ = tab_groups::TabGroupColorId::kRed;
+  tab_groups::TabGroupColorId tab_group_color_id_ =
+      tab_groups::TabGroupColorId::kRed;
   float border_thickness_ = 2.0;
   float border_radius_ = 4.5;
 };
@@ -1752,38 +1753,17 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       // saved tab groups feature flag
       if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
         // COPIED FROM PRIVATE SECTION OF TABGROUPBUTTON
-        tab_groups::TabGroupColorId tab_group_id_ =
+        tab_groups::TabGroupColorId tab_group_color_id_ =
             tab_groups::TabGroupColorId::kRed;
         float button_radius_ = 5.0;
 
         // Get tabgroup color.
         SkColor color = GetThemeProvider()->GetColor(
-            GetTabGroupTabStripColorId(tab_group_id_, false));
-        SkColor background_color;
-
-        if (color_utils::IsDark(text_color)) {
-          // Dynamically lighten background if in light mode/light theme
-          // (placeholder for official UX lightmode colors)
-          // TODO: use official colors (crbug.com/1239428)
-          SkScalar hsv[3];
-          SkColorToHSV(color, hsv);
-          hsv[1] = hsv[1] / 4;
-          hsv[2] = hsv[2] + 10 > 100 ? 100 : hsv[2] + 10;
-          background_color = SkHSVToColor(255, hsv);
-        } else {
-          // Dynamically darken background if in dark mode/theme
-          // (placeholder for official UX darkmode colors)
-          // TODO: use official colors (crbug.com/1239428)
-          SkScalar hsv[3];
-          SkColorToHSV(color, hsv);
-          hsv[1] = hsv[1] * 2.5;
-          hsv[2] = hsv[2] / 3;
-          background_color = SkHSVToColor(255, hsv);
-        }
+            GetTabGroupBookmarkColorId(tab_group_color_id_));
 
         // Set background color.
-        button->SetBackground(views::CreateRoundedRectBackground(
-            background_color, button_radius_));
+        button->SetBackground(
+            views::CreateRoundedRectBackground(color, button_radius_));
       } else {
         if (tp->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
           button->SetImageModel(
