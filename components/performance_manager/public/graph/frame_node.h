@@ -32,31 +32,31 @@ class WorkerNode;
 using execution_context_priority::PriorityAndReason;
 
 // Frame nodes form a tree structure, each FrameNode at most has one parent
-// that is a FrameNode. Conceptually, a frame corresponds to a
+// that is a FrameNode. Conceptually, a FrameNode corresponds to a
 // content::RenderFrameHost (RFH) in the browser, and a
 // content::RenderFrameImpl / blink::LocalFrame in a renderer.
 //
 // TODO(crbug.com/1211368): The naming is misleading. In the browser,
 // FrameTreeNode tracks state about a frame and RenderFrameHost tracks state
-// about a document loaded into that frame, which can change over time. The PM
-// node types should be cleaned up to more accurately reflect this.
+// about a document loaded into that frame, which can change over time.
+// (Although RFH doesn't exactly track documents 1:1 either - see
+// docs/render_document.md for more details.) The PM node types should be
+// cleaned up to more accurately reflect this.
 //
 // Each RFH is part of a frame tree made up of content::FrameTreeNodes (FTNs).
 // Note that a document in an FTN can be replaced with another, so it is
 // possible to have multiple "sibling" FrameNodes corresponding to RFHs in the
-// same FTN. Only one of these may contribute to the content being
-// rendered, and this node is designated the "current" node in content
-// terminology. A swap is effectively atomic but will take place in two steps
-// in the graph: the outgoing frame will first be marked as not current, and the
-// incoming frame will be marked as current. As such, the graph invariant is
-// that there will be 0 or 1 |is_current| FrameNode's for a given FTN.
+// same FTN. Only one of these may contribute to the content being rendered,
+// and this node is designated the "current" node in content terminology.
 //
-// This can occur, for example, when a frame is navigated and the existing
-// document can't be reused. In that case a "speculative" RFH is created to
-// start the navigation. Once the navigation completes (which may actually
-// involve a redirect to another origin meaning the document has to be
-// destroyed and another one created in another process!) and commits, the new
-// RFH will be swapped with the previously active RFH.
+// This can occur, for example, when an in-flight navigation creates a new RFH.
+// The new RFH will swap with the previously active RFH when the navigation
+// commits, but until then the two will coexist for the same FTN.
+//
+// A swap is effectively atomic but will take place in two steps in the graph:
+// the outgoing frame will first be marked as not current, and the incoming
+// frame will be marked as current. As such, the graph invariant is that there
+// will be 0 or 1 |is_current| FrameNode's for a given FTN.
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.

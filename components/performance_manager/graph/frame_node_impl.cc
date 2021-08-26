@@ -259,7 +259,9 @@ void FrameNodeImpl::SetIsCurrent(bool is_current) {
   // discussion at crbug.com/1179502 and in the comment thread at
   // https://chromium-review.googlesource.com/c/chromium/src/+/2966195/comments/58550eac_5795f790
   // for more details.) We need to find another way to check this invariant
-  // here.
+  // here. (altimin suggests simply relying on RFH::GetLifecycleState to
+  // correctly track "active" frame nodes instead of using "current", and not
+  // checking this invariant.)
 }
 
 void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
