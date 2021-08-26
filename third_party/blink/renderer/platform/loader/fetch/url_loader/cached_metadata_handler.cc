@@ -173,9 +173,6 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
 bool ShouldUseIsolatedCodeCache(
     mojom::blink::RequestContextType request_context,
     const ResourceResponse& response) {
-  if (!RuntimeEnabledFeatures::IsolatedCodeCacheEnabled())
-    return false;
-
   // WebAssembly always uses the site isolated code cache.
   if (response.MimeType() == "application/wasm")
     return true;

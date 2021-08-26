@@ -235,7 +235,6 @@ class ResourceLoader::CodeCacheRequest {
         should_use_source_hash_(
             SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
                 url.Protocol())) {
-    DCHECK(RuntimeEnabledFeatures::IsolatedCodeCacheEnabled());
   }
 
   ~CodeCacheRequest() = default;
@@ -482,9 +481,6 @@ void ResourceLoader::Trace(Visitor* visitor) const {
 }
 
 bool ResourceLoader::ShouldFetchCodeCache() {
-  if (!RuntimeEnabledFeatures::IsolatedCodeCacheEnabled())
-    return false;
-
   // Since code cache requests use a per-frame interface, don't fetch cached
   // code for keep-alive requests. These are only used for beaconing and we
   // don't expect code cache to help there.

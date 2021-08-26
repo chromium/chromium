@@ -73,7 +73,6 @@ webkit.org/b/90488 [ Debug ] inspector-protocol/* [ Slow ]
 # DevTools tests cause flakes on slow hardware in Release as well.
 crbug.com/1063051 [ Release ] http/tests/devtools/* [ Slow ]
 crbug.com/420008 virtual/threaded/http/tests/devtools/tracing/* [ Slow ]
-crbug.com/902685 virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/* [ Slow ]
 crbug.com/902685 virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/* [ Slow ]
 crbug.com/902685 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Slow ]
 crbug.com/902685 virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/* [ Slow ]

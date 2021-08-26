@@ -1198,12 +1198,6 @@
       status: "stable",
     },
     {
-      // Launched by default. TODO(mythria): cleanup virtual tests and
-      // other hooks in blink.
-      name: "IsolatedCodeCache",
-      status: "stable",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
     },

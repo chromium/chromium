@@ -1602,16 +1602,6 @@ virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-simil
 # https://foo.example.com/path?token=secret needs to be replaced with just
 # https://foo.example.com).
 crbug.com/669083 http/tests/security/frameNavigation/xss-DENIED-top-navigation-without-user-gesture.html [ Skip ]
-# --------------------------- code cache isolation -----------------------
-# Code cache isolation tests only make sense if either
-# 1) site isolation is disabled or
-#    (covered by virtual/not-site-per-process/.../isolated-code-cache)
-# 2) site isolation is enabled together with --enable-features=IsolatedCodeCache
-#    (covered by virtual/site-isolated-code-cache/.../isolated-code-cache)
-# but don't make sense if
-# 3) site isolation is enabled without also enabling
-#    IsolatedCodeCache (tests disabled by the test expectation below).
-http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
 # ----------------------- origin-keyed agent clusters --------------------
 # Origin-keyed agent clusters web platform tests are for the feature at
 # https://html.spec.whatwg.org/#origin-keyed-agent-clusters. It doesn't make
@@ -1754,9 +1744,6 @@ virtual/weakrefs/js/weakrefs/* [ Pass ]
 # virtual test should be run.
 http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass ]
-virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
-virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
-virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
 
 # This test run under virtual suites only.
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]

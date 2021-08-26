@@ -51,11 +51,8 @@ Text details for v8.compile: v8-cache-script.js:1
 v8.compile Properties:
 {
     data : {
-        cacheRejected : false
         columnNumber : 0
-        consumedCacheSize : <number>
         lineNumber : 0
-        notStreamedReason : "script has code-cache available"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.js
     }
