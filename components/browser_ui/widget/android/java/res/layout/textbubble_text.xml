@@ -3,9 +3,35 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<TextView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:padding="16dp"
-    android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Baseline.Inverse" />
+    android:gravity="center" >
+
+     <TextView
+          android:id="@+id/message"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Baseline.Inverse" />
+
+     <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/button_snooze"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:text="@string/iph_snooze" />
+
+     <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/button_dismiss"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          android:text="@string/got_it" />
+
+</LinearLayout>

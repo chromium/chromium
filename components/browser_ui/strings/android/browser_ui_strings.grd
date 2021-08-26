@@ -174,6 +174,9 @@
       <message name="IDS_DELETED" desc='Text that announces to the user that something was deleted.'>
         Deleted
       </message>
+      <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message">
+        Got it
+      </message>
       <message name="IDS_OK" desc="Label for a confirm button. Used in multiple contexts. [CHAR_LIMIT=20]">
         OK
       </message>
@@ -794,6 +797,11 @@
       <!-- Messages -->
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
         Option available near top of the screen
+      </message>
+
+      <!-- In-Product Help -->
+      <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">
+        Remind me
       </message>
     </messages>
   </release>
