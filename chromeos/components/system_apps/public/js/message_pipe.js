@@ -413,8 +413,7 @@ function throwIfReserved(messageType) {
     if (isGeneratedMessage(type)) {
       // Currently all generated messages are only sent in a response, so should
       // have been handled above.
-      console.error(`Response with type ${type} for unknown message id ${
-          messageId} received.`);
+      console.error(`Response with type ${type} for unknown message received.`);
       return;
     }
 
