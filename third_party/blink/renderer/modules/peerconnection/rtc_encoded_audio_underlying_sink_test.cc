@@ -46,6 +46,7 @@ class FakeAudioFrame : public webrtc::TransformableFrameInterface {
   void SetData(rtc::ArrayView<const uint8_t> data) override {}
   uint32_t GetTimestamp() const override { return 0xDEADBEEF; }
   uint32_t GetSsrc() const override { return 0; }
+  uint8_t GetPayloadType() const override { return 255; }
 };
 
 }  // namespace
