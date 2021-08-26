@@ -73,6 +73,7 @@ class ConversionStorageTest : public testing::Test {
                             /*conversion_time=*/clock_.Now(),
                             /*report_time=*/impression.impression_time() +
                                 base::TimeDelta::FromMilliseconds(kReportTime),
+                            conversion.priority(),
                             /*conversion_id=*/absl::nullopt);
     return report;
   }
@@ -1228,6 +1229,7 @@ TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
       /*conversion_time=*/clock()->Now(),
       /*report_time=*/clock()->Now() +
           base::TimeDelta::FromMilliseconds(kReportTime),
+      /*priority=*/0,
       /*conversion_id=*/absl::nullopt);
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
@@ -1518,6 +1520,20 @@ TEST_F(ConversionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
   EXPECT_THAT(storage()->GetConversionsToReport(clock()->Now()), IsEmpty());
+}
+
+TEST_F(ConversionStorageTest, GetConversionsToReport_SetsPriority) {
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            storage()->MaybeCreateAndStoreConversionReport(
+                ConversionBuilder().SetPriority(13).Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(13, actual_reports[0].priority);
 }
 
 }  // namespace content

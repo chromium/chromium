@@ -22,6 +22,7 @@ struct WebUIConversionReport {
   url.mojom.Origin reporting_origin;
   double report_time;
   SourceType source_type;
+  int64 priority;
 };
 
 // Struct representing a stored impression that will be displayed by WebUI.

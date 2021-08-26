@@ -26,6 +26,7 @@ struct CONTENT_EXPORT ConversionReport {
                    uint64_t conversion_data,
                    base::Time conversion_time,
                    base::Time report_time,
+                   int64_t priority,
                    absl::optional<Id> conversion_id);
   ConversionReport(const ConversionReport& other);
   ConversionReport& operator=(const ConversionReport& other);
@@ -45,6 +46,9 @@ struct CONTENT_EXPORT ConversionReport {
 
   // The time this conversion report should be sent.
   base::Time report_time;
+
+  // Priority specified in conversion redirect.
+  int64_t priority;
 
   // The original report time assigned to this report when it was created,
   // ignoring any ephemeral increases to |report_time| for this conversion

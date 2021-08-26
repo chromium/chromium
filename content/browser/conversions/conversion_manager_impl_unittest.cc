@@ -238,6 +238,7 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
       impression, conversion.conversion_data(),
       /*conversion_time=*/clock().Now(),
       /*report_time=*/clock().Now() + kFirstReportingWindow,
+      /*priority=*/0,
       /*conversion_id=*/absl::nullopt);
 
   base::RunLoop run_loop;

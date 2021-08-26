@@ -27,6 +27,7 @@ ConversionReport GetReport(base::Time impression_time,
                               .SetSourceType(source_type)
                               .Build(),
                           /*conversion_data=*/123, conversion_time, report_time,
+                          /*priority=*/0,
                           /*conversion_id=*/absl::nullopt);
 }
 

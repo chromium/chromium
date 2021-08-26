@@ -69,7 +69,8 @@ void ForwardReportsToWebUI(
         report.impression.impression_data(), report.conversion_data,
         report.impression.conversion_origin(),
         report.impression.reporting_origin(), report.report_time.ToJsTime(),
-        SourceTypeToMojoType(report.impression.source_type())));
+        SourceTypeToMojoType(report.impression.source_type()),
+        report.priority));
   }
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
 }

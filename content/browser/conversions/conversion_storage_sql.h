@@ -161,8 +161,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   // Stores |report| in the database, but uses |impression_id| rather than
   // |ConversionReport::impression::impression_id()|, which may be null.
   bool StoreConversionReport(const ConversionReport& report,
-                             StorableImpression::Id impression_id,
-                             int64_t priority)
+                             StorableImpression::Id impression_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Initializes the database if necessary, and returns whether the database is

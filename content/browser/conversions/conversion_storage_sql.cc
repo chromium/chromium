@@ -351,10 +351,11 @@ void ConversionStorageSql::StoreImpression(
     ConversionReport report(impression, event_source_trigger_data,
                             /*conversion_time=*/impression.impression_time(),
                             /*report_time=*/impression.impression_time(),
+                            /*priority=*/0,
                             /*conversion_id=*/absl::nullopt);
     report.report_time = delegate_->GetReportTime(report);
 
-    if (!StoreConversionReport(report, impression_id, /*priority=*/0))
+    if (!StoreConversionReport(report, impression_id))
       return;
   }
 
@@ -540,7 +541,7 @@ CreateReportStatus ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   ConversionReport report(std::move(impression_to_attribute->impression),
                           conversion_data,
                           /*conversion_time=*/current_time,
-                          /*report_time=*/current_time,
+                          /*report_time=*/current_time, conversion.priority(),
                           /*conversion_id=*/absl::nullopt);
 
   report.report_time = delegate_->GetReportTime(report);
@@ -583,10 +584,8 @@ CreateReportStatus ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   if (create_report) {
     DCHECK(report.impression.impression_id().has_value());
-    if (!StoreConversionReport(report, *report.impression.impression_id(),
-                               conversion.priority())) {
+    if (!StoreConversionReport(report, *report.impression.impression_id()))
       return CreateReportStatus::kInternalError;
-    }
   }
 
   // If a dedup key is present, store it. We do this regardless of whether
@@ -651,8 +650,7 @@ CreateReportStatus ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
 bool ConversionStorageSql::StoreConversionReport(
     const ConversionReport& report,
-    StorableImpression::Id impression_id,
-    int64_t priority) {
+    StorableImpression::Id impression_id) {
   static constexpr char kStoreConversionSql[] =
       "INSERT INTO conversions"
       "(impression_id,conversion_data,conversion_time,report_time,"
@@ -664,7 +662,7 @@ bool ConversionStorageSql::StoreConversionReport(
       1, SerializeImpressionOrConversionData(report.conversion_data));
   store_conversion_statement.BindTime(2, report.conversion_time);
   store_conversion_statement.BindTime(3, report.report_time);
-  store_conversion_statement.BindInt64(4, priority);
+  store_conversion_statement.BindInt64(4, report.priority);
   return store_conversion_statement.Run();
 }
 
@@ -680,9 +678,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   // impression table. Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
   static constexpr char kGetExpiredConversionsSql[] =
-      "SELECT C.conversion_data,C.conversion_time,"
-      "C.report_time,"
-      "C.conversion_id,I.impression_origin,I.conversion_origin,"
+      "SELECT C.conversion_data,C.conversion_time,C.report_time,"
+      "C.conversion_id,C.priority,I.impression_origin,I.conversion_origin,"
       "I.reporting_origin,I.impression_data,I.impression_time,"
       "I.expiry_time,I.impression_id,I.source_type,I.priority "
       "FROM conversions C JOIN impressions I ON "
@@ -700,19 +697,20 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     base::Time conversion_time = statement.ColumnTime(1);
     base::Time report_time = statement.ColumnTime(2);
     ConversionReport::Id conversion_id(statement.ColumnInt64(3));
+    int64_t conversion_priority = statement.ColumnInt64(4);
     url::Origin impression_origin =
-        DeserializeOrigin(statement.ColumnString(4));
-    url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(5));
-    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(6));
+    url::Origin conversion_origin =
+        DeserializeOrigin(statement.ColumnString(6));
+    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(7));
     uint64_t impression_data =
-        DeserializeImpressionOrConversionData(statement.ColumnInt64(7));
-    base::Time impression_time = statement.ColumnTime(8);
-    base::Time expiry_time = statement.ColumnTime(9);
-    StorableImpression::Id impression_id(statement.ColumnInt64(10));
+        DeserializeImpressionOrConversionData(statement.ColumnInt64(8));
+    base::Time impression_time = statement.ColumnTime(9);
+    base::Time expiry_time = statement.ColumnTime(10);
+    StorableImpression::Id impression_id(statement.ColumnInt64(11));
     absl::optional<StorableImpression::SourceType> source_type =
-        DeserializeSourceType(statement.ColumnInt(11));
-    int64_t attribution_source_priority = statement.ColumnInt64(12);
+        DeserializeSourceType(statement.ColumnInt(12));
+    int64_t attribution_source_priority = statement.ColumnInt64(13);
 
     // Ensure origins are valid before continuing. This could happen if there is
     // database corruption.
@@ -734,7 +732,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
                                   attribution_source_priority, impression_id);
 
     conversions.emplace_back(std::move(impression), conversion_data,
-                             conversion_time, report_time, conversion_id);
+                             conversion_time, report_time, conversion_priority,
+                             conversion_id);
   }
 
   if (!statement.Succeeded())

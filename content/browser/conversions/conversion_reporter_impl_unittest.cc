@@ -36,7 +36,7 @@ ConversionReport GetReport(base::Time conversion_time,
   // reporting.
   return ConversionReport(ImpressionBuilder(base::Time()).Build(),
                           /*conversion_data=*/0, conversion_time, report_time,
-                          conversion_id);
+                          /*priority=*/0, conversion_id);
 }
 
 // NetworkSender that keep track of the last sent report id.
@@ -274,7 +274,7 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
     std::vector<ConversionReport> reports{
         ConversionReport(std::move(impression),
                          /*conversion_data=*/0, clock().Now(), clock().Now(),
-                         ConversionReport::Id(1))};
+                         /*priority=*/0, ConversionReport::Id(1))};
     reporter_->AddReportsToQueue(std::move(reports));
 
     // Fast forward by 0, as we yield the thread when a report is scheduled to

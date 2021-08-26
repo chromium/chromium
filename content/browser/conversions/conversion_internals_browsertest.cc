@@ -359,14 +359,16 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/std::numeric_limits<uint64_t>::max(),
       /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
+      /*report_time=*/base::Time::Now(), /*priority=*/0,
+      ConversionReport::Id(1));
   ConversionReport report2(
       ImpressionBuilder(base::Time::Now())
           .SetData(200)
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
+      /*report_time=*/base::Time::Now(), /*priority=*/13,
+      ConversionReport::Id(1));
   manager.SetReportsForWebUI({report, report2});
   OverrideWebUIConversionManager(&manager);
 
@@ -376,7 +378,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       if (table.children.length === 2 &&
           table.children[0].children[1].innerText === $1 &&
           table.children[0].children[5].innerText === "Navigation" &&
-          table.children[1].children[5].innerText === "Event") {
+          table.children[0].children[6].innerText === "0" &&
+          table.children[1].children[5].innerText === "Event" &&
+          table.children[1].children[6].innerText === "13") {
         document.title = $2;
       }
     });
@@ -397,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
+      /*report_time=*/base::Time::Now(), /*priority=*/0,
+      ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 
@@ -437,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), ConversionReport::Id(1));
+      /*report_time=*/base::Time::Now(), /*priority=*/0,
+      ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 

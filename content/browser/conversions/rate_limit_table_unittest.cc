@@ -54,6 +54,7 @@ class RateLimitTableTest : public testing::Test {
         /*conversion_data=*/0,
         /*conversion_time=*/clock()->Now(),
         /*report_time=*/clock()->Now(),
+        /*priority=*/0,
         /*conversion_id=*/absl::nullopt);
   }
 
