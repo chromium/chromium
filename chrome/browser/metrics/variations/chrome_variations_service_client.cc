@@ -11,6 +11,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -21,7 +22,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC)
@@ -82,13 +82,11 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 
 variations::Study::FormFactor
 ChromeVariationsServiceClient::GetCurrentFormFactor() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(PLATFORM_CFM)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(PLATFORM_CFM)
   return variations::Study::MEET_DEVICE;
-#endif  // BUILDFLAG(PLATFORM_CFM)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+#else
   return variations::VariationsServiceClient::GetCurrentFormFactor();
+#endif
 }
 
 bool ChromeVariationsServiceClient::IsEnterprise() {
