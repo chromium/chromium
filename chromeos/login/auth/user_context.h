@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   const std::string& GetPublicSessionInputMethod() const;
   const std::string& GetDeviceId() const;
   const std::string& GetGAPSCookie() const;
+  const std::string& GetReauthProofToken() const;
   const absl::optional<password_manager::PasswordHashData>&
   GetSyncPasswordData() const;
   const absl::optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
@@ -129,6 +130,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   void SetPublicSessionInputMethod(const std::string& input_method);
   void SetDeviceId(const std::string& device_id);
   void SetGAPSCookie(const std::string& gaps_cookie);
+  void SetReauthProofToken(const std::string& reauth_proof_token);
   void SetSyncPasswordData(
       const password_manager::PasswordHashData& sync_password_data);
   void SetSamlPasswordAttributes(
@@ -168,6 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   std::string public_session_input_method_;
   std::string device_id_;
   std::string gaps_cookie_;
+  std::string reauth_proof_token_;
   bool is_under_advanced_protection_ = false;
   std::string managed_guest_session_launch_extension_id_;
   // |login_input_method_used_| is non-empty if login password/code was used,

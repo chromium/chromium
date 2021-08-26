@@ -26,6 +26,7 @@ namespace {
 
 const char kGAPSCookie[] = "GAPS";
 const char kOAUTHCodeCookie[] = "oauth_code";
+const char kRAPTCookie[] = "RAPT";
 constexpr base::TimeDelta kCookieDelay = base::TimeDelta::FromSeconds(20);
 
 }  // namespace
@@ -226,13 +227,15 @@ void OnlineLoginHelper::OnCookieWaitTimeout() {
 void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  std::string auth_code, gaps_cookie;
+  std::string auth_code, gaps_cookie, rapt;
   for (const auto& cookie_with_access_result : cookies) {
     const auto& cookie = cookie_with_access_result.cookie;
     if (cookie.Name() == login::kOAUTHCodeCookie)
       auth_code = cookie.Value();
     else if (cookie.Name() == login::kGAPSCookie)
       gaps_cookie = cookie.Value();
+    else if (cookie.Name() == login::kRAPTCookie)
+      rapt = cookie.Value();
   }
 
   if (auth_code.empty()) {
@@ -249,6 +252,8 @@ void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
   user_context.SetAuthCode(auth_code);
   if (!gaps_cookie.empty())
     user_context.SetGAPSCookie(gaps_cookie);
+  if (!rapt.empty())
+    user_context.SetReauthProofToken(rapt);
 
   std::move(complete_login_callback_).Run(user_context);
 }

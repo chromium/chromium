@@ -138,6 +138,10 @@ const std::string& UserContext::GetGAPSCookie() const {
   return gaps_cookie_;
 }
 
+const std::string& UserContext::GetReauthProofToken() const {
+  return reauth_proof_token_;
+}
+
 const absl::optional<password_manager::PasswordHashData>&
 UserContext::GetSyncPasswordData() const {
   return sync_password_data_;
@@ -233,6 +237,10 @@ void UserContext::SetDeviceId(const std::string& device_id) {
 
 void UserContext::SetGAPSCookie(const std::string& gaps_cookie) {
   gaps_cookie_ = gaps_cookie;
+}
+
+void UserContext::SetReauthProofToken(const std::string& reauth_proof_token) {
+  reauth_proof_token_ = reauth_proof_token;
 }
 
 void UserContext::SetSyncPasswordData(

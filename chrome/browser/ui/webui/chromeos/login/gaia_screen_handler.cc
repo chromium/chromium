@@ -555,6 +555,13 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kGaiaReauthRequestToken)) {
+    params.SetStringKey(
+        "rart", base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                    switches::kGaiaReauthRequestToken));
+  }
+
   was_security_token_pin_canceled_ = false;
 
   frame_state_ = FRAME_STATE_LOADING;

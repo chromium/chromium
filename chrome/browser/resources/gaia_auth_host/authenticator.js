@@ -219,6 +219,7 @@ cr.define('cr.login', function() {
     'doSamlRedirect',    // True if the authentication is done via external IdP.
     'enableCloseView',   // True if authenticator should wait for the closeView
                          // message from Gaia.
+    'rart',              // Encrypted reauth request token.
   ];
 
   // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -453,9 +454,9 @@ cr.define('cr.login', function() {
       this.closeViewReceived_ = false;
 
       window.addEventListener(
-          'message', this.onMessageFromWebview_.bind(this), false);
-      window.addEventListener('focus', this.onFocus_.bind(this), false);
-      window.addEventListener('popstate', this.onPopState_.bind(this), false);
+          'message', e => this.onMessageFromWebview_(e), false);
+      window.addEventListener('focus', () => this.onFocus_(), false);
+      window.addEventListener('popstate', e => this.onPopState_(e), false);
 
       /**
        * @type {boolean}
@@ -466,7 +467,7 @@ cr.define('cr.login', function() {
         this.initializeAfterDomLoaded_();
       } else {
         document.addEventListener(
-            'DOMContentLoaded', this.initializeAfterDomLoaded_.bind(this));
+            'DOMContentLoaded', () => this.initializeAfterDomLoaded_());
       }
     }
 
@@ -526,37 +527,36 @@ cr.define('cr.login', function() {
           new cr.login.SamlHandler(this.webview_, false /* startsOnSamlPage */);
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'insecureContentBlocked',
-          this.onInsecureContentBlocked_.bind(this));
+          e => this.onInsecureContentBlocked_(e));
       this.webviewEventManager_.addEventListener(
-          this.samlHandler_, 'authPageLoaded',
-          this.onAuthPageLoaded_.bind(this));
+          this.samlHandler_, 'authPageLoaded', e => this.onAuthPageLoaded_(e));
       this.webviewEventManager_.addEventListener(
-          this.samlHandler_, 'videoEnabled', this.onVideoEnabled_.bind(this));
+          this.samlHandler_, 'videoEnabled', e => this.onVideoEnabled_(e));
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'apiPasswordAdded',
-          this.onSamlApiPasswordAdded_.bind(this));
+          e => this.onSamlApiPasswordAdded_(e));
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'challengeMachineKeyRequired',
-          this.onChallengeMachineKeyRequired_.bind(this));
+          e => this.onChallengeMachineKeyRequired_(e));
 
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'droplink', this.onDropLink_.bind(this));
+          this.webview_, 'droplink', e => this.onDropLink_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'newwindow', this.onNewWindow_.bind(this));
+          this.webview_, 'newwindow', e => this.onNewWindow_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'contentload', this.onContentLoad_.bind(this));
+          this.webview_, 'contentload', e => this.onContentLoad_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'loadabort', this.onLoadAbort_.bind(this));
+          this.webview_, 'loadabort', e => this.onLoadAbort_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'loadcommit', this.onLoadCommit_.bind(this));
+          this.webview_, 'loadcommit', e => this.onLoadCommit_(e));
 
       this.webviewEventManager_.addWebRequestEventListener(
           this.webview_.request.onCompleted,
-          this.onRequestCompleted_.bind(this),
+          details => this.onRequestCompleted_(details),
           {urls: ['<all_urls>'], types: ['main_frame']}, ['responseHeaders']);
       this.webviewEventManager_.addWebRequestEventListener(
           this.webview_.request.onHeadersReceived,
-          this.onHeadersReceived_.bind(this),
+          details => this.onHeadersReceived_(details),
           {urls: ['<all_urls>'], types: ['main_frame', 'xmlhttprequest']},
           ['responseHeaders']);
     }
@@ -808,6 +808,9 @@ cr.define('cr.login', function() {
       if (data.isDeviceOwner) {
         url = appendParam(url, 'is_device_owner', '1');
       }
+      if (data.rart) {
+        url = appendParam(url, 'rart', data.rart);
+      }
 
       return url;
     }
@@ -1016,11 +1019,8 @@ cr.define('cr.login', function() {
         // does not expect it to be called immediately.
         // TODO(xiyuan): Change to synchronous call when iframe based code
         // is removed.
-        const invokeConfirmPassword =
-            (function() {
-              this.confirmPasswordCallback(
-                  this.email_, this.samlHandler_.scrapedPasswordCount);
-            }).bind(this);
+        const invokeConfirmPassword = () => this.confirmPasswordCallback(
+            this.email_, this.samlHandler_.scrapedPasswordCount);
         window.setTimeout(invokeConfirmPassword, 0);
         return;
       }
@@ -1069,7 +1069,7 @@ cr.define('cr.login', function() {
       if (!gaiaDone) {
         // Start `gaiaDoneTimer_` if user info is not available.
         this.gaiaDoneTimer_ = window.setTimeout(
-            this.onGaiaDoneTimeout_.bind(this), GAIA_DONE_WAIT_TIMEOUT_MS);
+            () => this.onGaiaDoneTimeout_(), GAIA_DONE_WAIT_TIMEOUT_MS);
         return;
       }
 

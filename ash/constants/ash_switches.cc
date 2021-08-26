@@ -553,6 +553,11 @@ const char kFormFactor[] = "form-factor";
 // Sets the throttle fps for compositor frame submission.
 const char kFrameThrottleFps[] = "frame-throttle-fps";
 
+// A reauth request token that will be passed in the Gaia embedded sign-in URL.
+// The token will be obtained by a client-server request in the future, but in
+// this temporary prototype we're configuring it manually.
+const char kGaiaReauthRequestToken[] = "gaia-reauth-request-token";
+
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
 const char kGuestSession[] = "bwsi";
