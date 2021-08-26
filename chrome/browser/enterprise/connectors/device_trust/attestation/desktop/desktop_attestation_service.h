@@ -12,10 +12,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
 
-namespace crypto {
-class UnexportableSigningKey;
-}  // namespace crypto
-
 namespace enterprise_connectors {
 
 class DeviceTrustSignals;
@@ -26,16 +22,11 @@ class SigningKeyPair;
 // Verified Access.
 class DesktopAttestationService : public AttestationService {
  public:
-  DesktopAttestationService();
+  explicit DesktopAttestationService(std::unique_ptr<SigningKeyPair> key_pair);
   ~DesktopAttestationService() override;
 
   // Export the public key of `key_pair_` in SubjectPublicKeyInfo format.
   std::string ExportPublicKey();
-
-  // Set a signing key for testing so that it does not need to be read from
-  // platform specific storage.
-  void SetKeyPairForTesting(
-      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
 
   // Builds a challenge response for the given challenge `request` and
   // `signals`, and wraps it into the `result`.

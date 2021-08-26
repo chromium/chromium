@@ -4,12 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -26,6 +26,7 @@
 
 using content::NavigationThrottle;
 using ::testing::_;
+using ::testing::Invoke;
 using ::testing::Return;
 
 namespace {
@@ -38,19 +39,8 @@ base::Value::ListStorage GetTrustedUrls() {
 }
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-constexpr char kChallenge[] =
-    "{"
-    "\"challenge\": "
-    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
-    "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
-    "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
-    "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
-    "FUA5r3lxdoluxwAUMFqcP4VgnMvKzKTPYbnnB+xj5h5BZqjQToXJYoP4VC3/"
-    "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
-    "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
-    "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
-    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
-    "}";
+constexpr char kChallenge[] = R"({"challenge": "encrypted_challenge_string"})";
+
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace
@@ -137,8 +127,9 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
   auto throttle = CreateThrottle(&test_handle);
 
-  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(kChallenge, _))
-      .Times(1);
+  EXPECT_CALL(test_handle, RemoveRequestHeader("X-Device-Trust"));
+  EXPECT_CALL(mock_device_trust_service_,
+              BuildChallengeResponse(kChallenge, _));
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 }

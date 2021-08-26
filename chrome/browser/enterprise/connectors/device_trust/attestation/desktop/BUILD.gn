@@ -1,0 +1,47 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This code is required to implement the device trust rotate key elevated
+# command.  It lives within its own target so that the code can be shared
+# by the //chrome/installer/setup:setup and //chrome/browser:browser targets.
+source_set("elevated_command_support") {
+  public = [
+    "ec_signing_key.h",
+    "signing_key_pair.h",
+  ]
+
+  sources = [
+    "ec_signing_key.cc",
+    "signing_key_pair.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/policy/proto",
+    "//crypto",
+  ]
+
+  if (is_win) {
+    sources += [ "signing_key_pair_win.cc" ]
+    deps = [ "//chrome/install_static:install_static_util" ]
+  }
+
+  if (is_mac) {
+    sources += [ "signing_key_pair_mac.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [ "signing_key_pair_linux.cc" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "memory_signing_key_pair.cc",
+    "memory_signing_key_pair.h",
+  ]
+
+  public_deps = [ ":elevated_command_support" ]
+}

@@ -29,8 +29,9 @@ const size_t kChallengResponseNonceBytesSize = 32;
 
 }  // namespace
 
-DesktopAttestationService::DesktopAttestationService()
-    : key_pair_(std::make_unique<SigningKeyPair>()) {}
+DesktopAttestationService::DesktopAttestationService(
+    std::unique_ptr<SigningKeyPair> key_pair)
+    : key_pair_(std::move(key_pair)) {}
 
 DesktopAttestationService::~DesktopAttestationService() = default;
 
@@ -74,11 +75,6 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
           google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex(),
           std::move(signals)),
       std::move(reply));
-}
-
-void DesktopAttestationService::SetKeyPairForTesting(
-    std::unique_ptr<crypto::UnexportableSigningKey> key_pair) {
-  key_pair_->SetKeyPairForTesting(std::move(key_pair));  // IN-TEST
 }
 
 void DesktopAttestationService::StampReport(DeviceTrustReportEvent& report) {

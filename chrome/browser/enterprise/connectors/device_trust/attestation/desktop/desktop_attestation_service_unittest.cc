@@ -2,31 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
 
-#include "base/base64.h"
-#include "base/json/json_reader.h"
-#include "base/values.h"
-#include "build/build_config.h"
+#include <memory>
+
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/memory_signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
-#endif
-
 namespace {
 
-constexpr char challenge[] =
+// A sample VerifiedAccess v2 challenge rerepsented as a JSON string.
+constexpr char kJsonChallenge[] =
     "{"
     "\"challenge\": "
     "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
@@ -45,33 +35,19 @@ constexpr char challenge[] =
 namespace enterprise_connectors {
 
 class DesktopAttestationServiceTest : public testing::Test {
- public:
-  DesktopAttestationServiceTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+ protected:
+  DesktopAttestationServiceTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();
-    OSCryptMocker::SetUp();
 
-    attestation_service_ = std::make_unique<DesktopAttestationService>();
+    // Make sure a signing key exists for the tests. This won't actual require
+    // admin rights because of MemorySigningKeyPair.
+    auto key_pair = test::MemorySigningKeyPair::Create();
+    ASSERT_TRUE(key_pair->RotateWithAdminRights("fake_dm_token"));
 
-#if defined(OS_WIN)
-    // The test bots won't already have a signing key stored in platform
-    // specific storage, so the attestation_service will have an empty signing
-    // key.  Set a key now for testing.
-    ECSigningKeyProvider provider;
-    auto acceptable_algorithms = {
-        crypto::SignatureVerifier::ECDSA_SHA256,
-        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-    };
-    attestation_service_->SetKeyPairForTesting(
-        provider.GenerateSigningKeySlowly(acceptable_algorithms));
-#endif
-  }
-
-  void TearDown() override {
-    testing::Test::TearDown();
-    OSCryptMocker::TearDown();
+    attestation_service_ =
+        std::make_unique<DesktopAttestationService>(std::move(key_pair));
   }
 
   DesktopAttestationService* attestation_service() {
@@ -79,10 +55,9 @@ class DesktopAttestationServiceTest : public testing::Test {
   }
 
  private:
-  ScopedTestingLocalState local_state_;
   base::test::TaskEnvironment task_environment_;
-  policy::FakeBrowserDMTokenStorage dm_token_storage_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
+  test::ScopedMemorySigningKeyPairPersistence persistence_scope_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {
@@ -94,7 +69,7 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {
   auto signals = std::make_unique<DeviceTrustSignals>();
 
   // Get the challenge from the SignedData json and create request.
-  request.set_challenge(JsonChallengeToProtobufChallenge(challenge));
+  request.set_challenge(JsonChallengeToProtobufChallenge(kJsonChallenge));
   // If challenge is equal to empty string, then
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(request.challenge(), std::string());

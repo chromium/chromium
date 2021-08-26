@@ -33,6 +33,8 @@ class DeviceTrustService;
 // back to the origin via the X-Verified-Access-Challenge-Response HTTP header.
 class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  public:
+  // Create a navigation throttle for the given navigation if device trust is
+  // enabled.  Returns nullptr if no throttling should be done.
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation_handle);
 

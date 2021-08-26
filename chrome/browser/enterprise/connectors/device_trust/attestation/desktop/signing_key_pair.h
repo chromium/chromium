@@ -5,8 +5,20 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_SIGNING_KEY_PAIR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_SIGNING_KEY_PAIR_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/compiler_specific.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+namespace crypto {
+class UnexportableKeyProvider;
+class UnexportableSigningKey;
+}  // namespace crypto
 
 namespace enterprise_connectors {
 
@@ -24,10 +36,13 @@ class SigningKeyPair {
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
-  SigningKeyPair();
+  using KeyInfo = std::pair<KeyTrustLevel, std::vector<uint8_t>>;
+
+  static std::unique_ptr<SigningKeyPair> Create();
+
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;
-  ~SigningKeyPair();
+  virtual ~SigningKeyPair();
 
   // Signs `message` and with the key and returns the signature.
   bool SignMessage(const std::string& message, std::string* signature);
@@ -36,32 +51,35 @@ class SigningKeyPair {
   // block.
   bool ExportPublicKey(std::vector<uint8_t>* public_key);
 
-  // Rotates the key pair.  The device must be enrolled with CBCM to succeeded.
-  // Uses a platform mechanism to elevate and run RotateWithElevation().
-  bool Rotate();
-
   // Rotates the key pair.  If no key pair already exists, simply creates a
-  // new one. |dm_token| is a base64-encoded string containing the DM token
-  // to use when sending the new public key to the DM server.  This function
-  // will fail if not called with elevation.
-  bool RotateWithElevation(const std::string& dm_token_base64);
+  // new one.  `dm_token` the DM token to use when sending the new public key to
+  // the DM server.  This function will fail if not called with admin rights.
+  bool RotateWithAdminRights(const std::string& dm_token) WARN_UNUSED_RESULT;
 
-  // Set a signing key for testing so that it does not need to be read from
-  // platform specific storage.
-  void SetKeyPairForTesting(
-      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
+ protected:
+  SigningKeyPair();
 
- private:
-  // Load key if available. Return true on success.
+  // Initialize the key pair by loading from persistent storage.
   void Init();
 
-  // Stores the key in a platform specific location.  This method requires
-  // elevation since it writes to a location that is shared by all OS users of
-  // the device.  Returns true on success.
-  bool StoreKeyPair();
+ private:
+  // Creates a signing key pair that is specific to the platform.
+  static std::unique_ptr<SigningKeyPair> CreatePlatformKeyPair();
 
-  // Loads the key from a platform specific location.  Returns true on success.
-  bool LoadKeyPair();
+  // Returns the TPM-backed signing key provider for the platform if available.
+  virtual std::unique_ptr<crypto::UnexportableKeyProvider>
+  GetTpmBackedKeyProvider();
+
+  // Stores the trust level and wrapped key in a platform specific location.
+  // This method requires elevation since it writes to a location that is
+  // shared by all OS users of the device.  Returns true on success.
+  virtual bool StoreKeyPair(KeyTrustLevel trust_level,
+                            std::vector<uint8_t> wrapped) = 0;
+
+  // Loads the key from a platform specific location.  Returns
+  // BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED and an empty vector if the trust level
+  // or wrapped bits could not be loaded.
+  virtual KeyInfo LoadKeyPair() = 0;
 
   std::unique_ptr<crypto::UnexportableSigningKey> key_pair_;
   KeyTrustLevel trust_level_ = enterprise_management::
