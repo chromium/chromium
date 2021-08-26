@@ -764,6 +764,7 @@ group("jni_headers") {
     "//chrome/android/features/autofill_assistant:jni_headers",
     "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
+    "//chrome/android/features/start_surface:jni_headers",
     "//chrome/browser/android/browserservices/metrics:jni_headers",
     "//chrome/browser/android/browserservices/verification:jni_headers",
     "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
