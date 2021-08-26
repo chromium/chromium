@@ -179,8 +179,10 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     SafeSeedManager* safe_seed_manager,
     absl::optional<int> low_entropy_source_value,
     bool extend_variations_safe_mode) {
+#if !defined(OS_ANDROID)
   if (extend_variations_safe_mode)
     MaybeExtendVariationsSafeMode(metrics_state_manager);
+#endif
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -588,6 +590,7 @@ Study::Platform VariationsFieldTrialCreator::GetPlatform() {
   return ClientFilterableState::GetCurrentPlatform();
 }
 
+#if !defined(OS_ANDROID)
 void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) const {
   version_info::Channel channel = client_->GetChannelForVariations();
@@ -624,5 +627,6 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
       /*has_session_shutdown_cleanly=*/false, /*write_synchronously=*/true,
       update_beacon);
 }
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

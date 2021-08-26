@@ -69,8 +69,10 @@ const char kTestSeedSerialNumber[] = "123";
 const char kTestSeedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
 
+#if !defined(OS_ANDROID)
 // The content of an empty prefs file.
 const char kEmptyPrefsFile[] = "{}";
+#endif  // !defined(OS_ANDROID)
 
 // Used for similar tests.
 struct TestParams {
@@ -760,6 +762,7 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
 }
 #endif  // OS_ANDROID
 
+#if !defined(OS_ANDROID)
 class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
  public:
   FieldTrialCreatorSafeModeExperimentTest()
@@ -1085,5 +1088,6 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
   EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
 }
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

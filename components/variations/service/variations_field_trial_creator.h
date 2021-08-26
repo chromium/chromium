@@ -188,11 +188,13 @@ class VariationsFieldTrialCreator {
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   Study::Platform GetPlatform();
 
+#if !defined(OS_ANDROID)
   // On channels that support the ExtendedVariationsSafeMode experiment, (a)
   // assigns the client to an experiment group and (b) applies group-specific
   // behavior. Does nothing if the channel does not support the experiment.
   void MaybeExtendVariationsSafeMode(
       metrics::MetricsStateManager* metrics_state_manager) const;
+#endif
 
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }
