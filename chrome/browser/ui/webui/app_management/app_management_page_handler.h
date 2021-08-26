@@ -73,6 +73,14 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   apps::PreferredAppsList& preferred_apps_list_;
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  base::ScopedObservation<apps::PreferredAppsList,
+                          apps::PreferredAppsList::Observer>
+      preferred_apps_list_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandler);
 };
 
