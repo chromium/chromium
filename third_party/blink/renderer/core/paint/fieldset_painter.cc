@@ -48,7 +48,7 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxDecorationData box_decoration_data(paint_info, layout_fieldset_);
   // TODO(crbug.com/786475): Fieldset should not scroll.
-  DCHECK(!box_decoration_data.IsPaintingScrollingBackground());
+  DCHECK(!box_decoration_data.IsPaintingBackgroundInContentsSpace());
   if (box_decoration_data.ShouldPaint() &&
       !DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_fieldset_, paint_info.phase)) {

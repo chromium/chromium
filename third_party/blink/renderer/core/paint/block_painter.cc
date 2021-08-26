@@ -70,9 +70,9 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
       local_paint_info.SetSkipsBackground(false);
 
       if (paint_location & kBackgroundPaintInContentsSpace) {
-        local_paint_info.SetIsPaintingScrollingBackground(true);
+        local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);
         layout_block_.PaintObject(local_paint_info, paint_offset);
-        local_paint_info.SetIsPaintingScrollingBackground(false);
+        local_paint_info.SetIsPaintingBackgroundInContentsSpace(false);
       }
     } else {
       layout_block_.PaintObject(local_paint_info, paint_offset);

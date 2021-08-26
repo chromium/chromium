@@ -79,8 +79,8 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
       const Color&,
       const FillLayer&,
       BackgroundBleedAvoidance,
-      bool is_painting_scrolling_background) const override;
-  bool IsPaintingScrollingBackground(const PaintInfo&) const override;
+      bool is_painting_background_in_contents_space) const override;
+  bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
   void PaintTextClipMask(const PaintInfo&,
                          const IntRect& mask_rect,

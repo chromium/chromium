@@ -64,13 +64,13 @@ void BoxPainter::PaintBoxDecorationBackground(
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
-  bool painting_scrolling_background =
-      BoxDecorationData::IsPaintingScrollingBackground(paint_info, layout_box_);
+  bool painting_background_in_contents_space =
+      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                             layout_box_);
   IntRect visual_rect;
-  if (painting_scrolling_background) {
-    // For the case where we are painting the background into the scrolling
-    // contents layer of a composited scroller we need to include the entire
-    // overflow rect.
+  if (painting_background_in_contents_space) {
+    // For the case where we are painting the background in the contents space,
+    // we need to include the entire overflow rect.
     paint_rect = layout_box_.PhysicalLayoutOverflowRect();
     contents_paint_state.emplace(paint_info, paint_offset, layout_box_);
     paint_rect.Move(contents_paint_state->PaintOffset());
@@ -125,7 +125,7 @@ void BoxPainter::PaintBoxDecorationBackground(
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
-  if (!painting_scrolling_background && needs_scroll_hit_test)
+  if (!painting_background_in_contents_space && needs_scroll_hit_test)
     RecordScrollHitTestData(paint_info, *background_client);
 }
 

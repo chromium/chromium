@@ -449,9 +449,9 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
       info.SetSkipsBackground(false);
 
       if (paint_location & kBackgroundPaintInContentsSpace) {
-        info.SetIsPaintingScrollingBackground(true);
+        info.SetIsPaintingBackgroundInContentsSpace(true);
         PaintObject(info, paint_offset);
-        info.SetIsPaintingScrollingBackground(false);
+        info.SetIsPaintingBackgroundInContentsSpace(false);
       }
     } else {
       PaintObject(info, paint_offset);
@@ -983,13 +983,12 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
-  bool painting_scrolling_background =
-      IsPaintingScrollingBackground(paint_info);
+  bool painting_background_in_contents_space =
+      IsPaintingBackgroundInContentsSpace(paint_info);
   IntRect visual_rect;
-  if (painting_scrolling_background) {
-    // For the case where we are painting the background into the scrolling
-    // contents layer of a composited scroller we need to include the entire
-    // overflow rect.
+  if (painting_background_in_contents_space) {
+    // For the case where we are painting the background in the contents space,
+    // we need to include the entire overflow rect.
     const LayoutBox& layout_box = To<LayoutBox>(layout_object);
     paint_rect = layout_box.PhysicalLayoutOverflowRect();
 
@@ -1008,7 +1007,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   } else {
     paint_rect.offset = paint_offset;
     paint_rect.size = box_fragment_.Size();
-    if (layout_object.IsTableCell()) {
+    if (layout_object.IsTableCell() && !box_fragment_.IsTableNGCell()) {
       paint_rect.size =
           PhysicalSize(To<LayoutBox>(layout_object).PixelSnappedSize());
     }
@@ -1017,36 +1016,10 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   }
 
   if (!suppress_box_decoration_background) {
-    // The fieldset painter is not skipped when there is no background because
-    // the legend needs to paint.
-    if (PhysicalFragment().IsFieldsetContainer()) {
-      NGFieldsetPainter(box_fragment_)
-          .PaintBoxDecorationBackground(paint_info, paint_offset);
-    } else if (PhysicalFragment().IsTableNGPart()) {
-      if (box_fragment_.IsTableNGCell()) {
-        NGTableCellPainter(box_fragment_)
-            .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          *background_client, visual_rect);
-      } else if (box_fragment_.IsTableNGRow()) {
-        NGTableRowPainter(box_fragment_)
-            .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          *background_client, visual_rect);
-      } else if (box_fragment_.IsTableNGSection()) {
-        NGTableSectionPainter(box_fragment_)
-            .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          *background_client, visual_rect);
-      } else {
-        DCHECK(box_fragment_.IsTableNG());
-        NGTablePainter(box_fragment_)
-            .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          *background_client, visual_rect);
-      }
-    } else if (box_fragment_.Style().HasBoxDecorationBackground()) {
-      PaintBoxDecorationBackgroundWithRect(
-          contents_paint_state ? contents_paint_state->GetPaintInfo()
-                               : paint_info,
-          visual_rect, paint_rect, *background_client);
-    }
+    PaintBoxDecorationBackgroundWithRect(
+        contents_paint_state ? contents_paint_state->GetPaintInfo()
+                             : paint_info,
+        visual_rect, paint_rect, *background_client);
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
@@ -1074,7 +1047,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
-  if (!painting_scrolling_background && needs_scroll_hit_test)
+  if (!painting_background_in_contents_space && needs_scroll_hit_test)
     RecordScrollHitTestData(paint_info, *background_client);
 }
 
@@ -1083,16 +1056,19 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     const IntRect& visual_rect,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
-  const auto& layout_box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
+  BoxDecorationData box_decoration_data(paint_info, box_fragment_);
+  if (!box_decoration_data.ShouldPaint() &&
+      (!box_fragment_.IsTableNG() ||
+       !NGTablePainter(box_fragment_).WillCheckColumnBackgrounds())) {
+    return;
+  }
 
   absl::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
-      ShouldSkipPaintUnderInvalidationChecking(layout_box))
+      ShouldSkipPaintUnderInvalidationChecking(
+          To<LayoutBox>(*box_fragment_.GetLayoutObject()))) {
     cache_skipper.emplace(paint_info.context);
-
-  BoxDecorationData box_decoration_data(paint_info, PhysicalFragment());
-  if (!box_decoration_data.ShouldPaint())
-    return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, background_client,
@@ -1102,9 +1078,35 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
   DrawingRecorder recorder(paint_info.context, background_client,
                            DisplayItem::kBoxDecorationBackground, visual_rect);
 
-  PaintBoxDecorationBackgroundWithRectImpl(paint_info, paint_rect,
-                                           box_decoration_data);
+  if (PhysicalFragment().IsFieldsetContainer()) {
+    NGFieldsetPainter(box_fragment_)
+        .PaintBoxDecorationBackground(paint_info, paint_rect,
+                                      box_decoration_data);
+  } else if (PhysicalFragment().IsTableNGPart()) {
+    if (box_fragment_.IsTableNGCell()) {
+      NGTableCellPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_rect,
+                                        box_decoration_data);
+    } else if (box_fragment_.IsTableNGRow()) {
+      NGTableRowPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_rect,
+                                        box_decoration_data);
+    } else if (box_fragment_.IsTableNGSection()) {
+      NGTableSectionPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_rect,
+                                        box_decoration_data);
+    } else {
+      DCHECK(box_fragment_.IsTableNG());
+      NGTablePainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_rect,
+                                        box_decoration_data);
+    }
+  } else {
+    PaintBoxDecorationBackgroundWithRectImpl(paint_info, paint_rect,
+                                             box_decoration_data);
+  }
 }
+
 // TODO(kojii): This logic is kept in sync with BoxPainter. Not much efforts to
 // eliminate LayoutObject dependency were done yet.
 void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
@@ -1125,7 +1127,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   }
 
   bool needs_end_layer = false;
-  if (!box_decoration_data.IsPaintingScrollingBackground()) {
+  if (!box_decoration_data.IsPaintingBackgroundInContentsSpace()) {
     if (box_fragment_.HasSelfPaintingLayer() && layout_box.IsTableCell() &&
         ToInterface<LayoutNGTableCellInterface>(layout_box)
             .TableInterface()
@@ -1713,10 +1715,10 @@ void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
   PaintInlineItems(paint_info, paint_offset, parent_offset, &children);
 }
 
-bool NGBoxFragmentPainter::IsPaintingScrollingBackground(
+bool NGBoxFragmentPainter::IsPaintingBackgroundInContentsSpace(
     const PaintInfo& paint_info) const {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return paint_info.IsPaintingScrollingBackground();
+    return paint_info.IsPaintingBackgroundInContentsSpace();
 
   // TODO(layout-dev): Change paint_info.PaintContainer to accept fragments
   // once LayoutNG supports scrolling containers.
@@ -1788,7 +1790,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 
   // Clip to the overflow area.
   if (info.is_clipped_with_local_scrolling &&
-      !IsPaintingScrollingBackground(paint_info)) {
+      !IsPaintingBackgroundInContentsSpace(paint_info)) {
     context.Clip(FloatRect(physical.OverflowClipRect(rect.offset)));
 
     // Adjust the paint rect to reflect a scrolled content box with borders at
@@ -1816,7 +1818,7 @@ BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
     const Color& color,
     const FillLayer& bg_layer,
     BackgroundBleedAvoidance bleed_avoidance,
-    bool is_painting_scrolling_background) const {
+    bool is_painting_background_in_contents_space) const {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   RespectImageOrientationEnum respect_orientation =
       LayoutObject::ShouldRespectImageOrientation(fragment.GetLayoutObject());
@@ -1829,7 +1831,7 @@ BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
       fragment.IsScrollContainer(), color, bg_layer, bleed_avoidance,
       respect_orientation, box_fragment_.SidesToInclude(),
       fragment.GetLayoutObject()->IsLayoutInline(),
-      is_painting_scrolling_background);
+      is_painting_background_in_contents_space);
 }
 
 template <typename T>

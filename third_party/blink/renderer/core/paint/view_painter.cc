@@ -74,11 +74,11 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 
   bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
                            layout_view_.InsideBlockingWheelEventHandler();
-  bool painting_scrolling_background =
-      BoxDecorationData::IsPaintingScrollingBackground(paint_info,
-                                                       layout_view_);
+  bool painting_background_in_contents_space =
+      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                             layout_view_);
   bool paints_scroll_hit_test =
-      !painting_scrolling_background &&
+      !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
@@ -114,7 +114,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 
   const DisplayItemClient* background_client = &layout_view_;
 
-  if (painting_scrolling_background) {
+  if (painting_background_in_contents_space) {
     // Layout overflow, combined with the visible content size.
     auto document_rect = layout_view_.DocumentRect();
     // DocumentRect is relative to ScrollOrigin. Add ScrollOrigin to let it be
@@ -159,7 +159,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   //
   // [1] https://drafts.fxtf.org/compositing/#pagebackdrop
   // [2] https://drafts.fxtf.org/compositing/#rootgroup
-  if (should_paint_background && painting_scrolling_background &&
+  if (should_paint_background && painting_background_in_contents_space &&
       should_apply_root_background_behavior && root_object) {
     const auto& document_element_state =
         root_object->FirstFragment().LocalBorderBoxProperties();
@@ -181,7 +181,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     }
   }
 
-  if (painting_scrolling_background) {
+  if (painting_background_in_contents_space) {
     scoped_properties.emplace(paint_info.context.GetPaintController(),
                               root_element_background_painting_state,
                               *background_client,
@@ -205,7 +205,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
   if (paints_scroll_hit_test) {
-    DCHECK(!painting_scrolling_background);
+    DCHECK(!painting_background_in_contents_space);
     BoxPainter(layout_view_)
         .RecordScrollHitTestData(paint_info, *background_client);
   }

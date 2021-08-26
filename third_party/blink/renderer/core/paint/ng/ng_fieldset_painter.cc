@@ -70,34 +70,21 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
 // cutout hole for the legend.
 void NGFieldsetPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) {
-  GraphicsContext& graphics_context = paint_info.context;
-  PhysicalSize fieldset_size(fieldset_.Size());
-  PhysicalRect paint_rect(paint_offset, fieldset_size);
-  BoxDecorationData box_decoration_data(paint_info, fieldset_);
-  // TODO(crbug.com/786475): Fieldset should not scroll.
-  DCHECK(!box_decoration_data.IsPaintingScrollingBackground());
-  if (!box_decoration_data.ShouldPaint())
-    return;
-
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          graphics_context, *fieldset_.GetLayoutObject(), paint_info.phase))
-    return;
+    const PhysicalRect& paint_rect,
+    const BoxDecorationData& box_decoration_data) {
+  DCHECK(box_decoration_data.ShouldPaint());
 
   const ComputedStyle& style = fieldset_.Style();
   FieldsetPaintInfo fieldset_paint_info = CreateFieldsetPaintInfo();
   PhysicalRect contracted_rect(paint_rect);
   contracted_rect.Contract(fieldset_paint_info.border_outsets);
 
-  DrawingRecorder recorder(
-      graphics_context, *fieldset_.GetLayoutObject(), paint_info.phase,
-      NGBoxFragmentPainter(fieldset_).VisualRect(paint_offset));
-
   NGBoxFragmentPainter fragment_painter(fieldset_);
   if (box_decoration_data.ShouldPaintShadow()) {
     fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style);
   }
 
+  GraphicsContext& graphics_context = paint_info.context;
   GraphicsContextStateSaver state_saver(graphics_context, false);
   bool needs_end_layer = false;
   if (BleedAvoidanceIsClipping(

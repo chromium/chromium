@@ -76,8 +76,8 @@ struct CORE_EXPORT PaintInfo {
         fragment_id_(copy_other_fields_from.fragment_id_),
         paint_flags_(copy_other_fields_from.paint_flags_),
         global_paint_flags_(copy_other_fields_from.global_paint_flags_) {
-    // We should never pass is_painting_scrolling_background_ other PaintInfo.
-    DCHECK(!copy_other_fields_from.is_painting_scrolling_background_);
+    // We should never pass the flag to other PaintInfo.
+    DCHECK(!copy_other_fields_from.is_painting_background_in_contents_space);
   }
 
   // Creates a PaintInfo for painting descendants. See comments about the paint
@@ -86,7 +86,7 @@ struct CORE_EXPORT PaintInfo {
     PaintInfo result(*this);
 
     // We should never start to paint descendant when the flag is set.
-    DCHECK(!result.is_painting_scrolling_background_);
+    DCHECK(!result.is_painting_background_in_contents_space);
 
     if (phase == PaintPhase::kDescendantOutlinesOnly)
       result.phase = PaintPhase::kOutline;
@@ -102,7 +102,7 @@ struct CORE_EXPORT PaintInfo {
     return paint_flags_ & kPaintLayerPaintingRenderingResourceSubtree;
   }
 
-  // TODO(wangxianzhu): Rename this function to SkipBackground() for CAP.
+  // TODO(wangxianzhu): Rename this function to ShouldSkipBackground() for CAP.
   bool SkipRootBackground() const {
     return paint_flags_ & kPaintLayerPaintingSkipRootBackground;
   }
@@ -193,13 +193,13 @@ struct CORE_EXPORT PaintInfo {
   void SetFragmentID(wtf_size_t id) { fragment_id_ = id; }
   void SetIsInFragmentTraversal() { fragment_id_ = WTF::kNotFound; }
 
-  bool IsPaintingScrollingBackground() const {
+  bool IsPaintingBackgroundInContentsSpace() const {
     DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return is_painting_scrolling_background_;
+    return is_painting_background_in_contents_space;
   }
-  void SetIsPaintingScrollingBackground(bool b) {
+  void SetIsPaintingBackgroundInContentsSpace(bool b) {
     DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    is_painting_scrolling_background_ = b;
+    is_painting_background_in_contents_space = b;
   }
 
   bool DescendantPaintingBlocked() const {
@@ -232,7 +232,7 @@ struct CORE_EXPORT PaintInfo {
   const GlobalPaintFlags global_paint_flags_;
 
   // For CAP only.
-  bool is_painting_scrolling_background_ = false;
+  bool is_painting_background_in_contents_space = false;
 
   // Used by display-locking.
   bool descendant_painting_blocked_ = false;

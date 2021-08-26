@@ -85,7 +85,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
   PhysicalRect paint_rect;
   IntRect visual_rect;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
-  if (box_decoration_data.IsPaintingScrollingBackground()) {
+  if (box_decoration_data.IsPaintingBackgroundInContentsSpace()) {
     // See BoxPainter::PaintBoxDecorationBackground() for explanations.
     // TODO(wangxianzhu): Perhaps we can merge them for CompositeAfterPaint.
     paint_rect = layout_table_cell_.PhysicalLayoutOverflowRect();

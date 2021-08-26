@@ -11,10 +11,12 @@
 
 namespace blink {
 
+class BoxDecorationData;
 class LayoutBox;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
 struct PhysicalOffset;
+struct PhysicalRect;
 
 class NGTablePainter {
   STACK_ALLOCATED();
@@ -25,10 +27,11 @@ class NGTablePainter {
     DCHECK(fragment_.IsTableNG());
   }
 
+  bool WillCheckColumnBackgrounds();
+
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintCollapsedBorders(const PaintInfo&,
                              const PhysicalOffset&,
@@ -49,9 +52,8 @@ class NGTableSectionPainter {
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& section_offset,
@@ -72,9 +74,8 @@ class NGTableRowPainter {
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintTablePartBackgroundIntoCells(
       const PaintInfo& paint_info,
@@ -99,9 +100,8 @@ class NGTableCellPainter {
       : fragment_(table_cell_fragment) {}
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintBackgroundForTablePart(const PaintInfo& paint_info,
                                    const LayoutBox& table_part,
