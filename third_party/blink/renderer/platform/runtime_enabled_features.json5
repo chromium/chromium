@@ -504,7 +504,7 @@
       // https://github.com/w3c/csswg-drafts/issues/5693
       // Experimental support of @counter-style rules in shadow DOM.
       name: "CSSAtRuleCounterStyleInShadowDOM",
-      status: "test",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-counter-styles/#counter-style-speak-as
