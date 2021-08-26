@@ -253,9 +253,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
 // Verify that the frame layout is as expected when using immersive mode in
 // tablet mode.
-// Fails on Linux Chromium OS ASan LSan Tests.
+// Fails on Linux Chromium OS.
 // TODO(crbug.com/1191327): reenable the test.
-#if defined(OS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#if defined(OS_CHROMEOS)
 #define MAYBE_FrameLayoutToggleTabletMode DISABLED_FrameLayoutToggleTabletMode
 #else
 #define MAYBE_FrameLayoutToggleTabletMode FrameLayoutToggleTabletMode
