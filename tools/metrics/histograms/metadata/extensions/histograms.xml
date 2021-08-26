@@ -1278,7 +1278,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Extensions.ExtensionCacheCount" units="units"
     expires_after="2021-10-04">
   <owner>burunduk@chromium.org</owner>
-  <owner>snijhara@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of cached extensions on disk. Reported on Chrome OS during user
@@ -1289,7 +1288,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
     expires_after="2021-10-04">
   <owner>burunduk@chromium.org</owner>
-  <owner>snijhara@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total size of .crx files in cache on disk. Reported on Chrome OS during user
@@ -1588,7 +1586,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
     enum="ExtensionNoUpdatesInfo" expires_after="2022-02-20">
-  <owner>snijhara@google.com</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1742,7 +1739,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="BooleanCacheHit" expires_after="2022-01-09">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
-  <owner>snijhara@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether the extension is downloaded from cache or not. Recorded for
@@ -1778,7 +1774,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
     expires_after="2022-02-01">
-  <owner>snijhara@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
