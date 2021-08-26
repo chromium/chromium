@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">พิมพ์ข้อความ</translation>
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
 <translation id="2021864487439853900">คลิกเพื่อปลดล็อก</translation>
+<translation id="2023558322300866873">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="2047639699071423250">เพิ่มแนวคิดหลัก</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">ใช้ได้อีกครั้งพรุ่งนี้ เวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธิต</translation>
+<translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="479989351350248267">ค้นหา</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4814539958450445987">หน้าจอการเข้าสู่ระบบ</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">ตรึง</translation>
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
-<translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
-<translation id="7482097454533720217">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="7483025031359818980">กำหนดพื้นที่สำหรับการเลือกเป็นเต็มหน้าจอ</translation>
 <translation id="7486227320194954040">ยุบเครื่องมือทำเครื่องหมาย</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796353162336583443">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ตลอดจนใช้ Google Assistant ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
+<translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> กับ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">สัญญาณแรง</translation>
 <translation id="7837740436429729974">หมดเวลา</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">กำลังนำโปรไฟล์ออก รอสักครู่</translation>
 <translation id="8825863694328519386">เลื่อนจากด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

@@ -141,6 +141,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2016340657076538683">Shkruaj një mesazh</translation>
 <translation id="2018630726571919839">Më trego një barsoletë</translation>
 <translation id="2021864487439853900">Kliko për ta shkyçur</translation>
+<translation id="2023558322300866873">Mund ta ndalosh regjistrimin e paketave në çdo kohë.</translation>
 <translation id="2047639699071423250">Shto ide kyçe</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
@@ -495,6 +496,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
+<translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="479989351350248267">kërko</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="4814539958450445987">Ekrani i identifikimit</translation>
@@ -824,9 +826,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="746232733191930409">Modaliteti i regjistrimit të ekranit</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
-<translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
-<translation id="7482097454533720217">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose troket dhe mban tekst.</translation>
 <translation id="7483025031359818980">Zona e përzgjedhjes është caktuar në ekran të plotë</translation>
 <translation id="7486227320194954040">Palos veglat e piketës</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
@@ -868,6 +868,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>
+<translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dhe <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinjal i fortë</translation>
 <translation id="7837740436429729974">Koha mbaroi</translation>
@@ -999,7 +1000,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8818320199597151042">Profili po hiqet. Prit disa minuta.</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Mund të ndalosh kapjen e paketave në çfarëdo kohe.</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>
 <translation id="8843682306134542540">Aktivizo/çaktivizo kyçjen e rrotullimit. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>

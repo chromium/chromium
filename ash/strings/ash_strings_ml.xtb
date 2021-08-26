@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">ഒരു സന്ദേശം ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2018630726571919839">എന്നോട് ഒരു തമാശ പറയൂ</translation>
 <translation id="2021864487439853900">അൺലോക്കുചെയ്യാൻ ക്ലിക്കുചെയ്യൂ</translation>
+<translation id="2023558322300866873">നിങ്ങൾക്ക് ഏതുസമയത്തും പാക്കറ്റ് ക്യാപ്ചർ അവസാനിപ്പിക്കാം</translation>
 <translation id="2047639699071423250">കീ ഐഡിയ ബട്ടൺ ചേർക്കുക</translation>
 <translation id="2049240716062114887">ഡെസ്‌കിന്റെ പേര് <ph name="DESK_NAME" /> എന്നാക്കി മാറ്റി</translation>
 <translation id="2050339315714019657">പോർട്രെയ്റ്റ്</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">നാളെ <ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനായുള്ള പാസ്‌വേഡ്</translation>
 <translation id="4778095205580009397">ഡെമോ സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
+<translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
 <translation id="479989351350248267">തിരയുക</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746232733191930409">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ്</translation>
 <translation id="7466449121337984263">സെൻസറിൽ സ്‌പർശിക്കുക</translation>
-<translation id="7473891865547856676">വേണ്ട, നന്ദി</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
-<translation id="7482097454533720217">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്തോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിച്ചോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കണ്‍വേര്‍ഷനുകളോ നേടുക.</translation>
 <translation id="7483025031359818980">തിരഞ്ഞെടുക്കൽ ഏരിയ പൂർണ്ണ സ്ക്രീനായി സജ്ജീകരിച്ചു</translation>
 <translation id="7486227320194954040">മാർക്കർ ടൂളുകൾ ചുരുക്കുക</translation>
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">സ്‌ക്രീൻ തിരിക്കുക</translation>
 <translation id="7796353162336583443">കുറിപ്പോ സ്‌ക്രീന്‍ഷോട്ടോ എടുക്കാനും Google സഹായിയോ ലേസർ പോയിന്‍ററോ ഭൂതക്കണ്ണാടിയോ ഉപയോഗിക്കാനും ഷെൽഫിലെ സ്‌റ്റൈലസ് ബട്ടൺ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="7798302898096527229">റദ്ദാക്കാൻ 'തിരയൽ' അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
+<translation id="780301667611848630">വേണ്ട നന്ദി</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />, <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ശക്തിയുള്ള സിഗ്നൽ</translation>
 <translation id="7837740436429729974">സമയം കഴിഞ്ഞു</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">നിങ്ങൾക്ക് ഏതുസമയത്തും പാക്കറ്റ് ക്യാപ്ചർ അവസാനിപ്പിക്കാം.</translation>
 <translation id="8841375032071747811">ബാക്ക് ബട്ടൺ</translation>
 <translation id="8843682306134542540">റൊട്ടേഷൻ ലോക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">തിരയൽ+Esc</translation>

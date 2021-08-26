@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">كتابة رسالة</translation>
 <translation id="2018630726571919839">أريد سماع نكتة</translation>
 <translation id="2021864487439853900">انقر لفتح قفل الشبكة.</translation>
+<translation id="2023558322300866873">يمكنك متى شئت إيقاف ميزة التقاط حِزم الشبكة.</translation>
 <translation id="2047639699071423250">إضافة الفكرة الرئيسية</translation>
 <translation id="2049240716062114887">تم تغيير اسم سطح المكتب إلى <ph name="DESK_NAME" />.</translation>
 <translation id="2050339315714019657">رأسي</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">يمكنك العودة غدًا في <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">‏لا يتوفَّر "مساعد Google" في جلسة تجريبية.</translation>
+<translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
 <translation id="479989351350248267">بحث</translation>
 <translation id="4804818685124855865">قطع الاتصال</translation>
 <translation id="4814539958450445987">شاشة تسجيل الدخول</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">تثبيت</translation>
 <translation id="746232733191930409">وضع تسجيل الشاشة</translation>
 <translation id="7466449121337984263">يُرجى لمس جهاز الاستشعار.</translation>
-<translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
-<translation id="7482097454533720217">يمكنك تعريف المصطلحات وترجمة النصوص وتحويل الوحدات من خلال النقر بزر الماوس الأيمن على نص أو النقر عليه مع الاستمرار.</translation>
 <translation id="7483025031359818980">تم ضبط منطقة الاختيار على ملء الشاشة.</translation>
 <translation id="7486227320194954040">تصغير أدوات التحديد</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">تدوير الشاشة</translation>
 <translation id="7796353162336583443">‏انقر على زر قلم الشاشة على الرف لتدوين ملاحظة أو الحصول على لقطة شاشة أو استخدام مساعد Google أو مؤشر الليزر أو العدسة المكبرة.</translation>
 <translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
+<translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> و<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">إشارة قوية</translation>
 <translation id="7837740436429729974">انتهى الوقت</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">جارٍ إزالة الملف التعريفي. يُرجى الانتظار بضع دقائق.</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
 <translation id="8828714802988429505">90 درجة</translation>
-<translation id="8832757911363938552">يمكنك إيقاف التقاط حِزم الشبكة في أي وقت.</translation>
 <translation id="8841375032071747811">زر الرجوع</translation>
 <translation id="8843682306134542540">تبديل قفل التدوير. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

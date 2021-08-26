@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">පණිවිඩයක් ටයිප් කරන්න</translation>
 <translation id="2018630726571919839">මට විහිළුවක් කියන්න</translation>
 <translation id="2021864487439853900">අගුලු හැරීමට ක්ලික් කරන්න</translation>
+<translation id="2023558322300866873">ඔබට ඕනෑම වේලාවක පැකට් ග්‍රහණය නැවැත්විය හැකිය</translation>
 <translation id="2047639699071423250">මූලික අදහසක් එක් කරන්න</translation>
 <translation id="2049240716062114887">ඩෙස්ක් නම <ph name="DESK_NAME" /> ලෙස වෙනස් කරන ලදි</translation>
 <translation id="2050339315714019657">සිරස්</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">හෙට <ph name="COME_BACK_TIME" />ට ආපසු එන්න.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
 <translation id="4778095205580009397">ආදර්ශන සැසියකදී Google සහකරු නොලැබේ.</translation>
+<translation id="4782311465517282004">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තන ලබා ගන්න</translation>
 <translation id="479989351350248267">සොයන්න</translation>
 <translation id="4804818685124855865">විසන්ධි කරන්න</translation>
 <translation id="4814539958450445987">පුරන තිරය</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">පින්</translation>
 <translation id="746232733191930409">තිර පටිගත කිරීම් ප්‍රකාරය</translation>
 <translation id="7466449121337984263">සංවේදකය ස්පර්ශ කරන්න</translation>
-<translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
-<translation id="7482097454533720217">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තනය ලබා ගන්න.</translation>
 <translation id="7483025031359818980">තේරීම් ප්‍රදේශය පූර්ණ තිරයට සකසා ඇත</translation>
 <translation id="7486227320194954040">ලකුණුකර මෙවලම් හකුළන්න</translation>
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
 <translation id="7796353162336583443">සටහනක්, තිර රුවක් ගැනීමට, Google සහායක, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රාක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
+<translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> සහ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ප්‍රබල සංඥාව</translation>
 <translation id="7837740436429729974">වේලාව ඉවරයි</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">පැතිකඩ ඉවත් කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="8825863694328519386">ආපසු යාමට වමින් ස්වයිප් කරන්න</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">ඔබට ඕනෑම වේලාවක පැකට් ග්‍රහණය නැවැත්විය හැකිය.</translation>
 <translation id="8841375032071747811">ආපසු බොත්තම</translation>
 <translation id="8843682306134542540">කරකැවීමේ අගුල මාරු කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

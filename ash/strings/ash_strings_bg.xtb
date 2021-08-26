@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Въведете съобщение</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Кликнете за отключване</translation>
+<translation id="2023558322300866873">Можете да спрете улавянето на пакети по всяко време</translation>
 <translation id="2047639699071423250">Добавяне на ключова идея</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Заповядайте отново утре в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Парола за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Асистент не е налице по време на демонстрационна сесия.</translation>
+<translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Изключване</translation>
 <translation id="4814539958450445987">Екран за вход</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Фиксиране</translation>
 <translation id="746232733191930409">Режим за записване на екрана</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
-<translation id="7473891865547856676">Не, благодаря</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
-<translation id="7482097454533720217">Получавайте определения, преводи или преобразувани мерни единици, когато кликнете с десния бутон или докоснете и задържите текст.</translation>
 <translation id="7483025031359818980">Целият екран е зададен като избрана област</translation>
 <translation id="7486227320194954040">Свиване на инструментите за маркиране</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Завъртане на екрана</translation>
 <translation id="7796353162336583443">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате Google Асистент, лазерната показалка или лупата.</translation>
 <translation id="7798302898096527229">Натиснете клавиша „търсене“ или Shift, за да анулирате.</translation>
+<translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">силен сигнал</translation>
 <translation id="7837740436429729974">Времето изтече</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Профилът за мобилна мрежа се премахва. Изчакайте няколко минути.</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Можете да спрете улавянето на пакети по всяко време.</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">търсене + Esc</translation>

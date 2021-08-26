@@ -141,6 +141,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2016340657076538683">Thayipha umlayezo</translation>
 <translation id="2018630726571919839">Ngitshele ihlaya</translation>
 <translation id="2021864487439853900">Chofoza ukuze uvule</translation>
+<translation id="2023558322300866873">Ungavimba ukuthatha iphakethe noma kunini.</translation>
 <translation id="2047639699071423250">Engeza icebo elingukhiye</translation>
 <translation id="2049240716062114887">Igama letafula lishintshelwe ku-<ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Ukuma ngobude</translation>
@@ -495,6 +496,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4774338217796918551">Buya kusasa ngo-<ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Iphasiwedi ye-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Umsizi we-Google akatholakali kuseshini yedemo.</translation>
+<translation id="4782311465517282004">Thola izincazelo, ukuhunyushwa, noma ukuguqulwa kweyunithi lapho uchofoza ngakwesokudla noma uthinta uphinde ubambe umbhalo</translation>
 <translation id="479989351350248267">sesha</translation>
 <translation id="4804818685124855865">Nqamula</translation>
 <translation id="4814539958450445987">Isikrini sokungena ngemvume</translation>
@@ -824,9 +826,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="7461924472993315131">Phina</translation>
 <translation id="746232733191930409">Imodi yokurekhoda isikrini</translation>
 <translation id="7466449121337984263">Sicela uthinte inzwa</translation>
-<translation id="7473891865547856676">Cha ngiyabonga</translation>
 <translation id="7477793887173910789">Lawula umculo wakho, amavidiyo, nokuningi</translation>
-<translation id="7482097454533720217">Thola izincazelo, ukuhunyushwa, noma ukuguqulwa kweyunithi lapho uchofoza ngakwesokudla noma uthinta uphinde ubambe umbhalo.</translation>
 <translation id="7483025031359818980">Indawo yokukhetha isethwe kusikrini esigcwele</translation>
 <translation id="7486227320194954040">Goqa amathuluzi wemaka</translation>
 <translation id="7497767806359279797">Khetha ulimi nekhibhodi</translation>
@@ -868,6 +868,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="7780159184141939021">Zungezisa isikrini</translation>
 <translation id="7796353162336583443">Thepha inkinobho ye-stylus kushelufu ukuze uthathe amanothi, isithombe-skrini, usebenzise umsizi, isikhombi se-pointer, noma ingilazi yokusondeza.</translation>
 <translation id="7798302898096527229">Cindezela usesho noma u-Shift ukuze ukhansele.</translation>
+<translation id="780301667611848630">Cha ngiyabonga</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ne-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Isignali enamandla</translation>
 <translation id="7837740436429729974">Isikhathi siphelile</translation>
@@ -999,7 +1000,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8818320199597151042">Isusa iphrofayela. Linda imizuzu embalwa.</translation>
 <translation id="8825863694328519386">Swayipha kusuka kwesobunxele ukuze ubuyele emuva</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Ungavima iphakethe lokuthatha nganoma yisiphi isikhathi.</translation>
 <translation id="8841375032071747811">Inkinobho yasemuva</translation>
 <translation id="8843682306134542540">Shintsha ukukhiya kokuphendula. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

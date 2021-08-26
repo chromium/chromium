@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">აკრიფეთ შეტყობინება</translation>
 <translation id="2018630726571919839">მომიყევი ანეკდოტი</translation>
 <translation id="2021864487439853900">განსაბლოკად დააწკაპუნეთ</translation>
+<translation id="2023558322300866873">პაკეტების აღბეჭდვის შეწყვეტა ნებისმიერ დროს შეგიძლიათ</translation>
 <translation id="2047639699071423250">საკვანძო იდეის დამატება</translation>
 <translation id="2049240716062114887">სამუშაო მაგიდის სახელი შეცვალა „<ph name="DESK_NAME" />“-ით</translation>
 <translation id="2050339315714019657">პორტრეტი</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
 <translation id="4778095205580009397">Google ასისტენტი მიუწვდომელია დემო-სესიაში.</translation>
+<translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="479989351350248267">ძიება</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4814539958450445987">შესვლის ეკრანი</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">პინი</translation>
 <translation id="746232733191930409">ეკრანის ჩაწერის რეჟიმი</translation>
 <translation id="7466449121337984263">შეეხეთ სენსორს</translation>
-<translation id="7473891865547856676">არა, გმადლობთ</translation>
 <translation id="7477793887173910789">მართეთ თქვენი მუსიკა, ვიდეოები და სხვა</translation>
-<translation id="7482097454533720217">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით.</translation>
 <translation id="7483025031359818980">არჩევის არე დაყენებულია სრულ ეკრანზე</translation>
 <translation id="7486227320194954040">მარკერის ხელსაწყოების ჩაკეცვა</translation>
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>
 <translation id="7796353162336583443">რაიმეს ჩასანიშნად, ეკრანის ანაბეჭდის გადასაღებად, ასევე Google ასისტენტის, ლაზერული მიმთითებლის ან გამადიდებელი შუშის გამოსაყენებლად შეეხეთ სტილუსის ღილაკს.</translation>
 <translation id="7798302898096527229">გასაუქმებლად დააჭირეთ Search ან Shift კლავიშს.</translation>
+<translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> და <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">სიგნალი ძლიერია</translation>
 <translation id="7837740436429729974">დრო ამოიწურა</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">მიმდინარეობს პროფილის ამოშლა. მოითმინეთ რამდენიმე წუთი.</translation>
 <translation id="8825863694328519386">უკან დასაბრუნებლად გადაფურცლეთ მარცხნიდან</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">პაკეტების აღბეჭდვის შეწყვეტა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

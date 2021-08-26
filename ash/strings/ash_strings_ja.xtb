@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">メッセージを入力</translation>
 <translation id="2018630726571919839">面白いこと言って</translation>
 <translation id="2021864487439853900">クリックしてロックを解除</translation>
+<translation id="2023558322300866873">パケット キャプチャはいつでも停止できます</translation>
 <translation id="2047639699071423250">要点を追加</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
 <translation id="2050339315714019657">縦</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">明日の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
 <translation id="4778095205580009397">Google アシスタントは、デモセッションではご利用いただけません。</translation>
+<translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
 <translation id="479989351350248267">検索</translation>
 <translation id="4804818685124855865">切断</translation>
 <translation id="4814539958450445987">ログイン画面</translation>
@@ -825,9 +827,7 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
-<translation id="7473891865547856676">スキップ</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
-<translation id="7482097454533720217">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。</translation>
 <translation id="7483025031359818980">選択領域を全画面に設定しました</translation>
 <translation id="7486227320194954040">マーカーツールを折りたたむ</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
@@ -869,6 +869,7 @@
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7796353162336583443">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、Google アシスタント、レーザー ポインタ、虫メガネを使用したりすることができます。</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>
+<translation id="780301667611848630">いいえ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">電波: 強い</translation>
 <translation id="7837740436429729974">タイムアップ</translation>
@@ -1000,7 +1001,6 @@
 <translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">パケット キャプチャはいつでも停止できます。</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

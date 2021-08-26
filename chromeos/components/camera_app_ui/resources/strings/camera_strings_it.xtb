@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
-<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
 <translation id="2144806332417375165">Parametri video personalizzati</translation>
 <translation id="2175927920773552910">Codice QR</translation>
-<translation id="2268107369530950373">Passa alla modalità Scanner</translation>
 <translation id="229579744168541441">Esporta su disco</translation>
 <translation id="2320741269052147773">Esegui una panoramica a sinistra</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2501853267655415902">Registrazione interrotta</translation>
 <translation id="2501953888035679275">Realizza foto e video con la tua fotocamera.</translation>
+<translation id="2517472476991765520">Scansiona</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="2599796128805996109">Fotocamera posteriore</translation>
 <translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
@@ -72,6 +71,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5422455049771430511">Le tue foto e i tuoi video hanno cambiato posto</translation>
 <translation id="5444515100983837161">Posiziona i bordi del documento all'interno dell'inquadratura. La qualità della scansione è migliore se il documento e lo sfondo sono di colori diversi.</translation>
 <translation id="5671277269877808209">Quadrato</translation>
+<translation id="5746169159649715125">Salva come PDF</translation>
 <translation id="5753488212459587150">Attiva modalità Esperto</translation>
 <translation id="5759254179196327752">Esegui la scansione del documento</translation>
 <translation id="5775960006311140197">Modalità Esperto</translation>

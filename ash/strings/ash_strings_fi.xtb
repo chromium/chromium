@@ -141,6 +141,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2016340657076538683">Kirjoita viesti</translation>
 <translation id="2018630726571919839">Kerro vitsi</translation>
 <translation id="2021864487439853900">Klikkaa avataksesi lukituksen</translation>
+<translation id="2023558322300866873">Voit lopettaa pakettien kaappaukset milloin tahansa</translation>
 <translation id="2047639699071423250">Lisää pääidea</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
@@ -495,6 +496,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
 <translation id="4778095205580009397">Google Assistantia ei voi käyttää demo-käyttökerralla.</translation>
+<translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
 <translation id="479989351350248267">haku</translation>
 <translation id="4804818685124855865">Katkaise yhteys</translation>
 <translation id="4814539958450445987">Kirjautumisnäyttö</translation>
@@ -824,9 +826,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7461924472993315131">Kiinnitä</translation>
 <translation id="746232733191930409">Näytön tallentajatila</translation>
 <translation id="7466449121337984263">Kosketa tunnistinta</translation>
-<translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
-<translation id="7482097454533720217">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään.</translation>
 <translation id="7483025031359818980">Lähteeksi on valittu koko näyttö</translation>
 <translation id="7486227320194954040">Tiivistä tussityökalut</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
@@ -868,6 +868,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7796353162336583443">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää Google Assistantia, laserosoitinta tai suurennuslasia.</translation>
 <translation id="7798302898096527229">Peru painamalla haku- tai vaihtonäppäintä.</translation>
+<translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Vahva signaali</translation>
 <translation id="7837740436429729974">Aika loppui</translation>
@@ -999,7 +1000,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8818320199597151042">Poistetaan profiilia. Odota muutama minuutti.</translation>
 <translation id="8825863694328519386">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Voit lopettaa pakettien kaappaukset milloin tahansa.</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Haku+Esc</translation>

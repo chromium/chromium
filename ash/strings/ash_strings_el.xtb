@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Πληκτρολογήστε ένα μήνυμα</translation>
 <translation id="2018630726571919839">Πες μου ένα ανέκδοτο</translation>
 <translation id="2021864487439853900">Κάντε κλικ για ξεκλείδωμα</translation>
+<translation id="2023558322300866873">Μπορείτε να διακόψετε τη λήψη πακέτων οποιαδήποτε στιγμή.</translation>
 <translation id="2047639699071423250">Προσθήκη σημαντικής ιδέας</translation>
 <translation id="2049240716062114887">Το όνομα γραφείου άλλαξε σε <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Κάθετα</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Επιστρέψτε ξανά αύριο στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Κωδικός πρόσβασης για <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Ο Βοηθός Google δεν είναι διαθέσιμος σε περίοδο λειτουργίας επίδειξης.</translation>
+<translation id="4782311465517282004">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
 <translation id="4814539958450445987">Οθόνη σύνδεσης</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Καρφίτσωμα</translation>
 <translation id="746232733191930409">Λειτουργία εγγραφής οθόνης</translation>
 <translation id="7466449121337984263">Αγγίξτε τον αισθητήρα.</translation>
-<translation id="7473891865547856676">Όχι, ευχαριστώ</translation>
 <translation id="7477793887173910789">Ελέγξτε τη μουσική σας, τα βίντεο και περισσότερα</translation>
-<translation id="7482097454533720217">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
 <translation id="7483025031359818980">Η περιοχή επιλογής ορίστηκε σε ολόκληρη την οθόνη</translation>
 <translation id="7486227320194954040">Σύμπτυξη εργαλείων δείκτη</translation>
 <translation id="7497767806359279797">Επιλογή γλώσσας και πληκτρολογίου</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Περιστροφή οθόνης</translation>
 <translation id="7796353162336583443">Πατήστε το κουμπί με τη γραφίδα στο ράφι, για να δημιουργήσετε μια σημείωση, ένα στιγμιότυπο οθόνης, να χρησιμοποιήσετε τον Βοηθό Google, τον δείκτη λέιζερ ή τον μεγεθυντικό φακό.</translation>
 <translation id="7798302898096527229">Πατήστε Search ή Shift για ακύρωση.</translation>
+<translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
 <translation id="7837740436429729974">Ο χρόνος τελείωσε</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Η κατάργηση του προφίλ βρίσκεται σε εξέλιξη. Περιμένετε λίγα λεπτά.</translation>
 <translation id="8825863694328519386">Για να επιστρέψετε, σύρετε από τα αριστερά.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Μπορείτε να διακόψετε την καταγραφή πληροφοριών πακέτων οποιαδήποτε στιγμή.</translation>
 <translation id="8841375032071747811">Κουμπί "Πίσω"</translation>
 <translation id="8843682306134542540">Εναλλαγή κλειδώματος περιστροφής. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Πλήκτρο αναζήτησης+Esc</translation>

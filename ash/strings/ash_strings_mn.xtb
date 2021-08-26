@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
 <translation id="2021864487439853900">Түгжээг тайлахын тулд товших</translation>
+<translation id="2023558322300866873">Та пакет авахыг хүссэн үедээ зогсоох боломжтой</translation>
 <translation id="2047639699071423250">Гол санаа нэмэх</translation>
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
@@ -496,6 +497,7 @@
 <translation id="4774338217796918551">Маргааш <ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4778095205580009397">Google Туслах туршилтын харилцан үйлдэлд боломжгүй байна.</translation>
+<translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
 <translation id="479989351350248267">хайлт</translation>
 <translation id="4804818685124855865">Таслах</translation>
 <translation id="4814539958450445987">Нэвтрэх дэлгэц</translation>
@@ -825,9 +827,7 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Дэлгэцийн үйлдэл бичих горим</translation>
 <translation id="7466449121337984263">Мэдрэгчид хүрнэ үү</translation>
-<translation id="7473891865547856676">Үгүй, баярлалаа</translation>
 <translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
-<translation id="7482097454533720217">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай.</translation>
 <translation id="7483025031359818980">Сонголтын хэсгийг бүтэн дэлгэц болгож тохируулсан</translation>
 <translation id="7486227320194954040">Тэмдэглэгээний хэрэгслийг хураах</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
@@ -869,6 +869,7 @@
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7796353162336583443">Тэмдэглэл бичих, дэлгэцийн зураг авах, Google Tуслах, лазер чиглүүлэгч эсвэл томруулдаг шил ашиглахын тулд тавиур дээрх мэдрэгч үзэгний товчлуурыг товшино уу.</translation>
 <translation id="7798302898096527229">Цуцлахын тулд Search эсвэл Shift товчлуурыг дарна уу.</translation>
+<translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ба <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Сайн дохио</translation>
 <translation id="7837740436429729974">Цаг дууслаа</translation>
@@ -1001,7 +1002,6 @@
 <translation id="8818320199597151042">Профайлыг хасаж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="8825863694328519386">Буцахын тулд зүүн талаас шударна уу</translation>
 <translation id="8828714802988429505">90 °</translation>
-<translation id="8832757911363938552">Та хүссэн үедээ пакет авахыг зогсоох боломжтой.</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>
 <translation id="8843682306134542540">Эргүүлэлтийн түгжээг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

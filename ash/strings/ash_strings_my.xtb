@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">မက်ဆေ့ဂျ် ရိုက်ပါ</translation>
 <translation id="2018630726571919839">ဟာသတစ်ခု ပြောပါ</translation>
 <translation id="2021864487439853900">ဖွင့်ရန် နှိပ်ပါ</translation>
+<translation id="2023558322300866873">အပိုင်းငယ်ဖမ်းယူမှုကို အချိန်မရွေးရပ်နိုင်သည်</translation>
 <translation id="2047639699071423250">အဓိကစိတ်ကူး ထည့်ရန်</translation>
 <translation id="2049240716062114887">မျက်နှာပြင်နေရာအမည်ကို <ph name="DESK_NAME" /> သို့ ပြောင်းထားသည်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">မနက်ဖြန် <ph name="COME_BACK_TIME" /> တွင် ပြန်လာပါ။</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />အတွက် စကားဝှက်</translation>
 <translation id="4778095205580009397">သရုပ်ပြစက်ရှင်တွင် Google Assistant မရနိုင်ပါ။</translation>
+<translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
 <translation id="479989351350248267">ရှာဖွေမှု</translation>
 <translation id="4804818685124855865">အဆက်ဖြတ်ရန်</translation>
 <translation id="4814539958450445987">အကောင့်ဝင်ရန် ဖန်သားပြင်</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="746232733191930409">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ်</translation>
 <translation id="7466449121337984263">အာရုံခံကိရိယာကို ထိပါ</translation>
-<translation id="7473891865547856676">မလိုပါ</translation>
 <translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
-<translation id="7482097454533720217">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်။</translation>
 <translation id="7483025031359818980">ရွေးချယ်ရန်နေရာအဖြစ် ဖန်သားပြင်အပြည့်ကို သတ်မှတ်လိုက်သည်</translation>
 <translation id="7486227320194954040">အမှတ်အသားပြုတူးလ်များ ချုံ့ရန်</translation>
 <translation id="7497767806359279797">ဘာသာစကားနှင့် ကီးဘုတ်ကို ရွေးရန်</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
 <translation id="7796353162336583443">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်၊ Google Assistant ကို သုံးရန်၊ လေဆာညွှန်ပြကိရိယာ သို့မဟုတ် မှန်ဘီလူးတို့ကို သုံးရန် စင်ပေါ်ရှိ စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
 <translation id="7798302898096527229">ပယ်ဖျက်ရန် Search သို့မဟုတ် Shift ခလုတ်ကို နှိပ်ပါ။</translation>
+<translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> နှင့် <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">လိုင်းအားကောင်းသည်</translation>
 <translation id="7837740436429729974">အချိန်စေ့ပါပြီ</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">ပရိုဖိုင်ကို ဖယ်ရှားနေသည်။ မိနစ်အနည်းငယ် စောင့်ပါ။</translation>
 <translation id="8825863694328519386">နောက်သို့ပြန်သွားရန် ဘယ်ဘက်မှ ပွတ်ဆွဲပါ</translation>
 <translation id="8828714802988429505">၉၀°</translation>
-<translation id="8832757911363938552">အပိုင်းငယ်ဖမ်းယူမှုကို အချိန်မရွေး ရပ်နိုင်သည်။</translation>
 <translation id="8841375032071747811">နောက်သို့ပြန်သည့် ခလုတ်</translation>
 <translation id="8843682306134542540">လှည့်ခြင်းလော့ခ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">ရှာဖွေမှု+Esc</translation>

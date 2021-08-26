@@ -141,6 +141,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Bana bir fıkra anlat</translation>
 <translation id="2021864487439853900">Kilidi açmak için tıklayın</translation>
+<translation id="2023558322300866873">Paket yakalama işlemini dilediğiniz zaman durdurabilirsiniz</translation>
 <translation id="2047639699071423250">Temel fikir ekle</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
 <translation id="2050339315714019657">Dikey</translation>
@@ -495,6 +496,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4774338217796918551">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
 <translation id="4778095205580009397">Google Asistan, demo oturumunda kullanılamaz.</translation>
+<translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="479989351350248267">ara</translation>
 <translation id="4804818685124855865">Bağlantıyı kes</translation>
 <translation id="4814539958450445987">Giriş Ekranı</translation>
@@ -825,9 +827,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
-<translation id="7473891865547856676">Hayır, Teşekkürler</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
-<translation id="7482097454533720217">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın.</translation>
 <translation id="7483025031359818980">Seçim alanı tam ekran olarak ayarlandı</translation>
 <translation id="7486227320194954040">İşaretçi araçlarını daralt</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
@@ -869,6 +869,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796353162336583443">Not veya ekran görüntüsü almak, Google Asistan, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
+<translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7837740436429729974">Süre doldu</translation>
@@ -1000,7 +1001,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8818320199597151042">Profil kaldırılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Paket yakalama işlemini dilediğiniz zaman durdurabilirsiniz.</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>

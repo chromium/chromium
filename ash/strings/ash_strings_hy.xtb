@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Մուտքագրեք հաղորդագրություն</translation>
 <translation id="2018630726571919839">Անեկդոտ պատմիր</translation>
 <translation id="2021864487439853900">Սեղմեք՝ ապակողպելու համար</translation>
+<translation id="2023558322300866873">Փաթեթների գրանցումը կարող եք ցանկացած ժամանակ կանգնեցնել</translation>
 <translation id="2047639699071423250">Ավելացնել հիմնական գաղափար</translation>
 <translation id="2049240716062114887">Աշխատասեղանի անունը փոխվել է հետևյալի՝ <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Սարքը հասանելի կլինի վաղը, <ph name="COME_BACK_TIME" />։</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="4778095205580009397">Google Օգնականը հասանելի չէ դեմո աշխատաշրջանում։</translation>
+<translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Անջատել</translation>
 <translation id="4814539958450445987">Մուտքի էկրան</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="746232733191930409">Էկրանի տեսագրման ռեժիմ</translation>
 <translation id="7466449121337984263">Մատը դրեք տվիչին</translation>
-<translation id="7473891865547856676">Ոչ</translation>
 <translation id="7477793887173910789">Վերահսկեք երաժշտությունը, տեսանյութերը և այլն</translation>
-<translation id="7482097454533720217">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="7483025031359818980">Ընտրված է ամբողջ էկրանը</translation>
 <translation id="7486227320194954040">Ծալել նշիչի գործիքները</translation>
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Էկրանի պտտում</translation>
 <translation id="7796353162336583443">Հպեք դարակի վրայի ստիլուսի կոճակը՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու, ինչպես նաև Օգնականը, լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
+<translation id="780301667611848630">Ոչ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ուժեղ ազդանշան</translation>
 <translation id="7837740436429729974">Ժամանակը սպառվել է</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Պրոֆիլը հեռացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Ցանկացած ժամանակ կարող եք կանգնեցնել փաթեթների գրանցումը։</translation>
 <translation id="8841375032071747811">«Հետ» կոճակ</translation>
 <translation id="8843682306134542540">Միացնել/անջատել պտտման կողպումը: <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Որոնել+Esc</translation>

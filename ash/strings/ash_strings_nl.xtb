@@ -141,6 +141,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2016340657076538683">Typ een bericht</translation>
 <translation id="2018630726571919839">Vertel me een grap</translation>
 <translation id="2021864487439853900">Klik om te ontgrendelen</translation>
+<translation id="2023558322300866873">Je kunt het opnemen van packets op elk moment stoppen</translation>
 <translation id="2047639699071423250">Sleutelidee toevoegen</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Staand</translation>
@@ -495,6 +496,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">De Google Assistent is niet beschikbaar in een demosessie.</translation>
+<translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="479989351350248267">zoeken</translation>
 <translation id="4804818685124855865">Verbinding verbreken</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
@@ -824,9 +826,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
-<translation id="7473891865547856676">Nee, bedankt</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
-<translation id="7482097454533720217">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen.</translation>
 <translation id="7483025031359818980">Selectiegebied ingesteld op volledig scherm</translation>
 <translation id="7486227320194954040">Markeringstools samenvouwen</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
@@ -868,6 +868,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7780159184141939021">Scherm draaien</translation>
 <translation id="7796353162336583443">Tik op de stylusknop op de plank om een notitie of screenshot te maken of de Google Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="7798302898096527229">Druk op Zoeken of Shift om te annuleren.</translation>
+<translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7837740436429729974">De tijd is om</translation>
@@ -999,7 +1000,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8818320199597151042">Profiel verwijderen. Wacht een paar minuten.</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Je kunt het opnemen van packets op elk moment stoppen.</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Zoeken+Esc</translation>

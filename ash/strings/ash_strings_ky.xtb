@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Бир нерсе деп жазыңыз</translation>
 <translation id="2018630726571919839">Мага тамаша айтып бер</translation>
 <translation id="2021864487439853900">Кулпусун ачуу үчүн басыңыз</translation>
+<translation id="2023558322300866873">Пакетти алууну каалаган убакта токтото аласыз</translation>
 <translation id="2047639699071423250">Негизги идеяны кошуу</translation>
 <translation id="2049240716062114887">Иш тактанын аталышы <ph name="DESK_NAME" /> болуп өзгөрдү</translation>
 <translation id="2050339315714019657">Тигинен</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Эртең саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> үчүн сырсөз</translation>
 <translation id="4778095205580009397">Google Жардамчысы демо сеанста жеткиликсиз.</translation>
+<translation id="4782311465517282004">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп же аныктамаларды жана котормолорду аласыз</translation>
 <translation id="479989351350248267">издөө</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
 <translation id="4814539958450445987">Аккаунтка кирүү экраны</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Кадап коюу</translation>
 <translation id="746232733191930409">Экрандан видео жаздырып алуу режими</translation>
 <translation id="7466449121337984263">Сенсорго тийиңиз, сураныч</translation>
-<translation id="7473891865547856676">Жок, рахмат</translation>
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
-<translation id="7482097454533720217">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп, аныктамаларын же котормолорун аласыз.</translation>
 <translation id="7483025031359818980">Толук экран тандалды</translation>
 <translation id="7486227320194954040">Белгилегичтин куралдарын жыйыштыруу</translation>
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Экранды буруу</translation>
 <translation id="7796353162336583443">Бир нерсе жазуу, скриншот тартуу, Google Жардамчыны, лазердик көрсөткүчтү же чоңойтуучу айнекти колдонуу үчүн стилус баскычын таптап коюңуз.</translation>
 <translation id="7798302898096527229">Өчүрүп коюу үчүн Search же Shift баскычтарын басыңыз.</translation>
+<translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> жана <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Күчтүү сигнал</translation>
 <translation id="7837740436429729974">Убакыт бүттү</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Профиль өчүрүлүүдө. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="8825863694328519386">Артка кайтуу үчүн экраныңыздын сол четинен сүрүп коюңуз</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Пакетти алууну каалаган убакта токтото аласыз.</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8843682306134542540">Буруу кулпусун өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

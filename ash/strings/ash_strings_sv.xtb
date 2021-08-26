@@ -141,6 +141,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
 <translation id="2021864487439853900">Klicka för att låsa upp</translation>
+<translation id="2023558322300866873">Du kan avsluta paketanalysen när som helst</translation>
 <translation id="2047639699071423250">Lägg till ett nyckelbegrepp</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -495,6 +496,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4774338217796918551">Prova igen i morgon klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google-assistenten är inte tillgänglig i en demosession.</translation>
+<translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="479989351350248267">sök</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
@@ -824,9 +826,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
-<translation id="7473891865547856676">Nej tack</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
-<translation id="7482097454533720217">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text.</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7486227320194954040">Komprimera markeringsverktygen</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
@@ -868,6 +868,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
+<translation id="780301667611848630">Nej tack</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">stark signal</translation>
 <translation id="7837740436429729974">Tiden är ute</translation>
@@ -999,7 +1000,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8818320199597151042">Tar bort profilen. Vänta några minuter.</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Du kan avsluta paketanalysen när som helst.</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>

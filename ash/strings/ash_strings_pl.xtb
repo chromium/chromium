@@ -141,6 +141,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
+<translation id="2023558322300866873">Przechwytywanie pakietów możesz zatrzymać w dowolnym momencie</translation>
 <translation id="2047639699071423250">Dodaj kluczowy pomysł</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pionowo</translation>
@@ -495,6 +496,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
+<translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
 <translation id="4814539958450445987">Ekran logowania</translation>
@@ -824,9 +826,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
-<translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
-<translation id="7482097454533720217">Kliknij tekst prawym przyciskiem lub dotknij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek.</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
@@ -868,6 +868,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
+<translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7837740436429729974">Czas minął</translation>
@@ -999,7 +1000,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8818320199597151042">Usuwam profil. Odczekaj kilka minut.</translation>
 <translation id="8825863694328519386">Aby wrócić, przesuń palcem od lewej strony</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Przechwytywanie pakietów możesz w dowolnym momencie zatrzymać.</translation>
 <translation id="8841375032071747811">Przycisk Wstecz</translation>
 <translation id="8843682306134542540">Włącz lub wyłącz blokadę obracania. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>

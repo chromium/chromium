@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> no està endollada.</translation>
 <translation id="1473110567575736769">Temporitzador de 3 segons</translation>
-<translation id="1478594628797167447">Escàners</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
 <translation id="2144806332417375165">Personalitza els paràmetres de vídeo</translation>
 <translation id="2175927920773552910">Codi QR</translation>
-<translation id="2268107369530950373">Canvia al mode d'escaneig</translation>
 <translation id="229579744168541441">Exporta al disc</translation>
 <translation id="2320741269052147773">Desplaça cap a l'esquerra</translation>
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2501853267655415902">S'ha aturat la gravació</translation>
 <translation id="2501953888035679275">Fes fotos i grava vídeos amb la càmera.</translation>
+<translation id="2517472476991765520">Escaneja</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="2599796128805996109">Càmera posterior</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
@@ -72,6 +71,7 @@
 <translation id="5422455049771430511">Les teves fotos i els teus vídeos han canviat de lloc</translation>
 <translation id="5444515100983837161">Col·loca totes les vores del document dins del marc. L'escaneig funciona millor si el document i el fons tenen colors diferents.</translation>
 <translation id="5671277269877808209">Quadrat</translation>
+<translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5753488212459587150">Activa el mode expert</translation>
 <translation id="5759254179196327752">Escaneja el document</translation>
 <translation id="5775960006311140197">Mode expert</translation>

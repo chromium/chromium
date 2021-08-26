@@ -141,6 +141,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2016340657076538683">Rédiger un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
+<translation id="2023558322300866873">Vous pouvez arrêter la capture des paquets en tout temps</translation>
 <translation id="2047639699071423250">Ajouter une idée clé</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -495,6 +496,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
+<translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="479989351350248267">chercher</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
@@ -824,9 +826,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
-<translation id="7473891865547856676">Non merci</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
-<translation id="7482097454533720217">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte.</translation>
 <translation id="7483025031359818980">La zone de sélection est définie à l'écran au complet</translation>
 <translation id="7486227320194954040">Réduire les outils de marqueur</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
@@ -868,6 +868,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796353162336583443">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran ou pour utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
+<translation id="780301667611848630">Non merci</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal fort</translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
@@ -999,7 +1000,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8818320199597151042">Retrait du profil en cours… Patientez quelques minutes.</translation>
 <translation id="8825863694328519386">Balayez l'écran de gauche à droite pour revenir en arrière</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Vous pouvez arrêter la capture des paquets en tout temps.</translation>
 <translation id="8841375032071747811">Bouton Précédent</translation>
 <translation id="8843682306134542540">Activer/désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>

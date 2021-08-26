@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">សរសេរ​សារ</translation>
 <translation id="2018630726571919839">និយាយ​រឿងកំប្លែង​ឱ្យខ្ញុំស្ដាប់</translation>
 <translation id="2021864487439853900">ចុចដើម្បីដោះសោ</translation>
+<translation id="2023558322300866873">អ្នកអាចបញ្ឈប់​ការថតកញ្ចប់​បានគ្រប់ពេល</translation>
 <translation id="2047639699071423250">បញ្ចូល​គំនិត​សំខាន់</translation>
 <translation id="2049240716062114887">ឈ្មោះតុត្រូវ​បានប្ដូរទៅ <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">បញ្ឈរ</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">ត្រឡប់​មកវិញ​នៅថ្ងៃស្អែកនៅម៉ោង <ph name="COME_BACK_TIME" />។</translation>
 <translation id="4776917500594043016">ពាក្យសម្ងាត់សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google ជំនួយការ​មិន​អាចប្រើ​នៅក្នុងរយៈពេល​ចូលប្រើសាកល្បងបានទេ។</translation>
+<translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="479989351350248267">ស្វែងរក</translation>
 <translation id="4804818685124855865">ផ្តាច់</translation>
 <translation id="4814539958450445987">អេក្រង់ចូល</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">លេខសម្គាល់</translation>
 <translation id="746232733191930409">មុខងារថតវីដេអូអេក្រង់</translation>
 <translation id="7466449121337984263">សូមប៉ះ​ឧបករណ៍​ចាប់សញ្ញា</translation>
-<translation id="7473891865547856676">ទេ អរគុណ</translation>
 <translation id="7477793887173910789">គ្រប់គ្រងតន្ត្រី វីដេអូរបស់អ្នក និងអ្វីៗជាច្រើនទៀត</translation>
-<translation id="7482097454533720217">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់។</translation>
 <translation id="7483025031359818980">ផ្នែកនៃការជ្រើសរើសត្រូវបានកំណត់ទៅអេក្រង់ពេញ</translation>
 <translation id="7486227320194954040">បង្រួម​ឧបករណ៍​ហ្វឺត</translation>
 <translation id="7497767806359279797">ជ្រើសរើស​ភាសា និងក្ដារចុច</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">បង្វិល​អេក្រង់</translation>
 <translation id="7796353162336583443">ចុច​ប៊ូតុងប៊ិច​នៅលើ​ធ្នើដើម្បី​កត់ចំណាំ ថត​អេក្រង់ ប្រើ​ Google ជំនួយការ សញ្ញា​ព្រួញ​ឡាស៊ែរ ឬ​កែវ​ពង្រីក។</translation>
 <translation id="7798302898096527229">ចុច Search ឬ Shift ដើម្បី​បោះបង់។</translation>
+<translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> និង <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">សេវាខ្លាំង</translation>
 <translation id="7837740436429729974">ដល់​ម៉ោង</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">កំពុងលុប​កម្រងព័ត៌មាន។ សូមរង់ចាំមួយភ្លែត។</translation>
 <translation id="8825863694328519386">អូសពីឆ្វេងដើម្បីថយក្រោយ</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">អ្នកអាចបញ្ឈប់​ការថតកញ្ចប់​បានគ្រប់ពេល។</translation>
 <translation id="8841375032071747811">ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="8843682306134542540">បិទ/បើកការចាក់​សោការ​បង្វិល។ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

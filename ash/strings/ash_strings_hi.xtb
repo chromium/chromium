@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">कोई मैसेज लिखें</translation>
 <translation id="2018630726571919839">मुझे कोई चुटकुला सुनाओ</translation>
 <translation id="2021864487439853900">क्लिक करके अनलॉक करें</translation>
+<translation id="2023558322300866873">आप किसी भी समय पैकेट कैप्चर की कार्रवाई रोक सकते हैं</translation>
 <translation id="2047639699071423250">मुख्य आइडिया बटन जोड़ें</translation>
 <translation id="2049240716062114887">डेस्क का नाम बदलकर <ph name="DESK_NAME" /> कर दिया गया है</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -496,6 +497,7 @@
 <translation id="4774338217796918551">कल <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4778095205580009397">डेमो सत्र में Google Assistant मौजूद नहीं है.</translation>
+<translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">डिसकनेक्ट करें</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
@@ -825,9 +827,7 @@
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746232733191930409">स्क्रीन रिकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेंसर को छुएं</translation>
-<translation id="7473891865547856676">नहीं, रहने दें</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
-<translation id="7482097454533720217">जब आप टेक्स्ट को दबाकर रखते हैं या दायां क्लिक करते हैं, तो आपको परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न मिलता है.</translation>
 <translation id="7483025031359818980">फ़ुल स्क्रीन को सोर्स के तौर पर सेट किया गया</translation>
 <translation id="7486227320194954040">मार्कर टूल छोटे करें</translation>
 <translation id="7497767806359279797">भाषा और कीवर्ड चुनें</translation>
@@ -869,6 +869,7 @@
 <translation id="7780159184141939021">स्क्रीन घुमाएं</translation>
 <translation id="7796353162336583443">नोट लेने, स्क्रीनशॉट लेने और Google Assistant, लेज़र पॉइंटर या आवर्धक ग्लास का इस्तेमाल करने के लिए अलमारी में मौजूद स्टाइलस बटन पर टैप करें.</translation>
 <translation id="7798302898096527229">रद्द करने के लिए Search या Shift दबाएं.</translation>
+<translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> और <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">मज़बूत सिग्नल</translation>
 <translation id="7837740436429729974">समय खत्म हुआ</translation>
@@ -1000,7 +1001,6 @@
 <translation id="8818320199597151042">प्रोफ़ाइल हटाई जा रही है. थोड़ा इंतज़ार करें.</translation>
 <translation id="8825863694328519386">वापस जाने के लिए, स्क्रीन के बाएं किनारे से स्वाइप करें</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">आप किसी भी समय पैकेट कैप्चर की कार्रवाई रोक सकते हैं.</translation>
 <translation id="8841375032071747811">वापस जाएं बटन</translation>
 <translation id="8843682306134542540">रोटेशन लॉक को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

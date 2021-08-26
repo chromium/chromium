@@ -141,6 +141,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2016340657076538683">Idatzi mezu bat</translation>
 <translation id="2018630726571919839">Kontatu txiste bat</translation>
 <translation id="2021864487439853900">Desblokeatzeko, sakatu</translation>
+<translation id="2023558322300866873">Nahi duzunean geldi dezakezu paketeak hautemateko prozesua</translation>
 <translation id="2047639699071423250">Gehitu ideia nagusi bat</translation>
 <translation id="2049240716062114887"><ph name="DESK_NAME" /> izena jarri zaio lan-eremuari</translation>
 <translation id="2050339315714019657">Bertikala</translation>
@@ -180,7 +181,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> erabiltzen duen hizketa gailuan bertan prozesatzen da eta konexiorik gabe funtzionatzen du. Diktaketa-hizkuntza aldatzeko, joan Ezarpenak &gt; Erabilerraztasuna atalera.</translation>
 <translation id="2352467521400612932">Arkatzaren ezarpenak</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktibatzen</translation>
-<translation id="2359808026110333948">Jarraitu</translation>
+<translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2369165858548251131">Nola esaten da "Kaixo" txineraz</translation>
 <translation id="2390318262976603432">Lurraldeko ezarpenak</translation>
 <translation id="2391579633712104609">180°</translation>
@@ -496,6 +497,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4774338217796918551">Itzuli bihar ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuaren pasahitza</translation>
 <translation id="4778095205580009397">Google-ren Laguntzailea ez dago erabilgarri demo saioetan.</translation>
+<translation id="4782311465517282004">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean</translation>
 <translation id="479989351350248267">bilaketa</translation>
 <translation id="4804818685124855865">Deskonektatu</translation>
 <translation id="4814539958450445987">Saioa hasteko pantaila</translation>
@@ -825,9 +827,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746232733191930409">Pantaila grabatzeko modua</translation>
 <translation id="7466449121337984263">Ukitu sentsorea</translation>
-<translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
-<translation id="7482097454533720217">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean.</translation>
 <translation id="7483025031359818980">Hautapen-eremua pantaila osoan dago ezarrita</translation>
 <translation id="7486227320194954040">Tolestu markatzailearen tresnak</translation>
 <translation id="7497767806359279797">Aukeratu hizkuntza eta teklatua</translation>
@@ -869,6 +869,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7780159184141939021">Biratu pantaila</translation>
 <translation id="7796353162336583443">Sakatu apaleko arkatzaren botoia oharrak idazteko, pantaila-argazkiak ateratzeko, edo Google-ren Laguntzailea, laser-erakuslea nahiz lupa erabiltzeko.</translation>
 <translation id="7798302898096527229">Bertan behera uzteko, sakatu Bilatu edo Maius.</translation>
+<translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> eta <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Seinale indartsua</translation>
 <translation id="7837740436429729974">Denbora agortu da</translation>
@@ -1000,7 +1001,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8818320199597151042">Profila kentzen. Itxaron minutu batzuk.</translation>
 <translation id="8825863694328519386">Atzera egiteko, pasatu hatza ezkerretik eskuinera</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Nahi duzunean geldi dezakezu paketeak hautemateko prozesua.</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>

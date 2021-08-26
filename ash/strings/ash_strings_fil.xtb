@@ -141,6 +141,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2016340657076538683">Mag-type ng mensahe</translation>
 <translation id="2018630726571919839">Pahingi ng joke</translation>
 <translation id="2021864487439853900">I-click para i-unlock</translation>
+<translation id="2023558322300866873">Puwede mong ihinto ang packet capture anumang oras</translation>
 <translation id="2047639699071423250">Magdagdag ng pangunahing ideya</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -495,6 +496,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Hindi available ang Google Assistant sa demo session.</translation>
+<translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">I-disconnect</translation>
 <translation id="4814539958450445987">Screen sa Pag-log In</translation>
@@ -824,9 +826,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7461924472993315131">I-pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Pakipindot ang sensor</translation>
-<translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
-<translation id="7482097454533720217">Makakuha ng mga kahulugan, pagsasalin, o pag-convert ng unit kapag nag-right click ka o pinindot mo nang matagal ang text.</translation>
 <translation id="7483025031359818980">Itinakda sa full screen ang selection area</translation>
 <translation id="7486227320194954040">I-collapse ang mga tool ng marker</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
@@ -868,6 +868,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
 <translation id="7796353162336583443">I-tap ang button ng stylus sa shelf upang magsulat ng tala, mag-screenshot, gamitin ang Google Assistant, laser pointer, o magnifying glass.</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
+<translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7837740436429729974">Oras na</translation>
@@ -999,7 +1000,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8818320199597151042">Inaalis ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="8825863694328519386">Mag-swipe mula sa kaliwa para bumalik</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Puwede mong ihinto ang packet capture anumang oras.</translation>
 <translation id="8841375032071747811">Button na Bumalik</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

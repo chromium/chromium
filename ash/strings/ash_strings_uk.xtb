@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
+<translation id="2023558322300866873">Ви можете будь-коли зупинити захоплення пакетів</translation>
 <translation id="2047639699071423250">Додати ключову ідею</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Портретна</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Асистент недоступний у демонстраційному сеансі.</translation>
+<translation id="4782311465517282004">Щоб дізнатися визначення слова, перекласти його або конвертувати одиницю, натисніть правою кнопкою миші або натисніть і втримуйте потрібний текст</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4814539958450445987">Екран входу</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746232733191930409">Режим запису екрана</translation>
 <translation id="7466449121337984263">Торкніться сканера</translation>
-<translation id="7473891865547856676">Ні, дякую</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
-<translation id="7482097454533720217">Щоб дізнатися визначення тексту, перекласти його або конвертувати в іншу одиницю, натисніть його правою кнопкою миші або натисніть і втримуйте.</translation>
 <translation id="7483025031359818980">Вибрано весь екран</translation>
 <translation id="7486227320194954040">Згорнути інструменти маркера</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Обернути екран</translation>
 <translation id="7796353162336583443">Щоб додавати примітки та знімки екрана, користуватися Google Асистентом або використовувати стилус як лазерний вказівник чи лупу, торкніться кнопки стилуса на полиці.</translation>
 <translation id="7798302898096527229">Щоб скасувати, натисніть клавішу Search або Shift.</translation>
+<translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
 <translation id="7837740436429729974">Час минув</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Видаляється профіль. Зачекайте кілька хвилин.</translation>
 <translation id="8825863694328519386">Щоб повернутися, проведіть пальцем від лівого краю</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Ви можете будь-коли зупинити захоплення пакетів.</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>

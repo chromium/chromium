@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1467231725790366244">Отключено устройство <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Таймер на 3 сек.</translation>
-<translation id="1478594628797167447">Сканер</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Камера <ph name="CAMERA" /> активна</translation>
 <translation id="2144806332417375165">Свои параметры видео</translation>
 <translation id="2175927920773552910">QR-код</translation>
-<translation id="2268107369530950373">Переключиться в режим сканера</translation>
 <translation id="229579744168541441">Экспортировать на диск</translation>
 <translation id="2320741269052147773">Панорамировать влево</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Запись остановлена</translation>
 <translation id="2501953888035679275">Съемка фото и видео на камеру устройства.</translation>
+<translation id="2517472476991765520">Искать</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="2599796128805996109">Основная камера</translation>
 <translation id="2879583609344924966">Подключено устройство <ph name="CAMERA" />.</translation>
@@ -72,6 +71,7 @@
 <translation id="5422455049771430511">Теперь фото и видео сохраняются в другой папке</translation>
 <translation id="5444515100983837161">Расположите документ внутри рамки. Для повышения качества отсканированного изображения цвета документа и фона должны различаться.</translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5753488212459587150">Включить режим эксперта</translation>
 <translation id="5759254179196327752">Сканирование документов</translation>
 <translation id="5775960006311140197">Режим эксперта</translation>

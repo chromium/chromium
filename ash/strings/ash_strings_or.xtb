@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">ଏକ ମେସେଜ୍ ଟାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2018630726571919839">ମୋତେ ଏକ ଜୋକ୍ କୁହନ୍ତୁ</translation>
 <translation id="2021864487439853900">ଅନଲକ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="2023558322300866873">ଆପଣ ଯେ କୌଣସି ସମୟରେ ପ୍ୟାକେଟ୍ କ୍ୟାପଚର୍ କରିବା ବନ୍ଦ କରିପାରିବେ</translation>
 <translation id="2047639699071423250">ମୁଖ୍ୟ ଆଇଡିଆ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2049240716062114887">ଡେସ୍କ ନାମକୁ <ph name="DESK_NAME" />ରେ ବଦଳା ଯାଇଥିଲା</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">ଆସନ୍ତାକାଲି <ph name="COME_BACK_TIME" />ରେ ପୁଣି ଆସନ୍ତୁ।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ଙ୍କ ପାଇଁ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="4778095205580009397">ଏକ ଡେମୋ ସମୟ ଅବଧିରେ Google ଆସିଷ୍ଟାଣ୍ଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="4782311465517282004">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="479989351350248267">ଖୋଜନ୍ତୁ</translation>
 <translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="4814539958450445987">ଲଗ୍‍ଇନ୍ ସ୍କ୍ରିନ୍</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="746232733191930409">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡ୍</translation>
 <translation id="7466449121337984263">ଦୟାକରି ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
-<translation id="7473891865547856676">ନାହିଁ, ଧନ୍ୟବାଦ</translation>
 <translation id="7477793887173910789">ଆପଣଙ୍କର ସଙ୍ଗୀତ, ଭିଡିଓଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
-<translation id="7482097454533720217">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ।</translation>
 <translation id="7483025031359818980">ଚୟନ କ୍ଷେତ୍ର ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ସେଟ୍ କରାଯାଇଛି</translation>
 <translation id="7486227320194954040">ମାର୍କର୍ ଟୁଲଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="7497767806359279797">ଭାଷା ଏବଂ କୀବୋର୍ଡ ବାଛନ୍ତୁ</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">ସ୍କ୍ରିନ୍‌କୁ ଘୂରାନ୍ତୁ</translation>
 <translation id="7796353162336583443">ଏକ ନୋଟ୍ ବା ସ୍କ୍ରିନ୍‌ସଟ୍ ନେବାକୁ ଏବଂ Google ଆସିଷ୍ଟାଣ୍ଟ, ଲେଜର୍ ପଏଣ୍ଟର୍ କିମ୍ବା ମ୍ୟାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍ ବ୍ୟବହାର କରିବାକୁ ସେଲ୍ଫରେ ଥିବା ଷ୍ଟାଇଲସ୍ ବଟନ୍ ଉପରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="7798302898096527229">ବାତିଲ୍‌ କରିବାକୁ Search କିମ୍ବା Shift ଦବାନ୍ତୁ।</translation>
+<translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ଓ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ଶକ୍ତିଶାଳୀ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="7837740436429729974">ସମୟ ସମାପ୍ତ</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଆଯାଉଛି। କିଛି ସମୟ ପାଇଁ ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="8825863694328519386">ପଛକୁ ଫେରିବା ପାଇଁ ବାମ ପାର୍ଶ୍ୱରୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">ଆପଣ ଯେ କୌଣସି ସମୟରେ ପ୍ୟାକେଟ୍ କ୍ୟାପଚର୍ କରିବା ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8841375032071747811">ପଛକୁ ଫେରନ୍ତୁ ବଟନ୍</translation>
 <translation id="8843682306134542540">ଘୂର୍ଣ୍ଣନ ଲକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講個笑話</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
+<translation id="2023558322300866873">你隨時可以停止封包擷取作業</translation>
 <translation id="2047639699071423250">新增重點</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2050339315714019657">直向</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4778095205580009397">Google 助理不適用於示範工作階段。</translation>
+<translation id="4782311465517282004">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
-<translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
-<translation id="7482097454533720217">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果。</translation>
 <translation id="7483025031359818980">選取區域為全螢幕</translation>
 <translation id="7486227320194954040">收合標記工具</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕觸檔案櫃的觸控筆圖示即可寫筆記、擷取螢幕畫面，以及使用 Google 助理、雷射筆和放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
+<translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> 小時 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="7829386189513694949">訊號穩定</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">正在移除設定檔，請稍後片刻。</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8828714802988429505">90 度</translation>
-<translation id="8832757911363938552">你隨時可以停止封包擷取作業。</translation>
 <translation id="8841375032071747811">返回按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>

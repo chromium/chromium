@@ -141,6 +141,7 @@
 <translation id="2016340657076538683">Унесите поруку</translation>
 <translation id="2018630726571919839">Испричај ми виц.</translation>
 <translation id="2021864487439853900">Кликните да бисте откључали</translation>
+<translation id="2023558322300866873">Снимање пакета можете да зауставите у сваком тренутку</translation>
 <translation id="2047639699071423250">Додајте кључну идеју</translation>
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -495,6 +496,7 @@
 <translation id="4774338217796918551">Вратите се сутра у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google помоћник није доступан у сесији демонстрације.</translation>
+<translation id="4782311465517282004">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Прекини везу</translation>
 <translation id="4814539958450445987">Екран за пријављивање</translation>
@@ -824,9 +826,7 @@
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746232733191930409">Режим снимања екрана</translation>
 <translation id="7466449121337984263">Додирните сензор</translation>
-<translation id="7473891865547856676">Не, хвала</translation>
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
-<translation id="7482097454533720217">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите.</translation>
 <translation id="7483025031359818980">Област за избор је подешена на цео екран</translation>
 <translation id="7486227320194954040">Скупи алатке за маркер</translation>
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
@@ -868,6 +868,7 @@
 <translation id="7780159184141939021">Ротирајте екран</translation>
 <translation id="7796353162336583443">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили Google помоћник, ласерски показивач или лупу.</translation>
 <translation id="7798302898096527229">Притисните тастер за претрагу или Shift да бисте отказали.</translation>
+<translation id="780301667611848630">Не, хвала</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Јак сигнал</translation>
 <translation id="7837740436429729974">Време је истекло</translation>
@@ -999,7 +1000,6 @@
 <translation id="8818320199597151042">Профил се уклања. Сачекајте неколико минута.</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Снимање пакета можете да зауставите у сваком тренутку.</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

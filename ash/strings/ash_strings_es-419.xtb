@@ -141,6 +141,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2016340657076538683">Escribe un mensaje</translation>
 <translation id="2018630726571919839">Cuéntame un chiste</translation>
 <translation id="2021864487439853900">Haz clic para desbloquear.</translation>
+<translation id="2023558322300866873">Puedes detener la captura de paquetes en cualquier momento.</translation>
 <translation id="2047639699071423250">Agregar una idea clave</translation>
 <translation id="2049240716062114887">Se cambió el nombre del escritorio a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -496,6 +497,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">El Asistente de Google no está disponible en la sesión de demostración.</translation>
+<translation id="4782311465517282004">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho en texto o lo mantienes presionado.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4814539958450445987">Pantalla de acceso</translation>
@@ -825,9 +827,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
-<translation id="7473891865547856676">No, gracias</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
-<translation id="7482097454533720217">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto.</translation>
 <translation id="7483025031359818980">Se estableció la pantalla completa como área de selección</translation>
 <translation id="7486227320194954040">Contraer las herramientas de marcado</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
@@ -869,6 +869,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Presiona el botón de la pluma stylus en la biblioteca para tomar notas o capturas de pantalla, usar el Asistente de Google y activar las funciones de puntero láser o lupa.</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
+<translation id="780301667611848630">No, gracias</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
@@ -1000,7 +1001,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8818320199597151042">Se está quitando el perfil. Espera unos minutos.</translation>
 <translation id="8825863694328519386">Para volver, desliza el dedo desde la izquierda</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Puedes detener la captura de paquetes en cualquier momento.</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar o desactivar el bloqueo de rotación: <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tecla de búsqueda + Esc</translation>

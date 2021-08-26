@@ -141,6 +141,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2016340657076538683">Escrever uma mensagem</translation>
 <translation id="2018630726571919839">Conta-me uma anedota</translation>
 <translation id="2021864487439853900">Clicar para desbloquear</translation>
+<translation id="2023558322300866873">Pode parar a captura de pacotes em qualquer altura</translation>
 <translation id="2047639699071423250">Adicionar ideia-chave</translation>
 <translation id="2049240716062114887">O nome do espaço de trabalho foi alterado para <ph name="DESK_NAME" />.</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -495,6 +496,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4774338217796918551">Volte amanhã à(s) <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Palavra-passe para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">O Assistente Google não está disponível numa sessão de demonstração.</translation>
+<translation id="4782311465517282004">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desligar</translation>
 <translation id="4814539958450445987">Ecrã de início de sessão</translation>
@@ -824,9 +826,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
-<translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
-<translation id="7482097454533720217">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto.</translation>
 <translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7486227320194954040">Reduzir ferramentas de marcador</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
@@ -868,6 +868,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
+<translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
@@ -999,7 +1000,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8818320199597151042">A remover o perfil. Aguarde alguns minutos.</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Pode parar a captura de pacotes em qualquer altura.</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>

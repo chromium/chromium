@@ -141,6 +141,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
 <translation id="2021864487439853900">Noklikšķiniet, lai atbloķētu</translation>
+<translation id="2023558322300866873">Varat jebkurā brīdī apturēt pakešu tveršanu</translation>
 <translation id="2047639699071423250">Pievienot svarīgu ideju</translation>
 <translation id="2049240716062114887">Darbvietas nosaukums tika mainīts uz “<ph name="DESK_NAME" />”.</translation>
 <translation id="2050339315714019657">Portrets</translation>
@@ -495,6 +496,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4774338217796918551">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Parole e-pasta adresei <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google asistents nav pieejams demonstrācijas sesijā.</translation>
+<translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="479989351350248267">meklēt</translation>
 <translation id="4804818685124855865">Atvienot</translation>
 <translation id="4814539958450445987">Pierakstīšanās ekrāns</translation>
@@ -824,9 +826,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7461924472993315131">Piespraust</translation>
 <translation id="746232733191930409">Ekrāna ierakstīšanas režīms</translation>
 <translation id="7466449121337984263">Lūdzu, pieskarieties sensoram.</translation>
-<translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
-<translation id="7482097454533720217">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot.</translation>
 <translation id="7483025031359818980">Kā atlases apgabals ir iestatīts viss ekrāns</translation>
 <translation id="7486227320194954040">Sakļaut marķiera rīkus</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
@@ -868,6 +868,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7796353162336583443">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes vai ekrānuzņēmumus, izmantotu Google asistentu, lāzera rādītāju vai lupu.</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
+<translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> un <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Spēcīgs signāls</translation>
 <translation id="7837740436429729974">Laiks ir beidzies!</translation>
@@ -999,7 +1000,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8818320199597151042">Notiek profila noņemšana. Uzgaidiet dažas minūtes.</translation>
 <translation id="8825863694328519386">Lai atgrieztos, velciet no kreisās malas.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Varat jebkurā brīdī apturēt pakešu tveršanu.</translation>
 <translation id="8841375032071747811">Poga Atpakaļ</translation>
 <translation id="8843682306134542540">Pārslēgt pagriešanas bloķēšanu. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

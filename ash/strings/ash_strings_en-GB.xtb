@@ -141,6 +141,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
+<translation id="2023558322300866873">You can stop packet capture at any time</translation>
 <translation id="2047639699071423250">Add key idea</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -495,6 +496,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
+<translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4814539958450445987">Login Screen</translation>
@@ -824,9 +826,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
-<translation id="7473891865547856676">No, thanks</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
-<translation id="7482097454533720217">Get definitions, translations or unit conversions when you right-click or touch and hold text.</translation>
 <translation id="7483025031359818980">Selection area set to full screen</translation>
 <translation id="7486227320194954040">Collapse marker tools</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
@@ -868,6 +868,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
+<translation id="780301667611848630">No, thanks</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7837740436429729974">Time's up</translation>
@@ -999,7 +1000,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8818320199597151042">Removing profile. Wait a few minutes.</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">You can stop packet capture at any time.</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

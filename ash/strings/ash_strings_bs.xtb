@@ -141,6 +141,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2016340657076538683">Napišite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
 <translation id="2021864487439853900">Kliknite da otključate</translation>
+<translation id="2023558322300866873">Možete bilo kada zaustaviti snimanje paketa</translation>
 <translation id="2047639699071423250">Dodaj ključnu ideju</translation>
 <translation id="2049240716062114887">Naziv radne površine je promijenjen u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Uspravno</translation>
@@ -495,6 +496,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lozinka za račun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Asistent nije dostupan u demo sesiji.</translation>
+<translation id="4782311465517282004">Dobijte definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="479989351350248267">pretraži</translation>
 <translation id="4804818685124855865">Prekini vezu</translation>
 <translation id="4814539958450445987">Ekran za prijavu</translation>
@@ -824,9 +826,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7461924472993315131">PIN</translation>
 <translation id="746232733191930409">Način rada snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
-<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Kontrolirajte muziku, videozapise i drugi sadržaj</translation>
-<translation id="7482097454533720217">Primite definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite.</translation>
 <translation id="7483025031359818980">Područje za odabir je postavljeno preko cijelog ekrana</translation>
 <translation id="7486227320194954040">Suzi alate označivača</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
@@ -868,6 +868,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
+<translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vrijeme je isteklo</translation>
@@ -999,7 +1000,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8818320199597151042">Uklanjanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="8825863694328519386">Prevucite prstom slijeva nadesno da se vratite</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Možete bilo kada zaustaviti snimanje paketa.</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
 <translation id="8843682306134542540">Uključi/isključi zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

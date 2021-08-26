@@ -141,6 +141,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2016340657076538683">Ketik pesan</translation>
 <translation id="2018630726571919839">Ceritakan lelucon</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
+<translation id="2023558322300866873">Anda dapat menghentikan penangkapan paket kapan saja</translation>
 <translation id="2047639699071423250">Tambahkan ide kunci</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
@@ -495,6 +496,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asisten Google tidak tersedia dalam sesi demo.</translation>
+<translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Putuskan</translation>
 <translation id="4814539958450445987">Layar Login</translation>
@@ -824,9 +826,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7461924472993315131">Sematkan</translation>
 <translation id="746232733191930409">Mode perekaman layar</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
-<translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
-<translation id="7482097454533720217">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks.</translation>
 <translation id="7483025031359818980">Area pemilihan disetel ke layar penuh</translation>
 <translation id="7486227320194954040">Ciutkan alat penanda</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
@@ -868,6 +868,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7796353162336583443">Ketuk tombol stilus di rak untuk mencatat, mengambil screenshot, menggunakan asisten, penunjuk laser, atau kaca pembesar.</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
+<translation id="780301667611848630">Lain kali</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinyal kuat</translation>
 <translation id="7837740436429729974">Waktu habis</translation>
@@ -999,7 +1000,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8818320199597151042">Menghapus profil. Tunggu beberapa menit.</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Anda dapat menghentikan penangkapan paket kapan saja.</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

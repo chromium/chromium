@@ -141,6 +141,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2016340657076538683">Sláðu inn skilaboð</translation>
 <translation id="2018630726571919839">Segðu mér brandara</translation>
 <translation id="2021864487439853900">Smelltu til að opna</translation>
+<translation id="2023558322300866873">Þú getur stöðvað pakkaupptöku hvenær sem er</translation>
 <translation id="2047639699071423250">Bæta við lykilhugmynd</translation>
 <translation id="2049240716062114887">Skrifborðsheiti var breytt í <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Skammsnið</translation>
@@ -495,6 +496,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4774338217796918551">Komdu aftur á morgun klukkan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Aðgangsorð fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google hjálparinn er ekki í boði í prufuútgáfu.</translation>
+<translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
 <translation id="479989351350248267">leita</translation>
 <translation id="4804818685124855865">Aftengja</translation>
 <translation id="4814539958450445987">Innskráningarskjár</translation>
@@ -824,9 +826,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7461924472993315131">Festa</translation>
 <translation id="746232733191930409">Skjáupptökustilling</translation>
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
-<translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
-<translation id="7482097454533720217">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða snertir og heldur texta inni.</translation>
 <translation id="7483025031359818980">Valsvæði stillt á allan skjáinn</translation>
 <translation id="7486227320194954040">Draga saman merkiverkfæri</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
@@ -868,6 +868,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7780159184141939021">Snúa skjánum</translation>
 <translation id="7796353162336583443">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota Google hjálparann, leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>
+<translation id="780301667611848630">Nei, takk</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Mikill sendistyrkur</translation>
 <translation id="7837740436429729974">Tíminn er liðinn</translation>
@@ -999,7 +1000,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8818320199597151042">Fjarlægir prófíl. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="8825863694328519386">Strjúktu frá vinstri til að fara til baka</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Þú getur stöðvað pakkaupptöku hvenær sem er.</translation>
 <translation id="8841375032071747811">Bakkhnappur</translation>
 <translation id="8843682306134542540">Víxla snúningslás. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

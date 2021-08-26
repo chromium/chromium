@@ -141,6 +141,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
 <translation id="2021864487439853900">Kliknite za odklepanje</translation>
+<translation id="2023558322300866873">Zajem omrežnih paketov lahko kadar koli ustavite.</translation>
 <translation id="2047639699071423250">Dodaj ključno idejo</translation>
 <translation id="2049240716062114887">Ime namizja je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pokončno</translation>
@@ -495,6 +496,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4774338217796918551">Vrni se jutri ob <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Geslo za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Pomočnik Google ni na voljo v predstavitveni seji.</translation>
+<translation id="4782311465517282004">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Prekini povezavo</translation>
 <translation id="4814539958450445987">Zaslon za prijavo</translation>
@@ -824,9 +826,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
-<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
-<translation id="7482097454533720217">Zagotovite si definicije, prevode pretvorbe enot, ko besedilo kliknite z desnim gumbom ali se ga dotaknete in pridržite.</translation>
 <translation id="7483025031359818980">Območje izbire je nastavljeno na celotni zaslon</translation>
 <translation id="7486227320194954040">Strni orodja označevalnika</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
@@ -868,6 +868,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7796353162336583443">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti Pomočnika Google, laserski kazalnik ali povečevalno steklo.</translation>
 <translation id="7798302898096527229">Za preklic pritisnite tipko za iskanje ali Shift.</translation>
+<translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> in <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Močan signal</translation>
 <translation id="7837740436429729974">Čas je potekel</translation>
@@ -999,7 +1000,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8818320199597151042">Odstranjevanje profila. Počakajte nekaj minut.</translation>
 <translation id="8825863694328519386">Povlecite z leve, če se želite vrniti</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Zajem omrežnih paketov lahko kadar koli ustavite.</translation>
 <translation id="8841375032071747811">Gumb za nazaj</translation>
 <translation id="8843682306134542540">Preklop zaklepanja zasuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>

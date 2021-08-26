@@ -141,6 +141,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2016340657076538683">Escriu un missatge</translation>
 <translation id="2018630726571919839">Explica'm un acudit</translation>
 <translation id="2021864487439853900">Fes clic per desbloquejar</translation>
+<translation id="2023558322300866873">Pots aturar la captura de paquets en qualsevol moment</translation>
 <translation id="2047639699071423250">Afegeix una idea clau</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -495,6 +496,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
+<translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="479989351350248267">cerca</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
@@ -824,9 +826,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
-<translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
-<translation id="7482097454533720217">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret.</translation>
 <translation id="7483025031359818980">S'ha establert la pantalla completa com a àrea de selecció</translation>
 <translation id="7486227320194954040">Replega les eines de marcatge</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
@@ -868,6 +868,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
+<translation id="780301667611848630">No, gràcies</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>
@@ -999,7 +1000,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8818320199597151042">S'està suprimint el perfil. Espera uns minuts.</translation>
 <translation id="8825863694328519386">Llisca des de l'esquerra per tornar enrere</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Pots aturar la captura de paquets en qualsevol moment.</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
