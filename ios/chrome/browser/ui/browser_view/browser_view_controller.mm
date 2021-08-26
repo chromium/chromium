@@ -3870,8 +3870,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
     if (search_engines::SupportsSearchByImage(service)) {
       const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
-      NSString* title = l10n_util::GetNSStringF(
-          IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE, defaultURL->short_name());
+      NSString* title =
+          IsContextMenuActionsRefreshEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_CONTEXT_MENU_SEARCHFORIMAGE)
+              : l10n_util::GetNSStringF(IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE,
+                                        defaultURL->short_name());
       UIAction* searchByImage = [actionFactory
           actionSearchImageWithTitle:title
                                Block:^{
