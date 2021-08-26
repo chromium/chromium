@@ -54,9 +54,11 @@ inline const DisplayItemClient& AsDisplayItemClient(
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
-                                   const PhysicalOffset& paint_offset,
-                                   const PhysicalOffset& parent_offset) {
+inline PhysicalRect BoxInPhysicalSpace(
+    const NGInlineCursor& cursor,
+    const PhysicalOffset& paint_offset,
+    const PhysicalOffset& parent_offset,
+    const LayoutNGTextCombine* text_combine) {
   PhysicalRect box_rect;
   if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData())
     box_rect = PhysicalRect::FastAndLossyFromFloatRect(svg_data->rect);
@@ -67,7 +69,19 @@ inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
   box_rect.offset.top =
       LayoutUnit((paint_offset.top + parent_offset.top).Round()) +
       (box_rect.offset.top - parent_offset.top);
+  if (text_combine) {
+    box_rect.offset.left =
+        text_combine->AdjustTextLeftForPaint(box_rect.offset.left);
+  }
   return box_rect;
+}
+
+inline PhysicalRect BoxInWritingModeSpace(const PhysicalRect& physical_box,
+                                          bool is_horizontal) {
+  PhysicalRect result = physical_box;
+  if (!is_horizontal)
+    result.size = PhysicalSize(result.Height(), result.Width());
+  return result;
 }
 
 inline const NGInlineCursor& InlineCursorForBlockFlow(
@@ -154,10 +168,22 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const bool is_rendering_resource = paint_info.IsRenderingResourceSubtree();
   const auto* const text_combine =
       DynamicTo<LayoutNGTextCombine>(layout_object->Parent());
+  const PhysicalRect physical_box =
+      BoxInPhysicalSpace(cursor_, paint_offset, parent_offset_, text_combine);
 #if DCHECK_IS_ON()
   if (UNLIKELY(text_combine))
     LayoutNGTextCombine::AssertStyleIsValid(style);
 #endif
+
+  // Determine whether or not we’ll need a writing-mode rotation, but don’t
+  // actually rotate until we reach the steps that need it.
+  absl::optional<AffineTransform> rotation;
+  const WritingMode writing_mode = style.GetWritingMode();
+  const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
+  const PhysicalRect rotated_box =
+      BoxInWritingModeSpace(physical_box, is_horizontal);
+  if (!is_horizontal)
+    rotation.emplace(TextPainterBase::Rotation(rotated_box, writing_mode));
 
   // Determine whether or not we're selected.
   NGHighlightPainter::SelectionPaintState* selection = nullptr;
@@ -172,7 +198,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     // Empty selections might be the boundary of the document selection, and
     // thus need to get recorded. We only need to paint the selection if it
     // has a valid range.
-    selection_for_bounds_recording.emplace(root_inline_cursor);
+    selection_for_bounds_recording.emplace(root_inline_cursor,
+                                           physical_box.offset, rotation);
     if (selection_for_bounds_recording->Status().HasValidRange())
       selection = &selection_for_bounds_recording.value();
   }
@@ -185,12 +212,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     // Flow controls (line break, tab, <wbr>) need only selection painting.
     if (text_item.IsFlowControl())
       return;
-  }
-
-  PhysicalRect box_rect = ComputeBoxRect(cursor_, paint_offset, parent_offset_);
-  if (UNLIKELY(text_combine)) {
-    box_rect.offset.left =
-        text_combine->AdjustTextLeftForPaint(box_rect.offset.left);
   }
 
   IntRect visual_rect;
@@ -206,7 +227,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   } else {
     DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
-    ink_overflow.Move(box_rect.offset);
+    ink_overflow.Move(physical_box.offset);
     visual_rect = EnclosingIntRect(ink_overflow);
   }
 
@@ -219,10 +240,9 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (SelectionBoundsRecorder::ShouldRecordSelection(
             cursor_.Current().GetLayoutObject()->GetFrame()->Selection(),
             selection_for_bounds_recording->State())) {
-      PhysicalRect selection_rect =
-          selection_for_bounds_recording->ComputeSelectionRect(box_rect.offset);
       selection_recorder.emplace(
-          selection_for_bounds_recording->State(), selection_rect,
+          selection_for_bounds_recording->State(),
+          selection_for_bounds_recording->RectInPhysicalSpace(),
           paint_info.context.GetPaintController(),
           cursor_.Current().ResolvedDirection(), style.GetWritingMode(),
           *cursor_.Current().GetLayoutObject());
@@ -259,8 +279,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       if (!Character::IsBidiControl(fragment_paint_info.text.CodepointAt(i)))
         return;
     }
-    PaintSymbol(layout_object, style, box_rect.size, paint_info,
-                box_rect.offset);
+    PaintSymbol(layout_object, style, physical_box.size, paint_info,
+                physical_box.offset);
     return;
   }
 
@@ -291,21 +311,18 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       paint_info.phase != PaintPhase::kSelectionDragImage &&
       paint_info.phase != PaintPhase::kTextClip && !is_printing;
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
-  absl::optional<AffineTransform> rotation;
-  const WritingMode writing_mode = style.GetWritingMode();
-  const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   PhysicalOffset text_origin(
-      box_rect.offset.left,
+      physical_box.offset.left,
       UNLIKELY(text_combine)
-          ? text_combine->AdjustTextTopForPaint(box_rect.offset.top)
-          : box_rect.offset.top + ascent);
+          ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
+          : physical_box.offset.top + ascent);
 
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
-                             text_origin, box_rect, is_horizontal);
-  NGHighlightPainter highlight_painter(text_painter, paint_info, cursor_,
-                                       *cursor_.CurrentItem(), box_rect.offset,
-                                       style, selection, is_printing);
+                             text_origin, physical_box, is_horizontal);
+  NGHighlightPainter highlight_painter(
+      text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
+      physical_box.offset, style, selection, is_printing);
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
@@ -331,12 +348,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // coordinates, so are painted before GraphicsContext rotation.
   highlight_painter.Paint(NGHighlightPainter::kBackground);
 
-  if (!is_horizontal) {
+  if (rotation) {
     state_saver.SaveIfNeeded();
-    // Because we rotate the GraphicsContext to match the logical direction,
-    // transpose the |box_rect| to match to it.
-    box_rect.size = PhysicalSize(box_rect.Height(), box_rect.Width());
-    rotation.emplace(TextPainterBase::Rotation(box_rect, writing_mode));
     context.ConcatCTM(*rotation);
     if (NGTextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
       DCHECK(rotation->IsInvertible());
@@ -345,25 +358,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (UNLIKELY(highlight_painter.Selection())) {
-    PhysicalRect before_rotation =
-        highlight_painter.Selection()->ComputeSelectionRect(box_rect.offset);
+    PhysicalRect physical_selection =
+        highlight_painter.Selection()->RectInPhysicalSpace();
     if (scaling_factor != 1.0f) {
-      before_rotation.offset.Scale(1 / scaling_factor);
-      before_rotation.size.Scale(1 / scaling_factor);
+      physical_selection.offset.Scale(1 / scaling_factor);
+      physical_selection.size.Scale(1 / scaling_factor);
     }
 
-    // The selection rect is given in physical coordinates, so we need to map
-    // them into our now-possibly-rotated space before calling any methods
-    // that might rely on them. Best to do this immediately, because they are
-    // cached internally and could potentially affect any method.
-    if (rotation) {
-      highlight_painter.Selection()->MapSelectionRectIntoRotatedSpace(
-          *rotation);
-    }
-
-    // We still need to use physical coordinates when invalidating.
+    // We need to use physical coordinates when invalidating.
     if (paint_marker_backgrounds && recorder)
-      recorder->UniteVisualRect(EnclosingIntRect(before_rotation));
+      recorder->UniteVisualRect(EnclosingIntRect(physical_selection));
   }
 
   // 2. Now paint the foreground, including text and decorations.
@@ -387,13 +391,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (LIKELY(!highlight_painter.Selection())) {
     bool has_line_through_decoration = false;
     text_painter.PaintDecorationsExceptLineThrough(
-        text_item, paint_info, style, text_style, box_rect, absl::nullopt,
+        text_item, paint_info, style, text_style, rotated_box, absl::nullopt,
         &has_line_through_decoration);
     text_painter.Paint(start_offset, end_offset, length, text_style, node_id);
     if (has_line_through_decoration) {
       DCHECK(!text_combine);
       text_painter.PaintDecorationsOnlyLineThrough(
-          text_item, paint_info, style, text_style, box_rect, absl::nullopt);
+          text_item, paint_info, style, text_style, rotated_box, absl::nullopt);
     }
   } else if (!highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
     highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
@@ -415,7 +419,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
     bool has_line_through_decoration = false;
     text_painter.PaintDecorationsExceptLineThrough(
-        text_item, paint_info, style, text_style, box_rect,
+        text_item, paint_info, style, text_style, rotated_box,
         highlight_painter.SelectionDecoration(), &has_line_through_decoration);
 
     // Paint only the text that is selected.
@@ -425,7 +429,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (has_line_through_decoration) {
       DCHECK(!text_combine);
       text_painter.PaintDecorationsOnlyLineThrough(
-          text_item, paint_info, style, text_style, box_rect,
+          text_item, paint_info, style, text_style, rotated_box,
           highlight_painter.SelectionDecoration());
     }
   }

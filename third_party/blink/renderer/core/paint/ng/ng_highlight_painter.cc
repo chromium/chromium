@@ -125,8 +125,12 @@ Color SelectionBackgroundColor(const Document& document,
 }  // namespace
 
 NGHighlightPainter::SelectionPaintState::SelectionPaintState(
-    const NGInlineCursor& containing_block)
+    const NGInlineCursor& containing_block,
+    const PhysicalOffset& box_offset,
+    const absl::optional<AffineTransform> writing_mode_rotation)
     : SelectionPaintState(containing_block,
+                          box_offset,
+                          writing_mode_rotation,
                           containing_block.Current()
                               .GetLayoutObject()
                               ->GetDocument()
@@ -134,12 +138,16 @@ NGHighlightPainter::SelectionPaintState::SelectionPaintState(
                               ->Selection()) {}
 NGHighlightPainter::SelectionPaintState::SelectionPaintState(
     const NGInlineCursor& containing_block,
+    const PhysicalOffset& box_offset,
+    const absl::optional<AffineTransform> writing_mode_rotation,
     const FrameSelection& frame_selection)
     : selection_status_(
           frame_selection.ComputeLayoutSelectionStatus(containing_block)),
       state_(frame_selection.ComputeLayoutSelectionStateForCursor(
           containing_block.Current())),
-      containing_block_(containing_block) {}
+      containing_block_(containing_block),
+      box_offset_(box_offset),
+      writing_mode_rotation_(writing_mode_rotation) {}
 
 void NGHighlightPainter::SelectionPaintState::ComputeSelectionStyle(
     const Document& document,
@@ -153,14 +161,30 @@ void NGHighlightPainter::SelectionPaintState::ComputeSelectionStyle(
       (paint_info.phase == PaintPhase::kSelectionDragImage);
 }
 
-PhysicalRect NGHighlightPainter::SelectionPaintState::ComputeSelectionRect(
-    const PhysicalOffset& box_offset) {
+void NGHighlightPainter::SelectionPaintState::ComputeSelectionRectIfNeeded() {
   if (!selection_rect_) {
-    selection_rect_ =
+    PhysicalRect physical =
         containing_block_.CurrentLocalSelectionRectForText(selection_status_);
-    selection_rect_->offset += box_offset;
+    physical.offset += box_offset_;
+    PhysicalRect rotated = writing_mode_rotation_
+                               ? PhysicalRect::EnclosingRect(
+                                     writing_mode_rotation_->Inverse().MapRect(
+                                         FloatRect(physical)))
+                               : physical;
+    selection_rect_.emplace(SelectionRect{physical, rotated});
   }
-  return *selection_rect_;
+}
+
+const PhysicalRect&
+NGHighlightPainter::SelectionPaintState::RectInPhysicalSpace() {
+  ComputeSelectionRectIfNeeded();
+  return selection_rect_->physical;
+}
+
+const PhysicalRect&
+NGHighlightPainter::SelectionPaintState::RectInWritingModeSpace() {
+  ComputeSelectionRectIfNeeded();
+  return selection_rect_->rotated;
 }
 
 // Logic is copied from InlineTextBoxPainter::PaintSelection.
@@ -176,7 +200,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
                                                selection_style_.fill_color);
 
   if (!rotation) {
-    PaintRect(context, *selection_rect_, color);
+    PaintRect(context, RectInPhysicalSpace(), color);
     return;
   }
 
@@ -185,19 +209,9 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
   // tests like <paint/invalidation/repaint-across-writing-mode-boundary>. To
   // fix this, we undo the transformation temporarily, then use the original
   // physical coordinates (before MapSelectionRectIntoRotatedSpace).
-  DCHECK(selection_rect_before_rotation_);
   context.ConcatCTM(rotation->Inverse());
-  PaintRect(context, *selection_rect_before_rotation_, color);
+  PaintRect(context, RectInPhysicalSpace(), color);
   context.ConcatCTM(*rotation);
-}
-
-// Called before we paint vertical selected text under a rotation transform.
-void NGHighlightPainter::SelectionPaintState::MapSelectionRectIntoRotatedSpace(
-    const AffineTransform& rotation) {
-  DCHECK(selection_rect_);
-  selection_rect_before_rotation_.emplace(*selection_rect_);
-  *selection_rect_ = PhysicalRect::EnclosingRect(
-      rotation.Inverse().MapRect(FloatRect(*selection_rect_)));
 }
 
 // Paint the selected text only.
@@ -208,7 +222,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectedText(
     DOMNodeId node_id) {
   text_painter.PaintSelectedText(selection_status_.start, selection_status_.end,
                                  length, text_style, selection_style_,
-                                 *selection_rect_, node_id);
+                                 RectInWritingModeSpace(), node_id);
 }
 
 // Paint the given text range in the given style, suppressing the text proper
