@@ -661,7 +661,7 @@
   {
     "name": "chromeos-sharing-hub",
     "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
@@ -5027,12 +5027,12 @@
   {
     "name": "sharing-hub-desktop-app-menu",
     "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "sharing-hub-desktop-omnibox",
     "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "sharing-hub-link-toggle",
