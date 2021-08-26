@@ -33,6 +33,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
+#include "ui/views/cascading_property.h"
 #include "url/gurl.h"
 
 namespace {
@@ -228,8 +229,7 @@ void TabIcon::PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
 
   // Draws the actual attention indicator.
   cc::PaintFlags indicator_flags;
-  indicator_flags.setColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_ProminentButtonColor));
+  indicator_flags.setColor(views::GetCascadingAccentColor(this));
   indicator_flags.setAntiAlias(true);
   canvas->DrawCircle(circle_center, kAttentionIndicatorRadius, indicator_flags);
 }
@@ -237,23 +237,22 @@ void TabIcon::PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
 void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {
   TRACE_EVENT0("views", "TabIcon::PaintLoadingAnimation");
 
-  const ui::ThemeProvider* tp = GetThemeProvider();
-
+  const SkColor spinning_color = views::GetCascadingAccentColor(this);
+  const SkColor waiting_color = color_utils::AlphaBlend(
+      spinning_color, views::GetCascadingBackgroundColor(this),
+      gfx::kGoogleGreyAlpha400);
   if (network_state_ == TabNetworkState::kWaiting) {
-    gfx::PaintThrobberWaiting(
-        canvas, bounds,
-        tp->GetColor(ThemeProperties::COLOR_TAB_THROBBER_WAITING),
-        waiting_state_.elapsed_time, kLoadingAnimationStrokeWidthDp);
+    gfx::PaintThrobberWaiting(canvas, bounds, waiting_color,
+                              waiting_state_.elapsed_time,
+                              kLoadingAnimationStrokeWidthDp);
   } else {
     const base::TimeTicks current_time = clock_->NowTicks();
     if (loading_animation_start_time_.is_null())
       loading_animation_start_time_ = current_time;
 
-    waiting_state_.color =
-        tp->GetColor(ThemeProperties::COLOR_TAB_THROBBER_WAITING);
+    waiting_state_.color = waiting_color;
     gfx::PaintThrobberSpinningAfterWaiting(
-        canvas, bounds,
-        tp->GetColor(ThemeProperties::COLOR_TAB_THROBBER_SPINNING),
+        canvas, bounds, spinning_color,
         current_time - loading_animation_start_time_, &waiting_state_,
         kLoadingAnimationStrokeWidthDp);
   }
