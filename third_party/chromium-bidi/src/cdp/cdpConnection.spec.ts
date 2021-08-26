@@ -6,21 +6,21 @@ chai.use(chaiAsPromised);
 
 import * as sinon from 'sinon';
 
-import { Connection } from './connection';
+import { CdpConnection } from './cdpConnection';
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
 
-describe('Connection', function () {
+describe('CdpConnection', function () {
   it('can send a command message for a CdpClient', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
     const browserMessage = JSON.stringify({
       id: 0,
       method: 'Browser.getVersion',
     });
-    conn.browserClient().Browser.getVersion();
+    cdpConnection.browserClient().Browser.getVersion();
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -30,9 +30,9 @@ describe('Connection', function () {
 
   it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
-    let client = conn.sessionClient(SOME_SESSION_ID);
+    let client = cdpConnection.sessionClient(SOME_SESSION_ID);
     chai.assert.isNull(client);
 
     const onMessage = mockCdpServer.getOnMessage();
@@ -43,13 +43,13 @@ describe('Connection', function () {
       })
     );
 
-    client = conn.sessionClient(SOME_SESSION_ID);
+    client = cdpConnection.sessionClient(SOME_SESSION_ID);
     chai.assert.isNotNull(client);
   });
 
   it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
     const onMessage = mockCdpServer.getOnMessage();
     onMessage(
@@ -59,8 +59,8 @@ describe('Connection', function () {
       })
     );
 
-    let client = conn.sessionClient(SOME_SESSION_ID);
-    chai.assert.isNotNull(client);
+    let cdpClient = cdpConnection.sessionClient(SOME_SESSION_ID);
+    chai.assert.isNotNull(cdpClient);
 
     onMessage(
       JSON.stringify({
@@ -69,13 +69,13 @@ describe('Connection', function () {
       })
     );
 
-    client = conn.sessionClient(SOME_SESSION_ID);
-    chai.assert.isNull(client);
+    cdpClient = cdpConnection.sessionClient(SOME_SESSION_ID);
+    chai.assert.isNull(cdpClient);
   });
 
   it('routes event messages to the correct handler based on sessionId', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
     const browserMessage = { method: 'Browser.downloadWillBegin' };
     const sessionMessage = {
@@ -93,7 +93,7 @@ describe('Connection', function () {
     const otherSessionCallback = sinon.fake();
 
     // Register for browser message callbacks.
-    const browserClient = conn.browserClient();
+    const browserClient = cdpConnection.browserClient();
     browserClient.Browser.on('downloadWillBegin', browserCallback);
 
     // Verify that the browser callback receives the message.
@@ -109,7 +109,7 @@ describe('Connection', function () {
       })
     );
 
-    const sessionClient = conn.sessionClient(SOME_SESSION_ID)!;
+    const sessionClient = cdpConnection.sessionClient(SOME_SESSION_ID)!;
     chai.assert.isNotNull(sessionClient);
     sessionClient.Page.on('frameNavigated', sessionCallback);
 
@@ -134,7 +134,7 @@ describe('Connection', function () {
       })
     );
 
-    const otherSessionClient = conn.sessionClient(ANOTHER_SESSION_ID)!;
+    const otherSessionClient = cdpConnection.sessionClient(ANOTHER_SESSION_ID)!;
     chai.assert.isNotNull(otherSessionClient);
     otherSessionClient.Page.on('loadEventFired', otherSessionCallback);
 
@@ -149,8 +149,8 @@ describe('Connection', function () {
 
   it('closes the transport connection when closed', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
-    conn.close();
+    const cdpConnection = new CdpConnection(mockCdpServer);
+    cdpConnection.close();
     sinon.assert.calledOnce(mockCdpServer.close);
   });
 });

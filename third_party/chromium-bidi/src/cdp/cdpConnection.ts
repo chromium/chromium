@@ -1,5 +1,5 @@
 import { ITransport } from '../utils/transport';
-import { CdpMessage } from './message';
+import { CdpMessage } from './cdpMessage';
 import { CdpClient, createClient } from './cdpClient';
 
 import { log } from '../utils/log';
@@ -14,7 +14,7 @@ interface CdpCallbacks {
  * Represents a high-level CDP connection to the browser backend.
  * Manages a CdpClient instance for each active CDP session.
  */
-export class Connection {
+export class CdpConnection {
   private _browserCdpClient: CdpClient;
   private _sessionCdpClients: Map<string, CdpClient> = new Map();
   private _commandCallbacks: Map<number, CdpCallbacks> = new Map();
@@ -54,10 +54,7 @@ export class Connection {
     return this._sessionCdpClients.get(sessionId) || null;
   }
 
-  /**
-   * @internal
-   */
-  _sendCommand(
+  sendCommand(
     method: string,
     params: object,
     sessionId: string | null

@@ -15,8 +15,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { ITransport } from '../utils/transport';
-import { Connection } from './connection';
+import { CdpConnection } from './cdpConnection';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
@@ -84,7 +83,7 @@ class CdpClientImpl extends EventEmitter {
   private _domains: Map<string, DomainImpl>;
 
   constructor(
-    private _connection: Connection,
+    private _cdpConnection: CdpConnection,
     private _sessionId: string | null
   ) {
     super();
@@ -106,7 +105,7 @@ class CdpClientImpl extends EventEmitter {
    * @param params Parameters to pass to the CDP command.
    */
   sendCommand(method: string, params: object): Promise<object> {
-    return this._connection._sendCommand(method, params, this._sessionId);
+    return this._cdpConnection.sendCommand(method, params, this._sessionId);
   }
 
   _onCdpEvent(method: string, params: object) {
@@ -128,6 +127,9 @@ class CdpClientImpl extends EventEmitter {
  * @param transport A transport object that will be used to send and receive raw CDP messages.
  * @returns A connected CDP client object.
  */
-export function createClient(connection: Connection, sessionId: string | null) {
-  return new CdpClientImpl(connection, sessionId) as unknown as CdpClient;
+export function createClient(
+  cdpConnection: CdpConnection,
+  sessionId: string | null
+) {
+  return new CdpClientImpl(cdpConnection, sessionId) as unknown as CdpClient;
 }

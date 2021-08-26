@@ -15,7 +15,7 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpClient, Connection } from '../cdp';
+import { CdpClient, CdpConnection } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
 import { ITransport } from '../utils/transport';
 
@@ -94,7 +94,7 @@ function _createCdpConnection() {
     }
   }
 
-  return new Connection(new WindowCdpTransport());
+  return new CdpConnection(new WindowCdpTransport());
 }
 
 function _createBidiServer() {

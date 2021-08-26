@@ -1,3 +1,3 @@
 export { CdpClient } from './cdpClient';
-export { Connection } from './connection';
+export { CdpConnection } from './cdpConnection';
 export { WebSocketTransport } from './websocketTransport';

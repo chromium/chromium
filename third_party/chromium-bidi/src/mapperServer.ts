@@ -21,7 +21,7 @@ const debugLog = debug('bidiMapper:log');
 import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
-import { CdpClient, Connection, WebSocketTransport } from './cdp';
+import { CdpClient, CdpConnection, WebSocketTransport } from './cdp';
 
 export class MapperServer {
   private _handlers: ((message: string) => void)[] = new Array();
@@ -44,7 +44,7 @@ export class MapperServer {
   }
 
   private constructor(
-    private _cdpConnection: Connection,
+    private _cdpConnection: CdpConnection,
     private _mapperCdpClient: CdpClient
   ) {
     this._mapperCdpClient.Runtime.on('bindingCalled', this._onBindingCalled);
@@ -66,7 +66,7 @@ export class MapperServer {
 
   private static async _establishCdpConnection(
     cdpUrl: string
-  ): Promise<Connection> {
+  ): Promise<CdpConnection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -78,7 +78,7 @@ export class MapperServer {
         debugInternal('Session established.');
 
         const transport = new WebSocketTransport(ws);
-        const connection = new Connection(transport);
+        const connection = new CdpConnection(transport);
         resolve(connection);
       });
     });
@@ -113,7 +113,7 @@ export class MapperServer {
   };
 
   private static async _initMapper(
-    cdpConnection: Connection,
+    cdpConnection: CdpConnection,
     mapperContent: string
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');

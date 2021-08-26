@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Connection } from './connection';
+import { CdpConnection } from './cdpConnection';
 import { StubTransport } from '../tests/stubTransport.spec';
 
 import * as chai from 'chai';
@@ -23,8 +23,6 @@ chai.use(chaiAsPromised);
 import * as sinon from 'sinon';
 
 import { Protocol } from 'devtools-protocol';
-
-const TEST_SESSION_ID = 'ABCD';
 
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
@@ -41,9 +39,9 @@ describe('CdpClient tests.', function () {
     });
 
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
-    const cdpClient = conn.browserClient();
+    const cdpClient = cdpConnection.browserClient();
     cdpClient.Target.activateTarget({ targetId: TEST_TARGET_ID });
 
     sinon.assert.calledOnceWithExactly(
@@ -55,9 +53,9 @@ describe('CdpClient tests.', function () {
   it(`given some command is called, when CDP command is done, then
         'sendMessage' promise is resolved`, async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
+    const cdpConnection = new CdpConnection(mockCdpServer);
 
-    const cdpClient = conn.browserClient();
+    const cdpClient = cdpConnection.browserClient();
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
     const onMessage = mockCdpServer.getOnMessage();
@@ -80,8 +78,8 @@ describe('CdpClient tests.', function () {
   it(`given some command is called 2 times, when CDP commands are done, then
         each command promise is resolved with proper results`, async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
-    const cdpClient = conn.browserClient();
+    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpClient = cdpConnection.browserClient();
 
     const expectedResult1 = {
       someResult: 1,
@@ -122,8 +120,8 @@ describe('CdpClient tests.', function () {
 
   it('gets event callbacks when events are received from CDP', async function () {
     const mockCdpServer = new StubTransport();
-    const conn = new Connection(mockCdpServer);
-    const cdpClient = conn.browserClient();
+    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpClient = cdpConnection.browserClient();
 
     // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
     const onMessage = mockCdpServer.getOnMessage();
@@ -170,8 +168,8 @@ describe('CdpClient tests.', function () {
   describe('sendCommand()', function () {
     it('sends a raw CDP messages and returns a promise that will be resolved with the result', async function () {
       const mockCdpServer = new StubTransport();
-      const conn = new Connection(mockCdpServer);
-      const cdpClient = conn.browserClient();
+      const cdpConnection = new CdpConnection(mockCdpServer);
+      const cdpClient = cdpConnection.browserClient();
 
       // Get handler 'onMessage' to notify 'cdpClient' about new CDP messages.
       const onMessage = mockCdpServer.getOnMessage();
@@ -197,8 +195,8 @@ describe('CdpClient tests.', function () {
 
     it('sends a raw CDP messages and returns a promise that will reject on error', async function () {
       const mockCdpServer = new StubTransport();
-      const conn = new Connection(mockCdpServer);
-      const cdpClient = conn.browserClient();
+      const cdpConnection = new CdpConnection(mockCdpServer);
+      const cdpClient = cdpConnection.browserClient();
 
       const expectedError = {
         code: 'some error',
