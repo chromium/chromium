@@ -88,10 +88,12 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   base::RunLoop run_loop;
   auto* event_listener =
       MakeGarbageCollected<SyncEventListener>(run_loop.QuitClosure());
-  sentinel->addEventListener(event_type_names::kRelease, event_listener);
+  sentinel->addEventListener(event_type_names::kRelease, event_listener,
+                             /*use_capture=*/false);
   sentinel->release(context.GetScriptState());
   run_loop.Run();
-  sentinel->removeEventListener(event_type_names::kRelease, event_listener);
+  sentinel->removeEventListener(event_type_names::kRelease, event_listener,
+                                /*use_capture=*/false);
 
   EXPECT_EQ(nullptr, sentinel->manager_);
   EXPECT_TRUE(sentinel->released());

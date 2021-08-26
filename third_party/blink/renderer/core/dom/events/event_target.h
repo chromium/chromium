@@ -151,7 +151,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
       const V8UnionBooleanOrEventListenerOptions* bool_or_options);
   bool removeEventListener(const AtomicString& event_type,
                            const EventListener*,
-                           bool use_capture = false);
+                           bool use_capture);
   bool removeEventListener(const AtomicString& event_type,
                            const EventListener*,
                            EventListenerOptions*);

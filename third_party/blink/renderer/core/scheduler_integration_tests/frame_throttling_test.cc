@@ -1827,7 +1827,8 @@ TEST_P(FrameThrottlingTest, ThrottledIframeGetsResizeEvents) {
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* listener = MakeGarbageCollected<TestEventListener>();
-  frame_element->contentWindow()->addEventListener("resize", listener);
+  frame_element->contentWindow()->addEventListener("resize", listener,
+                                                   /*use_capture=*/false);
   EXPECT_EQ(listener->GetCallCount(), 0);
   CompositeFrame();
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
@@ -1840,7 +1841,8 @@ TEST_P(FrameThrottlingTest, ThrottledIframeGetsResizeEvents) {
   CompositeFrame();
   EXPECT_EQ(listener->GetCallCount(), 2);
 
-  frame_element->contentWindow()->removeEventListener("resize", listener);
+  frame_element->contentWindow()->removeEventListener("resize", listener,
+                                                      /*use_capture=*/false);
 }
 
 TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {

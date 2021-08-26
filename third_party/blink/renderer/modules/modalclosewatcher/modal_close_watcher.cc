@@ -33,7 +33,8 @@ ModalCloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow& window)
 
 void ModalCloseWatcher::WatcherStack::Add(ModalCloseWatcher* watcher) {
   if (watchers_.IsEmpty()) {
-    GetSupplementable()->addEventListener(event_type_names::kKeyup, this);
+    GetSupplementable()->addEventListener(event_type_names::kKeyup, this,
+                                          /*use_capture=*/false);
     auto& host = GetSupplementable()->GetFrame()->GetLocalFrameHostRemote();
     host.SetModalCloseListener(receiver_.BindNewPipeAndPassRemote(
         GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -44,7 +45,8 @@ void ModalCloseWatcher::WatcherStack::Add(ModalCloseWatcher* watcher) {
 void ModalCloseWatcher::WatcherStack::Remove(ModalCloseWatcher* watcher) {
   watchers_.erase(watcher);
   if (watchers_.IsEmpty()) {
-    GetSupplementable()->removeEventListener(event_type_names::kKeyup, this);
+    GetSupplementable()->removeEventListener(event_type_names::kKeyup, this,
+                                             /*use_capture=*/false);
     receiver_.reset();
   }
 }

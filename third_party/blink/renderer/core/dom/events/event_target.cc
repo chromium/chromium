@@ -546,7 +546,7 @@ void EventTarget::AddedEventListener(
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       V8EventListener* listener) {
   EventListener* event_listener = JSEventListener::CreateOrNull(listener);
-  return removeEventListener(event_type, event_listener);
+  return removeEventListener(event_type, event_listener, /*use_capture=*/false);
 }
 
 bool EventTarget::removeEventListener(
