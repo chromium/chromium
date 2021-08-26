@@ -30,6 +30,7 @@ CameraRollManager::CameraRollManager(MessageReceiver* message_receiver,
     : message_receiver_(message_receiver),
       message_sender_(message_sender),
       thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
+  max_item_count_ = 4;  // TODO(mattwalliser): Pull this value from config.
   message_receiver->AddObserver(this);
 }
 
@@ -70,6 +71,7 @@ void CameraRollManager::SendFetchCameraRollItemsRequest() {
   CancelPendingThumbnailRequests();
 
   proto::FetchCameraRollItemsRequest request;
+  request.set_max_item_count(max_item_count_);
   for (const CameraRollItem& current_item : current_items_) {
     *request.add_current_item_metadata() = current_item.metadata();
   }

@@ -66,6 +66,7 @@ class CameraRollManager : public MessageReceiver::Observer {
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
 
+  int32_t max_item_count_;
   std::vector<CameraRollItem> current_items_;
 
   base::ObserverList<Observer> observer_list_;
