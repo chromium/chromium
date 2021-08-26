@@ -53,6 +53,7 @@ class OptimizationGuideBridge {
   void OnNewPushNotification(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& j_encoded_notification);
+  void OnDeferredStartup(JNIEnv* env);
 
  private:
   OptimizationGuideKeyedService* optimization_guide_keyed_service_;
