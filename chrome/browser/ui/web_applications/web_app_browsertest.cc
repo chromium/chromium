@@ -78,6 +78,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -1013,7 +1014,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
   EXPECT_TRUE(std::find(expected_pixel_colors.begin(),
                         expected_pixel_colors.end(),
-                        icon_pixel_color) != expected_pixel_colors.end());
+                        icon_pixel_color) != expected_pixel_colors.end())
+      << "Actual color (RGB) is: "
+      << color_utils::SkColorToRgbString(icon_pixel_color);
 }
 #endif
 
