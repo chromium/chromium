@@ -11,17 +11,17 @@
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/network_certificate_handler.h"
-#include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_profile_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/cros_network_config.h"
+#include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -128,90 +128,77 @@ void ExpectStateObserverFired(const FakeNetworkStateObserver& observer,
 class NetworkHealthProviderTest : public testing::Test {
  public:
   NetworkHealthProviderTest() {
-    // Initialize the ManagedNetworkConfigurationHandler and any associated
-    // properties.
     LoginState::Initialize();
     SystemTokenCertDbStorage::Initialize();
+
+    // NetworkHandler has pieces that depend on NetworkCertLoader so it's better
+    // to initialize NetworkHandlerTestHelper after
+    // NetworkCertLoader::Initialize(). Same with CrosNetworkConfig since it
+    // depends on NetworkHandler
     NetworkCertLoader::Initialize();
-    InitializeManagedNetworkConfigurationHandler();
-
-    cros_network_config_test_helper().Initialize(
-        managed_network_configuration_handler_.get());
-    // Wait until |cros_network_config_test_helper_| has initialized.
-    base::RunLoop().RunUntilIdle();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    network_handler_test_helper_->AddDefaultProfiles();
     ClearDevicesAndServices();
-    network_health_provider_ = std::make_unique<NetworkHealthProvider>();
-  }
-
-  ~NetworkHealthProviderTest() override {
-    managed_network_configuration_handler_.reset();
-    ui_proxy_config_service_.reset();
-    network_configuration_handler_.reset();
-    network_profile_handler_.reset();
-    network_health_provider_.reset();
-    LoginState::Shutdown();
-    NetworkCertLoader::Shutdown();
-    SystemTokenCertDbStorage::Shutdown();
-  }
-
-  void InitializeManagedNetworkConfigurationHandler() {
-    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
-    network_configuration_handler_ =
-        base::WrapUnique<NetworkConfigurationHandler>(
-            NetworkConfigurationHandler::InitializeForTest(
-                network_state_helper().network_state_handler(),
-                cros_network_config_test_helper().network_device_handler()));
-
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
     ::onc::RegisterProfilePrefs(user_prefs_.registry());
     ::onc::RegisterPrefs(local_state_.registry());
+    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
+    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
+    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
+        local_state_.registry());
+    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
 
-    ui_proxy_config_service_ = std::make_unique<chromeos::UIProxyConfigService>(
-        &user_prefs_, &local_state_,
-        network_state_helper().network_state_handler(),
-        network_profile_handler_.get());
+    cros_network_config_ =
+        std::make_unique<network_config::CrosNetworkConfig>();
 
-    managed_network_configuration_handler_ =
-        ManagedNetworkConfigurationHandler::InitializeForTesting(
-            network_state_helper().network_state_handler(),
-            network_profile_handler_.get(),
-            cros_network_config_test_helper().network_device_handler(),
-            network_configuration_handler_.get(),
-            ui_proxy_config_service_.get());
+    network_config::OverrideInProcessInstanceForTesting(
+        cros_network_config_.get());
+    base::RunLoop().RunUntilIdle();
 
-    managed_network_configuration_handler_->SetPolicy(
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler =
+        NetworkHandler::Get()->managed_network_configuration_handler();
+    managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
         /*network_configs_onc=*/base::ListValue(),
         /*global_network_config=*/base::DictionaryValue());
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>();
+  }
 
-    // Wait until the |managed_network_configuration_handler_| is initialized
-    // and set up.
-    base::RunLoop().RunUntilIdle();
+  ~NetworkHealthProviderTest() override {
+    // Ordering here is based on dependencies between classes,
+    // CrosNetworkConfig depends on NetworkHandler and NetworkHandler
+    // indirectly depends on NetworkCertLoader.
+    network_health_provider_.reset();
+    cros_network_config_.reset();
+    network_handler_test_helper_.reset();
+    NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
+    LoginState::Shutdown();
   }
 
  protected:
   void CreateEthernetDevice() {
-    network_state_helper().manager_test()->AddTechnology(shill::kTypeEthernet,
-                                                         true);
-    network_state_helper().device_test()->AddDevice(
+    network_handler_test_helper_->manager_test()->AddTechnology(
+        shill::kTypeEthernet, true);
+    network_handler_test_helper_->device_test()->AddDevice(
         kEth0DevicePath, shill::kTypeEthernet, kEth0Name);
 
     base::RunLoop().RunUntilIdle();
   }
 
   void CreateWifiDevice() {
-    network_state_helper().manager_test()->AddTechnology(shill::kTypeWifi,
-                                                         true);
-    network_state_helper().device_test()->AddDevice(
+    network_handler_test_helper_->manager_test()->AddTechnology(
+        shill::kTypeWifi, true);
+    network_handler_test_helper_->device_test()->AddDevice(
         kWlan0DevicePath, shill::kTypeWifi, kWlan0Name);
 
     base::RunLoop().RunUntilIdle();
   }
 
   void AssociateIPConfigWithWifiDevice() {
-    network_state_helper().device_test()->SetDeviceProperty(
+    network_handler_test_helper_->device_test()->SetDeviceProperty(
         kWlan0DevicePath, shill::kSavedIPConfigProperty,
         base::Value(kTestIPConfigPath),
         /*notify_changed=*/true);
@@ -220,8 +207,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void CreateVpnDevice() {
-    network_state_helper().manager_test()->AddTechnology(shill::kTypeVPN, true);
-    network_state_helper().device_test()->AddDevice(
+    network_handler_test_helper_->manager_test()->AddTechnology(shill::kTypeVPN,
+                                                                true);
+    network_handler_test_helper_->device_test()->AddDevice(
         "/device/vpn", shill::kTypeVPN, "vpn_name");
 
     base::RunLoop().RunUntilIdle();
@@ -229,7 +217,7 @@ class NetworkHealthProviderTest : public testing::Test {
 
   // The device must have been created with CreateEthernetDevice().
   void AssociateEthernet() {
-    network_state_helper().service_test()->AddService(
+    network_handler_test_helper_->service_test()->AddService(
         kEth0DevicePath, kEth0NetworkGuid, kEth0Name, shill::kTypeEthernet,
         shill::kStateAssociation, true);
 
@@ -237,7 +225,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void AssociateWifi() {
-    network_state_helper().service_test()->AddService(
+    network_handler_test_helper_->service_test()->AddService(
         kWlan0DevicePath, kWlan0NetworkGuid, kWlan0Name, shill::kTypeWifi,
         shill::kStateAssociation, true);
 
@@ -245,7 +233,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void AssociateWifiWithIPConfig() {
-    network_state_helper().service_test()->AddServiceWithIPConfig(
+    network_handler_test_helper_->service_test()->AddServiceWithIPConfig(
         kWlan0DevicePath, kWlan0NetworkGuid, kWlan0Name, shill::kTypeWifi,
         shill::kStateAssociation, kTestIPConfigPath, true);
 
@@ -253,7 +241,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void AssociateAndConnectVpn() {
-    network_state_helper().service_test()->AddService(
+    network_handler_test_helper_->service_test()->AddService(
         "/device/vpn", "vpn guid", "vpn_name", shill::kTypeVPN,
         shill::kStateAssociation, true);
 
@@ -263,7 +251,7 @@ class NetworkHealthProviderTest : public testing::Test {
 
   void SetNetworkState(const std::string& device_path,
                        const std::string& state) {
-    network_state_helper().SetServiceProperty(
+    network_handler_test_helper_->SetServiceProperty(
         device_path, shill::kStateProperty, base::Value(state));
     base::RunLoop().RunUntilIdle();
   }
@@ -295,8 +283,8 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetWifiProperty(std::string property, base::Value value) {
-    network_state_helper().SetServiceProperty(kWlan0DevicePath, property,
-                                              value);
+    network_handler_test_helper_->SetServiceProperty(kWlan0DevicePath, property,
+                                                     value);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -314,14 +302,14 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetEthernetMacAddress(const std::string& mac_address) {
-    network_state_helper().device_test()->SetDeviceProperty(
+    network_handler_test_helper_->device_test()->SetDeviceProperty(
         kEth0DevicePath, shill::kAddressProperty, base::Value(mac_address),
         /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 
   void SetWifiMacAddress(const std::string& mac_address) {
-    network_state_helper().device_test()->SetDeviceProperty(
+    network_handler_test_helper_->device_test()->SetDeviceProperty(
         kWlan0DevicePath, shill::kAddressProperty, base::Value(mac_address),
         /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
@@ -377,32 +365,19 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  network_config::CrosNetworkConfigTestHelper&
-  cros_network_config_test_helper() {
-    return cros_network_config_test_helper_;
-  }
-
-  chromeos::NetworkStateTestHelper& network_state_helper() {
-    return cros_network_config_test_helper_.network_state_helper();
-  }
-
   void ClearDevicesAndServices() {
     // Clear test devices and services.
-    network_state_helper().ClearDevices();
-    network_state_helper().ClearServices();
+    task_environment_.RunUntilIdle();
+    network_handler_test_helper_->ClearDevices();
+    network_handler_test_helper_->ClearServices();
     task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
-  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
-  std::unique_ptr<ManagedNetworkConfigurationHandler>
-      managed_network_configuration_handler_;
-  std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_{
-      false};
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;
 };
 
