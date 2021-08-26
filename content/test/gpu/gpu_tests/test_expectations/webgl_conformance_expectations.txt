@@ -444,6 +444,23 @@ crbug.com/1017162 [ win nvidia angle-vulkan passthrough ] conformance/extensions
 crbug.com/angleproject/1506 [ win amd angle-vulkan passthrough ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1004581 [ win amd angle-vulkan passthrough ] conformance/rendering/multisample-corruption.html [ Failure ]
 crbug.com/1010942 [ win amd angle-vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/glsl/misc/global-variable-init.html [ Failure ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/glsl/misc/struct-assign.html [ Failure ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/glsl/misc/ternary-operators-in-global-initializers.html [ Failure ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_009_to_016.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_025_to_032.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_041_to_048.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_057_to_064.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_065_to_072.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_073_to_080.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_081_to_088.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_089_to_096.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_097_to_104.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_105_to_112.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] conformance/ogles/GL/functions/functions_113_to_120.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] deqp/data/gles2/shaders/functions.html [ Skip ]
+crbug.com/1224996 [ win amd-0x6613 angle-vulkan passthrough ] deqp/data/gles2/shaders/scoping.html [ Failure ]
 
 ####################
 # Mac failures     #
