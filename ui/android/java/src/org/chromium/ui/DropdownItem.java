@@ -4,8 +4,11 @@
 
 package org.chromium.ui;
 
-import org.chromium.url.GURL;
+import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.url.GURL;
 /**
  * Dropdown item interface used to access all the information needed to show the item.
  */
@@ -36,6 +39,12 @@ public interface DropdownItem {
      * preferred over the resource id returned by getIconId().
      */
     GURL getCustomIconUrl();
+    /**
+     * Returns the bitmap for the icon. If present, then it should be preferred over the drawable id
+     * returned by getIconId().
+     */
+    @Nullable
+    Bitmap getCustomIcon();
     /**
      * Returns true if the item should be enabled in the dropdown.
      */
