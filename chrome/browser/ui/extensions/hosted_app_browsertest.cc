@@ -702,34 +702,34 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithAutoupgradesDisabled,
 // Common app manifest for HostedAppProcessModelTests.
 constexpr const char kHostedAppProcessModelManifest[] =
     R"( { "name": "Hosted App Process Model Test",
-            "version": "1",
-            "manifest_version": 2,
-            "app": {
-              "launch": {
-                "web_url": "%s"
-              },
-              "urls": ["*://app.site.com/frame_tree",  "*://isolated.site.com/"]
-            }
-          } )";
+        "version": "1",
+        "manifest_version": 2,
+        "app": {
+          "launch": {
+            "web_url": "%s"
+          },
+          "urls": ["*://app.site.test/frame_tree",  "*://isolated.site.test/"]
+        }
+      } )";
 
 // This set of tests verifies the hosted app process model behavior in various
 // isolation modes.
 //
 // Relevant frames in the tests:
-// - |app| - app.site.com/frame_tree/cross_origin_but_same_site_frames.html
+// - |app| - app.site.test/frame_tree/cross_origin_but_same_site_frames.html
 //           Main frame, launch URL of the hosted app (i.e. app.launch.web_url).
-// - |same_dir| - app.site.com/frame_tree/simple.htm
+// - |same_dir| - app.site.test/frame_tree/simple.htm
 //                Another URL, but still covered by hosted app's web extent
 //                (i.e. by app.urls).
-// - |diff_dir| - app.site.com/save_page/a.htm
+// - |diff_dir| - app.site.test/save_page/a.htm
 //                Same origin as |same_dir| and |app|, but not covered by app's
 //                extent.
-// - |same_site| - other.site.com/title1.htm
+// - |same_site| - other.site.test/title1.htm
 //                 Different origin, but same site as |app|, |same_dir|,
 //                 |diff_dir|.
-// - |isolated| - isolated.site.com/title1.htm
+// - |isolated| - isolated.site.test/title1.htm
 //                Within app's extent, but belongs to an isolated origin.
-//                Some tests also use isolated.site.com/title1.htm (defined by
+//                Some tests also use isolated.site.test/title1.htm (defined by
 //                |isolated_url_outside_app_|), which is an isolated origin
 //                outside the app's extent.
 // - |cross_site| - cross.domain.com/title1.htm
@@ -744,7 +744,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     HostedOrWebAppTest::SetUpCommandLine(command_line);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     std::string origin1 =
-        embedded_test_server()->GetURL("isolated.site.com", "/").spec();
+        embedded_test_server()->GetURL("isolated.site.test", "/").spec();
     std::string origin2 =
         embedded_test_server()->GetURL("isolated.foo.com", "/").spec();
     std::string origin_list =
@@ -776,14 +776,14 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
 
     process_map_ = extensions::ProcessMap::Get(browser()->profile());
 
-    same_dir_url_ = embedded_test_server()->GetURL("app.site.com",
+    same_dir_url_ = embedded_test_server()->GetURL("app.site.test",
                                                    "/frame_tree/simple.htm");
     diff_dir_url_ =
-        embedded_test_server()->GetURL("app.site.com", "/save_page/a.htm");
+        embedded_test_server()->GetURL("app.site.test", "/save_page/a.htm");
     same_site_url_ =
-        embedded_test_server()->GetURL("other.site.com", "/title1.html");
+        embedded_test_server()->GetURL("other.site.test", "/title1.html");
     isolated_url_ =
-        embedded_test_server()->GetURL("isolated.site.com", "/title1.html");
+        embedded_test_server()->GetURL("isolated.site.test", "/title1.html");
     isolated_url_outside_app_ =
         embedded_test_server()->GetURL("isolated.foo.com", "/title1.html");
     cross_site_url_ =
@@ -897,7 +897,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   // Set up and launch the hosted app.
   GURL url = embedded_test_server()->GetURL(
-      "app.site.com", "/frame_tree/cross_origin_but_same_site_frames.html");
+      "app.site.test", "/frame_tree/cross_origin_but_same_site_frames.html");
 
   extensions::TestExtensionDir test_app_dir;
   test_app_dir.WriteManifest(
@@ -941,13 +941,13 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   EXPECT_NE(same_site_site, app_site);
   EXPECT_EQ(same_site_site, diff_dir_site);
 
-  // The isolated.site.com iframe is covered by the hosted app's extent, so it
+  // The isolated.site.test iframe is covered by the hosted app's extent, so it
   // uses a chrome-extension site URL, just like the main app's site URL. Note,
   // however, that this iframe will still go into a separate app process,
-  // because isolated.site.com matches an isolated origin.  This will be
+  // because isolated.site.test matches an isolated origin.  This will be
   // achieved by having different lock URLs for the SiteInstances of
-  // the isolated.site.com iframe and the main app (isolated.site.com vs
-  // site.com).
+  // the isolated.site.test iframe and the main app (isolated.site.test vs
+  // site.test).
   // TODO(alexmos): verify the lock URLs once they are exposed through
   // content/public via SiteInfo.  For now, this verification will be done
   // implicitly by comparing SiteInstances and then actual processes further
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        IframeNavigationsInsideHostedApp) {
   // Set up and launch the hosted app.
   GURL app_url =
-      embedded_test_server()->GetURL("app.site.com", "/frame_tree/simple.htm");
+      embedded_test_server()->GetURL("app.site.test", "/frame_tree/simple.htm");
 
   extensions::TestExtensionDir test_app_dir;
   test_app_dir.WriteManifest(base::StringPrintf(kHostedAppProcessModelManifest,
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
   // Set up and launch the hosted app.
   GURL url = embedded_test_server()->GetURL(
-      "app.site.com", "/frame_tree/cross_origin_but_same_site_frames.html");
+      "app.site.test", "/frame_tree/cross_origin_but_same_site_frames.html");
 
   extensions::TestExtensionDir test_app_dir;
   test_app_dir.WriteManifest(
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
     SCOPED_TRACE("... for same_site popup");
     TestPopupProcess(app, same_site_url_, true, true);
   }
-  // The isolated origin URL for isolated.site.com should swap processes, but
+  // The isolated origin URL for isolated.site.test should swap processes, but
   // since it's covered by the app's extent, it should still be in a
   // (different) app process.
   {
@@ -1174,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
   // Set up and launch the hosted app.
   GURL app_url =
-      embedded_test_server()->GetURL("app.site.com", "/frame_tree/simple.htm");
+      embedded_test_server()->GetURL("app.site.test", "/frame_tree/simple.htm");
 
   extensions::TestExtensionDir test_app_dir;
   test_app_dir.WriteManifest(base::StringPrintf(kHostedAppProcessModelManifest,
@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        MAYBE_NavigateToAppURLWithDoubleSlashPath) {
   // Set up and launch the hosted app.
   GURL app_url =
-      embedded_test_server()->GetURL("app.site.com", "/frame_tree/simple.htm");
+      embedded_test_server()->GetURL("app.site.test", "/frame_tree/simple.htm");
   extensions::TestExtensionDir test_app_dir;
   test_app_dir.WriteManifest(base::StringPrintf(kHostedAppProcessModelManifest,
                                                 app_url.spec().c_str()));
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   // internally and would otherwise produce an empty/invalid URL to navigate
   // to.
   GURL double_slash_path_app_url =
-      embedded_test_server()->GetURL("isolated.site.com", "/");
+      embedded_test_server()->GetURL("isolated.site.test", "/");
   GURL::Replacements replace_path;
   replace_path.SetPathStr("//");
   double_slash_path_app_url =
@@ -1978,7 +1978,7 @@ constexpr const char kHostedAppOriginIsolationManifest[] =
               "launch": {
                 "web_url": "%s"
               },
-              "urls": ["https://site.com", "https://sub.site.com/"]
+              "urls": ["https://site.test", "https://sub.site.test/"]
             }
           } )";
 
@@ -2075,8 +2075,8 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
 // and sub frames are the same/different as is appropriate for each test.
 IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
                        IsolatedIframesInsideHostedApp_IsolateMainFrameOrigin) {
-  GURL main_origin_url("https://sub.site.com/isolate");
-  GURL nested_origin_url("https://sub.site.com");
+  GURL main_origin_url("https://sub.site.test/isolate");
+  GURL nested_origin_url("https://sub.site.test");
 
   RunTest(main_origin_url, nested_origin_url);
 }
@@ -2084,8 +2084,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
 // In this test the nested frame's isolation request will fail.
 IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
                        IsolatedIframesInsideHostedApp_IsolateSubFrameOrigin) {
-  GURL main_origin_url("https://sub.site.com");
-  GURL nested_origin_url("https://sub.site.com/isolate");
+  GURL main_origin_url("https://sub.site.test");
+  GURL nested_origin_url("https://sub.site.test/isolate");
 
   RunTest(main_origin_url, nested_origin_url);
 }
@@ -2093,8 +2093,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
 // In this test both frames' isolation requests are honoured.
 IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
                        IsolatedIframesInsideHostedApp_IsolateBaseOrigin) {
-  GURL main_origin_url("https://sub.site.com");
-  GURL nested_origin_url("https://site.com/isolate");
+  GURL main_origin_url("https://sub.site.test");
+  GURL nested_origin_url("https://site.test/isolate");
 
   RunTest(main_origin_url, nested_origin_url);
 }
@@ -2102,8 +2102,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
 // In this test both frames' isolation requests are honoured.
 IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
                        IsolatedIframesInsideHostedApp_IsolateSubOrigin) {
-  GURL main_origin_url("https://site.com");
-  GURL nested_origin_url("https://sub.site.com/isolate");
+  GURL main_origin_url("https://site.test");
+  GURL nested_origin_url("https://sub.site.test/isolate");
 
   RunTest(main_origin_url, nested_origin_url);
 }
