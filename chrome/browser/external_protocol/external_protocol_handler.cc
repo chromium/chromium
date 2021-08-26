@@ -68,6 +68,7 @@ constexpr const char* kDeniedSchemes[] = {
     "hcp",
     "ie.http",
     "javascript",
+    "mk",
     "ms-help",
     "nntp",
     "res",
