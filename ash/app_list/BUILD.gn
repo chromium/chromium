@@ -71,6 +71,8 @@ source_set("app_list") {
     "views/contents_view.h",
     "views/continue_section_view.cc",
     "views/continue_section_view.h",
+    "views/continue_task_container_view.cc",
+    "views/continue_task_container_view.h",
     "views/continue_task_view.cc",
     "views/continue_task_view.h",
     "views/expand_arrow_view.cc",

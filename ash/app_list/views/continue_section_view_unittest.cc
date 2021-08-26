@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -23,6 +24,8 @@
 
 namespace ash {
 namespace {
+
+using test::AppListTestViewDelegate;
 
 void AddSearchResult(const std::string& id, AppListSearchResultType type) {
   auto result = std::make_unique<TestSearchResult>();
@@ -53,6 +56,24 @@ class ContinueSectionViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetContinueSectionView();
   }
 
+  SearchModel::SearchResults* GetResults() {
+    return Shell::Get()->app_list_controller()->GetSearchModel()->results();
+  }
+
+  ContinueTaskView* GetResultViewAt(int index) {
+    return GetContinueSectionView()->GetTaskViewAtForTesting(index);
+  }
+
+  void VerifyResultViewsUpdated() {
+    // Wait for the view to update any pending SearchResults.
+    base::RunLoop().RunUntilIdle();
+
+    SearchModel::SearchResults* results = GetResults();
+    for (size_t i = 0; i < results->item_count(); ++i)
+      EXPECT_EQ(results->GetItemAt(i), GetResultViewAt(i)->result());
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -89,9 +110,53 @@ TEST_F(ContinueSectionViewTest, VerifyAddedViewsOrder) {
 
   ContinueSectionView* view = GetContinueSectionView();
   ASSERT_EQ(view->GetTasksSuggestionsCount(), 3u);
-  EXPECT_EQ(view->GetTaskViewAtForTesting(0)->result()->id(), "id1");
-  EXPECT_EQ(view->GetTaskViewAtForTesting(1)->result()->id(), "id2");
-  EXPECT_EQ(view->GetTaskViewAtForTesting(2)->result()->id(), "id3");
+  EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
+  EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
+  EXPECT_EQ(GetResultViewAt(2)->result()->id(), "id3");
+}
+
+TEST_F(ContinueSectionViewTest, ModelObservers) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  // Remove from end.
+  GetResults()->DeleteAt(2);
+  VerifyResultViewsUpdated();
+
+  // Insert a new result.
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  VerifyResultViewsUpdated();
+
+  // Delete from start.
+  GetResults()->DeleteAt(0);
+  VerifyResultViewsUpdated();
+}
+
+TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetEventGenerator()->MoveMouseTo(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
 }  // namespace

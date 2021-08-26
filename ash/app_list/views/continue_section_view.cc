@@ -13,9 +13,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
@@ -36,12 +34,7 @@ constexpr int kSectionHorizontalPadding = 20;
 constexpr int kHeaderVerticalSpacing = 4;
 constexpr int kHeaderHorizontalPadding = 12;
 
-// Suggested tasks padding in dips
-constexpr int kSuggestedTasksHorizontalPadding = 6;
-
 // Suggested tasks layout constants.
-constexpr int kContinueColumnSpacing = 8;
-constexpr int kContinueRowSpacing = 8;
 constexpr int kMinFilesForContinueSection = 3;
 
 std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
@@ -50,46 +43,12 @@ std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
   return label;
 }
 
-bool IsFileType(AppListSearchResultType type) {
-  return type == AppListSearchResultType::kFileChip ||
-         type == AppListSearchResultType::kDriveChip;
-}
-
-struct CompareByDisplayIndexAndPositionPriority {
-  bool operator()(const SearchResult* result1,
-                  const SearchResult* result2) const {
-    SearchResultDisplayIndex index1 = result1->display_index();
-    SearchResultDisplayIndex index2 = result2->display_index();
-    if (index1 != index2)
-      return index1 < index2;
-    return result1->position_priority() > result2->position_priority();
-  }
-};
-
-std::vector<SearchResult*> GetTasksResultsFromSuggestionChips(
-    SearchModel* search_model) {
-  SearchModel::SearchResults* results = search_model->results();
-  auto file_chips_filter = [](const SearchResult& r) -> bool {
-    return IsFileType(r.result_type()) &&
-           r.display_type() == SearchResultDisplayType::kChip;
-  };
-  std::vector<SearchResult*> file_chips_results =
-      SearchModel::FilterSearchResultsByFunction(
-          results, base::BindRepeating(file_chips_filter),
-          /*max_results=*/4);
-
-  std::sort(file_chips_results.begin(), file_chips_results.end(),
-            CompareByDisplayIndexAndPositionPriority());
-
-  return file_chips_results;
-}
-
 }  // namespace
 
 ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
                                          int columns)
-    : view_delegate_(view_delegate), columns_(columns) {
-  DCHECK(view_delegate_);
+    : view_delegate_(view_delegate) {
+  DCHECK(view_delegate);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -104,26 +63,18 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
   continue_label->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(0, kHeaderHorizontalPadding)));
 
-  suggestions_container_ = AddChildView(std::make_unique<views::View>());
-  suggestions_container_->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      columns_, kContinueColumnSpacing, kContinueRowSpacing));
-  suggestions_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, kSuggestedTasksHorizontalPadding)));
-
-  std::vector<SearchResult*> tasks =
-      GetTasksResultsFromSuggestionChips(view_delegate_->GetSearchModel());
-
-  for (SearchResult* task : tasks) {
-    suggestions_container_->AddChildView(
-        std::make_unique<ContinueTaskView>(task));
-  }
-  SetVisible(GetTasksSuggestionsCount() > kMinFilesForContinueSection);
+  suggestions_container_ =
+      AddChildView(std::make_unique<ContinueTaskContainerView>(
+          view_delegate, columns,
+          base::BindRepeating(
+              &ContinueSectionView::OnSearchResultContainerResultsChanged,
+              base::Unretained(this))));
 }
 
 ContinueSectionView::~ContinueSectionView() = default;
 
 size_t ContinueSectionView::GetTasksSuggestionsCount() const {
-  return suggestions_container_->children().size();
+  return static_cast<size_t>(suggestions_container_->num_results());
 }
 
 ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(
@@ -131,6 +82,16 @@ ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(
   DCHECK_GT(GetTasksSuggestionsCount(), index);
   return static_cast<ContinueTaskView*>(
       suggestions_container_->children()[index]);
+}
+
+void ContinueSectionView::UpdateSuggestionTasks() {
+  suggestions_container_->SetResults(
+      view_delegate_->GetSearchModel()->results());
+}
+
+void ContinueSectionView::OnSearchResultContainerResultsChanged() {
+  SetVisible(suggestions_container_->num_results() >=
+             kMinFilesForContinueSection);
 }
 
 BEGIN_METADATA(ContinueSectionView, views::View)

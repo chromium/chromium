@@ -103,6 +103,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->ResetForShowApps();
 
   scroll_view_->SetContents(std::move(scroll_contents));
+  continue_section_->UpdateSuggestionTasks();
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {

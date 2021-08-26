@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_util.h"
+#include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/ash_color_provider.h"
@@ -38,13 +39,13 @@ constexpr int kIconVericalPadding = 8;
 
 }  // namespace
 
-ContinueTaskView::ContinueTaskView(SearchResult* task_result)
-    : result_(task_result) {
+ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
+    : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
+                                  base::Unretained(this)));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-  GetViewAccessibility().OverrideName(result()->title() + u" " +
-                                      result()->details());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -52,7 +53,8 @@ ContinueTaskView::ContinueTaskView(SearchResult* task_result)
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets((kPreferredHeight - kIconSize) / 2, kIconVericalPadding)));
-  SetIcon(result()->chip_icon());
+  icon_->SetImageSize(GetIconSize());
+  icon_->SetPreferredSize(GetIconSize());
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -62,22 +64,31 @@ ContinueTaskView::ContinueTaskView(SearchResult* task_result)
       (kPreferredHeight - kLabelContainerHeight) / 2, kLabelRightPadding)));
 
   title_ = label_container->AddChildView(
-      std::make_unique<views::Label>(result()->title()));
-  title_->SetAccessibleName(result()->accessible_name());
+      std::make_unique<views::Label>(std::u16string()));
+  title_->SetAccessibleName(std::u16string());
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   subtitle_ = label_container->AddChildView(
-      std::make_unique<views::Label>(result()->details()));
+      std::make_unique<views::Label>(std::u16string()));
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  UpdateResult();
 
   SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 }
-
-ContinueTaskView::~ContinueTaskView() = default;
+ContinueTaskView::~ContinueTaskView() {}
 
 void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
   bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
   bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
+}
+
+void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
+  DCHECK(result());
+  view_delegate_->OpenSearchResult(
+      result()->id(), result()->result_type(), event.flags(),
+      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      AppListLaunchType::kAppSearchResult, index_in_container_.value(),
+      false /* launch_as_default */);
 }
 
 void ContinueTaskView::SetIcon(const gfx::ImageSkia& icon) {
@@ -89,6 +100,42 @@ void ContinueTaskView::SetIcon(const gfx::ImageSkia& icon) {
 
 gfx::Size ContinueTaskView::GetIconSize() const {
   return gfx::Size(kIconSize, kIconSize);
+}
+
+void ContinueTaskView::OnMetadataChanged() {
+  UpdateResult();
+}
+
+void ContinueTaskView::UpdateResult() {
+  SetVisible(!!result());
+  if (!result()) {
+    SetIcon(gfx::ImageSkia());
+    title_->SetText(std::u16string());
+    subtitle_->SetText(std::u16string());
+    GetViewAccessibility().OverrideName(std::u16string());
+    return;
+  }
+
+  SetIcon(result()->chip_icon());
+  title_->SetText(result()->title());
+  subtitle_->SetText(result()->details());
+
+  GetViewAccessibility().OverrideName(result()->title() + u" " +
+                                      result()->details());
+}
+
+void ContinueTaskView::OnResultDestroying() {
+  SetResult(nullptr);
+}
+
+void ContinueTaskView::SetResult(SearchResult* result) {
+  search_result_observation_.Reset();
+
+  result_ = result;
+  if (result_)
+    search_result_observation_.Observe(result_);
+
+  UpdateResult();
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)

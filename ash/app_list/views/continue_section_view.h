@@ -5,12 +5,14 @@
 #ifndef ASH_APP_LIST_VIEWS_CONTINUE_SECTION_VIEW_H_
 #define ASH_APP_LIST_VIEWS_CONTINUE_SECTION_VIEW_H_
 
+#include "ash/app_list/views/continue_task_container_view.h"
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class AppListViewDelegate;
+class ContinueTaskContainerView;
 class ContinueTaskView;
 
 // The "Continue" section of the bubble launcher. This view wraps around
@@ -24,14 +26,19 @@ class ASH_EXPORT ContinueSectionView : public views::View {
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
 
+  // Called when the |suggestion_container_| finishes updating the tasks.
+  void OnSearchResultContainerResultsChanged();
+
+  // Schedule an update to the |suggestion_container_| tasks.
+  void UpdateSuggestionTasks();
+
   size_t GetTasksSuggestionsCount() const;
   ContinueTaskView* GetTaskViewAtForTesting(size_t index) const;
 
  private:
   AppListViewDelegate* const view_delegate_;
 
-  const int columns_;
-  views::View* suggestions_container_ = nullptr;
+  ContinueTaskContainerView* suggestions_container_ = nullptr;
 };
 
 }  // namespace ash
