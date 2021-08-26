@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithDescriptionLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithEditText.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerImageView.java",
+    "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProvider.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGenerator.java",
     "java/src/org/chromium/components/browser_ui/widget/SurfaceColorOvalView.java",
     "java/src/org/chromium/components/browser_ui/widget/TintedDrawable.java",
@@ -340,6 +341,7 @@ java_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/InsetObserverViewTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
   ]

@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 /**
  * Container view for omnibox suggestions supplying icon decoration.
  */
 class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView {
-    private final RoundedCornerImageView mSuggestionIcon;
+    private final ImageView mSuggestionIcon;
     private T mContentView;
 
     /**
@@ -30,7 +30,9 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
         setClickable(true);
         setFocusable(true);
 
-        mSuggestionIcon = new RoundedCornerImageView(getContext());
+        mSuggestionIcon = new ImageView(getContext());
+        mSuggestionIcon.setOutlineProvider(new RoundedCornerOutlineProvider(
+                getResources().getDimensionPixelSize(R.dimen.default_rounded_corner_radius)));
         mSuggestionIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         mSuggestionIcon.setLayoutParams(new LayoutParams(
@@ -53,7 +55,7 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
     }
 
     /** @return Widget holding suggestion decoration icon.  */
-    RoundedCornerImageView getImageView() {
+    ImageView getImageView() {
         return mSuggestionIcon;
     }
 

@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -156,7 +155,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update attributes of decorated suggestion icon. */
     private static <T extends View> void updateSuggestionIcon(
             PropertyModel model, BaseSuggestionView<T> baseView) {
-        final RoundedCornerImageView rciv = baseView.getSuggestionImageView();
+        final ImageView rciv = baseView.getSuggestionImageView();
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
@@ -173,13 +172,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
             rciv.setPadding(paddingStart, 0, paddingEnd, 0);
             rciv.setMinimumHeight(edgeSize);
-
-            // TODO(ender): move logic applying corner rounding to updateIcon when action images use
-            // RoundedCornerImageView too.
-            int radius = sds.useRoundedCorners
-                    ? res.getDimensionPixelSize(R.dimen.default_rounded_corner_radius)
-                    : 0;
-            rciv.setRoundedCorners(radius, radius, radius, radius);
+            rciv.setClipToOutline(sds.useRoundedCorners);
         }
 
         updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(!useDarkColors(model)));

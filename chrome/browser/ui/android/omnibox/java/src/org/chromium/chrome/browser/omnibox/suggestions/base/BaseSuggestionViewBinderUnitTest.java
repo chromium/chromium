@@ -32,7 +32,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -53,7 +52,7 @@ public class BaseSuggestionViewBinderUnitTest {
     DecoratedSuggestionView mDecoratedView;
 
     @Mock
-    RoundedCornerImageView mIconView;
+    ImageView mIconView;
 
     @Mock
     ImageView mContentView;
@@ -94,9 +93,7 @@ public class BaseSuggestionViewBinderUnitTest {
         SuggestionDrawableState state = SuggestionDrawableState.Builder.forColor(0).build();
         mModel.set(BaseSuggestionViewProperties.ICON, state);
 
-        // Expect a single call to setRoundedCorners, and make sure this call sets all radii to 0.
-        verify(mIconView).setRoundedCorners(0, 0, 0, 0);
-        verify(mIconView).setRoundedCorners(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mIconView).setClipToOutline(false);
 
         verify(mIconView).setVisibility(View.VISIBLE);
         verify(mIconView).setImageDrawable(state.drawable);
@@ -108,9 +105,7 @@ public class BaseSuggestionViewBinderUnitTest {
                 SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
         mModel.set(BaseSuggestionViewProperties.ICON, state);
 
-        // Expect a single call to setRoundedCorners, and make sure this call sets radii to non-0.
-        verify(mIconView, never()).setRoundedCorners(0, 0, 0, 0);
-        verify(mIconView).setRoundedCorners(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mIconView).setClipToOutline(true);
 
         verify(mIconView).setVisibility(View.VISIBLE);
         verify(mIconView).setImageDrawable(state.drawable);
