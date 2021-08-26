@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/eche_app/eche_app_notification_controller.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -15,6 +18,10 @@ namespace eche_app {
 
 const char kEcheAppScreenLockNotifierId[] =
     "eche_app_notification_ids.screen_lock";
+
+// TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
+// some point.
+const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
 
 namespace {
 
@@ -43,10 +50,15 @@ EcheAppNotificationController::EcheAppNotificationController(Profile* profile)
 EcheAppNotificationController::~EcheAppNotificationController() {}
 void EcheAppNotificationController::LaunchSettings() {
   // TODO(crbug.com/1241352): Wait for UX confirm.
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
 }
 
 void EcheAppNotificationController::LaunchLearnMore() {
   // TODO(crbug.com/1241352): Wait for UX confirm.
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kEcheAppLearnMoreUrl),
+      /* from_user_interaction= */ true);
 }
 
 void EcheAppNotificationController::ShowScreenLockNotification() {
