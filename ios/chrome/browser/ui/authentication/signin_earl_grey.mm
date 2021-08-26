@@ -104,13 +104,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 
-  id<GREYMatcher> GetSettingsGoogleSyncAndServicesCellMatcher = grey_allOf(
-      grey_accessibilityValue(accessibilityString),
-      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId), nil);
+  id<GREYMatcher> GetSettingsGoogleSyncAndServicesCellMatcher =
+      grey_allOf(grey_accessibilityValue(accessibilityString),
+                 grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                 grey_sufficientlyVisible(), nil);
 
   [[EarlGrey
       selectElementWithMatcher:GetSettingsGoogleSyncAndServicesCellMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
