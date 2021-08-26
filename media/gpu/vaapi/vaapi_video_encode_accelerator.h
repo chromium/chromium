@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/containers/small_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
@@ -67,11 +68,13 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
     }
   };
 
-  // TODO(crbug.com/1186051): Use base::small_map.
+  // Maximum size is four to support the worst case of a given input of a
+  // different resolution than the maximum number of spatial layers (3).
   using ScopedVASurfacesMap =
-      std::map<gfx::Size,
-               std::vector<std::unique_ptr<ScopedVASurface>>,
-               SizeComparator>;
+      base::small_map<std::map<gfx::Size,
+                               std::vector<std::unique_ptr<ScopedVASurface>>,
+                               SizeComparator>,
+                      4>;
 
   // Holds input frames coming from the client ready to be encoded.
   struct InputFrameRef;
