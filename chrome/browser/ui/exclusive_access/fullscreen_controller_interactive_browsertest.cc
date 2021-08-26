@@ -382,8 +382,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests mouse lock then fullscreen.
+// Disabled because flaky: https://crbug.com/1243698
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MouseLockThenFullscreen) {
+                       DISABLED_MouseLockThenFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
