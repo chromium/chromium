@@ -121,12 +121,6 @@ class PlayerFrameBitmapPainter {
                         // Handler is on the UI thread so the needed bitmaps will be the last
                         // set of bitmaps requested.
                         mHandler.post(() -> {
-                            // If this is destroyed, then make sure any straggling inflations are
-                            // destroyed.
-                            if (mInflatedBitmaps == null) {
-                                inflatedBitmap.destroy();
-                                return;
-                            }
                             if (inflated) {
                                 mInflatedBitmaps.add(inflatedBitmap);
                             }
@@ -175,20 +169,5 @@ class PlayerFrameBitmapPainter {
             mHandler.post(mInvalidateCallback);
         }
         TraceEvent.end("PlayerFrameBitmapPainter.onDraw");
-    }
-
-    private void unlockAll() {
-        for (CompressibleBitmap bitmap : mLockedBitmaps) {
-            bitmap.unlock();
-        }
-    }
-
-    void destroy() {
-        // Prevent future invalidation.
-        mBitmapMatrix = null;
-        mInflatedBitmaps = null;
-
-        // Unlock all bitmaps so they can be destroyed.
-        unlockAll();
     }
 }

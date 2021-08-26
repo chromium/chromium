@@ -73,8 +73,6 @@ public class PlayerFrameCoordinator {
     }
 
     public void destroy() {
-        // Destroy the view first to unlock all bitmaps so they can be destroyed successfully.
-        mView.destroy();
         mMediator.destroy();
         for (PlayerFrameCoordinator subframe : mSubFrames) {
             subframe.destroy();
