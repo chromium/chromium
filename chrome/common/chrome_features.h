@@ -567,6 +567,8 @@ extern const base::Feature kChromeOSSharingHub;
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kShareUsageRanking;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kShareUsageRankingFixedMore;
 #endif
 
 #if defined(OS_MAC)

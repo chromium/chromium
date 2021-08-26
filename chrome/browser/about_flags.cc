@@ -7518,6 +7518,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"share-usage-ranking", flag_descriptions::kShareUsageRankingName,
      flag_descriptions::kShareUsageRankingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kShareUsageRanking)},
+    {"share-usage-ranking-fixed-more",
+     flag_descriptions::kShareUsageRankingFixedMoreName,
+     flag_descriptions::kShareUsageRankingFixedMoreDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kShareUsageRankingFixedMore)},
 #endif
 
     {"enable-safe-browsing-per-profile-network-contexts",

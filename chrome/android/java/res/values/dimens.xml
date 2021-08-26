@@ -393,4 +393,6 @@
     <dimen name="accessibility_page_zoom_minimum_button_size">44dp</dimen>
     <dimen name="accessibility_page_zoom_control_spacing">10dp</dimen>
 
+    <dimen name="sharing_hub_tile_width">69sp</dimen>
+    <dimen name="sharing_hub_tile_margin">8sp</dimen>
 </resources>

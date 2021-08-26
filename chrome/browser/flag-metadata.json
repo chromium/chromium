@@ -4992,7 +4992,12 @@
   {
     "name": "share-usage-ranking",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 96
+  },
+  {
+    "name": "share-usage-ranking-fixed-more",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 96
   },
   {
     "name": "shared-clipboard-ui",
