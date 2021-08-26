@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -21,6 +22,12 @@
 #include "components/policy/policy_constants.h"
 
 namespace policy {
+
+const char kRestrictedExtensionSettings[] = R"({
+  "*" : {
+    "installation_mode": "blocked"
+  }
+})";
 
 DeviceLocalAccountPolicyProvider::DeviceLocalAccountPolicyProvider(
     const std::string& user_id,
@@ -180,40 +187,31 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
 // policies can be found here: go/restricted-managed-guest-session.
 void DeviceLocalAccountPolicyProvider::
     ApplyRestrictedManagedGuestSessionOverride(PolicyMap* chrome_policy) {
-  const std::pair<std::string, bool> kRestrictedModeBooleanPolicyOverrides[] = {
-      {key::kPasswordManagerEnabled, false},
-      {key::kAllowDeletingBrowserHistory, true},
-      {key::kArcEnabled, false},
-      {key::kCrostiniAllowed, false},
-      {key::kUserPluginVmAllowed, false},
-      {key::kNetworkFileSharesAllowed, false},
-      {key::kCACertificateManagementAllowed, false},
-      {key::kClientCertificateManagementAllowed, false},
-      {key::kEnableMediaRouter, false},
-      {key::kScreenCaptureAllowed, false},
-      {key::kKerberosEnabled, false},
-      {key::kUserBorealisAllowed, false},
-      {key::kDeletePrintJobHistoryAllowed, true},
-      {key::kLacrosSecondaryProfilesAllowed, false}};
-  const std::pair<std::string, std::string>
-      kRestrictedModeStringPolicyOverrides[] = {
-          {key::kLacrosAvailability, "lacros_disallowed"}};
+  base::Value restricted_extension_settings_json =
+      *base::JSONReader::Read(kRestrictedExtensionSettings);
+  std::pair<std::string, base::Value> policy_overrides[] = {
+      {key::kPasswordManagerEnabled, base::Value(false)},
+      {key::kAllowDeletingBrowserHistory, base::Value(true)},
+      {key::kArcEnabled, base::Value(false)},
+      {key::kCrostiniAllowed, base::Value(false)},
+      {key::kUserPluginVmAllowed, base::Value(false)},
+      {key::kNetworkFileSharesAllowed, base::Value(false)},
+      {key::kCACertificateManagementAllowed, base::Value(false)},
+      {key::kClientCertificateManagementAllowed, base::Value(false)},
+      {key::kEnableMediaRouter, base::Value(false)},
+      {key::kScreenCaptureAllowed, base::Value(false)},
+      {key::kKerberosEnabled, base::Value(false)},
+      {key::kUserBorealisAllowed, base::Value(false)},
+      {key::kDeletePrintJobHistoryAllowed, base::Value(true)},
+      {key::kLacrosSecondaryProfilesAllowed, base::Value(false)},
+      {key::kLacrosAvailability, base::Value("lacros_disallowed")},
+      {key::kExtensionSettings, std::move(restricted_extension_settings_json)}};
 
-  for (const auto& restricted_mode_boolean_policy_override :
-       kRestrictedModeBooleanPolicyOverrides) {
-    chrome_policy->Set(
-        restricted_mode_boolean_policy_override.first, POLICY_LEVEL_MANDATORY,
-        POLICY_SCOPE_USER,
-        POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-        base::Value(restricted_mode_boolean_policy_override.second), nullptr);
-  }
-  for (const auto& restricted_mode_string_policy_override :
-       kRestrictedModeStringPolicyOverrides) {
-    chrome_policy->Set(
-        restricted_mode_string_policy_override.first, POLICY_LEVEL_MANDATORY,
-        POLICY_SCOPE_USER,
-        POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-        base::Value(restricted_mode_string_policy_override.second), nullptr);
+  for (auto& policy_override : policy_overrides) {
+    chrome_policy->Set(policy_override.first, POLICY_LEVEL_MANDATORY,
+                       POLICY_SCOPE_USER,
+                       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                       std::move(policy_override.second), nullptr);
   }
 }
 

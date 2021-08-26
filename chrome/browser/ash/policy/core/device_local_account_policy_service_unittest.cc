@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -70,6 +71,11 @@ const char kExtensionVersion[] = "1.0.0.0";
 const char kExtensionCRXPath[] = "extensions/hosted_app.crx";
 const char kUpdateURL[] = "https://clients2.google.com/service/update2/crx";
 
+const char kRestrictedExtensionSettings[] = R"({
+  "*" : {
+    "installation_mode": "blocked"
+  }
+})";
 }  // namespace
 
 class MockDeviceLocalAccountPolicyServiceObserver
@@ -1168,6 +1174,10 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
       key::kLacrosAvailability, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
       base::Value("lacros_disallowed"), nullptr);
+  expected_policy_map_restricted.Set(
+      key::kExtensionSettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+      *base::JSONReader::Read(kRestrictedExtensionSettings), nullptr);
 
   expected_policy_bundle.Get(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
