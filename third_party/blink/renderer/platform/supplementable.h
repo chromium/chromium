@@ -195,9 +195,10 @@ class Supplementable : public GarbageCollectedMixin {
         std::is_array<decltype(SupplementType::kSupplementName)>::value,
         "Declare a const char array kSupplementName. See Supplementable.h for "
         "details.");
-    return static_cast<SupplementType*>(
-        this->supplements_.DeprecatedAtOrEmptyValue(
-            SupplementType::kSupplementName));
+    const auto it = this->supplements_.find(SupplementType::kSupplementName);
+    if (it == this->supplements_.end())
+      return nullptr;
+    return static_cast<SupplementType*>(it->value.Get());
   }
 
   void ReattachThread() {
