@@ -111,6 +111,58 @@ bool DeleteRegValue(HKEY root,
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
+bool DeleteService(const std::wstring& service_name) {
+  SC_HANDLE scm = ::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
+  if (!scm)
+    return false;
+
+  SC_HANDLE service = ::OpenService(scm, service_name.c_str(), DELETE);
+  bool is_service_deleted = !service;
+  if (!is_service_deleted) {
+    is_service_deleted =
+        ::DeleteService(service)
+            ? true
+            : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
+
+    ::CloseServiceHandle(service);
+  }
+
+  DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name);
+
+  ::CloseServiceHandle(scm);
+
+  return is_service_deleted;
+}
+
+bool IsServiceGone(const std::wstring& service_name) {
+  LOG(ERROR) << "IsServiceGone()" << std::endl;
+  SC_HANDLE scm = ::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
+  if (!scm)
+    return false;
+
+  SC_HANDLE service = ::OpenService(
+      scm, service_name.c_str(), SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG);
+  bool is_service_gone = !service;
+  if (!is_service_gone) {
+    if (!::ChangeServiceConfig(service, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE,
+                               SERVICE_NO_CHANGE, nullptr, nullptr, nullptr,
+                               nullptr, nullptr, nullptr,
+                               L"Test Service Display Name")) {
+      is_service_gone = ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
+    }
+
+    ::CloseServiceHandle(service);
+  }
+
+  ::CloseServiceHandle(scm);
+
+  return is_service_gone &&
+         !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, Wow6432(KEY_READ))
+              .HasValue(service_name.c_str());
+}
+
 }  // namespace
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
@@ -130,35 +182,7 @@ absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
 }
 
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
-  base::FilePath app_data_dir;
-  if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
-    return absl::nullopt;
-  return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-bool DeleteService(const wchar_t* const service_name) {
-  SC_HANDLE scm = ::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
-  if (!scm)
-    return false;
-
-  SC_HANDLE service = ::OpenService(scm, service_name, DELETE);
-  bool is_service_deleted = !service;
-  if (!is_service_deleted) {
-    is_service_deleted =
-        ::DeleteService(service)
-            ? true
-            : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
-
-    ::CloseServiceHandle(service);
-  }
-
-  DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name);
-
-  ::CloseServiceHandle(scm);
-
-  return is_service_deleted;
+  return GetProductPath(scope);
 }
 
 void Clean(UpdaterScope scope) {
@@ -187,7 +211,7 @@ void Clean(UpdaterScope scope) {
 
   if (scope == UpdaterScope::kSystem) {
     for (const bool is_internal_service : {true, false}) {
-      EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service).c_str()));
+      EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service)));
     }
   }
 
@@ -200,34 +224,6 @@ void Clean(UpdaterScope scope) {
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
-}
-
-bool IsServiceGone(const wchar_t* const service_name) {
-  LOG(ERROR) << "IsServiceGone()" << std::endl;
-  SC_HANDLE scm = ::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
-  if (!scm)
-    return false;
-
-  SC_HANDLE service = ::OpenService(
-      scm, service_name, SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG);
-  bool is_service_gone = !service;
-  if (!is_service_gone) {
-    if (!::ChangeServiceConfig(service, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE,
-                               SERVICE_NO_CHANGE, nullptr, nullptr, nullptr,
-                               nullptr, nullptr, nullptr,
-                               L"Test Service Display Name")) {
-      is_service_gone = ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
-    }
-
-    ::CloseServiceHandle(service);
-  }
-
-  ::CloseServiceHandle(scm);
-
-  return is_service_gone &&
-         !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, Wow6432(KEY_READ))
-              .HasValue(service_name);
 }
 
 void ExpectClean(UpdaterScope scope) {
@@ -258,7 +254,7 @@ void ExpectClean(UpdaterScope scope) {
   if (scope == UpdaterScope::kSystem) {
     LOG(ERROR) << "Check services..." << std::endl;
     for (const bool is_internal_service : {true, false}) {
-      EXPECT_TRUE(IsServiceGone(GetServiceName(is_internal_service).c_str()));
+      EXPECT_TRUE(IsServiceGone(GetServiceName(is_internal_service)));
     }
   }
 
