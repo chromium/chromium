@@ -241,7 +241,6 @@ try_.blink_mac_builder(
 
 try_.blink_mac_builder(
     name = "mac11.0.arm64-blink-rel",
-    builderless = False,
 )
 
 try_.chromium_builder(
