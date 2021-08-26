@@ -29,13 +29,13 @@ ExtensionFunction::ResponseAction OsTelemetryGetVpdInfoFunction::Run() {
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
-      {health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
+      {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
 
   return RespondLater();
 }
 
 void OsTelemetryGetVpdInfoFunction::OnResult(
-    health::mojom::TelemetryInfoPtr ptr) {
+    ash::health::mojom::TelemetryInfoPtr ptr) {
   if (!ptr || !ptr->vpd_result || !ptr->vpd_result->is_vpd_info()) {
     Respond(Error("API internal error"));
     return;
@@ -79,7 +79,8 @@ ExtensionFunction::ResponseAction OsTelemetryGetOemDataFunction::Run() {
   return RespondLater();
 }
 
-void OsTelemetryGetOemDataFunction::OnResult(health::mojom::OemDataPtr ptr) {
+void OsTelemetryGetOemDataFunction::OnResult(
+    ash::health::mojom::OemDataPtr ptr) {
   if (!ptr || !ptr->oem_data.has_value()) {
     Respond(Error("API internal error"));
     return;

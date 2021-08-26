@@ -22,7 +22,7 @@ class BluetoothObserver
   ~BluetoothObserver() override;
 
   void AddObserver(
-      mojo::PendingRemote<health::mojom::BluetoothObserver> observer);
+      mojo::PendingRemote<ash::health::mojom::BluetoothObserver> observer);
 
   void OnAdapterAdded() override;
   void OnAdapterRemoved() override;
@@ -39,7 +39,7 @@ class BluetoothObserver
   void Connect();
 
   mojo::Receiver<cros_healthd::mojom::CrosHealthdBluetoothObserver> receiver_;
-  mojo::RemoteSet<health::mojom::BluetoothObserver> observers_;
+  mojo::RemoteSet<ash::health::mojom::BluetoothObserver> observers_;
 };
 
 }  // namespace chromeos

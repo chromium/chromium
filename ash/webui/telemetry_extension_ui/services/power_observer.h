@@ -20,7 +20,8 @@ class PowerObserver : public cros_healthd::mojom::CrosHealthdPowerObserver {
   PowerObserver& operator=(const PowerObserver&) = delete;
   ~PowerObserver() override;
 
-  void AddObserver(mojo::PendingRemote<health::mojom::PowerObserver> observer);
+  void AddObserver(
+      mojo::PendingRemote<ash::health::mojom::PowerObserver> observer);
 
   void OnAcInserted() override;
   void OnAcRemoved() override;
@@ -35,7 +36,7 @@ class PowerObserver : public cros_healthd::mojom::CrosHealthdPowerObserver {
   void Connect();
 
   mojo::Receiver<cros_healthd::mojom::CrosHealthdPowerObserver> receiver_;
-  mojo::RemoteSet<health::mojom::PowerObserver> observers_;
+  mojo::RemoteSet<ash::health::mojom::PowerObserver> observers_;
 };
 
 }  // namespace chromeos

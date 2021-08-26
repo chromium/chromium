@@ -45,7 +45,7 @@
 //   5) MemoryInfo: use uint64 to store page_faults_since_last_boot instead of
 //      uint32, it can be more than uint32 range.
 
-module chromeos.health.mojom;
+module ash.health.mojom;
 
 // Interface for getting device telemetry information.
 interface ProbeService {

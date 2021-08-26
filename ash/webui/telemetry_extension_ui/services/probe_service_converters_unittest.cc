@@ -18,6 +18,11 @@ using testing::ElementsAre;
 namespace chromeos {
 namespace converters {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace {
+namespace health = ::ash::health;
+}  // namespace
+
 // Note: in some tests we intentionally use New() with no arguments for
 // cros_healthd::mojom types, because there can be some fields that we don't
 // test yet.

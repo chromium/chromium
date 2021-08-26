@@ -15,27 +15,28 @@
 
 namespace chromeos {
 
-class SystemEventsService : public health::mojom::SystemEventsService {
+class SystemEventsService : public ash::health::mojom::SystemEventsService {
  public:
   explicit SystemEventsService(
-      mojo::PendingReceiver<health::mojom::SystemEventsService> receiver);
+      mojo::PendingReceiver<ash::health::mojom::SystemEventsService> receiver);
   SystemEventsService(const SystemEventsService&) = delete;
   SystemEventsService& operator=(const SystemEventsService&) = delete;
   ~SystemEventsService() override;
 
   void AddBluetoothObserver(
-      mojo::PendingRemote<health::mojom::BluetoothObserver> observer) override;
+      mojo::PendingRemote<ash::health::mojom::BluetoothObserver> observer)
+      override;
 
   void AddLidObserver(
-      mojo::PendingRemote<health::mojom::LidObserver> observer) override;
+      mojo::PendingRemote<ash::health::mojom::LidObserver> observer) override;
 
   void AddPowerObserver(
-      mojo::PendingRemote<health::mojom::PowerObserver> observer) override;
+      mojo::PendingRemote<ash::health::mojom::PowerObserver> observer) override;
 
   void FlushForTesting();
 
  private:
-  mojo::Receiver<health::mojom::SystemEventsService> receiver_;
+  mojo::Receiver<ash::health::mojom::SystemEventsService> receiver_;
 
   BluetoothObserver bluetooth_observer_;
   LidObserver lid_observer_;

@@ -23,7 +23,7 @@ class TelemetryApiFunctionBase : public ExtensionFunction {
  protected:
   ~TelemetryApiFunctionBase() override;
 
-  mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
+  mojo::Remote<ash::health::mojom::ProbeService> remote_probe_service_;
 
  private:
   ProbeService probe_service_;
@@ -44,7 +44,7 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
@@ -62,7 +62,7 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(health::mojom::OemDataPtr ptr);
+  void OnResult(ash::health::mojom::OemDataPtr ptr);
 };
 
 }  // namespace chromeos

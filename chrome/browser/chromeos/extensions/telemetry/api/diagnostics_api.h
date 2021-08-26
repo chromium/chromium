@@ -31,9 +31,10 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(health::mojom::RunRoutineResponsePtr ptr);
+  void OnResult(ash::health::mojom::RunRoutineResponsePtr ptr);
 
-  mojo::Remote<health::mojom::DiagnosticsService> remote_diagnostics_service_;
+  mojo::Remote<ash::health::mojom::DiagnosticsService>
+      remote_diagnostics_service_;
 
   DiagnosticsService diagnostics_service_;
 };

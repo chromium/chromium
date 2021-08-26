@@ -18,6 +18,9 @@ namespace converters {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace health = ::ash::health;
+
 cros_healthd::mojom::ProbeCategoryEnum Convert(
     health::mojom::ProbeCategoryEnum input) {
   switch (input) {

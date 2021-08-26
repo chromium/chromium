@@ -72,7 +72,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
   assertEquals(234089591, diagnosticsProxy.convertRoutineId(234089591));
 
   // Unit tests for convertCommandToEnum
-  const commandEnum = chromeos.health.mojom.DiagnosticRoutineCommandEnum;
+  const commandEnum = ash.health.mojom.DiagnosticRoutineCommandEnum;
 
   assertEquals(
       commandEnum.kContinue, diagnosticsProxy.convertCommandToEnum('continue'));
@@ -85,7 +85,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       commandEnum.kRemove, diagnosticsProxy.convertCommandToEnum('remove'));
 
   // Unit tests for convertStatus
-  const statusEnum = chromeos.health.mojom.DiagnosticRoutineStatusEnum;
+  const statusEnum = ash.health.mojom.DiagnosticRoutineStatusEnum;
 
   assertEquals('ready', diagnosticsProxy.convertStatus(statusEnum.kReady));
   assertEquals('running', diagnosticsProxy.convertStatus(statusEnum.kRunning));
@@ -107,7 +107,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
 
   // Unit tests for convertUserMessage
   const userMessageEnum =
-      chromeos.health.mojom.DiagnosticRoutineUserMessageEnum;
+      ash.health.mojom.DiagnosticRoutineUserMessageEnum;
 
   assertEquals(
       'unplug-ac-power',
@@ -117,7 +117,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertUserMessage(userMessageEnum.kPlugInACPower));
 
   // Unit tests for convertPowerStatusToEnum
-  const acPowerStatusEnum = chromeos.health.mojom.AcPowerStatusEnum;
+  const acPowerStatusEnum = ash.health.mojom.AcPowerStatusEnum;
   assertEquals(
       acPowerStatusEnum.kConnected,
       diagnosticsProxy.convertPowerStatusToEnum('connected'));
@@ -126,7 +126,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertPowerStatusToEnum('disconnected'));
 
   // Unit tests for convertNvmeSelfTestTypeToEnum
-  const nvmeSelfTestTypeEnum = chromeos.health.mojom.NvmeSelfTestTypeEnum;
+  const nvmeSelfTestTypeEnum = ash.health.mojom.NvmeSelfTestTypeEnum;
   assertEquals(
       nvmeSelfTestTypeEnum.kShortSelfTest,
       diagnosticsProxy.convertNvmeSelfTestTypeToEnum('short-self-test'));
@@ -135,7 +135,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertNvmeSelfTestTypeToEnum('long-self-test'));
 
   // Unit tests for convertDiskReadTypeToEnum
-  const diskReadRoutineTypeEnum = chromeos.health.mojom.DiskReadRoutineTypeEnum;
+  const diskReadRoutineTypeEnum = ash.health.mojom.DiskReadRoutineTypeEnum;
   assertEquals(
       diskReadRoutineTypeEnum.kLinearRead,
       diagnosticsProxy.convertDiskReadTypeToEnum('linear-read'));
@@ -149,7 +149,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
 // Tests that Telemetry correctly converts Mojo enums to strings.
 TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
   // Unit tests for convertErrorType.
-  const errorTypeEnum = chromeos.health.mojom.ErrorType;
+  const errorTypeEnum = ash.health.mojom.ErrorType;
 
   assertEquals(
       'file-read-error',
@@ -165,7 +165,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
       telemetryProxy.convertErrorType(errorTypeEnum.kServiceUnavailable));
 
   // Unit tests for convertCpuArch.
-  const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
+  const cpuArchEnum = ash.health.mojom.CpuArchitectureEnum;
 
   assertEquals('unknown', telemetryProxy.convertCpuArch(cpuArchEnum.kUnknown));
   assertEquals('x86-64', telemetryProxy.convertCpuArch(cpuArchEnum.kX86_64));
@@ -583,18 +583,18 @@ function registerUntrustedTest(
 }
 
 /**
- * @implements {chromeos.health.mojom.ProbeServiceInterface}
+ * @implements {ash.health.mojom.ProbeServiceInterface}
  */
 class TestProbeService {
   constructor() {
     /**
-     * @type {chromeos.health.mojom.ProbeServiceReceiver}
+     * @type {ash.health.mojom.ProbeServiceReceiver}
      */
     this.receiver_ = null;
 
     /**
      * History of the passed argument (categories) of probeTelemetryInfo method.
-     * @type {Array<Array<!chromeos.health.mojom.ProbeCategoryEnum>>}
+     * @type {Array<Array<!ash.health.mojom.ProbeCategoryEnum>>}
      */
     this.probeTelemetryInfoArgsHistory = [];
   }
@@ -603,21 +603,21 @@ class TestProbeService {
    * @param {!MojoHandle} handle
    */
   bind(handle) {
-    this.receiver_ = new chromeos.health.mojom.ProbeServiceReceiver(this);
+    this.receiver_ = new ash.health.mojom.ProbeServiceReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
   /**
    * @override
-   * @param { !Array<!chromeos.health.mojom.ProbeCategoryEnum> } categories
+   * @param { !Array<!ash.health.mojom.ProbeCategoryEnum> } categories
    * @return {!Promise<{telemetryInfo:
-   *     !chromeos.health.mojom.TelemetryInfo}>}
+   *     !ash.health.mojom.TelemetryInfo}>}
    */
   probeTelemetryInfo(categories) {
     this.probeTelemetryInfoArgsHistory.push(categories);
 
     const telemetryInfo =
-        /** @type {!chromeos.health.mojom.TelemetryInfo} */ ({
+        /** @type {!ash.health.mojom.TelemetryInfo} */ ({
         backlightResult: null,
         batteryResult: null,
         blockDeviceResult: null,
@@ -662,7 +662,7 @@ var TelemetryExtensionUIWithInterceptorBrowserTest =
 
       /** @suppress {undefinedVars} */
       this.probeServiceInterceptor = new MojoInterfaceInterceptor(
-        chromeos.health.mojom.ProbeService.$interfaceName);
+        ash.health.mojom.ProbeService.$interfaceName);
       this.probeServiceInterceptor.oninterfacerequest = (e) => {
         this.probeService.bind(e.handle);
       };
@@ -680,16 +680,16 @@ TEST_F(
     await runTestInUntrusted('UntrustedRequestTelemetryInfoWithInterceptor');
 
     const allCategories = [
-      chromeos.health.mojom.ProbeCategoryEnum.kBattery,
-      chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
-      chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData,
-      chromeos.health.mojom.ProbeCategoryEnum.kCpu,
-      chromeos.health.mojom.ProbeCategoryEnum.kTimezone,
-      chromeos.health.mojom.ProbeCategoryEnum.kMemory,
-      chromeos.health.mojom.ProbeCategoryEnum.kBacklight,
-      chromeos.health.mojom.ProbeCategoryEnum.kFan,
-      chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition,
-      chromeos.health.mojom.ProbeCategoryEnum.kBluetooth
+      ash.health.mojom.ProbeCategoryEnum.kBattery,
+      ash.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
+      ash.health.mojom.ProbeCategoryEnum.kCachedVpdData,
+      ash.health.mojom.ProbeCategoryEnum.kCpu,
+      ash.health.mojom.ProbeCategoryEnum.kTimezone,
+      ash.health.mojom.ProbeCategoryEnum.kMemory,
+      ash.health.mojom.ProbeCategoryEnum.kBacklight,
+      ash.health.mojom.ProbeCategoryEnum.kFan,
+      ash.health.mojom.ProbeCategoryEnum.kStatefulPartition,
+      ash.health.mojom.ProbeCategoryEnum.kBluetooth
     ];
 
     // This comparison respects the method calls order in
@@ -697,16 +697,16 @@ TEST_F(
     // untrusted_browsertest.js
     assertDeepEquals(this.probeService.probeTelemetryInfoArgsHistory, [
       allCategories,
-      [chromeos.health.mojom.ProbeCategoryEnum.kBacklight],
-      [chromeos.health.mojom.ProbeCategoryEnum.kBattery],
-      [chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices],
-      [chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData],
-      [chromeos.health.mojom.ProbeCategoryEnum.kCpu],
-      [chromeos.health.mojom.ProbeCategoryEnum.kTimezone],
-      [chromeos.health.mojom.ProbeCategoryEnum.kMemory],
-      [chromeos.health.mojom.ProbeCategoryEnum.kFan],
-      [chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition],
-      [chromeos.health.mojom.ProbeCategoryEnum.kBluetooth],
+      [ash.health.mojom.ProbeCategoryEnum.kBacklight],
+      [ash.health.mojom.ProbeCategoryEnum.kBattery],
+      [ash.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices],
+      [ash.health.mojom.ProbeCategoryEnum.kCachedVpdData],
+      [ash.health.mojom.ProbeCategoryEnum.kCpu],
+      [ash.health.mojom.ProbeCategoryEnum.kTimezone],
+      [ash.health.mojom.ProbeCategoryEnum.kMemory],
+      [ash.health.mojom.ProbeCategoryEnum.kFan],
+      [ash.health.mojom.ProbeCategoryEnum.kStatefulPartition],
+      [ash.health.mojom.ProbeCategoryEnum.kBluetooth],
     ]);
 
       testDone();
@@ -714,20 +714,20 @@ TEST_F(
 
 
 /**
- * @implements {chromeos.health.mojom.DiagnosticsServiceInterface}
+ * @implements {ash.health.mojom.DiagnosticsServiceInterface}
  */
 class TestDiagnosticsService {
   constructor() {
     /**
-     * @type {chromeos.health.mojom.DiagnosticsServiceReceiver}
+     * @type {ash.health.mojom.DiagnosticsServiceReceiver}
      */
     this.receiver_ = null;
 
     /**
-     * @type {!chromeos.health.mojom.RunRoutineResponse}
+     * @type {!ash.health.mojom.RunRoutineResponse}
      */
     this.routineResponse =
-        /** @type {!chromeos.health.mojom.RunRoutineResponse}*/ (
+        /** @type {!ash.health.mojom.RunRoutineResponse}*/ (
             {id: 123, status: 'ready'});
 
     /**
@@ -774,7 +774,7 @@ class TestDiagnosticsService {
    * @param {!MojoHandle} handle
    */
   bind(handle) {
-    this.receiver_ = new chromeos.health.mojom.DiagnosticsServiceReceiver(this);
+    this.receiver_ = new ash.health.mojom.DiagnosticsServiceReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -783,7 +783,7 @@ class TestDiagnosticsService {
 
   /**
    * @override
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runBatteryCapacityRoutine() {
     this.callHistory.push(['runBatteryCapacityRoutine']);
@@ -794,7 +794,7 @@ class TestDiagnosticsService {
 
   /**
    * @override
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runBatteryHealthRoutine() {
     this.callHistory.push(['runBatteryHealthRoutine']);
@@ -807,7 +807,7 @@ class TestDiagnosticsService {
    * @param {!number} lengthSeconds
    * @param {!number} maximumDischargePercentAllowed
    * @override
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runBatteryDischargeRoutine(lengthSeconds, maximumDischargePercentAllowed) {
     this.callHistory.push([
@@ -825,7 +825,7 @@ class TestDiagnosticsService {
    * @param {!number} lengthSeconds
    * @param {!number} minimumChargePercentRequired
    * @override
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runBatteryChargeRoutine(lengthSeconds, minimumChargePercentRequired) {
     this.callHistory.push([
@@ -842,9 +842,9 @@ class TestDiagnosticsService {
   /**
    * @override
    * @param {!number} routineId
-   * @param {!chromeos.health.mojom.DiagnosticRoutineCommandEnum} command
+   * @param {!ash.health.mojom.DiagnosticRoutineCommandEnum} command
    * @param {!boolean} includeOutput
-   * @return { !Promise<{routineUpdate: !chromeos.health.mojom.RoutineUpdate}> }
+   * @return { !Promise<{routineUpdate: !ash.health.mojom.RoutineUpdate}> }
    */
   getRoutineUpdate(routineId, command, includeOutput) {
     this.callHistory.push([
@@ -852,15 +852,15 @@ class TestDiagnosticsService {
       {routineId: routineId, command: command, includeOutput: includeOutput}
     ]);
 
-    let routineUpdate = /** @type {!chromeos.health.mojom.RoutineUpdate} */ (
+    let routineUpdate = /** @type {!ash.health.mojom.RoutineUpdate} */ (
         this.routineUpdateResponse);
     return Promise.resolve({routineUpdate});
   }
 
   /**
    * @override
-   * @param {!chromeos.health.mojom.NvmeSelfTestTypeEnum} type
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @param {!ash.health.mojom.NvmeSelfTestTypeEnum} type
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runNvmeSelfTestRoutine(type) {
     this.callHistory.push(['runNvmeSelfTestRoutine', {type: type}]);
@@ -872,7 +872,7 @@ class TestDiagnosticsService {
   /**
    * @override
    * @param {!number} threshold
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runNvmeWearLevelRoutine(threshold) {
     this.callHistory.push(['runNvmeWearLevelRoutine', {threshold: threshold}]);
@@ -883,7 +883,7 @@ class TestDiagnosticsService {
 
   /**
    * @override
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runSmartctlCheckRoutine() {
     this.callHistory.push(['runSmartctlCheckRoutine']);
@@ -894,9 +894,9 @@ class TestDiagnosticsService {
 
   /**
    * @override
-   * @param {!chromeos.health.mojom.AcPowerStatusEnum} expectedStatus
+   * @param {!ash.health.mojom.AcPowerStatusEnum} expectedStatus
    * @param {?string} expectedPowerType
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runAcPowerRoutine(expectedStatus, expectedPowerType) {
     this.callHistory.push([
@@ -911,7 +911,7 @@ class TestDiagnosticsService {
   /**
    * @override
    * @param {!number} duration
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runCpuCacheRoutine(duration) {
     this.callHistory.push(['runCpuCacheRoutine', {duration: duration}]);
@@ -923,7 +923,7 @@ class TestDiagnosticsService {
   /**
    * @override
    * @param {!number} duration
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runCpuStressRoutine(duration) {
     this.callHistory.push(['runCpuStressRoutine', {duration: duration}]);
@@ -935,7 +935,7 @@ class TestDiagnosticsService {
   /**
    * @override
    * @param {!number} duration
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runFloatingPointAccuracyRoutine(duration) {
     this.callHistory.push(
@@ -949,7 +949,7 @@ class TestDiagnosticsService {
    * @override
    * @param {!number} lengthSeconds
    * @param {!bigint} maxNum
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runPrimeSearchRoutine(lengthSeconds, maxNum) {
     this.callHistory.push([
@@ -962,10 +962,10 @@ class TestDiagnosticsService {
 
   /**
    * @override
-   * @param {!chromeos.health.mojom.DiskReadRoutineTypeEnum} type
+   * @param {!ash.health.mojom.DiskReadRoutineTypeEnum} type
    * @param {!number} lengthSeconds
    * @param {!number} fileSizeMB
-   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
    */
   runDiskReadRoutine(type, lengthSeconds, fileSizeMB) {
     this.callHistory.push([
@@ -998,7 +998,7 @@ var TelemetryExtensionUIWithDiagnosticsInterceptorBrowserTest =
 
     /** @suppress {undefinedVars} */
     this.diagnosticsServiceInterceptor = new MojoInterfaceInterceptor(
-        chromeos.health.mojom.DiagnosticsService.$interfaceName);
+        ash.health.mojom.DiagnosticsService.$interfaceName);
     this.diagnosticsServiceInterceptor.oninterfacerequest = (e) => {
       this.diagnosticsService.bind(e.handle);
     };
@@ -1022,7 +1022,7 @@ TEST_F(
             [
               'getRoutineUpdate', {
                 routineId: 123,
-                command: chromeos.health.mojom.DiagnosticRoutineCommandEnum
+                command: ash.health.mojom.DiagnosticRoutineCommandEnum
                              .kGetStatus,
                 includeOutput: true
               }
@@ -1030,7 +1030,7 @@ TEST_F(
             [
               'getRoutineUpdate', {
                 routineId: 123,
-                command: chromeos.health.mojom.DiagnosticRoutineCommandEnum
+                command: ash.health.mojom.DiagnosticRoutineCommandEnum
                              .kContinue,
                 includeOutput: true
               }
@@ -1039,7 +1039,7 @@ TEST_F(
               'getRoutineUpdate', {
                 routineId: 123,
                 command:
-                    chromeos.health.mojom.DiagnosticRoutineCommandEnum.kCancel,
+                    ash.health.mojom.DiagnosticRoutineCommandEnum.kCancel,
                 includeOutput: true
               }
             ],
@@ -1047,7 +1047,7 @@ TEST_F(
               'getRoutineUpdate', {
                 routineId: 123,
                 command:
-                    chromeos.health.mojom.DiagnosticRoutineCommandEnum.kRemove,
+                    ash.health.mojom.DiagnosticRoutineCommandEnum.kRemove,
                 includeOutput: true
               }
             ]
@@ -1079,37 +1079,37 @@ TEST_F(
             ['runNvmeWearLevelRoutine', {threshold: 37}],
             [
               'runNvmeSelfTestRoutine',
-              {type: chromeos.health.mojom.NvmeSelfTestTypeEnum.kShortSelfTest}
+              {type: ash.health.mojom.NvmeSelfTestTypeEnum.kShortSelfTest}
             ],
             [
               'runNvmeSelfTestRoutine',
-              {type: chromeos.health.mojom.NvmeSelfTestTypeEnum.kLongSelfTest}
+              {type: ash.health.mojom.NvmeSelfTestTypeEnum.kLongSelfTest}
             ],
             [
               'runAcPowerRoutine', {
                 expectedStatus:
-                    chromeos.health.mojom.AcPowerStatusEnum.kConnected,
+                    ash.health.mojom.AcPowerStatusEnum.kConnected,
                 expectedPowerType: null
               }
             ],
             [
               'runAcPowerRoutine', {
                 expectedStatus:
-                    chromeos.health.mojom.AcPowerStatusEnum.kDisconnected,
+                    ash.health.mojom.AcPowerStatusEnum.kDisconnected,
                 expectedPowerType: null
               }
             ],
             [
               'runAcPowerRoutine', {
                 expectedStatus:
-                    chromeos.health.mojom.AcPowerStatusEnum.kConnected,
+                    ash.health.mojom.AcPowerStatusEnum.kConnected,
                 expectedPowerType: 'Mains'
               }
             ],
             [
               'runAcPowerRoutine', {
                 expectedStatus:
-                    chromeos.health.mojom.AcPowerStatusEnum.kDisconnected,
+                    ash.health.mojom.AcPowerStatusEnum.kDisconnected,
                 expectedPowerType: 'Battery'
               }
             ],
@@ -1122,14 +1122,14 @@ TEST_F(
             ],
             [
               'runDiskReadRoutine', {
-                type: chromeos.health.mojom.DiskReadRoutineTypeEnum.kLinearRead,
+                type: ash.health.mojom.DiskReadRoutineTypeEnum.kLinearRead,
                 lengthSeconds: 44,
                 fileSizeMB: 135
               }
             ],
             [
               'runDiskReadRoutine', {
-                type: chromeos.health.mojom.DiskReadRoutineTypeEnum.kRandomRead,
+                type: ash.health.mojom.DiskReadRoutineTypeEnum.kRandomRead,
                 lengthSeconds: 23,
                 fileSizeMB: 1749
               }

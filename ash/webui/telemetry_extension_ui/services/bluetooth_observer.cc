@@ -12,6 +12,11 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace {
+namespace health = ::ash::health;
+}  // namespace
+
 BluetoothObserver::BluetoothObserver() : receiver_{this} {
   Connect();
 }

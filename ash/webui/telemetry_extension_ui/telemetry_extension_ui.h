@@ -28,19 +28,20 @@ class TelemetryExtensionUI : public ui::MojoWebUIController {
   ~TelemetryExtensionUI() override;
 
   void BindInterface(
-      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
+      mojo::PendingReceiver<ash::health::mojom::DiagnosticsService> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<ash::health::mojom::ProbeService> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<health::mojom::SystemEventsService> receiver);
+      mojo::PendingReceiver<ash::health::mojom::SystemEventsService> receiver);
 
  private:
   // Replaced when |BindInterface| is called.
-  std::unique_ptr<health::mojom::DiagnosticsService> diagnostics_service_;
-  std::unique_ptr<health::mojom::ProbeService> probe_service_;
-  std::unique_ptr<health::mojom::SystemEventsService> system_events_service_;
+  std::unique_ptr<ash::health::mojom::DiagnosticsService> diagnostics_service_;
+  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_;
+  std::unique_ptr<ash::health::mojom::SystemEventsService>
+      system_events_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -15,6 +15,11 @@
 namespace chromeos {
 namespace converters {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace {
+namespace health = ::ash::health;
+}  // namespace
+
 namespace unchecked {
 
 namespace {

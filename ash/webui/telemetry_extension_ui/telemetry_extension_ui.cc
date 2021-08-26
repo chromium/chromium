@@ -26,6 +26,9 @@ namespace chromeos {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace health = ::ash::health;
+
 std::unique_ptr<content::WebUIDataSource>
 CreateTrustedTelemetryExtensionDataSource() {
   auto trusted_source = base::WrapUnique(

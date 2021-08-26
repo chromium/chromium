@@ -22,46 +22,46 @@ namespace converters {
 
 namespace unchecked {
 
-health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
+ash::health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input);
 
-health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
+ash::health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdateUnionPtr input);
 
-health::mojom::InteractiveRoutineUpdatePtr UncheckedConvertPtr(
+ash::health::mojom::InteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::InteractiveRoutineUpdatePtr input);
 
-health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
+ash::health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::NonInteractiveRoutineUpdatePtr input);
 
-health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
+ash::health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
     cros_healthd::mojom::RunRoutineResponsePtr input);
 
 }  // namespace unchecked
 
-absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
+absl::optional<ash::health::mojom::DiagnosticRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input);
 
-std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
+std::vector<ash::health::mojom::DiagnosticRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input);
 
-health::mojom::DiagnosticRoutineUserMessageEnum Convert(
+ash::health::mojom::DiagnosticRoutineUserMessageEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input);
 
-health::mojom::DiagnosticRoutineStatusEnum Convert(
+ash::health::mojom::DiagnosticRoutineStatusEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineStatusEnum input);
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
-    health::mojom::DiagnosticRoutineCommandEnum input);
+    ash::health::mojom::DiagnosticRoutineCommandEnum input);
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
-    health::mojom::AcPowerStatusEnum input);
+    ash::health::mojom::AcPowerStatusEnum input);
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
-    health::mojom::NvmeSelfTestTypeEnum input);
+    ash::health::mojom::NvmeSelfTestTypeEnum input);
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
-    health::mojom::DiskReadRoutineTypeEnum input);
+    ash::health::mojom::DiskReadRoutineTypeEnum input);
 
 }  // namespace converters
 }  // namespace chromeos

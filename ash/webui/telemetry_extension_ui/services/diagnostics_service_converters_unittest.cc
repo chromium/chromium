@@ -13,7 +13,7 @@ namespace converters {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kReady),
             health::DiagnosticRoutineStatusEnum::kReady);
@@ -44,7 +44,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
 TEST(DiagnosticsServiceConvertersTest,
      ConvertDiagnosticRoutineUserMessageEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(
       Convert(cros_healthd::DiagnosticRoutineUserMessageEnum::kUnplugACPower),
@@ -56,7 +56,7 @@ TEST(DiagnosticsServiceConvertersTest,
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kContinue),
             cros_healthd::DiagnosticRoutineCommandEnum::kContinue);
@@ -70,7 +70,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(Convert(health::AcPowerStatusEnum::kConnected),
             cros_healthd::AcPowerStatusEnum::kConnected);
@@ -80,7 +80,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kShortSelfTest),
             cros_healthd::NvmeSelfTestTypeEnum::kShortSelfTest);
@@ -90,7 +90,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::chromeos::health::mojom;
+  namespace health = ::ash::health::mojom;
 
   EXPECT_EQ(Convert(health::DiskReadRoutineTypeEnum::kLinearRead),
             cros_healthd::DiskReadRoutineTypeEnum::kLinearRead);

@@ -15,6 +15,11 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
+namespace {
+namespace health = ::ash::health;
+}  // namespace
+
 DiagnosticsService::DiagnosticsService(
     mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver)
     : receiver_(this, std::move(receiver)) {}

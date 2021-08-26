@@ -12,7 +12,7 @@
 // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom and
 // src/chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
 
-module chromeos.health.mojom;
+module ash.health.mojom;
 
 // System Events interface exposed by the Telemetry SWX.
 interface SystemEventsService {

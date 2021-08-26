@@ -8,43 +8,43 @@ let systemEventsService = null;
 
 /**
  * Lazy creates pointer to remote implementation of diagnostics service.
- * @return {!chromeos.health.mojom.DiagnosticsServiceRemote}
+ * @return {!ash.health.mojom.DiagnosticsServiceRemote}
  */
 function getOrCreateDiagnosticsService() {
   if (diagnosticsService === null) {
-    diagnosticsService = chromeos.health.mojom.DiagnosticsService.getRemote();
+    diagnosticsService = ash.health.mojom.DiagnosticsService.getRemote();
   }
-  return /** @type {!chromeos.health.mojom.DiagnosticsServiceRemote} */ (
+  return /** @type {!ash.health.mojom.DiagnosticsServiceRemote} */ (
       diagnosticsService);
 }
 
 /**
  * Lazy creates pointer to remote implementation of probe service.
- * @return {!chromeos.health.mojom.ProbeServiceRemote}
+ * @return {!ash.health.mojom.ProbeServiceRemote}
  */
 function getOrCreateProbeService() {
   if (probeService === null) {
-    probeService = chromeos.health.mojom.ProbeService.getRemote();
+    probeService = ash.health.mojom.ProbeService.getRemote();
   }
-  return /** @type {!chromeos.health.mojom.ProbeServiceRemote} */ (
+  return /** @type {!ash.health.mojom.ProbeServiceRemote} */ (
       probeService);
 }
 
 /**
  * Lazy creates pointer to remote implementation of system events service.
- * @return {!chromeos.health.mojom.SystemEventsServiceRemote}
+ * @return {!ash.health.mojom.SystemEventsServiceRemote}
  */
 function getOrCreateSystemEventsService() {
   if (systemEventsService === null) {
-    systemEventsService = chromeos.health.mojom.SystemEventsService.getRemote();
+    systemEventsService = ash.health.mojom.SystemEventsService.getRemote();
   }
-  return /** @type {!chromeos.health.mojom.SystemEventsServiceRemote} */ (
+  return /** @type {!ash.health.mojom.SystemEventsServiceRemote} */ (
       systemEventsService);
 }
 
 /**
  * Alias for Mojo RunRoutine response.
- * @typedef { !Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>
+ * @typedef { !Promise<{response: !ash.health.mojom.RunRoutineResponse}>
  * }
  */
 let RunRoutineResponsePromise;
@@ -56,10 +56,10 @@ let RunRoutineResponsePromise;
  */
 class DiagnosticsProxy {
   constructor() {
-    const routineEnum = chromeos.health.mojom.DiagnosticRoutineEnum;
+    const routineEnum = ash.health.mojom.DiagnosticRoutineEnum;
 
     /**
-     * @type { !Map<!chromeos.health.mojom.DiagnosticRoutineEnum, !string> }
+     * @type { !Map<!ash.health.mojom.DiagnosticRoutineEnum, !string> }
      * @const
      */
     this.enumToRoutineName_ = new Map([
@@ -83,11 +83,10 @@ class DiagnosticsProxy {
           'enumToRoutineName_ does not contain all items from enum!');
     }
 
-    const commandEnum = chromeos.health.mojom.DiagnosticRoutineCommandEnum;
+    const commandEnum = ash.health.mojom.DiagnosticRoutineCommandEnum;
 
     /**
-     * @type { !Map<!string,
-     *     !chromeos.health.mojom.DiagnosticRoutineCommandEnum> }
+     * @type { !Map<!string, !ash.health.mojom.DiagnosticRoutineCommandEnum> }
      * @const
      */
     this.commandToEnum_ = new Map([
@@ -101,11 +100,10 @@ class DiagnosticsProxy {
       throw RangeError('commandToEnum_ does not contain all items from enum!');
     }
 
-    const statusEnum = chromeos.health.mojom.DiagnosticRoutineStatusEnum;
+    const statusEnum = ash.health.mojom.DiagnosticRoutineStatusEnum;
 
     /**
-     * @type { !Map<!chromeos.health.mojom.DiagnosticRoutineStatusEnum, !string>
-     *     }
+     * @type { !Map<!ash.health.mojom.DiagnosticRoutineStatusEnum, !string> }
      * @const
      */
     this.enumToStatus_ = new Map([
@@ -127,11 +125,10 @@ class DiagnosticsProxy {
       throw RangeError('enumToStatus_ does not contain all items from enum!');
     }
 
-    const userMessageEnum =
-        chromeos.health.mojom.DiagnosticRoutineUserMessageEnum;
+    const userMessageEnum = ash.health.mojom.DiagnosticRoutineUserMessageEnum;
 
     /**
-     * @type { !Map<!chromeos.health.mojom.DiagnosticRoutineUserMessageEnum,
+     * @type { !Map<!ash.health.mojom.DiagnosticRoutineUserMessageEnum,
      *     !string> }
      * @const
      */
@@ -145,10 +142,10 @@ class DiagnosticsProxy {
           'enumToUserMessage_ does not contain all items from enum!');
     }
 
-    const acPowerStatusEnum = chromeos.health.mojom.AcPowerStatusEnum;
+    const acPowerStatusEnum = ash.health.mojom.AcPowerStatusEnum;
 
     /**
-     * @type { !Map<!string, !chromeos.health.mojom.AcPowerStatusEnum> }
+     * @type { !Map<!string, !ash.health.mojom.AcPowerStatusEnum> }
      * @const
      */
     this.acPowerStatusToEnum_ = new Map([
@@ -161,10 +158,10 @@ class DiagnosticsProxy {
           'acPowerStatusToEnum_ does not contain all items from enum!');
     }
 
-    const nvmeSelfTestTypeEnum = chromeos.health.mojom.NvmeSelfTestTypeEnum;
+    const nvmeSelfTestTypeEnum = ash.health.mojom.NvmeSelfTestTypeEnum;
 
     /**
-     * @type { !Map<!string, !chromeos.health.mojom.NvmeSelfTestTypeEnum> }
+     * @type { !Map<!string, !ash.health.mojom.NvmeSelfTestTypeEnum> }
      * @const
      */
     this.nvmeSelfTestTypeToEnum_ = new Map([
@@ -178,11 +175,10 @@ class DiagnosticsProxy {
           'nvmeSelfTestTypeToEnum_ does not contain all items from enum!');
     }
 
-    const diskReadRoutineTypeEnum =
-        chromeos.health.mojom.DiskReadRoutineTypeEnum;
+    const diskReadRoutineTypeEnum = ash.health.mojom.DiskReadRoutineTypeEnum;
 
     /**
-     * @type { !Map<!string, !chromeos.health.mojom.DiskReadRoutineTypeEnum> }
+     * @type { !Map<!string, !ash.health.mojom.DiskReadRoutineTypeEnum> }
      * @const
      */
     this.diskReadRoutineTypeToEnum_ = new Map([
@@ -198,7 +194,7 @@ class DiagnosticsProxy {
   }
 
   /**
-   * @param { !Array<!chromeos.health.mojom.DiagnosticRoutineEnum> } routines
+   * @param { !Array<!ash.health.mojom.DiagnosticRoutineEnum> } routines
    * @return { !Array<!string> }
    */
   convertRoutines(routines) {
@@ -233,7 +229,7 @@ class DiagnosticsProxy {
 
   /**
    * @param { !string } command
-   * @return { !chromeos.health.mojom.DiagnosticRoutineCommandEnum }
+   * @return { !ash.health.mojom.DiagnosticRoutineCommandEnum }
    */
   convertCommandToEnum(command) {
     if (!this.commandToEnum_.has(command)) {
@@ -244,7 +240,7 @@ class DiagnosticsProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.DiagnosticRoutineStatusEnum } status
+   * @param { !ash.health.mojom.DiagnosticRoutineStatusEnum } status
    * @return { !string | null }
    */
   convertStatus(status) {
@@ -256,8 +252,7 @@ class DiagnosticsProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.DiagnosticRoutineUserMessageEnum }
-   *     userMessage
+   * @param { !ash.health.mojom.DiagnosticRoutineUserMessageEnum } userMessage
    * @return { !string | null }
    */
   convertUserMessage(userMessage) {
@@ -269,7 +264,7 @@ class DiagnosticsProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.RoutineUpdate } routineUpdate
+   * @param { !ash.health.mojom.RoutineUpdate } routineUpdate
    * @return { !Object }
    */
   convertRoutineUpdate(routineUpdate) {
@@ -328,7 +323,7 @@ class DiagnosticsProxy {
   };
 
   /**
-   * @param { !chromeos.health.mojom.RunRoutineResponse } runRoutineResponse
+   * @param { !ash.health.mojom.RunRoutineResponse } runRoutineResponse
    * @return { !Object }
    */
   convertRunRoutineResponse(runRoutineResponse) {
@@ -380,7 +375,7 @@ class DiagnosticsProxy {
   /**
    * Converts expected status string to AcPowerStatusEnum.
    * @param { !string } expectedStatus
-   * @return { !chromeos.health.mojom.AcPowerStatusEnum }
+   * @return { !ash.health.mojom.AcPowerStatusEnum }
    */
   convertPowerStatusToEnum(expectedStatus) {
     if (!this.acPowerStatusToEnum_.has(expectedStatus)) {
@@ -472,7 +467,7 @@ class DiagnosticsProxy {
   /**
    * Converts NVMe self test type string to NvmeSelfTestTypeEnum.
    * @param { !string } nvmeSelfTestType
-   * @return { !chromeos.health.mojom.NvmeSelfTestTypeEnum }
+   * @return { !ash.health.mojom.NvmeSelfTestTypeEnum }
    */
   convertNvmeSelfTestTypeToEnum(nvmeSelfTestType) {
     if (!this.nvmeSelfTestTypeToEnum_.has(nvmeSelfTestType)) {
@@ -499,7 +494,7 @@ class DiagnosticsProxy {
   /**
    * Converts disk read type string to DiskReadRoutineTypeEnum.
    * @param { !string } type
-   * @return { !chromeos.health.mojom.DiskReadRoutineTypeEnum }
+   * @return { !ash.health.mojom.DiskReadRoutineTypeEnum }
    */
   convertDiskReadTypeToEnum(type) {
     if (!this.diskReadRoutineTypeToEnum_.has(type)) {
@@ -594,10 +589,10 @@ const diagnosticsProxy = new DiagnosticsProxy();
  */
 class TelemetryProxy {
   constructor() {
-    const categoryEnum = chromeos.health.mojom.ProbeCategoryEnum;
+    const categoryEnum = ash.health.mojom.ProbeCategoryEnum;
 
     /**
-     * @type { !Map<!string, !chromeos.health.mojom.ProbeCategoryEnum> }
+     * @type { !Map<!string, !ash.health.mojom.ProbeCategoryEnum> }
      * @const
      */
     this.categoryToEnum_ = new Map([
@@ -615,10 +610,10 @@ class TelemetryProxy {
       throw RangeError('categoryToEnum_ does not contain all items from enum!');
     }
 
-    const errorEnum = chromeos.health.mojom.ErrorType;
+    const errorEnum = ash.health.mojom.ErrorType;
 
     /**
-     * @type { !Map<!chromeos.health.mojom.ErrorType, !string > }
+     * @type { !Map<!ash.health.mojom.ErrorType, !string > }
      * @const
      */
     this.errorTypeToString_ = new Map([
@@ -633,10 +628,10 @@ class TelemetryProxy {
           'errorTypeToString_ does not contain all items from enum!');
     }
 
-    const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
+    const cpuArchEnum = ash.health.mojom.CpuArchitectureEnum;
 
     /**
-     * @type { !Map<!chromeos.health.mojom.CpuArchitectureEnum, !string > }
+     * @type { !Map<!ash.health.mojom.CpuArchitectureEnum, !string > }
      * @const
      */
     this.cpuArchToString_ = new Map([
@@ -654,7 +649,7 @@ class TelemetryProxy {
 
   /**
    * @param { !Array<!string> } categories
-   * @return { !Array<!chromeos.health.mojom.ProbeCategoryEnum> }
+   * @return { !Array<!ash.health.mojom.ProbeCategoryEnum> }
    */
   convertCategories(categories) {
     return categories.map((category) => {
@@ -666,7 +661,7 @@ class TelemetryProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.ErrorType } errorType
+   * @param { !ash.health.mojom.ErrorType } errorType
    * @return { !string }
    */
   convertErrorType(errorType) {
@@ -677,7 +672,7 @@ class TelemetryProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.CpuArchitectureEnum } cpuArch
+   * @param { !ash.health.mojom.CpuArchitectureEnum } cpuArch
    * @return { !string }
    */
   convertCpuArch(cpuArch) {
@@ -688,7 +683,7 @@ class TelemetryProxy {
   }
 
   /**
-   * @param { !chromeos.health.mojom.TelemetryInfo } telemetryInfo
+   * @param { !ash.health.mojom.TelemetryInfo } telemetryInfo
    * @return { !Object }
    */
   convertAllEnums(telemetryInfo) {
@@ -836,7 +831,7 @@ class TelemetryProxy {
     const request =
         /** @type {!dpsl_internal.ProbeTelemetryInfoRequest} */ (message);
 
-    /** @type {!Array<!chromeos.health.mojom.ProbeCategoryEnum>} */
+    /** @type {!Array<!ash.health.mojom.ProbeCategoryEnum>} */
     let categories = [];
     try {
       categories = this.convertCategories(request);
@@ -888,7 +883,7 @@ class SystemEventsProxy {
     };
 
     this.bluetoothObserverCallbackRouter_ =
-        new chromeos.health.mojom.BluetoothObserverCallbackRouter();
+        new ash.health.mojom.BluetoothObserverCallbackRouter();
 
     this.bluetoothObserverCallbackRouter_.onAdapterAdded.addListener(
         () => this.sendEvent(events.BLUETOOTH_ADAPTER_ADDED));
@@ -907,7 +902,7 @@ class SystemEventsProxy {
         this.bluetoothObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
 
     this.lidObserverCallbackRouter_ =
-        new chromeos.health.mojom.LidObserverCallbackRouter();
+        new ash.health.mojom.LidObserverCallbackRouter();
 
     this.lidObserverCallbackRouter_.onLidClosed.addListener(
         () => this.sendEvent(events.LID_CLOSED));
@@ -918,7 +913,7 @@ class SystemEventsProxy {
         this.lidObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
 
     this.powerObserverCallbackRouter_ =
-        new chromeos.health.mojom.PowerObserverCallbackRouter();
+        new ash.health.mojom.PowerObserverCallbackRouter();
 
     this.powerObserverCallbackRouter_.onAcInserted.addListener(
         () => this.sendEvent(events.AC_INSERTED));

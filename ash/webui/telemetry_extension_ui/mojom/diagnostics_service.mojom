@@ -15,7 +15,7 @@
 // This is a subset of the cros_healthd diagnostics service interface which is
 // located in src/platform2/diagnostics/mojo/cros_healthd_diagnostics.mojom.
 
-module chromeos.health.mojom;
+module ash.health.mojom;
 
 // Interface for exposing diagnostics service.
 interface DiagnosticsService {

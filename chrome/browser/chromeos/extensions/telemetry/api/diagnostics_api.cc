@@ -19,7 +19,8 @@ namespace chromeos {
 namespace {
 
 api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
-    health::mojom::DiagnosticRoutineStatusEnum status) {
+    ash::health::mojom::DiagnosticRoutineStatusEnum status) {
+  namespace health = ::ash::health;
   switch (status) {
     case health::mojom::DiagnosticRoutineStatusEnum::kReady:
       return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_READY;
@@ -70,7 +71,7 @@ OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
 }
 
 void OsDiagnosticsRunBatteryCapacityRoutineFunction::OnResult(
-    health::mojom::RunRoutineResponsePtr ptr) {
+    ash::health::mojom::RunRoutineResponsePtr ptr) {
   if (!ptr) {
     // |ptr| should never be null, otherwise Mojo validation will fail.
     // However it's safer to handle it in case of API changes.

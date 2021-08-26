@@ -15,17 +15,17 @@
 
 namespace chromeos {
 
-class ProbeService : public health::mojom::ProbeService {
+class ProbeService : public ash::health::mojom::ProbeService {
  public:
   explicit ProbeService(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<ash::health::mojom::ProbeService> receiver);
   ProbeService(const ProbeService&) = delete;
   ProbeService& operator=(const ProbeService&) = delete;
   ~ProbeService() override;
 
  private:
   void ProbeTelemetryInfo(
-      const std::vector<health::mojom::ProbeCategoryEnum>& categories,
+      const std::vector<ash::health::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
   void GetOemData(GetOemDataCallback callback) override;
 
@@ -42,7 +42,7 @@ class ProbeService : public health::mojom::ProbeService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<health::mojom::ProbeService> receiver_;
+  mojo::Receiver<ash::health::mojom::ProbeService> receiver_;
 };
 
 }  // namespace chromeos
