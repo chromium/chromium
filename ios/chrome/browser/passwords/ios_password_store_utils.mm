@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/passwords/ios_password_store_utils.h"
 
+#include "base/bind.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -56,11 +57,18 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
     // StoreMetricsReporter will delay the actual reporting by 30 seconds, to
     // ensure it doesn't happen during the "hot phase" of Chrome startup.
-    auto metrics_reporter =
-        std::make_unique<password_manager::StoreMetricsReporter>(
-            profile_store, /*account_store=*/nullptr, sync_service,
-            identity_manager, pref_service, password_reuse_manager,
-            /*is_under_advanced_protection=*/false);
+    auto metrics_reporter = std::make_unique<
+        password_manager::StoreMetricsReporter>(
+        profile_store, /*account_store=*/nullptr, sync_service,
+        identity_manager, pref_service, password_reuse_manager,
+        /*is_under_advanced_protection=*/false,
+        base::BindOnce(
+            &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void RemoveInstanceFromBrowserStateUserData() {
+    browser_state_->RemoveUserData(kPasswordStoreMetricsReporterKey);
   }
 
   ChromeBrowserState* const browser_state_;

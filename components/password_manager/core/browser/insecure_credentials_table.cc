@@ -139,32 +139,4 @@ std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
   return StatementToInsecureCredential(&s);
 }
 
-void InsecureCredentialsTable::ReportMetrics(BulkCheckDone bulk_check_done) {
-  DCHECK(db_);
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE, base::StringPrintf("SELECT COUNT(*) FROM %s "
-                                        "WHERE insecurity_type = ? ",
-                                        kTableName)
-                         .c_str()));
-  s.BindInt(0, static_cast<int>(InsecureType::kLeaked));
-  if (s.Step()) {
-    int count = s.ColumnInt(0);
-    base::UmaHistogramCounts100(
-        "PasswordManager.CompromisedCredentials.CountLeaked", count);
-    if (bulk_check_done) {
-      base::UmaHistogramCounts100(
-          "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck",
-          count);
-    }
-  }
-
-  s.Reset(true);
-  s.BindInt(0, static_cast<int>(InsecureType::kPhished));
-  if (s.Step()) {
-    int count = s.ColumnInt(0);
-    base::UmaHistogramCounts100(
-        "PasswordManager.CompromisedCredentials.CountPhished", count);
-  }
-}
-
 }  // namespace password_manager

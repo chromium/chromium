@@ -27,11 +27,8 @@ namespace password_manager {
 namespace {
 
 constexpr char kTestDomain[] = "http://example.com/";
-constexpr char kTestDomain2[] = "http://test.com/";
-constexpr char kTestDomain3[] = "http://google.com/";
 constexpr char16_t kUsername[] = u"user";
 constexpr char16_t kUsername2[] = u"user2";
-constexpr char16_t kUsername3[] = u"user3";
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -228,61 +225,6 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
                                     new_metadata));
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               ElementsAre(new_insecure_credential));
-}
-
-TEST_F(InsecureCredentialsTableTest, ReportMetricsBeforeBulkCheck) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  InsecureCredential insecure_credential = test_data();
-  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
-                                    insecure_credential.insecure_type,
-                                    ToInsecurityMetadata(insecure_credential)));
-  test_form().signon_realm = insecure_credential.signon_realm = kTestDomain2;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = insecure_credential.username = kUsername2;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(2),
-                                    insecure_credential.insecure_type,
-                                    ToInsecurityMetadata(insecure_credential)));
-  test_form().signon_realm = insecure_credential.signon_realm = kTestDomain3;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = insecure_credential.username = kUsername3;
-  insecure_credential.insecure_type = InsecureType::kPhished;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(3),
-                                    insecure_credential.insecure_type,
-                                    ToInsecurityMetadata(insecure_credential)));
-
-  base::HistogramTester histogram_tester;
-  db()->ReportMetrics(BulkCheckDone(false));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeaked", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountPhished", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck", 0);
-}
-
-TEST_F(InsecureCredentialsTableTest, ReportMetricsAfterBulkCheck) {
-  InsecureCredential insecure_credential = test_data();
-
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
-                                    insecure_credential.insecure_type,
-                                    ToInsecurityMetadata(insecure_credential)));
-  test_form().signon_realm = insecure_credential.signon_realm = kTestDomain2;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = insecure_credential.username = kUsername2;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(2),
-                                    insecure_credential.insecure_type,
-                                    ToInsecurityMetadata(insecure_credential)));
-
-  base::HistogramTester histogram_tester;
-  db()->ReportMetrics(BulkCheckDone(true));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeaked", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck", 2, 1);
 }
 
 TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {

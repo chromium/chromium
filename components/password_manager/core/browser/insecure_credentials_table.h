@@ -90,10 +90,6 @@ class InsecureCredentialsTable {
   // Gets all the rows in the database for |parent_key|.
   std::vector<InsecureCredential> GetRows(FormPrimaryKey parent_key) const;
 
-  // Reports UMA metrics about the table. |bulk_check_done| means that the
-  // password bulk leak check was executed in the past.
-  void ReportMetrics(BulkCheckDone bulk_check_done);
-
  private:
   sql::Database* db_ = nullptr;
 

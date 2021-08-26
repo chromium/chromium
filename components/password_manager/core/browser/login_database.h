@@ -58,10 +58,8 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // should be called.
   virtual bool Init();
 
-  // Reports usage metrics to UMA.
-  void ReportMetrics(const std::string& sync_username,
-                     bool custom_passphrase_sync_enabled,
-                     BulkCheckDone bulk_check_done);
+  // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
+  void ReportMetrics();
 
   // Adds |form| to the list of remembered password forms. Returns the list of
   // changes applied ({}, {ADD}, {REMOVE, ADD}). If it returns {REMOVE, ADD}
@@ -226,10 +224,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // empty string if the row for this |form| is not found.
   std::string GetEncryptedPasswordById(int id) const;
 #endif
-
-  // Returns a suffix (infix, really) to be used in histogram names to
-  // differentiate the profile store from the account store.
-  base::StringPiece GetMetricsSuffixForStore() const;
 
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,6 +42,87 @@ PasswordForm CreateForm(const std::string& signon_realm,
   return form;
 }
 
+void AddMetricsTestData(TestPasswordStore* store) {
+  PasswordForm password_form;
+  password_form.url = GURL("http://example.com");
+  password_form.username_value = u"test1@gmail.com";
+  password_form.password_value = u"test";
+  password_form.signon_realm = "http://example.com/";
+  password_form.times_used = 0;
+  store->AddLogin(password_form);
+
+  password_form.username_value = u"test2@gmail.com";
+  password_form.times_used = 1;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("http://second.example.com");
+  password_form.signon_realm = "http://second.example.com";
+  password_form.times_used = 3;
+  store->AddLogin(password_form);
+
+  password_form.username_value = u"test3@gmail.com";
+  password_form.type = PasswordForm::Type::kGenerated;
+  password_form.times_used = 2;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("ftp://third.example.com/");
+  password_form.signon_realm = "ftp://third.example.com/";
+  password_form.times_used = 4;
+  password_form.scheme = PasswordForm::Scheme::kOther;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("http://fourth.example.com/");
+  password_form.signon_realm = "http://fourth.example.com/";
+  password_form.type = PasswordForm::Type::kManual;
+  password_form.username_value = u"";
+  password_form.times_used = 10;
+  password_form.scheme = PasswordForm::Scheme::kHtml;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("https://fifth.example.com/");
+  password_form.signon_realm = "https://fifth.example.com/";
+  password_form.password_value = u"";
+  password_form.blocked_by_user = true;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("https://sixth.example.com/");
+  password_form.signon_realm = "https://sixth.example.com/";
+  password_form.username_value = u"my_username";
+  password_form.password_value = u"my_password";
+  password_form.blocked_by_user = false;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL();
+  password_form.signon_realm = "android://hash@com.example.android/";
+  password_form.username_value = u"JohnDoe";
+  password_form.password_value = u"my_password";
+  password_form.blocked_by_user = false;
+  store->AddLogin(password_form);
+
+  password_form.username_value = u"JaneDoe";
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("http://rsolomakhin.github.io/autofill/");
+  password_form.signon_realm = "http://rsolomakhin.github.io/";
+  password_form.blocked_by_user = true;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("https://rsolomakhin.github.io/autofill/");
+  password_form.signon_realm = "https://rsolomakhin.github.io/";
+  password_form.blocked_by_user = true;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("http://rsolomakhin.github.io/autofill/123");
+  password_form.signon_realm = "http://rsolomakhin.github.io/";
+  password_form.blocked_by_user = true;
+  store->AddLogin(password_form);
+
+  password_form.url = GURL("https://rsolomakhin.github.io/autofill/1234");
+  password_form.signon_realm = "https://rsolomakhin.github.io/";
+  password_form.blocked_by_user = true;
+  store->AddLogin(password_form);
+}
+
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
  public:
   StoreMetricsReporterTest() = default;
@@ -70,17 +152,15 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
   TestingPrefServiceSimple prefs_;
 };
 
-// The test fixture defines two tests, one that doesn't require a password store
-// and one that does. Each of these tests depend on two boolean parameters,
-// which are declared here. Each test then assigns the desired semantics to
-// them.
+// The test fixture is used to test StoreIndependentMetrics. The parameter
+// defines whether password manager is enabled.
 class StoreMetricsReporterTestWithParams
     : public StoreMetricsReporterTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {};
+      public ::testing::WithParamInterface<bool> {};
 
 // Test that store-independent metrics are reported correctly.
 TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
-  const bool password_manager_enabled = std::get<0>(GetParam());
+  const bool password_manager_enabled = GetParam();
 
   prefs_.SetBoolean(password_manager::prefs::kCredentialsEnableService,
                     password_manager_enabled);
@@ -89,33 +169,551 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
   StoreMetricsReporter reporter(
       /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
       identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
-      /*is_under_advanced_protection=*/false);
+      /*is_under_advanced_protection=*/false,
+      /*done_callback*/ base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.Enabled",
                                       password_manager_enabled, 1);
 }
 
-// Test that sync username and syncing state are passed correctly to the
-// PasswordStore.
-TEST_P(StoreMetricsReporterTestWithParams, StoreDependentMetrics) {
-  const bool syncing_with_passphrase = std::get<0>(GetParam());
-  const bool is_under_advanced_protection = std::get<1>(GetParam());
+TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
 
-  test_sync_service()->SetIsUsingExplicitPassphrase(syncing_with_passphrase);
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
 
-  auto store = base::MakeRefCounted<MockPasswordStore>();
-  EXPECT_CALL(*store,
-              ReportMetrics("some.user@gmail.com", syncing_with_passphrase,
-                            is_under_advanced_protection));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountsPerSiteHiRes.AutoGenerated."
+      "WithoutCustomPassphrase",
+      1, 2);
 
-  FakeSigninAs("some.user@gmail.com");
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountsPerSiteHiRes.UserCreated."
+      "WithoutCustomPassphrase",
+      1, 3);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountsPerSiteHiRes.UserCreated."
+      "WithoutCustomPassphrase",
+      2, 2);
 
-  StoreMetricsReporter reporter(
-      /*profile_store=*/store.get(), /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
-      is_under_advanced_protection);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountsPerSiteHiRes.Overall.WithoutCustomPassphrase", 1,
+      5);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountsPerSiteHiRes.Overall.WithoutCustomPassphrase", 2,
+      2);
 
-  store->ShutdownOnUIThread();
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.ByType.AutoGenerated."
+      "WithoutCustomPassphrase",
+      2, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.ByType.UserCreated."
+      "WithoutCustomPassphrase",
+      7, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.ByType.Overall."
+      "WithoutCustomPassphrase",
+      9, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.WithScheme.Android", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.WithScheme.Ftp", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.WithScheme.Http", 5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.WithScheme.Https", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TotalAccountsHiRes.WithScheme.Other", 0, 1);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, ReportTimesPasswordUsedMetricsTest) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.AutoGenerated.WithoutCustomPassphrase",
+      2, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.AutoGenerated.WithoutCustomPassphrase",
+      4, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.UserCreated.WithoutCustomPassphrase",
+      0, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.UserCreated.WithoutCustomPassphrase",
+      1, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.UserCreated.WithoutCustomPassphrase",
+      3, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 0,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 1,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 2,
+      1);
+  // The bucket for 3 and 4 is the same. Thus we expect two samples here.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 3,
+      2);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+// The following tests are mostly a copy of Report*MetricsTest, but covering
+// the account store instead of the profile store. All the metrics that *are*
+// covered have
+// ".AccountStore" in their names.
+TEST_F(StoreMetricsReporterTest,
+       ReportAccountStoreAccountsPerSiteHiResMetricsTest) {
+  // Note: We also populate the profile store here and instruct it to report
+  // metrics, even though all the checks below only test the account DB. This is
+  // to make sure that the profile DB doesn't write to any of the same
+  // histograms.
+
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes.AutoGenerated."
+      "WithoutCustomPassphrase",
+      1, 2);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes.UserCreated."
+      "WithoutCustomPassphrase",
+      1, 3);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes.UserCreated."
+      "WithoutCustomPassphrase",
+      2, 2);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes.Overall."
+      "WithoutCustomPassphrase",
+      1, 5);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.AccountsPerSiteHiRes.Overall."
+      "WithoutCustomPassphrase",
+      2, 2);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest,
+       ReportAccountStoreTotalAccountsHiResMetricsTest) {
+  // Note: We also populate the profile store here and instruct it to report
+  // metrics, even though all the checks below only test the account DB. This is
+  // to make sure that the profile DB doesn't write to any of the same
+  // histograms.
+
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.ByType.AutoGenerated."
+      "WithoutCustomPassphrase",
+      2, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.ByType.UserCreated."
+      "WithoutCustomPassphrase",
+      7, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.ByType.Overall."
+      "WithoutCustomPassphrase",
+      9, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme.Android", 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme.Ftp", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme.Http", 5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme.Https", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme.Other", 0, 1);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest,
+       ReportAccountStoreTimesPasswordUsedMetricsTest) {
+  // Note: We also populate the profile store here and instruct it to report
+  // metrics, even though all the checks below only test the account DB. This is
+  // to make sure that the profile DB doesn't write to any of the same
+  // histograms.
+
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+  AddMetricsTestData(profile_store.get());
+  // Note: We also create and populate an account store here and instruct it to
+  // report metrics, even though all the checks below only test the profile DB.
+  // This is to make sure that the account DB doesn't write to any of the same
+  // histograms.
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_);
+  AddMetricsTestData(account_store.get());
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.AutoGenerated."
+      "WithoutCustomPassphrase",
+      2, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.AutoGenerated."
+      "WithoutCustomPassphrase",
+      4, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.UserCreated."
+      "WithoutCustomPassphrase",
+      0, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.UserCreated."
+      "WithoutCustomPassphrase",
+      1, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.UserCreated."
+      "WithoutCustomPassphrase",
+      3, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.Overall."
+      "WithoutCustomPassphrase",
+      0, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.Overall."
+      "WithoutCustomPassphrase",
+      1, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.Overall."
+      "WithoutCustomPassphrase",
+      2, 1);
+  // The bucket for 3 and 4 is the same. Thus we expect two samples here.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.TimesPasswordUsed.Overall."
+      "WithoutCustomPassphrase",
+      3, 2);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+
+  // No duplicate.
+  PasswordForm password_form;
+  password_form.signon_realm = "http://example1.com/";
+  password_form.url = GURL("http://example1.com/");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
+  password_form.password_value = u"password_1";
+  profile_store->AddLogin(password_form);
+
+  // Different username -> no duplicate.
+  password_form.signon_realm = "http://example2.com/";
+  password_form.url = GURL("http://example2.com/");
+  password_form.username_value = u"username_1";
+  profile_store->AddLogin(password_form);
+  password_form.username_value = u"username_2";
+  profile_store->AddLogin(password_form);
+
+  // Blocklisted forms don't count as duplicates (neither against other
+  // blocklisted forms nor against actual saved credentials).
+  password_form.signon_realm = "http://example3.com/";
+  password_form.url = GURL("http://example3.com/");
+  password_form.username_value = u"username_1";
+  profile_store->AddLogin(password_form);
+  password_form.blocked_by_user = true;
+  password_form.username_value = u"username_2";
+  profile_store->AddLogin(password_form);
+  password_form.username_value = u"username_3";
+  profile_store->AddLogin(password_form);
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithDuplicates"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithMismatchedDuplicates"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_ExactDuplicates) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+
+  // Add some PasswordForms that are "exact" duplicates (only the
+  // username_element is different, which doesn't matter).
+  PasswordForm password_form;
+  password_form.signon_realm = "http://example1.com/";
+  password_form.url = GURL("http://example1.com/");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
+  profile_store->AddLogin(password_form);
+  password_form.username_element = u"userelem_2";
+  profile_store->AddLogin(password_form);
+  // The number of "identical" credentials doesn't matter; we count the *sets*
+  // of duplicates.
+  password_form.username_element = u"userelem_3";
+  profile_store->AddLogin(password_form);
+
+  // Similarly, origin doesn't make forms "different" either.
+  password_form.signon_realm = "http://example2.com/";
+  password_form.url = GURL("http://example2.com/path1");
+  profile_store->AddLogin(password_form);
+  password_form.url = GURL("http://example2.com/path2");
+  profile_store->AddLogin(password_form);
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  // There should be 2 groups of "exact" duplicates.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithDuplicates"),
+              testing::ElementsAre(base::Bucket(2, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithMismatchedDuplicates"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_);
+
+  // Mismatched duplicates: Identical except for the password.
+  PasswordForm password_form;
+  password_form.signon_realm = "http://example1.com/";
+  password_form.url = GURL("http://example1.com/");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
+  password_form.password_element = u"passelem_1";
+  password_form.password_value = u"password_1";
+  profile_store->AddLogin(password_form);
+  // Note: password_value is not part of the unique key, so we need to change
+  // some other value to be able to insert the duplicate into the DB.
+  password_form.password_element = u"passelem_2";
+  password_form.password_value = u"password_2";
+  profile_store->AddLogin(password_form);
+  // The number of "identical" credentials doesn't matter; we count the *sets*
+  // of duplicates.
+  password_form.password_element = u"passelem_3";
+  password_form.password_value = u"password_3";
+  profile_store->AddLogin(password_form);
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  // Wait for the metrics to get reported, which involves queries to the
+  // stores, i.e. to background task runners.
+  RunUntilIdle();
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithDuplicates"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.CredentialsWithMismatchedDuplicates"),
+              testing::ElementsAre(base::Bucket(1, 1)));
+
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
 }
 
 // A test that covers multi-store metrics, which are recorded by the
@@ -199,7 +797,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
     StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
                                   sync_service(), identity_manager(), &prefs_,
                                   /*password_reuse_manager=*/nullptr,
-                                  /*is_under_advanced_protection=*/false);
+                                  /*is_under_advanced_protection=*/false,
+                                  /*done_callback*/ base::DoNothing());
 
     // Wait for the metrics to get reported, which involves queries to the
     // stores, i.e. to background task runners.
@@ -265,7 +864,8 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   StoreMetricsReporter reporter(/*profile_store=*/store.get(),
                                 /*account_store=*/nullptr, sync_service(),
                                 identity_manager(), &prefs_, &reuse_manager,
-                                /*is_under_advanced_protection=*/true);
+                                /*is_under_advanced_protection=*/true,
+                                /*done_callback*/ base::DoNothing());
 
   // Wait for the metrics to get reported, which involves queries to the stores,
   // i.e. to background task runners.
@@ -274,8 +874,6 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   store->ShutdownOnUIThread();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         StoreMetricsReporterTestWithParams,
-                         testing::Combine(Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
 }  // namespace
 }  // namespace password_manager

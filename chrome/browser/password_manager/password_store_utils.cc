@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_store_utils.h"
 
+#include "base/bind.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -77,7 +78,14 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         std::make_unique<password_manager::StoreMetricsReporter>(
             profile_store, account_store, sync_service, identity_manager,
             pref_service, password_reuse_manager,
-            IsUnderAdvancedProtection(profile_));
+            IsUnderAdvancedProtection(profile_),
+            base::BindOnce(
+                &StoreMetricReporterHelper::RemoveInstanceFromProfileUserData,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void RemoveInstanceFromProfileUserData() {
+    profile_->RemoveUserData(kPasswordStoreMetricsReporterKey);
   }
 
   Profile* const profile_;

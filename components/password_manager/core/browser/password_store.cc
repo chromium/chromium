@@ -331,20 +331,6 @@ FieldInfoStore* PasswordStore::GetFieldInfoStore() {
   return backend_->GetFieldInfoStore();
 }
 
-void PasswordStore::ReportMetrics(const std::string& sync_username,
-                                  bool custom_passphrase_sync_enabled,
-                                  bool is_under_advanced_protection) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  if (background_task_runner_) {
-    base::OnceClosure task = base::BindOnce(
-        &PasswordStore::ReportMetricsImpl, this, sync_username,
-        custom_passphrase_sync_enabled,
-        BulkCheckDone(prefs_ && prefs_->HasPrefPath(
-                                    prefs::kLastTimePasswordCheckCompleted)));
-    background_task_runner_->PostTask(FROM_HERE, std::move(task));
-  }
-}
-
 void PasswordStore::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -386,13 +372,6 @@ scoped_refptr<base::SequencedTaskRunner>
 PasswordStore::CreateBackgroundTaskRunner() const {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-}
-
-void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
-                                      bool custom_passphrase_sync_enabled,
-                                      BulkCheckDone bulk_check_done) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
 }
 
 void PasswordStore::OnInitCompleted(bool success) {

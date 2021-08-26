@@ -125,13 +125,6 @@ class PasswordStore : public PasswordStoreInterface {
   CreateSyncControllerDelegate() override;
   PasswordStoreBackend* GetBackendForTesting() override;
 
-  // Reports usage metrics for the database. |sync_username|, and
-  // |custom_passphrase_sync_enabled|, and |is_under_advanced_protection|
-  // determine some of the UMA stats that may be reported.
-  virtual void ReportMetrics(const std::string& sync_username,
-                             bool custom_passphrase_sync_enabled,
-                             bool is_under_advanced_protection);
-
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
 
@@ -159,12 +152,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Create a TaskRunner to be saved in |background_task_runner_|.
   virtual scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const;
-
-  // Methods below will be run in PasswordStore's own sequence.
-  // Synchronous implementation that reports usage metrics.
-  virtual void ReportMetricsImpl(const std::string& sync_username,
-                                 bool custom_passphrase_sync_enabled,
-                                 BulkCheckDone bulk_check_done);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
     return main_task_runner_;

@@ -245,12 +245,6 @@ TestPasswordStore::CreateSyncControllerDelegateFactory() {
   return nullptr;
 }
 
-void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
-                                          bool custom_passphrase_sync_enabled,
-                                          BulkCheckDone bulk_check_done) {
-  NOTIMPLEMENTED();
-}
-
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
 }

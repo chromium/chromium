@@ -98,11 +98,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegateFactory() override;
 
-  // Unused portions of PasswordStore interface
-  void ReportMetricsImpl(const std::string& sync_username,
-                         bool custom_passphrase_sync_enabled,
-                         BulkCheckDone bulk_check_done) override;
-
  private:
   LoginsResult GetAllLoginsInternal();
   LoginsResult GetAutofillableLoginsInternal();

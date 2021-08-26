@@ -50,16 +50,6 @@ void PasswordStoreImpl::ShutdownOnUIThread() {
       base::BindOnce(&PasswordStoreImpl::DestroyOnBackgroundSequence, this));
 }
 
-void PasswordStoreImpl::ReportMetricsImpl(const std::string& sync_username,
-                                          bool custom_passphrase_sync_enabled,
-                                          BulkCheckDone bulk_check_done) {
-  if (!login_db_)
-    return;
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  login_db_->ReportMetrics(sync_username, custom_passphrase_sync_enabled,
-                           bulk_check_done);
-}
-
 PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   PrimaryKeyToFormMap key_to_form_map;
@@ -130,6 +120,13 @@ PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(sync_bridge_);
   return sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+void PasswordStoreImpl::ReportMetrics() {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!login_db_)
+    return;
+  login_db_->ReportMetrics();
 }
 
 PasswordStoreChangeList PasswordStoreImpl::AddLoginSync(
@@ -460,6 +457,14 @@ bool PasswordStoreImpl::InitOnBackgroundSequence(
   if (success) {
     login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
         &PasswordStoreImpl::NotifyDeletionsHaveSynced, base::Unretained(this)));
+
+    // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
+    // during the "hot phase" of Chrome startup.
+    background_task_runner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordStoreImpl::ReportMetrics,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::TimeDelta::FromSeconds(30));
   }
 
   sync_bridge_ = base::WrapUnique(new PasswordSyncBridge(
@@ -475,6 +480,7 @@ void PasswordStoreImpl::DestroyOnBackgroundSequence() {
   login_db_.reset();
   sync_bridge_.reset();
   remote_forms_changes_received_callback_.Reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 LoginsResult PasswordStoreImpl::GetAllLoginsInternal() {

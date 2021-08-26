@@ -63,14 +63,6 @@ class MockPasswordStore : public PasswordStore {
               (base::Time, base::Time, base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              ReportMetrics,
-              (const std::string&, bool, bool),
-              (override));
-  MOCK_METHOD(void,
-              ReportMetricsImpl,
-              (const std::string&, bool, BulkCheckDone),
-              (override));
-  MOCK_METHOD(void,
               GetAllLoginsWithAffiliationAndBrandingInformation,
               (PasswordStoreConsumer*),
               (override));

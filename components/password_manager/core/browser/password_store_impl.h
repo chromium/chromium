@@ -46,9 +46,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   ~PasswordStoreImpl() override;
 
   // Implements PasswordStore interface.
-  void ReportMetricsImpl(const std::string& sync_username,
-                         bool custom_passphrase_sync_enabled,
-                         BulkCheckDone bulk_check_done) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
@@ -179,6 +176,11 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegateOnBackgroundSequence();
 
+  // Reports password store metrics that aren't reported by the
+  // StoreMetricsReporter. Namely, metrics related to inaccessible passwords,
+  // and bubble statistics.
+  void ReportMetrics();
+
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is
   // called on the background sequence in a deferred manner. If opening the DB
@@ -200,6 +202,8 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   std::vector<base::OnceCallback<void(bool)>> deletions_have_synced_callbacks_;
   // Timeout closure that runs if sync takes too long to propagate deletions.
   base::CancelableOnceClosure deletions_have_synced_timeout_;
+
+  base::WeakPtrFactory<PasswordStoreImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreImpl);
 };
