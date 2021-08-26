@@ -15,8 +15,11 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -85,9 +88,16 @@ namespace {
 
 // The URL from which to download a host denylist if no local one exists yet.
 const char kDenylistURL[] =
-    "https://www.gstatic.com/chrome/supervised_user/blacklist-20141001-1k.bin";
-// The filename under which we'll store the denylist (in the user data dir).
-const char kDenylistFilename[] = "su-blacklist.bin";
+    "https://www.gstatic.com/chrome/supervised_user/denylist-20141001-1k.bin";
+// The filename under which we'll store the denylist (in the user data dir). The
+// old file will be used as a backup in case the new file has not been loaded
+// yet.
+const char kDenylistPrefix[] = "su-deny";
+// TODO(crbug/1243379): Remove references to the old denylist
+const char kOldDenylistPrefix[] = "su-black";
+const char kDenylistSuffix[] = "list.bin";
+
+const char kDenylistSourceHistogramName[] = "FamilyUser.DenylistSource";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // These extensions are allowed for supervised users for internal development
@@ -117,10 +127,10 @@ void CreateURLAccessRequest(const GURL& url,
   creator->CreateURLAccessRequest(url, std::move(callback));
 }
 
-base::FilePath GetDenylistPath() {
+base::FilePath GetDenylistPath(base::StringPiece filePrefix) {
   base::FilePath denylist_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &denylist_dir);
-  return denylist_dir.AppendASCII(kDenylistFilename);
+  return denylist_dir.AppendASCII(base::StrCat({filePrefix, kDenylistSuffix}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -159,6 +169,18 @@ void SupervisedUserService::RegisterProfilePrefs(
   for (const char* pref : kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
+}
+
+// static
+const char* SupervisedUserService::GetDenylistSourceHistogramForTesting() {
+  return kDenylistSourceHistogramName;
+}
+
+// static
+base::FilePath SupervisedUserService::GetDenylistPathForTesting(
+    bool isOldPath) {
+  return isOldPath ? GetDenylistPath(kOldDenylistPrefix)
+                   : GetDenylistPath(kDenylistPrefix);
 }
 
 void SupervisedUserService::Init() {
@@ -611,7 +633,7 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
   bool use_denylist = supervised_users::IsSafeSitesDenylistEnabled(profile_);
   if (use_denylist != url_filter_.HasDenylist()) {
     if (use_denylist && denylist_state_ == DenylistLoadState::NOT_LOADED) {
-      LoadDenylist(GetDenylistPath(), GURL(kDenylistURL));
+      LoadDenylist(GetDenylistPath(kDenylistPrefix), GURL(kDenylistURL));
     } else if (!use_denylist || denylist_state_ == DenylistLoadState::LOADED) {
       // Either the denylist was turned off, or it was turned on but has
       // already been loaded previously. Just update the setting.
@@ -674,6 +696,8 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
   DCHECK(denylist_state_ == DenylistLoadState::LOAD_STARTED);
   if (file_exists) {
     LoadDenylistFromFile(path);
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kDenylist);
     return;
   }
 
@@ -681,7 +705,7 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
 
   // Create traffic annotation tag.
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("supervised_users_blacklist", R"(
+      net::DefineNetworkTrafficAnnotation("supervised_users_denylist", R"(
         semantics {
           sender: "Supervised Users"
           description:
@@ -733,11 +757,34 @@ void SupervisedUserService::OnDenylistDownloadDone(
   DCHECK(denylist_state_ == DenylistLoadState::LOAD_STARTED);
   if (FileDownloader::IsSuccess(result)) {
     LoadDenylistFromFile(path);
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kDenylist);
   } else {
-    LOG(WARNING) << "Denylist download failed";
+    LOG(WARNING) << "Denylist download failed, trying to load the old denylist";
+    const base::FilePath& filePath = GetDenylistPath(kOldDenylistPrefix);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&base::PathExists, filePath),
+        base::BindOnce(&SupervisedUserService::TryLoadingOldDenylist,
+                       weak_ptr_factory_.GetWeakPtr(), filePath));
     // TODO(treib): Retry downloading after some time?
   }
   denylist_downloader_.reset();
+}
+
+void SupervisedUserService::TryLoadingOldDenylist(const base::FilePath& path,
+                                                  bool file_exists) {
+  if (!file_exists) {
+    LOG(WARNING) << "Old denylist is not available";
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kNoSource);
+    return;
+  }
+  LoadDenylistFromFile(path);
+  base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                DenylistSource::kOldDenylist);
 }
 
 void SupervisedUserService::OnDenylistLoaded() {

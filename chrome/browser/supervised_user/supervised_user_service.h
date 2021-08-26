@@ -89,6 +89,20 @@ class SupervisedUserService : public KeyedService,
     virtual bool SetActive(bool active) = 0;
   };
 
+  // These enum values represent the source from which the supervised user's
+  // denylist has been loaded from. These values are logged to UMA. Entries
+  // should not be renumbered and numeric values should never be reused. Please
+  // keep in sync with "FamilyUserDenylistSource" in
+  // src/tools/metrics/histograms/enums.xml
+  enum class DenylistSource {
+    kNoSource = 0,
+    kDenylist = 1,
+    kOldDenylist = 2,
+    // Used for UMA. Update kMaxValue to the last value. Add future entries
+    // above this comment. Sync with enums.xml.
+    kMaxValue = kOldDenylist,
+  };
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // These enum values represent operations to manage the
   // kSupervisedUserApprovedExtensions user pref, which stores parent approved
@@ -104,6 +118,10 @@ class SupervisedUserService : public KeyedService,
   ~SupervisedUserService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  static const char* GetDenylistSourceHistogramForTesting();
+
+  static base::FilePath GetDenylistPathForTesting(bool isOldPath);
 
   // Initializes this object.
   void Init();
@@ -345,6 +363,10 @@ class SupervisedUserService : public KeyedService,
   void OnDenylistFileChecked(const base::FilePath& path,
                              const GURL& url,
                              bool file_exists);
+
+  // Tries loading an older copy of the denylist if the new denylist fails to
+  // load.
+  void TryLoadingOldDenylist(const base::FilePath& path, bool file_exists);
 
   // Asynchronously loads a denylist from a binary file at |path| and applies
   // it to the URL filters.

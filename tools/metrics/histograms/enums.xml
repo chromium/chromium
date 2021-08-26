@@ -29993,6 +29993,12 @@ Called by update_extension_permission.py.-->
   <int value="2" label="Only allow Certain Sites"/>
 </enum>
 
+<enum name="FamilyUserDenylistSource">
+  <int value="0" label="None"/>
+  <int value="1" label="Denylist"/>
+  <int value="2" label="Old Denylist"/>
+</enum>
+
 <enum name="FamilyUserLogSegment">
   <summary>Filters family user metrics into categories of interest.</summary>
   <int value="0" label="Other"/>
