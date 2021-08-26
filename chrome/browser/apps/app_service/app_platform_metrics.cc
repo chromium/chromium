@@ -730,55 +730,67 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 
   bool is_active = update.State() & apps::InstanceState::kActive;
-  auto it = running_start_time_.find(update.InstanceKey());
   if (is_active) {
-    if (it == running_start_time_.end()) {
-      AppTypeName app_type_name =
-          GetAppTypeNameForWindow(profile_, app_type, app_id,
-                                  update.InstanceKey().GetEnclosingAppWindow());
-      if (app_type_name == apps::AppTypeName::kUnknown) {
-        return;
-      }
-
-      // For browser tabs, record the top browser window running duration only,
-      // and skip web apps opened in browser tabs to avoid duration duplicated
-      // calculation.
-      if (app_type_name == AppTypeName::kChromeBrowser &&
-          app_id != extension_misc::kChromeAppId) {
-        return;
-      }
-
-      AppTypeNameV2 app_type_name_v2 =
-          GetAppTypeNameV2(profile_, app_type, app_id,
-                           update.InstanceKey().GetEnclosingAppWindow());
-
-      running_start_time_[update.InstanceKey()].start_time =
-          base::TimeTicks::Now();
-      running_start_time_[update.InstanceKey()].app_type_name = app_type_name;
-      running_start_time_[update.InstanceKey()].app_type_name_v2 =
-          app_type_name_v2;
-
-      ++activated_count_[app_type_name];
-      should_refresh_activated_count_pref = true;
-
-      start_time_per_five_minutes_[update.InstanceKey()].start_time =
-          base::TimeTicks::Now();
-      start_time_per_five_minutes_[update.InstanceKey()].app_type_name =
-          app_type_name;
-      start_time_per_five_minutes_[update.InstanceKey()].app_type_name_v2 =
-          app_type_name_v2;
-      start_time_per_five_minutes_[update.InstanceKey()].app_id = app_id;
+    auto* window = update.InstanceKey().GetEnclosingAppWindow();
+    AppTypeName app_type_name =
+        GetAppTypeNameForWindow(profile_, app_type, app_id, window);
+    if (app_type_name == apps::AppTypeName::kUnknown) {
+      return;
     }
+
+    AppTypeNameV2 app_type_name_v2 =
+        GetAppTypeNameV2(profile_, app_type, app_id, window);
+
+    SetWindowActivated(app_type, app_type_name, app_type_name_v2, app_id,
+                       update.InstanceKey());
     return;
   }
 
-  bool is_close = update.State() & apps::InstanceState::kDestroyed;
-  auto usage_time_it = usage_time_per_five_minutes_.find(update.InstanceKey());
+  SetWindowInActivated(app_id, update.InstanceKey(), update.State());
+}
+
+void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  apps::InstanceRegistry::Observer::Observe(nullptr);
+}
+
+void AppPlatformMetrics::SetWindowActivated(
+    apps::mojom::AppType app_type,
+    AppTypeName app_type_name,
+    AppTypeNameV2 app_type_name_v2,
+    const std::string& app_id,
+    const apps::Instance::InstanceKey& instance_key) {
+  auto it = running_start_time_.find(instance_key);
+  if (it != running_start_time_.end()) {
+    return;
+  }
+
+  running_start_time_[instance_key].start_time = base::TimeTicks::Now();
+  running_start_time_[instance_key].app_type_name = app_type_name;
+  running_start_time_[instance_key].app_type_name_v2 = app_type_name_v2;
+
+  ++activated_count_[app_type_name];
+  should_refresh_activated_count_pref = true;
+
+  start_time_per_five_minutes_[instance_key].start_time =
+      base::TimeTicks::Now();
+  start_time_per_five_minutes_[instance_key].app_type_name = app_type_name;
+  start_time_per_five_minutes_[instance_key].app_type_name_v2 =
+      app_type_name_v2;
+  start_time_per_five_minutes_[instance_key].app_id = app_id;
+}
+
+void AppPlatformMetrics::SetWindowInActivated(
+    const std::string& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    apps::InstanceState state) {
+  bool is_close = state & apps::InstanceState::kDestroyed;
+  auto usage_time_it = usage_time_per_five_minutes_.find(instance_key);
   if (is_close && usage_time_it != usage_time_per_five_minutes_.end()) {
     usage_time_it->second.window_is_closed = true;
   }
 
-  // The app window is inactivated.
+  auto it = running_start_time_.find(instance_key);
   if (it == running_start_time_.end()) {
     return;
   }
@@ -797,20 +809,15 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   base::TimeDelta running_time =
       base::TimeTicks::Now() -
-      start_time_per_five_minutes_[update.InstanceKey()].start_time;
+      start_time_per_five_minutes_[instance_key].start_time;
   app_type_running_time_per_five_minutes_[app_type_name] += running_time;
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
   usage_time_it->second.running_time += running_time;
 
   running_start_time_.erase(it);
-  start_time_per_five_minutes_.erase(update.InstanceKey());
+  start_time_per_five_minutes_.erase(instance_key);
 
   should_refresh_duration_pref = true;
-}
-
-void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
-    apps::InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
 }
 
 void AppPlatformMetrics::InitRunningDuration() {

@@ -203,6 +203,15 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  void SetWindowActivated(apps::mojom::AppType app_type,
+                          AppTypeName app_type_name,
+                          AppTypeNameV2 app_type_name_v2,
+                          const std::string& app_id,
+                          const apps::Instance::InstanceKey& instance_key);
+  void SetWindowInActivated(const std::string& app_id,
+                            const apps::Instance::InstanceKey& instance_key,
+                            apps::InstanceState state);
+
   void InitRunningDuration();
   void ClearRunningDuration();
 
