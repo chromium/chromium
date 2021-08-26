@@ -30,6 +30,7 @@ import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -211,7 +212,7 @@ public class PwaBottomSheetController
         mWebContents = webContents;
 
         mBottomSheetController = BottomSheetControllerProvider.from(windowAndroid);
-        if (mBottomSheetController == null) {
+        if (mBottomSheetController == null || !canShowFor(webContents)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             return;
         }
@@ -240,6 +241,14 @@ public class PwaBottomSheetController
         if (webContents != null) {
             createWebContentsObserver(webContents);
         }
+    }
+
+    /**
+     * @return Whether the Bottom Sheet Installer UI can be shown.
+     * @param webContents The WebContents the UI should show for.
+     */
+    public boolean canShowFor(WebContents webContents) {
+        return webContents.getVisibility() == Visibility.VISIBLE;
     }
 
     /**

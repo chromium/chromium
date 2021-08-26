@@ -79,6 +79,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
@@ -95,6 +96,7 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.installable.InstallableAmbientBadgeInfoBar;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -294,6 +296,13 @@ public class AppBannerManagerTest {
     private void waitForBannerManager(Tab tab) {
         CriteriaHelper.pollUiThread(
                 () -> !getAppBannerManager(tab.getWebContents()).isRunningForTesting());
+    }
+
+    private void waitForAppBannerPipelineStatus(Tab tab, int expectedValue) {
+        CriteriaHelper.pollUiThread(() -> {
+            return getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting()
+                    == expectedValue;
+        });
     }
 
     private void navigateToUrlAndWaitForBannerManager(
@@ -947,6 +956,36 @@ public class AppBannerManagerTest {
         AppBannerManager.setTimeDeltaForTesting(91);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.PEEK);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
+    public void testBottomSheetSkipsHiddenWebContents() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
+                WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
+
+        resetEngagementForUrl(url, 10);
+        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // Create an extra tab so that there is a background tab.
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
+                mTabbedActivityTestRule.getActivity(),
+                /* isIncognito= */ false, /* waitForNtpLoad= */ true);
+
+        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Assert.assertTrue(backgroundTab != null);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
+
+        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 8);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(BottomSheetController.SheetState.HIDDEN,
+                    mBottomSheetController.getSheetState());
+        });
     }
 
     @Test

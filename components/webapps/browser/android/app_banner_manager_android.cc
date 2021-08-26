@@ -81,6 +81,10 @@ bool AppBannerManagerAndroid::IsRunningForTesting(
   return IsRunning();
 }
 
+int AppBannerManagerAndroid::GetPipelineStatusForTesting(JNIEnv* env) {
+  return (int)state();
+}
+
 bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

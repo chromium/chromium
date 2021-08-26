@@ -67,6 +67,9 @@ class AppBannerManagerAndroid
   bool IsRunningForTesting(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj);
 
+  // Returns the state of the processing pipeline for testing purposes.
+  int GetPipelineStatusForTesting(JNIEnv* env);
+
   // Called when the Java-side has retrieved information for the app.
   // Returns |false| if an icon fetch couldn't be kicked off.
   bool OnAppDetailsRetrieved(
