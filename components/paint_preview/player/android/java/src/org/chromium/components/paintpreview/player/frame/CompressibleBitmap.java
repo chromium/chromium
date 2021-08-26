@@ -112,7 +112,14 @@ class CompressibleBitmap {
      * Destroys the data associated with this bitmap.
      */
     void destroy() {
-        mTaskRunner.postTask(this::destroyInternal);
+        mTaskRunner.postTask(() -> { destroyInternal(false); });
+    }
+
+    /**
+     * Destroys the data associated with this bitmap ignoring any locks.
+     */
+    void forceDestroy() {
+        mTaskRunner.postTask(() -> { destroyInternal(true); });
     }
 
     /**
@@ -213,9 +220,10 @@ class CompressibleBitmap {
         unlock();
     }
 
-    private void destroyInternal() {
-        if (!lock()) {
-            mTaskRunner.postDelayedTask(this::destroyInternal, IN_USE_BACKOFF_MS);
+    private void destroyInternal(boolean forceDestroy) {
+        if (!lock() && !forceDestroy) {
+            mTaskRunner.postDelayedTask(
+                    () -> { destroyInternal(forceDestroy); }, IN_USE_BACKOFF_MS);
             return;
         }
         if (mBitmap != null) {
