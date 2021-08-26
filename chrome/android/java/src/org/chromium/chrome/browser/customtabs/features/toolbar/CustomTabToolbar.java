@@ -162,6 +162,30 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     };
 
     /**
+     * Whether to use the toolbar as handle to resize the Window height.
+     */
+    public interface HandleStrategy {
+        /**
+         * Decide whether we need to intercept the touch events so the events will be passed to the
+         * {@link #onTouchEvent()} method.
+         *
+         * @param event The touch event to be examined.
+         * @return whether the event will be passed to {@link #onTouchEvent()}.
+         */
+        boolean onInterceptTouchEvent(MotionEvent event);
+
+        /**
+         * Handling the touch events.
+         *
+         * @param event The touch event to be handled.
+         * @return whether the event is consumed..
+         */
+        boolean onTouchEvent(MotionEvent event);
+    }
+
+    private HandleStrategy mHandleStrategy;
+
+    /**
      * Constructor for getting this class inflated from an xml layout file.
      */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
@@ -359,6 +383,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
         mLocationBarModel.notifySecurityStateChanged();
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mHandleStrategy != null) {
+            return mHandleStrategy.onTouchEvent(event);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (mHandleStrategy != null) {
+            return mHandleStrategy.onInterceptTouchEvent(event);
+        }
+        return false;
+    }
+
+    public void setHandleStrategy(HandleStrategy strategy) {
+        mHandleStrategy = strategy;
     }
 
     private void updateButtonsTint() {
