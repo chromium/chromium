@@ -152,6 +152,12 @@ class PageInfoUI {
     bool is_vr_presentation_in_headset;
   };
 
+  struct PermissionUIInfo {
+    ContentSettingsType type;
+    int string_id;
+    int string_id_mid_sentence;
+  };
+
   using CookieInfoList = std::vector<CookieInfo>;
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
@@ -160,6 +166,12 @@ class PageInfoUI {
 
   // Returns the UI string for the given permission |type|.
   static std::u16string PermissionTypeToUIString(ContentSettingsType type);
+  // Returns the UI string for the given permission |type| when used
+  // mid-sentence.
+  static std::u16string PermissionTypeToUIStringMidSentence(
+      ContentSettingsType type);
+  static base::span<const PermissionUIInfo>
+  GetContentSettingsUIInfoForTesting();
 
   // Returns the UI string describing the action taken for a permission,
   // including why that action was taken. E.g. "Allowed by you",

@@ -129,61 +129,92 @@ static_assert(
     "kSoundPermissionButtonTextIDDefaultSetting array size is incorrect");
 #endif
 
-struct PermissionsUIInfo {
-  ContentSettingsType type;
-  int string_id;
-};
-
-base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
+base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
   DCHECK(base::FeatureList::GetInstance() != nullptr);
-  static const PermissionsUIInfo kPermissionsUIInfo[] = {
-    {ContentSettingsType::COOKIES, 0},
-    {ContentSettingsType::IMAGES, IDS_PAGE_INFO_TYPE_IMAGES},
-    {ContentSettingsType::JAVASCRIPT, IDS_PAGE_INFO_TYPE_JAVASCRIPT},
-    {ContentSettingsType::POPUPS, IDS_PAGE_INFO_TYPE_POPUPS_REDIRECTS},
-    {ContentSettingsType::GEOLOCATION, IDS_PAGE_INFO_TYPE_LOCATION},
-    {ContentSettingsType::NOTIFICATIONS, IDS_PAGE_INFO_TYPE_NOTIFICATIONS},
-    {ContentSettingsType::MEDIASTREAM_MIC, IDS_PAGE_INFO_TYPE_MIC},
-    {ContentSettingsType::MEDIASTREAM_CAMERA, IDS_PAGE_INFO_TYPE_CAMERA},
+  static const PageInfoUI::PermissionUIInfo kPermissionUIInfo[] = {
+    {ContentSettingsType::COOKIES, IDS_SITE_SETTINGS_TYPE_COOKIES,
+     IDS_SITE_SETTINGS_TYPE_COOKIES_MID_SENTENCE},
+    {ContentSettingsType::JAVASCRIPT, IDS_SITE_SETTINGS_TYPE_JAVASCRIPT,
+     IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE},
+    {ContentSettingsType::POPUPS, IDS_SITE_SETTINGS_TYPE_POPUPS_REDIRECTS,
+     IDS_SITE_SETTINGS_TYPE_POPUPS_REDIRECTS_MID_SENTENCE},
+    {ContentSettingsType::GEOLOCATION, IDS_SITE_SETTINGS_TYPE_LOCATION,
+     IDS_SITE_SETTINGS_TYPE_LOCATION_MID_SENTENCE},
+    {ContentSettingsType::NOTIFICATIONS, IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS,
+     IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS_MID_SENTENCE},
+    {ContentSettingsType::MEDIASTREAM_MIC, IDS_SITE_SETTINGS_TYPE_MIC,
+     IDS_SITE_SETTINGS_TYPE_MIC_MID_SENTENCE},
+    {ContentSettingsType::MEDIASTREAM_CAMERA, IDS_SITE_SETTINGS_TYPE_CAMERA,
+     IDS_SITE_SETTINGS_TYPE_CAMERA_MID_SENTENCE},
     {ContentSettingsType::AUTOMATIC_DOWNLOADS,
-     IDS_AUTOMATIC_DOWNLOADS_TAB_LABEL},
-    {ContentSettingsType::MIDI_SYSEX, IDS_PAGE_INFO_TYPE_MIDI_SYSEX},
-    {ContentSettingsType::BACKGROUND_SYNC, IDS_PAGE_INFO_TYPE_BACKGROUND_SYNC},
+     IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+     IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS_MID_SENTENCE},
+    {ContentSettingsType::MIDI_SYSEX, IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX,
+     IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE},
+    {ContentSettingsType::BACKGROUND_SYNC,
+     IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC,
+     IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC_MID_SENTENCE},
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-     IDS_PAGE_INFO_TYPE_PROTECTED_MEDIA_IDENTIFIER},
+     IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID,
+     IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID_MID_SENTENCE},
 #endif
-    {ContentSettingsType::ADS, IDS_PAGE_INFO_TYPE_ADS},
-    {ContentSettingsType::SOUND, IDS_PAGE_INFO_TYPE_SOUND},
-    {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_PAGE_INFO_TYPE_CLIPBOARD},
-    {ContentSettingsType::SENSORS,
-     base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
-         ? IDS_PAGE_INFO_TYPE_SENSORS
-         : IDS_PAGE_INFO_TYPE_MOTION_SENSORS},
-    {ContentSettingsType::USB_GUARD, IDS_PAGE_INFO_TYPE_USB},
-#if !defined(OS_ANDROID)
-    {ContentSettingsType::SERIAL_GUARD, IDS_PAGE_INFO_TYPE_SERIAL},
-#endif
-    {ContentSettingsType::BLUETOOTH_GUARD, IDS_PAGE_INFO_TYPE_BLUETOOTH},
-    {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-     IDS_PAGE_INFO_TYPE_FILE_SYSTEM_ACCESS_WRITE},
+    {ContentSettingsType::ADS, IDS_SITE_SETTINGS_TYPE_ADS,
+     IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE},
+    {ContentSettingsType::SOUND, IDS_SITE_SETTINGS_TYPE_SOUND,
+     IDS_SITE_SETTINGS_TYPE_SOUND_MID_SENTENCE},
+    {ContentSettingsType::CLIPBOARD_READ_WRITE,
+     IDS_SITE_SETTINGS_TYPE_CLIPBOARD,
+     IDS_SITE_SETTINGS_TYPE_CLIPBOARD_MID_SENTENCE},
+    {
+        ContentSettingsType::SENSORS,
+        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+            ? IDS_SITE_SETTINGS_TYPE_SENSORS
+            : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS,
+        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+            ? IDS_SITE_SETTINGS_TYPE_SENSORS_MID_SENTENCE
+            : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS_MID_SENTENCE,
+    },
+    {ContentSettingsType::USB_GUARD, IDS_SITE_SETTINGS_TYPE_USB_DEVICES,
+     IDS_SITE_SETTINGS_TYPE_USB_DEVICES_MID_SENTENCE},
+    {ContentSettingsType::BLUETOOTH_GUARD,
+     IDS_SITE_SETTINGS_TYPE_BLUETOOTH_DEVICES,
+     IDS_SITE_SETTINGS_TYPE_BLUETOOTH_DEVICES_MID_SENTENCE},
     {ContentSettingsType::BLUETOOTH_SCANNING,
-     IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING},
-    {ContentSettingsType::NFC, IDS_PAGE_INFO_TYPE_NFC},
-    {ContentSettingsType::VR, IDS_PAGE_INFO_TYPE_VR},
-    {ContentSettingsType::AR, IDS_PAGE_INFO_TYPE_AR},
+     IDS_SITE_SETTINGS_TYPE_BLUETOOTH_SCANNING,
+     IDS_SITE_SETTINGS_TYPE_BLUETOOTH_SCANNING_MID_SENTENCE},
+    {ContentSettingsType::NFC, IDS_SITE_SETTINGS_TYPE_NFC,
+     IDS_SITE_SETTINGS_TYPE_NFC_MID_SENTENCE},
+    {ContentSettingsType::VR, IDS_SITE_SETTINGS_TYPE_VR,
+     IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE},
+    {ContentSettingsType::AR, IDS_SITE_SETTINGS_TYPE_AR,
+     IDS_SITE_SETTINGS_TYPE_AR_MID_SENTENCE},
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-     IDS_PAGE_INFO_TYPE_CAMERA_PAN_TILT_ZOOM},
-    {ContentSettingsType::WINDOW_PLACEMENT,
-     IDS_PAGE_INFO_TYPE_WINDOW_PLACEMENT},
-    {ContentSettingsType::FONT_ACCESS, IDS_PAGE_INFO_TYPE_FONT_ACCESS},
+     IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM,
+     IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE},
+    {ContentSettingsType::IDLE_DETECTION, IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION,
+     IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
 #if !defined(OS_ANDROID)
-    {ContentSettingsType::HID_GUARD, IDS_PAGE_INFO_TYPE_HID},
+    // Page Info Permissions that are not defined in Android.
+    {ContentSettingsType::FILE_HANDLING, IDS_SITE_SETTINGS_TYPE_FILE_HANDLING,
+     IDS_SITE_SETTINGS_TYPE_FILE_HANDLING_MID_SENTENCE},
+    {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+     IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
+     IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
+    {ContentSettingsType::FONT_ACCESS, IDS_SITE_SETTINGS_TYPE_FONT_ACCESS,
+     IDS_SITE_SETTINGS_TYPE_FONT_ACCESS_MID_SENTENCE},
+    {ContentSettingsType::HID_GUARD, IDS_SITE_SETTINGS_TYPE_HID_DEVICES,
+     IDS_SITE_SETTINGS_TYPE_HID_DEVICES_MID_SENTENCE},
+    {ContentSettingsType::IMAGES, IDS_SITE_SETTINGS_TYPE_IMAGES,
+     IDS_SITE_SETTINGS_TYPE_IMAGES_MID_SENTENCE},
+    {ContentSettingsType::SERIAL_GUARD, IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS,
+     IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
+    {ContentSettingsType::WINDOW_PLACEMENT,
+     IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT,
+     IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT_MID_SENTENCE},
 #endif
-    {ContentSettingsType::IDLE_DETECTION, IDS_PAGE_INFO_TYPE_IDLE_DETECTION},
-    {ContentSettingsType::FILE_HANDLING, IDS_PAGE_INFO_TYPE_FILE_HANDLING},
   };
-  return kPermissionsUIInfo;
+  return kPermissionUIInfo;
 }
 
 std::unique_ptr<PageInfoUI::SecurityDescription> CreateSecurityDescription(
@@ -520,12 +551,29 @@ PageInfoUI::~PageInfoUI() = default;
 
 // static
 std::u16string PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
-  for (const PermissionsUIInfo& info : GetContentSettingsUIInfo()) {
+  for (const PermissionUIInfo& info : GetContentSettingsUIInfo()) {
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id);
   }
   NOTREACHED();
   return std::u16string();
+}
+
+// static
+std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
+    ContentSettingsType type) {
+  for (const PermissionUIInfo& info : GetContentSettingsUIInfo()) {
+    if (info.type == type)
+      return l10n_util::GetStringUTF16(info.string_id_mid_sentence);
+  }
+  NOTREACHED();
+  return std::u16string();
+}
+
+// static
+base::span<const PageInfoUI::PermissionUIInfo>
+PageInfoUI::GetContentSettingsUIInfoForTesting() {
+  return GetContentSettingsUIInfo();
 }
 
 // static
@@ -916,7 +964,7 @@ int PageInfoUI::GetConnectionIconColorID(
 
 // static
 bool PageInfoUI::ContentSettingsTypeInPageInfo(ContentSettingsType type) {
-  for (const PermissionsUIInfo& info : GetContentSettingsUIInfo()) {
+  for (const PermissionUIInfo& info : GetContentSettingsUIInfo()) {
     if (info.type == type)
       return true;
   }

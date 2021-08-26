@@ -343,6 +343,36 @@ void ExpectPermissionInfoList(
 
 }  // namespace
 
+TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
+  page_info();
+  for (const PageInfoUI::PermissionUIInfo& info :
+       PageInfoUI::GetContentSettingsUIInfoForTesting()) {
+    std::u16string normal = l10n_util::GetStringUTF16(info.string_id);
+    std::u16string mid_sentence =
+        l10n_util::GetStringUTF16(info.string_id_mid_sentence);
+    switch (info.type) {
+      case ContentSettingsType::MIDI_SYSEX:
+      case ContentSettingsType::NFC:
+      case ContentSettingsType::USB_GUARD:
+#if !defined(OS_ANDROID)
+      case ContentSettingsType::HID_GUARD:
+#endif
+        EXPECT_EQ(normal, mid_sentence);
+        break;
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+      case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
+        break;
+#endif
+      default:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
+        break;
+    }
+  }
+}
+
 TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   page_info()->PresentSitePermissions();
   std::set<ContentSettingsType> expected_visible_permissions;

@@ -324,6 +324,7 @@
       <part file="security_interstitials_strings.grdp" />
       <part file="security_state_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
+      <part file="site_settings_strings.grdp" />
       <part file="sms_strings.grdp" />
       <part file="soda_strings.grdp" />
       <part file="ssl_errors_strings.grdp" />
