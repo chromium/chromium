@@ -3118,6 +3118,7 @@
 <translation id="4268670020635416342">إضافة اسم أو تصنيف مثل "حساب العمل" أو "حساب شخصي" أو "حساب للأطفال"</translation>
 <translation id="4270393598798225102">الإصدار <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">يتعذّر الوصول إلى هذه الصفحة.</translation>
+<translation id="4274604968379621964">حفظ المجموعة</translation>
 <translation id="4274667386947315930">بيانات تسجيل الدخول</translation>
 <translation id="4274673989874969668">عندما تغادر موقعًا إلكترونيًا، يواصل هذا الموقع الإلكتروني عادةً عملية المزامنة لإكمال المهام، مثل تحميل الصور أو إرسال رسالة محادثة.</translation>
 <translation id="4275291496240508082">الصوت عند بدء التشغيل</translation>
@@ -3570,6 +3571,7 @@
 <translation id="4770119228883592393">‏تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأسفل للاستجابة للطلب</translation>
 <translation id="4773112038801431077">‏ترقية نظام التشغيل Linux</translation>
 <translation id="477647109558161443">إنشاء اختصار على سطح المكتب</translation>
+<translation id="4776594120007763294">لإضافة صفحة وقراءتها لاحقًا، انقر على الزر.</translation>
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">يمكن للمستخدمين الآخرين لهذا الجهاز استخدام هذه الشبكة.</translation>
 <translation id="4777825441726637019">‏متجر Play</translation>
@@ -3655,6 +3657,7 @@
 <translation id="4864805589453749318">اختَر أحد الوالدَين الذي يمنح الإذن لإضافة حساب مؤسسة تعليمية.</translation>
 <translation id="486635084936119914">فتح أنواع معينة من الملفات تلقائيًا بعد التنزيل</translation>
 <translation id="4868281708609571334">‏تدريب "مساعد Google" للتعرّف على صوت <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="4868284252360267853">‏مربّع الحوار هذا ليس محل التركيز حاليًا. اضغط على Command+Shift+A لجعل مربّع الحوار هذا محل التركيز.</translation>
 <translation id="48704129375571883">إضافة ميزات إضافية</translation>
 <translation id="4870758487381879312">إدخال كلمة المرور التي قدمها المشرف للحصول على معلومات الضبط</translation>
 <translation id="4870903493621965035">ليست هناك أجهزة مقترنة</translation>
@@ -4228,6 +4231,7 @@
 <translation id="5496730470963166430">المواقع الإلكترونية التي لا يُسمح لها بإرسال النوافذ المنبثقة أو استخدام عمليات إعادة التوجيه</translation>
 <translation id="5497251278400702716">هذا الملف</translation>
 <translation id="5498967291577176373">تساعدك الاقتراحات المضمّنة لاسمك أو عنوانك أو رقم هاتفك على الكتابة بشكلٍ أسرع.</translation>
+<translation id="5499211612787418966">‏مربّع الحوار هذا ليس محل التركيز حاليًا. اضغط على Alt+Shift+A لجعل مربّع الحوار هذا محل التركيز.</translation>
 <translation id="5499313591153584299">قد يلحق هذا الملف الضرر بجهاز الكمبيوتر.</translation>
 <translation id="5499453227627332024">‏هناك ترقية متاحة لحاوية نظام التشغيل Linux. يمكنك أيضًا الترقية لاحقًا من تطبيق "الإعدادات".</translation>
 <translation id="549957179819296104">رمز جديد</translation>
@@ -5612,6 +5616,7 @@
 <translation id="7005496624875927304">أذونات إضافية</translation>
 <translation id="7005812687360380971">الإخفاق</translation>
 <translation id="7005848115657603926">نطاق صفحة غير صالح، استخدم <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="7006438259896942210">هذا الحساب (<ph name="USER_EMAIL_ADDRESS" />) يخضع لإدارة <ph name="PROFILE_NAME" /></translation>
 <translation id="700651317925502808">هل تريد إعادة ضبط الإعدادات؟</translation>
 <translation id="7006634003215061422">الهامش السفلي</translation>
 <translation id="7007648447224463482">فتح الكل في نافذة جديدة</translation>
@@ -6951,6 +6956,7 @@
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8425492902634685834">التثبيت على شريط المهام</translation>
 <translation id="8425768983279799676">يمكنك استخدام رقم تعريفك الشخصي لفتح قفل جهازك.</translation>
+<translation id="8426111352542548860">حفظ المجموعة</translation>
 <translation id="8426713856918551002">جارٍ التفعيل</translation>
 <translation id="8427213022735114808">‏ترسل ميزة "الإملاء" صوتك إلى Google للسماح بالكتابة بالصوت في أي حقل نصي.</translation>
 <translation id="8427292751741042100">مضمن في أي مضيف</translation>
@@ -7548,6 +7554,7 @@
 <translation id="9042893549633094279">الخصوصية والأمان</translation>
 <translation id="904451693890288097">يُرجى إدخال مفتاح المرور لـ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">تعذّر الاتصال بالشبكة: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">تم نقل قائمة القراءة إلى اللوحة الجانبية الجديدة. جرِّبها الآن.</translation>
 <translation id="9045430190527754450">‏يتم إرسال عنوان ويب الصفحة التي تحاول الوصول إليها إلى Google.</translation>
 <translation id="9048745018038487540">اختيار كل الخطوط</translation>
 <translation id="9050666287014529139">عبارة المرور</translation>

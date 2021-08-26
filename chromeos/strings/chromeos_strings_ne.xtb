@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
+<translation id="4521826082652183069">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो</translation>
 <translation id="4536864596629708641">IP कन्फिगुरेसन</translation>
 <translation id="4548483925627140043">सिग्नल फेला परेन</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ब्याट्री</translation>
@@ -362,6 +363,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
+<translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>

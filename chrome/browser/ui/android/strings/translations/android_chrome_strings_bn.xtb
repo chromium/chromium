@@ -137,6 +137,7 @@
 <translation id="1933845786846280168">নির্বাচিত ট্যাবগুলি</translation>
 <translation id="1943432128510653496">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
+<translation id="1959679933317802873">কন্টেন্টের জন্য অপেক্ষা করা হচ্ছে</translation>
 <translation id="1960290143419248813">Android-এর এই ভার্সনে Chrome আপডেট করা আর সম্ভব নয়</translation>
 <translation id="1963976881984600709">স্ট্যান্ডার্ড সুরক্ষা</translation>
 <translation id="1966710179511230534">অনুগ্রহ করে আমার সাইন-ইন বিবরণ আপডেট করুন।</translation>
@@ -309,6 +310,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> স্টোরেজ</translation>
 <translation id="2932222164150889403">আপনার কীবোর্ড পরিবর্তন হবে না</translation>
 <translation id="2942036813789421260">প্রিভিউ ট্যাব বন্ধ করা আছে</translation>
+<translation id="2946420957526726953">অন্য ডিভাইসে কানেক্ট করার জন্য Chrome আপডেট করা হচ্ছে</translation>
 <translation id="2956410042958133412">এই অ্যাকাউন্টটি <ph name="PARENT_NAME_1" /> এবং <ph name="PARENT_NAME_2" /> দ্বারা পরিচালিত হয়৷</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
 <translation id="2961210776189273067">সম্বোধন</translation>
@@ -617,6 +619,7 @@
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="488187801263602086">ফাইলটির আবার নাম দিন</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
+<translation id="4905823827770127520">পৃষ্ঠাতে লিঙ্ক যোগ করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4910889077668685004">পেমেন্ট অ্যাপ্লিকেশান</translation>
 <translation id="4912413785358399818">ট্যাব সরান</translation>

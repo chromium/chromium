@@ -163,6 +163,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1166583374608765787">Hlola isibuyekezo segama</translation>
 <translation id="1166596238782048887">I-<ph name="TAB_TITLE" /> ingeye-<ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ivuleka ngo-<ph name="TIME_REMAINING" />...</translation>
+<translation id="1169435433292653700">I-<ph name="FILE_NAME" /> inedatha ezwelayo noma eyingozi. Umlawuli wakho uthi: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="1170288591054440704">Buza uma isayithi lifuna ukusebenzisa amafonti afakwe kudivayisi yakho</translation>
 <translation id="1171135284592304528">Gqamisa into ngokugxila kwekhibhodi uma ishintsha</translation>
 <translation id="1171515578268894665">I-<ph name="ORIGIN" /> ifuna ukuxhumeka kudivayisi ye-HID</translation>
@@ -193,6 +194,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1195447618553298278">Iphutha elingaziwa.</translation>
 <translation id="1195558154361252544">Izaziso zivinjelwe ngokuzenzakalela kuwo wonke amasayithi ngaphandle kwalawo ovavumelayo</translation>
 <translation id="1197088940767939838">Olintshi</translation>
+<translation id="1197935538609051549">Yenza kungasebenzi</translation>
 <translation id="1197979282329025000">Kuvele iphutha ngenkathi ithola amakhono we-phrinta ye-<ph name="PRINTER_NAME" />. Le phrinta ayikwazanga ukubhaliswa ne-<ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Sula konke</translation>
 <translation id="1199814941632954229">Izitifiketi zinikezwa la maphrofayela wesitifikethi</translation>
@@ -729,6 +731,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1744108098763830590">ikhasi elingemuva</translation>
 <translation id="1745732479023874451">Phatha oxhumana nabo</translation>
 <translation id="1748563609363301860">Ungalondoloza le phasiwedi ku-akhawunti yakho ye-Google noma kule divayisi kuphela</translation>
+<translation id="1750048572964661931">Setha iphinikhodi noma iphasiwedi kule Chromebook ukuze uvikele ama-app wefoni yakho.</translation>
 <translation id="1750172676754093297">Ukhiye wakho wokufakazela ubuqiniso awukwazi ukugcina izigxivizo zeminwe</translation>
 <translation id="1751249301761991853">Okomuntu siqu</translation>
 <translation id="1751262127955453661">I-<ph name="ORIGIN" /> izokwazi ukuhlela amafayela ku-<ph name="FOLDERNAME" /> kuze kube yilapho uvala wonke amathebhu wale sayithi</translation>
@@ -5482,6 +5485,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6853388645642883916">Isibuyekezi silele</translation>
 <translation id="68541483639528434">Vala amanye amathebhu</translation>
 <translation id="6855892664589459354">Ukwenza ikhophi yasenqolobaneni futhi ubuyisele i-Crostini</translation>
+<translation id="6856210255562079267">Ayikwazanga ukuvula i-App</translation>
 <translation id="6856348640027512653">Ayivumelekile ukusebenzisa amadivayisi wento engekho ngokoqobo noma idatha</translation>
 <translation id="6856623341093082836">Setha futhi ulungise ukuqonda kwesikrini sakho esithintwayo</translation>
 <translation id="6856850379840757744">Lapho ivuliwe, zonke izaziso zizothuliswa</translation>
@@ -5826,6 +5830,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7250616558727237648">Idivayisi owabelana nayo ayisabelanga. Sicela uzame futhi.</translation>
 <translation id="725109152065019550">Uxolo, umlawuli wakho ukhubaze isitoreji sangaphandle ku-akhawunti yakho.</translation>
 <translation id="7251346854160851420">Isithombe sangemuva esizenzakalelayo</translation>
+<translation id="7251635775446614726">Umlawuli wakho uthi: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7251979364707973467">I-<ph name="WEBSITE" /> inikeze ukhiye wakho wokuqinisekisa ubunikazi futhi ifuna ukufunda inombolo ye-ID yayo. Isayithi lizokwazi ngqo ukuthi yimuphi ukhiye wokuqinisekisa ubunikazi owusebenzisayo.</translation>
 <translation id="7253521419891527137">&amp;Funda kabanzi</translation>
 <translation id="7254951428499890870">Ingabe uqinisekile ukuthi ufuna ukuqalisa i-"<ph name="APP_NAME" />" kumodi yokuxilonga?</translation>

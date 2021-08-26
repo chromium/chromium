@@ -137,6 +137,7 @@
 <translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
 <translation id="1943432128510653496">पासवर्डहरू संग्रह गर्नुहोस्</translation>
 <translation id="1952172573699511566">सम्भव भए सम्म वेबसाइटहरूले तपाईंको रुचाइएको भाषामा पाठ देखाउनेछ।</translation>
+<translation id="1959679933317802873">सामग्री लोड गरिँदै छ</translation>
 <translation id="1960290143419248813">Chrome का अद्यावधिकहरू उपलब्ध गराउने सुविधा Android को यो संस्करणमा अब उप्रान्त समर्थित छैन</translation>
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
 <translation id="1966710179511230534">कृपया तपाईंको साइन इन विवरण अपडेट गर्नुहोस्।</translation>
@@ -309,6 +310,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> को भण्डारण</translation>
 <translation id="2932222164150889403">तपाईंको किबोर्ड परिवर्तन हुने छैन</translation>
 <translation id="2942036813789421260">पूर्वावलोकन ट्याब बन्द छ</translation>
+<translation id="2946420957526726953">तपाईंको फोन अन्य डिभाइससँग कनेक्ट गर्न Chrome अपडेट गरिँदै छ</translation>
 <translation id="2956410042958133412">यो खाता <ph name="PARENT_NAME_1" /> र <ph name="PARENT_NAME_2" /> द्वारा व्यवस्थित गरिएको छ।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
 <translation id="2961210776189273067">सम्बोधन</translation>
@@ -614,6 +616,7 @@
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="488187801263602086">फाइलको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="4885273946141277891">असमर्थित संख्याका Chrome दृष्टान्तहरू।</translation>
+<translation id="4905823827770127520">यो पेजको लिंक समावेश गर्नुहोस्</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4912413785358399818">ट्याब सार्नुहोस्</translation>

@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">अन छ</translation>
 <translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> वटा डिभाइस</translation>
 <translation id="1654477262762802994">आवाजमार्फत गरिने क्वेरी सुरु गर्नुहोस्</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; सहायकमा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="1667964833127753507">'तटस्थ रङ' मोडमा वालपेपरबाट निकालिएका रङ्गहरू प्रयोग गरिँदैन। बरु यो मोडमा तटस्थ रङ्गहरू मिसाएर बनाइएको हल्का वा गाढा प्रकारको रङ प्रयोग गरिन्छ।</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> वटा डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="3552189655002856821">Wi-Fi अफ गरियो</translation>
 <translation id="3560866052109807830">मार्कर ड्रइङ टुलहरू</translation>
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
@@ -404,6 +406,7 @@
 <translation id="4129129681837227511">आफ्नो लक स्क्रिनमा सूचनाहरू हेर्नका लागि सेटिङहरू परिवर्तन गर्न अनलक गर्नुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4157822100366708405">अँध्यारो थिमसम्बन्धी सेटिङ</translation>
+<translation id="4170634509222878053"><ph name="TITLE" />, <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4195877955194704651">स्वतः क्लिक गर्ने बटन</translation>
 <translation id="4197790712631116042">अफ</translation>
@@ -497,6 +500,7 @@
 <translation id="4774338217796918551">भोलि <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
 <translation id="4778095205580009397">Google सहायक डेमो सत्रमा उपलब्ध छैन।</translation>
+<translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="479989351350248267">खोज्नुहोस्</translation>
 <translation id="4804818685124855865">जडान विच्छेद</translation>
 <translation id="4814539958450445987">लग इन स्क्रिन</translation>
@@ -555,6 +559,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="523505283826916779">पहुँचक्षमता सेटिङहरू</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ, <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ</translation>
 <translation id="5260676007519551770">डेस्क ४</translation>
 <translation id="5283198616748585639">१ मिनट थप्नुहोस्</translation>
 <translation id="528468243742722775">समाप्त</translation>
@@ -767,6 +772,7 @@
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
 <translation id="7007983414944123363">तपाईंको PIN वा पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> मा फर्केर आउनुहोस्।</translation>
 <translation id="70168403932084660">डेस्क ६</translation>
 <translation id="7025533177575372252">तपाईंको <ph name="DEVICE_NAME" /> लाई आफ्नो फोनसँग जोड्नुहोस्</translation>

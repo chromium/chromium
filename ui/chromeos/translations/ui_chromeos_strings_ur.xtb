@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />احتیاط:<ph name="END_BOLD" />  یہ فائلیں عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">پینگوئن</translation>
 <translation id="183183971458492120">معلومات لوڈ ہو رہی ہے…</translation>
+<translation id="1834290891154666894">موضوع کے متبادل نام سے مماثل اندراج غلط ہے</translation>
 <translation id="1838709767668011582">‏Google سائٹ</translation>
 <translation id="1844692022597038441">یہ فائل آف لائن دستیاب نہیں ہے۔</translation>
 <translation id="1853795129690976061">‏اس فولڈر کا اشتراک Linux کے ساتھ کر دیا گیا ہے</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">رسائی روک دی گئی</translation>
 <translation id="6356685157277930264">فائلوں کے تاثرات کی ونڈو</translation>
 <translation id="6358884629796491903">ڈریگن</translation>
+<translation id="636254897931573416">ڈومین لاحقہ سے مماثل قدر غلط ہے</translation>
 <translation id="6367976544441405720">وین</translation>
 <translation id="637062427944097960">یہ فائل ایک مختلف ڈیسک ٹاپ پر کھولی گئی ہے۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر منتقل ہوں۔</translation>
 <translation id="6394388407447716302">صرف پڑھنے کے لیے</translation>

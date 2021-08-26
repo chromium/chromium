@@ -137,6 +137,7 @@
 <translation id="1933845786846280168">Pestana seleccionada</translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
+<translation id="1959679933317802873">Á espera de contido</translation>
 <translation id="1960290143419248813">As actualizacións de Chrome xa non son compatibles con esta versión de Android</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1966710179511230534">Actualiza a túa información de inicio de sesión.</translation>
@@ -309,6 +310,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2932150158123903946">Almacenamento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">O teclado non cambiará</translation>
 <translation id="2942036813789421260">A pestana de vista previa está pechada</translation>
+<translation id="2946420957526726953">Actualizando Chrome para conectarse a outros dispositivos</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" /> xestionan esta conta.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> páxina sen ler}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páxinas sen ler}}</translation>
 <translation id="2961210776189273067">Tratamento</translation>
@@ -615,6 +617,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488187801263602086">Cambia o nome do ficheiro</translation>
 <translation id="4885273946141277891">Non se admite este número de instancias de Chrome.</translation>
+<translation id="4905823827770127520">Incluír unha ligazón á páxina</translation>
 <translation id="4908869848243824489">Discover, de Google</translation>
 <translation id="4910889077668685004">Aplicacións de pagos</translation>
 <translation id="4912413785358399818">Mover pestana</translation>

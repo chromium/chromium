@@ -137,6 +137,7 @@
 <translation id="1933845786846280168">Ausgewählter Tab</translation>
 <translation id="1943432128510653496">Passwörter speichern</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in Ihrer bevorzugten Sprache angezeigt.</translation>
+<translation id="1959679933317802873">Inhalte werden abgerufen</translation>
 <translation id="1960290143419248813">Chrome-Updates werden für diese Version von Android nicht mehr unterstützt</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
 <translation id="1966710179511230534">Bitte aktualisieren Sie Ihre Anmeldeinformationen.</translation>
@@ -309,6 +310,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-Speicher</translation>
 <translation id="2932222164150889403">Deine Tastaturbelegung ändert sich nicht</translation>
 <translation id="2942036813789421260">Vorschau-Tab ist geschlossen</translation>
+<translation id="2946420957526726953">Chrome wird aktualisiert, um eine Verbindung mit anderen Geräten herzustellen</translation>
 <translation id="2956410042958133412">Dieses Konto wird von <ph name="PARENT_NAME_1" /> und <ph name="PARENT_NAME_2" /> verwaltet.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ungelesene Seite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ungelesene Seiten}}</translation>
 <translation id="2961210776189273067">Anrede</translation>
@@ -615,6 +617,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="488187801263602086">Datei umbenennen</translation>
 <translation id="4885273946141277891">Nicht unterstützte Anzahl von Chrome-Instanzen</translation>
+<translation id="4905823827770127520">Link zur Seite hinzufügen</translation>
 <translation id="4908869848243824489">Discover von Google</translation>
 <translation id="4910889077668685004">Zahlungs-Apps</translation>
 <translation id="4912413785358399818">Tab verschieben</translation>

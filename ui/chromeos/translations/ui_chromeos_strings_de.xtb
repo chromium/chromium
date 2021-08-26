@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Vorsicht:<ph name="END_BOLD" />Hierbei handelt es sich um Temporärdateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Informationen werden geladen…</translation>
+<translation id="1834290891154666894">Ungültige Übereinstimmung für den alternativen Betreffnamen</translation>
 <translation id="1838709767668011582">Google Sites-Website</translation>
 <translation id="1844692022597038441">Diese Datei ist offline nicht verfügbar.</translation>
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Zugriff eingeschränkt</translation>
 <translation id="6356685157277930264">Feedbackfenster für "Meine Dateien"</translation>
 <translation id="6358884629796491903">Drache</translation>
+<translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
 <translation id="6367976544441405720">Transporter</translation>
 <translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
 <translation id="6394388407447716302">Schreibgeschützt</translation>

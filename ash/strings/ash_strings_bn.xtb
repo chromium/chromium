@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistant-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" />টি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="3552189655002856821">ওয়াই-ফাই বন্ধ করা আছে</translation>
 <translation id="3560866052109807830">মার্কার ড্রয়িং টুল</translation>
 <translation id="3563775809269155755">হটস্পট চালু করুন</translation>
@@ -404,6 +406,7 @@
 <translation id="4129129681837227511">আপনার লক স্ক্রিনে বিজ্ঞপ্তি দেখার জন্য সেটিংস পরিবর্তন করতে আনলক করুন</translation>
 <translation id="4146833061457621061">মিউজিক চালান</translation>
 <translation id="4157822100366708405">ডার্ক থিম সেটিংস</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4195877955194704651">অটোমেটিক ক্লিক বোতাম</translation>
 <translation id="4197790712631116042">বন্ধ করা আছে</translation>
@@ -497,6 +500,7 @@
 <translation id="4774338217796918551">আগামীকাল <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
 <translation id="4778095205580009397">একটি ডেমো সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
+<translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4814539958450445987">লগ-ইন স্ক্রিন</translation>
@@ -555,6 +559,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে, ব্যাটারি চার্জ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">ডেস্ক ৪</translation>
 <translation id="5283198616748585639">১ মিনিট যোগ করুন</translation>
 <translation id="528468243742722775">শেষ</translation>
@@ -767,6 +772,7 @@
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="698231206551913481">একবার এই ব্যবহারকারীকে সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে।</translation>
 <translation id="7007983414944123363">আপনার পিন বা পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="70168403932084660">ডেস্ক ৬</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" />-কে আপনার ফোনের সাথে কানেক্ট করুন</translation>

@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">آن</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> آلات</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1655967159878494613">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ اسسٹنٹ میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3510164367642747937">ماؤس کا کرسر نمایاں کریں</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> آلات سے منسلک ہیں</translation>
 <translation id="3552189655002856821">‏Wi-Fi آف ہے</translation>
 <translation id="3560866052109807830">مارکر ڈرائنگ ٹولز</translation>
 <translation id="3563775809269155755">ہاٹ اسپاٹ فعال کریں</translation>
@@ -557,6 +559,7 @@
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="5260676007519551770">ڈیسک 4</translation>
 <translation id="5283198616748585639">1 منٹ شامل کریں</translation>
 <translation id="528468243742722775">اختتام</translation>
@@ -769,6 +772,7 @@
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="698231206551913481">اس صارف کو ہٹانے کے بعد اس صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
 <translation id="7007983414944123363">‏آپ کے PIN یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک ہے</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="70168403932084660">ڈیسک 6</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>

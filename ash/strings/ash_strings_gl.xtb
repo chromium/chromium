@@ -92,6 +92,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado no Asistente.</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
@@ -321,6 +322,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3560866052109807830">Ferramentas de debuxo (marcador)</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
@@ -405,6 +407,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4129129681837227511">Para ver notificacións na pantalla de bloqueo, desbloquea o dispositivo e cambia a opción de configuración correspondente</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4157822100366708405">Configuración do tema escuro</translation>
+<translation id="4170634509222878053"><ph name="TITLE" />: <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
 <translation id="4197790712631116042">Desactivado</translation>
@@ -498,6 +501,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>
+<translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4814539958450445987">Pantalla de inicio de sesión</translation>
@@ -556,6 +560,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
+<translation id="5253783950165989294">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"; <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5283198616748585639">Engadir 1 min</translation>
 <translation id="528468243742722775">Final</translation>
@@ -768,6 +773,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
 <translation id="7007983414944123363">Non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
+<translation id="7014684956566476813">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Volve á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Escritorio 6</translation>
 <translation id="7025533177575372252">Conecta o <ph name="DEVICE_NAME" /> co teu teléfono</translation>

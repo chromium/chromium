@@ -137,6 +137,7 @@
 <translation id="1933845786846280168">निवडलेला टॅब</translation>
 <translation id="1943432128510653496">पासवर्ड सेव्ह करा</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
+<translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
 <translation id="1960290143419248813">Android च्या या आवृत्तीसाठी Chrome अपडेटना सपोर्ट नाही</translation>
 <translation id="1963976881984600709">साधारण संरक्षण</translation>
 <translation id="1966710179511230534">कृपया साइन इन तपशील अपडेट करा.</translation>
@@ -309,6 +310,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> स्टोरेज</translation>
 <translation id="2932222164150889403">तुमचा कीबोर्ड बदलणार नाही</translation>
 <translation id="2942036813789421260">पूर्वावलोकन टॅब बंद आहे</translation>
+<translation id="2946420957526726953">इतर डिव्हाइसशी कनेक्ट करण्यासाठी Chrome अपडेट करत आहे</translation>
 <translation id="2956410042958133412">हे खाते <ph name="PARENT_NAME_1" /> आणि <ph name="PARENT_NAME_2" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
@@ -615,6 +617,7 @@
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="488187801263602086">फाइलला पुन्हा नाव द्या</translation>
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
+<translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
 <translation id="4908869848243824489">Google चे Discover</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4912413785358399818">टॅब हलवा</translation>

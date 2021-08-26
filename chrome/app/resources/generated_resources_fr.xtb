@@ -3116,6 +3116,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4268670020635416342">Ajoutez un nom ou un libellé comme "Travail", "Personnel" ou "Enfants"</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">Cette page est inaccessible</translation>
+<translation id="4274604968379621964">Enregistrer le groupe</translation>
 <translation id="4274667386947315930">Données de connexion</translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme télécharger des photos ou envoyer un message de chat</translation>
 <translation id="4275291496240508082">Son au démarrage</translation>
@@ -3568,6 +3569,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+Flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
+<translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3653,6 +3655,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'autorise à ajouter un compte scolaire.</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après leur téléchargement</translation>
 <translation id="4868281708609571334">Apprendre à l'Assistant Google à reconnaître la voix de <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="4868284252360267853">Cette boîte de dialogue n'est actuellement pas sélectionnée. Appuyez sur Commande+Maj+Option A pour sélectionner cette boîte de dialogue.</translation>
 <translation id="48704129375571883">Ajouter des fonctionnalités</translation>
 <translation id="4870758487381879312">Saisissez le mot de passe fourni par l'administrateur pour accéder aux informations de configuration</translation>
 <translation id="4870903493621965035">Aucun appareil associé</translation>
@@ -4226,6 +4229,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5496730470963166430">Non autorisé à afficher des pop-ups ni à utiliser des redirections</translation>
 <translation id="5497251278400702716">Ce fichier</translation>
 <translation id="5498967291577176373">Accélérez la saisie de texte grâce aux suggestions intégrées qui s'affichent pour votre nom, votre adresse ou votre numéro de téléphone</translation>
+<translation id="5499211612787418966">Cette boîte de dialogue n'est actuellement pas sélectionnée. Appuyez sur Alt+Maj A pour sélectionner cette boîte de dialogue.</translation>
 <translation id="5499313591153584299">Ce fichier peut être néfaste pour votre ordinateur.</translation>
 <translation id="5499453227627332024">Une mise à niveau est disponible pour le conteneur Linux. Sachez que vous pouvez également effectuer cette mise à niveau plus tard depuis l'application "Paramètres".</translation>
 <translation id="549957179819296104">Nouvelle icône</translation>
@@ -5611,6 +5615,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7005496624875927304">Autorisations supplémentaires</translation>
 <translation id="7005812687360380971">Échec</translation>
 <translation id="7005848115657603926">Plage de pages non valide, veuillez utiliser <ph name="EXAMPLE_PAGE_RANGE" />.</translation>
+<translation id="7006438259896942210">Le compte (<ph name="USER_EMAIL_ADDRESS" />) est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="700651317925502808">Réinitialiser les paramètres ?</translation>
 <translation id="7006634003215061422">Marge inférieure</translation>
 <translation id="7007648447224463482">Tout ouvrir dans une nouvelle fenêtre</translation>
@@ -6950,6 +6955,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8425492902634685834">Épingler sur la barre des tâches</translation>
 <translation id="8425768983279799676">Vous pouvez utiliser votre code pour déverrouiller votre appareil.</translation>
+<translation id="8426111352542548860">Enregistrer le groupe</translation>
 <translation id="8426713856918551002">Activation</translation>
 <translation id="8427213022735114808">La fonctionnalité de dictée transmet votre voix à Google et permet d'utiliser ainsi la saisie vocale dans n'importe quelle zone de texte.</translation>
 <translation id="8427292751741042100">intégré sur n'importe quel hôte</translation>
@@ -7544,6 +7550,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="904451693890288097">Veuillez saisir la clé d'accès de "<ph name="DEVICE_NAME" />" :</translation>
 <translation id="9044646465488564462">Échec de la connexion au réseau : <ph name="DETAILS" />.</translation>
+<translation id="9045160989383249058">Votre liste de lecture a été déplacée vers le nouveau panneau latéral. Faites un essai.</translation>
 <translation id="9045430190527754450">Envoie l'adresse Web de la page que vous essayez d'ouvrir à Google</translation>
 <translation id="9048745018038487540">Sélectionner toutes les polices</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>

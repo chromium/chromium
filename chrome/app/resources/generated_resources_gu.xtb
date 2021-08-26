@@ -3110,6 +3110,7 @@
 <translation id="4268670020635416342">નામ અથવા લેબલ ઉમેરો, જેમ કે ઑફિસ, વ્યક્તિગત અથવા બાળકો</translation>
 <translation id="4270393598798225102">વર્ઝન <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">આ પેજ પર પહોંચી શકાતું નથી</translation>
+<translation id="4274604968379621964">ગ્રૂપ સાચવો</translation>
 <translation id="4274667386947315930">સાઇન-ઇન ડેટા</translation>
 <translation id="4274673989874969668">તમે કોઈ સાઇટમાંથી બહાર નીકળી જાઓ, પછી તે ફોટા અપલોડ કરવા કે ચૅટ સંદેશ મોકલવા જેવા કાર્યો પૂર્ણ કરવા માટે સિંક કરવાનું ચાલુ રાખી શકે છે</translation>
 <translation id="4275291496240508082">શરૂ થવાનો સાઉન્ડ</translation>
@@ -3562,6 +3563,7 @@
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4773112038801431077">Linux અપગ્રેડ કરો</translation>
 <translation id="477647109558161443">ડેસ્કટૉપ શૉર્ટકટ બનાવો</translation>
+<translation id="4776594120007763294">થોડા સમય પછી વાંચી શકવા કોઈ પેજને ઉમેરવા માટે, આ બટન ક્લિક કરો</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777458362738635055">આ ડિવાઇસના અન્ય વપરાશકર્તાઓ આ નેટવર્કનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4777825441726637019">Play સ્ટોર</translation>
@@ -3647,6 +3649,7 @@
 <translation id="4864805589453749318">સ્કૂલ એકાઉન્ટ ઉમેરવાની પરવાનગી આપી રહ્યાં છે તે માતાપિતાને પસંદ કરો.</translation>
 <translation id="486635084936119914">ડાઉનલોડ કર્યા પછી કેટલાક ફાઇલ પ્રકારોને ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="4868281708609571334">Google Assistantને <ph name="SUPERVISED_USER_NAME" />નો વૉઇસ ઓળખતા શીખવો</translation>
+<translation id="4868284252360267853">હાલમાં આ સંવાદ ફોકસમાં નથી. આ સંવાદને ફોકસમાં લાવવા માટે Command-Shift-Option A દબાવો.</translation>
 <translation id="48704129375571883">વધારાની સુવિધાઓ ઉમેરો</translation>
 <translation id="4870758487381879312">ગોઠવણીની માહિતી મેળવવા માટે, વ્યવસ્થાપક દ્વારા અપાયેલો પાસવર્ડ દાખલ કરો</translation>
 <translation id="4870903493621965035">કોઈ જોડી કરેલા ઉપકરણો નથી</translation>
@@ -4220,6 +4223,7 @@
 <translation id="5496730470963166430">પૉપ-અપ મોકલવા અથવા રીડાયરેક્ટનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="5497251278400702716">આ ફાઇલ</translation>
 <translation id="5498967291577176373">તમારા નામ, સરનામા કે ફોન નંબર માટેના ઇનલાઇન સૂચનો વડે વધુ ઝડપથી ટાઇપ કરો</translation>
+<translation id="5499211612787418966">હાલમાં આ સંવાદ ફોકસમાં નથી. આ સંવાદને ફોકસમાં લાવવા માટે Alt-Shift A દબાવો.</translation>
 <translation id="5499313591153584299">આ ફાઇલ તમારા કમ્પ્યુટર માટે હાનિકારક હોઇ શકે છે.</translation>
 <translation id="5499453227627332024">તમારા Linux Container માટે કોઈ અપગ્રેડ ઉપલબ્ધ છે. તમે થોડા સમય પછી સેટિંગ ઍપમાંથી પણ અપગ્રેડ કરી શકશો.</translation>
 <translation id="549957179819296104">નવું આઇકન</translation>
@@ -5605,6 +5609,7 @@ USB ડિવાઇસ</translation>
 <translation id="7005496624875927304">વધારાની પરવાનગીઓ</translation>
 <translation id="7005812687360380971">નિષ્ફળતા</translation>
 <translation id="7005848115657603926">અમાન્ય પૃષ્ઠ શ્રેણી, <ph name="EXAMPLE_PAGE_RANGE" /> નો ઉપયોગ કરો</translation>
+<translation id="7006438259896942210">આ (<ph name="USER_EMAIL_ADDRESS" />) એકાઉન્ટ <ph name="PROFILE_NAME" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="700651317925502808">શું સેટિંગ રીસેટ કરીએ?</translation>
 <translation id="7006634003215061422">નીચેનો હાસિયો</translation>
 <translation id="7007648447224463482">બધું નવી વિંડોમાં ખોલો</translation>
@@ -6937,6 +6942,7 @@ USB ડિવાઇસ</translation>
 <translation id="8425213833346101688">બદલો</translation>
 <translation id="8425492902634685834">ટાસ્કબારમાં પિન કરો</translation>
 <translation id="8425768983279799676">તમે તમારા ડિવાઇસને અનલૉક કરવા માટે તમારા પિનનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="8426111352542548860">ગ્રૂપ સાચવો</translation>
 <translation id="8426713856918551002">સક્ષમ કરી રહ્યાં છીએ</translation>
 <translation id="8427213022735114808">કોઈપણ ટેક્સ્ટ ફીલ્ડમાં અવાજ ટાઇપ કરવાને મંજૂરી આપવા માટે, શ્રુતલેખન Googleને તમારો અવાજ મોકલે છે.</translation>
 <translation id="8427292751741042100">કોઈ પણ હોસ્ટ પર એમ્બેડ કરેલ</translation>
@@ -7531,6 +7537,7 @@ USB ડિવાઇસ</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="904451693890288097">કૃપા કરીને "<ph name="DEVICE_NAME" />" માટે પાસકી દાખલ કરો:</translation>
 <translation id="9044646465488564462">નેટવર્કથી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">તમારી વાંચન સૂચિ બાજુની નવી પૅનલ પર ખસેડવામાં આવી છે. તેને અહીં અજમાવી જુઓ.</translation>
 <translation id="9045430190527754450">તમે જે Google સુધી પહોંચવાનો પ્રયાસ કરી રહ્યાં છો તે પેજનું વેબ ઍડ્રેસ મોકલે છે</translation>
 <translation id="9048745018038487540">બધા ફૉન્ટ પસંદ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>

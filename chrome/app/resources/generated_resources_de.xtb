@@ -161,6 +161,7 @@
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> enthält vertrauliche oder schädliche Daten. Ihr Administrator sagt „<ph name="CUSTOM_MESSAGE" />“.</translation>
 <translation id="1170288591054440704">Nachfragen, wenn eine Website Schriftarten verwenden möchte, die auf meinem Gerät installiert sind</translation>
 <translation id="1171135284592304528">Objekt mit Tastaturfokus bei Änderung hervorheben</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> möchte eine Verbindung mit einem HID-Gerät herstellen</translation>
@@ -190,6 +191,7 @@
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1195558154361252544">Benachrichtigungen werden automatisch für alle Websites blockiert, außer für diejenigen, die Sie zulassen</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1197935538609051549">Deaktivieren</translation>
 <translation id="1197979282329025000">Beim Abrufen der Druckerfunktionen für Drucker "<ph name="PRINTER_NAME" />" ist ein Fehler aufgetreten. Dieser Drucker konnte nicht mit <ph name="CLOUD_PRINT_NAME" /> registriert werden.</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
@@ -716,6 +718,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1744108098763830590">Hintergrundseite</translation>
 <translation id="1745732479023874451">Kontakte verwalten</translation>
 <translation id="1748563609363301860">Sie können dieses Passwort entweder in Ihrem Google-Konto oder nur auf diesem Gerät speichern</translation>
+<translation id="1750048572964661931">Sie können eine PIN oder ein Passwort für dieses Chromebook festlegen, um den unbefugten Zugriff auf die Apps Ihres Smartphones zu verhindern.</translation>
 <translation id="1750172676754093297">Auf Ihrem Sicherheitsschlüssel können keine Fingerabdrücke gespeichert werden</translation>
 <translation id="1751249301761991853">Personalisierung</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> kann dann Dateien im Ordner <ph name="FOLDERNAME" /> bearbeiten, solange Tabs dieser Website geöffnet sind</translation>
@@ -3109,6 +3112,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4268670020635416342">Fügen Sie einen Namen oder ein Label wie „Arbeit“, „Privat“ oder „Kinder“ hinzu</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">Die Seite ist nicht erreichbar</translation>
+<translation id="4274604968379621964">Gruppe speichern</translation>
 <translation id="4274667386947315930">Anmeldedaten</translation>
 <translation id="4274673989874969668">Wenn Sie eine Website verlassen, kann die Synchronisierung trotzdem fortgesetzt werden, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
 <translation id="4275291496240508082">Einschaltton</translation>
@@ -3561,6 +3565,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4770119228883592393">Berechtigung angefordert. Drücken Sie „⌘ + Option + Abwärtspfeil“, um zu reagieren.</translation>
 <translation id="4773112038801431077">Linux aktualisieren</translation>
 <translation id="477647109558161443">Desktopverknüpfung erstellen</translation>
+<translation id="4776594120007763294">Wenn Sie eine Seite zum späteren Lesen hinzufügen möchten, klicken Sie auf die Schaltfläche</translation>
 <translation id="4776917500594043016">Passwort für <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">Andere Nutzer dieses Geräts können dieses Netzwerk verwenden</translation>
 <translation id="4777825441726637019">Google Play Store</translation>
@@ -3646,6 +3651,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4868281708609571334">Google Assistant beibringen, die Stimme von <ph name="SUPERVISED_USER_NAME" /> zu erkennen</translation>
+<translation id="4868284252360267853">Dieses Dialogfeld ist aktuell nicht aktiv. Drücken Sie die Befehlstaste-Umschalt-Optionstaste-A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="48704129375571883">Zusätzliche Funktionen hinzufügen</translation>
 <translation id="4870758487381879312">Zum Abrufen von Konfigurationsinformationen das vom Administrator vergebene Passwort eingeben</translation>
 <translation id="4870903493621965035">Keine gekoppelten Geräte</translation>
@@ -4217,6 +4223,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5496730470963166430">Dürfen keine Pop-ups senden oder Weiterleitungen verwenden</translation>
 <translation id="5497251278400702716">Diese Datei</translation>
 <translation id="5498967291577176373">Mit Inline-Vorschlägen Namen, Adresse oder Telefonnummer noch schneller eingeben</translation>
+<translation id="5499211612787418966">Dieses Dialogfeld ist aktuell nicht aktiv. Drücken Sie ALT+Umschalttaste+A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="5499313591153584299">Diese Datei könnte schädlich für Ihren Computer sein.</translation>
 <translation id="5499453227627332024">Für Ihren Linux-Container ist ein Upgrade verfügbar. Sie können es auch später über die App "Einstellungen" ausführen.</translation>
 <translation id="549957179819296104">Neues Symbol</translation>
@@ -5456,6 +5463,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6853388645642883916">Updater im Ruhemodus</translation>
 <translation id="68541483639528434">Andere Tabs schließen</translation>
 <translation id="6855892664589459354">Crostini-Sicherung und ‑Wiederherstellung</translation>
+<translation id="6856210255562079267">Die App konnte nicht geöffnet werden</translation>
 <translation id="6856348640027512653">Dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="6856623341093082836">Touchscreen einrichten und Genauigkeit anpassen</translation>
 <translation id="6856850379840757744">Bei Aktivierung der Funktion werden alle Benachrichtigungen stummgeschaltet</translation>
@@ -5600,6 +5608,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7005496624875927304">Zusätzliche Berechtigungen</translation>
 <translation id="7005812687360380971">Fehler</translation>
 <translation id="7005848115657603926">Ungültiger Seitenbereich, verwenden Sie <ph name="EXAMPLE_PAGE_RANGE" />.</translation>
+<translation id="7006438259896942210">Dieses Konto (<ph name="USER_EMAIL_ADDRESS" />) wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="700651317925502808">Einstellungen zurücksetzen?</translation>
 <translation id="7006634003215061422">Unterer Rand</translation>
 <translation id="7007648447224463482">Alle in neuem Fenster öffnen</translation>
@@ -5799,6 +5808,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7250616558727237648">Das Gerät, mit dem Sie Dateien teilen möchten, hat nicht reagiert. Versuchen Sie es noch einmal.</translation>
 <translation id="725109152065019550">Externe Speichermedien wurden für Ihr Konto vom Administrator deaktiviert.</translation>
 <translation id="7251346854160851420">Standardhintergrund</translation>
+<translation id="7251635775446614726">Ihr Administrator sagt „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> hat Ihren Sicherheitsschlüssel ausgestellt und möchte seine ID-Nummer wissen. Die Website weiß dann genau, welchen Sicherheitsschlüssel Sie verwenden.</translation>
 <translation id="7253521419891527137">&amp;Weitere Informationen</translation>
 <translation id="7254951428499890870">Soll "<ph name="APP_NAME" />" wirklich im Diagnosemodus gestartet werden?</translation>
@@ -6937,6 +6947,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8425492902634685834">An Taskleiste anpinnen</translation>
 <translation id="8425768983279799676">Mit Ihrer PIN können Sie Ihr Gerät entsperren.</translation>
+<translation id="8426111352542548860">Gruppe speichern</translation>
 <translation id="8426713856918551002">Wird aktiviert</translation>
 <translation id="8427213022735114808">Die Diktierfunktion sendet Ihre Spracheingaben an Google, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>
 <translation id="8427292751741042100">auf beliebigem Host eingebettet</translation>
@@ -7530,6 +7541,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="904451693890288097">Geben Sie bitte den Zugangscode für "<ph name="DEVICE_NAME" />" ein:</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">Ihre Leseliste wurde in die neue Seitenliste verschoben. Hier können Sie die Funktion testen.</translation>
 <translation id="9045430190527754450">Die Webadresse der Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="9048745018038487540">Alle Schriftarten auswählen</translation>
 <translation id="9050666287014529139">Passphrase</translation>

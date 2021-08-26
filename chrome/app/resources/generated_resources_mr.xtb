@@ -163,6 +163,7 @@
 <translation id="1166583374608765787">अपडेट केलेल्या नावाचे पुनरावलोकन करा</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> हा <ph name="DESK_TITLE" /> डेस्‍कशी कनेक्ट केलेला आहे</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मध्ये उघडत आहे...</translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> मध्ये संवेदनशील किंवा धोकादायक डेटा आहे. तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1170288591054440704">एखाद्या साइटला तुमच्‍या डिव्‍हाइसमध्ये इंस्टॉल केलेले फाँट वापरायचे असतील तेव्‍हा विचारा</translation>
 <translation id="1171135284592304528">ऑब्जेक्ट बदलते तेव्हा ते कीबोर्ड फोकससह हायलाइट करा</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ला HID डिव्हाइसशी कनेक्ट करायचे आहे</translation>
@@ -192,6 +193,7 @@
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1195558154361252544">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी सूचना आपोआप ब्लॉक केल्या आहेत</translation>
 <translation id="1197088940767939838">नारिंगी</translation>
+<translation id="1197935538609051549">डीॲक्टिव्हेट करा</translation>
 <translation id="1197979282329025000"><ph name="PRINTER_NAME" /> प्रिंटरसाठी प्रिंटर क्षमता पुन्हा मिळवताना करताना एरर आली. हा प्रिंटर <ph name="CLOUD_PRINT_NAME" /> सह नोंदणीकृत असू शकत नाही.</translation>
 <translation id="119944043368869598">सर्व साफ करा</translation>
 <translation id="1199814941632954229">या सर्टिफिकेट प्रोफाइलसाठी सर्टिफिकेटची तरतूद केली जात आहे</translation>
@@ -729,6 +731,7 @@
 <translation id="1744108098763830590">पार्श्वभूमी पृष्ठ</translation>
 <translation id="1745732479023874451">संपर्क व्यवस्थापित करा</translation>
 <translation id="1748563609363301860">तुम्ही हा पासवर्ड तुमच्या Google खाते मध्ये किंवा फक्त या डिव्हाइसवर सेव्ह करू शकता</translation>
+<translation id="1750048572964661931">तुमच्या फोनच्या अ‍ॅप्सचा अ‍ॅक्सेस संरक्षित करण्यासाठी या Chromebook वर पिन किंवा पासवर्ड सेट करा.</translation>
 <translation id="1750172676754093297">तुमची सिक्युरिटी की फिंगरप्रिंट स्टोअर करू शकत नाही</translation>
 <translation id="1751249301761991853">वैयक्तिक</translation>
 <translation id="1751262127955453661">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल संपादित करता येतील</translation>
@@ -3124,6 +3127,7 @@
 <translation id="4268670020635416342">नाव किंवा ऑफिस, वैयक्तिक अथवा मूल अशी लेबले जोडा</translation>
 <translation id="4270393598798225102">आवृत्ती <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">या पेजवर पोहोचू शकत नाही</translation>
+<translation id="4274604968379621964">गट सेव्ह करा</translation>
 <translation id="4274667386947315930">साइन-इन डेटा</translation>
 <translation id="4274673989874969668">तुम्ही साइट बंद केल्यानंतर ती फोटो अपलोड करणे किंवा चॅट मेसेज पाठवणे यांसारख्या टास्क पूर्ण करण्यासाठी सिंक करणे सुरू ठेवू शकते</translation>
 <translation id="4275291496240508082">स्टार्टअप आवाज</translation>
@@ -3577,6 +3581,7 @@
 <translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो दाबा</translation>
 <translation id="4773112038801431077">Linux अपग्रेड करा</translation>
 <translation id="477647109558161443">डेस्कटॉप शॉर्टकट तयार करा</translation>
+<translation id="4776594120007763294">नंतर वाचण्यासाठी पेज जोडण्याकरिता, बटणवर क्लिक करा</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> साठी पासवर्ड</translation>
 <translation id="4777458362738635055">या डिव्हाइसचे इतर वापरकर्ते हे नेटवर्क वापरू शकतात</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
@@ -3662,6 +3667,7 @@
 <translation id="4864805589453749318">शाळा खाते जोडण्याची परवानगी देणार असलेले पालक निवडा.</translation>
 <translation id="486635084936119914">डाउनलोड केल्यानंतर काही फाईल प्रकार स्वयंचलितपणे उघडा</translation>
 <translation id="4868281708609571334">Google Assistant ला <ph name="SUPERVISED_USER_NAME" /> चा आवाज ओळखण्यास शिकवा</translation>
+<translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A दाबा.</translation>
 <translation id="48704129375571883">अतिरिक्त वैशिष्ट्ये जोडा</translation>
 <translation id="4870758487381879312">कॉंफिगरेशन माहिती मिळवण्यासाठी ॲडमिनने पुरवलेला पासवर्ड एंटर करा</translation>
 <translation id="4870903493621965035">कोणतेही जोडणी केलेले डिव्हाइस नाहीत</translation>
@@ -4235,6 +4241,7 @@
 <translation id="5496730470963166430">पॉप-अप पाठवण्याची आणि रीडिरेक्‍ट वापरण्याची अनुमती नाही</translation>
 <translation id="5497251278400702716">ही फाइल</translation>
 <translation id="5498967291577176373">तुमचे नाव, पत्ता किंवा फोन नंबरसाठी इनलाइन सूचनांसह जलदपणे लिहा</translation>
+<translation id="5499211612787418966">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Alt-Shift A दाबा.</translation>
 <translation id="5499313591153584299">ही फाइल तुमच्या कॉंप्युटरसाठी हानिकारक ठरू शकते.</translation>
 <translation id="5499453227627332024">तुमच्या Linux कंटेनर साठी अपग्रेड उपलब्ध आहे. सेटिंग्ज अ‍ॅपमधून तुम्ही नंतरदेखील अपग्रेड करू शकता.</translation>
 <translation id="549957179819296104">नवीन आयकन</translation>
@@ -5475,6 +5482,7 @@
 <translation id="6853388645642883916">अद्यतनकर्ता निष्क्रिय आहे</translation>
 <translation id="68541483639528434">अन्य टॅब बंद करा</translation>
 <translation id="6855892664589459354">Crostini बॅकअप आणि रिस्टोअर</translation>
+<translation id="6856210255562079267">अ‍ॅप उघडता आले नाही</translation>
 <translation id="6856348640027512653">आभासी वास्तविकता डिव्हाइस किंवा डेटा वापरण्याची अनुमती नाही</translation>
 <translation id="6856623341093082836">आपल्या टचस्क्रीनची अचूकता सेट करा आणि समायोजित करा</translation>
 <translation id="6856850379840757744">सुरू केल्यावर, सर्व सूचना सायलंट केल्या जातील</translation>
@@ -5619,6 +5627,7 @@
 <translation id="7005496624875927304">अतिरिक्त परवानग्या</translation>
 <translation id="7005812687360380971">अयशस्वी</translation>
 <translation id="7005848115657603926">चुकीचे पेज वर्गवारी, <ph name="EXAMPLE_PAGE_RANGE" /> वापरा</translation>
+<translation id="7006438259896942210">(<ph name="USER_EMAIL_ADDRESS" />) हे खाते <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="700651317925502808">सेटिंग्ज रीसेट करायच्या का?</translation>
 <translation id="7006634003215061422">तळाचा समास</translation>
 <translation id="7007648447224463482">सर्व नवीन विंडोमध्ये उघडा</translation>
@@ -5818,6 +5827,7 @@
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251346854160851420">डीफॉल्ट वॉलपेपर</translation>
+<translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> ने तुमची सिक्युरिटी की जारी केली आहे आणि तिला त्या सिक्युरिटी कीचा आयडी नंबर जाणून घ्यायचा आहे. तुम्ही नेमकी कोणती सिक्युरिटी की वापरत आहात ते साइटला कळेल.</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
 <translation id="7254951428499890870">तुम्ही निदान मोडमध्ये "<ph name="APP_NAME" />" लाँच करू इच्छिता याची तुम्हाला खात्री आहे?</translation>
@@ -6955,6 +6965,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8425492902634685834">टास्कबारवर पिन करा</translation>
 <translation id="8425768983279799676">तुमचे डिव्हाइस अनलॉक करण्यासाठी तुम्ही तुमचा पिन वापरू शकता.</translation>
+<translation id="8426111352542548860">गट सेव्ह करा</translation>
 <translation id="8426713856918551002">सुरू करत आहे</translation>
 <translation id="8427213022735114808">कोणत्याही मजकूर फील्डमध्ये व्हॉइस टायपिंगची अनुमती देण्यासाठी डिक्टेशन तुमचा व्हॉइस Google ला पाठवेल.</translation>
 <translation id="8427292751741042100">कोणत्याही होस्टवर एंबेड होण्यासारखे आहे</translation>
@@ -7549,6 +7560,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
 <translation id="904451693890288097">कृपया यासाठी पासकी प्रविष्‍ट करा "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">नेटवर्कशी कनेक्ट करण्यात अयशस्वी: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">तुमची वाचन सूची नवीन साइड पॅनलमध्ये हलवण्यात आली आहे. ते येथे वापरून पहा.</translation>
 <translation id="9045430190527754450">Google वरून ज्या पेजवर तुम्ही पोहोचण्याचा प्रयत्न करत आहात त्याचा वेब पत्ता पाठवते</translation>
 <translation id="9048745018038487540">सर्व फॉंट निवडा</translation>
 <translation id="9050666287014529139">सांकेतिक पासफ्रेझ</translation>

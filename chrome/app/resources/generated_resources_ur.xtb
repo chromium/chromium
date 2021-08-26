@@ -161,6 +161,7 @@
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> میں کھولا جا رہا ہے…</translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> میں حساس یا خطرناک ڈیٹا ہے۔ آپ کے منتظم کے مطابق: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1170288591054440704">جب کوئی سائٹ آپ کے آلے پر انسٹال کردہ فونٹس استعمال کرنا چاہے تو پوچھیں</translation>
 <translation id="1171135284592304528">کی بورڈ فوکس کے ساتھ آبجیکٹ تبدیل ہونے پر اسے ہائی لائٹ کریں</translation>
 <translation id="1171515578268894665">‏<ph name="ORIGIN" /> HID آلہ سے منسلک کرنا چاہتا ہے</translation>
@@ -190,6 +191,7 @@
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1195558154361252544">تمام سائٹس کے لیے اطلاعات کو خودکار طور پر مسدود کر دیا گیا ہے سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="1197088940767939838">نارنجی</translation>
+<translation id="1197935538609051549">غیر فعال کریں</translation>
 <translation id="1197979282329025000">پرنٹر <ph name="PRINTER_NAME" /> کیلئے پرنٹر کی اہلیتیں بازیافت کرنے کے دوران ایک خرابی پیش آ گئی۔ یہ پرنٹر <ph name="CLOUD_PRINT_NAME" /> کے ساتھ رجسٹرڈ نہیں ہو سکا۔</translation>
 <translation id="119944043368869598">سب کو صاف کریں</translation>
 <translation id="1199814941632954229">ان سرٹیفکیٹ پروفائلز کے لیے سرٹیفکیٹس فراہم کیے جا رہے ہیں</translation>
@@ -719,6 +721,7 @@
 <translation id="1744108098763830590">پس منظر کا صفحہ</translation>
 <translation id="1745732479023874451">رابطوں کا نظم کریں</translation>
 <translation id="1748563609363301860">‏آپ اس پاس ورڈ کو اپنے Google اکاؤنٹ میں یا صرف اس آلے پر محفوظ کر سکتے ہیں</translation>
+<translation id="1750048572964661931">‏اپنے فون کی ایپس تک رسائی کے تحفظ کیلئے اس Chromebook پر ایک پن یا پاس ورڈ سیٹ کریں۔</translation>
 <translation id="1750172676754093297">آپ کی سیکیورٹی کلید فنگر پرنٹس اسٹور نہیں کر سکتی</translation>
 <translation id="1751249301761991853">ذاتی</translation>
 <translation id="1751262127955453661">اس سائٹ کے لیے آپ کے سبھی ٹیبز کو بند کرنے تک <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائز میں ترمیم کر سکے گا</translation>
@@ -5464,6 +5467,7 @@
 <translation id="6853388645642883916">اپ ڈیٹر غیر فعال ہے</translation>
 <translation id="68541483639528434">دیگر ٹیبز بند کریں</translation>
 <translation id="6855892664589459354">‏Crostini کا بیک اپ اور بحالی</translation>
+<translation id="6856210255562079267">ایپ کھولی نہیں جا سکی</translation>
 <translation id="6856348640027512653">ورچوئل رئیلٹی آلات یا ڈیٹا کو استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="6856623341093082836">اپنی ٹچ اسکرین کی درستگی کو ترتیب دیں اور ایڈجسٹ کریں</translation>
 <translation id="6856850379840757744">آن کرنے پر، سبھی اطلاعات خاموش ہو جائیں گی</translation>
@@ -5808,6 +5812,7 @@
 <translation id="7250616558727237648">جس آلہ کے ساتھ آپ اشتراک کر رہے ہیں اس نے کوئی جواب نہیں دیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="725109152065019550">معذرت، آپ کے منتطم نے آپ کے اکاؤنٹ پر خارجی اسٹوریج غیر فعال کر دیا ہے۔</translation>
 <translation id="7251346854160851420">ڈیفالٹ وال پیپر</translation>
+<translation id="7251635775446614726">آپ کے منتظم کے مطابق: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467">‏<ph name="WEBSITE" /> نے آپ کی سیکیورٹی کلید جاری کی اور اس کا ID نمبر جاننا چاہتی ہے۔ سائٹ کو واضح طور پر معلوم ہو جائے گا کہ آپ کون سی سیکیورٹی کلید کا استعمال کر رہے ہیں۔</translation>
 <translation id="7253521419891527137">مزید &amp;جانیں</translation>
 <translation id="7254951428499890870">کیا آپ واقعی "<ph name="APP_NAME" />" کو تشخیصی وضع میں شروع کرنا چاہتے ہیں؟</translation>

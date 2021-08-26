@@ -146,7 +146,7 @@
 <translation id="1428729058023778569">この警告は、サイトが HTTPS に対応していない場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
-<translation id="1439627443299342313">[このページを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します。</translation>
+<translation id="1439627443299342313">[このページを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します</translation>
 <translation id="1442386063175183758">右観音折り</translation>
 <translation id="1442987760062738829">パンチ</translation>
 <translation id="1447067628680007684">（x86_64）</translation>
@@ -349,7 +349,7 @@
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="213826338245044447">モバイルのブックマーク</translation>
 <translation id="214556005048008348">支払いをキャンセル</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します。</translation>
+<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します</translation>
 <translation id="2147827593068025794">バックグラウンド同期</translation>
 <translation id="2148613324460538318">カードを追加</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
@@ -477,7 +477,7 @@
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2587730715158995865">公開元: <ph name="ARTICLE_PUBLISHER" />。この記事と他 <ph name="OTHER_ARTICLE_COUNT" /> 件の記事を読むことができます。</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
-<translation id="2592018527587890152">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome の設定でユーザー補助ツールをカスタマイズします。</translation>
+<translation id="2592018527587890152">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2594318783181750337">高速ウェブビュー:</translation>
 <translation id="2595719060046994702">このデバイスとアカウントは、会社またはその他の組織によって管理されていません。</translation>
 <translation id="2596415276201385844">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chrome ではこれらの証明書を確認できません。</translation>
@@ -816,7 +816,7 @@
 <translation id="3765588406864124894">用紙受け 9</translation>
 <translation id="3767485424735936570">このコンテンツの <ph name="VM_NAME" /> へのコピーと貼り付けは、管理者のポリシーで推奨されていません</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google Keep で新しいメモをすばやく作成します</translation>
-<translation id="3776257069753764304">[Chrome でのダウンロードを管理] ボタンです。Enter キーを押すと、Chrome でダウンロードしたファイルを管理します。</translation>
+<translation id="3776257069753764304">[Chrome でのダウンロードを管理] ボタンです。Enter キーを押すと、Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="3778403066972421603">このカードを Google アカウントとこのデバイスに保存しますか？</translation>
 <translation id="3780694243617746492">排紙トレイ</translation>
 <translation id="3781428340399460090">ホットピンク</translation>
@@ -916,7 +916,7 @@
 <translation id="413544239732274901">詳細</translation>
 <translation id="4142935452406587478">トレイ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
-<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、テーマを使用してブラウザのデザインをカスタマイズします。</translation>
+<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、テーマを使用してブラウザのデザインをカスタマイズします</translation>
 <translation id="4151403195736952345">全体の既定値を使用（検出）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>
 <translation id="4154664944169082762">指紋</translation>
@@ -1011,7 +1011,7 @@
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4389652395741935834">リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します。</translation>
+<translation id="4389652395741935834">リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します</translation>
 <translation id="4390472908992056574">ブリム</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406896451731180161">検索結果</translation>
@@ -1026,7 +1026,7 @@
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="4435702339979719576">ポストカード</translation>
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
-<translation id="4448463448776780262">[Chrome のテーマを管理] ボタンです。Enter キーを押すとテーマを使用してブラウザのデザインをカスタマイズします。</translation>
+<translation id="4448463448776780262">[Chrome のテーマを管理] ボタンです。Enter キーを押すとテーマを使用してブラウザのデザインをカスタマイズします</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4460315069258617173">このサイトのタブを開いている間のみ許可</translation>
@@ -1611,7 +1611,7 @@
 <translation id="647261751007945333">デバイス ポリシー</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6489534406876378309">クラッシュのアップロードを開始</translation>
-<translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でユーザー補助ツールをカスタマイズします。</translation>
+<translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="6493924760403974580">このアプリではこのサイズのみがサポートされています。</translation>
 <translation id="6499038740797743453">パスワードを再設定しますか？</translation>
 <translation id="6502991525169604759">変更前のバージョン</translation>

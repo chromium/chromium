@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />সতর্কতা:<ph name="END_BOLD" /> এই ফাইলগুলি অস্থায়ী এবং ডিস্ক স্থান মুক্ত করতে অটোমেটিক মুছে ফেলা হতে পারে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">পেঙ্গুইন</translation>
 <translation id="183183971458492120">তথ্য লোড করা হচ্ছে…</translation>
+<translation id="1834290891154666894">সাবজেক্টের অন্য নামের সাথে মিল থাকা এন্ট্রি ভুল</translation>
 <translation id="1838709767668011582">Google সাইট</translation>
 <translation id="1844692022597038441">এই ফাইলটি অফলাইনে উপলব্ধ নয়৷</translation>
 <translation id="1853795129690976061">এই ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">সীমাবদ্ধ অ্যাক্সেস</translation>
 <translation id="6356685157277930264">ফাইল সম্পর্কে মতামত জানানোর উইন্ডো</translation>
 <translation id="6358884629796491903">ড্রাগন</translation>
+<translation id="636254897931573416">ডোমেন সাফিক্সের সাথে মিল থাকা মানটি ভুল</translation>
 <translation id="6367976544441405720">ভ্যান</translation>
 <translation id="637062427944097960">এই ফাইলটি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) এ সরান৷</translation>
 <translation id="6394388407447716302">রিড-ওনলি</translation>

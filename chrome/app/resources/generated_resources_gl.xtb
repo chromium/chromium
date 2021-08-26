@@ -161,6 +161,7 @@
 <translation id="1166583374608765787">Revisa o cambio do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> é do escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">O ficheiro abrirase en <ph name="TIME_REMAINING" />...</translation>
+<translation id="1169435433292653700"><ph name="FILE_NAME" /> ten datos confidenciais ou perigosos. O teu administrador di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1170288591054440704">Preguntar cando un sitio queira usar os tipos de letra que tes instalados no dispositivo</translation>
 <translation id="1171135284592304528">Destacar obxecto co enfoque do teclado cando cambie</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> quere conectarse a un dispositivo de interface humana (HID)</translation>
@@ -190,6 +191,7 @@
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1195558154361252544">Bloquéanse automaticamente as notificacións para todos os sitios, excepto para os que permitas</translation>
 <translation id="1197088940767939838">Laranxa</translation>
+<translation id="1197935538609051549">Desactivar</translation>
 <translation id="1197979282329025000">Produciuse un erro durante a recuperación das funcionalidades de impresión para a impresora <ph name="PRINTER_NAME" />. Non se puido rexistrar esta impresora con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Borrar todo</translation>
 <translation id="1199814941632954229">Estanse proporcionando certificados para estes perfís de certificados</translation>
@@ -718,6 +720,7 @@
 <translation id="1744108098763830590">páxina en segundo plano</translation>
 <translation id="1745732479023874451">Xestionar contactos</translation>
 <translation id="1748563609363301860">Podes gardar este contrasinal na túa Conta de Google ou só neste dispositivo</translation>
+<translation id="1750048572964661931">Define un PIN ou un contrasinal neste Chromebook para protexer o acceso ás aplicacións do teléfono.</translation>
 <translation id="1750172676754093297">A túa chave de seguranza non pode almacenar impresións dixitais</translation>
 <translation id="1751249301761991853">Personalizar</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> poderá editar os ficheiros de <ph name="FOLDERNAME" /> ata que peches todas as pestanas deste sitio</translation>
@@ -3110,6 +3113,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4268670020635416342">Engade un nome ou unha etiqueta, como "Traballo", "Persoal" ou "Nenos"</translation>
 <translation id="4270393598798225102">Versión <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">Non se puido acceder a esta páxina</translation>
+<translation id="4274604968379621964">Gardar grupo</translation>
 <translation id="4274667386947315930">Datos de inicio de sesión</translation>
 <translation id="4274673989874969668">Unha vez que saes dun sitio, este pode seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
 <translation id="4275291496240508082">Son de inicio</translation>
@@ -3562,6 +3566,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4770119228883592393">Permiso solicitado; preme ⌘ + Option (Opción) + Down arrow (Frecha abaixo) para responder</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="477647109558161443">Crear acceso directo do escritorio</translation>
+<translation id="4776594120007763294">Se queres engadir unha páxina para ler máis adiante, fai clic no botón</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">Os demais usuarios deste dispositivo poden usar esta rede</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3647,6 +3652,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4864805589453749318">Indica se será o teu pai ou a túa nai quen che dará permiso para engadir unha conta de centro educativo.</translation>
 <translation id="486635084936119914">Abre determinados tipos de ficheiro automaticamente despois da descarga</translation>
 <translation id="4868281708609571334">Ensínalle ao Asistente de Google a recoñecer a voz de <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="4868284252360267853">Este cadro de diálogo non está enfocado nestes momentos. Para enfocalo, preme Comando + Maiúsculas + Opción + A.</translation>
 <translation id="48704129375571883">Engadir funcións adicionais</translation>
 <translation id="4870758487381879312">Introduce o contrasinal indicado polo administrador para obter información de configuración</translation>
 <translation id="4870903493621965035">Non hai dispositivos sincronizados</translation>
@@ -4220,6 +4226,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5496730470963166430">Sitios que non poden mostrar ventás emerxentes ou usar redireccións</translation>
 <translation id="5497251278400702716">Este ficheiro</translation>
 <translation id="5498967291577176373">Escribe máis rápido coas suxestións inseridas para o teu nome, enderezo ou número de teléfono</translation>
+<translation id="5499211612787418966">Este cadro de diálogo non está enfocado nestes momentos. Para enfocalo, preme Alt + Maiúsculas + A.</translation>
 <translation id="5499313591153584299">É posible que este ficheiro sexa daniño para o teu ordenador.</translation>
 <translation id="5499453227627332024">Hai dispoñible unha actualización para o teu contedor de Linux. Tamén podes instalar a actualización máis adiante desde a aplicación Configuración.</translation>
 <translation id="549957179819296104">Icona nova</translation>
@@ -5459,6 +5466,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6853388645642883916">O actualizador está en suspensión</translation>
 <translation id="68541483639528434">Pechar outras pestanas</translation>
 <translation id="6855892664589459354">Copia de seguranza e restauración de Crostini</translation>
+<translation id="6856210255562079267">Non se puido abrir a aplicación</translation>
 <translation id="6856348640027512653">Sitios que non poden usar datos nin dispositivos de realidade virtual</translation>
 <translation id="6856623341093082836">Configurar a pantalla táctil e axustar a súa precisión</translation>
 <translation id="6856850379840757744">Se se activa esta opción, silenciaranse todas as notificacións</translation>
@@ -5603,6 +5611,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7005496624875927304">Permisos adicionais</translation>
 <translation id="7005812687360380971">Fallo</translation>
 <translation id="7005848115657603926">Intervalo de páxina non válido. Utiliza <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="7006438259896942210">Esta conta (<ph name="USER_EMAIL_ADDRESS" />) está xestionada por <ph name="PROFILE_NAME" /></translation>
 <translation id="700651317925502808">Queres restablecer a configuración?</translation>
 <translation id="7006634003215061422">Marxe inferior</translation>
 <translation id="7007648447224463482">Abrir todos os marcadores nunha nova ventá</translation>
@@ -5802,6 +5811,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7250616558727237648">O dispositivo co que tentaches compartir o ficheiro non respondeu. Téntao de novo.</translation>
 <translation id="725109152065019550">O teu administrador desactivou o almacenamento externo na túa conta.</translation>
 <translation id="7251346854160851420">Fondo de pantalla predeterminado</translation>
+<translation id="7251635775446614726">O teu administrador di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> expediu a túa chave de seguranza e quere saber o seu número de identificación. O sitio saberá a chave de seguranza que estás utilizando exactamente.</translation>
 <translation id="7253521419891527137">&amp;Máis información</translation>
 <translation id="7254951428499890870">Estás seguro de que queres iniciar "<ph name="APP_NAME" />" no modo de diagnóstico?</translation>
@@ -6939,6 +6949,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Ancorar na barra de tarefas</translation>
 <translation id="8425768983279799676">Podes utilizar o teu PIN para desbloquear o dispositivo.</translation>
+<translation id="8426111352542548860">Gardar grupo</translation>
 <translation id="8426713856918551002">Activando</translation>
 <translation id="8427213022735114808">O Ditado envía a túa voz a Google para que poidas usar a escritura por voz en calquera campo de texto.</translation>
 <translation id="8427292751741042100">páxina inserida en calquera host</translation>
@@ -7532,6 +7543,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="904451693890288097">Introduce a clave de acceso para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">A túa lista de lectura trasladouse ao novo panel lateral. Próbaa aquí.</translation>
 <translation id="9045430190527754450">Envía a Google o enderezo web da páxina á que tentas acceder</translation>
 <translation id="9048745018038487540">Seleccionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>

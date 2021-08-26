@@ -3110,6 +3110,7 @@
 <translation id="4268670020635416342">添加一个名称或标签，例如“工作”、“个人”或“孩子”</translation>
 <translation id="4270393598798225102">版本 <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">无法访问此页面</translation>
+<translation id="4274604968379621964">保存组</translation>
 <translation id="4274667386947315930">登录数据</translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4275291496240508082">启动音</translation>
@@ -3562,6 +3563,7 @@
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4773112038801431077">升级 Linux</translation>
 <translation id="477647109558161443">创建桌面快捷方式</translation>
+<translation id="4776594120007763294">如需添加某个页面以供日后阅读，请点击此按钮</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
 <translation id="4777458362738635055">此设备的其他用户可以使用该网络</translation>
 <translation id="4777825441726637019">Play 商店</translation>
@@ -3647,6 +3649,7 @@
 <translation id="4864805589453749318">请选择让哪位家长授权您添加学校帐号。</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4868281708609571334">训练 Google 助理识别<ph name="SUPERVISED_USER_NAME" />的语音</translation>
+<translation id="4868284252360267853">此对话框目前未被聚焦。按 Command+Shift+Option+A 即可聚焦于此对话框。</translation>
 <translation id="48704129375571883">添加其他功能</translation>
 <translation id="4870758487381879312">请输入管理员提供的密码以获取配置信息</translation>
 <translation id="4870903493621965035">没有已配对的设备</translation>
@@ -4220,6 +4223,7 @@
 <translation id="5496730470963166430">不允许发送弹出式窗口或使用重定向</translation>
 <translation id="5497251278400702716">此文件</translation>
 <translation id="5498967291577176373">提供与您名字、地址或电话号码有关的内嵌建议，帮助您提高输入速度</translation>
+<translation id="5499211612787418966">此对话框目前未被聚焦。按 Alt+Shift+A 即可聚焦于此对话框。</translation>
 <translation id="5499313591153584299">此文件可能对您的计算机有害。</translation>
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
 <translation id="549957179819296104">新图标</translation>
@@ -5604,6 +5608,7 @@
 <translation id="7005496624875927304">更多权限</translation>
 <translation id="7005812687360380971">失败</translation>
 <translation id="7005848115657603926">页码范围无效，请使用 <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="7006438259896942210">该帐号 (<ph name="USER_EMAIL_ADDRESS" />) 由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="700651317925502808">重置设置？</translation>
 <translation id="7006634003215061422">下边距</translation>
 <translation id="7007648447224463482">在新窗口中打开所有网址</translation>
@@ -6942,6 +6947,7 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
+<translation id="8426111352542548860">保存组</translation>
 <translation id="8426713856918551002">正在启用</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
@@ -7535,6 +7541,7 @@
 <translation id="9042893549633094279">隐私设置和安全性</translation>
 <translation id="904451693890288097">请输入“<ph name="DEVICE_NAME" />”的配对密钥：</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
 <translation id="9045430190527754450">将您尝试访问的网页的网址发送至 Google</translation>
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>

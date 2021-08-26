@@ -425,7 +425,7 @@
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="2372464001869762664">आपके पुष्टि करने के बाद, Google खाते के कार्ड की जानकारी इस साइट से शेयर की जाएगी. सीवीसी को अपने Plex खाते की जानकारी में पाएं.</translation>
 <translation id="2380886658946992094">कानूनी</translation>
-<translation id="2383455408879745299">Chrome की सेटिंग में, सुलभता टूल को अपने हिसाब से बनाएं</translation>
+<translation id="2383455408879745299">Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2384307209577226199">एंटरप्राइज़ डिफ़ॉल्ट</translation>
 <translation id="2385809941344967209">अपनी Chrome की सेटिंग में जाकर Chrome को अपडेट करें</translation>
 <translation id="2386255080630008482">सर्वर का प्रमाणपत्र निरस्त कर दिया गया है.</translation>
@@ -602,7 +602,7 @@
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
-<translation id="304730011294247979">अपने 'Chrome इतिहास' का बटन देखें, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास देखने और उसे मैनेज करने के लिए, Enter दबाएं</translation>
+<translation id="304730011294247979">अपना 'Chrome इतिहास' देखें, Chrome की सेटिंग में, ब्राउज़िंग इतिहास देखने और उसे मैनेज करने के लिए Enter दबाएं</translation>
 <translation id="3060227939791841287">सी9 (एन्वेलप)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3061707000357573562">पैच सेवा</translation>
@@ -921,7 +921,7 @@
 <translation id="413544239732274901">ज़्यादा जानें</translation>
 <translation id="4142935452406587478">ट्रे 10</translation>
 <translation id="4148925816941278100">American Express</translation>
-<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, थीम से अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
+<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, थीम इस्तेमाल करके, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="4151403195736952345">वैश्‍विक डिफ़ॉल्‍ट का उपयोग करें (पता करें)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>

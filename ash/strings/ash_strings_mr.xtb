@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिव्हाइस</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistant मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="1667964833127753507">न्यूट्रल रंगीत मोड हा तटस्थपणे टोन केलेल्या फिकट किंवा गडद रंगछटांचा सेट वापरतो आणि वॉलपेपरमधून निवडलेल्या रंगांचा वापर करत नाही.</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> डिव्हाइसशी कनेक्ट केले</translation>
 <translation id="3552189655002856821">वाय-फाय बंद केले आहे</translation>
 <translation id="3560866052109807830">मार्कर ड्रॉइंग टूल</translation>
 <translation id="3563775809269155755">हॉटस्पॉट सुरू करा</translation>
@@ -404,6 +406,7 @@
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
 <translation id="4157822100366708405">गडद थीम सेटिंग्ज</translation>
+<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4195877955194704651">आपोआप क्लिक बटण</translation>
 <translation id="4197790712631116042">बंद</translation>
@@ -497,6 +500,7 @@
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> साठी पासवर्ड</translation>
 <translation id="4778095205580009397">डेमो सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
+<translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">‍डिस्कनेक्ट</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
@@ -555,6 +559,7 @@
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="523505283826916779">ॲक्सेसिबिलिटी सेटिंग्ज</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले, बॅटरी<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
 <translation id="5283198616748585639">एक मिनिट जोडा</translation>
 <translation id="528468243742722775">बंद करा</translation>
@@ -767,6 +772,7 @@
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="70168403932084660">डेस्‍क ६</translation>
 <translation id="7025533177575372252">तुमचे <ph name="DEVICE_NAME" /> तुमच्या फोनशी कनेक्ट करा</translation>
