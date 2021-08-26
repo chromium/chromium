@@ -224,8 +224,8 @@ void ScrollbarThemeMac::SetNewPainterForScrollbar(
 
 ScrollbarPainter ScrollbarThemeMac::PainterForScrollbar(
     const Scrollbar& scrollbar) const {
-  return [GetScrollbarPainterMap().DeprecatedAtOrEmptyValue(
-      const_cast<Scrollbar*>(&scrollbar)) painter];
+  auto it = GetScrollbarPainterMap().find(const_cast<Scrollbar*>(&scrollbar));
+  return it != GetScrollbarPainterMap().end() ? [it->value painter] : nil;
 }
 
 WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
@@ -278,6 +278,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
   {
     CGRect frame_rect = CGRect(scrollbar.FrameRect());
     ScrollbarPainter scrollbar_painter = PainterForScrollbar(scrollbar);
+    DCHECK(scrollbar_painter);
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
     [scrollbar_painter setBoundsSize:NSSizeFromCGSize(frame_rect.size)];
     opacity = [scrollbar_painter trackAlpha];
@@ -356,8 +357,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
   // and because the ScrollAnimator doesn't animate correctly without them.
   {
     base::scoped_nsobject<BlinkScrollbarObserver> observer(
-        GetScrollbarPainterMap().DeprecatedAtOrEmptyValue(
-            const_cast<Scrollbar*>(&scrollbar)),
+        GetScrollbarPainterMap().at(const_cast<Scrollbar*>(&scrollbar)),
         base::scoped_policy::RETAIN);
     ScrollbarPainter scrollbar_painter = [observer painter];
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
@@ -448,6 +448,7 @@ bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
 void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
     const Scrollbar& scrollbar) {
   ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
   switch (scrollbar.GetScrollbarOverlayColorTheme()) {
     case kScrollbarOverlayColorThemeDark:
       [painter setKnobStyle:NSScrollerKnobStyleDark];
@@ -460,6 +461,7 @@ void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
 
 bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) {
   ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
   int min_length_for_thumb =
       [painter knobMinLength] + [painter trackOverlapEndInset] +
       [painter knobOverlapEndInset] +
@@ -483,16 +485,21 @@ IntRect ScrollbarThemeMac::TrackRect(const Scrollbar& scrollbar) {
 }
 
 int ScrollbarThemeMac::MinimumThumbLength(const Scrollbar& scrollbar) {
-  return [PainterForScrollbar(scrollbar) knobMinLength];
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  return [painter knobMinLength];
 }
 
 void ScrollbarThemeMac::UpdateEnabledState(const Scrollbar& scrollbar) {
-  [PainterForScrollbar(scrollbar) setEnabled:scrollbar.Enabled()];
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  [painter setEnabled:scrollbar.Enabled()];
 }
 
 float ScrollbarThemeMac::Opacity(const Scrollbar& scrollbar) const {
-  ScrollbarPainter scrollbar_painter = PainterForScrollbar(scrollbar);
-  return [scrollbar_painter knobAlpha];
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  return [painter knobAlpha];
 }
 
 bool ScrollbarThemeMac::JumpOnTrackClick() const {
