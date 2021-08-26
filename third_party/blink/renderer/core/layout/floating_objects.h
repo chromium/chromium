@@ -194,7 +194,7 @@ struct FloatingObjectHashFunctions {
     return Equal(a, b.Get());
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = true;
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 struct FloatingObjectHashTranslator {
   STATIC_ONLY(FloatingObjectHashTranslator);
@@ -209,8 +209,9 @@ struct FloatingObjectHashTranslator {
   }
 };
 
-// TODO(yukiy): Use HeapLinkedHashSet here once it supports HashTranslator
-typedef HeapListHashSet<Member<FloatingObject>, 4, FloatingObjectHashFunctions>
+typedef HeapLinkedHashSet<Member<FloatingObject>,
+                          HashTraits<Member<FloatingObject>>,
+                          FloatingObjectHashFunctions>
     FloatingObjectSet;
 typedef FloatingObjectSet::const_iterator FloatingObjectSetIterator;
 typedef WTF::PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;
