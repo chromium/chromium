@@ -209,9 +209,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2022-08-29">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>jeroendh@google.com</owner>
   <summary>
     Amount of time between when the Assistant service is launched, and when the
     Assistant back-end signals it is ready to process queries.
@@ -219,7 +218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2022-08-29">
   <owner>updowndota@chromium.org</owner>
   <summary>Amount of time spent in starting Assistant service.</summary>
 </histogram>
