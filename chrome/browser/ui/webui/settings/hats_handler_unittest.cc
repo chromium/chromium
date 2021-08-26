@@ -66,9 +66,6 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
   MockHatsService* mock_hats_service_;
   MockTrustSafetySentimentService* mock_sentiment_service_;
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<HatsHandler> handler_;
@@ -101,22 +98,42 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
+}
 
-  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+class HatsHandlerNoSandboxTest : public HatsHandlerTest {
+ public:
+  HatsHandlerNoSandboxTest() {
+    base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
+        features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
+        {{"no-sandbox", "true"}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params},
+                                                       {});
+  }
 
+ protected:
+  // This should only be accessed in the test constructor, to avoid race
+  // conditions with other threads.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  SurveyBitsData expected_product_specific_data = {
+      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
   // Enable targeting for users who have not seen the Privacy Sandbox page and
   // ensure the handler does not attempt to launch the survey.
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(_, _, _, _, _))
       .Times(0);
 
-  base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
-      features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
-      {{"no-sandbox", "true"}}};
-  scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params}, {});
-
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
 
+  base::Value args(base::Value::Type::LIST);
+  args.Append(
+      static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
@@ -155,20 +172,23 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
 
-  EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(2);
+  EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
+}
 
+TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
   // A profile & feature state that would exclude the user from receiving the
   // Privacy Settings HaTS survey should not stop the sentiment service being
   // informed that the interaction occurred.
-  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
-  base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
-      features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
-      {{"no-sandbox", "true"}}};
-  scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params}, {});
+  // Check that interactions relevant to the T&S sentiment service are
+  // correctly reported.
+  EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(
+      static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));

@@ -30,6 +30,9 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
+                           TrustSafetySentimentInteractions);
 
   // All Trust & Safety based interactions which may result in a HaTS survey.
   // Must be kept in sync with the enum of the same name in
