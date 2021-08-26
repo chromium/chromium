@@ -24,7 +24,8 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import (
+    SystemConfigurationRemover, TestExpectations)
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (
     PRODUCTS, PRODUCTS_TO_EXPECTATION_FILE_PATHS, WPT_SMOKE_TESTS_FILE)
@@ -535,6 +536,29 @@ class WPTExpectationsUpdater(object):
                 expectations.add(actual.capitalize())
         return expectations
 
+    def remove_configurations(self, configs_to_remove):
+        """Removes configs from test expectations files for some tests
+
+        Args:
+            configs_to_remove: A dict maps test names to set of os versions:
+                {
+                    'test-with-failing-result': ['os1', 'os2', ...]
+                }
+        Returns: None
+        """
+        # SystemConfigurationRemover now only works on generic test expectations
+        # files. This is good enough for now
+        path = self.port.path_to_generic_test_expectations_file()
+        test_expectations = TestExpectations(
+            self.port,
+            expectations_dict={
+                path: self.host.filesystem.read_text_file(path),
+            })
+        system_remover = SystemConfigurationRemover(test_expectations)
+        for test, versions in configs_to_remove.items():
+            system_remover.remove_os_versions(test, versions)
+        system_remover.update_expectations()
+
     def create_line_dict(self, merged_results):
         """Creates list of test expectations lines.
 
@@ -554,10 +578,14 @@ class WPTExpectationsUpdater(object):
                 }
 
         Returns:
-            A dictionary from test names to a list of test expectation lines
-            (each SimpleTestResult turns into a line).
+            line_dict: A dictionary from test names to a list of test
+                       expectation lines
+                       (each SimpleTestResult turns into a line).
+            configs_to_remove: A dictionary from test names to a set
+                               of os specifiers
         """
         line_dict = defaultdict(list)
+        configs_to_remove = defaultdict(set)
         for test_name, test_results in sorted(merged_results.iteritems()):
             if not self._is_wpt_test(test_name):
                 _log.warning(
@@ -567,7 +595,12 @@ class WPTExpectationsUpdater(object):
             for configs, result in sorted(test_results.iteritems()):
                 line_dict[test_name].extend(
                     self._create_lines(test_name, configs, result))
-        return line_dict
+                for config in configs:
+                    configs_to_remove[test_name].add(
+                        self.host.builders.version_specifier_for_port_name(
+                            config.port_name))
+
+        return line_dict, configs_to_remove
 
     def _create_lines(self, test_name, configs, result):
         """Constructs test expectation line strings.
@@ -590,6 +623,7 @@ class WPTExpectationsUpdater(object):
             if specifier:
                 line_parts.append('[ %s ]' % specifier)
             # Escape literal asterisks for typ (https://crbug.com/1036130).
+            # TODO(weizhong): consider other escapes we added recently
             line_parts.append(test_name.replace('*', '\\*'))
             line_parts.append(expectations)
 
@@ -718,13 +752,18 @@ class WPTExpectationsUpdater(object):
         Returns:
             Dictionary mapping test names to lists of test expectation strings.
         """
-        line_dict = self.create_line_dict(test_expectations)
+        line_dict, configs_to_remove = self.create_line_dict(test_expectations)
         if not line_dict:
             _log.info(
                 'No lines to write to TestExpectations,'
                 ' WebdriverExpectations or NeverFixTests.'
             )
             return {}
+
+        if configs_to_remove:
+            _log.info('Clean up stale expectations that'
+                      ' could conflict with new expectations')
+            self.remove_configurations(configs_to_remove)
 
         line_list = []
         wont_fix_list = []

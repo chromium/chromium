@@ -433,6 +433,38 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 SimpleTestResult('PASS', 'FAIL', 'bug'),
                 test_name='external/wpt/webdriver/foo/a'), {'Failure'})
 
+    def test_remove_configurations(self):
+        host = self.mock_host()
+
+        initial_expectations = (
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11.0 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n'
+            + 'crbug.com/1234 test/foo.html [ Failure ]\n'
+            + 'crbug.com/1235 [ Win ] test/bar.html [ Timeout ]\n')
+
+        final_expectations = (
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11.0 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n'
+            + 'crbug.com/1234 [ Linux ] test/foo.html [ Failure ]\n'
+            + 'crbug.com/1234 [ Mac ] test/foo.html [ Failure ]\n'
+            + 'crbug.com/1234 [ Win10 ] test/foo.html [ Failure ]\n'
+            + 'crbug.com/1235 [ Win10 ] test/bar.html [ Timeout ]\n')
+
+        # Fill in an initial value for TestExpectations
+        expectations_path = \
+            host.port_factory.get().path_to_generic_test_expectations_file()
+        host.filesystem.write_text_file(expectations_path, initial_expectations)
+
+        updater = WPTExpectationsUpdater(host)
+        configs_to_remove = {
+            'test/foo.html': set(['win7']),
+            'test/bar.html': set(['win7'])
+        }
+        updater.remove_configurations(configs_to_remove)
+
+        value = host.filesystem.read_text_file(expectations_path)
+        self.assertMultiLineEqual(value, final_expectations)
+
     def test_create_line_dict_old_tests(self):
         # In this example, there are two failures that are not in wpt.
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -446,7 +478,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='PASS', bug='crbug.com/test'),
             }
         }
-        self.assertEqual(updater.create_line_dict(results), {})
+        line_dict, configs_to_remove = updater.create_line_dict(results)
+        self.assertEqual(line_dict, {})
+        self.assertEqual(configs_to_remove, {})
 
     def test_create_line_dict_new_tests(self):
         # In this example, there are three unexpected results for wpt tests.
@@ -472,8 +506,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='PASS', bug='crbug.com/test'),
             },
         }
+        line_dict, configs_to_remove = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/test/zzzz.html': [
                     'crbug.com/test [ Mac10.10 ] external/wpt/test/zzzz.html [ Failure ]'
                 ],
@@ -481,6 +516,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/zzzz.html [ Pass ]',
                     'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/zzzz.html [ Timeout ]',
                 ],
+            })
+        self.assertEqual(
+            configs_to_remove, {
+                'external/wpt/test/zzzz.html': set(['Mac10.10']),
+                'virtual/foo/external/wpt/test/zzzz.html': set(['Trusty', 'Mac10.11'])
             })
 
     def test_create_line_dict_with_manual_tests(self):
@@ -496,8 +536,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='TIMEOUT', bug='crbug.com/test'),
             },
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'virtual/foo/external/wpt/test/aa-manual.html': [
                     'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
                     'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
@@ -515,8 +556,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='PASS', actual='FAIL', bug='crbug.com/test'),
             },
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
                 [
                     'crbug.com/test [ Trusty ] external/wpt/html/dom/interfaces.https.html?exclude=(Document.\*|HTML.\*) [ Failure ]',
@@ -1244,8 +1286,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         }
         tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(results)
         self.assertEqual(tests_to_rebaseline, [])
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x-manual.html':
                 ['crbug.com/test external/wpt/x-manual.html [ Skip ]']
             })
@@ -1272,8 +1315,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.configs_with_no_results = [
             DesktopConfig(port_name='test-mac-mac10.10')
         ]
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x.html': [
                     'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
                     'crbug.com/test [ Mac10.10 ] external/wpt/x.html [ Failure ]',
@@ -1418,8 +1462,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='PASS', actual='TEXT', bug='crbug.com/test')
             }
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x.html': [
                     'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
                     'crbug.com/test [ Mac ] external/wpt/x.html [ Failure ]',
