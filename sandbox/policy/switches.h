@@ -41,7 +41,6 @@ SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 
 #if defined(OS_WIN)
 SANDBOX_POLICY_EXPORT extern const char kPdfConversionSandbox[];
-SANDBOX_POLICY_EXPORT extern const char kProxyResolverSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kXrCompositingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];

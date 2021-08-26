@@ -67,10 +67,6 @@ enum Sandbox {
   [EnableIf=is_win]
   kPdfConversion,
 
-  // Like kUtility but also disables dynamic code.
-  [EnableIf=is_win]
-  kProxyResolver,
-
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]
   kXrCompositing,

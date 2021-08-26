@@ -34,9 +34,6 @@ enum class SandboxType {
   // The XR Compositing process.
   kXrCompositing,
 
-  // The proxy resolver process.
-  kProxyResolver,
-
   // The PDF conversion service process used in printing.
   kPdfConversion,
 
@@ -155,8 +152,6 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges;
     case sandbox::mojom::Sandbox::kPdfConversion:
       return sandbox::policy::SandboxType::kPdfConversion;
-    case sandbox::mojom::Sandbox::kProxyResolver:
-      return sandbox::policy::SandboxType::kProxyResolver;
     case sandbox::mojom::Sandbox::kXrCompositing:
       return sandbox::policy::SandboxType::kXrCompositing;
 #endif  // OS_WIN

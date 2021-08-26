@@ -3726,7 +3726,6 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::policy::SandboxType::kPrintCompositor:
     case sandbox::policy::SandboxType::kAudio:
     case sandbox::policy::SandboxType::kSpeechRecognition:
-    case sandbox::policy::SandboxType::kProxyResolver:
     case sandbox::policy::SandboxType::kPdfConversion:
     case sandbox::policy::SandboxType::kService:
     case sandbox::policy::SandboxType::kIconReader:
@@ -3793,7 +3792,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::policy::SandboxType::kPrintCompositor:
     case sandbox::policy::SandboxType::kAudio:
     case sandbox::policy::SandboxType::kSpeechRecognition:
-    case sandbox::policy::SandboxType::kProxyResolver:
     case sandbox::policy::SandboxType::kPdfConversion:
     case sandbox::policy::SandboxType::kService:
     case sandbox::policy::SandboxType::kIconReader:

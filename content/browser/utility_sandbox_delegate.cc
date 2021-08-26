@@ -40,7 +40,6 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ ==
           sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges ||
       sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing ||
-      sandbox_type_ == sandbox::policy::SandboxType::kProxyResolver ||
       sandbox_type_ == sandbox::policy::SandboxType::kPdfConversion ||
       sandbox_type_ == sandbox::policy::SandboxType::kIconReader ||
       sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||

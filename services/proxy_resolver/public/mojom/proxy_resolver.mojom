@@ -81,20 +81,13 @@ interface ProxyResolverRequestClient {
              pending_remote<HostResolverRequestClient> client);
 };
 
-// Note: On Android this lives in-process in the browser.
-[EnableIf=is_win]
-const sandbox.mojom.Sandbox kProxyResolverSandbox
-  = sandbox.mojom.Sandbox.kProxyResolver;
-[EnableIfNot=is_win]
-const sandbox.mojom.Sandbox kProxyResolverSandbox
-  = sandbox.mojom.Sandbox.kUtility;
-
 // Creates a ProxyResolver that uses the provided PAC script. The ProxyResolver
 // will remain valid even after the ProxyResolverFactory has been destroyed.
 //
 // Destroying |client| before its ReportResult method is invoked may cancel
 // creation of the ProxyResolverFactory.
-[ServiceSandbox=kProxyResolverSandbox]
+// Note: on Android this lives in the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface ProxyResolverFactory {
   CreateResolver(string pac_script,
                  pending_receiver<ProxyResolver> receiver,

@@ -27,7 +27,6 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
       return true;
     case SandboxType::kXrCompositing:
       return !base::FeatureList::IsEnabled(features::kXRSandbox);
-    case SandboxType::kProxyResolver:
     case SandboxType::kPdfConversion:
     case SandboxType::kIconReader:
     case SandboxType::kMediaFoundationCdm:
@@ -126,7 +125,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #endif
 #if defined(OS_WIN)
     case SandboxType::kXrCompositing:
-    case SandboxType::kProxyResolver:
     case SandboxType::kPdfConversion:
     case SandboxType::kIconReader:
     case SandboxType::kMediaFoundationCdm:
@@ -263,8 +261,6 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
 #if defined(OS_WIN)
     case SandboxType::kXrCompositing:
       return switches::kXrCompositingSandbox;
-    case SandboxType::kProxyResolver:
-      return switches::kProxyResolverSandbox;
     case SandboxType::kPdfConversion:
       return switches::kPdfConversionSandbox;
     case SandboxType::kIconReader:
@@ -339,8 +335,6 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
 #if defined(OS_WIN)
   if (sandbox_string == switches::kXrCompositingSandbox)
     return SandboxType::kXrCompositing;
-  if (sandbox_string == switches::kProxyResolverSandbox)
-    return SandboxType::kProxyResolver;
   if (sandbox_string == switches::kPdfConversionSandbox)
     return SandboxType::kPdfConversion;
   if (sandbox_string == switches::kIconReaderSandbox)

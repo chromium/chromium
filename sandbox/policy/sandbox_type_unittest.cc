@@ -100,12 +100,6 @@ TEST(SandboxTypeTest, Utility) {
   EXPECT_EQ(SandboxType::kXrCompositing,
             SandboxTypeFromCommandLine(command_line10));
 
-  base::CommandLine command_line11(command_line);
-  SetCommandLineFlagsForSandboxType(&command_line11,
-                                    SandboxType::kProxyResolver);
-  EXPECT_EQ(SandboxType::kProxyResolver,
-            SandboxTypeFromCommandLine(command_line11));
-
   base::CommandLine command_line12(command_line);
   SetCommandLineFlagsForSandboxType(&command_line12,
                                     SandboxType::kPdfConversion);

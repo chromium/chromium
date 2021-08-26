@@ -195,13 +195,6 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
       return false;
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kProxyResolver) {
-    sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
-    flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-    if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
-      return false;
-  }
-
   if (sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
     policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
     policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
