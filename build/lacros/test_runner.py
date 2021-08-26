@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -39,9 +39,15 @@
 
   The above command starts ash-chrome with xvfb instead of an X11 window, and
   it's useful when running tests without a display attached, such as sshing.
+
+  For version skew testing when passing --ash-chrome-path-override, the runner
+  will try to find the ash major version and Lacros major version. If ash is
+  newer(major version larger), the runner will not run any tests and just
+  returns success.
 """
 
 import argparse
+import json
 import os
 import logging
 import re
@@ -266,6 +272,63 @@ def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
                           enable_mojo_crosapi)
 
 
+def _ExtractAshMajorVersion(file_path):
+  """Extract major version from file_path.
+
+  File path like this:
+  ../../lacros_version_skew_tests_v94.0.4588.0/test_ash_chrome
+
+  Returns:
+    int representing the major version. Or 0 if it can't extract
+        major version.
+  """
+  m = re.search(
+      'lacros_version_skew_tests_v(?P<version>[0-9]+).[0-9]+.[0-9]+.[0-9]+/',
+      file_path)
+  if (m and 'version' in m.groupdict().keys()):
+    return int(m.group('version'))
+  logging.warning('Can not find the ash version in %s.' % file_path)
+  # Returns ash major version as 0, so we can still run tests.
+  # This is likely happen because user is running in local environments.
+  return 0
+
+
+def _FindLacrosMajorVersionFromMetadata():
+  # This handles the logic on bots. When running on bots,
+  # we don't copy source files to test machines. So we build a
+  # metadata.json file which contains version information.
+  if not os.path.exists('metadata.json'):
+    logging.error('Can not determine current version.')
+    # Returns 0 so it can't run any tests.
+    return 0
+  version = ''
+  with open('metadata.json', 'r') as file:
+    content = json.load(file)
+    version = content['content']['version']
+  return int(version[:version.find('.')])
+
+
+def _FindLacrosMajorVersion():
+  """Returns the major version in the current checkout.
+
+  It would try to read src/chrome/VERSION. If it's not available,
+  then try to read metadata.json.
+
+  Returns:
+    int representing the major version. Or 0 if it fails to
+    determine the version.
+  """
+  version_file = os.path.abspath(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                   '../../chrome/VERSION'))
+  # This is mostly happens for local development where
+  # src/chrome/VERSION exists.
+  if os.path.exists(version_file):
+    lines = open(version_file, 'r').readlines()
+    return int(lines[0][lines[0].find('=') + 1:-1])
+  return _FindLacrosMajorVersionFromMetadata()
+
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
@@ -275,6 +338,14 @@ def _RunTestWithAshChrome(args, forward_args):
   """
   if args.ash_chrome_path_override:
     ash_chrome_file = args.ash_chrome_path_override
+    ash_major_version = _ExtractAshMajorVersion(ash_chrome_file)
+    lacros_major_version = _FindLacrosMajorVersion()
+    if ash_major_version > lacros_major_version:
+      logging.warning('''Not running any tests, because we do not \
+support version skew testing for Lacros M%s against ash M%s''' %
+                      (lacros_major_version, ash_major_version))
+      # Although we don't run any tests, this is considered as success.
+      return 0
     if not os.path.exists(ash_chrome_file):
       logging.error("""Can not find ash chrome at %s. Did you download \
 the ash from CIPD? If you don't plan to build your own ash, you need \
