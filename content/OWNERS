@@ -39,7 +39,7 @@ per-file *browser_task_environment*=gab@chromium.org
 per-file *browser_thread*=gab@chromium.org
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file *fuchsia*=file://build/fuchsia/OWNERS
 
 # For Mac-specific changes:
 per-file *_mac.*=ellyjones@chromium.org
