@@ -179,6 +179,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     std::string app_id;
   };
 
+  struct UsageTime {
+    base::TimeDelta running_time;
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
+    AppTypeName app_type_name = AppTypeName::kUnknown;
+    bool window_is_closed = false;
+  };
+
   // AppRegistryCache::Observer:
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -228,8 +235,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   int user_type_by_device_type_;
 
-  std::map<std::string, ukm::SourceId> app_id_to_source_id_;
-
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
   std::map<aura::Window*, RunningStartTime> running_start_time_;
@@ -238,14 +243,14 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // |start_time_per_five_minutes_|, |app_type_running_time_per_five_minutes_|,
   // |app_type_v2_running_time_per_five_minutes_|, and
-  // |app_id_running_time_per_five_minutes_| are used for accumulating app
+  // |usage_time_per_five_minutes_| are used for accumulating app
   // running duration per 5 minutes interval.
   std::map<aura::Window*, RunningStartTime> start_time_per_five_minutes_;
   std::map<AppTypeName, base::TimeDelta>
       app_type_running_time_per_five_minutes_;
   std::map<AppTypeNameV2, base::TimeDelta>
       app_type_v2_running_time_per_five_minutes_;
-  std::map<std::string, base::TimeDelta> app_id_running_time_per_five_minutes_;
+  std::map<aura::Window*, UsageTime> usage_time_per_five_minutes_;
 
   std::set<apps::mojom::AppType> initialized_app_types;
 };

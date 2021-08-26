@@ -653,6 +653,7 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
       .SetLaunchSource((int)launch_source)
       .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
       .Record(ukm::UkmRecorder::Get());
+  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 }
 
 void AppPlatformMetrics::RecordAppUninstallUkm(
@@ -676,6 +677,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
       .SetUninstallSource((int)uninstall_source)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
+  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 }
 
 void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
@@ -758,6 +760,12 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
     return;
   }
 
+  bool is_close = update.State() & apps::InstanceState::kDestroyed;
+  auto usage_time_it = usage_time_per_five_minutes_.find(update.Window());
+  if (is_close && usage_time_it != usage_time_per_five_minutes_.end()) {
+    usage_time_it->second.window_is_closed = true;
+  }
+
   // The app window is inactivated.
   if (it == running_start_time_.end()) {
     return;
@@ -765,16 +773,24 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   AppTypeName app_type_name = it->second.app_type_name;
   AppTypeNameV2 app_type_name_v2 = it->second.app_type_name_v2;
+
+  if (usage_time_it == usage_time_per_five_minutes_.end()) {
+    usage_time_per_five_minutes_[it->first].source_id = GetSourceId(app_id);
+    usage_time_it = usage_time_per_five_minutes_.find(it->first);
+  }
+  usage_time_it->second.app_type_name = app_type_name;
+
   running_duration_[app_type_name] +=
       base::TimeTicks::Now() - it->second.start_time;
-  running_start_time_.erase(it);
 
   base::TimeDelta running_time =
       base::TimeTicks::Now() -
       start_time_per_five_minutes_[update.Window()].start_time;
   app_type_running_time_per_five_minutes_[app_type_name] += running_time;
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
-  app_id_running_time_per_five_minutes_[app_id] += running_time;
+  usage_time_it->second.running_time += running_time;
+
+  running_start_time_.erase(it);
   start_time_per_five_minutes_.erase(update.Window());
 
   should_refresh_duration_pref = true;
@@ -907,7 +923,15 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
         running_time;
     app_type_v2_running_time_per_five_minutes_[it.second.app_type_name_v2] +=
         running_time;
-    app_id_running_time_per_five_minutes_[it.second.app_id] += running_time;
+
+    auto usage_time_it = usage_time_per_five_minutes_.find(it.first);
+    if (usage_time_it == usage_time_per_five_minutes_.end()) {
+      usage_time_per_five_minutes_[it.first].source_id =
+          GetSourceId(it.second.app_id);
+      usage_time_it = usage_time_per_five_minutes_.find(it.first);
+    }
+    usage_time_it->second.app_type_name = it.second.app_type_name;
+    usage_time_it->second.running_time += running_time;
     it.second.start_time = base::TimeTicks::Now();
   }
 
@@ -934,26 +958,33 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     return;
   }
 
-  for (auto it : app_id_running_time_per_five_minutes_) {
-    const std::string& app_id = it.first;
-    apps::AppTypeName app_type_name =
-        GetAppTypeName(profile_, app_registry_cache_.GetAppType(app_id), app_id,
-                       apps::mojom::LaunchContainer::kLaunchContainerWindow);
-
+  std::vector<aura::Window*> closed_windows;
+  for (auto& it : usage_time_per_five_minutes_) {
+    apps::AppTypeName app_type_name = it.second.app_type_name;
     if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
       continue;
     }
 
-    ukm::SourceId source_id = GetSourceId(app_id);
-    if (source_id != ukm::kInvalidSourceId) {
+    ukm::SourceId source_id = it.second.source_id;
+    if (source_id != ukm::kInvalidSourceId &&
+        !it.second.running_time.is_zero()) {
       ukm::builders::ChromeOSApp_UsageTime builder(source_id);
       builder.SetAppType((int)app_type_name)
-          .SetDuration(it.second.InMilliseconds())
+          .SetDuration(it.second.running_time.InMilliseconds())
           .SetUserDeviceMatrix(user_type_by_device_type_)
           .Record(ukm::UkmRecorder::Get());
     }
+    if (it.second.window_is_closed) {
+      closed_windows.push_back(it.first);
+      ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+    } else {
+      it.second.running_time = base::TimeDelta();
+    }
   }
-  app_id_running_time_per_five_minutes_.clear();
+
+  for (auto* closed_window : closed_windows) {
+    usage_time_per_five_minutes_.erase(closed_window);
+  }
 }
 
 void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
@@ -976,6 +1007,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       .SetInstallTime((int)install_time)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
+  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 }
 
 bool AppPlatformMetrics::ShouldRecordUkm() {
@@ -992,12 +1024,7 @@ bool AppPlatformMetrics::ShouldRecordUkm() {
 }
 
 ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
-  auto it = app_id_to_source_id_.find(app_id);
-  if (it != app_id_to_source_id_.end()) {
-    return it->second;
-  }
-
-  ukm::SourceId source_id;
+  ukm::SourceId source_id = ukm::kInvalidSourceId;
   apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
@@ -1034,7 +1061,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
     case apps::mojom::AppType::kBorealis:
       return ukm::kInvalidSourceId;
   }
-  app_id_to_source_id_[app_id] = source_id;
   return source_id;
 }
 
