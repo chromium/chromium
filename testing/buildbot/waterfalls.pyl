@@ -2885,7 +2885,6 @@
           'all',
         ],
         'mixins': [
-          'fuchsia-fvdl',
           'linux-bionic',
         ],
         'swarming': {
@@ -2907,7 +2906,6 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'linux',
         'mixins': [
-          'fuchsia-fvdl',
           'linux-bionic',
         ],
         'swarming': {

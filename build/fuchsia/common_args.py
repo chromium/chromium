@@ -168,6 +168,6 @@ def GetDeploymentTargetForArgs(args):
   if args.device:
     device = args.device
   else:
-    device = 'aemu' if args.target_cpu == 'x64' else 'qemu'
+    device = 'fvdl' if args.target_cpu == 'x64' else 'qemu'
 
   return _LoadTargetClass(_GetPathToBuiltinTarget(device)).CreateFromArgs(args)

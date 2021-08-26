@@ -257,7 +257,8 @@ class FuchsiaPort(base.Port):
                 require_kvm=True,
                 ram_size_mb=8192,
                 enable_graphics=False,
-                hardware_gpu=False)
+                hardware_gpu=False,
+                with_network=False)
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)
