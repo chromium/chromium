@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -129,6 +130,13 @@ class SystemWebAppDelegate {
 
   // If false, the application will not be installed.
   virtual bool IsAppEnabled() const;
+
+  // If true, GetTabMenuModel() is called to provide the tab menu model.
+  virtual bool HasCustomTabMenuModel() const;
+
+  // Optional custom tab menu model.
+  virtual std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate) const;
 
   // Returns whether the specified Tab Context Menu shortcut should be shown.
   virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
-#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
@@ -37,7 +36,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
@@ -54,33 +52,6 @@
 #endif
 
 namespace {
-
-class TerminalTabMenuModel : public ui::SimpleMenuModel {
- public:
-  explicit TerminalTabMenuModel(ui::SimpleMenuModel::Delegate* delegate)
-      : ui::SimpleMenuModel(delegate) {
-    AddItemWithStringId(TabStripModel::CommandNewTabToRight,
-                        IDS_TAB_CXMENU_NEWTABTORIGHT);
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithStringId(TabStripModel::CommandCloseTab,
-                        IDS_TAB_CXMENU_CLOSETAB);
-    AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
-                        IDS_TAB_CXMENU_CLOSEOTHERTABS);
-    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                        IDS_TAB_CXMENU_CLOSETABSTORIGHT);
-  }
-};
-
-class TerminalTabMenuModelFactory : public TabMenuModelFactory {
- public:
-  std::unique_ptr<ui::SimpleMenuModel> Create(
-      ui::SimpleMenuModel::Delegate* delegate,
-      TabMenuModelDelegate* tab_menu_model_delegate,
-      TabStripModel*,
-      int) override {
-    return std::make_unique<TerminalTabMenuModel>(delegate);
-  }
-};
 
 SkColor GetAltColor(SkColor color) {
   return color_utils::BlendForMinContrast(
@@ -278,10 +249,6 @@ bool AppBrowserController::IsInstalled() const {
 
 std::unique_ptr<TabMenuModelFactory>
 AppBrowserController::GetTabMenuModelFactory() const {
-  if (system_app() && system_app()->GetType() == SystemAppType::TERMINAL) {
-    // TODO(crbug.com/1061822) move terminal specific code out.
-    return std::make_unique<TerminalTabMenuModelFactory>();
-  }
   return nullptr;
 }
 

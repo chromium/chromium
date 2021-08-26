@@ -108,6 +108,15 @@ gfx::Rect SystemWebAppDelegate::GetDefaultBounds(Browser* browser) const {
   return {};
 }
 
+bool SystemWebAppDelegate::HasCustomTabMenuModel() const {
+  return false;
+}
+
+std::unique_ptr<ui::SimpleMenuModel> SystemWebAppDelegate::GetTabMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) const {
+  return nullptr;
+}
+
 bool SystemWebAppDelegate::ShouldShowTabContextMenuShortcut(
     Profile* profile,
     int command_id) const {

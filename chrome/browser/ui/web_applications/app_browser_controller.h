@@ -142,6 +142,7 @@ class AppBrowserController : public TabStripModelObserver,
   // the lifetime of HostedAppBrowserController).
   virtual bool IsInstalled() const;
 
+  // Returns an optional custom tab menu model factory.
   virtual std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const;
 
   // Returns true when an app's effective display mode is

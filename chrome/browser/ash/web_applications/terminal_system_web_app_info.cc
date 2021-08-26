@@ -11,12 +11,14 @@
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -74,6 +76,25 @@ bool TerminalSystemAppDelegate::HasTitlebarTerminalSelectNewTabButton() const {
 
 gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForTerminal(browser);
+}
+
+bool TerminalSystemAppDelegate::HasCustomTabMenuModel() const {
+  return true;
+}
+
+std::unique_ptr<ui::SimpleMenuModel> TerminalSystemAppDelegate::GetTabMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) const {
+  auto result = std::make_unique<ui::SimpleMenuModel>(delegate);
+  result->AddItemWithStringId(TabStripModel::CommandNewTabToRight,
+                              IDS_TAB_CXMENU_NEWTABTORIGHT);
+  result->AddSeparator(ui::NORMAL_SEPARATOR);
+  result->AddItemWithStringId(TabStripModel::CommandCloseTab,
+                              IDS_TAB_CXMENU_CLOSETAB);
+  result->AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
+                              IDS_TAB_CXMENU_CLOSEOTHERTABS);
+  result->AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                              IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  return result;
 }
 
 bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(

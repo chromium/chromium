@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -41,6 +42,33 @@ namespace {
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
 }
 #endif
+
+namespace {
+
+// SystemWebAppDelegate provides menu.
+class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
+ public:
+  explicit SystemAppTabMenuModelFactory(
+      const web_app::SystemWebAppDelegate* system_app)
+      : system_app_(system_app) {}
+  SystemAppTabMenuModelFactory(const SystemAppTabMenuModelFactory&) = delete;
+  SystemAppTabMenuModelFactory& operator=(const SystemAppTabMenuModelFactory&) =
+      delete;
+  ~SystemAppTabMenuModelFactory() override = default;
+
+  std::unique_ptr<ui::SimpleMenuModel> Create(
+      ui::SimpleMenuModel::Delegate* delegate,
+      TabMenuModelDelegate* tab_menu_model_delegate,
+      TabStripModel*,
+      int) override {
+    return system_app_->GetTabMenuModel(delegate);
+  }
+
+ private:
+  const web_app::SystemWebAppDelegate* system_app_;
+};
+
+}  // namespace
 
 namespace web_app {
 
@@ -70,6 +98,14 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
 
 bool WebAppBrowserController::IsHostedApp() const {
   return true;
+}
+
+std::unique_ptr<TabMenuModelFactory>
+WebAppBrowserController::GetTabMenuModelFactory() const {
+  if (system_app() && system_app()->HasCustomTabMenuModel()) {
+    return std::make_unique<SystemAppTabMenuModelFactory>(system_app());
+  }
+  return nullptr;
 }
 
 bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
