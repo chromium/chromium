@@ -8,8 +8,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +38,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 public class FollowManagementCoordinatorTest {
-    private Activity mActivity;
+    private TestActivity mActivity;
     private FollowManagementCoordinator mFollowManagementCoordinator;
 
     @Rule
@@ -49,9 +53,19 @@ public class FollowManagementCoordinatorTest {
     @Mock
     private Profile mProfile;
 
+    private static class TestActivity extends AppCompatActivity {
+        TestActivity() {}
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setTheme(R.style.Theme_BrowserUI);
+        }
+    }
+
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.setupActivity(TestActivity.class);
+
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
@@ -77,9 +91,20 @@ public class FollowManagementCoordinatorTest {
     @Test
     public void testBackArrow() {
         View outerView = mFollowManagementCoordinator.getView();
-        View backArrowView = outerView.findViewById(R.id.follow_management_back_arrow);
-
         // Send a click to the back arrow.
-        backArrowView.performClick();
+        // Note that finding the back arrow view is ugly because it doesn't
+        // have an ID.
+        boolean clicked = false;
+        ViewGroup actionBar = (ViewGroup) outerView.findViewById(R.id.action_bar);
+        for (int i = 0; i < actionBar.getChildCount(); i++) {
+            try {
+                AppCompatImageButton button = (AppCompatImageButton) actionBar.getChildAt(i);
+                button.performClick();
+                clicked = true;
+            } catch (ClassCastException e) {
+            }
+        }
+
+        assertTrue(clicked);
     }
 }

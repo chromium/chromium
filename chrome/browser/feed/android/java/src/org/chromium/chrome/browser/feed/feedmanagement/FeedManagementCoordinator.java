@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.feed.feedmanagement;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.AutoplayManagementLauncher;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
@@ -22,13 +24,13 @@ import org.chromium.ui.modelutil.ModelListAdapter;
  */
 public class FeedManagementCoordinator {
     private FeedManagementMediator mMediator;
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private final View mView;
 
     public FeedManagementCoordinator(Activity activity,
             FollowManagementLauncher followManagementLauncher,
             AutoplayManagementLauncher autoplayManagementLauncher) {
-        mActivity = activity;
+        mActivity = (AppCompatActivity) activity;
         ModelList listItems = new ModelList();
 
         // Once this is attached to the ListView, there is no need to hold a reference to it.
@@ -42,9 +44,11 @@ public class FeedManagementCoordinator {
         ListView listView = (ListView) mView.findViewById(R.id.feed_management_menu);
         listView.setAdapter(adapter);
 
-        // Set up a handler for the header to act as a back button.
-        ImageView backArrowView = (ImageView) mView.findViewById(R.id.feed_management_back_arrow);
-        backArrowView.setOnClickListener(this::handleBackArrowClick);
+        // Set up the toolbar and back button.
+        Toolbar toolbar = (Toolbar) mView.findViewById(R.id.action_bar);
+        mActivity.setSupportActionBar(toolbar);
+        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FeedManagementMediator(
                 mActivity, listItems, followManagementLauncher, autoplayManagementLauncher);
