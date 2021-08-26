@@ -318,6 +318,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "audio-url",
+    "owners": [ "enshuo", "chromeos-audio@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "auto-screen-brightness",
     "owners": [ "jiameng", "napper" ],
     "expiry_milestone": 90

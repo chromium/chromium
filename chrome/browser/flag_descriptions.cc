@@ -3983,6 +3983,11 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
+const char kAudioUrlName[] = "Enable chrome://audio";
+const char kAudioUrlDescription[] =
+    "Enable chrome://audio that is designed for debugging ChromeOS audio "
+    "issues";
+
 const char kBluetoothAdvertisementMonitoringName[] =
     "Bluetooth Advertisement Monitoring";
 const char kBluetoothAdvertisementMonitoringDescription[] =
