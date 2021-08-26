@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Cameraresolutie</translation>
 <translation id="3260401663013584785">Kan geen document waarnemen</translation>
 <translation id="3448774564454087943">De video is niet opgeslagen omdat deze te kort is</translation>
+<translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3517926952904427380">Kan geen portretfoto maken</translation>
 <translation id="3569311554794739032">Weet je zeker dat je <ph name="FILE" /> wilt verwijderen?</translation>
+<translation id="3573890771273113519">Overschakelen naar scanmodus</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Streepjescode scannen</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
@@ -109,6 +111,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8120146556401698679">Schuiven, kantelen, zoomen</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8145038249676204903">Naar foto maken</translation>
+<translation id="8167081290930651932">Opslaan als foto</translation>
 <translation id="8239780215768881278">Videomomentopname maken</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8425673304802773841">Naar beneden kantelen</translation>
