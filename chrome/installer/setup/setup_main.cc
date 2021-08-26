@@ -1148,13 +1148,19 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     // existing value.
     std::wstring token_switch_value =
         cmd_line.GetSwitchValueNative(installer::switches::kStoreDMToken);
-    absl::optional<std::string> token;
-    if (!(token = installer::DecodeDMTokenSwitchValue(token_switch_value)) ||
-        !installer::StoreDMToken(*token)) {
-      *exit_code = installer::STORE_DMTOKEN_FAILED;
-    } else {
-      *exit_code = installer::STORE_DMTOKEN_SUCCESS;
-    }
+    auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
+    *exit_code = token && installer::StoreDMToken(*token)
+                     ? installer::STORE_DMTOKEN_SUCCESS
+                     : installer::STORE_DMTOKEN_FAILED;
+  } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
+    // The value of the command line arguments is a DM token.  This is used
+    // to send the public part of the signing key to DM server.
+    std::wstring token_switch_value = cmd_line.GetSwitchValueNative(
+        installer::switches::kRotateDeviceTrustKey);
+    auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
+    *exit_code = token && installer::RotateDeviceTrustKey(*token)
+                     ? installer::ROTATE_DTKEY_SUCCESS
+                     : installer::ROTATE_DTKEY_FAILED;
 #endif
   } else {
     handled = false;

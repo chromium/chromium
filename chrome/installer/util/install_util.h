@@ -11,6 +11,7 @@
 
 #include <windows.h>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -191,6 +192,13 @@ class InstallUtil {
   static std::pair<base::win::RegKey, std::wstring>
   GetCloudManagementDmTokenLocation(ReadOnly read_only,
                                     BrowserLocation browser_location);
+
+  // Returns the registry key and value names from/to which the device trust
+  // signing key and trust level may be read/written. |read_only| indicates
+  // whether they key is opened for reading the value or writing it. The
+  // returned key will be invalid if it could not be opened/created.
+  static std::tuple<base::win::RegKey, std::wstring, std::wstring>
+  GetDeviceTrustSigningKeyLocation(ReadOnly read_only);
 
   // Returns the token used to enroll this chrome instance for machine level
   // user cloud policies.  Returns an empty string if this machine should not

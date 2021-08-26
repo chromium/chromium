@@ -40,6 +40,7 @@ class DesktopAttestationService : public AttestationService {
       std::unique_ptr<DeviceTrustSignals> signals,
       AttestationCallback callback) override;
   void StampReport(DeviceTrustReportEvent& report) override;
+  bool RotateSigningKey() override;
 
  private:
   // Verify challenge comes from Verify Access.

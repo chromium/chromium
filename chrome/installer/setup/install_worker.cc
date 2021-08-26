@@ -363,6 +363,43 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   }
 }
 
+// Adds work items to add the "rotate-dtkey" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used to rotate the device signing key stored in HKLM.
+void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
+                                       const base::FilePath& setup_path,
+                                       const base::Version& new_version,
+                                       WorkItemList* install_list) {
+  if (!installer_state.system_install())
+    return;
+
+  const HKEY root_key = installer_state.root_key();
+  const std::wstring cmd_key(GetCommandKey(kCmdRotateDeviceTrustKey));
+
+  // Register a command to allow Chrome to request Google Update to run
+  // setup.exe --rotate-dtkey=<dm-token>, which will rotate the key and store
+  // it in the registry.
+  base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
+                                 .Append(setup_path.BaseName()));
+  cmd_line.AppendSwitchASCII(switches::kRotateDeviceTrustKey, "%1");
+  cmd_line.AppendSwitch(switches::kSystemLevel);
+  cmd_line.AppendSwitch(switches::kVerboseLogging);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+
+  // The substitution for the insert sequence "%1" here is performed safely by
+  // Google Update rather than insecurely by the Windows shell. Disable the
+  // safety check for unsafe insert sequences since the right thing is
+  // happening. Do not blindly copy this pattern in new code. Check with a
+  // member of base/win/OWNERS if in doubt.
+  AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+
+  // TODO(rogerta): For now setting this command as web accessible is required
+  // by Google Update.  Could revisit this should Google Update change the
+  // way permissions are handled for commands.
+  cmd.set_is_web_accessible(true);
+  cmd.AddWorkItems(root_key, cmd_key, install_list);
+}
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -781,6 +818,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddEnterpriseEnrollmentWorkItems(installer_state, setup_path, new_version,
                                    install_list);
+  AddEnterpriseDeviceTrustWorkItems(installer_state, setup_path, new_version,
+                                    install_list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
   AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                             install_list);

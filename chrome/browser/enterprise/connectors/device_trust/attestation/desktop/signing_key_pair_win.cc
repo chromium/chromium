@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 
 #include "base/win/registry.h"
-#include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/install_util.h"
 #include "crypto/unexportable_key.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -13,14 +13,6 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 
 namespace {
-
-constexpr wchar_t kSigningKeyName[] = L"signing_key";
-constexpr wchar_t kTrustLevelName[] = L"trust_level";
-
-// Gets the registry path to store the device trust values.
-std::wstring GetRegistryPath() {
-  return install_static::GetRegistryPath() + L"\\DeviceTrust";
-}
 
 SigningKeyPair::KeyInfo InvalidKeyInfo() {
   return {BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()};
@@ -43,26 +35,32 @@ SigningKeyPairWin::GetTpmBackedKeyProvider() {
 
 bool SigningKeyPairWin::StoreKeyPair(KeyTrustLevel trust_level,
                                      std::vector<uint8_t> wrapped) {
-  // Write the wrapped key's bytes to the HKLM register.  Note that this will
-  // only work if the calling process is running elevated.
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, GetRegistryPath().c_str(),
-                        KEY_SET_VALUE | KEY_WOW64_64KEY);
+  base::win::RegKey key;
+  std::wstring signingkey_name;
+  std::wstring trustlevel_name;
+  std::tie(key, signingkey_name, trustlevel_name) =
+      InstallUtil::GetDeviceTrustSigningKeyLocation(
+          InstallUtil::ReadOnly(false));
   if (!key.Valid())
     return false;
 
-  return key.WriteValue(kSigningKeyName, wrapped.data(), wrapped.size(),
+  return key.WriteValue(signingkey_name.c_str(), wrapped.data(), wrapped.size(),
                         REG_BINARY) == ERROR_SUCCESS &&
-         key.WriteValue(kTrustLevelName, trust_level) == ERROR_SUCCESS;
+         key.WriteValue(trustlevel_name.c_str(), trust_level) == ERROR_SUCCESS;
 }
 
 SigningKeyPair::KeyInfo SigningKeyPairWin::LoadKeyPair() {
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, GetRegistryPath().c_str(),
-                        KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+  base::win::RegKey key;
+  std::wstring signingkey_name;
+  std::wstring trustlevel_name;
+  std::tie(key, signingkey_name, trustlevel_name) =
+      InstallUtil::GetDeviceTrustSigningKeyLocation(
+          InstallUtil::ReadOnly(true));
   if (!key.Valid())
     return InvalidKeyInfo();
 
   DWORD trust_level_dw;
-  auto res = key.ReadValueDW(kTrustLevelName, &trust_level_dw);
+  auto res = key.ReadValueDW(trustlevel_name.c_str(), &trust_level_dw);
   if (res != ERROR_SUCCESS)
     return InvalidKeyInfo();
 
@@ -78,10 +76,10 @@ SigningKeyPair::KeyInfo SigningKeyPairWin::LoadKeyPair() {
   std::vector<uint8_t> wrapped;
   DWORD type = REG_NONE;
   DWORD size = 0;
-  res = key.ReadValue(kSigningKeyName, nullptr, &size, &type);
+  res = key.ReadValue(signingkey_name.c_str(), nullptr, &size, &type);
   if (res == ERROR_SUCCESS && type == REG_BINARY) {
     wrapped.resize(size);
-    res = key.ReadValue(kSigningKeyName, wrapped.data(), &size, &type);
+    res = key.ReadValue(signingkey_name.c_str(), wrapped.data(), &size, &type);
   }
   if (res != ERROR_SUCCESS || type != REG_BINARY)
     return InvalidKeyInfo();

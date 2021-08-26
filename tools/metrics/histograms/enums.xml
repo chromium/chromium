@@ -75079,6 +75079,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SetupInstallResult">
+  <summary>
+    Return status of the Windows installer. The values in this enum must be kept
+    in sync with the InstallStatus enum in
+    //chrome/installer/util/util_constants.h.
+  </summary>
   <int value="0" label="First install of Chrome succeeded."/>
   <int value="1" label="Same version reinstalled for repair."/>
   <int value="2" label="Chrome successfully updated to new version."/>
@@ -75133,6 +75138,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="56" label="Autoupdates could not be enabled."/>
   <int value="57"
       label="Unpacking the (possibly patched) uncompressed archive failed."/>
+  <int value="71" label="Rotation of the device trust key failed."/>
+  <int value="72" label="Rotation of the device trust key succeeded."/>
 </enum>
 
 <enum name="SetupInstallServiceInstallResult">

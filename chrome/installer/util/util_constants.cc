@@ -151,6 +151,9 @@ const char kSelfDestruct[] = "self-destruct";
 // Show the embedded EULA dialog.
 const char kShowEula[] = "show-eula";
 
+// Rotate the stored device trust signing key.
+const char kRotateDeviceTrustKey[] = "rotate-dtkey";
+
 // Saves the specified device management token to the registry.
 const char kStoreDMToken[] = "store-dmtoken";
 
@@ -204,6 +207,7 @@ const wchar_t kChromeProxyExe[] = L"chrome_proxy.exe";
 const wchar_t kChromeProxyNewExe[] = L"new_chrome_proxy.exe";
 const wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
 const wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
+const wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
 const wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
 const wchar_t kEulaSentinelFile[] = L"EULA Accepted";
 const wchar_t kInstallBinaryDir[] = L"Application";

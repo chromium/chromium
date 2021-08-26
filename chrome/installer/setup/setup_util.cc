@@ -18,10 +18,12 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/cxx17_backports.h"
@@ -41,6 +43,7 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -763,6 +766,18 @@ bool StoreDMToken(const std::string& token) {
 
   VLOG(1) << "Successfully stored specified DMToken in the registry.";
   return true;
+}
+
+bool RotateDeviceTrustKey(const std::string& dm_token) {
+  DCHECK(install_static::IsSystemInstall());
+
+  if (dm_token.size() > kMaxDMTokenLength) {
+    LOG(ERROR) << "DMToken length out of bounds";
+    return false;
+  }
+
+  auto key_pair = enterprise_connectors::SigningKeyPair::Create();
+  return key_pair->RotateWithAdminRights(dm_token);
 }
 
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,

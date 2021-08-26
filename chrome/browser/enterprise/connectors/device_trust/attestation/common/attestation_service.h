@@ -33,6 +33,9 @@ class AttestationService {
 
   // Applies, if any, updates to a `report` about to be sent.
   virtual void StampReport(DeviceTrustReportEvent& report);
+
+  // Rotate the key used to sign in challenge response.
+  virtual bool RotateSigningKey();
 };
 
 }  // namespace enterprise_connectors

@@ -601,12 +601,60 @@ TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
 TEST(SetupUtilTest, StoreDMTokenToRegistryShouldFailWhenDMTokenTooLarge) {
   install_static::ScopedInstallDetails scoped_install_details(true);
   registry_util::RegistryOverrideManager registry_override_manager;
-  registry_override_manager.OverrideRegistry(HKEY_LOCAL_MACHINE);
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager.OverrideRegistry(HKEY_LOCAL_MACHINE));
 
   std::string token_too_large(installer::kMaxDMTokenLength + 1, 'x');
   ASSERT_GT(token_too_large.size(), installer::kMaxDMTokenLength);
 
   EXPECT_FALSE(installer::StoreDMToken(token_too_large));
+}
+
+TEST(SetupUtilTest, RotateDTKeySuccess) {
+  install_static::ScopedInstallDetails scoped_install_details(true);
+  registry_util::RegistryOverrideManager registry_override_manager;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  // Use the 2 argument std::string constructor so that the length of the string
+  // is not calculated by assuming the input char array is null terminated.
+  static constexpr char kTokenData[] = "tokens are \0 binary data";
+  constexpr DWORD kExpectedSize = sizeof(kTokenData) - 1;
+  std::string token(&kTokenData[0], kExpectedSize);
+  ASSERT_EQ(token.length(), kExpectedSize);
+  ASSERT_TRUE(installer::RotateDeviceTrustKey(token));
+
+  base::win::RegKey key;
+  std::wstring signingkey_name;
+  std::wstring tustlevel_name;
+  std::tie(key, signingkey_name, tustlevel_name) =
+      InstallUtil::GetDeviceTrustSigningKeyLocation(
+          InstallUtil::ReadOnly(true));
+  ASSERT_TRUE(key.Valid());
+
+  DWORD size = 0;
+  DWORD dtype = 0;
+  ASSERT_EQ(key.ReadValue(signingkey_name.c_str(), nullptr, &size, &dtype),
+            ERROR_SUCCESS);
+  EXPECT_EQ(dtype, REG_BINARY);
+  ASSERT_GT(size, 0u);
+
+  DWORD trust_level;
+  ASSERT_EQ(key.ReadValueDW(tustlevel_name.c_str(), &trust_level),
+            ERROR_SUCCESS);
+  EXPECT_NE(trust_level, 0u);
+}
+
+TEST(SetupUtilTest, RotateDTKeyShouldFailWhenDMTokenTooLarge) {
+  install_static::ScopedInstallDetails scoped_install_details(true);
+  registry_util::RegistryOverrideManager registry_override_manager;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  std::string token_too_large(installer::kMaxDMTokenLength + 1, 'x');
+  ASSERT_GT(token_too_large.size(), installer::kMaxDMTokenLength);
+
+  EXPECT_FALSE(installer::RotateDeviceTrustKey(token_too_large));
 }
 
 namespace installer {

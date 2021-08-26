@@ -24,7 +24,7 @@ source_set("elevated_command_support") {
 
   if (is_win) {
     sources += [ "signing_key_pair_win.cc" ]
-    deps = [ "//chrome/install_static:install_static_util" ]
+    deps = [ "//chrome/installer/util:with_no_strings" ]
   }
 
   if (is_mac) {

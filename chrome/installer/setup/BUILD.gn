@@ -101,6 +101,7 @@ if (is_win) {
 
     deps = [
       "//build:branding_buildflags",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/desktop:elevated_command_support",
       "//chrome/common:constants",
       "//chrome/common:version_header",
       "//chrome/install_static:buildflags",

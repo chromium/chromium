@@ -593,6 +593,32 @@ InstallUtil::GetCloudManagementDmTokenLocation(
 }
 
 // static
+std::tuple<base::win::RegKey, std::wstring, std::wstring>
+InstallUtil::GetDeviceTrustSigningKeyLocation(ReadOnly read_only) {
+  // The location dictates the path and WoW bit.
+  std::wstring key_path = L"SOFTWARE\\";
+  install_static::AppendChromeInstallSubDirectory(
+      install_static::InstallDetails::Get().mode(), /*include_suffix=*/false,
+      &key_path)
+      .append(L"\\DeviceTrust");
+  base::win::RegKey key;
+  if (read_only) {
+    key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
+             KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+  } else {
+    auto result = key.Create(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                             KEY_SET_VALUE | KEY_WOW64_64KEY);
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to create/open registry key HKLM\\" << key_path
+                  << " for writing";
+    }
+  }
+
+  return {std::move(key), L"signing_key", L"trust_level"};
+}
+
+// static
 std::wstring InstallUtil::GetCloudManagementEnrollmentToken() {
   // Because chrome needs to know if machine level user cloud policies must be
   // initialized even before the entire policy service is brought up, this

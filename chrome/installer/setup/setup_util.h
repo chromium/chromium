@@ -149,6 +149,11 @@ absl::optional<std::string> DecodeDMTokenSwitchValue(
 // install modes of the browser (i.e., stable and all three side-by-side modes).
 bool StoreDMToken(const std::string& token);
 
+// Rotates the device trust signing key and saves it to a global location on
+// the machine accessible to all install modes of the browser (i.e., stable and
+// all three side-by-side modes).
+bool RotateDeviceTrustKey(const std::string& dm_token);
+
 // Returns the file path to notification_helper.exe (in |version| directory).
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
                                          const base::Version& version);

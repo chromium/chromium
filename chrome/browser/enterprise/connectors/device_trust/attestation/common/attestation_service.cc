@@ -12,4 +12,8 @@ void AttestationService::StampReport(DeviceTrustReportEvent& report) {
   // No-op by default.
 }
 
+bool AttestationService::RotateSigningKey() {
+  return false;
+}
+
 }  // namespace enterprise_connectors
