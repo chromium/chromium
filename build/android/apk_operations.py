@@ -557,7 +557,7 @@ class _LogcatProcessor(object):
       """Prints queued lines after sending them through stack.py."""
       crash_lines = self._crash_lines_buffer
       self._crash_lines_buffer = None
-      with tempfile.NamedTemporaryFile() as f:
+      with tempfile.NamedTemporaryFile(mode='w') as f:
         f.writelines(x[0].message + '\n' for x in crash_lines)
         f.flush()
         proc = self._stack_script_context.Popen(
