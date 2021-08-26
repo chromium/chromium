@@ -2087,6 +2087,21 @@
             ]
         }
     ],
+    "ClankAppFlowsLoggingStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeedReliabilityLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankDetailedLanguageSettings": [
         {
             "platforms": [
