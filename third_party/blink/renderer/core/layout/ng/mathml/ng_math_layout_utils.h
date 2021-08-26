@@ -106,6 +106,9 @@ LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
 // See https://mathml-refresh.github.io/mathml-core/#embellished-operators
 struct MathMLEmbellishedOperatorProperties {
   bool has_movablelimits;
+  bool is_large_op;
+  bool is_stretchy;
+  bool is_vertical;
   LayoutUnit lspace;
   LayoutUnit rspace;
 };

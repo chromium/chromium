@@ -387,6 +387,14 @@ GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
   properties.has_movablelimits =
       core_operator->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
 
+  properties.is_stretchy =
+      core_operator->HasBooleanProperty(MathMLOperatorElement::kStretchy);
+
+  properties.is_large_op =
+      core_operator->HasBooleanProperty(MathMLOperatorElement::kLargeOp);
+
+  properties.is_vertical = core_operator->GetOperatorContent().is_vertical;
+
   LayoutUnit leading_space(core_operator->DefaultLeadingSpace() *
                            core_operator_style.FontSize());
   properties.lspace =
