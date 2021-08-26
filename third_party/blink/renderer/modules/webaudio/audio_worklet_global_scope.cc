@@ -218,7 +218,10 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
     const String& name) {
-  return processor_definition_map_.DeprecatedAtOrEmptyValue(name);
+  const auto it = processor_definition_map_.find(name);
+  if (it == processor_definition_map_.end())
+    return nullptr;
+  return it->value.Get();
 }
 
 unsigned AudioWorkletGlobalScope::NumberOfRegisteredDefinitions() {
