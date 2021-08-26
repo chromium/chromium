@@ -3885,6 +3885,11 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+extern const char kAppDiscoveryForOobeName[] =
+    "OOBE app recommendations with App Discovery Service.";
+extern const char kAppDiscoveryForOobeDescription[] =
+    "Use the App Discovery Service to request recommended apps for OOBE.";
+
 extern const char kAppListBubbleName[] =
     "Productivity experiment: App Launcher";
 extern const char kAppListBubbleDescription[] =

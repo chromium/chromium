@@ -47121,6 +47121,7 @@ from previous Chrome versions.
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
+  <int value="-1973559591" label="AppDiscoveryForOobe:enabled"/>
   <int value="-1972383451" label="disable-pinch"/>
   <int value="-1972312724" label="OfflinePagesLoadSignalCollecting:enabled"/>
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
@@ -51202,6 +51203,7 @@ from previous Chrome versions.
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
+  <int value="1265587614" label="AppDiscoveryForOobe:disabled"/>
   <int value="1265666387" label="DesktopPWAsAppIconShortcutsMenu:disabled"/>
   <int value="1266156008" label="IdentityDisc:disabled"/>
   <int value="1266525177"

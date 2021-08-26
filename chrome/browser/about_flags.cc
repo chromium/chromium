@@ -7573,6 +7573,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-app-discovery-for-oobe",
+     flag_descriptions::kAppDiscoveryForOobeName,
+     flag_descriptions::kAppDiscoveryForOobeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
