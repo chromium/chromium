@@ -74,6 +74,8 @@ bool IsSaveCardMessagesUiEnabled();
 
 bool IsUpdatePasswordMessagesUiEnabled();
 
+int GetSavePasswordMessageDismissDurationMs();
+
 bool UseFollowupButtonTextForUpdatePasswordButton();
 
 }  // namespace messages

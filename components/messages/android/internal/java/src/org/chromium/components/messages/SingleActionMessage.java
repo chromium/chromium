@@ -125,8 +125,9 @@ public class SingleActionMessage implements MessageStateHandler {
                 || dismissReason == DismissReason.SECONDARY_ACTION
                 || dismissReason == DismissReason.GESTURE) {
             // Only record time to dismiss when the user explicitly dismissed the message.
-            MessagesMetrics.recordTimeToAction(
-                    getMessageIdentifier(), MessagesMetrics.now() - mMessageShownTime);
+            MessagesMetrics.recordTimeToAction(getMessageIdentifier(),
+                    dismissReason == DismissReason.GESTURE,
+                    MessagesMetrics.now() - mMessageShownTime);
         }
     }
 

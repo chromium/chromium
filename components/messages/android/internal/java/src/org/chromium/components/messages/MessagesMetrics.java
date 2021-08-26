@@ -17,6 +17,8 @@ public class MessagesMetrics {
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
     private static final String TIME_TO_ACTION_HISTOGRAM_PREFIX = "Android.Messages.TimeToAction.";
+    private static final String TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX =
+            "Android.Messages.TimeToAction.Dismiss.";
 
     /** Records metrics when a message is enqueued. */
     public static void recordMessageEnqueued(@MessageIdentifier int messageIdentifier) {
@@ -37,11 +39,15 @@ public class MessagesMetrics {
      * Records metrics with duration of time a message was visible before it was dismissed by a user
      * action.
      */
-    public static void recordTimeToAction(
-            @MessageIdentifier int messageIdentifier, long durationMs) {
-        String histogramName = TIME_TO_ACTION_HISTOGRAM_PREFIX
-                + messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(histogramName, durationMs);
+    public static void recordTimeToAction(@MessageIdentifier int messageIdentifier,
+            boolean messageDismissedByGesture, long durationMs) {
+        String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
+        RecordHistogram.recordMediumTimesHistogram(
+                TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
+        if (messageDismissedByGesture) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
+        }
     }
 
     /**
