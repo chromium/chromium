@@ -58,17 +58,5 @@ float GetNextMagnifierScaleValue(int delta_index,
   return base::clamp(new_scale, min_scale, max_scale);
 }
 
-ui::InputMethod* GetInputMethod(aura::Window* root_window) {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
-  if (bridge && bridge->GetInputContextHandler())
-    return bridge->GetInputContextHandler()->GetInputMethod();
-
-  if (root_window && root_window->GetHost())
-    return root_window->GetHost()->GetInputMethod();
-
-  // Needed by a handful of browser tests that use MockInputMethod.
-  return Shell::GetRootWindowForNewWindows()->GetHost()->GetInputMethod();
-}
-
 }  // namespace magnifier_utils
 }  // namespace ash

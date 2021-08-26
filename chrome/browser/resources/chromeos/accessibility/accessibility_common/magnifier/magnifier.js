@@ -38,9 +38,15 @@ export class Magnifier {
     this.focusHandler_ = new EventHandler(
         [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
 
+    /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
         [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
         this.onActiveDescendantChanged_.bind(this));
+
+    /** @private {!EventHandler} */
+    this.onCaretBoundsChangedHandler = new EventHandler(
+        [], chrome.automation.EventType.CARET_BOUNDS_CHANGED,
+        this.onCaretBoundsChanged.bind(this));
 
     this.init_();
   }
@@ -49,6 +55,7 @@ export class Magnifier {
   onMagnifierDisabled() {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
+    this.onCaretBoundsChangedHandler.stop();
 
     chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
         this.onMagnifierBoundsChanged_);
@@ -68,6 +75,8 @@ export class Magnifier {
       this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
+      this.onCaretBoundsChangedHandler.setNodes(desktop);
+      this.onCaretBoundsChangedHandler.start();
     });
 
     chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
@@ -175,6 +184,31 @@ export class Magnifier {
     }
 
     chrome.accessibilityPrivate.moveMagnifierToRect(location);
+  }
+
+  /**
+   * Listener for when caret bounds have changed. Moves magnifier to include
+   * caret in viewport.
+   * @param {!chrome.automation.AutomationEvent} event
+   * @private
+   */
+  onCaretBoundsChanged(event) {
+    const {target} = event;
+    if (!target || !target.caretBounds) {
+      return;
+    }
+
+    // Note: onCaretBoundsChanged can get called when TextInputType is changed,
+    // during which the caret bounds are set to an empty rect (0x0), and we
+    // don't need to adjust the viewport position based on this bogus caret
+    // position. This is only a transition period; the caret position will be
+    // fixed upon focusing directly afterward.
+    if (target.caretBounds.width === 0 && target.caretBounds.height === 0) {
+      return;
+    }
+
+    const caretBoundsCenter = RectUtil.center(target.caretBounds);
+    chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
   }
 }
 

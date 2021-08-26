@@ -10,8 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ui/base/ime/chromeos/ime_bridge_observer.h"
-#include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -43,8 +41,6 @@ namespace ash {
 class ASH_EXPORT DockedMagnifierController
     : public SessionObserver,
       public ui::EventHandler,
-      public ui::IMEBridgeObserver,
-      public ui::InputMethodObserver,
       public views::WidgetObserver,
       public WindowTreeHostManager::Observer {
  public:
@@ -90,18 +86,6 @@ class ASH_EXPORT DockedMagnifierController
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // ui::IMEBridgeObserver:
-  void OnRequestSwitchEngine() override {}
-  void OnInputContextHandlerChanged() override;
-
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
-  void OnShowVirtualKeyboardIfEnabled() override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -130,8 +114,6 @@ class ASH_EXPORT DockedMagnifierController
   const ui::Layer* GetViewportMagnifierLayerForTesting() const;
 
   float GetMinimumPointOfInterestHeightForTesting() const;
-
-  gfx::Point GetLastCaretScreenPointForTesting() const;
 
  private:
   // Switches the current source root window to |new_root_window| if it's
@@ -206,20 +188,10 @@ class ASH_EXPORT DockedMagnifierController
   // ash_unittests.
   PrefService* active_user_pref_service_ = nullptr;
 
-  // The currently active input method, observed for caret bounds changes.
-  ui::InputMethod* input_method_ = nullptr;
-
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  // Most recent caret position.
-  gfx::Point last_caret_screen_point_;
 
   // Timer for moving magnifier window when it fires.
   base::OneShotTimer move_magnifier_timer_;
-
-  // Last move magnifier to rect time - used for ignoring caret updates for a
-  // few milliseconds after the last move magnifier to rect call.
-  base::TimeTicks last_move_magnifier_to_rect_;
 };
 
 }  // namespace ash

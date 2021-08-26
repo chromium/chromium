@@ -29,6 +29,7 @@ chrome.automation.EventType = {
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',
   BLUR: 'blur',
   BUSY_CHANGED: 'busyChanged',
+  CARET_BOUNDS_CHANGED: 'caretBoundsChanged',
   CHECKED_STATE_CHANGED: 'checkedStateChanged',
   CHECKED_STATE_DESCRIPTION_CHANGED: 'checkedStateDescriptionChanged',
   CHILDREN_CHANGED: 'childrenChanged',
@@ -1266,8 +1267,8 @@ chrome.automation.AutomationNode.prototype.htmlTag;
 chrome.automation.AutomationNode.prototype.hierarchicalLevel;
 
 /**
- * An array of ints of the current caret bounds in screen coordinates. (x, y, width, height).
- * @type {(!Array<number>|undefined)}
+ * The current caret bounds in screen coordinates.
+ * @type {(!chrome.automation.Rect|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-caretBounds
  */
 chrome.automation.AutomationNode.prototype.caretBounds;

@@ -8,14 +8,6 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
-namespace aura {
-class Window;
-}
-
-namespace ui {
-class InputMethod;
-}
-
 namespace ash {
 namespace magnifier_utils {
 
@@ -73,9 +65,6 @@ float ASH_EXPORT GetNextMagnifierScaleValue(int delta_index,
                                             float current_scale,
                                             float min_scale,
                                             float max_scale);
-
-// Returns the active InputMethod, or that associated with |root_window|.
-ui::InputMethod* GetInputMethod(aura::Window* root_window);
 
 }  // namespace magnifier_utils
 }  // namespace ash

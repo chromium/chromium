@@ -12,8 +12,6 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/ime/chromeos/ime_bridge_observer.h"
-#include "ui/base/ime/input_method_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_rewriter.h"
@@ -48,8 +46,6 @@ class ASH_EXPORT FullscreenMagnifierController
     : public ui::EventHandler,
       public ui::ImplicitAnimationObserver,
       public aura::WindowObserver,
-      public ui::IMEBridgeObserver,
-      public ui::InputMethodObserver,
       public ui::GestureConsumer,
       public ui::EventRewriter {
  public:
@@ -135,18 +131,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Returns the magnification transformation for the root window. If
   // magnification is disabled, return an empty Transform.
   gfx::Transform GetMagnifierTransform() const;
-
-  // ui::IMEBridgeObserver:
-  void OnRequestSwitchEngine() override {}
-  void OnInputContextHandlerChanged() override;
-
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
-  void OnShowVirtualKeyboardIfEnabled() override {}
 
   // Returns the last mouse cursor (or last touched) location.
   gfx::Point GetPointOfInterestForTesting() {
@@ -268,9 +252,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Target root window. This must not be NULL.
   aura::Window* root_window_;
 
-  // The currently active input method, observed for caret bounds changes.
-  ui::InputMethod* input_method_ = nullptr;
-
   // True if the magnified window is currently animating a change. Otherwise,
   // false.
   bool is_on_animation_ = false;
@@ -337,10 +318,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Flag to draw a preview box around magnifier viewport area instead of
   // magnifying the screen for debugging.
   bool magnifier_debug_draw_rect_ = false;
-
-  // Last move magnifier to rect time - used for ignoring caret updates for a
-  // few milliseconds after the last move magnifier to rect call.
-  base::TimeTicks last_move_magnifier_to_rect_;
 };
 
 }  // namespace ash

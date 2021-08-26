@@ -4,7 +4,6 @@
 
 GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
-GEN_INCLUDE(['../../common/rect_util.js']);
 
 /**
  * Magnifier feature using accessibility common extension browser tests.
@@ -214,6 +213,58 @@ TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
     // Move magnifier to lower right of screen.
     await movePointAssertBounds(
         {x: 650, y: 450}, {left: 650, top: 450, width: 0, height: 0});
+  });
+});
+
+TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', function() {
+  const site = `
+    <input type="text" id="input" style="width: 1000px">
+    <button id="button">Type words</button>
+    <script>
+      const input = document.getElementById('input');
+      const button = document.getElementById('button');
+      button.addEventListener('click', function() {
+        input.focus();
+        input.value += 'The quick brown fox jumps over the lazy dog.';
+      });
+    </script>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    const magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
+    const button = root.find({attributes: {name: 'Type words'}});
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    input.doDefault();
+
+    const typeWordsAssertBounds = async targetBounds => {
+      return new Promise(resolve => {
+        const boundsChangedListener = newBounds => {
+          // Verify new magnifier bounds include |targetBounds|.
+          if (RectUtil.contains(newBounds, targetBounds)) {
+            chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
+                boundsChangedListener);
+            clearInterval(id);
+            resolve();
+          }
+        };
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+            boundsChangedListener);
+
+        const id = setInterval(() => {
+          // Type words in the input field to move the text caret forward.
+          button.doDefault();
+        }, 500);
+      });
+    };
+
+    // Type words to move text cursor forward, verify magnifier contains caret.
+    await typeWordsAssertBounds({left: 400, top: 100, width: 0, height: 0});
+
+    // Additional words to move caret forward, make sure magnifier follows.
+    await typeWordsAssertBounds({left: 800, top: 100, width: 0, height: 0});
+
+    // Even more words to move caret forward, make sure magnifier follows.
+    await typeWordsAssertBounds({left: 1200, top: 100, width: 0, height: 0});
   });
 });
 

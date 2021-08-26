@@ -25,9 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/input_method.h"
-#include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
@@ -47,13 +44,6 @@ constexpr float kScrollScaleFactor = 0.0125f;
 
 constexpr char kDockedMagnifierViewportWindowName[] =
     "DockedMagnifierViewportWindow";
-
-// The duration of time to wait before moving the viewport to the caret.
-// Allows magnifier.js to preempt the viewport moving to the caret with
-// moveMagnifierToRect.
-// TODO(accessibility): Remove once caret updates handled in magnifier.js.
-constexpr base::TimeDelta kMoveMagnifierCaretDelay =
-    base::TimeDelta::FromMilliseconds(5);
 
 // Returns the current cursor location in screen coordinates.
 inline gfx::Point GetCursorScreenPoint() {
@@ -101,17 +91,9 @@ aura::Window* GetViewportParentContainerForRoot(aura::Window* root) {
 // static
 DockedMagnifierController::DockedMagnifierController() {
   Shell::Get()->session_controller()->AddObserver(this);
-  if (ui::IMEBridge::Get())
-    ui::IMEBridge::Get()->AddObserver(this);
 }
 
 DockedMagnifierController::~DockedMagnifierController() {
-  if (input_method_)
-    input_method_->RemoveObserver(this);
-  input_method_ = nullptr;
-  if (ui::IMEBridge::Get())
-    ui::IMEBridge::Get()->RemoveObserver(this);
-
   Shell* shell = Shell::Get();
   shell->session_controller()->RemoveObserver(this);
 
@@ -165,8 +147,6 @@ void DockedMagnifierController::StepToNextScaleValue(int delta_index) {
 void DockedMagnifierController::MoveMagnifierToRect(
     const gfx::Rect& rect_in_screen) {
   DCHECK(GetEnabled());
-  last_move_magnifier_to_rect_ = base::TimeTicks::Now();
-
   gfx::Point point_in_screen = rect_in_screen.CenterPoint();
 
   // If rect is too wide to fit in viewport, include as much as we can, starting
@@ -302,65 +282,6 @@ void DockedMagnifierController::OnTouchEvent(ui::TouchEvent* event) {
   CenterOnPoint(event_screen_point);
 }
 
-void DockedMagnifierController::OnInputContextHandlerChanged() {
-  if (!GetEnabled())
-    return;
-
-  auto* new_input_method =
-      magnifier_utils::GetInputMethod(current_source_root_window_);
-  if (new_input_method == input_method_)
-    return;
-
-  if (input_method_)
-    input_method_->RemoveObserver(this);
-  input_method_ = new_input_method;
-  if (input_method_)
-    input_method_->AddObserver(this);
-}
-
-void DockedMagnifierController::OnInputMethodDestroyed(
-    const ui::InputMethod* input_method) {
-  DCHECK_EQ(input_method, input_method_);
-  input_method_->RemoveObserver(this);
-  input_method_ = nullptr;
-}
-
-void DockedMagnifierController::OnCaretBoundsChanged(
-    const ui::TextInputClient* client) {
-  if (!GetEnabled()) {
-    // There is a small window between the time the "enabled" pref is updated to
-    // false, and the time we're notified with this change, upon which we remove
-    // the magnifier's viewport widget and stop observing the input method.
-    // During this short interval, if focus is in an editable element, the input
-    // method can notify us here. In this case, we should just return.
-    return;
-  }
-
-  aura::client::DragDropClient* drag_drop_client =
-      aura::client::GetDragDropClient(current_source_root_window_);
-  if (drag_drop_client && drag_drop_client->IsDragDropInProgress()) {
-    // Ignore caret bounds change events when they result from changes in window
-    // bounds due to dragging. This is to leave the viewport centered around the
-    // cursor.
-    return;
-  }
-
-  const gfx::Rect caret_screen_bounds = client->GetCaretBounds();
-  // In many cases, espcially text input events coming from webpages, the caret
-  // screen width is 0. Hence we can't check IsEmpty() since it returns true if
-  // either of the width or height is 0. We want to abort if only both are 0s.
-  if (!caret_screen_bounds.width() && !caret_screen_bounds.height())
-    return;
-
-  // Wait a few milliseconds to see if any move magnifier to rect activity is
-  // occurring.
-  // TODO(accessibility): Remove once we move caret following to magnifier.js.
-  last_caret_screen_point_ = caret_screen_bounds.CenterPoint();
-  move_magnifier_timer_.Start(
-      FROM_HERE, kMoveMagnifierCaretDelay, this,
-      &DockedMagnifierController::OnMoveMagnifierTimer);
-}
-
 void DockedMagnifierController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(widget, viewport_widget_);
 
@@ -435,11 +356,6 @@ float DockedMagnifierController::GetMinimumPointOfInterestHeightForTesting()
   return minimum_point_of_interest_height_;
 }
 
-gfx::Point DockedMagnifierController::GetLastCaretScreenPointForTesting()
-    const {
-  return last_caret_screen_point_;
-}
-
 void DockedMagnifierController::SwitchCurrentSourceRootWindowIfNeeded(
     aura::Window* new_root_window,
     bool update_old_root_workarea) {
@@ -454,14 +370,6 @@ void DockedMagnifierController::SwitchCurrentSourceRootWindowIfNeeded(
   is_minimum_point_of_interest_height_valid_ = false;
 
   if (old_root_window) {
-    // Order here matters. We should stop observing caret bounds changes before
-    // updating the work area bounds of the old root window. Otherwise, work
-    // area bounds changes will lead to caret bounds changes that recurses back
-    // here unnecessarily. https://crbug.com/1000903.
-    if (input_method_)
-      input_method_->RemoveObserver(this);
-    input_method_ = nullptr;
-
     if (update_old_root_workarea)
       SetViewportHeightInWorkArea(old_root_window, 0);
 
@@ -488,10 +396,6 @@ void DockedMagnifierController::SwitchCurrentSourceRootWindowIfNeeded(
   }
 
   CreateMagnifierViewport();
-
-  input_method_ = magnifier_utils::GetInputMethod(current_source_root_window_);
-  if (input_method_)
-    input_method_->AddObserver(this);
 
   auto* magnified_container = current_source_root_window_->GetChildById(
       kShellWindowId_MagnifiedContainer);
@@ -767,16 +671,6 @@ void DockedMagnifierController::ConfineMouseCursorOutsideViewport() {
   RootWindowController::ForWindow(current_source_root_window_)
       ->ash_host()
       ->ConfineCursorToBoundsInRoot(confine_bounds);
-}
-
-void DockedMagnifierController::OnMoveMagnifierTimer() {
-  // Ignore caret changes while move magnifier to rect activity is occurring.
-  if (base::TimeTicks::Now() - last_move_magnifier_to_rect_ <
-      magnifier_utils::kPauseCaretUpdateDuration) {
-    return;
-  }
-
-  CenterOnPoint(last_caret_screen_point_);
 }
 
 }  // namespace ash

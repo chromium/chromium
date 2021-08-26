@@ -103,6 +103,7 @@ js_library("accessibility_common") {
     ":magnifier",
     "../common:event_handler",
     "../common:instance_checker",
+    "../common:rect_util",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

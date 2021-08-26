@@ -809,43 +809,6 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
                   controller()->GetMinimumPointOfInterestHeightForTesting());
 }
 
-// Tests that the magnifier viewport follows text fields focus and input caret
-// bounds changes events.
-TEST_F(DockedMagnifierTest, TextInputFieldEvents) {
-  UpdateDisplay("600x900");
-  const auto root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(1u, root_windows.size());
-
-  MagnifierTextInputTestHelper text_input_helper;
-  text_input_helper.CreateAndShowTextInputView(gfx::Rect(500, 400, 80, 80));
-
-  // Enable the docked magnifier.
-  controller()->SetEnabled(true);
-  const float scale1 = 2.0f;
-  controller()->SetScale(scale1);
-  EXPECT_TRUE(controller()->GetEnabled());
-  EXPECT_FLOAT_EQ(scale1, controller()->GetScale());
-
-  // Focus on the text input field.
-  text_input_helper.FocusOnTextInputView();
-
-  // The text input caret center point will be our point of interest. When it
-  // goes through the magnifier layer transform, it should end up being in the
-  // center of the viewport.
-  gfx::Point caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  gfx::Point caret_screen_point =
-      controller()->GetLastCaretScreenPointForTesting();
-  ASSERT_EQ(caret_center, caret_screen_point);
-
-  // Simulate typing by pressing some keys while focus is in the text field. The
-  // transformed caret center should always go to the viewport center.
-  PressAndReleaseKey(ui::VKEY_A);
-  gfx::Point new_caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  gfx::Point new_caret_screen_point =
-      controller()->GetLastCaretScreenPointForTesting();
-  ASSERT_EQ(new_caret_center, new_caret_screen_point);
-}
-
 // Tests that there are no crashes observed when the docked magnifier switches
 // displays, moving away from a display with a maximized window that has a
 // focused text input field. Changing the old display's work area bounds should
@@ -868,44 +831,8 @@ TEST_F(DockedMagnifierTest, NoCrashDueToRecursion) {
   EXPECT_TRUE(controller()->GetEnabled());
   EXPECT_FLOAT_EQ(scale1, controller()->GetScale());
 
-  // Focus on the text input field.
-  text_input_helper.FocusOnTextInputView();
-  gfx::Point caret_center(text_input_helper.GetCaretBounds().CenterPoint());
-  gfx::Point caret_screen_point =
-      controller()->GetLastCaretScreenPointForTesting();
-  ASSERT_EQ(caret_center, caret_screen_point);
-
   // Move the mouse to the second display and expect no crashes.
   GetEventGenerator()->MoveMouseTo(1000, 300);
-}
-
-TEST_F(DockedMagnifierTest, FocusChangeEvents) {
-  UpdateDisplay("600x900");
-  const auto root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(1u, root_windows.size());
-
-  MagnifierFocusTestHelper focus_test_helper;
-  focus_test_helper.CreateAndShowFocusTestView(gfx::Point(70, 500));
-
-  // Enable the docked magnifier.
-  controller()->SetEnabled(true);
-  const float scale = 2.0f;
-  controller()->SetScale(scale);
-  EXPECT_TRUE(controller()->GetEnabled());
-  EXPECT_FLOAT_EQ(scale, controller()->GetScale());
-
-  // Focus on the first button and expect the magnifier to be centered around
-  // its center.
-  focus_test_helper.FocusFirstButton();
-  gfx::Point button_1_center(
-      focus_test_helper.GetFirstButtonBoundsInRoot().CenterPoint());
-  TestMagnifierLayerTransform(button_1_center, root_windows[0]);
-
-  // Similarly if we focus on the second button.
-  focus_test_helper.FocusSecondButton();
-  gfx::Point button_2_center(
-      focus_test_helper.GetSecondButtonBoundsInRoot().CenterPoint());
-  TestMagnifierLayerTransform(button_2_center, root_windows[0]);
 }
 
 TEST_F(DockedMagnifierTest, CaptureMode) {
