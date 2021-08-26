@@ -746,6 +746,16 @@ def _AssertTypeIsStable(kind):
           assertDependencyIsStable(response_param.kind)
 
 
+def _AssertStructIsValid(kind):
+  expected_ordinals = set(range(0, len(kind.fields)))
+  ordinals = set(map(lambda field: field.ordinal, kind.fields))
+  if ordinals != expected_ordinals:
+    raise Exception(
+        'Structs must use contiguous ordinals starting from 0. ' +
+        '{} is missing the following ordinals: {}.'.format(
+            kind.mojom_name, ', '.join(map(str, expected_ordinals - ordinals))))
+
+
 def _Module(tree, path, imports):
   """
   Args:
@@ -851,6 +861,9 @@ def _Module(tree, path, imports):
     for kind in kinds:
       if kind.stable:
         _AssertTypeIsStable(kind)
+
+  for kind in module.structs:
+    _AssertStructIsValid(kind)
 
   return module
 
