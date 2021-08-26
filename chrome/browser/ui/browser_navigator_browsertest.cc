@@ -1800,8 +1800,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(base::UTF8ToUTF16(expected_url), omnibox_view->GetText());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-// Flaky on Win and Linux. See https://crbug.com/1044335.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
+    defined(OS_MAC)
+// Flaky on Win, Linux, Mac. See https://crbug.com/1044335.
 #define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
 #else
 #define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
