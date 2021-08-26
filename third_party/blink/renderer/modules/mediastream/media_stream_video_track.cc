@@ -716,7 +716,13 @@ void MediaStreamVideoTrack::GetSettings(
 
 MediaStreamTrackPlatform::CaptureHandle
 MediaStreamVideoTrack::GetCaptureHandle() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+
   MediaStreamTrackPlatform::CaptureHandle capture_handle;
+
+  if (!source_) {
+    return capture_handle;
+  }
 
   const MediaStreamDevice& device = source_->device();
   if (!device.display_media_info.has_value()) {
