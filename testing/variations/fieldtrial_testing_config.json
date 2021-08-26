@@ -8688,23 +8688,6 @@
             ]
         }
     ],
-    "UploadBrowserDeviceIdentifier": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UploadBrowserDeviceIdentifier"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseFluentLanguageModel": [
         {
             "platforms": [
