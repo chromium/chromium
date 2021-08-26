@@ -472,7 +472,8 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
 
 void Desk::MoveWindowToDesk(aura::Window* window,
                             Desk* target_desk,
-                            aura::Window* target_root) {
+                            aura::Window* target_root,
+                            bool unminimize) {
   DCHECK(window);
   DCHECK(target_desk);
   DCHECK(target_root);
@@ -506,7 +507,7 @@ void Desk::MoveWindowToDesk(aura::Window* window,
     // been dragged and moved to another desk. Don't unminimize if the window is
     // visible on all desks since it's being moved during desk activation.
     auto* window_state = WindowState::Get(transient_root);
-    if (window_state->IsMinimized() &&
+    if (unminimize && window_state->IsMinimized() &&
         !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
       window_state->Unminimize();
     }

@@ -850,8 +850,10 @@ TEST_F(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
 
   // Moving |win2| should be enough to get its transient parent |win1| moved as
   // well.
-  desk_2->MoveWindowToDesk(win2.get(), desk_1, win1->GetRootWindow());
-  desk_2->MoveWindowToDesk(win3.get(), desk_1, win1->GetRootWindow());
+  desk_2->MoveWindowToDesk(win2.get(), desk_1, win1->GetRootWindow(),
+                           /*unminimize=*/true);
+  desk_2->MoveWindowToDesk(win3.get(), desk_1, win1->GetRootWindow(),
+                           /*unminimize=*/true);
   EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
   EXPECT_TRUE(IsStackedBelow(win2.get(), win0.get()));
   EXPECT_TRUE(IsStackedBelow(win0.get(), win3.get()));

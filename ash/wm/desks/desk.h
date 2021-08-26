@@ -136,11 +136,13 @@ class ASH_EXPORT Desk {
   void MoveWindowsToDesk(Desk* target_desk);
 
   // Moves a single |window| from this desk to |target_desk|, possibly moving it
-  // to a different display, depending on |target_root|. |window| must
-  // belong to this desk.
+  // to a different display, depending on |target_root|. |window| must belong to
+  // this desk. If |unminimize| is true, the window is unminimized after it has
+  // been moved.
   void MoveWindowToDesk(aura::Window* window,
                         Desk* target_desk,
-                        aura::Window* target_root);
+                        aura::Window* target_root,
+                        bool unminimize);
 
   aura::Window* GetDeskContainerForRoot(aura::Window* root) const;
 

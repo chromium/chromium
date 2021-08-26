@@ -663,7 +663,8 @@ bool DesksController::MoveWindowFromActiveDeskTo(
     }
   }
 
-  active_desk_->MoveWindowToDesk(window, target_desk, target_root);
+  active_desk_->MoveWindowToDesk(window, target_desk, target_root,
+                                 /*unminimize=*/true);
 
   MaybeUpdateShelfItems(/*windows_on_inactive_desk=*/{window},
                         /*windows_on_active_desk=*/{});
@@ -962,7 +963,8 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
   src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
-                             existing_app_instance_window->GetRootWindow());
+                             existing_app_instance_window->GetRootWindow(),
+                             /*unminimize=*/false);
   MaybeUpdateShelfItems(
       /*windows_on_inactive_desk=*/{},
       /*windows_on_active_desk=*/{existing_app_instance_window});
