@@ -1,14 +1,26 @@
 <style include="history-clusters-shared-style">
   :host {
-    display: block;
-    padding: 4px 0;
-    position: relative;
+    cursor: pointer;
+    display: flex;
+    height: 64px;
+  }
+
+  :host(:hover) {
+    background-color: var(--cr-hover-background-color);
   }
 
   #header {
     align-items: center;
     display: flex;
+    flex-grow: 1;
     justify-content: space-between;
+    min-width: 0;
+    outline: none;
+    user-select: none;
+  }
+
+  :host-context(.focus-outline-visible) #header:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
   #start-justified {
@@ -17,53 +29,17 @@
     display: flex;
     min-width: 0;
     text-decoration: none;
-    user-select: none;
-  }
-
-  #end-justified {
-    align-items: center;
-    display: flex;
-    flex-shrink: 0;
-    margin-inline-start: 8px;
-  }
-
-  :host(:not([is-top-visit])) #end-justified {
-    opacity: 0; /* Hides the element while keeping it in tab order. */
-  }
-
-  :host(:not([is-top-visit]):-webkit-any(:focus-within, :hover)) #end-justified {
-    opacity: 1;
-  }
-
-  page-favicon {
-    border-radius: 8px;
-    flex-shrink: 0;
-    height: var(--favicon-element-size);
-    margin-inline-end: 16px;
-    width: var(--favicon-element-size);
-  }
-
-  :host([is-top-visit]) page-favicon {
-    box-shadow: 0 4px 46px var(--favicon-drop-shadow-color);
   }
 
   #page-info {
     display: flex;
     flex-direction: column;
+    line-height: 28px;
     min-width: 0;
   }
 
   #title-and-annotations {
     display: flex;
-  }
-
-  #title,
-  .annotation {
-    line-height: 28px;
-  }
-
-  :host([is-top-visit]) #title {
-    font-size: 1rem;  /* 16px */
   }
 
   .annotation {
@@ -80,9 +56,38 @@
     margin-inline-start: 8px;
   }
 
+  #title,
+  #hostname {
+    font-size: .875rem;  /* 14px */
+  }
+
   #hostname {
     color: var(--google-blue-600);
-    line-height: 20px;
+  }
+
+  :host([is-top-visit]) #title,
+  :host([is-top-visit]) #hostname {
+    font-size: 1.125rem;  /* 18px */
+    font-weight: 700;
+  }
+
+  #debug-info {
+    color: var(--cr-secondary-text-color);
+  }
+
+  #end-justified {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    margin-inline-start: 24px;
+  }
+
+  :host(:not([is-top-visit])) #end-justified {
+    opacity: 0; /* Hides the element while keeping it in tab order. */
+  }
+
+  :host(:not([is-top-visit]):-webkit-any(:focus-within, :hover)) #end-justified {
+    opacity: 1;
   }
 
   #timestamp {
@@ -90,13 +95,15 @@
     flex-shrink: 0;
   }
 
-  #debug-info {
-    color: var(--cr-secondary-text-color);
+  #actionMenuButton {
+    --cr-icon-button-margin-end: 1px;
   }
 </style>
-<div id="header">
-  <a id="start-justified" href="[[visit.normalizedUrl.url]]">
-    <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
+<div id="header" tabindex="0">
+  <a id="start-justified" href="[[visit.normalizedUrl.url]]" tabindex="-1">
+    <page-favicon is-top-visit-favicon="[[isTopVisit]]"
+        url="[[visit.normalizedUrl]]">
+    </page-favicon>
     <div id="page-info">
       <div id="title-and-annotations">
         <span id="title" class="truncate">[[visit.pageTitle]]</span>

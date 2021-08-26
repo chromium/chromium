@@ -28,9 +28,13 @@ class PageFavicon extends PolymerElement {
   static get properties() {
     return {
       /**
-       * The URL for which the favicon is shown.
+       * Whether the favicon belongs to a top visit.
        */
-      url: Object,
+      isTopVisitFavicon: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
       /**
        * The element's style attribute.
@@ -40,6 +44,11 @@ class PageFavicon extends PolymerElement {
         reflectToAttribute: true,
         computed: `computeStyle_(url)`,
       },
+
+      /**
+       * The URL for which the favicon is shown.
+       */
+      url: Object,
     };
   }
 
@@ -47,6 +56,7 @@ class PageFavicon extends PolymerElement {
   // Properties
   //============================================================================
 
+  isTopVisitFavicon: boolean = false;
   url: Url = new Url();
 
   //============================================================================
@@ -56,7 +66,9 @@ class PageFavicon extends PolymerElement {
   private computeStyle_(): string {
     return `background-image:${
         getFaviconForPageURL(
-            this.url.url, false, '', /** --favicon-size */ 16)}`;
+            this.url.url, false, '',
+            this.isTopVisitFavicon ? /** --top-visit-favicon-size */ 24 :
+                                     /** --favicon-size */ 16)}`;
   }
 }
 

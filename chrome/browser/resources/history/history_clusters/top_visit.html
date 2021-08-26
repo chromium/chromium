@@ -6,11 +6,7 @@
   }
 
   #related-content {
-    margin-inline-start: var(--indentation);
-  }
-
-  #related-visits {
-    margin-inline-start: calc(-1 * (var(--favicon-element-size) - var(--favicon-size)) / 2);
+    margin-inline-start: calc(var(--top-visit-favicon-size) + var(--favicon-margin));
   }
 
   #related-searches {
@@ -66,6 +62,7 @@
     display: flex;
     justify-content: center;
     min-width: calc(var(--cluster-width) / 4);
+    outline: none;
     overflow: hidden;
     position: relative;
   }
@@ -80,6 +77,10 @@
 
   #toggle-button:active {
     background-color: var(--cr-active-background-color);
+  }
+
+  :host-context(.focus-outline-visible) #toggle-button:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
   #toggle-icon {
@@ -117,7 +118,7 @@
   <div id="visibility-toggle" hidden="[[!hiddenRelatedVisits_.length]]">
     <div id="horizontal-line"></div>
     <div id="toggle-button-white-background" class="pill"></div>
-    <div id="toggle-button" class="pill pill-padding-icon-end" tabindex="0"
+    <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
         on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
       <span>[[toggleButtonLabel_]]</span>
       <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
