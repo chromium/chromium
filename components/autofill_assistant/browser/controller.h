@@ -231,6 +231,7 @@ class Controller : public ScriptExecutorDelegate,
                           const ValueProto& value) override;
   void GetTouchableArea(std::vector<RectF>* area) const override;
   void GetRestrictedArea(std::vector<RectF>* area) const override;
+  void GetVisualViewport(RectF* visual_viewport) const override;
   void OnFatalError(const std::string& error_message,
                     bool show_feedback_chip,
                     Metrics::DropOutReason reason) override;
@@ -371,7 +372,8 @@ class Controller : public ScriptExecutorDelegate,
   void OnValueChanged(const std::string& identifier,
                       const ValueProto& new_value) override;
 
-  void OnTouchableAreaChanged(const std::vector<RectF>& touchable_areas,
+  void OnTouchableAreaChanged(const RectF& visual_viewport,
+                              const std::vector<RectF>& touchable_areas,
                               const std::vector<RectF>& restricted_areas);
 
   void SetOverlayColors(std::unique_ptr<OverlayColors> colors);

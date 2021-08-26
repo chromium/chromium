@@ -670,7 +670,9 @@ void UiControllerAndroid::RestoreUi() {
   ui_delegate_->GetTouchableArea(&area);
   std::vector<RectF> restricted_area;
   ui_delegate_->GetRestrictedArea(&restricted_area);
-  OnTouchableAreaChanged(area, restricted_area);
+  RectF visual_viewport;
+  ui_delegate_->GetVisualViewport(&visual_viewport);
+  OnTouchableAreaChanged(visual_viewport, area, restricted_area);
   OnViewportModeChanged(ui_delegate_->GetViewportMode());
   OnPeekModeChanged(ui_delegate_->GetPeekMode());
   OnFormChanged(ui_delegate_->GetForm(), ui_delegate_->GetFormResult());
@@ -1049,6 +1051,7 @@ void UiControllerAndroid::OnShouldShowOverlayChanged(bool should_show) {
 }
 
 void UiControllerAndroid::OnTouchableAreaChanged(
+    const RectF& visual_viewport,
     const std::vector<RectF>& touchable_areas,
     const std::vector<RectF>& restricted_areas) {
   if (!touchable_areas.empty() &&
@@ -1058,10 +1061,12 @@ void UiControllerAndroid::OnTouchableAreaChanged(
 
   JNIEnv* env = AttachCurrentThread();
 
+  Java_AssistantOverlayModel_setVisualViewport(
+      env, GetOverlayModel(), visual_viewport.left, visual_viewport.top,
+      visual_viewport.right, visual_viewport.bottom);
   Java_AssistantOverlayModel_setTouchableArea(
       env, GetOverlayModel(),
       base::android::ToJavaFloatArray(env, ToFloatVector(touchable_areas)));
-
   Java_AssistantOverlayModel_setRestrictedArea(
       AttachCurrentThread(), GetOverlayModel(),
       base::android::ToJavaFloatArray(env, ToFloatVector(restricted_areas)));

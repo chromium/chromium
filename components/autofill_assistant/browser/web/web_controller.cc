@@ -42,6 +42,15 @@ using autofill::ContentAutofillDriver;
 
 namespace {
 
+// Get the visual viewport as a list of values to fill into RectF, that is:
+// left, top, right, bottom.
+const char* const kGetVisualViewport =
+    R"({ const v = window.visualViewport;
+         [v.pageLeft,
+          v.pageTop,
+          v.pageLeft + v.width,
+          v.pageTop + v.height] })";
+
 // Scrolls to the specified node with top padding. The top padding can
 // be specified through pixels or ratio. Pixels take precedence.
 const char* const kScrollIntoViewWithPaddingScript =
@@ -1436,6 +1445,51 @@ void WebController::BlurField(
   ExecuteVoidJsWithoutArguments(element, std::string(kBlurFieldScript),
                                 WebControllerErrorInfoProto::BLUR_FIELD,
                                 std::move(callback));
+}
+
+void WebController::GetVisualViewport(
+    base::OnceCallback<void(const ClientStatus&, const RectF&)> callback) {
+  devtools_client_->GetRuntime()->Evaluate(
+      runtime::EvaluateParams::Builder()
+          .SetExpression(std::string(kGetVisualViewport))
+          .SetReturnByValue(true)
+          .Build(),
+      /* node_frame_id= */ std::string(),
+      base::BindOnce(&WebController::OnGetVisualViewport,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebController::OnGetVisualViewport(
+    base::OnceCallback<void(const ClientStatus&, const RectF&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::EvaluateResult> result) {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok() || !result->GetResult()->HasValue() ||
+      !result->GetResult()->GetValue()->is_list() ||
+      result->GetResult()->GetValue()->GetList().size() != 4u) {
+    VLOG(1) << __func__ << " Failed to get visual viewport: " << status;
+    std::move(callback).Run(
+        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
+        RectF());
+    return;
+  }
+  const auto& list = result->GetResult()->GetValue()->GetList();
+  // Value::GetDouble() is safe to call without checking the value type; it'll
+  // return 0.0 if the value has the wrong type.
+
+  float left = static_cast<float>(list[0].GetDouble());
+  float top = static_cast<float>(list[1].GetDouble());
+  float width = static_cast<float>(list[2].GetDouble());
+  float height = static_cast<float>(list[3].GetDouble());
+
+  RectF rect;
+  rect.left = left;
+  rect.top = top;
+  rect.right = left + width;
+  rect.bottom = top + height;
+
+  std::move(callback).Run(OkClientStatus(), rect);
 }
 
 void WebController::GetElementRect(
