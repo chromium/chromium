@@ -8,7 +8,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
@@ -42,8 +41,8 @@ void HostSettingsWin::InitializeInstance() {
                                      KEY_READ);
   }
   if (result != ERROR_SUCCESS) {
-    NOTREACHED() << "Failed to open key HKLM\\" << kHostSettingsKeyName
-                 << ", result: " << result;
+    LOG(ERROR) << "Failed to open key HKLM\\" << kHostSettingsKeyName
+               << ", result: " << result;
   }
 }
 
