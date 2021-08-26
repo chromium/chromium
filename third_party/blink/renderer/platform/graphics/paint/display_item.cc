@@ -218,7 +218,7 @@ String DisplayItem::IdAsString(const PaintArtifact& paint_artifact) const {
 void DisplayItem::PropertiesAsJSON(JSONObject& json,
                                    const PaintArtifact& paint_artifact,
                                    bool client_known_to_be_alive) const {
-  json.SetString("id", paint_artifact.IdAsString(GetId()));
+  json.SetString("id", IdAsString(paint_artifact));
   if (IsSubsequenceTombstone())
     return;
 
