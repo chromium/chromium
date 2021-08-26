@@ -48,11 +48,12 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   scoped_refptr<CachedMetadata> GetCachedMetadata(
       uint32_t data_type_id,
       GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const override {
-    scoped_refptr<CachedMetadata> cached_metadata =
-        parent_->cached_metadata_map_.DeprecatedAtOrEmptyValue(key_);
-    if (!cached_metadata || cached_metadata->DataTypeID() != data_type_id)
+    const auto it = parent_->cached_metadata_map_.find(key_);
+    if (it == parent_->cached_metadata_map_.end() ||
+        it->value->DataTypeID() != data_type_id) {
       return nullptr;
-    return cached_metadata;
+    }
+    return it->value;
   }
 
   String Encoding() const override { return parent_->Encoding(); }

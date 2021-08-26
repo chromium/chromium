@@ -538,9 +538,10 @@ Resource* ResourceFetcher::CachedResource(const KURL& resource_url) const {
   if (resource_url.IsEmpty())
     return nullptr;
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url);
-  const WeakMember<Resource>& resource =
-      cached_resources_map_.DeprecatedAtOrEmptyValue(url);
-  return resource.Get();
+  const auto it = cached_resources_map_.find(url);
+  if (it == cached_resources_map_.end())
+    return nullptr;
+  return it->value.Get();
 }
 
 mojom::ControllerServiceWorkerMode
