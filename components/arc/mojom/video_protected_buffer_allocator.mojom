@@ -8,8 +8,10 @@ module arc.mojom;
 
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/video_common.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Next method ID: 3
+[ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface VideoProtectedBufferAllocator {
   // Allocates protected shared memory associated with |handle_fd|.
   // |size| is the size of allocated protected shared memory.

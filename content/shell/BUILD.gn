@@ -824,6 +824,7 @@ if (is_mac) {
 
 mojom("content_browsertests_mojom") {
   sources = [ "common/power_monitor_test.mojom" ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 }
 
 group("content_shell_crash_test") {

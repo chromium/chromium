@@ -19,6 +19,7 @@ module arc.mojom;
 
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/video_common.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Information of the bitstream buffer.
 struct BitstreamBuffer {
@@ -84,6 +85,7 @@ struct BufferModifier {
 //
 // Deprecated method IDs: 3, 7, 8
 // Next method ID: 10
+[ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface VideoDecodeAccelerator {
   [Extensible]
   enum Result {
