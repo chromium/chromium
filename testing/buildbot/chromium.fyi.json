@@ -28178,7 +28178,6 @@
       },
       {
         "args": [
-          "--device=fvdl",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
