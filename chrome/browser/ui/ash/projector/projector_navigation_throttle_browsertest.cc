@@ -28,8 +28,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kUntrustedGalleryView[] = "gallery/gallery_view.html";
-constexpr char kTrustedGalleryView[] = "gallery/gallery_embedder.html";
 constexpr char kFilePath[] = "xyz";
 
 }  // namespace
@@ -61,8 +59,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
 };
 
 // Verifies that navigating to https://projector.apps.chrome/xyz redirects to
-// chrome://projector/gallery/gallery_embedder.html/?file=xyz and launches the
-// SWA.
+// chrome://projector/xyz and launches the SWA.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        PwaNavigationRedirects) {
   std::string url = chromeos::kChromeUIUntrustedProjectorPwaUrl;
@@ -86,8 +83,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
             content::PAGE_TYPE_NORMAL);
 
   // Construct the new redirected URL.
-  std::string expected_url = chromeos::kChromeUITrustedProjectorGalleryUrl;
-  expected_url += "?file=";
+  std::string expected_url = chromeos::kChromeUITrustedProjectorAppUrl;
   expected_url += kFilePath;
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
 }
@@ -96,7 +92,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        UntrustedNavigationNoRedirect) {
   std::string url = chromeos::kChromeUIUntrustedProjectorAppUrl;
-  url += kUntrustedGalleryView;
   GURL gurl(url);
 
   ui_test_utils::NavigateToURL(browser(), gurl);
@@ -121,7 +116,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        TrustedNavigationNoRedirect) {
   std::string url = chromeos::kChromeUITrustedProjectorAppUrl;
-  url += kTrustedGalleryView;
   GURL gurl(url);
 
   ui_test_utils::NavigateToURLWithDisposition(

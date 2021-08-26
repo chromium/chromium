@@ -29,18 +29,19 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
+  source->AddResourcePath("", IDR_PROJECTOR_APP_INDEX_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' "
-      // Mock gallery_view.html.
-      "'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=' "
-      // Prod gallery_view.html.
-      "'sha256-vmbEvTe8n51+32ssYgxneFQpyYbiWl1V5V/2LE8e+H0=';");
+      // Mock index.html.
+      "'sha256-vunvdG/aGKMFmosUfnXnaOfAKJ1vqzY/TjBlJ8/SEqY=' "
+      // Prod index.html.
+      "'sha256-yTOCd/3yFekoT/PpJwcLz8Hkw89nnlVBtq7cgEag574=';");
 
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types gallery_view_bin-js-static lit-html;");
+  // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
+  // template is setting innerHTML.
+  source->DisableTrustedTypesCSP();
 
   // TODO(b/193579885): Add ink WASM.
   // TODO(b/193579885): Override content security policy to support loading wasm

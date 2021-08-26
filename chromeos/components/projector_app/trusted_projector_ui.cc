@@ -26,6 +26,8 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
       base::make_span(kChromeosProjectorAppTrustedResources,
                       kChromeosProjectorAppTrustedResourcesSize));
 
+  source->AddResourcePath("", IDR_CHROMEOS_PROJECTOR_APP_TRUSTED_EMBEDDER_HTML);
+
   std::string csp =
       std::string("frame-src ") + kChromeUIUntrustedProjectorAppUrl + ";";
 

@@ -1,10 +1,10 @@
 <!doctype html>
-<meta http-equiv="Content-Security-Policy" content="script-src 'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=' 'strict-dynamic' https:">
+<meta http-equiv="Content-Security-Policy" content="script-src 'sha256-vunvdG/aGKMFmosUfnXnaOfAKJ1vqzY/TjBlJ8/SEqY=' 'strict-dynamic' https:">
 <head>
   <script>
     const staticUrlPolicy = trustedTypes.createPolicy(
-        'gallery_view_bin-js-static',
-        {createScriptURL: () => 'gallery_view_bin.js'});
+        'app_bin-js-static',
+        {createScriptURL: () => 'app_bin.js'});
 
     const script = document.createElement('script');
     script.src = staticUrlPolicy.createScriptURL('');

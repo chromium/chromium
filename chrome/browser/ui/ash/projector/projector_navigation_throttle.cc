@@ -17,12 +17,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr char kQueryParam[] = "?file=";
-
-}  // namespace
-
 // static
 std::unique_ptr<ProjectorNavigationThrottle>
 ProjectorNavigationThrottle::MaybeCreateThrottleFor(
@@ -65,10 +59,10 @@ ProjectorNavigationThrottle::ProjectorNavigationThrottle(
           navigation_handle->GetWebContents()->GetBrowserContext())) {}
 
 GURL ProjectorNavigationThrottle::ConstructOverrideUrl(const GURL& url) {
-  std::string override_url = chromeos::kChromeUITrustedProjectorGalleryUrl;
-  // TODO(b/195975836): Validate query params.
+  std::string override_url = chromeos::kChromeUITrustedProjectorAppUrl;
+  // TODO(b/195975836): Validate `url`.
   if (url.path().length() > 1)
-    override_url += kQueryParam + url.path().substr(1);
+    override_url += url.path().substr(1);
   GURL result(override_url);
   DCHECK(result.is_valid());
   return result;

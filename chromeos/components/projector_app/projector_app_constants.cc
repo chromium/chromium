@@ -17,7 +17,5 @@ const char kChromeUIUntrustedProjectorPwaUrl[] =
 const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/";
 const char kChromeUITrustedProjectorSelfieCamUrl[] =
     "chrome://projector/selfie_cam/selfie_cam.html";
-const char kChromeUITrustedProjectorGalleryUrl[] =
-    "chrome://projector/gallery/gallery_embedder.html";
 
 }  // namespace chromeos
