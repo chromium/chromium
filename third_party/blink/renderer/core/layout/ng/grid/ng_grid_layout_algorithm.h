@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_node.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -18,7 +19,7 @@ class NGGridPlacement;
 struct NGGridProperties;
 
 class CORE_EXPORT NGGridLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
+    : public NGLayoutAlgorithm<NGGridNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:

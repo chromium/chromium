@@ -3415,6 +3415,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIsTableColumnsConstraintsDirty(b);
   }
 
+  bool IsGridPlacementDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.IsGridPlacementDirty();
+  }
+
+  void SetGridPlacementDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIsGridPlacementDirty(b);
+  }
+
   DisplayLockContext* GetDisplayLockContext() const {
     NOT_DESTROYED();
     if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
@@ -3914,6 +3924,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           being_destroyed_(false),
           is_layout_ng_object_for_list_marker_image_(false),
           is_table_column_constraints_dirty_(false),
+          is_grid_placement_dirty_(false),
           transform_affects_vector_effect_(false),
           is_layout_ng_object_for_canvas_formatted_text(false),
           should_skip_next_layout_shift_tracking_(true),
@@ -4227,6 +4238,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // When this flag is set, any cached constraints are invalid.
     ADD_BOOLEAN_BITFIELD(is_table_column_constraints_dirty_,
                          IsTableColumnsConstraintsDirty);
+
+    // Grid item placement is cached on LayoutNGGrid.
+    // When this flag is set, any cached item placements are invalid.
+    ADD_BOOLEAN_BITFIELD(is_grid_placement_dirty_, IsGridPlacementDirty);
 
     // For transformable SVG child objects, indicates if this object or any
     // descendant has special vector effect that is affected by transform on

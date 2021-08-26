@@ -50,6 +50,11 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
       GridTrackSizingDirection direction) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
       GridTrackSizingDirection direction) const;
+
+  void AddChild(LayoutObject* new_child,
+                LayoutObject* before_child = nullptr) override;
+  void RemoveChild(LayoutObject*) override;
+  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
 };
 
 }  // namespace blink

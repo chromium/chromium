@@ -579,6 +579,14 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
         SetNeedsLayoutAndIntrinsicWidthsRecalc(
             layout_invalidation_reason::kStyleChange);
 
+        // Grid placement is different for out-of-flow elements, so if the
+        // containing block is a grid, dirty the grid's placement. The converse
+        // (going from out of flow to in flow) is handled in
+        // LayoutBox::UpdateGridPositionAfterStyleChange.
+        LayoutBlock* containing_block = ContainingBlock();
+        if (containing_block && containing_block->IsLayoutNGGrid())
+          containing_block->SetGridPlacementDirty(true);
+
         if (IsInLayoutNGInlineFormattingContext() &&
             FirstInlineFragmentItemIndex()) {
           // Out of flow are not part of |NGFragmentItems|, and that further
@@ -810,6 +818,14 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   LayoutBlock* containing_block = ContainingBlock();
   if (containing_block && containing_block->IsLayoutNGGrid() &&
       GridStyleChanged(old_style, StyleRef())) {
+    // Out-of-flow items do not impact grid placement.
+    // TODO(kschmi): Scope this so that it only dirties the grid when track
+    // sizing depends on grid item sizes.
+    if (!old_style->HasOutOfFlowPosition() ||
+        !StyleRef().HasOutOfFlowPosition()) {
+      containing_block->SetGridPlacementDirty(true);
+    }
+
     // For out-of-flow elements with grid container as containing block, we need
     // to run the entire algorithm to place and size them correctly. As a
     // result, we trigger a full layout for GridNG.
