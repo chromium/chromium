@@ -117,8 +117,6 @@ interface SystemPropertiesObserver {
 
 // Allows clients of Bluetooth discovery to be notified of the progress of a
 // discovery session.
-//
-// TODO(khorimoto): Add function to provide discovered devices.
 interface BluetoothDiscoveryDelegate {
   // Invoked when discovery has started.
   //
@@ -132,6 +130,12 @@ interface BluetoothDiscoveryDelegate {
   //   * Bluetooth was turned off while the discovery session was active.
   //   * Internal errors while discovering.
   OnBluetoothDiscoveryStopped();
+
+  // Invoked when the devices list changes. This function is called whenever
+  // a device is added, removed, or updated in the list. When a client first
+  // begins discovery, this function is immediately called.
+  OnDiscoveredDevicesListChanged(
+      array<BluetoothDeviceProperties> discovered_devices);
 };
 
 // Provides Bluetooth metadata and controls. Embedded in the browser process.

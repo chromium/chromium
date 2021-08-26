@@ -10,9 +10,12 @@ namespace chromeos {
 namespace bluetooth_config {
 
 DiscoverySessionManager::DiscoverySessionManager(
-    AdapterStateController* adapter_state_controller)
-    : adapter_state_controller_(adapter_state_controller) {
+    AdapterStateController* adapter_state_controller,
+    DeviceCache* device_cache)
+    : adapter_state_controller_(adapter_state_controller),
+      device_cache_(device_cache) {
   adapter_state_controller_observation_.Observe(adapter_state_controller_);
+  device_cache_observation_.Observe(device_cache_);
   delegates_.set_disconnect_handler(
       base::BindRepeating(&DiscoverySessionManager::OnDelegateDisconnected,
                           base::Unretained(this)));
@@ -38,9 +41,13 @@ void DiscoverySessionManager::StartDiscovery(
   if (!had_client_before_call)
     OnHasAtLeastOneDiscoveryClientChanged();
 
-  // If discovery is already active, notify the delegate.
-  if (IsDiscoverySessionActive())
+  // If discovery is already active, notify the delegate that discovery has
+  // started and of the current discovered devices list.
+  if (IsDiscoverySessionActive()) {
     delegates_.Get(id)->OnBluetoothDiscoveryStarted();
+    delegates_.Get(id)->OnDiscoveredDevicesListChanged(
+        device_cache_->GetUnpairedDevices());
+  }
 }
 
 void DiscoverySessionManager::NotifyDiscoveryStarted() {
@@ -67,6 +74,13 @@ bool DiscoverySessionManager::HasAtLeastOneDiscoveryClient() const {
   return !delegates_.empty();
 }
 
+void DiscoverySessionManager::NotifyDiscoveredDevicesListChanged() {
+  for (auto& delegate : delegates_) {
+    delegate->OnDiscoveredDevicesListChanged(
+        device_cache_->GetUnpairedDevices());
+  }
+}
+
 void DiscoverySessionManager::OnAdapterStateChanged() {
   // We only need to handle the case where we have at least one client and
   // Bluetooth is no longer enabled.
@@ -74,6 +88,10 @@ void DiscoverySessionManager::OnAdapterStateChanged() {
     return;
 
   NotifyDiscoveryStoppedAndClearActiveClients();
+}
+
+void DiscoverySessionManager::OnUnpairedDevicesListChanged() {
+  NotifyDiscoveredDevicesListChanged();
 }
 
 bool DiscoverySessionManager::IsBluetoothEnabled() const {
@@ -87,6 +105,10 @@ void DiscoverySessionManager::OnDelegateDisconnected(
   // decreased from 1 to 0.
   if (!HasAtLeastOneDiscoveryClient())
     OnHasAtLeastOneDiscoveryClientChanged();
+}
+
+void DiscoverySessionManager::FlushForTesting() {
+  delegates_.FlushForTesting();  // IN-TEST
 }
 
 }  // namespace bluetooth_config

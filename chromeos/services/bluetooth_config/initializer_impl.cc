@@ -32,9 +32,10 @@ std::unique_ptr<DeviceCache> InitializerImpl::CreateDeviceCache(
 std::unique_ptr<DiscoverySessionManager>
 InitializerImpl::CreateDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceCache* device_cache) {
   return std::make_unique<DiscoverySessionManagerImpl>(
-      adapter_state_controller, std::move(bluetooth_adapter));
+      adapter_state_controller, std::move(bluetooth_adapter), device_cache);
 }
 
 }  // namespace bluetooth_config

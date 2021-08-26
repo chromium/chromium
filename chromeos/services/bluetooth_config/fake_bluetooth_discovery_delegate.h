@@ -32,15 +32,24 @@ class FakeBluetoothDiscoveryDelegate
   size_t num_start_callbacks() const { return num_start_callbacks_; }
   size_t num_stop_callbacks() const { return num_stop_callbacks_; }
 
+  const std::vector<mojom::BluetoothDevicePropertiesPtr>&
+  discovered_devices_list() const {
+    return discovered_devices_list_;
+  }
+
  private:
   // mojom::BluetoothDiscoveryDelegate:
   void OnBluetoothDiscoveryStarted() override;
   void OnBluetoothDiscoveryStopped() override;
+  void OnDiscoveredDevicesListChanged(
+      std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices)
+      override;
 
   void OnDisconnected();
 
   size_t num_start_callbacks_ = 0u;
   size_t num_stop_callbacks_ = 0u;
+  std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices_list_;
 
   mojo::Receiver<mojom::BluetoothDiscoveryDelegate> receiver_{this};
 };

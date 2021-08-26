@@ -26,7 +26,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
               device_cache_.get())),
       discovery_session_manager_(initializer.CreateDiscoverySessionManager(
           adapter_state_controller_.get(),
-          bluetooth_adapter)) {}
+          bluetooth_adapter,
+          device_cache_.get())) {}
 
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 

@@ -16,8 +16,9 @@ const char kDiscoveryClientName[] = "CrosBluetoothConfig API";
 
 DiscoverySessionManagerImpl::DiscoverySessionManagerImpl(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
-    : DiscoverySessionManager(adapter_state_controller),
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceCache* device_cache)
+    : DiscoverySessionManager(adapter_state_controller, device_cache),
       bluetooth_adapter_(std::move(bluetooth_adapter)) {
   adapter_observation_.Observe(bluetooth_adapter_.get());
 }
@@ -75,6 +76,10 @@ void DiscoverySessionManagerImpl::OnDiscoverySuccess(
   is_discovery_attempt_in_progress_ = false;
   discovery_session_ = std::move(discovery_session);
   NotifyDiscoveryStarted();
+
+  // Immediately inform the client of any devices already present once discovery
+  // started.
+  NotifyDiscoveredDevicesListChanged();
 
   // Discovery could have been cancelled between when StartDiscoverySession()
   // was called and when the callback was invoked. Check to see whether the new

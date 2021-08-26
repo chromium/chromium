@@ -42,9 +42,11 @@ std::unique_ptr<DeviceCache> ScopedBluetoothConfigTestHelper::CreateDeviceCache(
 std::unique_ptr<DiscoverySessionManager>
 ScopedBluetoothConfigTestHelper::CreateDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceCache* device_cache) {
   auto fake_discovery_session_manager =
-      std::make_unique<FakeDiscoverySessionManager>(adapter_state_controller);
+      std::make_unique<FakeDiscoverySessionManager>(adapter_state_controller,
+                                                    device_cache);
   fake_discovery_session_manager_ = fake_discovery_session_manager.get();
   return fake_discovery_session_manager;
 }

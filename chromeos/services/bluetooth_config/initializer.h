@@ -36,7 +36,8 @@ class Initializer {
   virtual std::unique_ptr<DiscoverySessionManager>
   CreateDiscoverySessionManager(
       AdapterStateController* adapter_state_controller,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceCache* device_cache) = 0;
 
  protected:
   Initializer() = default;

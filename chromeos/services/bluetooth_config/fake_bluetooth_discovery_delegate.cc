@@ -41,6 +41,11 @@ void FakeBluetoothDiscoveryDelegate::OnBluetoothDiscoveryStopped() {
   ++num_stop_callbacks_;
 }
 
+void FakeBluetoothDiscoveryDelegate::OnDiscoveredDevicesListChanged(
+    std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices) {
+  discovered_devices_list_ = std::move(discovered_devices);
+}
+
 void FakeBluetoothDiscoveryDelegate::OnDisconnected() {
   receiver_.reset();
 }

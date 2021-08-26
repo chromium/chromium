@@ -8,8 +8,9 @@ namespace chromeos {
 namespace bluetooth_config {
 
 FakeDiscoverySessionManager::FakeDiscoverySessionManager(
-    AdapterStateController* adapter_state_controller)
-    : DiscoverySessionManager(adapter_state_controller) {}
+    AdapterStateController* adapter_state_controller,
+    DeviceCache* device_cache)
+    : DiscoverySessionManager(adapter_state_controller, device_cache) {}
 
 FakeDiscoverySessionManager::~FakeDiscoverySessionManager() = default;
 
