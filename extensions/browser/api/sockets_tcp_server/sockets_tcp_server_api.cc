@@ -256,15 +256,15 @@ SocketsTcpServerGetInfoFunction::~SocketsTcpServerGetInfoFunction() = default;
 ExtensionFunction::ResponseAction SocketsTcpServerGetInfoFunction::Work() {
   std::unique_ptr<sockets_tcp_server::GetInfo::Params> params =
       sockets_tcp_server::GetInfo::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  ResumableTCPServerSocket* socket = GetTcpSocket(params_->socket_id);
+  ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
     return RespondNow(Error(kSocketNotFoundError));
   }
 
   sockets_tcp_server::SocketInfo socket_info =
-      CreateSocketInfo(params_->socket_id, socket);
+      CreateSocketInfo(params->socket_id, socket);
   return RespondNow(
       ArgumentList(sockets_tcp_server::GetInfo::Results::Create(socket_info)));
 }
