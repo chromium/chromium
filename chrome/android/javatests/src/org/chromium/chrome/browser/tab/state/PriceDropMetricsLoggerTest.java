@@ -149,4 +149,24 @@ public class PriceDropMetricsLoggerTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop"));
     }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testEmptyPriceDropResponse() {
+        doReturn(null).when(mShoppingPersistedTabData).getMainOfferId();
+        doReturn(false).when(mShoppingPersistedTabData).hasPriceMicros();
+        doReturn(false).when(mShoppingPersistedTabData).hasPreviousPriceMicros();
+        mPriceDropMetricsLogger.logPriceDropMetrics(
+                "EnterTabSwitcher", TimeUnit.HOURS.toMillis(12));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.IsProductDetailPage", 0));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPrice", 0));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop", 0));
+    }
 }

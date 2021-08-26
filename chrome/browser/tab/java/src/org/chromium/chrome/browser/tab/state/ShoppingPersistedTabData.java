@@ -245,12 +245,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
                 .canApplyOptimizationAsync(navigationHandle,
                         HintsProto.OptimizationType.PRICE_TRACKING, (decision, metadata) -> {
+                            mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
                             if (!tab.isInitialized()
                                     || !tab.getUrl().equals(navigationHandle.getUrl())
                                     || decision != OptimizationGuideDecision.TRUE) {
                                 if (onCompleteForTesting != null) {
                                     onCompleteForTesting.run();
                                 }
+                                mPriceDropMetricsLogger.logPriceDropMetrics(
+                                        METRICS_IDENTIFIER_PREFIX,
+                                        getTimeSinceTabLastOpenedMs(tab));
                                 return;
                             }
                             try {
@@ -258,7 +262,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                         PriceTrackingData.parseFrom(metadata.getValue());
                                 parsePriceTrackingDataProto(tab, priceTrackingDataProto, null);
                                 setLastUpdatedMs(System.currentTimeMillis());
-                                mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
                                 mPriceDropMetricsLogger.logPriceDropMetrics(
                                         METRICS_IDENTIFIER_PREFIX,
                                         getTimeSinceTabLastOpenedMs(tab));

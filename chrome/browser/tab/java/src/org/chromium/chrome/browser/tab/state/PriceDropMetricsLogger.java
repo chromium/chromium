@@ -20,7 +20,7 @@ public class PriceDropMetricsLogger {
     private static final long NINETY_DAYS_MS = TimeUnit.DAYS.toMillis(90);
     private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
 
-    private MetricsResult mMetrics;
+    private ShoppingPersistedTabData mShoppingPersistedTabData;
     @VisibleForTesting
     protected enum TabUsageStatus {
         ABANDONED("AbandonedTab"),
@@ -45,7 +45,7 @@ public class PriceDropMetricsLogger {
      *         data.
      */
     PriceDropMetricsLogger(ShoppingPersistedTabData shoppingPersistedTabData) {
-        mMetrics = deriveMetrics(shoppingPersistedTabData);
+        mShoppingPersistedTabData = shoppingPersistedTabData;
     }
 
     /**
@@ -61,30 +61,31 @@ public class PriceDropMetricsLogger {
         if (tabUsageStatus == TabUsageStatus.ABANDONED) {
             return;
         }
+        MetricsResult metrics = deriveMetrics();
         RecordHistogram.recordBooleanHistogram(
                 String.format(Locale.US, "Commerce.PriceDrops.%s%s.IsProductDetailPage",
                         tabUsageStatus, locationIdentifier),
-                mMetrics.isProductDetailPage);
+                metrics.isProductDetailPage);
         RecordHistogram.recordBooleanHistogram(
                 String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPrice", tabUsageStatus,
                         locationIdentifier),
-                mMetrics.containsPrice);
+                metrics.containsPrice);
         RecordHistogram.recordBooleanHistogram(
                 String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPriceDrop",
                         tabUsageStatus, locationIdentifier),
-                mMetrics.containsPriceDrop);
+                metrics.containsPriceDrop);
     }
 
     @VisibleForTesting
     protected MetricsResult getMetricsResultForTesting() {
-        return mMetrics;
+        return deriveMetrics();
     }
 
-    private static MetricsResult deriveMetrics(ShoppingPersistedTabData shoppingPersistedTabData) {
-        return new MetricsResult(!TextUtils.isEmpty(shoppingPersistedTabData.getMainOfferId()),
-                shoppingPersistedTabData.hasPriceMicros(),
-                shoppingPersistedTabData.hasPriceMicros()
-                        && shoppingPersistedTabData.hasPreviousPriceMicros());
+    private MetricsResult deriveMetrics() {
+        return new MetricsResult(!TextUtils.isEmpty(mShoppingPersistedTabData.getMainOfferId()),
+                mShoppingPersistedTabData.hasPriceMicros(),
+                mShoppingPersistedTabData.hasPriceMicros()
+                        && mShoppingPersistedTabData.hasPreviousPriceMicros());
     }
 
     @VisibleForTesting
