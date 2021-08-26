@@ -18,6 +18,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -132,6 +133,7 @@ public class FeedSurfaceCoordinator
     private @Nullable FeedStream mStream;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
+    private @Nullable ViewGroup mViewportView;
     private @Nullable SectionHeaderView mSectionHeaderView;
     private @Nullable ListModelChangeProcessor<PropertyListModel<PropertyModel, PropertyKey>,
             SectionHeaderView, PropertyKey> mSectionHeaderListModelChangeProcessor;
@@ -141,6 +143,7 @@ public class FeedSurfaceCoordinator
     private @Nullable NtpListContentManager mContentManager;
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable SurfaceScope mSurfaceScope;
+    private @Nullable FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private @Nullable HybridListRenderer mHybridListRenderer;
 
     // Used when Feed is disabled by policy.
@@ -148,6 +151,9 @@ public class FeedSurfaceCoordinator
     private @Nullable ViewResizer mScrollViewResizer;
 
     // Used to handle things related to the main scrollable container of NTP surface.
+    // In start surface, it does not track scrolling events - only the header offset.
+    // In New Tab Page, it does not track the header offset (no header) - instead, it
+    // tracks scrolling events.
     private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
@@ -264,6 +270,8 @@ public class FeedSurfaceCoordinator
      * @param FeedLaunchReliabilityLoggingState Holds the state for feed surface creation.
      * @param swipeRefreshLayout The layout to support pull-to-refresh.
      * @param overScrollDisabled Whether the overscroll effect is disabled.
+     * @param viewportView The view that should be used as a container for viewport measurement
+     *   purposes, or |null| if the view returned by HybridListRenderer is to be used.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -277,7 +285,8 @@ public class FeedSurfaceCoordinator
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
-            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled) {
+            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled,
+            @Nullable ViewGroup viewportView) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -296,6 +305,7 @@ public class FeedSurfaceCoordinator
         mToolbarSupplier = toolbarSupplier;
         mSwipeRefreshLayout = swipeRefreshLayout;
         mOverScrollDisabled = overScrollDisabled;
+        mViewportView = viewportView;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -344,6 +354,13 @@ public class FeedSurfaceCoordinator
         }
     }
 
+    private void stopScrollTracking() {
+        if (mScrollableContainerDelegate != null) {
+            mScrollableContainerDelegate.removeScrollListener(mDependencyProvider);
+            mScrollableContainerDelegate = null;
+        }
+    }
+
     @Override
     public void destroy() {
         if (mSwipeRefreshLayout != null) {
@@ -362,7 +379,7 @@ public class FeedSurfaceCoordinator
         if (mEnhancedProtectionPromoController != null) {
             mEnhancedProtectionPromoController.destroy();
         }
-        mScrollableContainerDelegate = null;
+        stopScrollTracking();
         if (mSectionHeaderModelChangeProcessor != null) {
             mSectionHeaderModelChangeProcessor.destroy();
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
@@ -504,12 +521,18 @@ public class FeedSurfaceCoordinator
                                      : R.style.ThemeOverlay_Feed_Light));
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mSurfaceScope = processScope.obtainSurfaceScope(new FeedSurfaceScopeDependencyProvider(
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
                     mActivity, context, mShowDarkBackground, () -> {
                         if (mMediator.getFirstStream() == null) return false;
                         return mMediator.getFirstStream().isActivityLoggingEnabled();
-                    }));
+                    });
+
+            mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
+            if (mScrollableContainerDelegate != null) {
+                mScrollableContainerDelegate.addScrollListener(mDependencyProvider);
+            }
         } else {
+            mDependencyProvider = null;
             mSurfaceScope = null;
         }
 
@@ -520,6 +543,7 @@ public class FeedSurfaceCoordinator
                 mLaunchReliabilityLogger = mSurfaceScope.getFeedLaunchReliabilityLogger();
                 mLaunchReliabilityLoggingState.onLoggerAvailable(mLaunchReliabilityLogger);
             }
+
         } else {
             mHybridListRenderer = new NativeViewListRenderer(context);
         }
@@ -532,7 +556,7 @@ public class FeedSurfaceCoordinator
         RecyclerView view;
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
-            view = (RecyclerView) mHybridListRenderer.bind(mContentManager);
+            view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(
@@ -847,7 +871,7 @@ public class FeedSurfaceCoordinator
      * components, e.g., on #destroy. This also applies for the case where the feed stream is
      * deleted when disabled (e.g., by policy).
      */
-    void stopIph() {
+    private void stopIph() {
         if (mStream != null && mScrollableContainerDelegate != null
                 && mHeaderIphScrollListener != null) {
             if (mHeaderIphScrollListener != null) {
@@ -859,7 +883,7 @@ public class FeedSurfaceCoordinator
                 mRefreshIphScrollListener = null;
             }
         }
-        mScrollableContainerDelegate = null;
+        stopScrollTracking();
     }
 
     @Override

@@ -108,7 +108,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 return internalCreateFeedSurfaceCoordinator(mHasHeader, isInNightMode,
                         isPlaceholderShown, bottomSheetController, scrollableContainerDelegate,
                         launchOrigin, toolbarSupplier, feedLaunchReliabilityLoggingState,
-                        swipeRefreshLayout);
+                        swipeRefreshLayout, parentView);
             }
         };
     }
@@ -141,7 +141,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             ScrollableContainerDelegate scrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin, @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState feedLaunchReliabilityLoggingState,
-            FeedSwipeRefreshLayout swipeRefreshLayout) {
+            FeedSwipeRefreshLayout swipeRefreshLayout, ViewGroup parentView) {
         if (mExploreSurfaceNavigationDelegate == null) {
             mExploreSurfaceNavigationDelegate =
                     new ExploreSurfaceNavigationDelegate(mParentTabSupplier);
@@ -166,7 +166,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
                 bottomSheetController, mShareDelegateSupplier, scrollableContainerDelegate,
                 launchOrigin, PrivacyPreferencesManagerImpl.getInstance(), toolbarSupplier,
-                feedLaunchReliabilityLoggingState, swipeRefreshLayout, /*overScrollDisabled=*/true);
+                feedLaunchReliabilityLoggingState, swipeRefreshLayout, /*overScrollDisabled=*/true,
+                parentView);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

@@ -156,4 +156,19 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
     default Rect getToolbarGlobalVisibleRect() {
         return new Rect();
     }
+
+    /**
+     * Adds a header offset observer to the surface this scope is associated with.
+     *
+     * @param observer The observer to add.
+     * @Return a reference to be used when removing the observer, or null if not successful.
+     */
+    default void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /**
+     * Removes a header offset observer.
+     *
+     * @param observer An Object returned by |addHeaderOffsetObserver|.
+     */
+    default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
 }
