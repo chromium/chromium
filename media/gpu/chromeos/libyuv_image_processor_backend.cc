@@ -89,20 +89,32 @@ enum class SupportResult {
   Unsupported,
 };
 
-SupportResult IsFormatSupported(Fourcc input_fourcc, Fourcc output_fourcc) {
+enum class Transform {
+  kConversion,
+  kScaling,
+  kRotation,
+};
+
+SupportResult IsConversionSupported(Fourcc input_fourcc,
+                                    Fourcc output_fourcc,
+                                    Transform transform) {
   static constexpr struct {
     uint32_t input;
     uint32_t output;
+    Transform transform;
     bool need_pivot;
   } kSupportFormatConversionArray[] = {
       // Conversion.
-      {Fourcc::AR24, Fourcc::NV12, false},
-      {Fourcc::YU12, Fourcc::NV12, false},
-      {Fourcc::YV12, Fourcc::NV12, false},
-      {Fourcc::AB24, Fourcc::NV12, true},
-      {Fourcc::XB24, Fourcc::NV12, true},
-      // Scaling or Rotating.
-      {Fourcc::NV12, Fourcc::NV12, true},
+      {Fourcc::AR24, Fourcc::NV12, Transform::kConversion, false},
+      {Fourcc::YU12, Fourcc::NV12, Transform::kConversion, false},
+      {Fourcc::YV12, Fourcc::NV12, Transform::kConversion, false},
+      {Fourcc::AB24, Fourcc::NV12, Transform::kConversion, true},
+      {Fourcc::XB24, Fourcc::NV12, Transform::kConversion, true},
+      {Fourcc::NV12, Fourcc::NV12, Transform::kConversion, false},
+      // Scaling.
+      {Fourcc::NV12, Fourcc::NV12, Transform::kScaling, false},
+      // Rotating.
+      {Fourcc::NV12, Fourcc::NV12, Transform::kRotation, true},
   };
 
   const auto single_input_fourcc = input_fourcc.ToSinglePlanar();
@@ -123,7 +135,8 @@ SupportResult IsFormatSupported(Fourcc input_fourcc, Fourcc output_fourcc) {
       continue;
 
     if (single_input_fourcc == single_conv_input_fourcc &&
-        single_output_fourcc == single_conv_output_fourcc) {
+        single_output_fourcc == single_conv_output_fourcc &&
+        transform == conv.transform) {
       return conv.need_pivot ? SupportResult::SupportedWithPivot
                              : SupportResult::Supported;
     }
@@ -197,23 +210,11 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
     return nullptr;
   }
 
-  SupportResult res =
-      IsFormatSupported(input_config.fourcc, output_config.fourcc);
-  if (res == SupportResult::Unsupported) {
-    VLOGF(2) << "Conversion from " << input_config.fourcc.ToString() << " to "
-             << output_config.fourcc.ToString() << " is not supported";
-    return nullptr;
-  }
-
+  const gfx::Size& input_size = input_config.visible_rect.size();
+  const gfx::Size& output_size = output_config.visible_rect.size();
+  Transform transform = Transform::kConversion;
   if (relative_rotation != VIDEO_ROTATION_0) {
-    if (input_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12 ||
-        output_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12) {
-      VLOGF(2) << "Rotation is supported for NV12->NV12 only";
-      return nullptr;
-    }
-
-    const gfx::Size& input_size = input_config.visible_rect.size();
-    const gfx::Size& output_size = output_config.visible_rect.size();
+    transform = Transform::kRotation;
     bool size_mismatch = false;
     if (relative_rotation == VIDEO_ROTATION_180) {
       size_mismatch = input_size.width() != output_size.width() ||
@@ -228,6 +229,18 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
                << ", output=" << output_size.ToString();
       return nullptr;
     }
+  } else if (input_size.width() != output_size.width() ||
+             input_size.height() != output_size.height()) {
+    transform = Transform::kScaling;
+  }
+  SupportResult res = IsConversionSupported(input_config.fourcc,
+                                            output_config.fourcc, transform);
+  if (res == SupportResult::Unsupported) {
+    VLOGF(2) << "Conversion from " << input_size.ToString() << "/"
+             << input_config.fourcc.ToString() << " to "
+             << output_size.ToString() << "/" << output_config.fourcc.ToString()
+             << " with rotation " << relative_rotation << " is not supported";
+    return nullptr;
   }
 
   if (input_config.fourcc.ToVideoPixelFormat() ==
