@@ -4,9 +4,13 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_COPY;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CUT;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_PASTE;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_LONG_CLICK;
@@ -34,6 +38,8 @@ import static org.chromium.content.browser.accessibility.WebContentsAccessibilit
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -1515,6 +1521,9 @@ public class WebContentsAccessibilityTest {
                 mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
     }
 
+    /**
+     * Test that the performAction for ACTION_SET_TEXT works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_setText() throws Throwable {
@@ -1552,6 +1561,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, "new text", mNodeInfo.getText().toString());
     }
 
+    /**
+     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_setSelection() throws Throwable {
@@ -1586,6 +1598,145 @@ public class WebContentsAccessibilityTest {
         // Verify results.
         Assert.assertEquals(PERFORM_ACTION_ERROR, 2, mNodeInfo.getTextSelectionStart());
         Assert.assertEquals(PERFORM_ACTION_ERROR, 5, mNodeInfo.getTextSelectionEnd());
+    }
+
+    /**
+     * Test that the performAction for ACTION_CUT works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_cut() throws Throwable {
+        // Build a simple web page with an input field.
+        setupTestWithHTML("<input type='text' value='test text'>");
+
+        // Find the relevant node.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Select a given portion of the text.
+        Bundle bundle = new Bundle();
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 7);
+        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+        });
+
+        // Perform the "cut" action, and poll for clipboard to be non-null.
+        ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
+                    CLIPBOARD_SERVICE);
+        });
+        performActionOnUiThread(
+                vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null);
+
+        // Send end of test signal and refresh input node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify text has been properly added to the clipboard.
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "st te",
+                clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+
+        // Verify input node was changed by the cut action.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "text", mNodeInfo.getText().toString());
+    }
+
+    /**
+     * Test that the performAction for ACTION_COPY works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_copy() throws Throwable {
+        // Build a simple web page with an input field.
+        setupTestWithHTML("<input type='text' value='test text'>");
+
+        // Find the relevant node.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Select a given portion of the text.
+        Bundle bundle = new Bundle();
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 2);
+        bundle.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 7);
+        performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle, () -> {
+            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+        });
+
+        // Perform the "copy" action, and poll for clipboard to be non-null.
+        ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
+                    CLIPBOARD_SERVICE);
+        });
+        performActionOnUiThread(
+                vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null);
+
+        // Send end of test signal and refresh input node.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify text has been properly added to the clipboard.
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "st te",
+                clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+
+        // Verify input node was not changed by the copy action.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
+    }
+
+    /**
+     * Test that the performAction for ACTION_PASTE works properly with accessibility.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_paste() throws Throwable {
+        // Build a simple web page with an input field.
+        setupTestWithHTML("<input type='text'>");
+
+        // Find the relevant node.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Add some ClipData to the ClipboardManager to paste.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
+                            CLIPBOARD_SERVICE);
+            clipboardManager.setPrimaryClip(ClipData.newPlainText("test text", "test text"));
+        });
+
+        // Focus the input field node.
+        focusNode(vvid);
+
+        // Perform a paste action and poll for the text to change.
+        performActionOnUiThread(vvid, ACTION_PASTE, null,
+                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty());
+
+        // Send end of test signal and update node info.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+
+        // Verify text has not been removed from the clipboard.
+        ClipboardManager clipboardManager =
+                (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
+                        CLIPBOARD_SERVICE);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "test text",
+                clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+
+        // Verify text has been properly pasted into the input field.
+        Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
