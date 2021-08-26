@@ -348,6 +348,10 @@ void WebView::AXTreeIDForMainFrameHasChanged() {
   NotifyAccessibilityWebContentsChanged();
 }
 
+void WebView::WebContentsDestroyed() {
+  SetWebContents(nullptr);
+}
+
 void WebView::ResizeDueToAutoResize(content::WebContents* source,
                                     const gfx::Size& new_size) {
   if (source != web_contents())

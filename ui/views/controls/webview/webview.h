@@ -147,6 +147,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void AXTreeIDForMainFrameHasChanged() override;
+  void WebContentsDestroyed() override;
 
   // Override from ui::AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;

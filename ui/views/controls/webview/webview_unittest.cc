@@ -310,7 +310,8 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
 // if WebView is already removed from Widget.
 TEST_F(WebViewUnitTest, DetachedWebViewDestructor) {
   // Init WebView with attached NativeView.
-  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
   std::unique_ptr<WebView> webview(
       new WebView(web_contents->GetBrowserContext()));
   View* contents_view = top_level_widget()->GetContentsView();
@@ -409,7 +410,8 @@ TEST_F(WebViewUnitTest, DefaultConstructability) {
 // holder's parent NativeViewAccessible matches that of its parent view's
 // NativeViewAccessible.
 TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
-  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
   auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
   web_view->SetWebContents(web_contents.get());
 
@@ -444,12 +446,23 @@ TEST_F(WebViewUnitTest, ChangeAXMode) {
   // Case 2: WebView has no Widget and a WebContents.
   View* contents_view = top_level_widget()->GetContentsView();
   contents_view->RemoveChildView(web_view());
-  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
   web_view()->SetWebContents(web_contents.get());
 
   SetAXMode(ui::AXMode::kFirstModeFlag);
 
   // No crash.
+}
+
+// Tests to make sure the WebView clears away the reference to its hosted
+// WebContents object when its deleted.
+TEST_F(WebViewUnitTest, WebViewClearsWebContentsOnDestruction) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  web_view()->SetWebContents(web_contents.get());
+  EXPECT_EQ(web_contents.get(), web_view()->web_contents());
+  web_contents.reset();
+  EXPECT_EQ(nullptr, web_view()->web_contents());
 }
 
 }  // namespace views
