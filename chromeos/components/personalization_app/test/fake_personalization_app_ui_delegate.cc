@@ -69,16 +69,9 @@ void FakePersonalizationAppUiDelegate::GetLocalImageThumbnail(
   std::move(callback).Run(std::string());
 }
 
-void FakePersonalizationAppUiDelegate::GetCurrentWallpaper(
-    GetCurrentWallpaperCallback callback) {
-  std::move(callback).Run(
-      chromeos::personalization_app::mojom::CurrentWallpaper::New(
-          GURL("https://test.googleusercontent.com/0"),
-          std::vector<std::string>({"this is a test"}),
-          ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
-          ash::WallpaperType::CUSTOMIZED,
-          /*key=*/"fake-key"));
-}
+void FakePersonalizationAppUiDelegate::SetWallpaperObserver(
+    mojo::PendingRemote<chromeos::personalization_app::mojom::WallpaperObserver>
+        observer) {}
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(
     uint64_t image_asset_id,

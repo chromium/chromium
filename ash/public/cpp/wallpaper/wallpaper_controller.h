@@ -31,6 +31,9 @@ class WallpaperControllerClient;
 // Used by Chrome to set the wallpaper displayed by ash.
 class ASH_PUBLIC_EXPORT WallpaperController {
  public:
+  WallpaperController();
+  virtual ~WallpaperController();
+
   static WallpaperController* Get();
 
   // Sets the client interface, used to show the wallpaper picker, etc.
@@ -294,9 +297,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Returns a suffix to be appended to the base url of Backdrop (online)
   // wallpapers.
   static std::string GetBackdropWallpaperSuffix();
-
- protected:
-  static WallpaperController* g_instance_;
 };
 
 }  // namespace ash

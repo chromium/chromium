@@ -46,11 +46,11 @@ export let BackdropState;
  * |local.data| stores a mapping of stringified UnguessableToken to loading
  * state.
  *
- * |selected| is a number representing the number of concurrent requests to load
- * current wallpaper information. This can be more than 1 in case a user rapidly
- * selects multiple wallpaper options, or picks a new daily refresh wallpaper.
- * This is also called at the beginning of page load, so has subtly different
- * behavior than the |setImage| counter below.
+ * |selected| is a boolean representing the loading state of current wallpaper
+ * information. This gets complicated when a user rapidly selects multiple
+ * wallpaper images, or picks a new daily refresh wallpaper. This becomes
+ * false when a new CurrentWallpaper object is received and the |setImage|
+ * counter is at 0.
  *
  * |setImage| is a number representing the number of concurrent requests to set
  * current wallpaper information. This can be more than 1 in case a user rapidly
@@ -63,7 +63,7 @@ export let BackdropState;
  *     data: !Object<string, boolean>
  *   },
  *   refreshWallpaper: boolean,
- *   selected: number,
+ *   selected: boolean,
  *   setImage: number,
  * }}
  */
@@ -94,7 +94,7 @@ export let DailyRefreshState;
  *   backdrop: !BackdropState,
  *   loading: !LoadingState,
  *   local: !LocalState,
- *   currentSelected: ?DisplayableImage,
+ *   currentSelected: ?chromeos.personalizationApp.mojom.CurrentWallpaper,
  *   pendingSelected: ?DisplayableImage,
  *   dailyRefresh: !DailyRefreshState,
  *   error: ?string,
@@ -114,7 +114,7 @@ export function emptyState() {
       images: {},
       local: {images: true, data: {}},
       refreshWallpaper: false,
-      selected: 0,
+      selected: false,
       setImage: 0,
     },
     local: {images: null, data: {}},
@@ -197,8 +197,7 @@ function loadingReducer(state, action) {
         local: {...state.local, data: {...state.local.data, [action.id]: true}}
       });
     case ActionName.BEGIN_LOAD_SELECTED_IMAGE:
-      return /** @type {!LoadingState} */ (
-          {...state, selected: state.selected + 1});
+      return /** @type {!LoadingState} */ ({...state, selected: true});
     case ActionName.BEGIN_SELECT_IMAGE:
       return /** @type {!LoadingState} */ (
           {...state, setImage: state.setImage + 1});
@@ -237,13 +236,10 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.SET_SELECTED_IMAGE:
-      if (state.selected <= 0) {
-        console.error('Impossible state for loading.selected');
-        // Reset to 0.
-        return /** @type {!LoadingState} */ ({...state, selected: 0});
+      if (state.setImage === 0) {
+        return /** @type {!LoadingState} */ ({...state, selected: false});
       }
-      return /** @type {!LoadingState} */ (
-          {...state, selected: state.selected - 1});
+      return state;
     case ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
     case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
@@ -279,9 +275,9 @@ function localReducer(state, action) {
 }
 
 /**
- * @param {?DisplayableImage} state
+ * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} state
  * @param {!Action} action
- * @return {?DisplayableImage}
+ * @return {?chromeos.personalizationApp.mojom.CurrentWallpaper}
  */
 function currentSelectedReducer(state, action) {
   switch (action.name) {

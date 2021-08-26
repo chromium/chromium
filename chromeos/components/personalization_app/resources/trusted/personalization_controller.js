@@ -91,18 +91,6 @@ async function getAllLocalImageThumbnails(provider, store) {
 }
 
 /**
- * Get the currently set wallpaper.
- * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
- *     provider
- * @param {!PersonalizationStore} store
- */
-export async function getCurrentWallpaper(provider, store) {
-  store.dispatch(beginLoadSelectedImageAction());
-  const {image} = await provider.getCurrentWallpaper();
-  store.dispatch(setSelectedImageAction(image));
-}
-
-/**
  * @param {!chromeos.personalizationApp.mojom.WallpaperImage |
  *     !chromeos.personalizationApp.mojom.LocalImage} image
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
@@ -110,7 +98,12 @@ export async function getCurrentWallpaper(provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function selectWallpaper(image, provider, store) {
+  // Batch these changes together to reduce polymer churn as multiple state
+  // fields change quickly.
+  store.beginBatchUpdate();
   store.dispatch(beginSelectImageAction(image));
+  store.dispatch(beginLoadSelectedImageAction());
+  store.endBatchUpdate();
   const {success} = await (() => {
     if (image.assetId) {
       return provider.selectWallpaper(image.assetId);
@@ -121,15 +114,16 @@ export async function selectWallpaper(image, provider, store) {
       return {success: false};
     }
   })();
+  store.beginBatchUpdate();
+  store.dispatch(endSelectImageAction(image, success));
   if (!success) {
     console.warn('Error setting wallpaper');
+    store.dispatch(setSelectedImageAction(store.data.currentSelected));
   }
-  store.dispatch(endSelectImageAction(image, success));
+  store.endBatchUpdate();
 
   // Explicitly disable daily refresh if wallpaper is manually selected.
-  setDailyRefreshCollectionId('', provider, store);
-  // Retrieve the current wallpaper from client to get the correct attribution.
-  getCurrentWallpaper(provider, store);
+  await setDailyRefreshCollectionId('', provider, store);
 }
 
 /**
@@ -139,8 +133,8 @@ export async function selectWallpaper(image, provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function setCustomWallpaperLayout(layout, provider, store) {
+  store.dispatch(beginLoadSelectedImageAction());
   await provider.setCustomWallpaperLayout(layout);
-  getCurrentWallpaper(provider, store);
 }
 
 /**
@@ -176,10 +170,10 @@ export async function getDailyRefreshCollectionId(provider, store) {
  */
 export async function updateDailyRefreshWallpaper(provider, store) {
   store.dispatch(beginUpdateDailyRefreshImageAction());
+  store.dispatch(beginLoadSelectedImageAction());
   const {success} = await provider.updateDailyRefreshWallpaper();
   if (success) {
     store.dispatch(setUpdatedDailyRefreshImageAction());
-    getCurrentWallpaper(provider, store);
   }
 }
 

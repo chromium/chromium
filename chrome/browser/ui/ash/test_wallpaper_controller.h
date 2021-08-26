@@ -10,6 +10,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -17,7 +18,7 @@
 class TestWallpaperController : public ash::WallpaperController {
  public:
   TestWallpaperController();
-  ~TestWallpaperController();
+  ~TestWallpaperController() override;
 
   // Simulates showing the wallpaper on screen by updating |current_wallpaper|
   // and notifying the observers.
@@ -32,6 +33,7 @@ class TestWallpaperController : public ash::WallpaperController {
     return set_default_wallpaper_count_;
   }
   int set_custom_wallpaper_count() const { return set_custom_wallpaper_count_; }
+  int set_online_wallpaper_count() const { return set_online_wallpaper_count_; }
   int show_always_on_top_wallpaper_count() const {
     return show_always_on_top_wallpaper_count_;
   }
@@ -39,6 +41,9 @@ class TestWallpaperController : public ash::WallpaperController {
     return remove_always_on_top_wallpaper_count_;
   }
   const std::string& collection_id() const { return collection_id_; }
+  const absl::optional<ash::WallpaperInfo>& wallpaper_info() const {
+    return wallpaper_info_;
+  }
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
@@ -112,9 +117,11 @@ class TestWallpaperController : public ash::WallpaperController {
   int remove_user_wallpaper_count_ = 0;
   int set_default_wallpaper_count_ = 0;
   int set_custom_wallpaper_count_ = 0;
+  int set_online_wallpaper_count_ = 0;
   int show_always_on_top_wallpaper_count_ = 0;
   int remove_always_on_top_wallpaper_count_ = 0;
   std::string collection_id_;
+  absl::optional<ash::WallpaperInfo> wallpaper_info_;
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 
