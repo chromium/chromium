@@ -12,9 +12,11 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
+using password_manager_util::GetMatchType;
 
 namespace {
 
@@ -23,7 +25,7 @@ std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.reserve(password_forms.size());
   for (const PasswordForm* form : password_forms) {
-    if (!form->is_public_suffix_match)
+    if (GetMatchType(*form) != password_manager_util::GetLoginMatchType::kPSL)
       result.push_back(std::make_unique<PasswordForm>(*form));
   }
   return result;
@@ -123,7 +125,7 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
   ClearData();
   form_manager_ = std::move(form_manager);
   for (const auto* form : form_manager_->GetBestMatches()) {
-    if (form->is_public_suffix_match)
+    if (GetMatchType(*form) == password_manager_util::GetLoginMatchType::kPSL)
       continue;
     local_credentials_forms_.push_back(std::make_unique<PasswordForm>(*form));
   }

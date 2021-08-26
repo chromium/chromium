@@ -135,6 +135,32 @@ TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
             "localhost/accounts.federation.com");
 }
 
+TEST(PasswordManagerUtil, GetMatchType_Android) {
+  PasswordForm form = GetTestAndroidCredential();
+  form.is_affiliation_based_match = true;
+
+  EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+}
+
+TEST(PasswordManagerUtil, GetMatchType_Web) {
+  PasswordForm form = GetTestCredential();
+  form.is_public_suffix_match = true;
+  form.is_affiliation_based_match = true;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.is_public_suffix_match = false;
+  form.is_affiliation_based_match = true;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.is_public_suffix_match = true;
+  form.is_affiliation_based_match = false;
+  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
+
+  form.is_public_suffix_match = false;
+  form.is_affiliation_based_match = false;
+  EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+}
+
 TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time kNow = base::Time::Now();
   const base::Time kYesterday = kNow - base::TimeDelta::FromDays(1);
@@ -289,13 +315,13 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   std::vector<const PasswordForm*> same_scheme_matches;
   FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
                   &best_matches, &preferred_match);
-  // All 4 matches should be returned in best matches.
-  EXPECT_EQ(best_matches.size(), 4U);
+  // |profile_form1| is filtered out because it's the same as |account_form1|.
+  EXPECT_EQ(best_matches.size(), 3U);
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form1),
             best_matches.end());
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form2),
             best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
+  EXPECT_EQ(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
             best_matches.end());
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form2),
             best_matches.end());

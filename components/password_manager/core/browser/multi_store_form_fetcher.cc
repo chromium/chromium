@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/statistics_table.h"
 
 using Logger = autofill::SavePasswordProgressLogger;
+using password_manager_util::GetMatchType;
 
 namespace password_manager {
 
@@ -79,9 +80,11 @@ bool MultiStoreFormFetcher::IsMovingBlocked(
       // entries anyway).
       if (form->IsUsingAccountStore())
         continue;
-      // Ignore PSL matches for blocking moving.
-      if (form->is_public_suffix_match)
+      // Ignore non-exact matches for blocking moving.
+      if (GetMatchType(*form) !=
+          password_manager_util::GetLoginMatchType::kExact) {
         continue;
+      }
       if (form->username_value != username)
         continue;
       if (base::Contains(form->moving_blocked_for_list, destination))
@@ -169,9 +172,11 @@ void MultiStoreFormFetcher::SplitResults(
   for (auto& result : results) {
     if (!result->blocked_by_user)
       continue;
-    // Ignore PSL matches for blocklisted entries.
-    if (result->is_public_suffix_match)
+    // Ignore non-exact matches for blocklisted entries.
+    if (GetMatchType(*result) !=
+        password_manager_util::GetLoginMatchType::kExact) {
       continue;
+    }
     // Ignore different schemes.
     if (result->scheme != form_digest_.scheme)
       continue;

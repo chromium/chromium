@@ -177,7 +177,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 TEST_F(CredentialManagerPendingRequestTaskTest,
        SameUsernameSamePasswordsInBothStores) {
   // This is testing that when two credentials have the same username and
-  //  passwords from two store, the account store version is passed to the UI.
+  // passwords from two store, the account store version is passed to the UI.
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
       CredentialMediationRequirement::kOptional, /*include_passwords=*/true,

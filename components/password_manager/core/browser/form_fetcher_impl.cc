@@ -233,8 +233,9 @@ void FormFetcherImpl::SplitResults(
   federated_.clear();
   for (auto& form : forms) {
     if (form->blocked_by_user) {
-      // Ignore PSL matches for blocklisted entries.
-      if (!form->is_public_suffix_match &&
+      // Ignore non-exact matches for blocklisted entries.
+      if (password_manager_util::GetMatchType(*form) ==
+              password_manager_util::GetLoginMatchType::kExact &&
           form->scheme == form_digest_.scheme) {
         is_blocklisted_ = true;
       }

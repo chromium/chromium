@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/Credential_jni.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -17,9 +18,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     int position) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ConvertUTF8ToJavaString;
-  std::string origin_url = password_form.is_public_suffix_match
-                               ? password_form.url.GetOrigin().spec()
-                               : std::string();
+  std::string origin_url =
+      password_manager_util::GetMatchType(password_form) ==
+              password_manager_util::GetLoginMatchType::kExact
+          ? std::string()
+          : password_form.url.GetOrigin().spec();
   std::string federation =
       password_form.federation_origin.opaque()
           ? std::string()
