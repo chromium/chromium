@@ -857,6 +857,11 @@ void SpdyStreamRequest::OnConfirmHandshakeComplete(int rv) {
   // can adjust LoadTimingInfo.
   confirm_handshake_end_ = base::TimeTicks::Now();
 
+  if (!session_) {
+    OnRequestCompleteFailure(ERR_CONNECTION_CLOSED);
+    return;
+  }
+
   base::WeakPtr<SpdyStream> stream;
   rv = session_->TryCreateStream(weak_ptr_factory_.GetWeakPtr(), &stream);
   if (rv == OK) {
