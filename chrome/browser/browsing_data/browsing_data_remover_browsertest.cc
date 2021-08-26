@@ -749,6 +749,67 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   TestSiteData("Cookie", GetParam());
 }
 
+// Regression test for https://crbug.com/1216406.
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       BrowserContextDestructionVsCookieRemoval) {
+  // Open an incognito browser.
+  UseIncognitoBrowser();
+
+  // Set a cookie.
+  const char kDataType[] = "Cookie";
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  SetDataForType(kDataType);
+  EXPECT_EQ(1, GetSiteDataCount());
+  ExpectCookieTreeModelCount(1);
+  EXPECT_TRUE(HasDataForType(kDataType));
+
+  // Start data removal.  This will CreateTaskCompletionClosureForMojo and
+  // register it as a completion callback for mojo calls to NetworkContext
+  // and other StorageParition-owned mojo::Remote(s).
+  //
+  // kRemoveMask contains:
+  // - DATA_TYPE_SITE_DATA - cargo-culted default from other tests
+  // - DEFERRED_COOKIE_DELETION_DATA_TYPES - to get non-empty result from
+  //   ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion
+  //   (which is needed to touch StoragePartition in
+  //   BrowsingDataRemoverImpl::OnTaskComplete when it is called later,
+  //   after starting destruction of the BrowserContext - see the description
+  //   of the next test step below).
+  constexpr uint64_t kRemoveMask =
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
+      chrome_browsing_data_remover::DEFERRED_COOKIE_DELETION_DATA_TYPES;
+  content::BrowserContext* browser_context = GetBrowser()->profile();
+  content::BrowsingDataRemover* remover =
+      browser_context->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(
+      base::Time(),       // delete_begin
+      base::Time::Max(),  // delete_end
+      kRemoveMask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+
+  // Close the incognito browser.  This will tear down its
+  // Profile/BrowserContext, which will tear down the StoragePartition, which
+  // will tear down some mojo::Remote(s), which will end up running the closures
+  // returned from CreateTaskCompletionClosureForMojo (see the previous test
+  // step), which will run BrowsingDataRemoverImpl::OnTaskComplete.  In
+  // https://crbug.com/1216406 OnTaskComplete would attempt to use its
+  // `browser_context_` (half-way destructed at this point) to get a
+  // StoragePartition and this would lead to DumpWithoutCrashing initially (and
+  // potentially crashes down the line).
+  CloseBrowserSynchronously(GetBrowser());
+
+  // Verify that the completion observer will get notified, even if there might
+  // have been a failure with the removal.
+  completion_observer.BlockUntilCompletion();
+
+  // Expect that removing the cookies failed, because the StoragePartition has
+  // been already gone by the time BrowsingDataRemoverImpl::OnTaskComplete run.
+  EXPECT_TRUE(content::StoragePartition::REMOVE_DATA_MASK_COOKIES &
+              completion_observer.failed_data_types());
+}
+
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, SessionCookieDeletion) {
   TestSiteData("SessionCookie", GetParam());
 }
