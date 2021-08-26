@@ -48,6 +48,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
     "//ios/chrome/browser/providers/lens:chromium_lens",
     "//ios/chrome/browser/providers/modals:chromium_modals",
+    "//ios/chrome/browser/providers/omaha:chromium_omaha",
     "//ios/chrome/browser/providers/overrides:chromium_overrides",
     "//ios/chrome/browser/providers/risk_data:chromium_risk_data",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
