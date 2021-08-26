@@ -824,16 +824,14 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBaseAttributes(
-      env, obj, info, is_root,
-      base::android::ConvertUTF8ToJavaString(env, node->GetClassName()),
-      base::android::ConvertUTF8ToJavaString(env, node->GetRoleString()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetRoleDescription()),
+      env, obj, info, is_root, GetCanonicalJNIString(env, node->GetClassName()),
+      GetCanonicalJNIString(env, node->GetRoleString()),
+      GetCanonicalJNIString(env, node->GetRoleDescription()),
       base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
       base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
       node->CanOpenPopup(), node->IsDismissable(), node->IsMultiLine(),
       node->AndroidInputType(), node->AndroidLiveRegionType(),
-      base::android::ConvertUTF16ToJavaString(
-          env, node->GetContentInvalidErrorMessage()));
+      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()));
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;
@@ -858,9 +856,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       env, obj, info,
       base::android::ConvertUTF16ToJavaString(env, node->GetInnerText()),
       node->IsLink(), node->IsTextField(),
-      base::android::ConvertUTF16ToJavaString(
-          env, node->GetInheritedString16Attribute(
-                   ax::mojom::StringAttribute::kLanguage)),
+      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                     ax::mojom::StringAttribute::kLanguage)),
       suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
       base::android::ConvertUTF16ToJavaString(env,
                                               node->GetStateDescription()));
@@ -925,7 +922,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
       node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
       node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
       node->GetMaxScrollX(), node->GetMaxScrollY(),
-      base::android::ConvertUTF8ToJavaString(env, node->GetClassName()));
+      GetCanonicalJNIString(env, node->GetClassName()));
 
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {
