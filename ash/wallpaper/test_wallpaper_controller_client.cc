@@ -22,6 +22,7 @@ void TestWallpaperControllerClient::ResetCounts() {
   get_wallpaper_path_from_drive_fs_account_id_.clear();
   save_wallpaper_to_drive_fs_account_id_.clear();
   fake_files_ids_.clear();
+  wallpaper_sync_enabled_ = true;
 }
 
 // WallpaperControllerClient:
@@ -39,7 +40,8 @@ void TestWallpaperControllerClient::SetDefaultWallpaper(
   set_default_wallpaper_count_++;
 }
 
-void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp() {
+void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp(
+    const AccountId& account_id) {
   migrate_collection_id_from_chrome_app_count_++;
 }
 
@@ -76,6 +78,11 @@ void TestWallpaperControllerClient::GetFilesId(
     return;
   }
   std::move(files_id_callback).Run(iter->second);
+}
+
+bool TestWallpaperControllerClient::IsWallpaperSyncEnabled(
+    const AccountId& account_id) const {
+  return wallpaper_sync_enabled_;
 }
 
 }  // namespace ash

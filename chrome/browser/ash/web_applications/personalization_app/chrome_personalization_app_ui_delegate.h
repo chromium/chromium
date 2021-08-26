@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
+#include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -123,6 +124,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       bool success,
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
+
+  AccountId GetAccountId() const;
 
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
