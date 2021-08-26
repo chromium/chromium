@@ -109,3 +109,19 @@ This package contains type definitions for webrtc (https://webrtc.org/).
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for Google Analytics
+Short Name: @types/google.analytics
+URL: https://www.npmjs.com/package/@types/google.analytics
+Version: 0.0.42
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for Google Analytics (Classic and
+Universal)
+(https://developers.google.com/analytics/devguides/collection/gajs/).
+
+Local Modifications:
+(none)

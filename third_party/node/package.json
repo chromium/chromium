@@ -4,6 +4,7 @@
   "author": "dpapad@chromium.org",
   "dependencies": {
     "@types/dom-mediacapture-record": "1.0.10",
+    "@types/google.analytics": "0.0.42",
     "@types/w3c-css-typed-object-model-level-1": "20180410.0.3",
     "@types/w3c-image-capture": "1.0.4",
     "@types/webrtc": "0.0.29",

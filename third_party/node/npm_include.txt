@@ -1,5 +1,7 @@
 @types/dom-mediacapture-record
 @types/dom-mediacapture-record/*.d.ts
+@types/google.analytics
+@types/google.analytics/*.d.ts
 @types/w3c-css-typed-object-model-level-1
 @types/w3c-css-typed-object-model-level-1/*.d.ts
 @types/w3c-image-capture
