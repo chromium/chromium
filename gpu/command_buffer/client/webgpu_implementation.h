@@ -146,13 +146,14 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 
   LogSettings log_settings_;
 
-  base::flat_map<DawnRequestAdapterSerial,
-                 base::OnceCallback<
-                     void(int32_t, const WGPUDeviceProperties&, const char*)>>
+  using RequestAdapterCallback = base::OnceCallback<
+      void(int32_t, const WGPUDeviceProperties&, const char*)>;
+  base::flat_map<DawnRequestAdapterSerial, RequestAdapterCallback>
       request_adapter_callback_map_;
   DawnRequestAdapterSerial request_adapter_serial_ = 0;
 
-  base::flat_map<DawnRequestDeviceSerial, base::OnceCallback<void(bool)>>
+  using RequestDeviceCallback = base::OnceCallback<void(bool)>;
+  base::flat_map<DawnRequestDeviceSerial, RequestDeviceCallback>
       request_device_callback_map_;
   DawnRequestDeviceSerial request_device_serial_ = 0;
 

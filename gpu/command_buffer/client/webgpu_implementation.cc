@@ -392,8 +392,12 @@ void WebGPUImplementation::OnGpuControlReturnData(
       auto request_callback_iter =
           request_adapter_callback_map_.find(request_adapter_serial);
       CHECK(request_callback_iter != request_adapter_callback_map_.end());
+      RequestAdapterCallback callback =
+          std::move(request_callback_iter->second);
+      // Remove the callback from the map immediately since the callback could
+      // perform reentrant calls that modify the map.
+      request_adapter_callback_map_.erase(request_callback_iter);
 
-      auto& request_callback = request_callback_iter->second;
       GLuint adapter_service_id =
           returned_adapter_info->header.adapter_service_id;
       WGPUDeviceProperties adapter_properties = {};
@@ -416,9 +420,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
           error_message = "Request adapter failed";
         }
       }
-      std::move(request_callback)
-          .Run(adapter_service_id, adapter_properties, error_message);
-      request_adapter_callback_map_.erase(request_callback_iter);
+      std::move(callback).Run(adapter_service_id, adapter_properties,
+                              error_message);
     } break;
     case DawnReturnDataType::kRequestedDeviceReturnInfo: {
       CHECK_GE(data.size(), sizeof(cmds::DawnReturnRequestDeviceInfo));
@@ -432,12 +435,14 @@ void WebGPUImplementation::OnGpuControlReturnData(
       auto request_callback_iter =
           request_device_callback_map_.find(request_device_serial);
       CHECK(request_callback_iter != request_device_callback_map_.end());
+      RequestDeviceCallback callback = std::move(request_callback_iter->second);
+      // Remove the callback from the map immediately since the callback could
+      // perform reentrant calls that modify the map.
+      request_device_callback_map_.erase(request_callback_iter);
 
-      auto& request_callback = request_callback_iter->second;
       bool is_request_device_success =
           returned_request_device_info->is_request_device_success;
-      std::move(request_callback).Run(is_request_device_success);
-      request_device_callback_map_.erase(request_callback_iter);
+      std::move(callback).Run(is_request_device_success);
     } break;
     default:
       NOTREACHED();
