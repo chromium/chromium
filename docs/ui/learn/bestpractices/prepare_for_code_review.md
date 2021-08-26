@@ -29,3 +29,6 @@
 * When you post UI code for review, include screenshots. The best way to do this
   is posting before (if relevant) and after screenshots as attachments on the
   linked bug. Mention this in the review.
+  * When adding or changing strings, presubmit will prompt you to upload
+    screenshots to facilitate translations. The associated hash can be used by
+    reviewers to [view the screenshots](https://docs.google.com/document/d/1nwYWDny20icMSpLUuV_LgrlbWKrYpbXOERUIZNH636o/edit#heading=h.ndzwtb9u4qzw).
