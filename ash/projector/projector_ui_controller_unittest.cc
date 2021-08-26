@@ -233,8 +233,8 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
   Shell::Get()->projector_controller()->SetClient(&mock_client);
   Shell::Get()->projector_controller()->OnSpeechRecognitionAvailable(
       /*available=*/true);
-  Shell::Get()->projector_controller()->SetProjectorToolsVisible(
-      /*is_visible=*/true);
+  Shell::Get()->projector_controller()->OnRecordingStarted();
+
   histogram_tester.ExpectUniqueSample(
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarOpened, /*count=*/1);
@@ -351,8 +351,7 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       /*sample=*/ProjectorToolbar::kToolbarLocationBottomCenter,
       /*count=*/1);
 
-  Shell::Get()->projector_controller()->SetProjectorToolsVisible(
-      /*is_visible=*/false);
+  controller_->CloseToolbar();
   histogram_tester.ExpectBucketCount(
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarClosed,

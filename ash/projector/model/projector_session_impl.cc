@@ -10,18 +10,17 @@ ProjectorSessionImpl::ProjectorSessionImpl() = default;
 
 ProjectorSessionImpl::~ProjectorSessionImpl() = default;
 
-void ProjectorSessionImpl::Start(SourceType preset_source_type) {
+void ProjectorSessionImpl::Start(const std::string& storage_dir) {
   DCHECK(!active_);
 
-  preset_source_type_ = preset_source_type;
   active_ = true;
+  storage_dir_ = storage_dir;
   NotifySessionActiveStateChanged(active_);
 }
 
 void ProjectorSessionImpl::Stop() {
   DCHECK(active_);
 
-  preset_source_type_ = SourceType::kUnset;
   active_ = false;
   NotifySessionActiveStateChanged(active_);
 }

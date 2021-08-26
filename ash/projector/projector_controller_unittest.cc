@@ -101,22 +101,9 @@ class ProjectorControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ProjectorControllerTest, ShowToolbar) {
-  // Verify that |ShowToolbar| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
-  controller_->SetProjectorToolsVisible(true);
-}
-
-TEST_F(ProjectorControllerTest, CloseToolbar) {
-  controller_->SetProjectorToolsVisible(/*is_visible=*/true);
-  mock_client_.SetSelfieCamVisible(/*visible=*/true);
-  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
-  EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
-  controller_->SetProjectorToolsVisible(/*is_visible=*/false);
-}
-
 TEST_F(ProjectorControllerTest, SaveScreencast) {
+  controller_->projector_session()->Start("projector_data");
+
   base::FilePath saved_path;
   // Verify that |SaveMetadata| in |ProjectorMetadataController| is called.
   EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(saved_path)).Times(1);
@@ -232,11 +219,21 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/true));
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
+
+  mock_client_.SetSelfieCamVisible(/*visible=*/true);
+  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
+  EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
+
   controller_->OnRecordingStarted();
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
-  controller_->projector_session()->Start(SourceType::kUnset);
+  mock_client_.SetSelfieCamVisible(/*visible=*/true);
+  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
+  EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
+  EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
+
+  controller_->projector_session()->Start("projector_data");
   controller_->OnRecordingStarted();
   EXPECT_CALL(mock_client_, StopSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/false));

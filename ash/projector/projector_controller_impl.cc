@@ -29,10 +29,15 @@ ProjectorControllerImpl* ProjectorControllerImpl::Get() {
   return static_cast<ProjectorControllerImpl*>(ProjectorController::Get());
 }
 
-void ProjectorControllerImpl::StartProjectorSession() {
+void ProjectorControllerImpl::StartProjectorSession(
+    const std::string& storage_dir) {
+  DCHECK(CanStartNewSession());
+
   auto* controller = CaptureModeController::Get();
-  if (!controller->is_recording_in_progress())
+  if (!controller->is_recording_in_progress()) {
+    projector_session_->Start(storage_dir);
     controller->Start(CaptureModeEntryType::kProjector);
+  }
 }
 
 void ProjectorControllerImpl::SetClient(ProjectorClient* client) {
@@ -64,31 +69,13 @@ void ProjectorControllerImpl::OnTranscriptionError() {
       EndRecordingReason::kProjectorTranscriptionError);
 }
 
-void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
-  // TODO(llin): This function should probably be removed or renamed. Kept for
-  // now so as not to break existing unit tests.
-
-  // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
-  // available.
-  if (is_visible) {
-    // TODO(crbug/1206720): Move elsewhere once screen capture integration
-    // finalized.
-    OnRecordingStarted();
-    return;
-  }
-
-  // TODO(crbug/1206720): Move elsewhere once screen capture integration
-  // finalized.
-  OnRecordingEnded();
-}
-
 bool ProjectorControllerImpl::IsEligible() const {
   return is_speech_recognition_available_;
 }
 
 bool ProjectorControllerImpl::CanStartNewSession() const {
-  // TODO(b/177959166) Add other pre-conditions to starting a new projector
-  // session.
+  // TODO(crbug.com/1165435) Add other pre-conditions to starting a new
+  // projector session.
   return IsEligible() && !projector_session_->is_active();
 }
 
@@ -113,21 +100,28 @@ void ProjectorControllerImpl::OnRecordingStarted() {
 }
 
 void ProjectorControllerImpl::OnRecordingEnded() {
-  if (projector_session_->is_active()) {
-    StopSpeechRecognition();
-    ui_controller_->OnRecordingStateChanged(false /* started */);
-  }
+  DCHECK(projector_session_->is_active());
+
+  StopSpeechRecognition();
+  ui_controller_->OnRecordingStateChanged(false /* started */);
+
+  // TODO(b/197152209): move closing selfie cam to ProjectorUiController.
   if (client_->IsSelfieCamVisible())
     client_->CloseSelfieCam();
+  // Close Projector toolbar.
   ui_controller_->CloseToolbar();
 
-  // TODO(crbug.com/1165439): Call on to SaveScreencast when the metadata file
-  // saving format is finalized.
+  // TODO(crbug.com/1165439): Call on to SaveScreencast when the storage
+  // strategy is finalized.
 }
 
 void ProjectorControllerImpl::SaveScreencast(
     const base::FilePath& saved_video_path) {
   metadata_controller_->SaveMetadata(saved_video_path);
+
+  // TODO(crbug.com/1165439): Stop projector session when the screencast is
+  // saved.
+  projector_session_->Stop();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {

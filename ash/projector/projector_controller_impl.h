@@ -34,12 +34,11 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   static ProjectorControllerImpl* Get();
 
   // ProjectorController:
-  void StartProjectorSession() override;
+  void StartProjectorSession(const std::string& storage_dir) override;
   void SetClient(ProjectorClient* client) override;
   void OnSpeechRecognitionAvailable(bool available) override;
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
-  void SetProjectorToolsVisible(bool is_visible) override;
   bool IsEligible() const override;
   bool CanStartNewSession() const override;
 

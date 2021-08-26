@@ -10,10 +10,6 @@
 
 namespace ash {
 
-// The recording source type.
-// TODO(crbug/1199163): Record metrics for most common source type.
-enum class SourceType { kUnset = 0, kFullscreen = 1, kTab = 2, kWindow = 3 };
-
 // A checked observer which receives notification of changes to the
 // |ProjectorSession|.
 class ASH_PUBLIC_EXPORT ProjectorSessionObserver
@@ -33,23 +29,15 @@ class ASH_PUBLIC_EXPORT ProjectorSession {
 
   static ProjectorSession* Get();
 
-  // Starts or stops the projector session active state.
-  virtual void Start(SourceType preset_source_type) = 0;
-  virtual void Stop() = 0;
+  bool is_active() const { return active_; }
 
   // Adds/removes the specified |observer|.
   virtual void AddObserver(ProjectorSessionObserver* observer) = 0;
   virtual void RemoveObserver(ProjectorSessionObserver* observer) = 0;
 
-  bool is_active() const { return active_; }
-  SourceType preset_source_type() const { return preset_source_type_; }
-
  protected:
   // Keep track of the session active state. Only one active session is allowed.
   bool active_ = false;
-
-  // The preset recording source type for some entry points (i.e: share screen).
-  SourceType preset_source_type_ = SourceType::kUnset;
 };
 
 }  // namespace ash

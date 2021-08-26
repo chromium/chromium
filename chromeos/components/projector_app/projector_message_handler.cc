@@ -147,10 +147,7 @@ void ProjectorMessageHandler::StartProjectorSession(
     return;
   }
 
-  // TODO(b/177959166) Remove setting the toolbar visibility here after the
-  // integration with screen capture is complete. Simply notify the projector
-  // controller to start a new session.
-  controller->SetProjectorToolsVisible(true);
+  controller->StartProjectorSession(args->GetList()[0].GetString());
   ResolveJavascriptCallback(args->GetList()[0], base::Value(true));
 }
 

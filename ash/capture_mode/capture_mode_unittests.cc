@@ -4377,9 +4377,9 @@ class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
   void StartProjectorModeSession() {
     auto* projector_session = ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
-    projector_session->Start(SourceType::kUnset);
     auto* projector_controller = ProjectorController::Get();
-    projector_controller->StartProjectorSession();
+    projector_controller->StartProjectorSession("projector_data");
+    EXPECT_TRUE(projector_session->is_active());
   }
 
  protected:
