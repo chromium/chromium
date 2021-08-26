@@ -894,6 +894,7 @@ class OrderfileGenerator(object):
     Returns:
       benchmark_results: (dict) Results extracted from benchmarks.
     """
+    benchmark_results = {}
     try:
       _UnstashOutputDirectory(out_directory)
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
@@ -913,7 +914,6 @@ class OrderfileGenerator(object):
       self._compiler.CompileChromeApk(instrumented=False,
                                       use_call_graph=False,
                                       force_relink=True)
-      benchmark_results = dict()
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
           self._compiler.chrome_apk)
       benchmark_results['orderfile.memory_mobile'] = (
