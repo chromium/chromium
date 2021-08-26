@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_UI_UTIL_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_UI_UTIL_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class ASCredentialServiceIdentifier;
+
+extern const CGFloat kUITableViewInsetGroupedTopSpace;
 
 // Prompt for the top of the navigation controller telling what the current site
 // is.

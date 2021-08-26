@@ -15,12 +15,17 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+// Desired space between the bottom of the nav bar and the top of the table
+// view.
+const CGFloat kTableViewTopSpace = 14;
 
 NSString* kCellIdentifier = @"cdvcCell";
 
@@ -70,6 +75,12 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   self.navigationItem.rightBarButtonItem = IsPasswordCreationEnabled()
                                                ? [self navigationEnterButton]
                                                : [self navigationCancelButton];
+  if (IsPasswordCreationEnabled()) {
+    // UITableViewStyleInsetGrouped adds space to the top of the table view by
+    // default. Remove that space and add in the desired amount.
+    self.tableView.contentInset = UIEdgeInsetsMake(
+        -kUITableViewInsetGroupedTopSpace + kTableViewTopSpace, 0, 0, 0);
+  }
   self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];

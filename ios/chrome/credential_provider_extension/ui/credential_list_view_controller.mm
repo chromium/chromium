@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -124,6 +125,8 @@ UIColor* BackgroundColor() {
   self.definesPresentationContext = YES;
   [self.tableView registerClass:[UITableViewHeaderFooterView class]
       forHeaderFooterViewReuseIdentifier:kHeaderIdentifier];
+  [self.tableView registerClass:[CredentialListHeaderView class]
+      forHeaderFooterViewReuseIdentifier:CredentialListHeaderView.reuseID];
 }
 
 #pragma mark - CredentialListConsumer
@@ -170,30 +173,6 @@ UIColor* BackgroundColor() {
   }
 }
 
-- (NSString*)tableView:(UITableView*)tableView
-    titleForHeaderInSection:(NSInteger)section {
-  if ([self isEmptyTable]) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
-                             @"No search results found");
-  } else if ([self isSuggestedPasswordSection:section]) {
-    if (IsPasswordCreationEnabled()) {
-      return nil;
-    }
-    if (self.suggestedPasswords.count > 1) {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
-          @"Suggested Passwords");
-    } else {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
-          @"Suggested Password");
-    }
-  } else {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
-                             @"All Passwords");
-  }
-}
-
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self isIndexPathNewPasswordRow:indexPath]) {
@@ -236,14 +215,22 @@ UIColor* BackgroundColor() {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
-  UITableViewHeaderFooterView* view = [self.tableView
-      dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
-  UIFontTextStyle textStyle = IsPasswordCreationEnabled()
-                                  ? UIFontTextStyleHeadline
-                                  : UIFontTextStyleCaption1;
-  view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
-  view.contentView.backgroundColor = BackgroundColor();
-  return view;
+  if (IsPasswordCreationEnabled()) {
+    CredentialListHeaderView* view = [self.tableView
+        dequeueReusableHeaderFooterViewWithIdentifier:CredentialListHeaderView
+                                                          .reuseID];
+    view.headerTextLabel.text = [self titleForHeaderInSection:section];
+    view.contentView.backgroundColor = BackgroundColor();
+    return view;
+  } else {
+    UITableViewHeaderFooterView* view = [self.tableView
+        dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
+    UIFontTextStyle textStyle = UIFontTextStyleCaption1;
+    view.textLabel.text = [self titleForHeaderInSection:section];
+    view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
+    view.contentView.backgroundColor = BackgroundColor();
+    return view;
+  }
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -384,6 +371,30 @@ UIColor* BackgroundColor() {
 // Returns the number of rows in suggested passwords section.
 - (NSUInteger)numberOfRowsInSuggestedPasswordSection {
   return [self.suggestedPasswords count] + (self.showNewPasswordOption ? 1 : 0);
+}
+
+// Returns the title of the given section
+- (NSString*)titleForHeaderInSection:(NSInteger)section {
+  if ([self isEmptyTable]) {
+    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
+                             @"No search results found");
+  } else if ([self isSuggestedPasswordSection:section]) {
+    if (IsPasswordCreationEnabled()) {
+      return nil;
+    }
+    if (self.suggestedPasswords.count > 1) {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
+          @"Suggested Passwords");
+    } else {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
+          @"Suggested Password");
+    }
+  } else {
+    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
+                             @"All Passwords");
+  }
 }
 
 @end

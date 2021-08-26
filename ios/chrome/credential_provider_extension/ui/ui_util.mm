@@ -10,6 +10,8 @@
 #error "This file requires ARC support."
 #endif
 
+const CGFloat kUITableViewInsetGroupedTopSpace = 35;
+
 NSString* PromptForServiceIdentifiers(
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers) {
   NSString* identifier = serviceIdentifiers.firstObject.identifier;

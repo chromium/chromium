@@ -41,8 +41,13 @@ using base::SysUTF16ToNSString;
   UIColor* backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.view.backgroundColor = backgroundColor;
-  self.navigationController.navigationBar.translucent = NO;
-  self.navigationController.navigationBar.backgroundColor = backgroundColor;
+
+  UINavigationBarAppearance* appearance =
+      [[UINavigationBarAppearance alloc] init];
+  [appearance configureWithOpaqueBackground];
+  appearance.backgroundColor = backgroundColor;
+  appearance.shadowColor = UIColor.clearColor;
+  self.navigationItem.standardAppearance = appearance;
 
   self.title =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_TITLE",
@@ -54,8 +59,6 @@ using base::SysUTF16ToNSString;
          forCellReuseIdentifier:NewPasswordTableCell.reuseID];
   [self.tableView registerClass:[NewPasswordFooterView class]
       forHeaderFooterViewReuseIdentifier:NewPasswordFooterView.reuseID];
-  self.tableView.rowHeight = UITableViewAutomaticDimension;
-  self.tableView.estimatedRowHeight = 44.0;
 }
 
 #pragma mark - UITableViewDataSource
@@ -300,6 +303,7 @@ using base::SysUTF16ToNSString;
                            target:self
                            action:@selector(saveButtonWasPressed)];
   saveButton.tintColor = [UIColor colorNamed:kBlueColor];
+  saveButton.style = UIBarButtonItemStyleDone;
 
   // Save button should start disabled because no password has been entered.
   saveButton.enabled = NO;

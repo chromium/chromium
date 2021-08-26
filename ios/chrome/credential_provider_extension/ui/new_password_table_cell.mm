@@ -260,7 +260,6 @@ const CGFloat kButtonSpacing = 8;
           @"Placeholder for password field");
 
       self.hidePasswordButton.hidden = NO;
-      self.passwordHidden = YES;
       break;
     case NewPasswordTableCellTypeSuggestStrongPassword:
       self.titleLabel.text = NSLocalizedString(

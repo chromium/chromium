@@ -14,6 +14,8 @@ source_set("ui") {
     "credential_list_consumer.h",
     "credential_list_coordinator.h",
     "credential_list_coordinator.mm",
+    "credential_list_header_view.h",
+    "credential_list_header_view.mm",
     "credential_list_mediator.h",
     "credential_list_mediator.mm",
     "credential_list_ui_handler.h",
