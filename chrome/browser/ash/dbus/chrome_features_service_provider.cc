@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/tpm/install_attributes.h"
 #include "components/arc/arc_features.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
@@ -259,9 +261,20 @@ void ChromeFeaturesServiceProvider::IsVmManagementCliAllowed(
 void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
+  // TODO(1242686): Add end-to-end tests for this D-Bus signal.
+
   bool peripheral_data_access_enabled = false;
-  CrosSettings::Get()->GetBoolean(chromeos::kDevicePeripheralDataAccessEnabled,
-                                  &peripheral_data_access_enabled);
+  // Enterprise managed devices use the local state pref.
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
+    peripheral_data_access_enabled =
+        g_browser_process->local_state()->GetBoolean(
+            prefs::kLocalStateDevicePeripheralDataAccessEnabled);
+  } else {
+    // Consumer devices use the CrosSetting pref.
+    CrosSettings::Get()->GetBoolean(
+        chromeos::kDevicePeripheralDataAccessEnabled,
+        &peripheral_data_access_enabled);
+  }
   SendResponse(method_call, std::move(response_sender),
                peripheral_data_access_enabled);
 }
