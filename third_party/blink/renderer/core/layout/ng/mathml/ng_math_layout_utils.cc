@@ -293,6 +293,8 @@ namespace {
 // be fine in in practice. See https://github.com/w3c/mathml/issues/115
 static bool IsSpaceLike(const NGBlockNode& node) {
   DCHECK(node);
+  if (!node.IsMathML())
+    return false;
   // See https://w3c.github.io/mathml-core/#dfn-space-like
   const auto* element = DynamicTo<MathMLElement>(node.GetDOMNode());
   // 1. An <mtext> or <mspace>;
