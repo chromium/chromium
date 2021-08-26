@@ -37,18 +37,17 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key_hash.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class BlinkStorageKey;
 class CachedStorageArea;
 class InspectorDOMStorageAgent;
 class StorageController;
-class SecurityOrigin;
 
 // Contains DOMStorage storage areas for BlinkStorageKeys & handles inspector
 // agents. A namespace is either a SessionStorage namespace with a namespace_id,
@@ -131,9 +130,9 @@ class MODULES_EXPORT StorageNamespace final
   // `ExecutionContext`.
   HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};
   // TODO(https://crbug.com/1212808) Migrate hash map and function.
-  HashMap<scoped_refptr<const SecurityOrigin>,
+  HashMap<std::unique_ptr<const BlinkStorageKey>,
           scoped_refptr<CachedStorageArea>,
-          SecurityOriginHash>
+          BlinkStorageKeyHash>
       cached_areas_;
 };
 

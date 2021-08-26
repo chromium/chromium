@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
-#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -82,7 +81,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  auto cache_it = cached_areas_.find(storage_key.GetSecurityOrigin());
+  auto cache_it = cached_areas_.find(&storage_key);
   if (cache_it != cached_areas_.end()) {
     metric = cache_it->value->HasOneRef() ? CacheMetrics::kHit
                                           : CacheMetrics::kUnused;
@@ -104,7 +103,8 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
                          : CachedStorageArea::AreaType::kLocalStorage,
       storage_key, controller_->TaskRunner(), this,
       /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
-  cached_areas_.insert(storage_key.GetSecurityOrigin(), result);
+  cached_areas_.insert(std::make_unique<const BlinkStorageKey>(storage_key),
+                       result);
   return result;
 }
 
@@ -176,7 +176,7 @@ size_t StorageNamespace::TotalCacheSize() const {
 }
 
 void StorageNamespace::CleanUpUnusedAreas() {
-  Vector<const SecurityOrigin*, 16> to_remove;
+  Vector<const BlinkStorageKey*, 16> to_remove;
   for (const auto& area : cached_areas_) {
     if (area.value->HasOneRef())
       to_remove.push_back(area.key.get());

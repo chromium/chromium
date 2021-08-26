@@ -24,7 +24,6 @@ namespace blink {
 // It is typemapped to blink.mojom.StorageKey, and should stay in sync with
 // blink::StorageKey (third_party/blink/public/common/storage_key/storage_key.h)
 class PLATFORM_EXPORT BlinkStorageKey {
-  DISALLOW_NEW();
 
  public:
   // Creates a BlinkStorageKey with a unique opaque origin and top-level site.

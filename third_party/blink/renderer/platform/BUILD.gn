@@ -1375,6 +1375,7 @@ component("platform") {
     "search_engine_utils.h",
     "storage/blink_storage_key.cc",
     "storage/blink_storage_key.h",
+    "storage/blink_storage_key_hash.h",
     "storage/blink_storage_key_mojom_traits.cc",
     "supplementable.cc",
     "supplementable.h",
