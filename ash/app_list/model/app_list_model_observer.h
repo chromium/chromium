@@ -37,9 +37,6 @@ class APP_LIST_MODEL_EXPORT AppListModelObserver
   virtual void OnAppListStateChanged(AppListState new_state,
                                      AppListState old_state) {}
 
-  // Triggered when the custom launcher page enabled state is changed.
-  virtual void OnCustomLauncherPageEnabledStateChanged(bool enabled) {}
-
  protected:
   ~AppListModelObserver() override;
 };
