@@ -10,6 +10,7 @@
 #include "components/download/public/background_service/clients.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace download {
@@ -110,6 +111,9 @@ struct RequestParams {
 
   // Whether the download is not trustworthy and requires safe browsing checks.
   bool require_safety_checks;
+
+  // The credentials mode of the request.
+  ::network::mojom::CredentialsMode credentials_mode;
 };
 
 // The parameters that describe a download request made to the DownloadService.
