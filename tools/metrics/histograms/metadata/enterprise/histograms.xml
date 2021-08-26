@@ -245,6 +245,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison"
     enum="PsmHashDanceDifferentResultsComparison" expires_after="2022-03-01">
+  <obsolete>
+    Removed in Aug 2021 since the data is no longer required after PSM became
+    the source of truth for initial enrollment in M94.
+  </obsolete>
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
