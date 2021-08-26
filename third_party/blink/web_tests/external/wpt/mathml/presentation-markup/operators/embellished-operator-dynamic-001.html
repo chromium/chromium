@@ -56,6 +56,47 @@
     </mrow>
   </math>
 
+  <p>There should be the five 1em squares on the same line, with colors
+    black, orange, blue, orange, black:</p>
+  <math display="block">
+    <mrow style="background: yellow">
+      <mn>5</mn>
+      <mrow style="background: orange">
+        <mrow>
+          <mrow>
+            <mo lspace="1em" rspace="1em">X</mo>
+          </mrow>
+        </mrow>
+          <mrow id="change_to_not_space_like">
+            <mspace></mspace>
+            <mtext></mtext>
+          </mrow>
+      </mrow>
+      <mn>6</mn>
+    </mrow>
+  </math>
+
+  <p>There should be the five 1em squares on the same line, with colors
+    black, yellow, blue, yellow, black:</p>
+  <math display="block">
+    <mrow style="background: yellow">
+      <mn>7</mn>
+      <mrow style="background: orange">
+        <mrow>
+          <mrow>
+            <mo lspace="1em" rspace="1em">X</mo>
+          </mrow>
+          <mrow id="change_to_space_like">
+            <mspace></mspace>
+            <mtext></mtext>
+            <mn></mn>
+          </mrow>
+        </mrow>
+      </mrow>
+      <mn>8</mn>
+    </mrow>
+  </math>
+
   <script src="/mathml/support/feature-detection.js"></script>
   <script>
     MathMLFeatureDetection.ensure_for_match_reftest("has_operator_spacing");
@@ -69,6 +110,12 @@
     // an embellished operator. lspace/rspace should be around this parent.
     let mrow2 = document.getElementById("change_to_embellished_operator");
     mrow2.removeChild(mrow2.lastElementChild);
+
+    // Same as above, but changing the space-like nature of one child.
+    let mrow3 = document.getElementById("change_to_not_space_like");
+    mrow3.appendChild(FragmentHelper.createElement("mn"));
+    let mrow4 = document.getElementById("change_to_space_like");
+    mrow4.removeChild(mrow4.lastElementChild);
 
     document.documentElement.classList.remove('reftest-wait');
   </script>

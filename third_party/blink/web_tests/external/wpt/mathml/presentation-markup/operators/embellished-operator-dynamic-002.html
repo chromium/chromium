@@ -74,6 +74,28 @@
           assertCorrectSpacing(container2, true);
       }, "container2: Became an embellished operator");
 
+      let container3 = document.getElementById("container3");
+      test(function() {
+          assertCorrectSpacing(container3, true);
+      }, "container3: Initially an embellished operator (testing space-like)");
+
+      let container4 = document.getElementById("container4");
+      test(function() {
+          assertCorrectSpacing(container4, false);
+      }, "container4/space-like: Initially not an embellished operator (testing space-like)");
+
+      test(function() {
+          let mrow = document.getElementById("change_to_not_space_like");
+          mrow.appendChild(FragmentHelper.createElement("mn"));
+          assertCorrectSpacing(container3, false);
+      }, " container3: No longer an embellished operator (testing space-like)");
+
+      test(function() {
+          let mrow = document.getElementById("change_to_space_like");
+          mrow.removeChild(mrow.lastElementChild);
+          assertCorrectSpacing(container4, true);
+      }, "container4: Became an embellished operator (testing space-like)");
+
       done();
   }
 </script>
@@ -110,6 +132,51 @@
           </mrow>
         </mrow>
         <mn>4</mn>
+      </mrow>
+    </math>
+  </div>
+
+  <div>
+    <math display="block">
+      <mrow id="container3">
+        <mn>5</mn>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo lspace="1em" rspace="2em"></mo>
+            </mrow>
+            <mrow class="relative_positioned_and_fixed_size">
+              <mrow id="change_to_not_space_like">
+                <mspace></mspace>
+                <mtext></mtext>
+              </mrow>
+            </mrow>
+          </mrow>
+        </mrow>
+        <mn>6</mn>
+      </mrow>
+    </math>
+  </div>
+
+  <div>
+    <math display="block">
+      <mrow id="container4">
+        <mn>7</mn>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo lspace="1em" rspace="2em"></mo>
+            </mrow>
+            <mrow class="relative_positioned_and_fixed_size">
+              <mrow id="change_to_space_like">
+                <mspace></mspace>
+                <mtext></mtext>
+                <mn></mn>
+              </mrow>
+            </mrow>
+          </mrow>
+        </mrow>
+        <mn>8</mn>
       </mrow>
     </math>
   </div>

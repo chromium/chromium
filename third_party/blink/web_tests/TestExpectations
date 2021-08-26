@@ -1314,11 +1314,6 @@ crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-paramet
 crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-005.html [ Failure ]
 crbug.com/1125137 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-006.html [ Failure ]
 
-# These tests fail because we don't fully support embellished operators.
-crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
-crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
-crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
-
 # This test fail because we don't properly center elements in MathML tables.
 crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-003.html [ Failure ]
 
