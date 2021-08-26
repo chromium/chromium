@@ -115,7 +115,7 @@ public class TabGridDialogMenuCoordinator {
 
         mMenuWindow = new AnchoredPopupWindow(mContext, decorView,
                 ApiCompatibilityUtils.getDrawable(
-                        mContext.getResources(), R.drawable.popup_bg_tinted),
+                        mContext.getResources(), R.drawable.menu_bg_tinted),
                 contentView, rectProvider);
         mMenuWindow.setFocusable(true);
         mMenuWindow.setHorizontalOverlapAnchor(true);

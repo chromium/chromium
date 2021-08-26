@@ -22,7 +22,7 @@
 
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
-    <color name="distilled_page_prefs_unselected">@color/popup_bg_color</color>
+    <color name="distilled_page_prefs_unselected">@color/dialog_bg_color</color>
 
     <!-- Data Saver Colors -->
     <color name="data_reduction_compressed_color">#E1E1E1</color>

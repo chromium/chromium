@@ -82,7 +82,7 @@
     <style name="Base.Theme.Chromium.AlertDialog"
         parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:textColorPrimary">@color/default_text_color</item>
-        <item name="android:windowBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:windowBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
 
@@ -142,7 +142,7 @@
 
     <!-- Spinner styles -->
     <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 

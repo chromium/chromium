@@ -48,8 +48,10 @@
     <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_light_elev_1</color>
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 
-    <!-- Popup colors -->
-    <color name="popup_bg_color">@color/default_bg_color</color>
+    <!-- Dialog colors -->
+    <color name="dialog_bg_color">@color/dialog_bg_color_light</color>
+    <color name="dialog_bg_color_light">@color/default_bg_color_light</color>
+    <color name="dialog_bg_color_dark">@color/default_bg_color_dark_elev_3</color>
 
     <!-- Snackbar colors -->
     <color name="snackbar_background_color">@color/default_bg_color</color>
