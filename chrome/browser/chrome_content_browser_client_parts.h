@@ -51,6 +51,9 @@ class ChromeContentBrowserClientParts {
   virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
                                    blink::web_pref::WebPreferences* web_prefs) {
   }
+  virtual bool OverrideWebPreferencesAfterNavigation(
+      content::WebContents* web_contents,
+      blink::web_pref::WebPreferences* web_prefs);
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
   virtual void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_allowed_schemes) {}

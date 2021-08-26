@@ -3237,7 +3237,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   // See crbug.com/1238157: the Native Client flag (chrome://flags/#enable-nacl)
   // can be manually re-enabled. In that case, we also need to return the full
   // plugins list, for compat.
-  web_prefs->allow_non_empty_navigator_plugins =
+  web_prefs->allow_non_empty_navigator_plugins |=
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kEnableNaCl);
 
   web_prefs->data_saver_enabled = IsDataSaverEnabled(profile);
@@ -3442,6 +3442,12 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     parts->OverrideWebkitPrefs(web_contents, web_prefs);
 }
 
+bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
+    WebContents* web_contents,
+    WebPreferences* web_prefs) {
+  return false;
+}
+
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     WebPreferences* prefs) {
@@ -3451,9 +3457,17 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   if (new_autoplay_policy_needed)
     prefs->autoplay_policy = autoplay_policy;
 
-  return new_autoplay_policy_needed ||
-         UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
-                                    web_contents, GetWebTheme());
+  bool extra_parts_need_update = false;
+  for (ChromeContentBrowserClientParts* parts : extra_parts_) {
+    extra_parts_need_update |=
+        parts->OverrideWebPreferencesAfterNavigation(web_contents, prefs);
+  }
+
+  bool preferred_color_scheme_updated = UpdatePreferredColorScheme(
+      prefs, web_contents->GetLastCommittedURL(), web_contents, GetWebTheme());
+
+  return new_autoplay_policy_needed || extra_parts_need_update ||
+         preferred_color_scheme_updated;
 }
 
 void ChromeContentBrowserClient::BrowserURLHandlerCreated(

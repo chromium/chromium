@@ -110,6 +110,9 @@ class ChromeContentBrowserClientExtensionsPart
   void SiteInstanceDeleting(content::SiteInstance* site_instance) override;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
+  bool OverrideWebPreferencesAfterNavigation(
+      content::WebContents* web_contents,
+      blink::web_pref::WebPreferences* web_prefs) override;
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_allowed_schemes) override;
