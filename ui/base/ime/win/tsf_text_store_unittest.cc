@@ -469,6 +469,13 @@ TEST_F(TSFTextStoreTest, QueryInsertTest) {
             text_store_->QueryInsert(3, 5, 0, &result_start, &result_end));
   EXPECT_EQ(3, result_start);
   EXPECT_EQ(4, result_end);
+
+  *string_buffer() = u"";
+  *composition_start() = 2;
+  EXPECT_EQ(S_OK,
+            text_store_->QueryInsert(0, 2, 5, &result_start, &result_end));
+  EXPECT_EQ(0, result_start);
+  EXPECT_EQ(5, result_end);
 }
 
 class SyncRequestLockTestCallback : public TSFTextStoreTestCallback {

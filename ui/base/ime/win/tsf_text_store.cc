@@ -11,7 +11,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
@@ -528,8 +527,10 @@ HRESULT TSFTextStore::QueryInsert(LONG acp_test_start,
   const LONG composition_start = static_cast<LONG>(composition_start_);
   const LONG buffer_size = static_cast<LONG>(string_buffer_document_.size());
   *acp_result_start =
-      base::clamp(acp_test_start, composition_start, buffer_size);
-  *acp_result_end = base::clamp(acp_test_end, composition_start, buffer_size);
+      std::min(std::max(acp_test_start, composition_start), buffer_size);
+  *acp_result_end =
+      std::min(std::max(acp_test_end, composition_start), buffer_size) +
+      text_size;
   return S_OK;
 }
 
