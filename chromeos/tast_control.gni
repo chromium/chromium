@@ -45,4 +45,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1238654
   "lockscreen.KeyboardShortcut",
+  "apps.SystemWebAppsReinstall.all_apps_stable",
+  "apps.SystemWebAppsReinstall.default_enabled_apps_stable",
+  "camera.EncodeAccelJPEG",
 ]
