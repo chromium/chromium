@@ -255,8 +255,10 @@ test("extensions_unittests") {
   data_deps = [ "//third_party/mesa_headers" ]
 
   if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    ]
   }
 }
 

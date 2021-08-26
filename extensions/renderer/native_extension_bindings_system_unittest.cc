@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
@@ -925,8 +926,16 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 
 // Tests that a context having access to an aliased API (like networking.onc)
 // does not allow for accessing the source API (networkingPrivate) directly.
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_AccessToAliasSourceDoesntGiveAliasAccess \
+  DISABLED_AccessToAliasSourceDoesntGiveAliasAccess
+#else
+#define MAYBE_AccessToAliasSourceDoesntGiveAliasAccess \
+  AccessToAliasSourceDoesntGiveAliasAccess
+#endif
 TEST_F(NativeExtensionBindingsSystemUnittest,
-       AccessToAliasSourceDoesntGiveAliasAccess) {
+       MAYBE_AccessToAliasSourceDoesntGiveAliasAccess) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
@@ -957,8 +966,16 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 // Tests that a context having access to the source for an aliased API does not
 // allow for accessing the alias.
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_AccessToAliasDoesntGiveAliasSourceAccess \
+  DISABLED_AccessToAliasDoesntGiveAliasSourceAccess
+#else
+#define MAYBE_AccessToAliasDoesntGiveAliasSourceAccess \
+  AccessToAliasDoesntGiveAliasSourceAccess
+#endif
 TEST_F(NativeExtensionBindingsSystemUnittest,
-       AccessToAliasDoesntGiveAliasSourceAccess) {
+       MAYBE_AccessToAliasDoesntGiveAliasSourceAccess) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
@@ -988,7 +1005,15 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
-TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_AliasedAPIsAreDifferentObjects \
+  DISABLED_AliasedAPIsAreDifferentObjects
+#else
+#define MAYBE_AliasedAPIsAreDifferentObjects AliasedAPIsAreDifferentObjects
+#endif
+TEST_F(NativeExtensionBindingsSystemUnittest,
+       MAYBE_AliasedAPIsAreDifferentObjects) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
@@ -33,7 +34,13 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 
 // Tests bluetoothSocket.create() and bluetoothSocket.close().
 // Regression test for https://crbug.com/831651.
-TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_CreateThenClose DISABLED_CreateThenClose
+#else
+#define MAYBE_CreateThenClose CreateThenClose
+#endif
+TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
   scoped_refptr<const Extension> extension_with_socket_permitted =
       ExtensionBuilder()
           .SetManifest(

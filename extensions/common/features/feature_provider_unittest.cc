@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "build/build_config.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
@@ -96,7 +97,14 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
 }
 
 // Tests that real permission features have the correct availability for an app.
-TEST(FeatureProviderTest, PermissionFeatureAvailability) {
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_PermissionFeatureAvailability \
+  DISABLED_PermissionFeatureAvailability
+#else
+#define MAYBE_PermissionFeatureAvailability PermissionFeatureAvailability
+#endif
+TEST(FeatureProviderTest, MAYBE_PermissionFeatureAvailability) {
   const FeatureProvider* provider = FeatureProvider::GetByName("permission");
 
   scoped_refptr<const Extension> app =

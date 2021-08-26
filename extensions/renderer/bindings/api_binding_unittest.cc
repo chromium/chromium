@@ -685,7 +685,13 @@ TEST_F(APIBindingUnittest, TestEventCreation) {
   EXPECT_FALSE(has_nonexistent_event.FromJust());
 }
 
-TEST_F(APIBindingUnittest, TestProperties) {
+// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
+#if defined(OS_FUCHSIA)
+#define MAYBE_TestProperties DISABLED_TestProperties
+#else
+#define MAYBE_TestProperties TestProperties
+#endif
+TEST_F(APIBindingUnittest, MAYBE_TestProperties) {
   SetProperties(
       "{"
       "  'prop1': { 'value': 17, 'type': 'integer' },"
