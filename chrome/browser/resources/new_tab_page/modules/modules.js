@@ -192,13 +192,12 @@ export class ModulesElement extends mixinBehaviors
   /** @private */
   onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_) {
-      this.shadowRoot.querySelectorAll('ntp-module-wrapper')
-          .forEach(({module}) => {
-            chrome.metricsPrivate.recordBoolean(
-                `NewTabPage.Modules.EnabledOnNTPLoad.${module.descriptor.id}`,
-                !this.disabledModules_.all &&
-                    !this.disabledModules_.ids.includes(module.descriptor.id));
-          });
+      ModuleRegistry.getInstance().getDescriptors().forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
       chrome.metricsPrivate.recordBoolean(
           'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
       this.dispatchEvent(new Event('modules-loaded'));
