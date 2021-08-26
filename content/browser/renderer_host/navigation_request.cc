@@ -4245,8 +4245,8 @@ void NavigationRequest::CommitNavigation() {
                        network::mojom::WebClientHintsType::kUAReduced)) {
       // For Chrome to continue to send Sec-CH-UA-Reduced, the server must
       // continue replying with:
-      //  - a valid OriginTrial
-      //  - Accept-CH with "Sec-CH-UA-Reduced.
+      //  - a valid Origin Trial token.
+      //  - Accept-CH header with Sec-CH-UA-Reduced as a value.
       //
       // Here, it did not. So it gets removed from the persisted client hints
       // for the next request.
