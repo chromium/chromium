@@ -1307,7 +1307,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.UpdateReceived"
-    units="BooleanReceived" expires_after="2021-08-31">
+    units="BooleanReceived" expires_after="2021-09-30">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -2287,7 +2287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
-    expires_after="2021-08-31">
+    expires_after="2021-09-30">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -2305,7 +2305,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Memory.PerFrame.Max" units="KiB"
-    expires_after="2021-08-31">
+    expires_after="2021-09-30">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
