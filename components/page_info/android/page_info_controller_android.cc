@@ -161,10 +161,13 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     if (base::Contains(user_specified_settings_to_display, permission)) {
       std::u16string setting_title =
           PageInfoUI::PermissionTypeToUIString(permission);
+      std::u16string setting_title_mid_sentence =
+          PageInfoUI::PermissionTypeToUIStringMidSentence(permission);
 
       Java_PageInfoController_addPermissionSection(
           env, controller_jobject_,
           ConvertUTF16ToJavaString(env, setting_title),
+          ConvertUTF16ToJavaString(env, setting_title_mid_sentence),
           static_cast<jint>(permission),
           static_cast<jint>(user_specified_settings_to_display[permission]));
     }
@@ -177,6 +180,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 
     Java_PageInfoController_addPermissionSection(
         env, controller_jobject_, ConvertUTF16ToJavaString(env, object_title),
+        ConvertUTF16ToJavaString(env, object_title),
         static_cast<jint>(chosen_object->ui_info.content_settings_type),
         static_cast<jint>(CONTENT_SETTING_ALLOW));
   }

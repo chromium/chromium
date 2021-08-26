@@ -348,13 +348,16 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * Adds a new row for the given permission.
      *
      * @param name The title of the permission to display to the user.
+     * @param nameMidSentence The title of the permission to display to the user when used
+     *         mid-sentence.
      * @param type The ContentSettingsType of the permission.
      * @param currentSettingValue The ContentSetting value of the currently selected setting.
      */
     @CalledByNative
-    private void addPermissionSection(
-            String name, int type, @ContentSettingValues int currentSettingValue) {
-        mPermissionParamsListBuilder.addPermissionEntry(name, type, currentSettingValue);
+    private void addPermissionSection(String name, String nameMidSentence, int type,
+            @ContentSettingValues int currentSettingValue) {
+        mPermissionParamsListBuilder.addPermissionEntry(
+                name, nameMidSentence, type, currentSettingValue);
     }
 
     /**
