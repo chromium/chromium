@@ -2481,21 +2481,20 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   PasswordForm form = GenerateExamplePasswordForm();
   ignore_result(db().AddLogin(form));
 
-  InsecureCredential credential1{form.signon_realm, form.username_value,
-                                 base::Time(), InsecureType::kLeaked,
-                                 IsMuted(false)};
-  InsecureCredential credential2 = credential1;
-  credential2.insecure_type = InsecureType::kPhished;
 
   base::flat_map<InsecureType, InsecurityMetadata> issues;
   issues[InsecureType::kLeaked] =
-      InsecurityMetadata(credential1.create_time, credential1.is_muted);
+      InsecurityMetadata(base::Time(), IsMuted(false));
   issues[InsecureType::kPhished] =
-      InsecurityMetadata(credential2.create_time, credential2.is_muted);
+      InsecurityMetadata(base::Time(), IsMuted(false));
   form.password_issues = std::move(issues);
 
-  db().insecure_credentials_table().AddRow(credential1);
-  db().insecure_credentials_table().AddRow(credential2);
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), InsecureType::kLeaked,
+      form.password_issues[InsecureType::kLeaked]);
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), InsecureType::kPhished,
+      form.password_issues[InsecureType::kPhished]);
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
@@ -2513,14 +2512,18 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   InsecureCredential credential2 = credential1;
   credential2.insecure_type = InsecureType::kPhished;
 
-  db().insecure_credentials_table().AddRow(credential1);
-  db().insecure_credentials_table().AddRow(credential2);
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), credential1.insecure_type,
+      InsecurityMetadata(credential1.create_time, credential1.is_muted));
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), credential2.insecure_type,
+      InsecurityMetadata(credential2.create_time, credential2.is_muted));
 
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::ElementsAre(credential1, credential2));
 
   EXPECT_TRUE(db().RemoveLogin(form, nullptr));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::IsEmpty());
 }
 
@@ -2580,7 +2583,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
 }
 
@@ -2598,7 +2601,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
   ASSERT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
-  ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
+  ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
 
   form.password_issues[InsecureType::kLeaked].is_muted = IsMuted(true);
@@ -2606,7 +2609,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
   insecure_credential.is_muted = IsMuted(true);
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
 }
 
@@ -2630,7 +2633,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   ASSERT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
-  ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
+  ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               UnorderedElementsAre(leaked, phished));
 
   // Complete password_issues removal can usually only happen when the password
@@ -2640,7 +2643,8 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(), IsEmpty());
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
+              IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest,
@@ -2654,10 +2658,14 @@ TEST_F(LoginDatabaseTest,
   InsecureCredential credential2 = credential1;
   credential2.insecure_type = InsecureType::kPhished;
 
-  db().insecure_credentials_table().AddRow(credential1);
-  db().insecure_credentials_table().AddRow(credential2);
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), InsecureType::kLeaked,
+      InsecurityMetadata(base::Time(), IsMuted(false)));
+  db().insecure_credentials_table().InsertOrReplace(
+      FormPrimaryKey(1), InsecureType::kPhished,
+      InsecurityMetadata(base::Time(), IsMuted(false)));
 
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::UnorderedElementsAre(credential1, credential2));
   form.password_value = u"new_password";
 
@@ -2665,7 +2673,8 @@ TEST_F(LoginDatabaseTest,
   list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
   EXPECT_EQ(list, db().AddLogin(form));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(), IsEmpty());
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
+              IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
@@ -2687,7 +2696,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
   PasswordStoreChangeList list;
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
   EXPECT_EQ(list, db().AddLogin(form));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::UnorderedElementsAre(leaked, phished));
 }
 
@@ -2701,12 +2710,13 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
   InsecureCredential leaked{form.signon_realm, form.username_value,
                             base::Time::FromTimeT(1), InsecureType::kLeaked,
                             IsMuted(false)};
-  ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
+  ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(leaked));
 
   PasswordStoreChangeList list;
   EXPECT_TRUE(db().RemoveLogin(form, &list));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(), IsEmpty());
+  EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
+              IsEmpty());
 }
 
 class LoginDatabaseForAccountStoreTest : public testing::Test {

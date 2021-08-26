@@ -81,44 +81,6 @@ void InsecureCredentialsTable::Init(sql::Database* db) {
   db_ = db;
 }
 
-bool InsecureCredentialsTable::AddRow(
-    const InsecureCredential& compromised_credentials) {
-  DCHECK(db_);
-  if (compromised_credentials.signon_realm.empty())
-    return false;
-
-  DCHECK(db_->DoesTableExist(kTableName));
-
-  // In case there is an error, expect it to be a constraint violation.
-  db_->set_error_callback(base::BindRepeating([](int error, sql::Statement*) {
-    constexpr int kSqliteErrorMask = 0xFF;
-    constexpr int kSqliteConstraint = 19;
-    if ((error & kSqliteErrorMask) != kSqliteConstraint) {
-      DLOG(ERROR) << "Got unexpected SQL error code: " << error;
-    }
-  }));
-
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf(
-          "INSERT INTO %s (parent_id, insecurity_type, create_time, is_muted) "
-          "SELECT id, ?, ?, ? FROM logins WHERE signon_realm=? AND "
-          "username_value=?",
-          kTableName)
-          .c_str()));
-
-  s.BindInt(0, static_cast<int>(compromised_credentials.insecure_type));
-  s.BindInt64(1, compromised_credentials.create_time.ToDeltaSinceWindowsEpoch()
-                     .InMicroseconds());
-  s.BindBool(2, compromised_credentials.is_muted.value());
-  s.BindString(3, compromised_credentials.signon_realm);
-  s.BindString16(4, compromised_credentials.username);
-
-  bool result = s.Run();
-  db_->reset_error_callback();
-  return result && db_->GetLastChangeCount();
-}
-
 bool InsecureCredentialsTable::InsertOrReplace(FormPrimaryKey parent_key,
                                                InsecureType type,
                                                InsecurityMetadata metadata) {
@@ -160,54 +122,6 @@ bool InsecureCredentialsTable::RemoveRow(FormPrimaryKey parent_key,
   return result && db_->GetLastChangeCount();
 }
 
-bool InsecureCredentialsTable::RemoveRows(
-    const std::string& signon_realm,
-    const std::u16string& username,
-    RemoveInsecureCredentialsReason reason) {
-  DCHECK(db_);
-  if (signon_realm.empty())
-    return false;
-
-  DCHECK(db_->DoesTableExist(kTableName));
-
-  // Retrieve the rows that are to be removed to log.
-  const std::vector<InsecureCredential> compromised_credentials =
-      GetRows(signon_realm);
-  if (compromised_credentials.empty())
-    return false;
-
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("DELETE FROM %s WHERE parent_id IN "
-                         "(SELECT id FROM logins WHERE signon_realm = ? AND "
-                         "username_value = ?)",
-                         kTableName)
-          .c_str()));
-  s.BindString(0, signon_realm);
-  s.BindString16(1, username);
-  return s.Run();
-}
-
-std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
-    const std::string& signon_realm) const {
-  DCHECK(db_);
-  if (signon_realm.empty())
-    return std::vector<InsecureCredential>{};
-
-  DCHECK(db_->DoesTableExist(kTableName));
-
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
-                         "insecurity_type, create_time, is_muted FROM %s "
-                         "INNER JOIN logins ON parent_id = logins.id "
-                         "WHERE signon_realm = ? ",
-                         kTableName)
-          .c_str()));
-  s.BindString(0, signon_realm);
-  return StatementToInsecureCredential(&s);
-}
-
 std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
     FormPrimaryKey parent_key) const {
   DCHECK(db_);
@@ -222,20 +136,6 @@ std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
                          kTableName)
           .c_str()));
   s.BindInt(0, *parent_key);
-  return StatementToInsecureCredential(&s);
-}
-
-std::vector<InsecureCredential> InsecureCredentialsTable::GetAllRows() {
-  DCHECK(db_);
-  DCHECK(db_->DoesTableExist(kTableName));
-
-  sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
-                         "insecurity_type, create_time, is_muted FROM %s "
-                         "INNER JOIN logins ON parent_id = logins.id",
-                         kTableName)
-          .c_str()));
   return StatementToInsecureCredential(&s);
 }
 
