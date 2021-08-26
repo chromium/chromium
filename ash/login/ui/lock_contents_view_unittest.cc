@@ -116,8 +116,62 @@ AuthDisabledData GetTestDisabledAuthData() {
 
 }  // namespace
 
-using LockContentsViewUnitTest = LoginTestBase;
 using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
+
+class LockContentsViewUnitTest : public LoginTestBase {
+ protected:
+  LockContentsViewUnitTest() = default;
+  LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
+  LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;
+  ~LockContentsViewUnitTest() override = default;
+
+  // Returns true if the easy unlock icon is displayed for |view|.
+  bool IsEasyUnlockIconShowing(LoginBigUserView* view) {
+    if (!view->auth_user())
+      return false;
+
+    views::View* icon =
+        LoginPasswordView::TestApi(
+            LoginAuthUserView::TestApi(view->auth_user()).password_view())
+            .easy_unlock_icon();
+    return icon->GetVisible();
+  }
+
+  // Enables easy unlock icon for user associated with |view|. If |view| is
+  // null, then use the primary user.
+  void EnableEasyUnlockIcon(LoginBigUserView* view,
+                            bool autoshow_tooltip = false) {
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::LOCKED;
+    icon_info.autoshow_tooltip = autoshow_tooltip;
+    AccountId account_id =
+        view ? view->GetCurrentUser().basic_user_info.account_id
+             : users()[0].basic_user_info.account_id;
+    DataDispatcher()->ShowEasyUnlockIcon(account_id, icon_info);
+  }
+
+  // Disables easy unlock icon for user associated with |view|. If |view| is
+  // null, then use the primary user.
+  void DisableEasyUnlockIcon(LoginBigUserView* view,
+                             bool autoshow_tooltip = false) {
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::NONE;
+    icon_info.autoshow_tooltip = autoshow_tooltip;
+    AccountId account_id =
+        view ? view->GetCurrentUser().basic_user_info.account_id
+             : users()[0].basic_user_info.account_id;
+    DataDispatcher()->ShowEasyUnlockIcon(account_id, icon_info);
+  }
+
+  // Change the active LoginBigUserView by sending a mouse click event.
+  void MakeAuthViewActive(LoginBigUserView* view) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    // Send event to swap users.
+    LoginUserView* user_view = view->GetUserView();
+    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+};
 
 TEST_F(LockContentsViewUnitTest, DisplayMode) {
   // Build lock screen with 1 user.
@@ -938,17 +992,11 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockForceTooltipCreatesTooltipWidget) {
 
   // Show an icon with |autoshow_tooltip| is false. Tooltip bubble is not
   // activated.
-  EasyUnlockIconInfo icon_info;
-  icon_info.icon_state = EasyUnlockIconState::LOCKED;
-  icon_info.autoshow_tooltip = false;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon_info);
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/false);
   EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
 
   // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is shown.
-  icon_info.autoshow_tooltip = true;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon_info);
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/true);
   EXPECT_TRUE(test_api.tooltip_bubble()->GetVisible());
 }
 
@@ -966,82 +1014,105 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockIconUpdatedDuringUserSwap) {
   LoginBigUserView* primary = test_api.primary_big_view();
   LoginBigUserView* secondary = test_api.opt_secondary_big_view();
 
-  // Returns true if the easy unlock icon is displayed for |view|.
-  auto showing_easy_unlock_icon = [&](LoginBigUserView* view) {
-    if (!view->auth_user())
-      return false;
+  // NOTE: we cannot assert on non-active auth views because the easy unlock
+  // icon is lazily updated, ie, if we're not showing the view we will not
+  // update icon state.
 
-    views::View* icon =
-        LoginPasswordView::TestApi(
-            LoginAuthUserView::TestApi(view->auth_user()).password_view())
-            .easy_unlock_icon();
-    return icon->GetVisible();
-  };
+  // No easy unlock icons are shown.
+  MakeAuthViewActive(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Enables easy unlock icon for |view|.
-  auto enable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconInfo icon_info;
-    icon_info.icon_state = EasyUnlockIconState::LOCKED;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon_info);
-  };
+  // Activate icon for primary.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
 
-  // Disables easy unlock icon for |view|.
-  auto disable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconInfo icon_info;
-    icon_info.icon_state = EasyUnlockIconState::NONE;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon_info);
-  };
+  // Secondary does not have easy unlock enabled; swapping auth hides the icon.
+  MakeAuthViewActive(secondary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
 
-  // Makes |view| the active auth view so it will can show auth methods.
-  auto make_active_auth_view = [&](LoginBigUserView* view) {
-    // Send event to swap users.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    LoginUserView* user_view = view->GetUserView();
-    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
-    generator->ClickLeftButton();
-  };
+  // Switching back enables the icon again.
+  MakeAuthViewActive(primary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
+
+  // Activate icon for secondary. Primary visibility does not change.
+  EnableEasyUnlockIcon(secondary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
+
+  // Swap to secondary, icon still visible.
+  MakeAuthViewActive(secondary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(secondary));
+
+  // Deactivate secondary, icon hides.
+  DisableEasyUnlockIcon(secondary, DataDispatcher());
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+
+  // Deactivate primary, icon still hidden.
+  DisableEasyUnlockIcon(primary, DataDispatcher());
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+
+  // Enable primary, icon still hidden.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+}
+
+// Verifies the easy unlock tooltip is hidden if Smart Lock revamp is enabled.
+TEST_F(LockContentsViewUnitTest, SmartLockRevampHidesTooltip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+
+  auto* lock = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(lock));
+
+  LockContentsView::TestApi test_api(lock);
+  // Creating lock screen does not show tooltip bubble.
+  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
+
+  // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is not shown
+  // since kSmartLockUIRevamp is enabled.
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/true);
+  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
+}
+
+// Verifies that easy unlock icon is not shown when auth users are swapped if
+// Smart Lock revamp is enabled.
+TEST_F(LockContentsViewUnitTest, SmartLockRevampHidesIconDuringUserSwap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+
+  // Build lock screen with two users.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(2);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  LockContentsView::TestApi test_api(contents);
+  LoginBigUserView* primary = test_api.primary_big_view();
+  LoginBigUserView* secondary = test_api.opt_secondary_big_view();
 
   // NOTE: we cannot assert on non-active auth views because the easy unlock
   // icon is lazily updated, ie, if we're not showing the view we will not
   // update icon state.
 
   // No easy unlock icons are shown.
-  make_active_auth_view(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(primary));
+  MakeAuthViewActive(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Activate icon for primary.
-  enable_icon(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
+  // Activate icon for primary. Icon not shown because kSmartLockUIRevamp is
+  // disabled.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Secondary does not have easy unlock enabled; swapping auth hides the icon.
-  make_active_auth_view(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Switching back enables the icon again.
-  make_active_auth_view(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Activate icon for secondary. Primary visibility does not change.
-  enable_icon(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Swap to secondary, icon still visible.
-  make_active_auth_view(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate secondary, icon hides.
-  disable_icon(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate primary, icon still hidden.
-  disable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Enable primary, icon still hidden.
-  enable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
+  // Swap to secondary, icon still not visible.
+  EnableEasyUnlockIcon(secondary);
+  MakeAuthViewActive(secondary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
 }
 
 TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {

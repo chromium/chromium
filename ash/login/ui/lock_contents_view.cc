@@ -1161,6 +1161,11 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
 void LockContentsView::OnShowEasyUnlockIcon(
     const AccountId& user,
     const EasyUnlockIconInfo& icon_info) {
+  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
+  // it will be removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   UserState* state = FindStateForUser(user);
   if (!state)
     return;
@@ -2069,6 +2074,11 @@ void LockContentsView::OnBigUserChanged() {
 }
 
 void LockContentsView::UpdateEasyUnlockIconForUser(const AccountId& user) {
+  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
+  // it will be removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   // Try to find an big view for |user|. If there is none, there is no state to
   // update.
   LoginBigUserView* big_view =

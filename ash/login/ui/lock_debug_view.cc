@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
@@ -285,6 +286,12 @@ class LockDebugView::DebugDataDispatcherTransformer
 
   // Enables click to auth for the user at |user_index|.
   void CycleEasyUnlockForUserIndex(size_t user_index) {
+    // Do not cycle EasyUnlockIconState if the Smart Lock revamp is enabled
+    // since it will be removed post launch.
+    // TODO(crbug.com/1233614) Update this to cycle the states of the new UI
+    // once ready.
+    DCHECK(!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp));
+
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
 

@@ -4,12 +4,14 @@
 
 #include "ash/login/ui/login_password_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
@@ -71,6 +73,17 @@ class LoginPasswordViewTest : public LoginTestBase {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordViewTest);
+};
+
+// For tests with the Smart Lock UI revamp feature enabled. Enables the flag
+// before the view is constructed.
+class LoginPasswordViewWithSmartLockRevampTest : public LoginPasswordViewTest {
+ protected:
+  LoginPasswordViewWithSmartLockRevampTest() {
+    feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+  }
+
+  base::test::ScopedFeatureList feature_list;
 };
 
 }  // namespace
@@ -289,6 +302,23 @@ TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
 
   // Icon was not tapped.
   EXPECT_FALSE(easy_unlock_icon_tapped_called_);
+}
+
+// Verifies that the easy unlock icon is not visible if the Smart Lock revamp is
+// enabled
+TEST_F(LoginPasswordViewWithSmartLockRevampTest,
+       EasyUnlockNotVisibleWithSmartLockRevampEnabled) {
+  // Test fixture enables kSmartLockUIRevamp feature.
+
+  LoginPasswordView::TestApi test_api(view_);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Enable icon, should still not be visible.
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
+                           std::u16string() /*accessibility_label*/);
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
 }
 
 // Checks that the user can't hit Ctrl+Z to revert the password when it has been

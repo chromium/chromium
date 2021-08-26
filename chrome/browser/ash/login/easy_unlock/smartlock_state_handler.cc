@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -161,12 +162,17 @@ void SmartLockStateHandler::ChangeState(SmartLockState new_state) {
   if (IsLockedState(state_))
     did_see_locked_phone_ = true;
 
+  UpdateScreenlockAuthType();
+
+  // Do not update UserPodCustomIcon if the Smart Lock revamp is enabled since
+  // it will be removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   if (hardlock_state_ != NO_HARDLOCK) {
     ShowHardlockUI();
     return;
   }
-
-  UpdateScreenlockAuthType();
 
   proximity_auth::ScreenlockBridge::UserPodCustomIcon icon =
       GetIconForState(state_);

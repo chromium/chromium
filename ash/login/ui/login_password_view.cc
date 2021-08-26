@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_password_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
@@ -695,6 +696,11 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
 void LoginPasswordView::SetEasyUnlockIcon(
     EasyUnlockIconState icon_state,
     const std::u16string& accessibility_label) {
+  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
+  // it will be removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   // Update icon.
   easy_unlock_icon_->SetEasyUnlockIcon(icon_state, accessibility_label);
 
