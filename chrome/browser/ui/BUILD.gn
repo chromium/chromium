@@ -3709,8 +3709,6 @@ static_library("ui") {
       "translate/translate_bubble_test_utils.h",
       "views/accessibility/caption_bubble_context_views.cc",
       "views/accessibility/caption_bubble_context_views.h",
-      "views/accessibility/caption_bubble_controller_views.cc",
-      "views/accessibility/caption_bubble_controller_views.h",
       "views/accessibility/caret_browsing_dialog_delegate.cc",
       "views/accessibility/caret_browsing_dialog_delegate.h",
       "views/accessibility/non_accessible_image_view.cc",

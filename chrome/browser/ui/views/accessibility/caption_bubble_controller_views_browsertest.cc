@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
-
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +17,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"

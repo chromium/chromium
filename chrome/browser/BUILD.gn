@@ -3461,8 +3461,6 @@ static_library("browser") {
       "accessibility/caption_bubble_context_browser.h",
       "accessibility/invert_bubble_prefs.cc",
       "accessibility/invert_bubble_prefs.h",
-      "accessibility/live_caption_controller.cc",
-      "accessibility/live_caption_controller.h",
       "accessibility/live_caption_controller_factory.cc",
       "accessibility/live_caption_controller_factory.h",
       "accessibility/live_caption_speech_recognition_host.cc",

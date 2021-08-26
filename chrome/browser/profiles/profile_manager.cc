@@ -130,7 +130,6 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
@@ -139,6 +138,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/live_caption/live_caption_controller.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

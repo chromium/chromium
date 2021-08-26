@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
+#include "components/live_caption/views/caption_bubble_controller_views.h"
 
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
-#include "chrome/browser/accessibility/live_caption_controller.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 
