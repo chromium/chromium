@@ -49,6 +49,7 @@ generate_grd("build_grd") {
       "cr_components:build_grdp",
       "cr_components/customize_themes:build_grdp",
       "cr_elements:build_grdp",
+      "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
@@ -56,6 +57,7 @@ generate_grd("build_grd") {
       "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/customize_themes/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/js/browser_command/resources.grdp",
     ]
 
     if (use_nss_certs) {

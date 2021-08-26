@@ -22,7 +22,7 @@ extern const base::Feature kClosedTabCache;
 extern const base::Feature kDestroyProfileOnBrowserClose;
 
 extern const base::Feature kPromoBrowserCommands;
-extern const char kPromoBrowserCommandIdParam[];
+extern const char kBrowserCommandIdParam[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kDoubleTapToZoomInTabletMode;

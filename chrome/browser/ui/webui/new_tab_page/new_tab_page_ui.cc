@@ -441,7 +441,7 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandlerFactory>
+    mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
         pending_receiver) {
   if (browser_command_factory_receiver_.is_bound())
     browser_command_factory_receiver_.reset();
@@ -524,9 +524,9 @@ void NewTabPageUI::CreateCustomizeThemesHandler(
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(
-    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
+    mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {
-  using promo_browser_command::mojom::Command;
+  using browser_command::mojom::Command;
   std::vector<Command> supported_commands = {
       Command::kOpenSafetyCheck,
       Command::kOpenSafeBrowsingEnhancedProtectionSettings,

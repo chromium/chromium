@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, Command, CommandHandlerRemote, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BackgroundSelectionType, BrowserCommandProxy, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -404,7 +405,7 @@ suite('NewTabPageAppTest', () => {
   test('can show promo with browser command', async () => {
     const promoBrowserCommandHandler =
         TestBrowserProxy.fromClass(CommandHandlerRemote);
-    PromoBrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
+    BrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
     promoBrowserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: true}));
 
@@ -435,7 +436,7 @@ suite('NewTabPageAppTest', () => {
   test('executes promo browser command', async () => {
     const promoBrowserCommandHandler =
         TestBrowserProxy.fromClass(CommandHandlerRemote);
-    PromoBrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
+    BrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve({commandExecuted: true}));
 

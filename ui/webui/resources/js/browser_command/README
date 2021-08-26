@@ -4,7 +4,7 @@ browser. These commands may trigger side-effect-free actions in the browser such
 as navigating to a chrome:// URL or initiating a helpful flow.
 
 These mojo definitions are accessible to Desktop and Android. The implementer of
-the handler interface in promo_browser_command.mojom chooses which commands to
+the handler interface in browser_command.mojom chooses which commands to
 handle and which ones to ignore depending on the platform or the milestone.
 
 The Desktop implementations for these commands are located at:

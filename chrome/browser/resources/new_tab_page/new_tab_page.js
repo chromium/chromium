@@ -10,6 +10,7 @@
  * things tests need.
  */
 
+export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 export {NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
@@ -37,8 +38,6 @@ export {recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipe
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
-export {Command, CommandHandlerRemote} from './promo_browser_command.mojom-webui.js';
-export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
 export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';

@@ -6,12 +6,12 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import './whats_new_error_page.js';
 import './strings.m.js';
 
+import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ClickInfo, Command} from './promo_browser_command.mojom-webui.js';
-import {WhatsNewCommandProxy} from './whats_new_command_proxy.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
 type CommandData = {
@@ -77,7 +77,7 @@ export class WhatsNewAppElement extends PolymerElement {
         commandData.commandId :
         Command.kUnknownCommand;
 
-    const handler = WhatsNewCommandProxy.getInstance().handler;
+    const handler = BrowserCommandProxy.getInstance().handler;
     handler.canExecuteCommand(commandId).then(({canExecute}) => {
       if (canExecute) {
         handler.executeCommand(commandId, commandData.clickInfo);

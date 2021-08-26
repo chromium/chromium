@@ -1,6 +1,6 @@
-This directory contains the Desktop implementations of the promo browser
+This directory contains the Desktop implementations of the browser
 commands located at:
-//chrome/browser/promo_browser_command/promo_browser_command.mojom
+//ui/webui/resources/js/browser_command/browser_command.mojom
 
 Add unit tests for every new handled command.
 

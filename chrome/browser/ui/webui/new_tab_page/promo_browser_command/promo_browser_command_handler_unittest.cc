@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/command_updater_impl.h"
-#include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -23,11 +22,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
-using promo_browser_command::mojom::ClickInfo;
-using promo_browser_command::mojom::ClickInfoPtr;
-using promo_browser_command::mojom::Command;
-using promo_browser_command::mojom::CommandHandler;
+using browser_command::mojom::ClickInfo;
+using browser_command::mojom::ClickInfoPtr;
+using browser_command::mojom::Command;
+using browser_command::mojom::CommandHandler;
 
 namespace {
 

@@ -78,7 +78,7 @@ base::RefCountedMemory* WhatsNewUI::GetFaviconResourceBytes(
 WEB_UI_CONTROLLER_TYPE_IMPL(WhatsNewUI)
 
 void WhatsNewUI::BindInterface(
-    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandlerFactory>
+    mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
         pending_receiver) {
   if (browser_command_factory_receiver_.is_bound())
     browser_command_factory_receiver_.reset();
@@ -86,10 +86,10 @@ void WhatsNewUI::BindInterface(
 }
 
 void WhatsNewUI::CreateBrowserCommandHandler(
-    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
+    mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {
-  std::vector<promo_browser_command::mojom::Command> supported_commands = {
-      promo_browser_command::mojom::Command::kOpenFeedbackForm};
+  std::vector<browser_command::mojom::Command> supported_commands = {
+      browser_command::mojom::Command::kOpenFeedbackForm};
   command_handler_ = std::make_unique<PromoBrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
   command_handler_->ConfigureFeedbackCommand(

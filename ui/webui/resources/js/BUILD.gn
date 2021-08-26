@@ -23,6 +23,9 @@ generate_grd("build_grdp") {
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_src_manifest",
   ]
+  if (include_polymer) {
+    manifest_files += [ "$target_gen_dir/browser_command/tsconfig.manifest" ]
+  }
   resource_path_prefix = "js"
 }
 
@@ -32,6 +35,9 @@ group("preprocess") {
     ":preprocess_src",
     "cr/ui:preprocess",
   ]
+  if (include_polymer) {
+    public_deps += [ "browser_command:build_ts" ]
+  }
 }
 
 preprocess_if_expr("preprocess_src") {
@@ -122,6 +128,10 @@ group("closure_compile") {
     "cr:closure_compile",
     "cr/ui:closure_compile",
   ]
+
+  if (include_polymer) {
+    deps += [ "browser_command:closure_compile" ]
+  }
 }
 
 js_type_check("js_resources") {

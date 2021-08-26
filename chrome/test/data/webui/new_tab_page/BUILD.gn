@@ -10,12 +10,6 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=" +
-                        rebase_path("//chrome/browser/resources/new_tab_page/",
-                                    root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/promo_browser_command",
-                            root_build_dir),
                   ]
   deps = [
     ":metrics_utils_test",

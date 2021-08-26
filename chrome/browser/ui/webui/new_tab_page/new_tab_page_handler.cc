@@ -515,7 +515,7 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
   // Replace the promo URL with "command:<id>" if such a command ID is set
   // via the feature params.
   const std::string command_id = base::GetFieldTrialParamValueByFeature(
-      features::kPromoBrowserCommands, features::kPromoBrowserCommandIdParam);
+      features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
   if (!command_id.empty()) {
     auto promo = new_tab_page::mojom::Promo::New();
     std::vector<new_tab_page::mojom::PromoPartPtr> parts;

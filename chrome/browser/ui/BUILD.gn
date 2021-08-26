@@ -1618,7 +1618,6 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
-      "//chrome/browser/promo_browser_command:mojo_bindings",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/safe_browsing:advanced_protection",
@@ -1670,6 +1669,7 @@ static_library("ui") {
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
       "//ui/events",
+      "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
     public_deps += [
       "//build:branding_buildflags",

@@ -44,16 +44,7 @@ html_to_js("web_components") {
 }
 
 copy("copy_proxy") {
-  sources = [
-    "//chrome/browser/resources/whats_new/whats_new_command_proxy.ts",
-    "//chrome/browser/resources/whats_new/whats_new_proxy.ts",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_mojo") {
-  deps = [ "//chrome/browser/promo_browser_command:mojo_bindings_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/promo_browser_command/promo_browser_command.mojom-webui.js" ]
+  sources = [ "//chrome/browser/resources/whats_new/whats_new_proxy.ts" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -62,18 +53,16 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/$tsc_folder"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "promo_browser_command.mojom-webui.js",
     "whats_new_app.ts",
-    "whats_new_command_proxy.ts",
     "whats_new_error_page.ts",
     "whats_new_proxy.ts",
   ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/js/browser_command:build_ts",
   ]
   extra_deps = [
-    ":copy_mojo",
     ":copy_proxy",
     ":web_components",
   ]

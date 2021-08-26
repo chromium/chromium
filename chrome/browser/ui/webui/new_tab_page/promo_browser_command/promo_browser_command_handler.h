@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "chrome/browser/command_updater_delegate.h"
-#include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "url/gurl.h"
 
 class CommandUpdater;
@@ -36,22 +36,22 @@ struct FeedbackCommandSettings {
 // Handles browser commands send from JS.
 class PromoBrowserCommandHandler
     : public CommandUpdaterDelegate,
-      public promo_browser_command::mojom::CommandHandler {
+      public browser_command::mojom::CommandHandler {
  public:
   static const char kPromoBrowserCommandHistogramName[];
 
   PromoBrowserCommandHandler(
-      mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
+      mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_page_handler,
       Profile* profile,
-      std::vector<promo_browser_command::mojom::Command> supported_commands);
+      std::vector<browser_command::mojom::Command> supported_commands);
   ~PromoBrowserCommandHandler() override;
 
-  // promo_browser_command::mojom::CommandHandler:
-  void CanExecuteCommand(promo_browser_command::mojom::Command command_id,
+  // browser_command::mojom::CommandHandler:
+  void CanExecuteCommand(browser_command::mojom::Command command_id,
                          CanExecuteCommandCallback callback) override;
-  void ExecuteCommand(promo_browser_command::mojom::Command command_id,
-                      promo_browser_command::mojom::ClickInfoPtr click_info,
+  void ExecuteCommand(browser_command::mojom::Command command_id,
+                      browser_command::mojom::ClickInfoPtr click_info,
                       ExecuteCommandCallback callback) override;
 
   // CommandUpdaterDelegate:
@@ -73,9 +73,9 @@ class PromoBrowserCommandHandler
 
   FeedbackCommandSettings feedback_settings_;
   Profile* profile_;
-  std::vector<promo_browser_command::mojom::Command> supported_commands_;
+  std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
-  mojo::Receiver<promo_browser_command::mojom::CommandHandler> page_handler_;
+  mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROMO_BROWSER_COMMAND_HANDLER_H_

@@ -20,9 +20,9 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-using promo_browser_command::mojom::ClickInfoPtr;
-using promo_browser_command::mojom::Command;
-using promo_browser_command::mojom::CommandHandler;
+using browser_command::mojom::ClickInfoPtr;
+using browser_command::mojom::Command;
+using browser_command::mojom::CommandHandler;
 
 // static
 const char PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
@@ -31,7 +31,7 @@ const char PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
 PromoBrowserCommandHandler::PromoBrowserCommandHandler(
     mojo::PendingReceiver<CommandHandler> pending_page_handler,
     Profile* profile,
-    std::vector<promo_browser_command::mojom::Command> supported_commands)
+    std::vector<browser_command::mojom::Command> supported_commands)
     : profile_(profile),
       supported_commands_(supported_commands),
       command_updater_(std::make_unique<CommandUpdaterImpl>(this)),
@@ -45,7 +45,7 @@ PromoBrowserCommandHandler::PromoBrowserCommandHandler(
 PromoBrowserCommandHandler::~PromoBrowserCommandHandler() = default;
 
 void PromoBrowserCommandHandler::CanExecuteCommand(
-    promo_browser_command::mojom::Command command_id,
+    browser_command::mojom::Command command_id,
     CanExecuteCommandCallback callback) {
   if (!base::Contains(supported_commands_, command_id)) {
     std::move(callback).Run(false);

@@ -10,7 +10,7 @@
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
-#include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -66,7 +66,7 @@ class NewTabPageUI
       public new_tab_page::mojom::PageHandlerFactory,
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
-      public promo_browser_command::mojom::CommandHandlerFactory,
+      public browser_command::mojom::CommandHandlerFactory,
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
@@ -92,10 +92,10 @@ class NewTabPageUI
       mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler);
 
   // Instantiates the implementor of the
-  // promo_browser_command::mojom::CommandHandlerFactory mojo interface passing
+  // browser_command::mojom::CommandHandlerFactory mojo interface passing
   // the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<promo_browser_command::mojom::CommandHandlerFactory>
+      mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
           pending_receiver);
 
   // Instantiates the implementor of the
@@ -158,9 +158,9 @@ class NewTabPageUI
       mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
           pending_handler) override;
 
-  // promo_browser_command::mojom::CommandHandlerFactory
+  // browser_command::mojom::CommandHandlerFactory
   void CreateBrowserCommandHandler(
-      mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
+      mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_handler) override;
 
   // most_visited::mojom::MostVisitedPageHandlerFactory:
@@ -202,7 +202,7 @@ class NewTabPageUI
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
   std::unique_ptr<PromoBrowserCommandHandler> promo_browser_command_handler_;
-  mojo::Receiver<promo_browser_command::mojom::CommandHandlerFactory>
+  mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   std::unique_ptr<RealboxHandler> realbox_handler_;
 #if !defined(OFFICIAL_BUILD)

@@ -14,12 +14,7 @@ import("//ui/webui/webui_features.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
 
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/promo_browser_command",
-                            root_build_dir),
-                  ]
+  closure_flags = default_closure_args + mojom_js_args
 
   deps = [
     ":app",
@@ -30,7 +25,6 @@ js_type_check("closure_compile") {
     ":logo",
     ":new_tab_page",
     ":new_tab_page_proxy",
-    ":promo_browser_command_proxy",
     ":utils",
     ":voice_search_overlay",
     ":window_proxy",
@@ -51,7 +45,6 @@ js_library("new_tab_page") {
   deps = [
     ":app",
     ":background_manager",
-    ":promo_browser_command_proxy",
     ":utils",
     ":window_proxy",
     "modules:info_dialog",
@@ -60,6 +53,7 @@ js_library("new_tab_page") {
     "modules:module_registry",
     "modules:modules",
     "realbox:realbox_browser_proxy",
+    "//ui/webui/resources/js/browser_command:browser_command_proxy",
   ]
 }
 
@@ -87,30 +81,26 @@ js_library("app") {
     ":i18n_setup",
     ":metrics_utils",
     ":new_tab_page_proxy",
-    ":promo_browser_command_proxy",
     ":voice_search_overlay",
     ":window_proxy",
     "modules:module_registry",
     "realbox:realbox",
-    "//chrome/browser/promo_browser_command:mojo_bindings_webui_js",
     "//skia/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/browser_command:browser_command_proxy",
+    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
     "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
-}
-
-js_library("promo_browser_command_proxy") {
-  deps = [ "//chrome/browser/promo_browser_command:mojo_bindings_webui_js" ]
 }
 
 js_library("middle_slot_promo") {
   deps = [
     ":new_tab_page_proxy",
     ":window_proxy",
-    "//chrome/browser/promo_browser_command:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
   ]
 }
 
@@ -283,7 +273,6 @@ preprocess_if_expr("preprocess") {
     "lazy_load.js",
     "customize_dialog_types.js",
     "new_tab_page.js",
-    "promo_browser_command_proxy.js",
     "utils.js",
     "metrics_utils.js",
     "i18n_setup.js",
@@ -322,16 +311,6 @@ generate_grd("build_new_tab_page_mojo_grdp") {
   input_files_base_dir =
       rebase_path("$root_gen_dir/chrome/browser/ui/webui/new_tab_page",
                   root_build_dir)
-}
-
-generate_grd("build_promo_browser_command_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/promo_browser_command_mojo_resources.grdp"
-  input_files = [ "promo_browser_command.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/promo_browser_command",
-          root_build_dir)
 }
 
 generate_grd("build_drive_mojo_grdp") {
@@ -393,7 +372,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/modules/cart/icons/resources.grdp",
     "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
     "$target_gen_dir/new_tab_page_mojo_resources.grdp",
-    "$target_gen_dir/promo_browser_command_mojo_resources.grdp",
     "$target_gen_dir/realbox/icons/resources.grdp",
     "$target_gen_dir/realbox/realbox_mojo_resources.grdp",
     "$target_gen_dir/task_module_mojo_resources.grdp",
@@ -406,7 +384,6 @@ generate_grd("build_grd") {
     ":build_drive_mojo_grdp",
     ":build_new_tab_page_mojo_grdp",
     ":build_photos_mojo_grdp",
-    ":build_promo_browser_command_mojo_grdp",
     ":build_task_module_mojo_grdp",
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
@@ -452,7 +429,6 @@ grit("resources") {
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js",
-    "//chrome/browser/promo_browser_command:mojo_bindings_js",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js",
     "//chrome/common/search:mojo_bindings_js",
@@ -511,9 +487,9 @@ if (optimize_webui) {
       "chrome://resources/mojo/url/mojom/origin.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+      "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
       "new_tab_page.mojom-lite.js",
       "realbox/realbox.mojom-lite.js",
-      "promo_browser_command.mojom-webui.js",
       "modules/drive/drive.mojom-lite.js",
       "modules/photos/photos.mojom-lite.js",
       "modules/task_module/task_module.mojom-lite.js",
