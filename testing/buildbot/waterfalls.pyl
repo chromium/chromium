@@ -6132,7 +6132,7 @@
       'Win10 Tests x64': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
           'isolate_profile_data',
         ],
         'test_suites': {
