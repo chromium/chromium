@@ -7262,22 +7262,10 @@
     "ReportCertificateErrors": [
         {
             "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "1.0"
-                    }
-                },
-                {
-                    "name": "DontShowAndDontSend"
-                }
-            ]
-        },
-        {
-            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "android",
                 "chromeos"
             ],
             "experiments": [
@@ -7286,45 +7274,6 @@
                     "params": {
                         "sendingThreshold": "1.0"
                     }
-                },
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "-1.0"
-                    }
-                },
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "0.0"
-                    }
-                },
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "abcdef"
-                    }
-                },
-                {
-                    "name": "DontShowAndDontSend"
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ShowAndPossiblySend",
-                    "params": {
-                        "sendingThreshold": "1.0"
-                    }
-                },
-                {
-                    "name": "DontShowAndDontSend"
                 }
             ]
         }
