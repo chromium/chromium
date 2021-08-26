@@ -108,6 +108,25 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     : format_(absl::nullopt), timestamp_(init->timestamp()) {
   media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
 
+  if (init->numberOfChannels() == 0) {
+    exception_state.ThrowTypeError("numberOfChannels must be greater than 0.");
+    return;
+  }
+
+  if (init->numberOfChannels() > media::limits::kMaxChannels) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        String::Format("numberOfChannels exceeds supported implementation "
+                       "limits: %u vs %u.",
+                       init->numberOfChannels(), media::limits::kMaxChannels));
+    return;
+  }
+
+  if (init->numberOfFrames() == 0) {
+    exception_state.ThrowTypeError("numberOfFrames must be greater than 0.");
+    return;
+  }
+
   uint32_t bytes_per_sample =
       media::SampleFormatToBytesPerChannel(media_format);
 
@@ -135,7 +154,8 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
   auto sample_rate = static_cast<int>(init->sampleRate());
   if (sample_rate < media::limits::kMinSampleRate ||
       sample_rate > media::limits::kMaxSampleRate) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
         String::Format("sampleRate is outside of supported implementation "
                        "limits: need between %u and %u, received %d.",
                        media::limits::kMinSampleRate,
@@ -243,13 +263,29 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
     return 0;
   }
 
+  auto format = data_->sample_format();
+  if (copy_to_options->hasFormat()) {
+    auto dest_format = BlinkFormatToMediaFormat(copy_to_options->format());
+    if (dest_format != data_->sample_format() &&
+        dest_format != media::SampleFormat::kSampleFormatPlanarF32) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "AudioData currently only supports copy conversion to f32-planar.");
+      return 0;
+    }
+
+    format = dest_format;
+  }
+
+  // Interleaved formats only have one plane, despite many channels.
+  uint32_t max_plane_index =
+      media::IsInterleaved(format) ? 0 : data_->channel_count() - 1;
+
   // The channel isn't used in calculating the allocationSize, but we still
   // validate it here. This prevents a failed copyTo() call following a
   // successful allocationSize() call.
-  if (copy_to_options->planeIndex() >=
-      static_cast<uint32_t>(data_->channel_count())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "Invalid planeIndex.");
+  if (copy_to_options->planeIndex() > max_plane_index) {
+    exception_state.ThrowRangeError("Invalid planeIndex.");
     return 0;
   }
 
@@ -272,20 +308,6 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
         String::Format("Frame count exceeds available_frames frames (%u > %u).",
                        frame_count, available_frames));
     return 0;
-  }
-
-  auto format = data_->sample_format();
-  if (copy_to_options->hasFormat()) {
-    auto dest_format = BlinkFormatToMediaFormat(copy_to_options->format());
-    if (dest_format != data_->sample_format() &&
-        dest_format != media::SampleFormat::kSampleFormatPlanarF32) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "AudioData currently only supports copy conversion to f32-planar.");
-      return 0;
-    }
-
-    format = dest_format;
   }
 
   uint32_t sample_count = frame_count;
@@ -329,13 +351,11 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
   if (!dest_wrapper.data()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "destination is detached.");
+    exception_state.ThrowRangeError("destination is detached.");
     return;
   }
   if (dest_wrapper.size() < static_cast<size_t>(copy_size_in_bytes)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "destination is not large enough.");
+    exception_state.ThrowRangeError("destination is not large enough.");
     return;
   }
 
@@ -344,6 +364,7 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
                          : data_->sample_format();
 
   const uint8_t* src_data = nullptr;
+  size_t src_data_size = 0;
   if (dest_format != data_->sample_format()) {
     // NOTE: The call to allocationSize() above ensures only passthrough or
     // f32-planar are possible by this point.
@@ -353,10 +374,27 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
     // at once and save it for future copy calls.
     if (!temp_bus_)
       temp_bus_ = media::AudioBuffer::WrapOrCopyToAudioBus(data_);
+
+    CHECK_LE(copy_to_options->planeIndex(),
+             static_cast<uint32_t>(temp_bus_->channels()));
+
     src_data = reinterpret_cast<const uint8_t*>(
         temp_bus_->channel(copy_to_options->planeIndex()));
+
+    src_data_size = sizeof(float) * temp_bus_->frames();
   } else {
+    CHECK_LE(copy_to_options->planeIndex(),
+             static_cast<uint32_t>(data_->channel_count()));
+
     src_data = data_->channel_data()[copy_to_options->planeIndex()];
+
+    if (media::IsInterleaved(data_->sample_format())) {
+      src_data_size = data_->data_size();
+    } else {
+      src_data_size =
+          media::SampleFormatToBytesPerChannel(data_->sample_format()) *
+          data_->frame_count();
+    }
   }
 
   // Copy data.
@@ -381,6 +419,7 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
   }
 
   const uint8_t* data_start = src_data + offset_in_bytes;
+  CHECK_LE(data_start + copy_size_in_bytes, src_data + src_data_size);
   memcpy(dest_wrapper.data(), data_start, copy_size_in_bytes);
 }
 
