@@ -146,8 +146,8 @@ void CSSToStyleMap::MapFillImage(StyleResolverState& state,
   CSSPropertyID property = layer->GetType() == EFillLayerType::kBackground
                                ? CSSPropertyID::kBackgroundImage
                                : CSSPropertyID::kWebkitMaskImage;
-  layer->SetImage(state.GetStyleImage(
-      property, state.ResolveLightDarkPair(CSSProperty::Get(property), value)));
+  layer->SetImage(
+      state.GetStyleImage(property, state.ResolveLightDarkPair(value)));
 }
 
 void CSSToStyleMap::MapFillRepeatX(StyleResolverState&,

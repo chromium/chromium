@@ -156,10 +156,8 @@ class CORE_EXPORT StyleResolverState {
 
   // If the input CSSValue is a CSSLightDarkValuePair, return the light or dark
   // CSSValue based on the UsedColorScheme. For all other values, just return a
-  // reference to the passed value. If the property is a non-inherited one, mark
-  // the ComputedStyle as having such a pair since that will make sure its not
-  // stored in the MatchedPropertiesCache.
-  const CSSValue& ResolveLightDarkPair(const CSSProperty&, const CSSValue&);
+  // reference to the passed value.
+  const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 

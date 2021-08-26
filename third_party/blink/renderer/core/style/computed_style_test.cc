@@ -734,14 +734,11 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   auto* dark_declaration = ParseDeclarationBlock("color-scheme:dark");
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
-  EXPECT_FALSE(style->HasNonInheritedLightDarkValue());
-
   StyleCascade cascade1(state);
   cascade1.MutableMatchResult().AddMatchedProperties(bgimage_declaration);
   cascade1.MutableMatchResult().AddMatchedProperties(dark_declaration);
   cascade1.Apply();
   EXPECT_TRUE(style->HasBackgroundImage());
-  EXPECT_TRUE(style->HasNonInheritedLightDarkValue());
 
   style = CreateComputedStyle();
   state.SetStyle(style);
@@ -751,7 +748,6 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   cascade2.MutableMatchResult().AddMatchedProperties(light_declaration);
   cascade2.Apply();
   EXPECT_FALSE(style->HasBackgroundImage());
-  EXPECT_TRUE(style->HasNonInheritedLightDarkValue());
 }
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {

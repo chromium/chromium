@@ -204,10 +204,6 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.TextAutosizingMultiplier() != 1)
     return false;
-  // -internal-light-dark() values in UA sheets have different computed values
-  // based on the used value of color-scheme.
-  if (style.HasNonInheritedLightDarkValue())
-    return false;
   if (style.HasContainerRelativeUnits())
     return false;
   return true;

@@ -109,16 +109,6 @@
       custom_copy: true,
       custom_compare: true,
     },
-    // Style has applied a non-inherited -internal-light-dark() value from a UA
-    // stylesheet. Since such values have a dependency on the used color-scheme,
-    // we cannot use the MatchedPropertyCache when this flag is set.
-    {
-      name: "HasNonInheritedLightDarkValue",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_copy: true,
-      custom_compare: true,
-    },
     // Whether this style is affected by these pseudo-classes.
     {
       name: "AffectedByFocusWithin",
