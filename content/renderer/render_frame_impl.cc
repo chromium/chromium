@@ -2602,7 +2602,6 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
             blink::mojom::PagehideDispatch::kNotDispatched);
     CaptureTraceForNavigationDebugScenario(
         DebugScenario::kDebugNonMainFrameWithOldPageInfo);
-    NOTREACHED();
     return;
   }
   DCHECK_EQ(old_page_info->new_lifecycle_state_for_old_page->visibility,
