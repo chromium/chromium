@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
-class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
 class OmahaServiceProvider;
@@ -124,9 +123,6 @@ class ChromeBrowserProvider {
 
   // Returns a valid non-null instance of the mailto handler provider.
   virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
-
-  // Returns an instance of the BrowserURLRewriter provider.
-  virtual BrowserURLRewriterProvider* GetBrowserURLRewriterProvider() const;
 
   // Returns an instance of the DiscoverFeed provider;
   virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;

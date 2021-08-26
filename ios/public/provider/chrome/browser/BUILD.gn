@@ -7,8 +7,6 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "browser_url_rewriter_provider.h",
-    "browser_url_rewriter_provider.mm",
     "chrome_browser_provider.h",
     "chrome_browser_provider.mm",
   ]
