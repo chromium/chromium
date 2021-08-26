@@ -624,9 +624,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CLEAR_SAVED_PASSWORDS" desc="Label for the option in settings to clear saved passwords. In titlecase. [Length: 20em] [iOS only]">
         Saved Passwords
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOPHOTOS" desc="The name of the Add to Photos As command in the content area context menu">
-        Add to Photos
-      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST" desc="The iOS menu item for adding a link to the reading list.">
         Add to Reading List
       </message>
@@ -714,9 +711,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_SETTINGS_TITLE" desc="Title for content settings dialog [Length: 29em] [iOS only]">
         Content Settings
-      </message>
-      <message name="IDS_IOS_CONTEXT_MENU_SEARCHFORIMAGE" desc="Context menu text for option to perform a search for image [Length: 25em] [iOS only]">
-        Search for Image
       </message>
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE" desc="Context menu text for option to perform a search for image [Length: 25em] [iOS only]">
         Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for This Image
