@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -505,6 +506,13 @@ network::mojom::URLResponseHeadPtr CreateResponseInfoFromServiceWorker() {
   return head;
 }
 
+// ServiceWorkerSubresourceLoader::RecordTimingMetrics() records the metrics
+// only when the consistent high-resolution timer is used among processes.
+bool LoaderRecordsTimingMetrics() {
+  return base::TimeTicks::IsHighResolution() &&
+         base::TimeTicks::IsConsistentAcrossProcesses();
+}
+
 const char kHistogramSubresourceFetchEvent[] =
     "ServiceWorker.FetchEvent.Subresource.Status";
 
@@ -696,15 +704,18 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, Basic) {
 
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
-      "Unspecified",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
+        "Unspecified",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, Abort) {
@@ -727,12 +738,15 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, Abort) {
       kHistogramSubresourceFetchEvent,
       blink::ServiceWorkerStatusCode::kErrorAbort, 1);
 
-  // Timing histograms shouldn't be recorded on abort.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on abort.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, DropController) {
@@ -827,13 +841,16 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, NoController) {
     EXPECT_EQ(1, fake_container_host_.get_controller_service_worker_count());
   }
 
-  // No fetch event was dispatched, so no sample should be recorded.
-  histogram_tester.ExpectTotalCount(kHistogramSubresourceFetchEvent, 0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  if (LoaderRecordsTimingMetrics()) {
+    // No fetch event was dispatched, so no sample should be recorded.
+    histogram_tester.ExpectTotalCount(kHistogramSubresourceFetchEvent, 0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, DropController_RestartFetchEvent) {
@@ -892,11 +909,14 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, DropController_RestartFetchEvent) {
   EXPECT_EQ(2, fake_container_host_.get_controller_service_worker_count());
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, DropController_TooManyRestart) {
@@ -925,12 +945,15 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, DropController_TooManyRestart) {
       kHistogramSubresourceFetchEvent,
       blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed, 1);
 
-  // Timing histograms shouldn't be recorded on failure.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on failure.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {
@@ -987,16 +1010,19 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Test timing histograms of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
-      "Network",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test timing histograms of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
+        "Network",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse_Abort) {
@@ -1048,12 +1074,15 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse_Abort) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Timing histograms shouldn't be recorded on abort.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on abort.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponse) {
@@ -1111,16 +1140,19 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponse) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Test timing histograms of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
-      "CacheStorage",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test timing histograms of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2."
+        "CacheStorage",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponseWithoutMetadata) {
@@ -1159,12 +1191,15 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponseWithoutMetadata) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Test timing histograms of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test timing histograms of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponseNonScript) {
@@ -1235,13 +1270,16 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, FallbackResponse) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Test timing histograms of network fallback.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.FetchHandlerEndToFallbackNetwork",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test timing histograms of network fallback.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.FetchHandlerEndToFallbackNetwork",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, ErrorResponse) {
@@ -1263,12 +1301,16 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, ErrorResponse) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
-  // Timing histograms shouldn't be recorded when we receive an error response.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded when we receive an error
+    // response.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ForwardServiceWorkerToWorkerReady",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2", 0);
+  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, RedirectResponse) {
