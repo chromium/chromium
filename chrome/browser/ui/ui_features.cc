@@ -114,7 +114,7 @@ const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",
 
 // Enables tabs to be frozen when collapsed. https://crbug.com/1110108
 const base::Feature kTabGroupsCollapseFreezing{
-    "TabGroupsCollapseFreezing", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TabGroupsCollapseFreezing", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the feedback through the tab group editor bubble.
 // https://crbug.com/1067062
