@@ -3650,6 +3650,9 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (ProcessingBeforeUnload())
     return false;
 
+  if (auto* mf_checker = View()->GetMobileFriendlinessChecker())
+    mf_checker->EvaluateNow();
+
   PageDismissalScope in_page_dismissal;
   auto& before_unload_event = *MakeGarbageCollected<BeforeUnloadEvent>();
   before_unload_event.initEvent(event_type_names::kBeforeunload, false, true);
@@ -3809,8 +3812,6 @@ void Document::DispatchUnloadEvents(
     return;
 
   GetFrame()->Loader().SaveScrollAnchor();
-  if (auto* mf_checker = View()->GetMobileFriendlinessChecker())
-    mf_checker->EvaluateNow();
 
   // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
   VLOG(1) << "Actually dispatching an UnloadEvent: URL = " << Url();
