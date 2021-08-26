@@ -207,7 +207,7 @@ float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
   return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorURL);
+      AshColorProvider::ContentLayerType::kHighlightColorHover);
 }
 
 }  // namespace ash
