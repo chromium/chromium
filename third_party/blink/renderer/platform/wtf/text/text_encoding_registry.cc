@@ -125,10 +125,10 @@ static inline void checkExistingName(const char*, const char*) {}
 
 static void CheckExistingName(const char* alias, const char* atomic_name) {
   EncodingRegistryMutex().AssertAcquired();
-  const char* old_atomic_name =
-      g_text_encoding_name_map->DeprecatedAtOrEmptyValue(alias);
-  if (!old_atomic_name)
+  const auto it = g_text_encoding_name_map->find(alias);
+  if (it == g_text_encoding_name_map->end())
     return;
+  const char* old_atomic_name = it->value;
   if (old_atomic_name == atomic_name)
     return;
   // Keep the warning silent about one case where we know this will happen.
@@ -163,11 +163,10 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   EncodingRegistryMutex().AssertAcquired();
   if (IsUndesiredAlias(alias))
     return;
+  const auto it = g_text_encoding_name_map->find(name);
+  DCHECK(strcmp(alias, name) == 0 || it != g_text_encoding_name_map->end());
   const char* atomic_name =
-      g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name);
-  DCHECK(strcmp(alias, name) == 0 || atomic_name);
-  if (!atomic_name)
-    atomic_name = name;
+      it != g_text_encoding_name_map->end() ? it->value : name;
   CheckExistingName(alias, atomic_name);
   g_text_encoding_name_map->insert(alias, atomic_name);
 }
@@ -229,14 +228,17 @@ const char* AtomicCanonicalTextEncodingName(const char* name) {
   if (!g_text_encoding_name_map)
     BuildBaseTextCodecMaps();
 
-  if (const char* atomic_name =
-          g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name))
-    return atomic_name;
+  const auto it1 = g_text_encoding_name_map->find(name);
+  if (it1 != g_text_encoding_name_map->end())
+    return it1->value;
+
   if (AtomicDidExtendTextCodecMaps())
     return nullptr;
+
   ExtendTextCodecMaps();
   AtomicSetDidExtendTextCodecMaps();
-  return g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name);
+  const auto it2 = g_text_encoding_name_map->find(name);
+  return it2 != g_text_encoding_name_map->end() ? it2->value : nullptr;
 }
 
 template <typename CharacterType>
