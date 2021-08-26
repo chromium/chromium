@@ -64,10 +64,15 @@ class MojoCertVerifierTest : public PlatformTest {
    public:
     explicit DummyCVService(MojoCertVerifierTest* test) : test_(test) {}
     void Verify(const net::CertVerifier::RequestParams& params,
+                uint32_t netlog_source_type,
+                uint32_t netlog_source_id,
+                base::TimeTicks netlog_source_start_time,
                 mojo::PendingRemote<mojom::CertVerifierRequest>
                     cert_verifier_request) override {
       ASSERT_FALSE(test_->received_requests_.count(params));
       test_->received_requests_[params].Bind(std::move(cert_verifier_request));
+      test_->received_netlogsources_[params] = std::make_tuple(
+          netlog_source_type, netlog_source_id, netlog_source_start_time);
     }
 
     void SetConfig(const net::CertVerifier::Config& config) override {
@@ -97,10 +102,6 @@ class MojoCertVerifierTest : public PlatformTest {
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   MojoCertVerifier* mojo_cert_verifier() { return &mojo_cert_verifier_; }
-
-  net::NetLogWithSource* net_log_with_source() {
-    return &empty_net_log_with_source_;
-  }
 
   DummyCVService* dummy_cv_service() { return &dummy_cv_service_; }
 
@@ -136,10 +137,25 @@ class MojoCertVerifierTest : public PlatformTest {
     reconnect_cb_ = std::move(cb);
   }
 
+  void ExpectReceivedNetlogSource(
+      const net::CertVerifier::RequestParams& params,
+      net::NetLogSourceType type,
+      uint32_t id,
+      base::TimeTicks start_time) {
+    ASSERT_TRUE(received_netlogsources_.count(params));
+    EXPECT_EQ(static_cast<uint32_t>(type),
+              std::get<0>(received_netlogsources_[params]));
+    EXPECT_EQ(id, std::get<1>(received_netlogsources_[params]));
+    EXPECT_EQ(start_time, std::get<2>(received_netlogsources_[params]));
+  }
+
  private:
   std::map<net::CertVerifier::RequestParams,
            mojo::Remote<mojom::CertVerifierRequest>>
       received_requests_;
+  std::map<net::CertVerifier::RequestParams,
+           std::tuple<uint32_t, uint32_t, base::TimeTicks>>
+      received_netlogsources_;
 
   base::test::TaskEnvironment task_environment_;
 
@@ -149,8 +165,6 @@ class MojoCertVerifierTest : public PlatformTest {
   MojoCertVerifier mojo_cert_verifier_;
 
   MojoCertVerifier::ReconnectURLLoaderFactory reconnect_cb_;
-
-  net::NetLogWithSource empty_net_log_with_source_;
 };
 }  // namespace
 
@@ -160,10 +174,12 @@ TEST_F(MojoCertVerifierTest, BasicVerify) {
   auto cert_verify_result = std::make_unique<net::CertVerifyResult>();
   net::TestCompletionCallback test_cb;
   std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  int net_error = mojo_cert_verifier()->Verify(
-      dummy_params, cert_verify_result.get(), test_cb.callback(), &request,
-      *net_log_with_source());
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   test_cb.callback(), &request, net_log);
   ASSERT_EQ(net_error, net::ERR_IO_PENDING);
 
   // Handle Mojo request
@@ -174,6 +190,36 @@ TEST_F(MojoCertVerifierTest, BasicVerify) {
   net_error = test_cb.WaitForResult();
   EXPECT_EQ(net_error, kExpectedNetError);
   EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
+}
+
+// Like BasicVerify, but tests with a different NetLogSourceType to ensure that
+// is passed through correctly.
+TEST_F(MojoCertVerifierTest, BasicVerifyOtherNetLogSourceType) {
+  net::CertVerifier::RequestParams dummy_params = GetDummyParams();
+
+  auto cert_verify_result = std::make_unique<net::CertVerifyResult>();
+  net::TestCompletionCallback test_cb;
+  std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(net::NetLog::Get(),
+                                           net::NetLogSourceType::SOCKET));
+
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   test_cb.callback(), &request, net_log);
+  ASSERT_EQ(net_error, net::ERR_IO_PENDING);
+
+  // Handle Mojo request
+  task_environment()->RunUntilIdle();
+
+  RespondToRequest(dummy_params);
+
+  net_error = test_cb.WaitForResult();
+  EXPECT_EQ(net_error, kExpectedNetError);
+  EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
 }
 
 // Same as BasicVerify, except we disconnect the Remote<CertVerifierRequest>
@@ -185,10 +231,12 @@ TEST_F(MojoCertVerifierTest, BasicVerifyAndRequestDisconnection) {
   auto cert_verify_result = std::make_unique<net::CertVerifyResult>();
   net::TestCompletionCallback test_cb;
   std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  int net_error = mojo_cert_verifier()->Verify(
-      dummy_params, cert_verify_result.get(), test_cb.callback(), &request,
-      *net_log_with_source());
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   test_cb.callback(), &request, net_log);
   ASSERT_EQ(net_error, net::ERR_IO_PENDING);
 
   // Handle Mojo request
@@ -201,6 +249,8 @@ TEST_F(MojoCertVerifierTest, BasicVerifyAndRequestDisconnection) {
   net_error = test_cb.WaitForResult();
   EXPECT_EQ(net_error, kExpectedNetError);
   EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
 }
 
 TEST_F(MojoCertVerifierTest, CVRequestDeletionCausesDisconnect) {
@@ -213,10 +263,12 @@ TEST_F(MojoCertVerifierTest, CVRequestDeletionCausesDisconnect) {
     GTEST_FAIL();
   });
   std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  int net_error = mojo_cert_verifier()->Verify(
-      dummy_params, cert_verify_result.get(), std::move(verify_cb), &request,
-      *net_log_with_source());
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   std::move(verify_cb), &request, net_log);
   ASSERT_EQ(net_error, net::ERR_IO_PENDING);
 
   // Reset our cert verifier request to cause a disconnection.
@@ -225,6 +277,8 @@ TEST_F(MojoCertVerifierTest, CVRequestDeletionCausesDisconnect) {
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(DidRequestDisconnect(dummy_params));
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
 }
 
 TEST_F(MojoCertVerifierTest, HandlesMojomCVRequestDisconnectionAsCancellation) {
@@ -233,10 +287,12 @@ TEST_F(MojoCertVerifierTest, HandlesMojomCVRequestDisconnectionAsCancellation) {
   auto cert_verify_result = std::make_unique<net::CertVerifyResult>();
   net::TestCompletionCallback test_cb;
   std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  int net_error = mojo_cert_verifier()->Verify(
-      dummy_params, cert_verify_result.get(), test_cb.callback(), &request,
-      *net_log_with_source());
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   test_cb.callback(), &request, net_log);
   ASSERT_EQ(net_error, net::ERR_IO_PENDING);
 
   // Handle Mojo request
@@ -248,6 +304,8 @@ TEST_F(MojoCertVerifierTest, HandlesMojomCVRequestDisconnectionAsCancellation) {
   // Should abort if cancelled on the CertVerifierService side.
   EXPECT_EQ(net_error, net::ERR_ABORTED);
   EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
 }
 
 TEST_F(MojoCertVerifierTest, IgnoresCVServiceDisconnection) {
@@ -256,10 +314,12 @@ TEST_F(MojoCertVerifierTest, IgnoresCVServiceDisconnection) {
   auto cert_verify_result = std::make_unique<net::CertVerifyResult>();
   net::TestCompletionCallback test_cb;
   std::unique_ptr<net::CertVerifier::Request> request;
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
 
-  int net_error = mojo_cert_verifier()->Verify(
-      dummy_params, cert_verify_result.get(), test_cb.callback(), &request,
-      *net_log_with_source());
+  int net_error =
+      mojo_cert_verifier()->Verify(dummy_params, cert_verify_result.get(),
+                                   test_cb.callback(), &request, net_log);
   ASSERT_EQ(net_error, net::ERR_IO_PENDING);
 
   // Handle Mojo request
@@ -271,6 +331,8 @@ TEST_F(MojoCertVerifierTest, IgnoresCVServiceDisconnection) {
   net_error = test_cb.WaitForResult();
   EXPECT_EQ(net_error, kExpectedNetError);
   EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
+                             net_log.source().id, net_log.source().start_time);
 }
 
 TEST_F(MojoCertVerifierTest, SendsConfig) {

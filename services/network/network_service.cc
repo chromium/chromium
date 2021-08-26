@@ -190,7 +190,7 @@ std::unique_ptr<net::HttpAuthMechanism> CreateAuthSystem(
 // NetworkService is running in a separate process - otherwise the existing bad
 // message handling inside the Browser process is sufficient).
 void HandleBadMessage(const std::string& error) {
-  LOG(WARNING) << "Mojo error in NetworkService:" << error;
+  LOG(WARNING) << "Mojo error in NetworkService: " << error;
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();
