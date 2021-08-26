@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
+import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
@@ -48,7 +49,6 @@ Polymer({
   /** @override */
   attached() {
     if (this.isBluetoothRevampEnabled_) {
-      // TODO(crbug.com/1010321): Add revamp Bluetooth init logic here.
       return;
     }
 

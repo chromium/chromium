@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
@@ -19,6 +20,7 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/wm/core/shadow_types.h"
 
 namespace chromeos {
 
@@ -85,6 +87,17 @@ BluetoothPairingDialog::~BluetoothPairingDialog() = default;
 
 const std::string& BluetoothPairingDialog::Id() {
   return address_;
+}
+
+void BluetoothPairingDialog::AdjustWidgetInitParams(
+    views::Widget::InitParams* params) {
+  if (!chromeos::features::IsBluetoothRevampEnabled()) {
+    return;
+  }
+
+  params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
+  params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params->shadow_elevation = wm::kShadowElevationActiveWindow;
 }
 
 void BluetoothPairingDialog::GetDialogSize(gfx::Size* size) const {

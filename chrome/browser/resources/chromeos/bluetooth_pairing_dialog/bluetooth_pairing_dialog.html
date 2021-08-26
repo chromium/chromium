@@ -11,3 +11,7 @@
       dialog-title="$i18n{bluetoothPairDeviceTitle}">
   </bluetooth-dialog>
 </template>
+<template is="dom-if" if="[[isBluetoothRevampEnabled_]" restamp>
+  <bluetooth-pairing-ui on-cancel="onDialogClose_">
+  </bluetooth-pairing-ui>
+</template>

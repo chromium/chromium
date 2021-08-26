@@ -18,6 +18,7 @@ namespace bluetooth {
 // correspond to ids in ui/webui/resources/cr_components/chromeos/bluetooth/.
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"bluetoothPairNewDevice", IDS_SETTINGS_BLUETOOTH_PAIR_NEW_DEVICES},
       {"bluetoothAccept", IDS_SETTINGS_BLUETOOTH_ACCEPT_PASSKEY},
       {"bluetoothEnterKey", IDS_SETTINGS_BLUETOOTH_ENTER_KEY},
       {"bluetoothPair", IDS_SETTINGS_BLUETOOTH_PAIR},
