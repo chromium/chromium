@@ -244,6 +244,12 @@ class TestImporter(object):
             self.fetch_new_expectations_and_baselines()
             self.fetch_wpt_override_expectations()
             if self.chromium_git.has_working_directory_changes():
+                # Skip slow and timeout tests so that presubmit check passes
+                port = self.host.port_factory.get()
+                if self._expectations_updater.skip_slow_timeout_tests(port):
+                    path = port.path_to_generic_test_expectations_file()
+                    self.chromium_git.add_list([path])
+
                 self._generate_manifest()
                 message = 'Update test expectations and baselines.'
                 self._commit_changes(message)

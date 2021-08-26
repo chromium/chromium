@@ -1319,6 +1319,30 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
              '# line below should exist in new file\n'
              'some/test/d.html [ Failure ]\n'))
 
+    def test_skip_slow_timeout_tests(self):
+        host = MockHost()
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'SlowTests',
+            ('# results: [ Slow ]\n'
+             'foo/slow_timeout.html [ Slow ]\n'
+             'bar/slow.html [ Slow ]\n'))
+        data = ('# results: [ Pass Failure Crash Timeout Skip ]\n'
+                'foo/failure.html [ Failure ]\n'
+                'foo/slow_timeout.html [ Timeout ]\n'
+                'bar/text.html [ Pass ]\n')
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'TestExpectations', data)
+        for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
+            host.filesystem.write_text_file(path, '')
+        newdata = data.replace('foo/slow_timeout.html [ Timeout ]',
+                               'foo/slow_timeout.html [ Skip Timeout ]')
+        updater = WPTExpectationsUpdater(host)
+        rv = updater.skip_slow_timeout_tests(host.port_factory.get())
+        self.assertTrue(rv)
+        self.assertEqual(
+            newdata,
+            host.filesystem.read_text_file(MOCK_WEB_TESTS + 'TestExpectations'))
+
     def test_cleanup_all_test_expectations_files(self):
         host = MockHost()
         host.filesystem.files[MOCK_WEB_TESTS + 'TestExpectations'] = (

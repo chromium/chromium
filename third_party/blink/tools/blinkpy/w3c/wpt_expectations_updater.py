@@ -25,6 +25,7 @@ from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (
     PRODUCTS, PRODUCTS_TO_EXPECTATION_FILE_PATHS, WPT_SMOKE_TESTS_FILE)
 
@@ -820,6 +821,28 @@ class WPTExpectationsUpdater(object):
             _log.info('Restore file WPTSmokeTestCases.')
             shutil.copyfile(self._saved_test_cases_file, WPT_SMOKE_TESTS_FILE)
             chromium_git.commit_locally_with_message('Restore WPTSmokeTestCases')
+
+    def skip_slow_timeout_tests(self, port):
+        """Skip any Slow and Timeout tests found in TestExpectations.
+        """
+        _log.info('Skip Slow and Timeout tests.')
+        test_expectations = TestExpectations(port)
+        path = port.path_to_generic_test_expectations_file()
+        changed = False
+        for line in test_expectations.get_updated_lines(path):
+            if not line.test or line.is_glob:
+                continue
+            if (ResultType.Timeout in line.results and
+                    (ResultType.Skip not in line.results) and
+                    (test_expectations.get_expectations(line.test).is_slow_test or
+                        port.is_slow_wpt_test(line.test))):
+                test_expectations.remove_expectations(path, [line])
+                line.add_expectations({ResultType.Skip})
+                test_expectations.add_expectations(path, [line], line.lineno)
+                changed = True
+        if changed:
+            test_expectations.commit_changes()
+        return changed
 
     def cleanup_test_expectations_files(self):
         """Removes deleted tests from expectations files.

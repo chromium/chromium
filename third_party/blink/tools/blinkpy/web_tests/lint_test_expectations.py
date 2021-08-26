@@ -237,6 +237,27 @@ def _check_redundant_virtual_expectations(host, port, path, expectations):
 
     return failures
 
+def _check_not_slow_and_timeout(host, port, path, expectations):
+    # only do check for web tests, so that we don't impact test coverage
+    # for other test suites
+    if (not path.endswith('TestExpectations') and
+        not path.endswith('SlowTests')):
+        return []
+
+    rv = []
+    test_expectations = TestExpectations(host.port_factory.get())
+
+    for i in range(len(expectations)):
+        exp = expectations[i]
+        if (ResultType.Timeout in exp.results and
+                (ResultType.Skip not in exp.results) and
+                (test_expectations.get_expectations(exp.test).is_slow_test or
+                    port.is_slow_wpt_test(exp.test))):
+            error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test.".format(
+                host.filesystem.basename(path), exp.lineno, exp.test)
+            _log.warning(error)
+            rv.append(error)
+    return rv
 
 def _check_never_fix_tests(host, port, path, expectations):
     if not path.endswith('NeverFixTests'):
@@ -290,6 +311,7 @@ def _check_expectations(host, port, path, test_expectations, options):
     failures, warnings = _check_test_existence(
         host, port, path, expectations)
     failures.extend(_check_directory_glob(host, port, path, expectations))
+    warnings.extend(_check_not_slow_and_timeout(host, port, path, expectations))
     failures.extend(_check_never_fix_tests(host, port, path, expectations))
     if path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
         failures.extend(_check_non_wpt_in_android_override(
