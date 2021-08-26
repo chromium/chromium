@@ -27,8 +27,16 @@ std::string GetFullWindowsVersion() {
   // Service Pack
   const std::string sp = gi->service_pack_str();
 
-  if (major == 10) {
-    version += (server) ? "Server OS" : "10 OS";
+  if (major == 11) {
+    version += (server) ? "Server OS" : "11";
+  } else if (major == 10) {
+    if (build < 20348) {
+      version += (server) ? "Server OS" : "10";
+    } else if (build < 22000) {
+      version += (server) ? "Server 2022" : "10";
+    } else {
+      version += (server) ? "Server OS" : "11";
+    }
   } else if (major == 6) {
     switch (minor) {
       case 0:

@@ -24,7 +24,17 @@ TEST(WindowsVersion, GetVersionExAndKernelOsVersionMatch) {
 
 TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 32767),
-            Version::WIN10_21H1);
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 22000),
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 21999),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20348),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20347),
+            Version::WIN10_21H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19044),
+            Version::WIN10_21H2);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19043),
             Version::WIN10_21H1);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19042),
@@ -58,7 +68,7 @@ TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(0, 0, 0), Version::PRE_XP);
 
 #if !DCHECK_IS_ON()
-  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(11, 0, 0), Version::WIN_LAST);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(12, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(9, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(8, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(7, 0, 0), Version::WIN_LAST);

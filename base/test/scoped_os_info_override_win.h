@@ -26,6 +26,10 @@ class ScopedOSInfoOverride {
   // Types of windows machines that can be used for overriding.  Add new
   // machine types as needed.
   enum class Type {
+    kWin11Pro,
+    kWin11Home,
+    kWinServer2022,
+    kWin10Pro21H1,
     kWin10Pro,
     kWin10Home,
     kWinServer2016,
