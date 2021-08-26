@@ -620,7 +620,10 @@ static_library("common") {
       "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
     ]
-    libs += [ "crypt32.lib" ]
+    libs += [
+      "crypt32.lib",
+      "Wintrust.lib",
+    ]
     deps += [
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
