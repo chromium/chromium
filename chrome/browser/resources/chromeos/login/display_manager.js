@@ -542,19 +542,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Called when window size changed. Notifies current screen about
-     * change.
-     * @private
-     */
-    onWindowResize_() {
-      for (var i = 0, screenId; screenId = this.screens_[i]; ++i) {
-        var screen = $(screenId);
-        if (screen.onWindowResize)
-          screen.onWindowResize();
-      }
-    }
-
-    /**
      * Returns true if Oobe UI is shown.
      * @return {boolean}
      */
@@ -595,13 +582,7 @@ cr.define('cr.ui.login', function() {
             '". Setting default.');
         this.displayType = DISPLAY_TYPE.LOGIN;
       }
-
       this.initializeDemoModeMultiTapListener();
-
-      // TODO(crbug.com/1202135): Whole windowResize code is only used to switch
-      // horizontal/vertical animations on welcome screen. Remove it during
-      // OOBE redesign cleanup.
-      window.addEventListener('resize', this.onWindowResize_.bind(this));
     }
 
     /**

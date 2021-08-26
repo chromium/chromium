@@ -16,13 +16,13 @@
        */
       this.timeoutId_ = null;
 
-      element.addEventListener('touchstart', this.onTouchStart_.bind(this));
-      element.addEventListener('touchend', this.killTimer_.bind(this));
-      element.addEventListener('touchcancel', this.killTimer_.bind(this));
+      element.addEventListener('touchstart', () => void this.onTouchStart_());
+      element.addEventListener('touchend', () => void this.killTimer_());
+      element.addEventListener('touchcancel', () => void this.killTimer_());
 
-      element.addEventListener('mousedown', this.onTouchStart_.bind(this));
-      element.addEventListener('mouseup', this.killTimer_.bind(this));
-      element.addEventListener('mouseleave', this.killTimer_.bind(this));
+      element.addEventListener('mousedown', () => void this.onTouchStart_());
+      element.addEventListener('mouseup', () => void this.killTimer_());
+      element.addEventListener('mouseleave', () => void this.killTimer_());
     }
 
     /**
@@ -41,7 +41,7 @@
     onTouchStart_() {
       this.killTimer_();
       this.timeoutId_ =
-          window.setTimeout(this.onTimeout_.bind(this), LONG_TOUCH_TIME_MS);
+          window.setTimeout(() => void this.onTimeout_(), LONG_TOUCH_TIME_MS);
     }
 
     /**
@@ -53,209 +53,6 @@
 
       window.clearTimeout(this.timeoutId_);
       this.timeoutId_ = null;
-    }
-  }
-
-  const VIDEO_DEVICE = {
-    CHROMEBOX: 'chromebox',
-    LAPTOP: 'laptop',
-    TABLET: 'tablet',
-    LAPTOP_G: 'laptop_G',
-    TABLET_G: 'tablet_G',
-  };
-
-  const VIDEO_ORIENTATION = {
-    PORTRAIT: 'portrait',
-    LANDSCAPE: 'landscape',
-  };
-
-  const VIDEO_TYPE = {
-    INTRO: 'intro',
-    LOOP: 'loop',
-  };
-
-  class WelcomeVideoController {
-    /**
-     * This calculates key that is used to identify <video> node in internal
-     * mapping between possible video configurations and actual videos.
-     *
-     * @param {VIDEO_DEVICE} device Allowed device type.
-     * @param {VIDEO_ORIENTATION} orientation Allowed orientation.
-     * @param {VIDEO_TYPE} type Allowed type.
-     * @return {String} Returns <video> key to be stored in this.videos.
-     * @private
-     */
-    calcKey_(device, orientation, type) {
-      return device + '-' + orientation + '-' + type;
-    }
-
-    /**
-     * @param {VIDEO_DEVICE} device Allowed device type.
-     * @param {VIDEO_ORIENTATION} orientation Allowed orientation.
-     */
-    constructor(device, orientation) {
-      this.devices = new Set();
-      this.orientations = new Set();
-      this.types = new Set();
-      for (let key in VIDEO_DEVICE)
-        this.devices.add(VIDEO_DEVICE[key]);
-
-      for (let key in VIDEO_ORIENTATION)
-        this.orientations.add(VIDEO_ORIENTATION[key]);
-
-      for (let key in VIDEO_TYPE)
-        this.types.add(VIDEO_TYPE[key]);
-
-      assert(this.devices.has(device));
-      assert(this.orientations.has(orientation));
-
-      this.device = device;
-      this.orientation = orientation;
-      this.type = VIDEO_TYPE.INTRO;
-
-      // This is map from 'device-orientation-video_type' to video DOM object.
-      this.videos = new Map();
-    }
-
-    /**
-     * Returns currently playing video.
-     * If none are playing, falls back to currently visible one, because
-     * it might have accidentally stopped because of media error.
-     *
-     * @return {Object|null} Returns <video> DOM node.
-     * @private
-     */
-    getActiveVideo_() {
-      for (let node of this.videos.values()) {
-        if (!node.paused)
-          return node;
-      }
-      // Media decode error stops video play. Try 'hidden' instead.
-      for (let node of this.videos.values()) {
-        if (!node.hasAttribute('hidden'))
-          return node;
-      }
-      return null;
-    }
-
-    /**
-     * @param {Object} video <video> DOM node with valid |oobe_devices|,
-     *     |oobe_orientations| and |oobe_types|.
-     * |oobe_devices| is a comma-separated list of VIDEO_DEVICE values.
-     * |oobe_orientations| is a comma-separated list of VIDEO_ORIENTATION
-     *     values.
-     * |oobe_types| is a comma-separated list of VIDEO_TYPE values.
-     */
-    add(video) {
-      // Split strings by comma and trim space.
-      let devices = video.getAttribute('oobe_devices')
-                        .split(',')
-                        .map((str) => str.replace(/\s/g, ''));
-      let orientations = video.getAttribute('oobe_orientations')
-                             .split(',')
-                             .map((str) => str.replace(/\s/g, ''));
-      let types = video.getAttribute('oobe_types')
-                      .split(',')
-                      .map((str) => str.replace(/\s/g, ''));
-
-      for (let device of devices) {
-        assert(this.devices.has(device));
-
-        for (let orientation of orientations) {
-          assert(this.orientations.has(orientation));
-
-          for (let type of types) {
-            assert(this.types.has(type));
-
-            let key = this.calcKey_(device, orientation, type);
-            assert(!this.videos.has(key));
-
-            this.videos.set(key, video);
-
-            if (type == VIDEO_TYPE.INTRO)
-              video.addEventListener('ended', (event) => {
-                event.target.setAttribute('hidden', '');
-                this.type = VIDEO_TYPE.LOOP;
-                this.play();
-              });
-          }
-        }
-      }
-    }
-
-    /**
-     * Hides all videos.
-     * @private
-     */
-    hideAll_() {
-      for (let node of this.videos.values())
-        node.setAttribute('hidden', '');
-    }
-
-    /**
-     * Updates screen configuration, and switches to appropriate video to match
-     * it.
-     *
-     * @param {String} device Allowed device type.
-     * @param {String} orientation Allowed orientation.
-     */
-    updateConfiguration(device, orientation) {
-      assert(this.devices.has(device));
-      assert(this.orientations.has(orientation));
-
-      if (device === this.device && orientation === this.orientation)
-        return;
-
-      this.device = device;
-      this.orientation = orientation;
-      let previousVideo = this.getActiveVideo_();
-      let nextKey = this.calcKey_(device, orientation, this.type);
-      let nextVideo = this.videos.get(nextKey);
-
-      // Some video may match more than one key.
-      if (previousVideo === nextVideo)
-        return;
-
-      if (previousVideo)
-        previousVideo.pause();
-
-      if (previousVideo && nextVideo)
-        nextVideo.currentTime = previousVideo.currentTime;
-
-      this.hideAll_();
-      if (nextVideo) {
-        nextVideo.removeAttribute('hidden');
-        nextVideo.play();
-      }
-    }
-
-    /**
-     *  Starts active video.
-     */
-    play() {
-      let activeVideo = this.getActiveVideo_();
-      if (activeVideo) {
-        // The active video could be paused, even if it hasn't changed
-        activeVideo.play();
-        return;
-      }
-
-      let key = this.calcKey_(this.device, this.orientation, this.type);
-      let video = this.videos.get(key);
-
-      if (video) {
-        video.removeAttribute('hidden');
-        video.play();
-      }
-    }
-    /**
-     *  Pauses active video.
-     */
-    pause() {
-      let video = this.getActiveVideo_();
-      if (video) {
-        video.pause();
-      }
     }
   }
 
@@ -279,7 +76,6 @@
       timezoneButtonVisible: {
         type: Boolean,
         value: false,
-        observer: 'updateVideoMode_',
       },
 
       /**
@@ -288,37 +84,11 @@
       debuggingLinkVisible: Boolean,
 
       /**
-       * True when in tablet mode (vs laptop).
-       */
-      isInTabletMode: {
-        type: Boolean,
-        observer: 'updateVideoMode_',
-      },
-
-      /**
-       * True when screen orientation is portrait (vs landscape).
-       */
-      isInPortraitMode: {
-        type: Boolean,
-        observer: 'updateVideoMode_',
-      },
-
-      /**
        * Observer for when this screen is hidden, or shown.
        */
       hidden: {
         type: Boolean,
         observer: 'updateHidden_',
-        reflectToAttribute: true,
-      },
-
-      isNewLayout_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('newLayoutEnabled') &&
-              loadTimeData.getBoolean('newLayoutEnabled');
-        },
-        readOnly: true,
         reflectToAttribute: true,
       },
 
@@ -342,34 +112,8 @@
     },
 
     onBeforeShow() {
-      if (this.isNewLayout_) {
-        document.documentElement.setAttribute('new-layout', '');
-        this.setVideoPlay_(true);
-      } else {
-        this.$.oldDialog.onBeforeShow();
-      }
-    },
-
-    getVideoDeviceType_() {
-      if (this.timezoneButtonVisible)
-        return VIDEO_DEVICE.CHROMEBOX;
-
-      return this.isInTabletMode ? VIDEO_DEVICE.TABLET : VIDEO_DEVICE.LAPTOP;
-    },
-
-    getVideoOrientationType_() {
-      return this.isInPortraitMode ? VIDEO_ORIENTATION.PORTRAIT :
-                                     VIDEO_ORIENTATION.LANDSCAPE;
-    },
-
-    updateVideoMode_() {
-      // Depending on the order of events, this might be called before
-      // attached().
-      if (!this.welcomeVideoController_)
-        return;
-
-      this.welcomeVideoController_.updateConfiguration(
-          this.getVideoDeviceType_(), this.getVideoOrientationType_());
+      document.documentElement.setAttribute('new-layout', '');
+      this.setVideoPlay_(true);
     },
 
     /**
@@ -378,38 +122,28 @@
     titleLongTouchDetector_: null,
 
     /**
-     * @private {WelcomeVideoController}
-     */
-    welcomeVideoController_: null,
-
-    /**
      * This is stored ID of currently focused element to restore id on returns
      * to this dialog from Language / Timezone Selection dialogs.
      */
     focusedElement_: null,
 
     onLanguageClicked_(e) {
-      this.focusedElement_ = this.isNewLayout_ ? 'newLanguageSelectionButton' :
-                                                 'languageSelectionButton';
+      this.focusedElement_ = 'languageSelectionButton';
       this.fire('language-button-clicked');
     },
 
     onAccessibilityClicked_() {
-      this.focusedElement_ = this.isNewLayout_ ?
-          'newAccessibilitySettingsButton' :
-          'accessibilitySettingsButton';
+      this.focusedElement_ = 'accessibilitySettingsButton';
       this.fire('accessibility-button-clicked');
     },
 
     onTimezoneClicked_() {
-      this.focusedElement_ = this.isNewLayout_ ? 'newTimezoneSettingsButton' :
-                                                 'timezoneSettingsButton';
+      this.focusedElement_ = 'timezoneSettingsButton';
       this.fire('timezone-button-clicked');
     },
 
     onNextClicked_() {
-      this.focusedElement_ =
-          this.isNewLayout_ ? 'getStarted' : 'welcomeNextButton';
+      this.focusedElement_ = 'getStarted';
       this.fire('next-button-clicked');
     },
 
@@ -431,17 +165,8 @@
     },
 
     attached() {
-      if (!this.isNewLayout_) {
-        this.welcomeVideoController_ = new WelcomeVideoController(
-            this.getVideoDeviceType_(), this.getVideoOrientationType_());
-        let videos = Polymer.dom(this.root).querySelectorAll('video');
-        for (let video of videos)
-          this.welcomeVideoController_.add(video);
-      }
-
       this.titleLongTouchDetector_ = new TitleLongTouchDetector(
-          this.isNewLayout_ ? this.$.newTitle : this.$.title,
-          this.onTitleLongTouch_.bind(this));
+          this.$.title, () => void this.onTitleLongTouch_());
       this.$.chromeVoxHint.addEventListener('keydown', (event) => {
         // When the ChromeVox hint dialog is open, allow users to press the
         // space bar to activate ChromeVox. This is intended to help first time
@@ -457,10 +182,8 @@
 
     focus() {
       if (!this.focusedElement_) {
-        this.focusedElement_ =
-            this.isNewLayout_ ? 'getStarted' : 'welcomeNextButton';
+        this.focusedElement_ = 'getStarted';
       }
-      this.onWindowResize();
       let focusedElement = this.$[this.focusedElement_];
       if (focusedElement)
         focusedElement.focus();
@@ -485,21 +208,9 @@
      * @private
      */
     setVideoPlay_(play) {
-      if (this.isNewLayout_) {
-        if (this.isMeet_)
-          return;
-        this.$.newWelcomeAnimation.setPlay(play);
+      if (this.isMeet_)
         return;
-      }
-
-      if (!this.welcomeVideoController_)
-        return;
-
-      if (play) {
-        this.welcomeVideoController_.play();
-      } else {
-        this.welcomeVideoController_.pause();
-      }
+      this.$.welcomeAnimation.setPlay(play);
     },
 
     /**
@@ -510,13 +221,6 @@
      */
     formatMessage_(label, parameter) {
       return loadTimeData.getStringF(label, parameter);
-    },
-
-    /**
-     * Window-resize event listener (delivered through the display_manager).
-     */
-    onWindowResize() {
-      this.isInPortraitMode = window.innerHeight > window.innerWidth;
     },
 
     // ChromeVox hint section.

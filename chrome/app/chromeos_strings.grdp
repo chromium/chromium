@@ -510,9 +510,6 @@
   <message name="IDS_OOBE_GENERIC_FATAL_ERROR_TITLE" desc="A generic title to be shown during OOBE to be used in error screens.">
     Something went wrong
   </message>
-  <message name="IDS_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
-    Welcome!
-  </message>
   <message name="IDS_NEW_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
     Welcome to <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>

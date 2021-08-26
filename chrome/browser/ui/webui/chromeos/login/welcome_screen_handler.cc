@@ -136,15 +136,13 @@ void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
 void WelcomeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
-    builder->Add("newWelcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
-    builder->Add("newWelcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
+    builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else {
-    builder->AddF("newWelcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
+    builder->AddF("welcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
                   ui::GetChromeOSDeviceTypeResourceId());
-    builder->Add("newWelcomeScreenGreetingSubtitle",
+    builder->Add("welcomeScreenGreetingSubtitle",
                  IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
-    builder->Add("welcomeScreenGreeting", IDS_WELCOME_SCREEN_GREETING);
   }
 
   builder->Add("welcomeScreenGetStarted", IDS_LOGIN_GET_STARTED);
@@ -154,7 +152,6 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
   builder->Add("timezoneDropdownLabel", IDS_TIMEZONE_DROPDOWN_LABEL);
   builder->Add("oobeOKButtonText", IDS_OOBE_OK_BUTTON_TEXT);
-  builder->Add("welcomeNextButtonText", IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT);
   builder->Add("languageButtonLabel", IDS_LANGUAGE_BUTTON_LABEL);
   builder->Add("languageSectionTitle", IDS_LANGUAGE_SECTION_TITLE);
   builder->Add("accessibilitySectionTitle", IDS_ACCESSIBILITY_SECTION_TITLE);
