@@ -17,6 +17,7 @@
 #include "chromeos/dbus/login_manager/arc.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/arc/session/arc_session.h"
+#include "components/arc/session/arc_upgrade_params.h"
 
 namespace arc {
 namespace {
@@ -107,9 +108,8 @@ class ArcContainerClientAdapter
       chromeos::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
-  // ArcClientAdapter overrides:
-  void StartMiniArc(StartParams params,
-                    chromeos::VoidDBusMethodCallback callback) override {
+  login_manager::StartArcMiniContainerRequest
+  ConvertStartParamsToStartArcMiniContainerRequest(StartParams params) {
     login_manager::StartArcMiniContainerRequest request;
     request.set_native_bridge_experiment(params.native_bridge_experiment);
     request.set_lcd_density(params.lcd_density);
@@ -126,7 +126,12 @@ class ArcContainerClientAdapter
     request.set_disable_download_provider(params.disable_download_provider);
     request.set_disable_ureadahead(params.disable_ureadahead);
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
+    return request;
+  }
 
+  // ArcClientAdapter overrides:
+  void StartMiniArc(StartParams params,
+                    chromeos::VoidDBusMethodCallback callback) override {
     switch (params.usap_profile) {
       case StartParams::UsapProfile::DEFAULT:
         break;
@@ -137,12 +142,14 @@ class ArcContainerClientAdapter
         break;
     }
 
+    auto request =
+        ConvertStartParamsToStartArcMiniContainerRequest(std::move(params));
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
 
-  void UpgradeArc(UpgradeParams params,
-                  chromeos::VoidDBusMethodCallback callback) override {
+  login_manager::UpgradeArcContainerRequest
+  ConvertUpgradeParamsToUpgradeArcContainerRequest(UpgradeParams params) {
     login_manager::UpgradeArcContainerRequest request;
     request.set_account_id(params.account_id);
     request.set_is_account_managed(params.is_account_managed);
@@ -161,7 +168,12 @@ class ArcContainerClientAdapter
       request.add_preferred_languages(language);
     request.set_management_transition(
         ToLoginManagerManagementTransition(params.management_transition));
+    return request;
+  }
 
+  void UpgradeArc(UpgradeParams params,
+                  chromeos::VoidDBusMethodCallback callback) override {
+    auto request = ConvertUpgradeParamsToUpgradeArcContainerRequest(params);
     chromeos::SessionManagerClient::Get()->UpgradeArcContainer(
         request, std::move(callback));
   }
