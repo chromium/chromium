@@ -1714,13 +1714,7 @@ config("chromium_code") {
     # TODO(thakis): Enable this more often, https://crbug.com/346399
     # use_libfuzzer: https://crbug.com/1063180
     if (!is_nacl && !use_libfuzzer) {
-      # TODO(1066980): Use -Wunreachable-code-aggressive on all platforms.
-      if (target_os == "android" || is_chromeos || is_fuchsia || is_ios ||
-          is_linux || is_mac || is_win) {
-        cflags += [ "-Wunreachable-code-aggressive" ]
-      } else {
-        cflags += [ "-Wunreachable-code" ]
-      }
+      cflags += [ "-Wunreachable-code-aggressive" ]
     }
 
     # Thread safety analysis is broken under nacl: https://crbug.com/982423.
