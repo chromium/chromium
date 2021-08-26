@@ -13,7 +13,7 @@ namespace blink {
 
 class StylePath;
 
-class PathInterpolationFunctions {
+class CORE_EXPORT PathInterpolationFunctions {
   STATIC_ONLY(PathInterpolationFunctions);
 
  public:
@@ -34,6 +34,8 @@ class PathInterpolationFunctions {
       const InterpolationValue& underlying,
       InterpolationType::ConversionCheckers&);
 
+  static bool PathsAreCompatible(const NonInterpolableValue& start,
+                                 const NonInterpolableValue& end);
   static PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
       InterpolationValue&& end);
