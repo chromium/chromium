@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -22,14 +24,15 @@ WebTransportError* WebTransportError::Create(
       Source::kStream);
 }
 
-WebTransportError* WebTransportError::Create(
-    v8::Isolate*,
+v8::Local<v8::Value> WebTransportError::Create(
+    ScriptState* script_state,
     absl::optional<uint8_t> application_protocol_code,
     String message,
     Source source) {
-  // TODO(ricea): Use the isolate to attach a stack to the created object.
-  return MakeGarbageCollected<WebTransportError>(
+  auto* dom_exception = MakeGarbageCollected<WebTransportError>(
       PassKey(), application_protocol_code, std::move(message), source);
+  return V8ThrowDOMException::AttachStackProperty(
+      script_state->GetIsolate(), script_state->GetContext(), dom_exception);
 }
 
 WebTransportError::WebTransportError(

@@ -6,8 +6,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
@@ -39,8 +41,26 @@ TEST(WebTransportErrorTest, ConstructWithMessage) {
 
 TEST(WebTransportErrorTest, InternalCreate) {
   V8TestingScope scope;
-  auto* error = WebTransportError::Create(scope.GetIsolate(), 27, "badness",
-                                          WebTransportError::Source::kSession);
+  auto* isolate = scope.GetIsolate();
+  auto context = scope.GetContext();
+  auto v8value =
+      WebTransportError::Create(scope.GetScriptState(), 27, "badness",
+                                WebTransportError::Source::kSession);
+
+  ASSERT_TRUE(v8value->IsObject());
+  v8::Local<v8::Value> stack;
+  ASSERT_TRUE(v8value.As<v8::Object>()
+                  ->Get(context, V8String(isolate, "stack"))
+                  .ToLocal(&stack));
+  // Maybe "stack" will return some kind of structured object someday?
+  // Explicitly convert it to a string just in case.
+  v8::Local<v8::String> stack_as_v8string;
+  ASSERT_TRUE(stack->ToString(context).ToLocal(&stack_as_v8string));
+  String stack_string = ToCoreString(stack_as_v8string);
+  EXPECT_TRUE(stack_string.Contains("badness"));
+
+  WebTransportError* error = V8WebTransportError::ToWrappable(isolate, v8value);
+  ASSERT_TRUE(error);
   EXPECT_EQ(error->code(), 0);
   ASSERT_TRUE(error->applicationProtocolCode().has_value());
   EXPECT_EQ(error->applicationProtocolCode().value(), 27);

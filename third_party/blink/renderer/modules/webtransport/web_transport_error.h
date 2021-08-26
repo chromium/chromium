@@ -13,13 +13,11 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-namespace v8 {
-class Isolate;
-}
+#include "v8/include/v8.h"
 
 namespace blink {
 
+class ScriptState;
 class WebTransportErrorInit;
 
 // https://w3c.github.io/webtransport/#web-transport-error-interface
@@ -34,9 +32,10 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // Constructor exposed to script. Called by the V8 bindings.
   static WebTransportError* Create(const WebTransportErrorInit*);
 
-  // For creating a WebTransportError from C++.
-  static WebTransportError* Create(
-      v8::Isolate*,
+  // For creating a WebTransportError from C++. Typically this will be
+  // immediately passed to ScriptPromiseResolver::Reject.
+  static v8::Local<v8::Value> Create(
+      ScriptState*,
       absl::optional<uint8_t> application_protocol_code,
       String message,
       Source);

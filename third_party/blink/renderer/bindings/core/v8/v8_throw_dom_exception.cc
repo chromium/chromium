@@ -59,17 +59,26 @@ v8::Local<v8::Value> V8ThrowDOMException::CreateOrEmpty(
 
   auto* dom_exception = MakeGarbageCollected<DOMException>(
       exception_code, sanitized_message, unsanitized_message);
+  return AttachStackProperty(isolate, isolate->GetCurrentContext(),
+                             dom_exception);
+}
+
+v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    DOMException* dom_exception) {
+  if (isolate->IsExecutionTerminating())
+    return v8::Local<v8::Value>();
+
   v8::Local<v8::Object> exception_obj =
-      ToV8(dom_exception, isolate->GetCurrentContext()->Global(), isolate)
-          .As<v8::Object>();
+      ToV8(dom_exception, context->Global(), isolate).As<v8::Object>();
   // Attach an Error object to the DOMException. This is then lazily used to
   // get the stack value.
   v8::Local<v8::Value> error =
       v8::Exception::Error(V8String(isolate, dom_exception->message()));
   exception_obj
-      ->SetAccessor(isolate->GetCurrentContext(),
-                    V8AtomicString(isolate, "stack"), DomExceptionStackGetter,
-                    DomExceptionStackSetter, error)
+      ->SetAccessor(context, V8AtomicString(isolate, "stack"),
+                    DomExceptionStackGetter, DomExceptionStackSetter, error)
       .ToChecked();
 
   auto private_error =
