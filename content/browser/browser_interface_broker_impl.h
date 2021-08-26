@@ -53,7 +53,7 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
   BrowserInterfaceBrokerImpl& operator=(BrowserInterfaceBrokerImpl&&) = delete;
 
   // blink::mojom::BrowserInterfaceBroker
-  void GetInterface(mojo::GenericPendingReceiver receiver) {
+  void GetInterface(mojo::GenericPendingReceiver receiver) override {
     DCHECK(receiver.interface_name().has_value());
     if (!policy_applier_) {
       BindInterface(std::move(receiver));
