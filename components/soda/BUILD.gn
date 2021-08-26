@@ -4,6 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+assert(!is_android)
+
 component("soda") {
   sources = [
     "soda_installer.cc",

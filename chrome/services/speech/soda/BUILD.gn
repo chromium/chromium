@@ -5,6 +5,8 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/services/speech/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(!is_android)
+
 proto_library("soda_api_proto") {
   sources = [ "proto/soda_api.proto" ]
 }
