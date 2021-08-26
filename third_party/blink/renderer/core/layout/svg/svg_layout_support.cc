@@ -39,16 +39,21 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
 struct SearchCandidate {
+  DISALLOW_NEW();
+
   SearchCandidate()
       : layout_object(nullptr), distance(std::numeric_limits<float>::max()) {}
   SearchCandidate(LayoutObject* layout_object, float distance)
       : layout_object(layout_object), distance(distance) {}
-  UntracedMember<LayoutObject> layout_object;
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
+
+  Member<LayoutObject> layout_object;
   float distance;
 };
 
@@ -450,7 +455,8 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
     const FloatPoint& point) {
   // Try to find the closest LayoutSVGText.
   SearchCandidate closest_text;
-  Vector<SearchCandidate> candidates;
+  HeapVector<SearchCandidate> candidates;
+  ClearCollectionScope<HeapVector<SearchCandidate>> scope(&candidates);
 
   // Find the closest LayoutSVGText on this tree level, and also collect any
   // containers that could contain LayoutSVGTexts that are closer.
@@ -521,3 +527,5 @@ void SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(
 }
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::SearchCandidate)
