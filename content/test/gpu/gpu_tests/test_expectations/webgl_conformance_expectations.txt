@@ -432,7 +432,6 @@ crbug.com/1148120 [ win7 nvidia angle-vulkan passthrough ] conformance/canvas/vi
 crbug.com/1197905 [ win7 nvidia angle-vulkan passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
 crbug.com/1209189 [ win nvidia angle-vulkan passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
 crbug.com/angleproject/6281 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1242454 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/pow-with-constant-exponent-should-not-crash.html [ Failure ]
 
 # Flaky since crbug.com/1017162
 crbug.com/1017162 [ win nvidia angle-vulkan passthrough ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
