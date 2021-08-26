@@ -28,7 +28,7 @@ namespace quick_pair {
 namespace fast_pair_encryption {
 
 COMPONENT_EXPORT(QUICK_PAIR_PAIRING)
-KeyPair GenerateKeysWithEcdhKeyAgreement(
+absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
     const std::string& decoded_public_anti_spoofing);
 
 COMPONENT_EXPORT(QUICK_PAIR_PAIRING)

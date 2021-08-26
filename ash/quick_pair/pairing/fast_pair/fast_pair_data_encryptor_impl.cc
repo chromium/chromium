@@ -65,11 +65,17 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
       device_metadata->device.anti_spoofing_key_pair().public_key();
   std::string decoded_key;
   base::Base64Decode(public_anti_spoofing_key, &decoded_key);
-  fast_pair_encryption::KeyPair key_pair =
+  absl::optional<fast_pair_encryption::KeyPair> key_pair =
       fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(decoded_key);
-  std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =
-      base::WrapUnique(new FastPairDataEncryptorImpl(key_pair));
-  std::move(on_get_instance_callback).Run(std::move(data_encryptor));
+
+  if (key_pair) {
+    std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =
+        base::WrapUnique(new FastPairDataEncryptorImpl(key_pair.value()));
+    std::move(on_get_instance_callback).Run(std::move(data_encryptor));
+  } else {
+    QP_LOG(WARNING) << __func__ << ": Failed to get key pair for device";
+    std::move(on_get_instance_callback).Run(nullptr);
+  }
 }
 
 FastPairDataEncryptorImpl::FastPairDataEncryptorImpl(
