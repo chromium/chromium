@@ -19987,6 +19987,91 @@ Called by update_debug_scenarios.py.-->
   <int value="105" label="layers.right"/>
 </enum>
 
+<enum name="DevToolsLanguage">
+  <int value="1" label="af - Afrikaans"/>
+  <int value="2" label="am - Amharic"/>
+  <int value="3" label="ar - Arabic"/>
+  <int value="4" label="as - Assamese"/>
+  <int value="5" label="az - Azerbaijani"/>
+  <int value="6" label="be - Belarusian"/>
+  <int value="7" label="bg - Bulgarian"/>
+  <int value="8" label="bn - Bangla"/>
+  <int value="9" label="bs - Bosnian"/>
+  <int value="10" label="ca - Catalan"/>
+  <int value="11" label="cs - Czech"/>
+  <int value="12" label="cy - Welsh"/>
+  <int value="13" label="da - Danish"/>
+  <int value="14" label="de - German"/>
+  <int value="15" label="el - Greek"/>
+  <int value="16" label="en-GB - British English"/>
+  <int value="17" label="en-US - American English"/>
+  <int value="18" label="es-419 - Latin American Spanish"/>
+  <int value="19" label="es - Spanish"/>
+  <int value="20" label="et - Estonian"/>
+  <int value="21" label="eu - Basque"/>
+  <int value="22" label="fa - Persian"/>
+  <int value="23" label="fi - Finnish"/>
+  <int value="24" label="fil - Filipino"/>
+  <int value="25" label="fr-CA - Canadian French"/>
+  <int value="26" label="fr - French"/>
+  <int value="27" label="gl - Galician"/>
+  <int value="28" label="gu - Gujarati"/>
+  <int value="29" label="he - Hebrew"/>
+  <int value="30" label="hi - Hindi"/>
+  <int value="31" label="hr - Croatian"/>
+  <int value="32" label="hu - Hungarian"/>
+  <int value="33" label="hy - Armenian"/>
+  <int value="34" label="id - Indonesian"/>
+  <int value="35" label="is - Icelandic"/>
+  <int value="36" label="it - Italian"/>
+  <int value="37" label="ja - Japanese"/>
+  <int value="38" label="ka - Georgian"/>
+  <int value="39" label="kk - Kazakh"/>
+  <int value="40" label="km - Khmer"/>
+  <int value="41" label="kn - Kannada"/>
+  <int value="42" label="ko - Korean"/>
+  <int value="43" label="ky - Kyrgyz"/>
+  <int value="44" label="lo - Lao"/>
+  <int value="45" label="lt - Lithuanian"/>
+  <int value="46" label="lv - Latvian"/>
+  <int value="47" label="mk - Macedonian"/>
+  <int value="48" label="ml - Malayalam"/>
+  <int value="49" label="mn - Mongolian"/>
+  <int value="50" label="mr - Marathi"/>
+  <int value="51" label="ms - Malay"/>
+  <int value="52" label="my - Burmese"/>
+  <int value="53" label="ne - Nepali"/>
+  <int value="54" label="nl - Dutch"/>
+  <int value="55" label="no - Norwegian"/>
+  <int value="56" label="or - Odia"/>
+  <int value="57" label="pa - Punjabi"/>
+  <int value="58" label="pl - Polish"/>
+  <int value="59" label="pt-PT - European Portuguese"/>
+  <int value="60" label="pt - Portuguese"/>
+  <int value="61" label="ro - Romanian"/>
+  <int value="62" label="ru - Russian"/>
+  <int value="63" label="si - Sinhala"/>
+  <int value="64" label="sk - Slovak"/>
+  <int value="65" label="sl - Slovenian"/>
+  <int value="66" label="sq - Albanian"/>
+  <int value="67" label="sr-Latn - Serbian (Latin)"/>
+  <int value="68" label="sr - Serbian"/>
+  <int value="69" label="sv - Swedish"/>
+  <int value="70" label="sw - Swahili"/>
+  <int value="71" label="ta - Tamil"/>
+  <int value="72" label="te - Telugu"/>
+  <int value="73" label="th - Thai"/>
+  <int value="74" label="tr - Turkish"/>
+  <int value="75" label="uk - Ukrainian"/>
+  <int value="76" label="ur - Urdu"/>
+  <int value="77" label="uz - Uzbek"/>
+  <int value="78" label="vi - Vietnamese"/>
+  <int value="79" label="zh - Chinese"/>
+  <int value="80" label="zh-HK - Chinese (Hong Kong)"/>
+  <int value="81" label="zh-TW - Chinese (Taiwan)"/>
+  <int value="82" label="zu - Zulu"/>
+</enum>
+
 <enum name="DevToolsLinearMemoryInspectorRevealedFrom">
   <int value="0" label="Context menu"/>
   <int value="1" label="Memory icon"/>
