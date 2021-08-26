@@ -251,6 +251,7 @@ mojom("mojom_platform") {
     "//services/device/public/mojom",
     "//services/network/public/mojom",
     "//services/network/public/mojom:mojom_ip_address",
+    "//services/network/public/mojom:mojom_proxy_config",
     "//services/network/public/mojom:url_loader_base",
     "//services/network/public/mojom:websocket_mojom",
     "//services/service_manager/public/mojom",
