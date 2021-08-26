@@ -18,6 +18,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 struct wl_cursor;
@@ -275,6 +276,8 @@ class WaylandConnection {
     return available_globals_;
   }
 
+  wl::SerialTracker& serial_tracker() { return serial_tracker_; }
+
  private:
   friend class WaylandConnectionTestApi;
 
@@ -419,6 +422,8 @@ class WaylandConnection {
   EventSerial serial_;
 
   uint32_t pointer_enter_serial_ = 0;
+
+  wl::SerialTracker serial_tracker_;
 
   // Global Wayland interfaces available in the current session, with their
   // versions.
