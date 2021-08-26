@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -56,7 +57,7 @@ class UiUtils {
         int totalTabCount = totalTabCount(item);
         String title;
         Resources res = mContext.getResources();
-        if (totalTabCount == 0) {
+        if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
             title = res.getString(R.string.instance_switcher_entry_empty_window);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             // Show 'incognito tab' only when we have any restorable incognito tabs.
@@ -139,8 +140,8 @@ class UiUtils {
     void setFavicon(PropertyModel model,
             PropertyModel.WritableObjectPropertyKey<Drawable> faviconKey, InstanceInfo item) {
         int incognitoTabCount = recoverableIncognitoTabCount(item);
-        boolean hasNoTabs = item.tabCount + incognitoTabCount == 0;
-        if (hasNoTabs) {
+        int totalTabCount = totalTabCount(item);
+        if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
             model.set(faviconKey, mGlobeFavicon);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             model.set(faviconKey, mIncognitoFavicon);
@@ -170,5 +171,12 @@ class UiUtils {
             icon = Bitmap.createScaledBitmap(icon, mDisplayedIconSize, mDisplayedIconSize, true);
         }
         return new BitmapDrawable(mContext.getResources(), icon);
+    }
+
+    /**
+     * @return Whether a new Chrome instance has not yet started loading a URL on its tab.
+     */
+    private boolean isBeforeFirstTabLoad(InstanceInfo item, int totalTabCount) {
+        return totalTabCount == 1 && TextUtils.isEmpty(item.url) && TextUtils.isEmpty(item.title);
     }
 }
