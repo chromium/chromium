@@ -16,8 +16,6 @@
 
 namespace blink {
 
-namespace {
-
 TEST(ResourceTest, RevalidateWithFragment) {
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
@@ -443,5 +441,49 @@ TEST(ResourceTest, SetIsAdResource) {
   EXPECT_TRUE(resource->GetResourceRequest().IsAdResource());
 }
 
-}  // namespace
+TEST(ResourceTest, GarbageCollection) {
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform;
+  const KURL url("http://test.example.com/");
+  Persistent<MockResource> resource = MakeGarbageCollected<MockResource>(url);
+  ResourceResponse response(url);
+  resource->ResponseReceived(response);
+  resource->FinishForTest();
+  GetMemoryCache()->Add(resource);
+
+  // Add a client.
+  Persistent<MockResourceClient> client =
+      MakeGarbageCollected<MockResourceClient>();
+  client->SetResource(resource, platform->test_task_runner().get());
+
+  EXPECT_TRUE(resource->IsAlive());
+
+  // Garbage collect the client.
+  // This shouldn't crash due to checks around GC and prefinalizers.
+  WeakPersistent<MockResourceClient> weak_client = client;
+  client = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      BlinkGC::kNoHeapPointersOnStack);
+
+  EXPECT_FALSE(resource->IsAlive());
+  EXPECT_FALSE(weak_client);
+
+  // Add a client again.
+  client = MakeGarbageCollected<MockResourceClient>();
+  client->SetResource(resource, platform->test_task_runner().get());
+
+  EXPECT_TRUE(resource->IsAlive());
+
+  // Garbage collect the client and resource together.
+  weak_client = client;
+  client = nullptr;
+  WeakPersistent<MockResource> weak_resource = resource;
+  resource = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      BlinkGC::kNoHeapPointersOnStack);
+
+  EXPECT_FALSE(weak_client);
+  EXPECT_FALSE(weak_resource);
+}
+
 }  // namespace blink

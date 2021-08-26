@@ -619,9 +619,6 @@ void Resource::AddClient(ResourceClient* client,
 void Resource::RemoveClient(ResourceClient* client) {
   CHECK(!is_add_remove_client_prohibited_);
 
-  // This code may be called in a pre-finalizer, where weak members in the
-  // HashCountedSet are already swept out.
-
   if (finished_clients_.Contains(client))
     finished_clients_.erase(client);
   else if (clients_awaiting_callback_.Contains(client))

@@ -420,6 +420,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Sets the ResourceRequest to be tagged as an ad.
   void SetIsAdResource();
 
+  void DidRemoveClientOrObserver();
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
@@ -444,7 +446,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   virtual void DidAddClient(ResourceClient*);
   void WillAddClientOrObserver();
 
-  void DidRemoveClientOrObserver();
   virtual void AllClientsAndObserversRemoved();
 
   bool HasClient(ResourceClient* client) const {
