@@ -7028,19 +7028,15 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithoutBottomSheet",
+                    "name": "EnabledContextMenuWithRootAsDefault",
+                    "params": {
+                        "use_root_bookmark_as_default": "true"
+                    },
                     "enable_features": [
                         "ReadLater"
                     ],
                     "disable_features": [
                         "BookmarkBottomSheet"
-                    ]
-                },
-                {
-                    "name": "EnabledWithBottomSheet",
-                    "enable_features": [
-                        "BookmarkBottomSheet",
-                        "ReadLater"
                     ]
                 }
             ]

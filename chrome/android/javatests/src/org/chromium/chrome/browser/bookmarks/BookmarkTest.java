@@ -114,7 +114,8 @@ import java.util.concurrent.ExecutionException;
 // clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/false"})
 public class BookmarkTest {
     // clang-format on
     @Rule

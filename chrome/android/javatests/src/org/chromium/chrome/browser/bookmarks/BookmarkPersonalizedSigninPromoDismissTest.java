@@ -46,7 +46,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests different scenarios when the bookmark personalized signin promo is not shown.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/false"})
 @Features.DisableFeatures({ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD,
         ChromeFeatureList.INTEREST_FEED_V2})
 public class BookmarkPersonalizedSigninPromoDismissTest {
