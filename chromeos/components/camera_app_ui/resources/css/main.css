@@ -339,6 +339,11 @@ body.playing-result-video #play-result-video {
   margin-inline-end: var(--fade-padding);
 }
 
+#modes-group .mode-item input:active {
+  /* Don't scale when active to prevent twitching. See b/197583162. */
+  transform: none;
+}
+
 div.mode-item>span {
   border-radius: 16px/50%;
   color: white;
