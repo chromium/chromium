@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://bluetooth-pairing/=../../chrome/browser/resources/chromeos/bluetooth_pairing_dialog/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [ ":bluetooth_pairing_ui_test" ]
+}
+
+js_library("bluetooth_pairing_ui_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

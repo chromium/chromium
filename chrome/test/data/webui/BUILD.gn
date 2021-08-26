@@ -520,13 +520,11 @@ if (include_js_tests) {
 }
 
 group("modulize") {
-  deps = [
-    ":modulize_local",
-    "./cr_components/chromeos:modulize",
-  ]
+  deps = [ ":modulize_local" ]
 
   if (is_chromeos_ash) {
     deps += [
+      "./cr_components/chromeos:modulize",
       "./nearby_share/shared:modulize",
       "./settings/chromeos:modulize",
     ]
@@ -563,6 +561,7 @@ group("closure_compile") {
   if (is_chromeos_ash) {
     deps += [
       "chromeos:closure_compile",
+      "cr_components/chromeos:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
       "settings/chromeos:closure_compile",

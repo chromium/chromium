@@ -1,8 +1,10 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
+import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+
+assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
 
 group("modulize") {
   deps = [
@@ -12,4 +14,8 @@ group("modulize") {
     "network_health:modulize",
     "//chrome/test/data/webui/chromeos:modulize",
   ]
+}
+
+group("closure_compile") {
+  deps = [ "bluetooth:closure_compile" ]
 }

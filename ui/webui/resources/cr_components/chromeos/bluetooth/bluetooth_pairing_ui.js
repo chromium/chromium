@@ -21,7 +21,7 @@ const SettingsBluetoothPairingUiElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-class SettingsBluetoothPairingUiElement extends
+export class SettingsBluetoothPairingUiElement extends
     SettingsBluetoothPairingUiElementBase {
   static get is() {
     return 'bluetooth-pairing-ui';

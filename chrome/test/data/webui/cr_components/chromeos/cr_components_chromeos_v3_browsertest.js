@@ -11,6 +11,10 @@ GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 // clang-format off
+[
+  ['BluetoothPairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
+ ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
+
 [['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.m.js'],
  ['CrPolicyNetworkIndicatorMojo', 'network/cr_policy_network_indicator_mojo_tests.m.js'],
  ['NetworkApnlist', 'network/network_apnlist_test.m.js'],
@@ -75,6 +79,7 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
       return {
         enabled: [
           'chromeos::features::kCellularUseAttachApn',
+          'ash::features::kBluetoothRevamp',
         ],
       };
     }
