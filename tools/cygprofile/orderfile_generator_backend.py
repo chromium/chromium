@@ -54,9 +54,9 @@ constants.SetBuildType('Release')
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
-    'arm': [ 'target_cpu = "arm"' ],
-    'arm64': [ 'target_cpu = "arm64"',
-               'android_64bit_browser = true'],
+    'arm': ['target_cpu = "arm"'],
+    'arm64': ['target_cpu = "arm64"', 'android_64bit_browser = true'],
+    'x86': ['target_cpu = "x86"'],
 }
 
 class CommandError(Exception):
@@ -1051,9 +1051,11 @@ def CreateArgumentParser():
   parser.add_argument(
       '--verify', action='store_true',
       help='If true, the script only verifies the current orderfile')
-  parser.add_argument('--target-arch', action='store', dest='arch',
+  parser.add_argument('--target-arch',
+                      action='store',
+                      dest='arch',
                       default='arm',
-                      choices=['arm', 'arm64'],
+                      choices=list(_ARCH_GN_ARGS.keys()),
                       help='The target architecture for which to build.')
   parser.add_argument('--output-json', action='store', dest='json_file',
                       help='Location to save stats in json format')

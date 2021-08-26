@@ -33,7 +33,7 @@
 #endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 
 #if !BUILDFLAG(SUPPORTS_CODE_ORDERING)
-#error Only supported on architectures supporting code ordering (arm/arm64).
+#error Requires code ordering support (arm/arm64/x86/x86_64).
 #endif  // !BUILDFLAG(SUPPORTS_CODE_ORDERING)
 
 // Must be applied to all functions within this file.
