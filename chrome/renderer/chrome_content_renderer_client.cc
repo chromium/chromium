@@ -347,6 +347,16 @@ void MaybeEnableWebShare() {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsTerminalSystemWebAppNaClPage(GURL url) {
+  url::Replacements<char> replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements) ==
+         "chrome-untrusted://terminal/html/nassh.html";
+}
+#endif
+
 }  // namespace
 
 ChromeContentRendererClient::ChromeContentRendererClient()
@@ -983,6 +993,11 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           if (extension) {
             is_module_allowed =
                 IsNativeNaClAllowed(app_url, is_nacl_unrestricted, extension);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            // Allow Terminal System App to load the SSH extension NaCl module.
+          } else if (IsTerminalSystemWebAppNaClPage(app_url)) {
+            is_module_allowed = true;
+#endif
           } else {
             WebDocument document = frame->GetDocument();
             is_module_allowed =

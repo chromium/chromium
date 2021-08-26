@@ -38,6 +38,10 @@
 #include "extensions/common/permissions/socket_permission.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/webui_url_constants.h"
+#endif
+
 namespace plugins {
 namespace {
 
@@ -169,6 +173,11 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
                                          GetAllowedSocketOrigins())) {
       return true;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Terminal SWA is not an extension, but runs SSH NaCL with sockets.
+    if (url == chrome::kChromeUIUntrustedTerminalURL)
+      return true;
+#endif
   } else {
     // Access to public socket APIs is controlled by extension permissions.
     if (url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&

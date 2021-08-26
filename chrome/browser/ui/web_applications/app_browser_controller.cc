@@ -147,19 +147,6 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
     if (url.is_empty())
       return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Terminal SWA allows the SSH extension to load within one of its tabs
-    // and should not show the custom tab bar.
-    // TODO(crbug.com/1241262): Include nassh in cros rootfs and host it within
-    // Terminal SWA rather than loading the nassh extension.
-    if (system_app() &&
-        system_app()->GetType() == web_app::SystemAppType::TERMINAL &&
-        url.SchemeIs(extensions::kExtensionScheme) &&
-        url.host() == "iodihamcpbpeioajjeobimgagajmlibd") {
-      return false;
-    }
-#endif
-
     // Page URLs that are not within scope
     // (https://www.w3.org/TR/appmanifest/#dfn-within-scope) of the app
     // corresponding to |start_url| show the toolbar.

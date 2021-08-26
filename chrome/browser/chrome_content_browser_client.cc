@@ -3615,6 +3615,7 @@ void ChromeContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
       additional_allowed_schemes);
   additional_allowed_schemes->push_back(content::kChromeDevToolsScheme);
   additional_allowed_schemes->push_back(content::kChromeUIScheme);
+  additional_allowed_schemes->push_back(content::kChromeUIUntrustedScheme);
   for (auto*& extra_part : extra_parts_) {
     extra_part->GetAdditionalAllowedSchemesForFileSystem(
         additional_allowed_schemes);

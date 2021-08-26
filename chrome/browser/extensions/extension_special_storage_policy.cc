@@ -36,6 +36,10 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/webui_url_constants.h"
+#endif
+
 using content::BrowserThread;
 using extensions::APIPermission;
 using extensions::Extension;
@@ -120,6 +124,14 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
   if (origin.SchemeIs(content::kChromeDevToolsScheme) &&
       origin.host_piece() == chrome::kChromeUIDevToolsHost)
     return true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // chrome-untrusted://terminal/ runs the SSH extension code which can store
+  // SSH known_hosts, config, and Identity keys. Use unlimitedStorage to match
+  // extension config.
+  if (origin == chrome::kChromeUIUntrustedTerminalURL)
+    return true;
+#endif
 
   base::AutoLock locker(lock_);
   return unlimited_extensions_.Contains(origin) ||
