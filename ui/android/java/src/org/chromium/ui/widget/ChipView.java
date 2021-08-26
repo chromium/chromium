@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -57,25 +58,23 @@ public class ChipView extends LinearLayout {
     private ViewGroup mEndIconWrapper;
     private TextView mSecondaryText;
 
-    /**
-     * Constructor for inflating from XML.
-     */
-    public ChipView(Context context, @StyleRes int chipStyle) {
-        this(context, null, chipStyle);
+    /** Constructor for applying a theme overlay. */
+    public ChipView(Context context, @StyleRes int themeOverlay) {
+        this(new ContextThemeWrapper(context, themeOverlay), null, 0, 0);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ChipView(Context context, AttributeSet attrs) {
-        this(context, attrs, R.style.SuggestionChipThemeOverlay);
+        this(new ContextThemeWrapper(context, R.style.SuggestionChipThemeOverlay), attrs, 0, 0);
     }
 
-    private ChipView(Context context, AttributeSet attrs, @StyleRes int themeOverlay) {
-        super(new ContextThemeWrapper(context, themeOverlay), attrs, R.attr.chipStyle);
+    /** Constructor for base classes and programmatic creation. */
+    public ChipView(Context context, AttributeSet attrs, @AttrRes int defStyleAttr,
+            @StyleRes int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.ChipView, R.attr.chipStyle, 0);
+                attrs, R.styleable.ChipView, defStyleAttr, defStyleRes);
 
         boolean extendLateralPadding =
                 a.getBoolean(R.styleable.ChipView_extendLateralPadding, false);
