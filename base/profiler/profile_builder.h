@@ -6,6 +6,7 @@
 #define BASE_PROFILER_PROFILE_BUILDER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/macros.h"

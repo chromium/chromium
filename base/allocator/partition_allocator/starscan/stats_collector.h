@@ -7,9 +7,12 @@
 
 #include <array>
 #include <atomic>
+#include <functional>
 #include <mutex>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"

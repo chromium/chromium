@@ -34,6 +34,7 @@
 
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/message_loop/timer_slack.h"

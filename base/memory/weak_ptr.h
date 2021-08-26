@@ -71,6 +71,7 @@
 
 #include <cstddef>
 #include <type_traits>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/check.h"

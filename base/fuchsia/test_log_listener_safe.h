@@ -9,6 +9,8 @@
 
 #include <lib/fidl/cpp/binding.h>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"

@@ -10,6 +10,7 @@
 #define BASE_CALLBACK_H_
 
 #include <stddef.h>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_forward.h"

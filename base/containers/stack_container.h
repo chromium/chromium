@@ -6,7 +6,7 @@
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
 #include <stddef.h>
-
+#include <memory>
 #include <vector>
 
 #include "build/build_config.h"

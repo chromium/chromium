@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_HISTOGRAM_FUNCTIONS_H_
 #define BASE_METRICS_HISTOGRAM_FUNCTIONS_H_
 
+#include <string>
 #include <type_traits>
 
 #include "base/metrics/histogram.h"

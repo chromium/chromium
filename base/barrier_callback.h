@@ -5,7 +5,9 @@
 #ifndef BASE_BARRIER_CALLBACK_H_
 #define BASE_BARRIER_CALLBACK_H_
 
+#include <memory>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"

@@ -5,6 +5,8 @@
 #ifndef BASE_ANDROID_TASK_SCHEDULER_POST_TASK_ANDROID_H_
 #define BASE_ANDROID_TASK_SCHEDULER_POST_TASK_ANDROID_H_
 
+#include <string>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/base_export.h"
 #include "base/task/task_traits.h"

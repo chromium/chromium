@@ -11,6 +11,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 

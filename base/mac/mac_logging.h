@@ -5,6 +5,8 @@
 #ifndef BASE_MAC_MAC_LOGGING_H_
 #define BASE_MAC_MAC_LOGGING_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/macros.h"

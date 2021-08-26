@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_post_task_internal.h"

@@ -6,6 +6,7 @@
 #define BASE_PROFILER_NATIVE_UNWINDER_MAC_H_
 
 #include <libunwind.h>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/profiler/unwinder.h"

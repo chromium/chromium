@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cstdint>
 #include <limits>
+#include <utility>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"

@@ -8,6 +8,8 @@
 #ifndef BASE_CALLBACK_INTERNAL_H_
 #define BASE_CALLBACK_INTERNAL_H_
 
+#include <utility>
+
 #include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"

@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_THREAD_CACHE_H_
 
 #include <atomic>
+#include <limits>
 #include <memory>
 
 #include "base/allocator/partition_allocator/partition_alloc_config.h"

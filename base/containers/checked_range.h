@@ -9,6 +9,7 @@
 
 #include <iterator>
 #include <type_traits>
+#include <utility>
 
 #include "base/containers/checked_iterators.h"
 #include "base/cxx17_backports.h"

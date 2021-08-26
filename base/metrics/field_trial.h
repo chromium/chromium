@@ -58,6 +58,7 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>

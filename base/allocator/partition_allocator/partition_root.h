@@ -30,6 +30,7 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
+#include <algorithm>
 #include <atomic>
 
 #include "base/allocator/buildflags.h"

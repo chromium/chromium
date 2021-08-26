@@ -11,6 +11,7 @@
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
+#include <memory>
 #include <string>
 
 #include "base/base_export.h"

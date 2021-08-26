@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/atomicops.h"
 #include "base/metrics/histogram_base.h"

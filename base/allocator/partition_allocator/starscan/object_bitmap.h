@@ -13,6 +13,7 @@
 #include <array>
 #include <atomic>
 #include <tuple>
+#include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"

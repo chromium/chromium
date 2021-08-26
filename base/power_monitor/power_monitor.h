@@ -5,6 +5,8 @@
 #ifndef BASE_POWER_MONITOR_POWER_MONITOR_H_
 #define BASE_POWER_MONITOR_POWER_MONITOR_H_
 
+#include <memory>
+
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

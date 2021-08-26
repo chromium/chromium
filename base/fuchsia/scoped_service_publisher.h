@@ -5,6 +5,10 @@
 #ifndef BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
 #define BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/cpp/outgoing_directory.h>
