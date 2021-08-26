@@ -1329,6 +1329,12 @@ void AuthenticatorCommon::GetAssertion(
 void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
+  if (proxy) {
+    proxy->SignalIsUvpaaRequest(std::move(callback));
+    return;
+  }
+
   // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode
   // and, on Windows only, in Incognito.
   absl::optional<bool> is_uvpaa_override =
@@ -1869,6 +1875,13 @@ void AuthenticatorCommon::InitDiscoveryFactory(bool is_u2f_api_request) {
   discovery_factory_testing_override_ =
       AuthenticatorEnvironmentImpl::GetInstance()
           ->MaybeGetDiscoveryFactoryTestOverride();
+}
+
+WebAuthenticationRequestProxy*
+AuthenticatorCommon::GetWebAuthnRequestProxyIfActive() {
+  WebAuthenticationRequestProxy* proxy =
+      GetWebAuthenticationDelegate()->MaybeGetRequestProxy(GetBrowserContext());
+  return proxy && proxy->IsActive() ? proxy : nullptr;
 }
 
 }  // namespace content

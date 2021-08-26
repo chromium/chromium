@@ -1633,6 +1633,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATE_GETZIPPROGRESS = 1570,
   CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST = 1571,
   OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE = 1572,
+  WEB_AUTHENTICATION_PROXY_COMPLETE_ISUVPAA_REQUEST = 1573,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

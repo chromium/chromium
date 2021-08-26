@@ -27365,6 +27365,7 @@ Called by update_extension_histograms.py.-->
   <int value="477" label="ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL"/>
   <int value="478" label="STORAGE_SESSION_ON_CHANGE"/>
   <int value="479" label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION"/>
+  <int value="480" label="WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -29014,6 +29015,7 @@ Called by update_extension_histograms.py.-->
   <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
   <int value="1571" label="CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
   <int value="1572" label="OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE"/>
+  <int value="1573" label="WEB_AUTHENTICATION_PROXY_COMPLETE_ISUVPAA_REQUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -29635,6 +29637,7 @@ Called by update_extension_permission.py.-->
   <int value="229" label="kTabGroups"/>
   <int value="230" label="kScripting"/>
   <int value="231" label="kWmDesksPrivate"/>
+  <int value="232" label="kWebAuthenticationProxy"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

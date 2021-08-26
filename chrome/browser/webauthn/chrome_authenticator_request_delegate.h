@@ -72,6 +72,8 @@ class ChromeWebAuthenticationDelegate
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host) override;
+  content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      content::BrowserContext* browser_context) override;
 };
 
 class ChromeAuthenticatorRequestDelegate

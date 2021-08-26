@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -117,6 +118,11 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   virtual absl::optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
+
+  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
+  // any.
+  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      BrowserContext* browser_context);
 };
 
 // AuthenticatorRequestClientDelegate is an interface that lets embedders

@@ -567,10 +567,14 @@ source_set("browser_sources") {
 
   if (!is_android) {
     sources += [
-      "authenticator_request_client_delegate.cc",
-      "authenticator_request_client_delegate.h",
       "host_zoom_map.h",
       "zoom_level_delegate.h",
+
+      # Some Web Authentication related targets only apply to desktop because
+      # Android provides its own native implementation of that API.
+      "authenticator_request_client_delegate.cc",
+      "authenticator_request_client_delegate.h",
+      "web_authentication_request_proxy.h",
     ]
   }
 

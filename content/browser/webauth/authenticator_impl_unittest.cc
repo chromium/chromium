@@ -1662,6 +1662,35 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// TestWebAuthenticationRequestProxy is a test fake implementation of the
+// WebAuthenticationRequestProxy embedder interface.
+class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
+ public:
+  struct Config {
+    bool is_active = true;
+    bool is_uvpaa = true;
+  };
+
+  struct CallCounts {
+    size_t signal_is_uvpaa_request;
+  };
+
+  Config& config() { return config_; }
+
+  const CallCounts& call_counts() { return call_counts_; }
+
+  bool IsActive() override { return config_.is_active; }
+
+  void SignalIsUvpaaRequest(IsUvpaaCallback callback) override {
+    call_counts_.signal_is_uvpaa_request++;
+    std::move(callback).Run(config_.is_uvpaa);
+  }
+
+ private:
+  Config config_;
+  CallCounts call_counts_;
+};
+
 // TestWebAuthenticationDelegate is a test fake implementation of the
 // WebAuthentuicationDelegate embedder interface.
 class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
@@ -1698,6 +1727,11 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   }
 #endif
 
+  WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      content::BrowserContext* browser_context) override {
+    return request_proxy.get();
+  }
+
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
   absl::optional<bool> is_uvpaa_override;
@@ -1724,6 +1758,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // Configuration data for the macOS platform authenticator.
   absl::optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
 #endif
+
+  // The WebAuthenticationRequestProxy returned by |MaybeGetRequestProxy|.
+  std::unique_ptr<TestWebAuthenticationRequestProxy> request_proxy = nullptr;
 };
 
 enum class EnterprisePolicy {
@@ -7734,6 +7771,58 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   // The pairing should be been erased because of the signal from the tunnel
   // server.
   ASSERT_EQ(pairings_.size(), 0u);
+}
+
+// AuthenticatorImplWithRequestProxyTest tests behavior with an installed
+// TestWebAuthenticationRequestProxy that takes over WebAuthn request handling.
+class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
+ public:
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+    old_client_ = SetBrowserClientForTesting(&test_client_);
+    test_client_.GetTestWebAuthenticationDelegate()->request_proxy =
+        std::make_unique<TestWebAuthenticationRequestProxy>();
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_client_);
+    AuthenticatorImplTest::TearDown();
+  }
+
+  TestWebAuthenticationRequestProxy& request_proxy() {
+    return static_cast<TestWebAuthenticationRequestProxy&>(
+        *test_client_.GetTestWebAuthenticationDelegate()->request_proxy);
+  }
+
+  ContentBrowserClient* old_client_ = nullptr;
+  TestAuthenticatorContentBrowserClient test_client_;
+};
+
+TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
+  size_t i = 0;
+  for (const bool is_uvpaa : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "is_uvpaa=" << is_uvpaa);
+    request_proxy().config().is_uvpaa = is_uvpaa;
+    NavigateAndCommit(GURL(kTestOrigin1));
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    TestIsUvpaaCallback cb;
+    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+    cb.WaitForCallback();
+    EXPECT_EQ(cb.value(), is_uvpaa);
+    EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, ++i);
+  }
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
+  request_proxy().config().is_active = false;
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestIsUvpaaCallback cb;
+  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+  cb.WaitForCallback();
+  EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, 0u);
 }
 
 }  // namespace content

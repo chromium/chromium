@@ -124,6 +124,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kWallpaper, "wallpaper",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kWebAuthenticationProxy, "webAuthenticationProxy",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebNavigation, "webNavigation",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
 

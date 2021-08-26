@@ -1,0 +1,44 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The webAuthenticationProxy API lets remote desktop software running on a
+// remote host intercept Web Authentication API requests in order to handle
+// them on a local client.
+namespace webAuthenticationProxy {
+  // An object representing a
+  // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() call.
+  dictionary IsUvpaaRequest {
+    // An opaque identifier for the request.
+    long requestId;
+  };
+
+  // This interface defines Events that fire when any website makes a WebAuthn
+  // API request. Regular processing of WebAuthn requests in the local Chrome
+  // instance is disabled when these events are subscribed to.
+  interface Events {
+    // Fires when a
+    // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() call
+    // occurs. The extension must supply a response by calling
+    // completeIsUvpaaRequest() with the given requestId.
+    static void onIsUvpaaRequest(IsUvpaaRequest requestInfo);
+  };
+
+  callback VoidCallback = void();
+
+  dictionary IsUvpaaResponseDetails {
+    long requestId;
+    boolean isUvpaa;
+  };
+
+  interface Functions {
+    // Reports the result of a
+    // PublicKeyCredential.isUserVerifyingPlatformAuthenticator() call. The
+    // extension must call this for every onIsUvpaaRequest event it has
+    // received; but not if onRequestCanceled has been called for that
+    // particular requestId.
+    [supportsPromises] static void completeIsUvpaaRequest(
+        IsUvpaaResponseDetails details,
+        VoidCallback callback);
+  };
+};

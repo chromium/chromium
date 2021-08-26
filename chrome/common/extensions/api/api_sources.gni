@@ -58,6 +58,7 @@ schema_sources_ = [
   "tab_groups.json",
   "tabs.json",
   "types.json",
+  "web_authentication_proxy.idl",
   "web_navigation.json",
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and as

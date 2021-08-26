@@ -912,6 +912,10 @@
     "dependencies": ["permission:wallpaperPrivate"],
     "contexts": ["blessed_extension"]
   },
+  "webAuthenticationProxy": {
+    "dependencies": ["permission:webAuthenticationProxy"],
+    "contexts": ["blessed_extension"]
+  },
   "webNavigation": {
     "dependencies": ["permission:webNavigation"],
     "contexts": ["blessed_extension"]

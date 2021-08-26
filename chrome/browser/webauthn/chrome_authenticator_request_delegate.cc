@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -302,6 +303,13 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
   }
 
   return absl::nullopt;
+}
+
+content::WebAuthenticationRequestProxy*
+ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
+    content::BrowserContext* browser_context) {
+  return extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+      browser_context);
 }
 
 // ---------------------------------------------------------------------

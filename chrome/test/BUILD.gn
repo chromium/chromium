@@ -2470,6 +2470,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/api/tabs/tabs_test.cc",
         "../browser/extensions/api/test/apitest_apitest.cc",
         "../browser/extensions/api/top_sites/top_sites_apitest.cc",
+        "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
         "../browser/extensions/api/web_navigation/web_navigation_apitest.cc",
         "../browser/extensions/api/web_request/web_request_apitest.cc",
         "../browser/extensions/api/webrtc_audio_private/webrtc_audio_private_browsertest.cc",

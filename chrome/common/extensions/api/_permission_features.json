@@ -883,6 +883,11 @@
     "location": "component",
     "platforms": ["chromeos"]
   },
+  "webAuthenticationProxy": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "webNavigation": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

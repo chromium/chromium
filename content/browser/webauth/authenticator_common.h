@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -200,6 +201,8 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // accessor. It gets reset at the end of each request by Cleanup().
   device::FidoDiscoveryFactory* discovery_factory();
   void InitDiscoveryFactory(bool is_u2f_api_request);
+
+  WebAuthenticationRequestProxy* GetWebAuthnRequestProxyIfActive();
 
   const GlobalRenderFrameHostId render_frame_host_id_;
   std::unique_ptr<device::FidoRequestHandlerBase> request_;

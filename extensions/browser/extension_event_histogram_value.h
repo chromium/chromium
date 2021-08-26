@@ -499,6 +499,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL = 477,
   STORAGE_SESSION_ON_CHANGE = 478,
   ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION = 479,
+  WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST = 480,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
