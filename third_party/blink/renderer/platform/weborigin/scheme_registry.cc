@@ -415,12 +415,12 @@ bool SchemeRegistry::SchemeShouldBypassContentSecurityPolicy(
   if (scheme.IsEmpty() || policy_areas == kPolicyAreaNone)
     return false;
 
-  // get() returns 0 (PolicyAreaNone) if there is no entry in the map.
-  // Thus by default, schemes do not bypass CSP.
-  return (GetURLSchemesRegistry()
-              .content_security_policy_bypassing_schemes
-              .DeprecatedAtOrEmptyValue(scheme) &
-          policy_areas) == policy_areas;
+  const auto& bypassing_schemes =
+      GetURLSchemesRegistry().content_security_policy_bypassing_schemes;
+  const auto it = bypassing_schemes.find(scheme);
+  if (it == bypassing_schemes.end())
+    return false;
+  return (it->value & policy_areas) == policy_areas;
 }
 
 void SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
