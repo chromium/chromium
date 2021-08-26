@@ -594,7 +594,16 @@ public class ExternalNavigationHandler {
      */
     private boolean preferToShowIntentPicker(ExternalNavigationParams params,
             int pageTransitionCore, boolean isExternalProtocol, boolean isFormSubmit,
-            boolean linkNotFromIntent, boolean incomingIntentRedirect) {
+            boolean linkNotFromIntent, boolean incomingIntentRedirect, boolean isFromIntent,
+            List<ResolveInfo> resolveInfos) {
+        // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
+        // never launched as the result of a suitable Intent, the user's default browser will be
+        // opened instead. As a temporary solution, have Chrome launch the WebAPK.
+        if (isFromIntent && mDelegate.shouldLaunchWebApksOnInitialIntent()) {
+            boolean suitableWebApk = pickWebApkIfSoleIntentHandler(resolveInfos) != null;
+            if (suitableWebApk) return true;
+        }
+
         // http://crbug.com/169549 : If you type in a URL that then redirects in server side to a
         // link that cannot be rendered by the browser, we want to show the intent picker.
         if (isTypedRedirectToExternalProtocol(params, pageTransitionCore, isExternalProtocol)) {
@@ -1212,8 +1221,12 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
+        if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
+
+        Intent debugIntent = new Intent(targetIntent);
+        List<ResolveInfo> resolvingInfos = queryIntentActivities(targetIntent);
         if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
-                    linkNotFromIntent, incomingIntentRedirect)) {
+                    linkNotFromIntent, incomingIntentRedirect, isFromIntent, resolvingInfos)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -1237,14 +1250,10 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
-
         // From this point on, we have determined it is safe to launch an External App from a
         // fallback URL.
         canLaunchExternalFallbackResult.set(true);
 
-        Intent debugIntent = new Intent(targetIntent);
-        List<ResolveInfo> resolvingInfos = queryIntentActivities(targetIntent);
         if (resolvingInfos.isEmpty()) {
             return handleUnresolvableIntent(params, targetIntent, browserFallbackUrl);
         }
@@ -1445,10 +1454,11 @@ public class ExternalNavigationHandler {
      */
     private boolean launchWebApkIfSoleIntentHandler(
             List<ResolveInfo> resolvingInfos, Intent targetIntent) {
-        ArrayList<String> packages = getSpecializedHandlers(resolvingInfos);
-        if (packages.size() != 1 || !isValidWebApk(packages.get(0))) return false;
+        String packageName = pickWebApkIfSoleIntentHandler(resolvingInfos);
+        if (packageName == null) return false;
+
         Intent webApkIntent = new Intent(targetIntent);
-        webApkIntent.setPackage(packages.get(0));
+        webApkIntent.setPackage(packageName);
         try {
             startActivity(webApkIntent, false, mDelegate);
             if (DEBUG) Log.i(TAG, "Launched WebAPK");
@@ -1459,6 +1469,13 @@ public class ExternalNavigationHandler {
             if (DEBUG) Log.i(TAG, "WebAPK launch failed");
             return false;
         }
+    }
+
+    @Nullable
+    private String pickWebApkIfSoleIntentHandler(List<ResolveInfo> resolvingInfos) {
+        ArrayList<String> packages = getSpecializedHandlers(resolvingInfos);
+        if (packages.size() != 1 || !isValidWebApk(packages.get(0))) return null;
+        return packages.get(0);
     }
 
     /**

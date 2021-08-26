@@ -94,6 +94,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
+                    .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .build();
 
     /**

@@ -284,6 +284,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebOtpCrossDeviceSimpleString,
     &content_creation::kWebNotesStylizeEnabled,
     &kWebApkInstallCompleteNotification,
+    &kWebApkTrampolineOnInitialIntent,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -797,6 +798,9 @@ const base::Feature kWebOtpCrossDeviceSimpleString{
 
 const base::Feature kWebApkInstallCompleteNotification{
     "WebApkInstallCompleteNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kWebApkTrampolineOnInitialIntent{
+    "WebApkTrampolineOnInitialIntent", base::FEATURE_ENABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,
