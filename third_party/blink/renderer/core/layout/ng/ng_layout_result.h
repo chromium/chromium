@@ -224,8 +224,9 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   }
 
   // Return true if we weren't able to honor all break avoidance hints requested
-  // by break-{after,before,inside}:avoid or orphans / widows. This is used for
-  // column balancing.
+  // by break-{after,before,inside}:avoid or orphans / widows, or if we had to
+  // break at an invalid breakpoint (e.g. before/after the first/last
+  // child). This is used for column balancing.
   bool HasViolatingBreak() const {
     return HasRareData() && rare_data_->has_violating_break;
   }

@@ -84,7 +84,10 @@ NGLayoutResult::NGLayoutResult(
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
-    rare_data->has_violating_break = builder->has_violating_break_;
+    rare_data->has_violating_break =
+        builder->HasViolatingDescendantBreak() ||
+        (builder->DidBreakSelf() &&
+         builder->break_appeal_ < kBreakAppealPerfect);
 
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));

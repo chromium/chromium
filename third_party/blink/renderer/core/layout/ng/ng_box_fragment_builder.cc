@@ -31,14 +31,11 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
   if (appeal) {
     break_appeal_ = *appeal;
     // If we're violating any orphans / widows or
-    // break-{after,before,inside}:avoid requests, remember this. If we're
-    // balancing columns, we may be able to stretch the columns to resolve the
-    // situation. Note that we should consider handling kBreakAppealLastResort
-    // as well here, but that's currently causing trouble for large leading
-    // margins, which would cause taller columns than desirable in some cases.
-    if (break_appeal_ == kBreakAppealViolatingBreakAvoid ||
-        break_appeal_ == kBreakAppealViolatingOrphansAndWidows)
-      has_violating_break_ = true;
+    // break-{after,before,inside}:avoid requests, or if we're inserting a
+    // last-resort break, remember this. If we're balancing columns, we may be
+    // able to stretch the columns to resolve the situation.
+    if (break_appeal_ < kBreakAppealPerfect)
+      has_violating_descendant_break_ = true;
   }
   if (is_forced_break) {
     SetHasForcedBreak();
@@ -381,7 +378,7 @@ void NGBoxFragmentBuilder::PropagateBreak(
   }
 
   if (!is_fragmentation_context_root_)
-    has_violating_break_ |= child_layout_result.HasViolatingBreak();
+    has_violating_descendant_break_ |= child_layout_result.HasViolatingBreak();
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.
