@@ -283,7 +283,7 @@ public class ContextualSearchTabHelper
         }
 
         boolean isActive = !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
-                && !ContextualSearchManager.isContextualSearchDisabled()
+                && !ContextualSearchPolicy.isContextualSearchDisabled()
                 && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
                 && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                 // Svelte and Accessibility devices are incompatible with the first-run flow and
@@ -342,8 +342,8 @@ public class ContextualSearchTabHelper
 
         ContextualSearchManager manager = getContextualSearchManager(mTab);
         if (manager != null) {
-            boolean isEnabled = !ContextualSearchManager.isContextualSearchDisabled()
-                    && !ContextualSearchManager.isContextualSearchUninitialized();
+            boolean isEnabled = !ContextualSearchPolicy.isContextualSearchDisabled()
+                    && !ContextualSearchPolicy.isContextualSearchUninitialized();
             manager.onContextualSearchPrefChanged(isEnabled);
         }
     }

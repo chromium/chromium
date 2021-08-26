@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,8 +69,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -127,10 +124,6 @@ public class ContextualSearchManager
     // How long to wait for a Tap to be converted to a Long-press gesture when the user taps on
     // an existing tap-selection.
     private static final int TAP_ON_TAP_SELECTION_DELAY_MS = 100;
-
-    // Constants related to the Contextual Search preference.
-    private static final String CONTEXTUAL_SEARCH_DISABLED = "false";
-    private static final String CONTEXTUAL_SEARCH_ENABLED = "true";
 
     private final ObserverList<ContextualSearchObserver> mObservers =
             new ObserverList<ContextualSearchObserver>();
@@ -1970,33 +1963,14 @@ public class ContextualSearchManager
      * @return Whether the Contextual Search feature was disabled by the user explicitly.
      */
     public static boolean isContextualSearchDisabled() {
-        return getPrefService()
-                .getString(Pref.CONTEXTUAL_SEARCH_ENABLED)
-                .equals(CONTEXTUAL_SEARCH_DISABLED);
-    }
-
-    /**
-     * @return Whether the Contextual Search feature is disabled by policy.
-     */
-    public static boolean isContextualSearchDisabledByPolicy() {
-        return getPrefService().isManagedPreference(Pref.CONTEXTUAL_SEARCH_ENABLED)
-                && isContextualSearchDisabled();
-    }
-
-    /**
-     * @return Whether the Contextual Search feature is uninitialized (preference unset by the
-     *         user).
-     */
-    public static boolean isContextualSearchUninitialized() {
-        return getPrefService().getString(Pref.CONTEXTUAL_SEARCH_ENABLED).isEmpty();
+        return ContextualSearchPolicy.isContextualSearchDisabled();
     }
 
     /**
      * @param enabled Whether Contextual Search should be enabled.
      */
     public static void setContextualSearchState(boolean enabled) {
-        getPrefService().setString(Pref.CONTEXTUAL_SEARCH_ENABLED,
-                enabled ? CONTEXTUAL_SEARCH_ENABLED : CONTEXTUAL_SEARCH_DISABLED);
+        ContextualSearchPolicy.setContextualSearchState(enabled);
     }
 
     // Private helper functions
@@ -2004,10 +1978,6 @@ public class ContextualSearchManager
     /** @return The language of the base page being viewed by the user. */
     private String getBasePageLanguage() {
         return mContext.getDetectedLanguage();
-    }
-
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     private int getBasePageHeight() {

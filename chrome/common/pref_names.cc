@@ -405,6 +405,11 @@ const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 const char kContextualSearchDisabledValue[] = "false";
 const char kContextualSearchEnabledValue[] = "true";
+
+// Boolean that indicates whether the user chose to fully opt in for Contextual
+// Search.
+const char kContextualSearchWasFullyPrivacyEnabled[] =
+    "search.contextual_search_fully_opted_in";
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)

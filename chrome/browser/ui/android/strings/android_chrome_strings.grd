@@ -759,6 +759,12 @@ Touch &amp; hold any word to search. To refine your search, select more or fewer
       <message name="IDS_CONTEXTUAL_SEARCH_DEFAULT_CAPTION" desc="Summary help text that is shown as a second line in the Contextual Search peeking bottom sheet telling the user that they can tap the text in order to open the sheet and see search results there.">
         Tap to see search results
       </message>
+      <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_TITLE" desc="Title for the see better results switch in Contextual Search preference.">
+        See better results
+      </message>
+      <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_SUMMARY" desc="Summary for the see better results switch in Contextual Search preference.">
+        Let Google also also consider some of the page’s text
+      </message>
       <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for 'Do Not Track' preference">
         “Do Not Track”
       </message>

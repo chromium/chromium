@@ -288,6 +288,9 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kContextualSearchEnabled,
       std::string(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kContextualSearchWasFullyPrivacyEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif  // defined(OS_ANDROID)
   registry->RegisterStringPref(prefs::kSessionExitType, std::string());
   registry->RegisterBooleanPref(prefs::kDisableExtensions, false);

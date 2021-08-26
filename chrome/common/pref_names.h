@@ -176,6 +176,7 @@ extern const char kSearchSuggestEnabled[];
 extern const char kContextualSearchEnabled[];
 extern const char kContextualSearchDisabledValue[];
 extern const char kContextualSearchEnabledValue[];
+extern const char kContextualSearchWasFullyPrivacyEnabled[];
 #endif  // defined(OS_ANDROID)
 extern const char kShowInternalAccessibilityTree[];
 extern const char kAccessibilityImageLabelsEnabled[];

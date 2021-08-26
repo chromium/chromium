@@ -36,10 +36,13 @@ public class ContextualSearchUma {
     /** A pattern to determine if text contains any whitespace. */
     private static final Pattern CONTAINS_WHITESPACE_PATTERN = Pattern.compile("\\s");
 
-    // Constants used to log UMA "enum" histograms about the Contextual Search's preference state.
-    @IntDef({Preference.UNINITIALIZED, Preference.ENABLED, Preference.DISABLED})
+    // Constants with ContextualSearchPreferenceState in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({ContextualSearchPreference.UNINITIALIZED, ContextualSearchPreference.ENABLED,
+            ContextualSearchPreference.DISABLED})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface Preference {
+    public @interface ContextualSearchPreference {
         int UNINITIALIZED = 0;
         int ENABLED = 1;
         int DISABLED = 2;
@@ -562,15 +565,17 @@ public class ContextualSearchUma {
     static {
         Map<Pair<Integer, Boolean>, Integer> codes =
                 new HashMap<Pair<Integer, Boolean>, Integer>();
-        codes.put(new Pair<Integer, Boolean>(Preference.ENABLED, TAP), Promo.ENABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.DISABLED, TAP), Promo.DISABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.UNINITIALIZED, TAP),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, TAP),
+                Promo.ENABLED_FROM_TAP);
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, TAP),
+                Promo.DISABLED_FROM_TAP);
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, TAP),
                 Promo.UNDECIDED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.ENABLED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, LONG_PRESS),
                 Promo.ENABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(Preference.DISABLED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, LONG_PRESS),
                 Promo.DISABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(Preference.UNINITIALIZED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, LONG_PRESS),
                 Promo.UNDECIDED_FROM_LONG_PRESS);
         PROMO_BY_GESTURE_CODES = Collections.unmodifiableMap(codes);
     }
@@ -582,7 +587,7 @@ public class ContextualSearchUma {
      */
     public static void logPreferenceState() {
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchPreferenceState",
-                getPreferenceValue(), Preference.NUM_ENTRIES);
+                getPreferenceValue(), ContextualSearchPreference.NUM_ENTRIES);
     }
 
     /**
@@ -677,7 +682,8 @@ public class ContextualSearchUma {
      */
     public static void logPreferenceChange(boolean enabled) {
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchPreferenceStateChange",
-                enabled ? Preference.ENABLED : Preference.DISABLED, Preference.NUM_ENTRIES);
+                enabled ? ContextualSearchPreference.ENABLED : ContextualSearchPreference.DISABLED,
+                ContextualSearchPreference.NUM_ENTRIES);
     }
 
     /**
@@ -689,7 +695,7 @@ public class ContextualSearchUma {
     public static void logPromoOutcome(boolean wasTap, boolean wasMandatory) {
         int preferenceCode = getPreferenceValue();
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchFirstRunFlowOutcome",
-                preferenceCode, Preference.NUM_ENTRIES);
+                preferenceCode, ContextualSearchPreference.NUM_ENTRIES);
 
         int preferenceByGestureCode = getPromoByGestureStateCode(preferenceCode, wasTap);
         if (wasMandatory) {
@@ -1700,12 +1706,12 @@ public class ContextualSearchUma {
      * @return The code for the Contextual Search preference.
      */
     private static int getPreferenceValue() {
-        if (ContextualSearchManager.isContextualSearchUninitialized()) {
-            return Preference.UNINITIALIZED;
-        } else if (ContextualSearchManager.isContextualSearchDisabled()) {
-            return Preference.DISABLED;
+        if (ContextualSearchPolicy.isContextualSearchUninitialized()) {
+            return ContextualSearchPreference.UNINITIALIZED;
+        } else if (ContextualSearchPolicy.isContextualSearchDisabled()) {
+            return ContextualSearchPreference.DISABLED;
         }
-        return Preference.ENABLED;
+        return ContextualSearchPreference.ENABLED;
     }
 
     /**

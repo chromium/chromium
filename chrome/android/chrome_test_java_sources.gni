@@ -121,6 +121,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateControllerWrapper.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicyTest.java",
+  "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPreferenceFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchRequestTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTest.java",
   "javatests/src/org/chromium/chrome/browser/contextualsearch/MockContextualSearchPolicy.java",
