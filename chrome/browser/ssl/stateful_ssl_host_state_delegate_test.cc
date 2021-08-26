@@ -578,14 +578,14 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
                                          incognito_tab));
 }
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_WIN)
 // TODO(https://crbug.com/1243074): Disabled for brokenness.
 #define MAYBE_PRE_AfterRestartHttp DISABLED_PRE_AfterRestartHttp
 #define MAYBE_AfterRestartHttp DISABLED_AfterRestartHttp
-#else // OS_MAC
+#else
 #define MAYBE_PRE_AfterRestartHttp PRE_AfterRestartHttp
 #define MAYBE_AfterRestartHttp AfterRestartHttp
-#endif  // !OS_MAC
+#endif
 
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
                        MAYBE_PRE_AfterRestartHttp) {
