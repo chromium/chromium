@@ -82,8 +82,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Terminal system app commands
-#define IDC_TERMINAL_SPLIT_HORIZONTAL   34070
-#define IDC_TERMINAL_SPLIT_VERTICAL     34071
+#define IDC_TERMINAL_LINUX   34070
+#define IDC_TERMINAL_SSH     34071
 
 // Move window to other user commands
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_2 34080

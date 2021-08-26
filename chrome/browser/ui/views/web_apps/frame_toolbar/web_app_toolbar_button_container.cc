@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/terminal_system_app_menu_button_chromeos.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -27,6 +30,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/window/hit_test_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#endif
 
 namespace {
 
@@ -135,6 +142,21 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     views::SetHitTestComponent(extensions_container_,
                                static_cast<int>(HTCLIENT));
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1241262): Create a Terminal Select New Tab button rather
+  // than reusing WebAppMenuButton.
+  if (app_controller->system_app() &&
+      app_controller->system_app()->HasTitlebarTerminalSelectNewTabButton()) {
+    web_app_menu_button_ = AddChildView(
+        std::make_unique<TerminalSystemAppMenuButton>(browser_view_));
+    web_app_menu_button_->SetID(VIEW_ID_APP_MENU);
+    ConfigureWebAppToolbarButton(web_app_menu_button_,
+                                 toolbar_button_provider_);
+    web_app_menu_button_->SetProperty(views::kFlexBehaviorKey,
+                                      views::FlexSpecification());
+  }
+#endif
 
   if (app_controller->HasTitlebarMenuButton()) {
     web_app_menu_button_ =

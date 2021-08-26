@@ -8419,13 +8419,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
                    desc="Text for the button that installs the Android app. (In sentence case.)">
             Install
           </message>
-          <message name="IDS_APP_TERMINAL_SPLIT_HORIZONTAL"
-                   desc="Text for the menu item to create a horizontal split in terminal app">
-            Split horizontal
+          <message name="IDS_APP_TERMINAL_LINUX"
+                   desc="Text for the menu item to open Linux in a tab in Terminal system app">
+            Linux
           </message>
-          <message name="IDS_APP_TERMINAL_SPLIT_VERTICAL"
-                   desc="Text for the menu item to create a vertical split in terminal app">
-            Split vertical
+          <message name="IDS_APP_TERMINAL_SSH"
+                   desc="Text for the menu item to open an SSH tab in Terminal system app">
+            SSH
           </message>
         </if>
         <message name="IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN"

@@ -133,6 +133,11 @@ class SystemWebAppDelegate {
   // Returns whether the specified Tab Context Menu shortcut should be shown.
   virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,
                                                 int command_id) const;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Whether the browser should show the Terminal System App select new tab
+  // button in the toolbar.
+  virtual bool HasTitlebarTerminalSelectNewTabButton() const;
+#endif
 
  protected:
   SystemAppType type_;
