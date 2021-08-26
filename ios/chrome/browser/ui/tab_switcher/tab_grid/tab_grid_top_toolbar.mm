@@ -310,9 +310,10 @@ const int kSelectionModeButtonSize = 17;
     [_selectedTabsItem setTitleTextAttributes:@{
       NSForegroundColorAttributeName :
           UIColorFromRGB(kTabGridToolbarTextButtonColor),
-      NSFontAttributeName : [UIFont systemFontOfSize:kSelectionModeButtonSize
-                                              weight:UIFontWeightSemibold]
-
+      NSFontAttributeName : [[UIFontMetrics
+          metricsForTextStyle:UIFontTextStyleBody]
+          scaledFontForFont:[UIFont systemFontOfSize:kSelectionModeButtonSize
+                                              weight:UIFontWeightSemibold]]
     }
                                      forState:UIControlStateDisabled];
   }
