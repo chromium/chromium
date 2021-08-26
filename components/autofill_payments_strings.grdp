@@ -96,6 +96,9 @@
     <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE" desc="This message appears as the title of a confirmation dialog in which the user can view/edit the information that will be saved to Google Payments, and only appears after the user has expressed interest in uploading the card.">
       Save to Google Account
     </message>
+    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP" desc="Button label for a prompt to ask if user agrees to save the card to the server. This prompt will be followed by confirmation dialogs to confirm the card details, such as card label.">
+      Save…
+    </message>
   </if>
   <if expr="is_ios">
     <then>
