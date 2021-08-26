@@ -46,7 +46,7 @@ void NonScannableAllocator::EnablePCScan() {
   allocator_->init(PartitionOptions(PartitionOptions::AlignedAlloc::kDisallowed,
                                     PartitionOptions::ThreadCache::kDisabled,
                                     PartitionOptions::Quarantine::kAllowed,
-                                    PartitionOptions::Cookies::kAllowed,
+                                    PartitionOptions::Cookie::kAllowed,
                                     PartitionOptions::RefCount::kDisallowed));
   PCScan::RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);

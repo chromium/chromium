@@ -116,7 +116,7 @@ struct PartitionOptions {
     kAllowed,
   };
 
-  enum class Cookies : uint8_t {
+  enum class Cookie : uint8_t {
     kDisallowed,
     kAllowed,
   };
@@ -130,18 +130,18 @@ struct PartitionOptions {
   constexpr PartitionOptions(AlignedAlloc aligned_alloc,
                              ThreadCache thread_cache,
                              Quarantine quarantine,
-                             Cookies cookies,
+                             Cookie cookie,
                              RefCount ref_count)
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
-        cookies(cookies),
+        cookie(cookie),
         ref_count(ref_count) {}
 
   AlignedAlloc aligned_alloc;
   ThreadCache thread_cache;
   Quarantine quarantine;
-  Cookies cookies;
+  Cookie cookie;
   RefCount ref_count;
 };
 
@@ -183,7 +183,7 @@ struct BASE_EXPORT PartitionRoot {
   const bool is_thread_safe = thread_safe;
 
   bool allow_aligned_alloc;
-  bool allow_cookies;
+  bool allow_cookie;
   bool allow_ref_count;
 
   // Lazy commit should only be enabled on Windows, because commit charge is
@@ -322,8 +322,7 @@ struct BASE_EXPORT PartitionRoot {
   // padding, and can be passed to |Free()| later.
   //
   // NOTE: This is incompatible with anything that adds extras before the
-  // returned pointer, such as cookies (with DCHECK_IS_ON()), or reference
-  // count.
+  // returned pointer, such as ref-count.
   ALWAYS_INLINE void* AlignedAllocFlags(int flags,
                                         size_t alignment,
                                         size_t requested_size);
@@ -993,7 +992,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // - Before the "raw" allocator.
   //
   // On the deallocation side:
-  // 1. Check cookies/ref-count, adjust the pointer
+  // 1. Check cookie/ref-count, adjust the pointer
   // 2. Deallocation
   //   a. Return to the thread cache if possible. If it succeeds, return.
   //   b. Otherwise, call the "raw" allocator <-- Locking
@@ -1001,17 +1000,17 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   PA_DCHECK(slot_span);
   PA_DCHECK(IsValidSlotSpan(slot_span));
 
-  // |ptr| points after the ref-count and the cookie.
+  // |ptr| points after the ref-count.
   //
   // Layout inside the slot:
-  //  <------extras----->                  <-extras->
-  //  <--------------utilized_slot_size------------->
-  //                    <----usable_size--->
-  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-  //                    ^
-  //                   ptr
+  //  <-extras->                  <-extras->
+  //  <---------utilized_slot_size--------->
+  //           <----usable_size--->
+  //  |[refcnt]|...data...|[empty]|[cookie]|[unused]|
+  //           ^
+  //          ptr
   //
-  // Note: ref-count and cookies can be 0-sized.
+  // Note: ref-count and cookie can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
 #if EXPENSIVE_DCHECKS_ARE_ON() || defined(PA_ZERO_RANDOMLY_ON_FREE)
@@ -1023,11 +1022,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
 #if DCHECK_IS_ON()
-  if (allow_cookies) {
-    // Verify 2 cookies surrounding the allocated region.
-    // If these asserts fire, you probably corrupted memory.
+  if (allow_cookie) {
+    // Verify the cookie after the allocated region.
+    // If this assert fires, you probably corrupted memory.
     char* char_ptr = static_cast<char*>(ptr);
-    internal::PartitionCookieCheckValue(char_ptr - internal::kCookieSize);
     internal::PartitionCookieCheckValue(char_ptr + usable_size);
   }
 #endif
@@ -1357,7 +1355,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // 2. Allocation:
   //   a. Call to the thread cache, if it succeeds, go to step 3.
   //   b. Otherwise, call the "raw" allocator <-- Locking
-  // 3. Handle cookies/ref-count, zero allocation if required
+  // 3. Handle cookie/ref-count, zero allocation if required
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
@@ -1426,13 +1424,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     return nullptr;
 
   // Layout inside the slot:
-  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-  //                    <---(a)---->
-  //                    <-------(b)-------->
-  //  <-------(c)------->                  <--(c)--->
-  //  <-------------(d)------------>   +   <--(d)--->
-  //  <---------------------(e)--------------------->
-  //  <-------------------------(f)-------------------------->
+  //  |[refcnt]|...data...|[empty]|[cookie]|[unused]|
+  //           <---(a)---->
+  //           <-------(b)-------->
+  //  <--(c)--->                  <--(c)--->
+  //  <--------(d)-------->   +   <--(d)--->
+  //  <----------------(e)----------------->
+  //  <---------------------(f)--------------------->
   //   (a) requested_size
   //   (b) usable_size
   //   (c) extras
@@ -1442,7 +1440,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //
   // - Ref-count may or may not exist in the slot, depending on raw_ptr<T>
   //   implementation.
-  // - Cookies exist only when DCHECK is on.
+  // - Cookie exists only when DCHECK is on.
   // - Think of raw_size as the minimum size required internally to satisfy
   //   the allocation request (i.e. requested_size + extras)
   // - Note, at most one "empty" or "unused" space can occur at a time. It
@@ -1458,13 +1456,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //
   // If BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true, Layout inside the
   // slot of small buckets:
-  //  |[cookie]|...data...|[empty]|[cookie]|[refcnt]|
-  //           <---(a)---->
-  //           <-------(b)-------->
-  //  <--(c)--->                  <-------(c)------->
-  //  <---------(d)------->   +   <-------(d)------->
-  //  <------------------(e)------------------------>
-  //  <------------------(f)------------------------>
+  //  |...data...|[empty]|[cookie]|[refcnt]|
+  //  <---(a)---->
+  //  <-------(b)-------->
+  //                     <-------(c)------->
+  //  <---(d)---->   +   <-------(d)------->
+  //  <----------------(e)----------------->
+  //  <----------------(f)----------------->
   //
   // If the slot start address is not SystemPageSize() aligned (this also means,
   // the slot size is small), [refcnt] of this slot is stored at the end of
@@ -1480,15 +1478,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // TODO(tasak): we don't need to add/subtract sizeof(refcnt) to requested size
   // in single slot span case.
 
-  // The value given to the application is just after the ref-count and cookie,
-  // or the cookie (BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true).
+  // The value given to the application is just after the ref-count.
   void* ret = AdjustPointerForExtrasAdd(slot_start);
 
 #if DCHECK_IS_ON()
-  // Surround the region with 2 cookies.
-  if (allow_cookies) {
+  // Add the cookie after the allocation.
+  if (allow_cookie) {
     char* char_ret = static_cast<char*>(ret);
-    internal::PartitionCookieWriteValue(char_ret - internal::kCookieSize);
     internal::PartitionCookieWriteValue(char_ret + usable_size);
   }
 #endif

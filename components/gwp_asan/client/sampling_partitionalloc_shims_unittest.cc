@@ -55,7 +55,7 @@ constexpr base::PartitionOptions kAllocatorOptions = {
     base::PartitionOptions::AlignedAlloc::kDisallowed,
     base::PartitionOptions::ThreadCache::kDisabled,
     base::PartitionOptions::Quarantine::kDisallowed,
-    base::PartitionOptions::Cookies::kAllowed,
+    base::PartitionOptions::Cookie::kAllowed,
     base::PartitionOptions::RefCount::kDisallowed};
 
 static void HandleOOM(size_t unused_size) {

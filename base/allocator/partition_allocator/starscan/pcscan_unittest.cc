@@ -48,7 +48,7 @@ class PartitionAllocPCScanTest : public testing::Test {
     allocator_.init({PartitionOptions::AlignedAlloc::kAllowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::Cookies::kDisallowed,
+                     PartitionOptions::Cookie::kDisallowed,
                      PartitionOptions::RefCount::kDisallowed});
     PCScan::RegisterScannableRoot(allocator_.root());
   }
@@ -443,13 +443,13 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -470,13 +470,13 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -497,13 +497,13 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
        PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::Cookie::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
   PCScan::RegisterNonScannableRoot(&source_root);

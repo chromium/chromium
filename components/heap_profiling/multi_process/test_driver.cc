@@ -346,7 +346,7 @@ TestDriver::TestDriver()
   partition_allocator_.init({base::PartitionOptions::AlignedAlloc::kDisallowed,
                              base::PartitionOptions::ThreadCache::kDisabled,
                              base::PartitionOptions::Quarantine::kDisallowed,
-                             base::PartitionOptions::Cookies::kAllowed,
+                             base::PartitionOptions::Cookie::kAllowed,
                              base::PartitionOptions::RefCount::kDisallowed});
 }
 TestDriver::~TestDriver() {

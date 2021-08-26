@@ -501,24 +501,22 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
     allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
-    allow_cookies = opts.cookies == PartitionOptions::Cookies::kAllowed;
+    allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
     allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kAllowed;
 
-    // Cookies and ref-count mess up alignment needed for AlignedAlloc, making
-    // those options incompatible. However, ref-count is acceptable in the
+    // Ref-count messes up alignment needed for AlignedAlloc, making this
+    // option incompatible. However, except in the
     // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
-    PA_DCHECK(!allow_aligned_alloc || !allow_cookies);
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    PA_DCHECK(!allow_aligned_alloc || !allow_ref_count);
+    PA_CHECK(!allow_aligned_alloc || !allow_ref_count);
 #endif
 
 #if defined(PA_EXTRAS_REQUIRED)
     extras_size = 0;
     extras_offset = 0;
 
-    if (allow_cookies) {
+    if (allow_cookie) {
       extras_size += internal::kPartitionCookieSizeAdjustment;
-      extras_offset += internal::kPartitionCookieOffsetAdjustment;
     }
 
     if (allow_ref_count) {
@@ -743,7 +741,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
-  if (allow_cookies) {
+  if (allow_cookie) {
     char* user_data_start =
         static_cast<char*>(AdjustPointerForExtrasAdd(slot_start));
     size_t usable_size = slot_span->GetUsableSize(this);
@@ -768,9 +766,9 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
       AllocationCapacityFromPtr(ptr))
     return false;
 
-  // Trying to allocate |new_size| would use the same amount of
-  // underlying memory as we're already using, so re-use the allocation
-  // after updating statistics (and cookies, if present).
+  // Trying to allocate |new_size| would use the same amount of underlying
+  // memory as we're already using, so re-use the allocation after updating
+  // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     void* slot_start = AdjustPointerForExtrasSubtract(ptr);
@@ -778,7 +776,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     if (allow_ref_count) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
@@ -791,12 +789,12 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
 #if DCHECK_IS_ON()
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
-    if (allow_cookies) {
+    if (allow_cookie) {
       size_t usable_size = slot_span->GetUsableSize(this);
       internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
                                           usable_size);
     }
-#endif
+#endif  // DCHECK_IS_ON()
   }
   return ptr;
 }

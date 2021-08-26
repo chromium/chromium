@@ -80,7 +80,7 @@ NoDestructor<ThreadSafePartitionRoot> g_root{
                      PartitionOptions::ThreadCache::kDisabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::Cookies::kDisallowed,
+                     PartitionOptions::Cookie::kDisallowed,
                      PartitionOptions::RefCount::kDisallowed}};
 
 size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
@@ -251,7 +251,7 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   ThreadSafePartitionRoot root{{PartitionOptions::AlignedAlloc::kAllowed,
                                 PartitionOptions::ThreadCache::kDisabled,
                                 PartitionOptions::Quarantine::kAllowed,
-                                PartitionOptions::Cookies::kDisallowed,
+                                PartitionOptions::Cookie::kDisallowed,
                                 PartitionOptions::RefCount::kDisallowed}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);

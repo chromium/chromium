@@ -149,8 +149,8 @@ const size_t kTestAllocSize = 16;
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
 #else
-const size_t kPointerOffset = kCookieSize + kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSize = kCookieSize * 2 + kInSlotRefCountBufferSize;
+const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
+const size_t kExtraAllocSize = kCookieSize + kInSlotRefCountBufferSize;
 #endif
 const size_t kRealAllocSize =
     bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
@@ -196,12 +196,12 @@ class PartitionAllocTest : public testing::Test {
     allocator.init({PartitionOptions::AlignedAlloc::kDisallowed,
                     PartitionOptions::ThreadCache::kDisabled,
                     PartitionOptions::Quarantine::kDisallowed,
-                    PartitionOptions::Cookies::kAllowed,
+                    PartitionOptions::Cookie::kAllowed,
                     PartitionOptions::RefCount::kAllowed});
     aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
                             PartitionOptions::ThreadCache::kDisabled,
                             PartitionOptions::Quarantine::kDisallowed,
-                            PartitionOptions::Cookies::kDisallowed,
+                            PartitionOptions::Cookie::kDisallowed,
                             PartitionOptions::RefCount::kDisallowed});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }
@@ -1875,22 +1875,8 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
-// These tests rely on precise layout. We handle cookies, not reference counts.
+// These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
-
-namespace {
-
-// Used to adjust the returned pointer. This is necessary to make the following
-// death tests pass with DCHECK_IS_ON(), as they rely on the precise knowledge
-// of the allocator layout. Since the offset is 0 for non-DCHECK() builds, this
-// provides the benefit of more testing coverage.
-constexpr size_t kAllocationOffset =
-#if DCHECK_IS_ON()
-    kCookieSize;
-#else
-    0;
-#endif
-}  // namespace
 
 TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
   void* data = allocator.root()->Alloc(100, "");
@@ -1898,11 +1884,7 @@ TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
 
   // use after free, not crashing here, but the next allocation should crash,
   // since we corrupted the freelist.
-  //
-  // When there is a cookie, must offset the UaF since the freelist entry is
-  // stored over the cookie area, not the allocated data.
-  void* data_before_cookie = reinterpret_cast<char*>(data) - kAllocationOffset;
-  memset(data_before_cookie, 0x42, 100);
+  memset(data, 0x42, 100);
   EXPECT_DEATH(allocator.root()->Alloc(100, ""), "");
 }
 
@@ -1916,15 +1898,13 @@ TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
   void** uaf_data =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
   allocator.root()->Free(uaf_data);
-  void** uaf_data_before_cookie = reinterpret_cast<void**>(
-      reinterpret_cast<char*>(uaf_data) - kAllocationOffset);
   // Try to confuse the allocator. This is still easy to circumvent willingly,
   // "just" need to set uaf_data[1] to ~uaf_data[0].
-  uaf_data_before_cookie[0] = fake_freelist_entry;
+  uaf_data[0] = fake_freelist_entry;
   EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
 }
 
-// With DCHECK_IS_ON(), cookies already handle off-by-one detection.
+// With DCHECK_IS_ON(), cookie already handles off-by-one detection.
 #if !DCHECK_IS_ON()
 TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
   const size_t alloc_size = 2 * sizeof(void*);
@@ -2591,9 +2571,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   allocator.root()->Free(ptr2);
 }
 
-TEST_F(PartitionAllocTest, ReallocMovesCookies) {
+TEST_F(PartitionAllocTest, ReallocMovesCookie) {
   // Resize so as to be sure to hit a "resize in place" case, and ensure that
-  // use of the entire result is compatible with the debug mode's cookies, even
+  // use of the entire result is compatible with the debug mode's cookie, even
   // when the bucket size is large enough to span more than one partition page
   // and we can track the "raw" size. See https://crbug.com/709271
   static const size_t kSize = base::MaxRegularSlotSpanSize();
@@ -2720,21 +2700,18 @@ TEST_F(PartitionAllocTest, Alignment) {
   std::vector<void*> allocated_ptrs;
 
   for (size_t size = 1; size <= base::PartitionPageSize(); size <<= 1) {
+    if (size <= kExtraAllocSize)
+      continue;
+    size_t requested_size = size - kExtraAllocSize;
+
     // All allocations which are not direct-mapped occupy contiguous slots of a
     // span, starting on a page boundary. This means that allocations are first
     // rounded up to the nearest bucket size, then have an address of the form:
+    //   (partition-page-aligned address) + i * bucket_size.
     //
-    // (page-aligned address) + i * bucket_size.
-
     // All powers of two are bucket sizes, meaning that all power of two
     // allocations smaller than a page will be aligned on the allocation size.
     size_t expected_alignment = size;
-#if DCHECK_IS_ON()
-    // When DCHECK_IS_ON(), a kCookieSize cookie is added on both sides before
-    // rounding up the allocation size. The returned pointer points after the
-    // cookie.
-    expected_alignment = std::min(expected_alignment, kCookieSize);
-#endif
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
     // rounding up the allocation size, making the raw size not a power of two.
@@ -2746,7 +2723,7 @@ TEST_F(PartitionAllocTest, Alignment) {
         std::min({expected_alignment, kInSlotRefCountBufferSize});
 #endif
     for (int index = 0; index < 3; index++) {
-      void* ptr = allocator.root()->Alloc(size, "");
+      void* ptr = allocator.root()->Alloc(requested_size, "");
       allocated_ptrs.push_back(ptr);
       EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) % expected_alignment)
           << (index + 1) << "-th allocation of size=" << size;
@@ -2781,7 +2758,7 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     // Since slot size is multiples of base::kAlignment,
     // C % kAlignment == (slot_size - kExtraAllocSize) % kAlignment.
     // C % kAlignment == (-kExtraAllocSize) % kAlignment.
-    // Since kCookieSize * 2 is multiples of kAlignment,
+    // Since kCookieSize is a multiple of kAlignment,
     // C % kAlignment == (-kInSlotRefCountBufferSize) % kAlignment
     // == (kAlignment - kInSlotRefCountBufferSize) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
@@ -3385,7 +3362,7 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
       base::PartitionOptions::AlignedAlloc::kDisallowed,
       base::PartitionOptions::ThreadCache::kDisabled,
       base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookies::kAllowed,
+      base::PartitionOptions::Cookie::kAllowed,
       base::PartitionOptions::RefCount::kDisallowed,
   });
 

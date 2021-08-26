@@ -49,7 +49,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
     allocator_->init({PartitionOptions::AlignedAlloc::kDisallowed,
                       PartitionOptions::ThreadCache::kDisabled,
                       PartitionOptions::Quarantine::kAllowed,
-                      PartitionOptions::Cookies::kAllowed,
+                      PartitionOptions::Cookie::kAllowed,
                       PartitionOptions::RefCount::kDisallowed});
   }
 

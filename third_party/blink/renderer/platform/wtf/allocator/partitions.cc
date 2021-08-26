@@ -83,7 +83,7 @@ bool Partitions::InitializeOnce() {
     base::PartitionOptions::AlignedAlloc::kDisallowed,
         base::PartitionOptions::ThreadCache::kEnabled,
         base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
+        base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
         base::PartitionOptions::RefCount::kAllowed
 #else
@@ -103,18 +103,17 @@ bool Partitions::InitializeOnce() {
 
   // RefCount disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
-  array_buffer_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-        base::PartitionOptions::RefCount::kDisallowed
-  });
+  array_buffer_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       base::PartitionOptions::RefCount::kDisallowed});
   buffer_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
         base::PartitionOptions::ThreadCache::kDisabled,
         base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
+        base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
         base::PartitionOptions::RefCount::kAllowed
 #else
@@ -123,13 +122,11 @@ bool Partitions::InitializeOnce() {
   });
   // RefCount disallowed because layout code will be excluded from raw_ptr<T>
   // rewrite due to performance.
-  layout_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-        base::PartitionOptions::RefCount::kDisallowed
-  });
+  layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
+                          base::PartitionOptions::ThreadCache::kDisabled,
+                          base::PartitionOptions::Quarantine::kAllowed,
+                          base::PartitionOptions::Cookie::kAllowed,
+                          base::PartitionOptions::RefCount::kDisallowed});
 
   array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();

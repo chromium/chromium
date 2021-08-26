@@ -29,7 +29,7 @@ TEST(HardeningTest, PartialCorruption) {
       PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
-                       PartitionOptions::Cookies::kDisallowed,
+                       PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::RefCount::kDisallowed}};
 
   const size_t kAllocSize = 100;
@@ -57,7 +57,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
       PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
-                       PartitionOptions::Cookies::kDisallowed,
+                       PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::RefCount::kDisallowed}};
 
   const size_t kAllocSize = 100;
@@ -82,7 +82,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
       PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
-                       PartitionOptions::Cookies::kDisallowed,
+                       PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::RefCount::kDisallowed}};
 
   const size_t kAllocSize = 100;
@@ -112,7 +112,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
       PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
-                       PartitionOptions::Cookies::kDisallowed,
+                       PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::RefCount::kDisallowed}};
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(

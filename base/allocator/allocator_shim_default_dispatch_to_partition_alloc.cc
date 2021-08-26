@@ -152,16 +152,7 @@ class MainPartitionConstructor {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
           base::PartitionOptions::Quarantine::kAllowed,
-#if DCHECK_IS_ON()
-#if !BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
-#error \
-    "Can't enable cookies if aligned allocations aren't moved to a " \
-          "separate partition"
-#endif
-          base::PartitionOptions::Cookies::kAllowed,
-#else  // DCHECK_IS_ON()
-          base::PartitionOptions::Cookies::kDisallowed,
-#endif
+          base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(USE_BACKUP_REF_PTR) && \
     !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 #if !(BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT) || \
@@ -201,7 +192,7 @@ class AlignedPartitionConstructor {
           base::PartitionOptions::AlignedAlloc::kAllowed,
               base::PartitionOptions::ThreadCache::kDisabled,
               base::PartitionOptions::Quarantine::kAllowed,
-              base::PartitionOptions::Cookies::kDisallowed,
+              base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
     !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
               // Given the outer #if, this is possible only when DCHECK_IS_ON().
@@ -526,10 +517,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
               : base::PartitionOptions::AlignedAlloc::kDisallowed,
           base::PartitionOptions::ThreadCache::kEnabled,
           base::PartitionOptions::Quarantine::kAllowed,
-          // Cookies are allowed iff AlignedAlloc isn't.
-          allow_aligned_alloc_in_main_root
-              ? base::PartitionOptions::Cookies::kDisallowed
-              : base::PartitionOptions::Cookies::kAllowed,
+          base::PartitionOptions::Cookie::kAllowed,
           enable_ref_count ? base::PartitionOptions::RefCount::kAllowed
                            : base::PartitionOptions::RefCount::kDisallowed,
       });
@@ -557,7 +545,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
                     base::PartitionOptions::AlignedAlloc::kAllowed,
                     base::PartitionOptions::ThreadCache::kDisabled,
                     base::PartitionOptions::Quarantine::kAllowed,
-                    base::PartitionOptions::Cookies::kDisallowed,
+                    base::PartitionOptions::Cookie::kAllowed,
                     base::PartitionOptions::RefCount::kDisallowed,
                 })
           // Otherwise, the new main root can also support AlignedAlloc.
