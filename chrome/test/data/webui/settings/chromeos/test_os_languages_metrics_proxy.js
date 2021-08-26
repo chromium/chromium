@@ -23,6 +23,7 @@ cr.define('settings', function() {
         'recordToggleTranslate',
         'recordAddInputMethod',
         'recordTranslateCheckboxChanged',
+        'recordShortcutReminderDismissed',
       ]);
     }
 
@@ -64,6 +65,11 @@ cr.define('settings', function() {
     /** @override */
     recordTranslateCheckboxChanged(value) {
       this.methodCalled('recordTranslateCheckboxChanged', value);
+    }
+
+    /** @override */
+    recordShortcutReminderDismissed(value) {
+      this.methodCalled('recordShortcutReminderDismissed', value);
     }
   }
   // #cr_define_end

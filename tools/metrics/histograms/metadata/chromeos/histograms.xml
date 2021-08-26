@@ -1144,6 +1144,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Inputs.ShortcutReminderDismissed"
+    enum="SettingsInputsShortcutReminderState" expires_after="2022-02-06">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders@google.com</owner>
+  <summary>
+    Records when users dismiss the shortcut reminder banner in Chrome OS' Inputs
+    OS settings page. The value saved indicates the keyboard shortcuts that were
+    previously shown in the banner before the user dismissed the banner.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Languages.Browser.Interaction"
     enum="SettingsLanguagesPageBrowserInteraction" expires_after="2021-08-01">
   <obsolete>

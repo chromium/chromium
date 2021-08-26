@@ -25,6 +25,18 @@ cr.define('settings', function() {
     OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE: 5,
   };
 
+  /**
+   * Keeps in sync with SettingsInputsShortcutReminderState
+   * in tools/metrics/histograms/enums.xml.
+   * @enum {number}
+   */
+  /* #export */ const InputsShortcutReminderState = {
+    NONE: 0,
+    LAST_USED_IME: 1,
+    NEXT_IME: 2,
+    LAST_USED_IME_AND_NEXT_IME: 3,
+  };
+
   /** @interface */
   /* #export */ class LanguagesMetricsProxy {
     /**
@@ -67,6 +79,12 @@ cr.define('settings', function() {
      * @param {boolean} value
      */
     recordTranslateCheckboxChanged(value) {}
+
+    /**
+     * Records when users dismiss the shortcut reminder.
+     * @param {InputsShortcutReminderState} value
+     */
+    recordShortcutReminderDismissed(value) {}
   }
 
   /** @implements {settings.LanguagesMetricsProxy} */
@@ -119,6 +137,13 @@ cr.define('settings', function() {
       chrome.metricsPrivate.recordBoolean(
           'ChromeOS.Settings.Languages.OfferToTranslateCheckbox', value);
     }
+
+    /** @override */
+    recordShortcutReminderDismissed(value) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'ChromeOS.Settings.Inputs.ShortcutReminderDismissed', value,
+          Object.keys(InputsShortcutReminderState).length);
+    }
   }
 
   cr.addSingletonGetter(LanguagesMetricsProxyImpl);
@@ -128,5 +153,6 @@ cr.define('settings', function() {
     LanguagesMetricsProxy,
     LanguagesMetricsProxyImpl,
     LanguagesPageInteraction,
+    InputsShortcutReminderState,
   };
 });

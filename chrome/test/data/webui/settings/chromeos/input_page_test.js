@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/chromeos/lazy_load.js';
+// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, InputsShortcutReminderState} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -478,6 +478,46 @@ suite('input page', () => {
       assertEquals(
           settings.LanguagesPageInteraction.SWITCH_INPUT_METHOD,
           await metricsProxy.whenCalled('recordInteraction'));
+    });
+
+    test('when dismissing shortcut reminder', async () => {
+      // Enable Update 2.
+      inputPage.languageSettingsV2Update2Enabled_ = true;
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
+      Polymer.dom.flush();
+
+      // Default shortcut reminder with two elements should show "last used IME"
+      // reminder.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.LAST_USED_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+      metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+      // Add US Swahili keyboard, a third party IME.
+      languageHelper.addInputMethod(
+          'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw');
+      Polymer.dom.flush();
+
+      // Shortcut reminder should show "next IME" shortcut.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.NEXT_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+      metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+      // Reset shortcut reminder dismissals to display both shortcuts.
+      inputPage.setPrefValue(
+          'ash.shortcut_reminders.last_used_ime_dismissed', false);
+      inputPage.setPrefValue(
+          'ash.shortcut_reminders.next_ime_dismissed', false);
+      Polymer.dom.flush();
+
+      // Shortcut reminder should show both shortcuts.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
     });
   });
 
