@@ -98,7 +98,10 @@ Polymer({
     },
 
     /** @type {boolean} */
-    multiPageScanChecked: Boolean,
+    multiPageScanChecked: {
+      type: Boolean,
+      observer: 'onMultiPageScanCheckedChange_',
+    },
 
     /** @private {number} */
     currentPageInView_: {
@@ -128,6 +131,9 @@ Polymer({
 
     /** @private {string} */
     dialogConfirmationText_: String,
+
+    /** @private {?Function} */
+    onWindowResized_: Object,
   },
 
   observers: [
@@ -140,24 +146,19 @@ Polymer({
   created() {
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+    this.onWindowResized_ = () => this.setActionToolbarPosition_();
   },
 
   /** @override */
   ready() {
     this.style.setProperty(
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
-
-    // Only listen for window size changes during multi-page scan sessions so
-    // the position of the action toolbar can be updated.
-    if (this.multiPageScanChecked) {
-      window.addEventListener('resize', () => this.setActionToolbarPosition_());
-    }
   },
 
   /** @override */
   detached() {
     if (this.multiPageScanChecked) {
-      window.removeEventListener('resize', this.setActionToolbarPosition_);
+      window.removeEventListener('resize', this.onWindowResized_);
     }
   },
 
@@ -484,5 +485,16 @@ Polymer({
 
     const previewDiv = this.$$('#previewDiv');
     previewDiv.scrollTop = previewDiv.scrollHeight;
+  },
+
+  /** @private */
+  onMultiPageScanCheckedChange_() {
+    // Only listen for window size changes during multi-page scan sessions so
+    // the position of the action toolbar can be updated.
+    if (this.multiPageScanChecked) {
+      window.addEventListener('resize', this.onWindowResized_);
+    } else {
+      window.removeEventListener('resize', this.onWindowResized_);
+    }
   },
 });

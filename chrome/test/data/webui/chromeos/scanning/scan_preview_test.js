@@ -309,4 +309,62 @@ export function scanPreviewTest() {
               previewDiv.scrollTop);
         });
   });
+
+  // Tests that for multi-page scans, resizing the app window triggers the
+  // repositioning of the action toolbar.
+  test('resizingWindowRepositionsActionToolbar', () => {
+    scanPreview.multiPageScanChecked = true;
+    scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
+    return flushTasks()
+        .then(() => {
+          scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+          return flushTasks();
+        })
+        .then(() => {
+          // After the image loads we expect the CSS variables to be set.
+          assertNotEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-top'));
+          assertNotEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-left'));
+
+          // Reset the CSS variables and simulate the window being resized.
+          scanPreview.style.setProperty('--action-toolbar-top', '');
+          scanPreview.style.setProperty('--action-toolbar-left', '');
+          window.dispatchEvent(new CustomEvent('resize'));
+          return flushTasks();
+        })
+        .then(() => {
+          // The CSS variables should get set again.
+          assertNotEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-top'));
+          assertNotEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-left'));
+
+          // Now test that unchecking the multi-page scan checkbox removes the
+          // window listener.
+          scanPreview.objectUrls = [];
+          scanPreview.multiPageScanChecked = false;
+          scanPreview.appState = AppState.SCANNING;
+          return flushTasks();
+        })
+        .then(() => {
+          scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
+          scanPreview.appState = AppState.DONE;
+
+          // Reset the CSS variables and simulate starting the window being
+          // resized.
+          scanPreview.style.setProperty('--action-toolbar-top', '');
+          scanPreview.style.setProperty('--action-toolbar-left', '');
+          window.dispatchEvent(new CustomEvent('resize'));
+          return flushTasks();
+        })
+        .then(() => {
+          // The CSS variables should not get set for non-multi-page scans.
+          assertEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-top'));
+          assertEquals(
+              '', scanPreview.style.getPropertyValue('--action-toolbar-left'));
+        });
+  });
 }
