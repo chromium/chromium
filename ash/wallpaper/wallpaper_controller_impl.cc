@@ -475,13 +475,6 @@ user_manager::UserType GetUserType(const AccountId& id) {
   return user_manager::USER_TYPE_REGULAR;
 }
 
-PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) {
-  return features::IsWallpaperWebUIEnabled()
-             ? Shell::Get()->session_controller()->GetUserPrefServiceForUser(
-                   account_id)
-             : nullptr;
-}
-
 bool GetWallpaperInfo(const AccountId& account_id,
                       const PrefService* const pref_service,
                       const std::string& pref_name,
@@ -569,18 +562,6 @@ void RemoveWallpaperInfo(const AccountId& account_id,
   prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
 }
 
-bool GetSyncedWallpaperInfo(const AccountId& account_id, WallpaperInfo* info) {
-  return GetWallpaperInfo(account_id, GetUserPrefServiceSyncable(account_id),
-                          prefs::kSyncableWallpaperInfo, info);
-}
-
-bool SetSyncedWallpaperInfo(const AccountId& account_id,
-                            const WallpaperInfo& info) {
-  return SetWallpaperInfo(account_id, info,
-                          GetUserPrefServiceSyncable(account_id),
-                          prefs::kSyncableWallpaperInfo);
-}
-
 }  // namespace
 
 const char WallpaperControllerImpl::kSmallWallpaperSubDir[] = "small";
@@ -629,6 +610,7 @@ void WallpaperControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kUserWallpaperInfo);
   registry->RegisterDictionaryPref(prefs::kWallpaperColors);
+  registry->RegisterDictionaryPref(kWallpaperCollectionId);
 }
 
 // static
@@ -1592,14 +1574,22 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (!features::IsWallpaperWebUIEnabled())
     return;
+  AccountId account_id = GetActiveAccountId();
+  if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
+    return;
+
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
       prefs::kSyncableWallpaperInfo,
       base::BindRepeating(&WallpaperControllerImpl::SyncLocalAndRemotePrefs,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr(), account_id));
+  pref_change_registrar_->Add(
+      kWallpaperCollectionId,
+      base::BindRepeating(
+          &WallpaperControllerImpl::HandleSyncedCollectionIdChanged,
+          weak_factory_.GetWeakPtr(), account_id));
 
-  AccountId account_id = GetActiveAccountId();
   WallpaperInfo local_info;
   WallpaperInfo synced_info;
 
@@ -1617,9 +1607,9 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   if (!pref_service->FindPreference(kWallpaperCollectionId)->HasUserSetting())
-    wallpaper_controller_client_->MigrateCollectionIdFromChromeApp();
+    wallpaper_controller_client_->MigrateCollectionIdFromChromeApp(account_id);
 
-  SyncLocalAndRemotePrefs();
+  SyncLocalAndRemotePrefs(account_id);
 
   if (IsDailyRefreshEnabled())
     StartDailyRefreshTimer();
@@ -2385,12 +2375,22 @@ bool WallpaperControllerImpl::GetLocalWallpaperInfo(const AccountId& account_id,
                           info);
 }
 
-void WallpaperControllerImpl::SyncLocalAndRemotePrefs() {
-  AccountId account_id = GetActiveAccountId();
-  SyncLocalAndRemotePrefsForAccountId(account_id);
+bool WallpaperControllerImpl::GetSyncedWallpaperInfo(
+    const AccountId& account_id,
+    WallpaperInfo* info) const {
+  return GetWallpaperInfo(account_id, GetUserPrefServiceSyncable(account_id),
+                          prefs::kSyncableWallpaperInfo, info);
 }
 
-void WallpaperControllerImpl::SyncLocalAndRemotePrefsForAccountId(
+bool WallpaperControllerImpl::SetSyncedWallpaperInfo(
+    const AccountId& account_id,
+    const WallpaperInfo& info) {
+  return SetWallpaperInfo(account_id, info,
+                          GetUserPrefServiceSyncable(account_id),
+                          prefs::kSyncableWallpaperInfo);
+}
+
+void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
     const AccountId& account_id) {
   // Check if the synced info was set by another device, and if we have already
   // handled it locally.
@@ -2414,6 +2414,14 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefsForAccountId(
                                 .Append(local_info.location);
     SaveWallpaperToDriveFs(account_id, source);
   }
+}
+
+void WallpaperControllerImpl::HandleSyncedCollectionIdChanged(
+    const AccountId& account_id) {
+  PrefService* pref_service = GetUserPrefServiceSyncable(account_id);
+  CHECK(pref_service);
+  std::string collection_id = pref_service->GetString(kWallpaperCollectionId);
+  SetDailyRefreshCollectionId(account_id, collection_id);
 }
 
 void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
@@ -2481,30 +2489,31 @@ constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
 }
 
 void WallpaperControllerImpl::SetDailyRefreshCollectionId(
+    const AccountId& account_id,
     const std::string& collection_id) {
-  PrefService* pref_service = GetUserPrefServiceSyncable(GetActiveAccountId());
+  SetLocalDailyRefreshCollectionId(account_id, collection_id);
+  PrefService* pref_service = GetUserPrefServiceSyncable(account_id);
   if (!pref_service)
     return;
   pref_service->SetString(kWallpaperCollectionId, collection_id);
 }
 
 std::string WallpaperControllerImpl::GetDailyRefreshCollectionId() const {
-  return GetCollectionId();
+  std::string account_id_key = GetActiveAccountId().GetAccountIdKey();
+  const std::string* collection_id =
+      local_state_->GetDictionary(kWallpaperCollectionId)
+          ->FindStringKey(account_id_key);
+  return collection_id ? *collection_id : std::string();
 }
 
 void WallpaperControllerImpl::OnGoogleDriveMounted(
     const AccountId& account_id) {
-  SyncLocalAndRemotePrefsForAccountId(account_id);
+  SyncLocalAndRemotePrefs(account_id);
 }
 
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
-  return features::IsWallpaperWebUIEnabled() && !GetCollectionId().empty();
-}
-
-std::string WallpaperControllerImpl::GetCollectionId() const {
-  PrefService* pref_service = GetUserPrefServiceSyncable(GetActiveAccountId());
-  CHECK(pref_service);
-  return pref_service->GetString(kWallpaperCollectionId);
+  return features::IsWallpaperWebUIEnabled() &&
+         !GetDailyRefreshCollectionId().empty();
 }
 
 void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
@@ -2519,10 +2528,10 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
   // wallpaper controller.
   if (wallpaper_controller_client_) {
     wallpaper_controller_client_->FetchDailyRefreshWallpaper(
-        GetCollectionId(),
+        GetDailyRefreshCollectionId(),
         base::BindOnce(&WallpaperControllerImpl::SetDailyWallpaper,
                        weak_factory_.GetWeakPtr(), GetActiveAccountId(),
-                       GetCollectionId(),
+                       GetDailyRefreshCollectionId(),
                        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                        /*preview_mode=*/false, std::move(callback)));
   } else {
@@ -2609,6 +2618,8 @@ void WallpaperControllerImpl::SaveWallpaperToDriveFs(
     return;
   if (!wallpaper_controller_client_)
     return;
+  if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
+    return;
   if (!wallpaper_controller_client_->SaveWallpaperToDriveFs(account_id,
                                                             origin_path)) {
     return;
@@ -2649,7 +2660,24 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
 void WallpaperControllerImpl::DriveFsWallpaperChanged(
     const base::FilePath& path,
     bool error) {
-  SyncLocalAndRemotePrefs();
+  SyncLocalAndRemotePrefs(GetActiveAccountId());
+}
+
+void WallpaperControllerImpl::SetLocalDailyRefreshCollectionId(
+    const AccountId& account_id,
+    const std::string& collection_id) {
+  DictionaryPrefUpdate wallpaper_update(local_state_, kWallpaperCollectionId);
+  wallpaper_update->SetStringKey(account_id.GetAccountIdKey(), collection_id);
+}
+
+PrefService* WallpaperControllerImpl::GetUserPrefServiceSyncable(
+    const AccountId& account_id) const {
+  if (!features::IsWallpaperWebUIEnabled())
+    return nullptr;
+  if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
+    return nullptr;
+  return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+      account_id);
 }
 
 }  // namespace ash
