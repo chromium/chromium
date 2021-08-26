@@ -114,14 +114,6 @@ void AppServiceProxyLacros::Initialize() {
       std::make_unique<apps::AppServiceImpl>(profile_->GetPath());
   app_service_impl_->BindReceiver(app_service_.BindNewPipeAndPassReceiver());
 
-  if (app_service_.is_connected()) {
-    // The AppServiceProxy is a subscriber: something that wants to be able to
-    // list all known apps.
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber;
-    receivers_.Add(this, subscriber.InitWithNewPipeAndPassReceiver());
-    app_service_->RegisterSubscriber(std::move(subscriber), nullptr);
-  }
-
   Observe(&app_registry_cache_);
 
   if (!app_service_.is_connected()) {
@@ -546,33 +538,6 @@ void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                              should_notify_initialized);
 }
 
-void AppServiceProxyLacros::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
-}
-
-void AppServiceProxyLacros::Clone(
-    mojo::PendingReceiver<apps::mojom::Subscriber> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
-void AppServiceProxyLacros::OnPreferredAppSet(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  preferred_apps_.AddPreferredApp(app_id, intent_filter);
-}
-
-void AppServiceProxyLacros::OnPreferredAppRemoved(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  preferred_apps_.DeletePreferredApp(app_id, intent_filter);
-}
-
-void AppServiceProxyLacros::InitializePreferredApps(
-    PreferredAppsList::PreferredApps preferred_apps) {
-  preferred_apps_.Init(preferred_apps);
-}
-
 void AppServiceProxyLacros::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() ||
       !apps_util::IsInstalled(update.Readiness())) {
@@ -620,7 +585,7 @@ void AppServiceProxyLacros::RecordAppPlatformMetrics(
 
 void AppServiceProxyLacros::FlushMojoCallsForTesting() {
   app_service_impl_->FlushMojoCallsForTesting();
-  receivers_.FlushForTesting();
+  crosapi_receiver_.FlushForTesting();
 }
 
 web_app::WebAppsPublisherHost*

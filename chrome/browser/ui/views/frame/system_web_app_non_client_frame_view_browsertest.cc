@@ -15,6 +15,7 @@
 using SystemWebAppNonClientFrameViewBrowserTest =
     web_app::SystemWebAppManagerBrowserTest;
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // System Web Apps don't get the web app menu button.
 IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
                        HideWebAppMenuButton) {
@@ -45,3 +46,4 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppNonClientFrameViewBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

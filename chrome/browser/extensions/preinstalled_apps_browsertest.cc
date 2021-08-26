@@ -323,6 +323,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledAppsBrowserTest, TestUninstall) {
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // A fun back-and-forth with enabling-and-disabling the web app migration
 // feature. This is designed to exercise the flow needed in case of a rollback.
 IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
@@ -420,6 +421,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
 
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledAppsMigrationBrowserTest,
                        PRE_PRE_TestExtensionWasAlreadyUninstalled) {

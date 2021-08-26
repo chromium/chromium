@@ -60,7 +60,6 @@ struct IntentLaunchInfo {
 // See components/services/app_service/README.md.
 class AppServiceProxyLacros : public KeyedService,
                               public apps::IconLoader,
-                              public apps::mojom::Subscriber,
                               public apps::AppRegistryCache::Observer,
                               public crosapi::mojom::AppServiceSubscriber {
  public:
@@ -304,20 +303,10 @@ class AppServiceProxyLacros : public KeyedService,
   // KeyedService overrides:
   void Shutdown() override;
 
-  // apps::mojom::Subscriber overrides.
+  // crosapi::mojom::AppServiceSubscriber overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
               bool should_notify_initialized) override;
-  void OnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
-  void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
-  void OnPreferredAppSet(const std::string& app_id,
-                         apps::mojom::IntentFilterPtr intent_filter) override;
-  void OnPreferredAppRemoved(
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter) override;
-  void InitializePreferredApps(
-      PreferredAppsList::PreferredApps preferred_apps) override;
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -339,8 +328,6 @@ class AppServiceProxyLacros : public KeyedService,
   mojo::Remote<apps::mojom::AppService> app_service_;
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
-
-  mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
 
   // The LoadIconFromIconKey implementation sends a chained series of requests
   // through each icon loader, starting from the outer and working back to the

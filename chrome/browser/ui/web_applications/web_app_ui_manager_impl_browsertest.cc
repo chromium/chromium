@@ -201,6 +201,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Regression test for crbug.com/1182030
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
                        WebAppMigrationPreservesShortcutStates) {
@@ -229,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   EXPECT_FALSE(options->add_to_quick_launch_bar);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that app migrations use the UI preferences of the replaced app but only
