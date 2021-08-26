@@ -48,6 +48,9 @@ class TabRestoreService;
               shareURLs:(NSArray<URLWithTitle*>*)items
                  anchor:(UIBarButtonItem*)buttonAnchor;
 
+// Dismissed presented popovers, if any.
+- (void)dismissPopovers;
+
 @end
 
 // Mediates between model layer and tab grid UI layer.

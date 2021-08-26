@@ -254,10 +254,8 @@
   [self.baseViewController dismissModals];
   self.baseViewController.tabGridMode = TabGridModeNormal;
 
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
+  [self dismissPopovers];
+
   if (_bookmarkInteractionController) {
     [_bookmarkInteractionController dismissBookmarkModalControllerAnimated:YES];
   }
@@ -906,6 +904,13 @@
                           params:params
                           anchor:buttonAnchor];
   [self.sharingCoordinator start];
+}
+
+- (void)dismissPopovers {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
 }
 
 #pragma mark - TabGridViewControllerDelegate

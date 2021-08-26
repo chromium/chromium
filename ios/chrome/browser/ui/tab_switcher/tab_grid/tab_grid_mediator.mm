@@ -458,6 +458,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
                                             anchor:
                                                 (UIBarButtonItem*)buttonAnchor {
+  [self.delegate dismissPopovers];
+
   [self.delegate
       showCloseItemsConfirmationActionSheetWithTabGridMediator:self
                                                          items:items
@@ -466,6 +468,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor {
+  [self.delegate dismissPopovers];
+
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
     GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
@@ -743,6 +747,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!_readingListHandler) {
     return;
   }
+  [self.delegate dismissPopovers];
+
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToReadingList",
                               items.count);
 
@@ -760,6 +766,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!bookmarkHandler) {
     return;
   }
+  [self.delegate dismissPopovers];
+
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToBookmarks",
                               items.count);
 
