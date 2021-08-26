@@ -73,6 +73,7 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
     form_to_save_.password_value = u"pass1";
     form_to_save_.scheme = PasswordForm::Scheme::kHtml;
     form_to_save_.type = PasswordForm::Type::kApi;
+    form_to_save_.in_store = PasswordForm::Store::kProfileStore;
   }
 
  protected:

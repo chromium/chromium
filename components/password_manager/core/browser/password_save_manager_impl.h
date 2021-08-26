@@ -139,6 +139,17 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const FormFetcher* form_fetcher_;
 
  private:
+  struct PendingCredentialsStates {
+    PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
+    PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
+
+    const PasswordForm* similar_saved_form_from_profile_store = nullptr;
+    const PasswordForm* similar_saved_form_from_account_store = nullptr;
+  };
+  static PendingCredentialsStates ComputePendingCredentialsStates(
+      const PasswordForm& parsed_submitted_form,
+      const std::vector<const PasswordForm*>& matches);
+
   std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;
 
@@ -153,6 +164,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   // UMA reporting.
   void UploadVotesAndMetrics(const autofill::FormData* observed_form,
                              const PasswordForm& parsed_submitted_form);
+
+  bool IsOptedInForAccountStorage() const;
+  bool AccountStoreIsDefault() const;
 
   // Handles the user flows related to the generation.
   std::unique_ptr<PasswordGenerationManager> generation_manager_;
