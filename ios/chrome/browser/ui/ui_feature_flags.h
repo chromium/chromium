@@ -68,4 +68,10 @@ extern const base::Feature kSearchHistoryLinkIOS;
 // Incognito mode.
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 
+// Feature to update context menu actions.
+extern const base::Feature kContextMenuActionsRefresh;
+
+// Whether the ContextMenuActionsRefresh flag is enabled.
+bool IsContextMenuActionsRefreshEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

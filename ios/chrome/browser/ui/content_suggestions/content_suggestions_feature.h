@@ -16,13 +16,7 @@ extern const base::Feature kDiscoverFeedInNtp;
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
 
-// Feature to update context menu actions.
-extern const base::Feature kContextMenuActionsRefresh;
-
 // Whether the Discover feed is enabled instead of the Zine feed.
 bool IsDiscoverFeedEnabled();
-
-// Whether the ContextMenuActionsRefresh flag is enabled.
-bool IsContextMenuActionsRefreshEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_
