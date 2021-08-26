@@ -1273,7 +1273,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
-    units="clicks" expires_after="2021-10-01">
+    units="clicks" expires_after="2022-09-01">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -1282,7 +1282,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
-    units="navigations" expires_after="2021-10-01">
+    units="navigations" expires_after="2022-09-01">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -1291,7 +1291,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumSearchesUntilChange"
-    units="searches" expires_after="2021-10-01">
+    units="searches" expires_after="2022-09-01">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -1355,7 +1355,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchLatency" units="ms"
-    expires_after="2021-10-01">
+    expires_after="2022-09-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1380,7 +1380,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequestsPerSession"
-    units="mojo search requests" expires_after="2021-10-01">
+    units="mojo search requests" expires_after="2022-09-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1401,7 +1401,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSettingSelected"
-    enum="OsSetting" expires_after="2021-10-01">
+    enum="OsSetting" expires_after="2022-09-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1431,7 +1431,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SettingChanged" enum="OsSetting"
-    expires_after="2021-10-01">
+    expires_after="2022-09-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1444,7 +1444,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
-    expires_after="2021-10-01">
+    expires_after="2022-09-01">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -1490,7 +1490,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2021-10-01">
+    expires_after="2022-09-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
   <summary>
