@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -34,6 +33,7 @@ using autofill::PasswordFormFillData;
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::ElementsAre;
+using testing::NiceMock;
 using testing::Return;
 
 namespace password_manager {
@@ -48,6 +48,9 @@ class MockLogManager : public autofill::StubLogManager {
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
+  MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
+  MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
+      delete;
   ~MockPasswordManagerClient() override = default;
 
   MOCK_METHOD(const autofill::LogManager*, GetLogManager, (), (const override));
@@ -58,9 +61,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const GURL&, const GURL&),
               (override));
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerClient);
 };
 
 class FakePasswordAutofillAgent
@@ -212,8 +212,8 @@ class ContentPasswordManagerDriverTest
   }
 
  protected:
-  MockLogManager log_manager_;
-  MockPasswordManagerClient password_manager_client_;
+  NiceMock<MockLogManager> log_manager_;
+  NiceMock<MockPasswordManagerClient> password_manager_client_;
   autofill::TestAutofillClient autofill_client_;
 
   FakePasswordAutofillAgent fake_agent_;

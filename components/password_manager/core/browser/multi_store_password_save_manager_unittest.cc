@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -44,7 +43,8 @@ const auto kTrigger = metrics_util::MoveToAccountStoreTrigger::
 class MockFormSaver : public StubFormSaver {
  public:
   MockFormSaver() = default;
-
+  MockFormSaver(const MockFormSaver&) = delete;
+  MockFormSaver& operator=(const MockFormSaver&) = delete;
   ~MockFormSaver() override = default;
 
   // FormSaver:
@@ -68,9 +68,6 @@ class MockFormSaver : public StubFormSaver {
   std::unique_ptr<FormSaver> Clone() override {
     return std::make_unique<MockFormSaver>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFormSaver);
 };
 
 class MultiStorePasswordSaveManagerTest : public testing::Test {
@@ -163,6 +160,10 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
     password_save_manager_->Init(&client_, fetcher_.get(), metrics_recorder_,
                                  &votes_uploader_);
   }
+  MultiStorePasswordSaveManagerTest(const MultiStorePasswordSaveManagerTest&) =
+      delete;
+  MultiStorePasswordSaveManagerTest& operator=(
+      const MultiStorePasswordSaveManagerTest&) = delete;
 
   void SetNonFederatedAndNotifyFetchCompleted(
       const std::vector<const PasswordForm*>& non_federated) {
@@ -224,8 +225,6 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
   std::unique_ptr<MultiStorePasswordSaveManager> password_save_manager_;
   NiceMock<MockFormSaver>* mock_account_form_saver_;
   NiceMock<MockFormSaver>* mock_profile_form_saver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiStorePasswordSaveManagerTest);
 };
 
 TEST_F(MultiStorePasswordSaveManagerTest,

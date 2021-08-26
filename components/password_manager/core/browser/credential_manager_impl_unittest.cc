@@ -10,13 +10,10 @@
 #include <map>
 #include <memory>
 #include <string>
-
-#include <string>
 #include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -44,6 +41,7 @@
 
 using testing::_;
 using testing::ElementsAre;
+using testing::NiceMock;
 using testing::Pair;
 using testing::Pointee;
 using testing::UnorderedElementsAre;
@@ -99,6 +97,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     ON_CALL(*this, IsAutofillAssistantUIVisible)
         .WillByDefault(testing::Return(false));
   }
+  MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
+  MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
+      delete;
   ~MockPasswordManagerClient() override = default;
 
   bool PromptUserToSaveOrUpdatePassword(
@@ -177,8 +178,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   PasswordManager password_manager_;
   GURL last_committed_url_{kTestWebOrigin};
-
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerClient);
 };
 
 // Callbacks from CredentialManagerImpl methods
@@ -824,7 +823,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form2_);
 
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1085,7 +1084,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1106,7 +1105,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1129,7 +1128,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   federations.emplace_back("https://example.com/");
@@ -1153,7 +1152,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   federations.emplace_back("https://not-example.com/");
@@ -1473,7 +1472,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithAffiliatedFormInPasswordStore) {
   store_->AddLogin(affiliated_form1_);
 
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms = {kTestAndroidRealm1};
@@ -1494,7 +1493,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form2_);
 
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1516,7 +1515,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
 
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<std::string> affiliated_realms;
   PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
@@ -1544,7 +1543,7 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
 
   store_->SetAffiliatedMatchHelper(
-      std::make_unique<MockAffiliatedMatchHelper>());
+      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>());
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;

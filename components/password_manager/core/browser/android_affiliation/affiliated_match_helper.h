@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -54,6 +53,8 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   AffiliatedMatchHelper(
       PasswordStore* password_store,
       std::unique_ptr<AndroidAffiliationService> affiliation_service);
+  AffiliatedMatchHelper(const AffiliatedMatchHelper&) = delete;
+  AffiliatedMatchHelper& operator=(const AffiliatedMatchHelper&) = delete;
   ~AffiliatedMatchHelper() override;
 
   // Schedules deferred initialization.
@@ -137,8 +138,6 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   std::unique_ptr<AndroidAffiliationService> affiliation_service_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedMatchHelper);
 };
 
 }  // namespace password_manager

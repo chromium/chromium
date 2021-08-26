@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -29,6 +28,10 @@ class BrowserSavePasswordProgressLogger
  public:
   explicit BrowserSavePasswordProgressLogger(
       const autofill::LogManager* log_manager);
+  BrowserSavePasswordProgressLogger(const BrowserSavePasswordProgressLogger&) =
+      delete;
+  BrowserSavePasswordProgressLogger& operator=(
+      const BrowserSavePasswordProgressLogger&) = delete;
   ~BrowserSavePasswordProgressLogger() override;
 
   // Browser-specific addition to the base class' Log* methods. The input is
@@ -81,8 +84,6 @@ class BrowserSavePasswordProgressLogger
   // Returns the string representation of a binary password attribute.
   std::string BinaryPasswordAttributeLogString(StringID string_id,
                                                bool attribute_value);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSavePasswordProgressLogger);
 };
 
 }  // namespace password_manager

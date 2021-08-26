@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -164,6 +163,9 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
  public:
   MockAutofillDownloadManager()
       : AutofillDownloadManager(nullptr, &fake_observer) {}
+  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
+  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+      delete;
 
   MOCK_METHOD(bool,
               StartUploadRequest,
@@ -183,7 +185,6 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
   };
 
   StubObserver fake_observer;
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
 };
 
 }  // namespace
@@ -318,6 +319,9 @@ class PasswordSaveManagerImplTest : public testing::Test,
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   }
+  PasswordSaveManagerImplTest(const PasswordSaveManagerImplTest&) = delete;
+  PasswordSaveManagerImplTest& operator=(const PasswordSaveManagerImplTest&) =
+      delete;
 
   PasswordForm Parse(const FormData& form_data) {
     return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving);
@@ -376,8 +380,6 @@ class PasswordSaveManagerImplTest : public testing::Test,
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
   NiceMock<MockFormSaver>* mock_form_saver_;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordSaveManagerImplTest);
 };
 
 TEST_P(PasswordSaveManagerImplTest, Blocklist) {

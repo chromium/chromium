@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 
+#include <string>
+
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,17 +23,19 @@ constexpr char kFederationOrigin[] = "https://google.com";
 class MockLogManager : public autofill::StubLogManager {
  public:
   MockLogManager() = default;
+  MockLogManager(const MockLogManager&) = delete;
+  MockLogManager& operator=(const MockLogManager&) = delete;
   ~MockLogManager() override = default;
 
   MOCK_CONST_METHOD1(LogTextMessage, void(const std::string& text));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLogManager);
 };
 
 class CredentialManagerLoggerTest : public testing::Test {
  public:
   CredentialManagerLoggerTest();
+  CredentialManagerLoggerTest(const CredentialManagerLoggerTest&) = delete;
+  CredentialManagerLoggerTest& operator=(const CredentialManagerLoggerTest&) =
+      delete;
   ~CredentialManagerLoggerTest() override;
 
   MockLogManager& log_manager() { return log_manager_; }
@@ -40,8 +44,6 @@ class CredentialManagerLoggerTest : public testing::Test {
  private:
   MockLogManager log_manager_;
   CredentialManagerLogger logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerLoggerTest);
 };
 
 CredentialManagerLoggerTest::CredentialManagerLoggerTest()

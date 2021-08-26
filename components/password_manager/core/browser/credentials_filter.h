@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace password_manager {
 
 class PasswordFormManager;
@@ -19,6 +17,8 @@ struct PasswordForm;
 class CredentialsFilter {
  public:
   CredentialsFilter() = default;
+  CredentialsFilter(const CredentialsFilter&) = delete;
+  CredentialsFilter& operator=(const CredentialsFilter&) = delete;
   virtual ~CredentialsFilter() = default;
 
   // Should |form| be offered to be saved?
@@ -44,9 +44,6 @@ class CredentialsFilter {
   // it matches |username| against the sync account email used in its original
   // profile.
   virtual bool IsSyncAccountEmail(const std::string& username) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialsFilter);
 };
 
 }  // namespace password_manager

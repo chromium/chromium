@@ -12,7 +12,6 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -67,6 +66,8 @@ class AffiliationBackend : public FacetManagerHost,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* time_source,
       const base::TickClock* time_tick_source);
+  AffiliationBackend(const AffiliationBackend&) = delete;
+  AffiliationBackend& operator=(const AffiliationBackend&) = delete;
   ~AffiliationBackend() override;
 
   // Performs the I/O-heavy part of initialization. The database used to cache
@@ -171,8 +172,6 @@ class AffiliationBackend : public FacetManagerHost,
       facet_managers_;
 
   base::WeakPtrFactory<AffiliationBackend> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationBackend);
 };
 
 }  // namespace password_manager
