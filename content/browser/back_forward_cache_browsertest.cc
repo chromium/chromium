@@ -3479,14 +3479,26 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Tests the events are fired when going back from the cache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/record_events.html"));
+  GURL url_b(embedded_test_server()->GetURL(
+      "b.com", "/back_forward_cache/record_events.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  StartRecordingEvents(rfh_a);
+
+  // At A, a page-show event is recorded for the first loading.
+  MatchEventList(rfh_a, ListValueOf("window.pageshow"));
+
+  const char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
+  const int kPageShowNoPersist = 0;
+  const int kPageShowPersist = 1;
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kEventPageShowPersisted),
+      testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 1)));
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -3500,6 +3512,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // TODO(yuzus): Post message to the frozen page, and make sure that the
   // messages arrive after the page visibility events, not before them.
 
+  // As |rfh_a| is in back-forward cache, we cannot get the event list of A.
+  // At B, a page-show event is recorded for the first loading.
+  MatchEventList(rfh_b, ListValueOf("window.pageshow"));
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kEventPageShowPersisted),
+      testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 2)));
+
   // 3) Go back to A. Confirm that expected events are fired.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -3509,11 +3529,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // visibilitychange events are added twice per each because it is fired for
   // both window and document.
   MatchEventList(
-      rfh_a,
-      ListValueOf("window.pagehide.persisted", "document.visibilitychange",
-                  "window.visibilitychange", "document.freeze",
-                  "document.resume", "document.visibilitychange",
-                  "window.visibilitychange", "window.pageshow.persisted"));
+      rfh_a, ListValueOf("window.pageshow", "window.pagehide.persisted",
+                         "document.visibilitychange", "window.visibilitychange",
+                         "document.freeze", "document.resume",
+                         "document.visibilitychange", "window.visibilitychange",
+                         "window.pageshow.persisted"));
+
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kEventPageShowPersisted),
+              testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 2),
+                                            base::Bucket(kPageShowPersist, 1)));
 }
 
 // Tests the events are fired for subframes when going back from the cache.

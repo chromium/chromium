@@ -144,6 +144,7 @@ namespace blink {
 namespace {
 
 constexpr size_t kMaxPostMessageUkmRecordedSourceIdsSize = 20;
+constexpr char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
 
 bool ShouldRecordPostMessageIncomingFrameUkmEvent(
     ukm::SourceId source_frame_ukm_source_id,
@@ -733,11 +734,20 @@ void LocalDOMWindow::EnqueueNonPersistedPageshowEvent() {
     EnqueueWindowEvent(*PageTransitionEvent::Create(event_type_names::kPageshow,
                                                     false /* persisted */),
                        TaskType::kMiscPlatformAPI);
-    return;
+  } else {
+    DispatchEvent(*PageTransitionEvent::Create(event_type_names::kPageshow,
+                                               false /* persisted */),
+                  document_.Get());
   }
-  DispatchEvent(*PageTransitionEvent::Create(event_type_names::kPageshow,
-                                             false /* persisted */),
-                document_.Get());
+
+  // This UMA is recorded regardless of whether the event will be actually
+  // dispatched or not. It should only be possible for an enqueued page-show
+  // event to skip dispatch when the renderer exits. If this is not the case or
+  // there are other cases, we need to fix this code to only record the metric
+  // once the event is dispatched.
+  if (GetFrame() && GetFrame()->IsMainFrame()) {
+    UMA_HISTOGRAM_BOOLEAN(kEventPageShowPersisted, false);
+  }
 }
 
 void LocalDOMWindow::DispatchPersistedPageshowEvent(
@@ -747,6 +757,10 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
   // |navigation_start| time of the back navigation.
   DispatchEvent(*PageTransitionEvent::CreatePersistedPageshow(navigation_start),
                 document_.Get());
+
+  if (GetFrame() && GetFrame()->IsMainFrame()) {
+    UMA_HISTOGRAM_BOOLEAN(kEventPageShowPersisted, true);
+  }
 }
 
 void LocalDOMWindow::DispatchPagehideEvent(

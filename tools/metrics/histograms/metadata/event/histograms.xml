@@ -1668,6 +1668,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Event.PageShow.Persisted" enum="Boolean"
+    expires_after="2022-09-01">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <summary>
+    Records whether the pageshow event had its persisted flag set. This flag is
+    true if and only if the page is restored from back-forward cache. This flag
+    is false e.g. during the page load. This is recorded when pageshow event
+    fires on a main frame.
+  </summary>
+</histogram>
+
 <histogram name="Event.PassiveListeners" enum="EventResultType"
     expires_after="2021-12-12">
   <owner>dtapuska@chromium.org</owner>
