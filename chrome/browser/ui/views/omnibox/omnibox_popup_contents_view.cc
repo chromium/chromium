@@ -222,8 +222,8 @@ gfx::Image OmniboxPopupContentsView::GetMatchIcon(
 void OmniboxPopupContentsView::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
-  OmniboxPopupModel::LineState line_state = OmniboxPopupModel::NORMAL;
-  model()->SetSelection(OmniboxPopupModel::Selection(index, line_state));
+  OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
+  model()->SetSelection(OmniboxPopupSelection(index, line_state));
   OnPropertyChanged(model(), views::kPropertyEffectsNone);
 }
 
@@ -232,7 +232,7 @@ size_t OmniboxPopupContentsView::GetSelectedIndex() const {
 }
 
 void OmniboxPopupContentsView::UnselectButton() {
-  model()->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+  model()->SetSelectedLineState(OmniboxPopupSelection::NORMAL);
 }
 
 OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
@@ -259,7 +259,7 @@ OmniboxResultView* OmniboxPopupContentsView::GetSelectedResultView() {
     return nullptr;
 
   size_t selected_line = model()->selected_line();
-  if (selected_line == OmniboxPopupModel::kNoMatch)
+  if (selected_line == OmniboxPopupSelection::kNoMatch)
     return nullptr;
   return result_view_at(selected_line);
 }
@@ -287,8 +287,8 @@ void OmniboxPopupContentsView::InvalidateLine(size_t line) {
 }
 
 void OmniboxPopupContentsView::OnSelectionChanged(
-    OmniboxPopupModel::Selection old_selection,
-    OmniboxPopupModel::Selection new_selection) {
+    OmniboxPopupSelection old_selection,
+    OmniboxPopupSelection new_selection) {
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
     webui_view_->GetWebUIHandler()->OnSelectedLineChanged(old_selection.line,
                                                           new_selection.line);
@@ -297,12 +297,12 @@ void OmniboxPopupContentsView::OnSelectionChanged(
 
   // Do not invalidate the same line twice, in order to avoid redundant
   // accessibility events.
-  if (old_selection.line != OmniboxPopupModel::kNoMatch &&
+  if (old_selection.line != OmniboxPopupSelection::kNoMatch &&
       old_selection.line != new_selection.line) {
     InvalidateLine(old_selection.line);
   }
 
-  if (new_selection.line != OmniboxPopupModel::kNoMatch) {
+  if (new_selection.line != OmniboxPopupSelection::kNoMatch) {
     InvalidateLine(new_selection.line);
   }
 }
@@ -572,7 +572,7 @@ const AutocompleteMatch& OmniboxPopupContentsView::GetMatchAtIndex(
 
 size_t OmniboxPopupContentsView::GetIndexForPoint(const gfx::Point& point) {
   if (!HitTestPoint(point))
-    return OmniboxPopupModel::kNoMatch;
+    return OmniboxPopupSelection::kNoMatch;
 
   size_t nb_match = model()->result().size();
   DCHECK_LE(nb_match, children().size());
@@ -583,7 +583,7 @@ size_t OmniboxPopupContentsView::GetIndexForPoint(const gfx::Point& point) {
     if (child->GetVisible() && child->HitTestPoint(point_in_child_coords))
       return i;
   }
-  return OmniboxPopupModel::kNoMatch;
+  return OmniboxPopupSelection::kNoMatch;
 }
 
 void OmniboxPopupContentsView::OnSuggestionGroupVisibilityUpdate() {

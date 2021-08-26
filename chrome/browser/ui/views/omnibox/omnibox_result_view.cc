@@ -195,7 +195,7 @@ OmniboxResultView::OmniboxResultView(
   remove_suggestion_button_ = suggestion_button_container->AddChildView(
       std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
           &OmniboxResultView::ButtonPressed, base::Unretained(this),
-          OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
+          OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
   remove_suggestion_button_->SetProperty(views::kMarginsKey, child_insets);
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
   remove_suggestion_button_->SetTooltipText(
@@ -205,7 +205,7 @@ OmniboxResultView::OmniboxResultView(
       ->SetHasFocusPredicate([&](View* view) {
         return view->GetVisible() && GetMatchSelected() &&
                (popup_contents_view_->model()->selected_line_state() ==
-                OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION);
+                OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
       });
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
@@ -358,7 +358,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   selection_indicator_->SetVisible(
       GetMatchSelected() &&
       popup_contents_view_->model()->selected_line_state() ==
-          OmniboxPopupModel::NORMAL);
+          OmniboxPopupSelection::NORMAL);
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
@@ -378,15 +378,15 @@ void OmniboxResultView::OnSelectionStateChanged() {
     // events. Specifically, OmniboxPopupContentsView::ProvideButtonFocusHint()
     // already fires the correct events when the user tabs to an attached button
     // in the current row.
-    if (selection_state == OmniboxPopupModel::FOCUSED_BUTTON_HEADER ||
-        selection_state == OmniboxPopupModel::NORMAL) {
+    if (selection_state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER ||
+        selection_state == OmniboxPopupSelection::NORMAL) {
       popup_contents_view_->FireAXEventsForNewActiveDescendant(this);
     }
 
     // The slide animation is not used in the new suggestion button row UI.
     ShowKeywordSlideAnimation(
         !OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
-        selection_state == OmniboxPopupModel::KEYWORD_MODE);
+        selection_state == OmniboxPopupSelection::KEYWORD_MODE);
   } else {
     ShowKeywordSlideAnimation(false);
   }
@@ -397,12 +397,12 @@ bool OmniboxResultView::GetMatchSelected() const {
   // The header button being focused means the match itself is NOT focused.
   return popup_contents_view_->GetSelectedIndex() == model_index_ &&
          popup_contents_view_->model()->selected_line_state() !=
-             OmniboxPopupModel::FOCUSED_BUTTON_HEADER;
+             OmniboxPopupSelection::FOCUSED_BUTTON_HEADER;
 }
 
 views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
   if (popup_contents_view_->model()->selected_line_state() ==
-      OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
+      OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     return remove_suggestion_button_;
   }
 
@@ -428,10 +428,10 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
   suggestion_view_->SetImage(image);
 }
 
-void OmniboxResultView::ButtonPressed(OmniboxPopupModel::LineState state,
+void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
   popup_contents_view_->model()->TriggerSelectionAction(
-      OmniboxPopupModel::Selection(model_index_, state), event.time_stamp());
+      OmniboxPopupSelection(model_index_, state), event.time_stamp());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -561,9 +561,9 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   bool old_visibility = remove_suggestion_button_->GetVisible();
   bool new_visibility =
       popup_contents_view_->model()->IsControlPresentOnMatch(
-          OmniboxPopupModel::Selection(
+          OmniboxPopupSelection(
               model_index_,
-              OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
+              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
       (GetMatchSelected() || IsMouseHovered());
 
   remove_suggestion_button_->SetVisible(new_visibility);

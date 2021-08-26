@@ -43,7 +43,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                              const std::u16string& text,
                              const gfx::VectorIcon& icon,
                              OmniboxPopupContentsView* popup_contents_view,
-                             OmniboxPopupModel::Selection selection)
+                             OmniboxPopupSelection selection)
       : MdTextButton(std::move(callback), text, CONTEXT_OMNIBOX_PRIMARY),
         icon_(&icon),
         popup_contents_view_(popup_contents_view),
@@ -83,7 +83,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     UpdateBackgroundColor();
   }
 
-  OmniboxPopupModel::Selection selection() { return selection_; }
+  OmniboxPopupSelection selection() { return selection_; }
 
   void OnThemeChanged() override {
     MdTextButton::OnThemeChanged();
@@ -130,7 +130,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
  private:
   const gfx::VectorIcon* icon_;
   OmniboxPopupContentsView* popup_contents_view_;
-  OmniboxPopupModel::Selection selection_;
+  OmniboxPopupSelection selection_;
   absl::optional<SkColor> omnibox_bg_color_;
 };
 
@@ -162,35 +162,35 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
   keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
-                          OmniboxPopupModel::KEYWORD_MODE),
+                          OmniboxPopupSelection::KEYWORD_MODE),
       std::u16string(), vector_icons::kSearchIcon, popup_contents_view_,
-      OmniboxPopupModel::Selection(model_index_,
-                                   OmniboxPopupModel::KEYWORD_MODE)));
+      OmniboxPopupSelection(model_index_,
+                            OmniboxPopupSelection::KEYWORD_MODE)));
   tab_switch_button_ =
       AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
           base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                               base::Unretained(this),
-                              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
+                              OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH),
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
           omnibox::kSwitchIcon, popup_contents_view_,
-          OmniboxPopupModel::Selection(
-              model_index_, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH)));
+          OmniboxPopupSelection(
+              model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH)));
   tab_switch_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON));
   pedal_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
-                          OmniboxPopupModel::FOCUSED_BUTTON_ACTION),
+                          OmniboxPopupSelection::FOCUSED_BUTTON_ACTION),
       std::u16string(), OmniboxPedal::GetDefaultVectorIcon(),
       popup_contents_view_,
-      OmniboxPopupModel::Selection(model_index_,
-                                   OmniboxPopupModel::FOCUSED_BUTTON_ACTION)));
+      OmniboxPopupSelection(model_index_,
+                            OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)));
 }
 
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {
-  SetPillButtonVisibility(keyword_button_, OmniboxPopupModel::KEYWORD_MODE);
+  SetPillButtonVisibility(keyword_button_, OmniboxPopupSelection::KEYWORD_MODE);
   if (keyword_button_->GetVisible()) {
     const OmniboxEditModel* edit_model = model()->edit_model();
     std::u16string keyword;
@@ -206,10 +206,10 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   }
 
   SetPillButtonVisibility(tab_switch_button_,
-                          OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
+                          OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
 
   SetPillButtonVisibility(pedal_button_,
-                          OmniboxPopupModel::FOCUSED_BUTTON_ACTION);
+                          OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
   if (pedal_button_->GetVisible()) {
     const auto pedal_strings = match().action->GetLabelStrings();
     pedal_button_->SetText(pedal_strings.hint);
@@ -253,7 +253,7 @@ const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
 
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
-    OmniboxPopupModel::LineState state) {
+    OmniboxPopupSelection::LineState state) {
   // If the keyword button flag is not enabled, the classic keyword UI is
   // used instead, so do not show the keyword button
   if (button == keyword_button_ &&
@@ -261,15 +261,15 @@ void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     button->SetVisible(false);
   } else {
     button->SetVisible(model()->IsControlPresentOnMatch(
-        OmniboxPopupModel::Selection(model_index_, state)));
+        OmniboxPopupSelection(model_index_, state)));
   }
 }
 
 void OmniboxSuggestionButtonRowView::ButtonPressed(
-    OmniboxPopupModel::LineState state,
+    OmniboxPopupSelection::LineState state,
     const ui::Event& event) {
-  const OmniboxPopupModel::Selection selection(model_index_, state);
-  if (state == OmniboxPopupModel::KEYWORD_MODE) {
+  const OmniboxPopupSelection selection(model_index_, state);
+  if (state == OmniboxPopupSelection::KEYWORD_MODE) {
     // TODO(yoangela): Port to PopupModel and merge with keyEvent
     // TODO(orinj): Clear out existing suggestions, particularly this one, as
     // once we AcceptKeyword, we are really in a new scope state and holding

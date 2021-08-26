@@ -45,9 +45,9 @@ class OmniboxSuggestionButtonRowView : public views::View {
   const AutocompleteMatch& match() const;
 
   void SetPillButtonVisibility(OmniboxSuggestionRowButton* button,
-                               OmniboxPopupModel::LineState state);
+                               OmniboxPopupSelection::LineState state);
 
-  void ButtonPressed(OmniboxPopupModel::LineState state,
+  void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
   OmniboxPopupContentsView* const popup_contents_view_;

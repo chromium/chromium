@@ -76,8 +76,8 @@ class OmniboxPopupContentsView : public views::View,
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
-  void OnSelectionChanged(OmniboxPopupModel::Selection old_selection,
-                          OmniboxPopupModel::Selection new_selection) override;
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection new_selection) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
@@ -110,8 +110,8 @@ class OmniboxPopupContentsView : public views::View,
   const AutocompleteMatch& GetMatchAtIndex(size_t index) const;
 
   // Find the index of the match under the given |point|, specified in window
-  // coordinates. Returns OmniboxPopupModel::kNoMatch if there isn't a match at
-  // the specified point.
+  // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
+  // at the specified point.
   size_t GetIndexForPoint(const gfx::Point& point);
 
   // Update which result views are visible when the group visibility changes.

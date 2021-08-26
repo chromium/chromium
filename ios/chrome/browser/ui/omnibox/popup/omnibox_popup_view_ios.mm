@@ -56,7 +56,7 @@ void OmniboxPopupViewIOS::UpdateEditViewIcon() {
   const AutocompleteResult& result = model()->result();
 
   // Use default icon as a fallback
-  if (model()->selected_line() == OmniboxPopupModel::kNoMatch) {
+  if (model()->selected_line() == OmniboxPopupSelection::kNoMatch) {
     delegate_->OnSelectedMatchImageChanged(/*has_match=*/false,
                                            AutocompleteMatchType::NUM_TYPES,
                                            absl::nullopt, GURL());
@@ -117,7 +117,7 @@ bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
 }
 
 void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {
-  model()->SetSelection(OmniboxPopupModel::Selection(row), false, true);
+  model()->SetSelection(OmniboxPopupSelection(row), false, true);
   if ([mediator_ isOpen]) {
     UpdateEditViewIcon();
   }

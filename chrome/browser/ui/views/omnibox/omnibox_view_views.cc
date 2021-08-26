@@ -690,9 +690,9 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
     return false;
 
   model()->popup_model()->StepSelection(event.IsShiftDown()
-                                            ? OmniboxPopupModel::kBackward
-                                            : OmniboxPopupModel::kForward,
-                                        OmniboxPopupModel::kStateOrLine);
+                                            ? OmniboxPopupSelection::kBackward
+                                            : OmniboxPopupSelection::kForward,
+                                        OmniboxPopupSelection::kStateOrLine);
 
   return true;
 }
@@ -808,12 +808,13 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
-  if (model()->popup_model()->selected_line() == OmniboxPopupModel::kNoMatch) {
+  if (model()->popup_model()->selected_line() ==
+      OmniboxPopupSelection::kNoMatch) {
     // If nothing is selected in the popup, we are in the no-default-match edge
     // case, and |match| is a synthetically generated match. In that case,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
     friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
-        match, display_text, OmniboxPopupModel::kNoMatch,
+        match, display_text, OmniboxPopupSelection::kNoMatch,
         model()->result().size(), std::u16string(),
         &friendly_suggestion_text_prefix_length_);
   } else {
@@ -1048,8 +1049,8 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
 
   // Clear focus of buttons, but do not clear keyword mode.
   if (model()->popup_model() && model()->popup_model()->selected_line_state() !=
-                                    OmniboxPopupModel::KEYWORD_MODE) {
-    model()->popup_model()->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+                                    OmniboxPopupSelection::KEYWORD_MODE) {
+    model()->popup_model()->SetSelectedLineState(OmniboxPopupSelection::NORMAL);
   }
 
   is_mouse_pressed_ = true;
@@ -1628,8 +1629,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (control || alt || shift || GetReadOnly())
         return false;
       if (!model()->MaybeStartQueryForPopup()) {
-        model()->popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                                              OmniboxPopupModel::kAllLines);
+        model()->popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                                              OmniboxPopupSelection::kAllLines);
       }
       return true;
 
@@ -1637,8 +1638,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (control || alt || shift || GetReadOnly())
         return false;
       if (!model()->MaybeStartQueryForPopup()) {
-        model()->popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                                              OmniboxPopupModel::kAllLines);
+        model()->popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                                              OmniboxPopupSelection::kAllLines);
       }
       return true;
 

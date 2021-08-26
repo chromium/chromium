@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   // Each time the selection changes, we should have a text/name change event.
   // This makes it possible for screen readers to have the updated match content
   // when they are notified the selection changed.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_TRUE(
       contains(observer.selected_option_name(), "location from history"));
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(2));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(2));
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 2);
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   controller->result_.AppendMatches(controller->input_, matches);
   popup_view()->UpdatePopupAppearance();
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
@@ -564,8 +564,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
       contains(observer.selected_option_name(), "press Tab then Enter"));
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(
-      1, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
 
   popup_view()->model()->SetSelection(
-      OmniboxPopupModel::Selection(1, OmniboxPopupModel::NORMAL));
+      OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
   EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_EQ(observer.selected_children_changed_count(), 4);
@@ -631,14 +631,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_EQ(observer.active_descendant_changed_count(), 0);
 
   // This is equiverlent of the user arrowing down in the omnibox.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.selected_children_changed_count(), 1);
   EXPECT_EQ(observer.selection_changed_count(), 1);
   EXPECT_EQ(observer.value_changed_count(), 1);
   EXPECT_EQ(observer.active_descendant_changed_count(), 1);
 
   // This is equivalent of the user arrowing up in the omnibox.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(0));
+  popup_view()->model()->SetSelection(OmniboxPopupSelection(0));
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 2);

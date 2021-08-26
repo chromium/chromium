@@ -606,7 +606,7 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
   }
 
   view_->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, alternate_nav_url,
-                   text, OmniboxPopupModel::kNoMatch,
+                   text, OmniboxPopupSelection::kNoMatch,
                    match_selection_timestamp);
 }
 
@@ -970,7 +970,7 @@ bool OmniboxEditModel::AcceptKeyword(
   user_text_ = MaybeStripKeyword(user_text_);
 
   if (PopupIsOpen()) {
-    popup_model()->SetSelectedLineState(OmniboxPopupModel::KEYWORD_MODE);
+    popup_model()->SetSelectedLineState(OmniboxPopupSelection::KEYWORD_MODE);
   } else {
     StartAutocomplete(false, true);
   }
@@ -1038,8 +1038,8 @@ void OmniboxEditModel::ClearKeyword() {
   // (usually because the user has typed a search string).  Keep track of the
   // difference, as we'll need it below. popup_model() may be nullptr in tests.
   bool was_toggled_into_keyword_mode =
-      popup_model() &&
-      popup_model()->selected_line_state() == OmniboxPopupModel::KEYWORD_MODE;
+      popup_model() && popup_model()->selected_line_state() ==
+                           OmniboxPopupSelection::KEYWORD_MODE;
 
   bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
 
@@ -1277,8 +1277,9 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
     // (user_input_in_progress_ is false) unless the first result is a
     // verbatim match of the omnibox input (on-focus query refinements on SERP).
     const auto next_selection = popup_model()->GetNextSelection(
-        count > 0 ? OmniboxPopupModel::kForward : OmniboxPopupModel::kBackward,
-        OmniboxPopupModel::kWholeLine);
+        count > 0 ? OmniboxPopupSelection::kForward
+                  : OmniboxPopupSelection::kBackward,
+        OmniboxPopupSelection::kWholeLine);
     if (result().default_match() && has_temporary_text_ &&
         next_selection.line == 0 &&
         (user_input_in_progress_ ||
@@ -1632,11 +1633,12 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
       // stopped. So the default match must be the desired selection.
       *match = *result().default_match();
       found_match_for_text = true;
-    } else if (popup_model()->selected_line() != OmniboxPopupModel::kNoMatch) {
+    } else if (popup_model()->selected_line() !=
+               OmniboxPopupSelection::kNoMatch) {
       const AutocompleteMatch& selected_match =
           result().match_at(popup_model()->selected_line());
       *match = (popup_model()->selected_line_state() ==
-                OmniboxPopupModel::KEYWORD_MODE)
+                OmniboxPopupSelection::KEYWORD_MODE)
                    ? *selected_match.associated_keyword
                    : selected_match;
       found_match_for_text = true;

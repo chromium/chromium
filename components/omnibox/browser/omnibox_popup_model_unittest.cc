@@ -80,7 +80,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
 }  // namespace
 
-using Selection = OmniboxPopupModel::Selection;
+using Selection = OmniboxPopupSelection;
 
 class OmniboxPopupModelTest : public ::testing::Test {
  public:
@@ -129,9 +129,9 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLine) {
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_TRUE(popup_model()->SelectionOnInitialLine());
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(0), true, false);
+  popup_model()->SetSelection(OmniboxPopupSelection(0), true, false);
   EXPECT_TRUE(popup_model()->SelectionOnInitialLine());
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(0), false, false);
+  popup_model()->SetSelection(OmniboxPopupSelection(0), false, false);
   EXPECT_TRUE(popup_model()->SelectionOnInitialLine());
 }
 
@@ -151,19 +151,19 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLineWithNoDefaultMatches) {
   result->SortAndCull(input, nullptr);
 
   popup_model()->OnResultChanged();
-  EXPECT_EQ(OmniboxPopupModel::kNoMatch, popup_model()->selected_line());
+  EXPECT_EQ(OmniboxPopupSelection::kNoMatch, popup_model()->selected_line());
   EXPECT_TRUE(popup_model()->SelectionOnInitialLine());
 
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(0), false, false);
+  popup_model()->SetSelection(OmniboxPopupSelection(0), false, false);
   EXPECT_EQ(0U, popup_model()->selected_line());
   EXPECT_FALSE(popup_model()->SelectionOnInitialLine());
 
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(1), false, false);
+  popup_model()->SetSelection(OmniboxPopupSelection(1), false, false);
   EXPECT_EQ(1U, popup_model()->selected_line());
   EXPECT_FALSE(popup_model()->SelectionOnInitialLine());
 
   popup_model()->ResetToInitialState();
-  EXPECT_EQ(OmniboxPopupModel::kNoMatch, popup_model()->selected_line());
+  EXPECT_EQ(OmniboxPopupSelection::kNoMatch, popup_model()->selected_line());
   EXPECT_TRUE(popup_model()->SelectionOnInitialLine());
 }
 
@@ -234,66 +234,71 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelection) {
 
   // Step by lines forward.
   for (size_t n : {1, 2, 3, 4, 0}) {
-    popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                                 OmniboxPopupModel::kWholeLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                                 OmniboxPopupSelection::kWholeLine);
     EXPECT_EQ(n, model()->popup_model()->selected_line());
   }
   // Step by lines backward.
   for (size_t n : {4, 3, 2, 1, 0}) {
-    popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                                 OmniboxPopupModel::kWholeLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                                 OmniboxPopupSelection::kWholeLine);
     EXPECT_EQ(n, model()->popup_model()->selected_line());
   }
 
   // Step by states forward.
   for (auto selection : {
-           Selection(1, OmniboxPopupModel::NORMAL),
-           Selection(1, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(2, OmniboxPopupModel::NORMAL),
-           Selection(2, OmniboxPopupModel::KEYWORD_MODE),
-           Selection(3, OmniboxPopupModel::NORMAL),
-           Selection(3, OmniboxPopupModel::KEYWORD_MODE),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(4, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
-           Selection(4, OmniboxPopupModel::NORMAL),
-           Selection(0, OmniboxPopupModel::NORMAL),
+           Selection(1, OmniboxPopupSelection::NORMAL),
+           Selection(1,
+                     OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(2, OmniboxPopupSelection::NORMAL),
+           Selection(2, OmniboxPopupSelection::KEYWORD_MODE),
+           Selection(3, OmniboxPopupSelection::NORMAL),
+           Selection(3, OmniboxPopupSelection::KEYWORD_MODE),
+           Selection(3, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH),
+           Selection(3,
+                     OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(4, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
+           Selection(4, OmniboxPopupSelection::NORMAL),
+           Selection(0, OmniboxPopupSelection::NORMAL),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                                 OmniboxPopupModel::kStateOrLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                                 OmniboxPopupSelection::kStateOrLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
   // Step by states backward. Unlike prior to suggestion button row, there is
   // no difference in behavior for KEYWORD mode moving forward or backward.
   for (auto selection : {
-           Selection(4, OmniboxPopupModel::NORMAL),
-           Selection(4, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-           Selection(3, OmniboxPopupModel::KEYWORD_MODE),
-           Selection(3, OmniboxPopupModel::NORMAL),
-           Selection(2, OmniboxPopupModel::KEYWORD_MODE),
-           Selection(2, OmniboxPopupModel::NORMAL),
-           Selection(1, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(1, OmniboxPopupModel::NORMAL),
-           Selection(0, OmniboxPopupModel::NORMAL),
-           Selection(4, OmniboxPopupModel::NORMAL),
-           Selection(4, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(4, OmniboxPopupSelection::NORMAL),
+           Selection(4, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
+           Selection(3,
+                     OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(3, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH),
+           Selection(3, OmniboxPopupSelection::KEYWORD_MODE),
+           Selection(3, OmniboxPopupSelection::NORMAL),
+           Selection(2, OmniboxPopupSelection::KEYWORD_MODE),
+           Selection(2, OmniboxPopupSelection::NORMAL),
+           Selection(1,
+                     OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(1, OmniboxPopupSelection::NORMAL),
+           Selection(0, OmniboxPopupSelection::NORMAL),
+           Selection(4, OmniboxPopupSelection::NORMAL),
+           Selection(4, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
+           Selection(3,
+                     OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                                 OmniboxPopupModel::kStateOrLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                                 OmniboxPopupSelection::kStateOrLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
 
   // Try the kAllLines step behavior.
-  popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                               OmniboxPopupModel::kAllLines);
-  EXPECT_EQ(Selection(0, OmniboxPopupModel::NORMAL),
+  popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                               OmniboxPopupSelection::kAllLines);
+  EXPECT_EQ(Selection(0, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
-  popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                               OmniboxPopupModel::kAllLines);
-  EXPECT_EQ(Selection(4, OmniboxPopupModel::NORMAL),
+  popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                               OmniboxPopupSelection::kAllLines);
+  EXPECT_EQ(Selection(4, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
 }
 
@@ -323,47 +328,47 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelectionWithHiddenGroupIds) {
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
 
   // Test the simple kAllLines case.
-  popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                               OmniboxPopupModel::kAllLines);
+  popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                               OmniboxPopupSelection::kAllLines);
   EXPECT_EQ(1u, model()->popup_model()->selected_line());
-  popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                               OmniboxPopupModel::kAllLines);
+  popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                               OmniboxPopupSelection::kAllLines);
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
 
   // Test the kStateOrLine case, forwards and backwards.
   for (auto selection : {
-           Selection(1, OmniboxPopupModel::NORMAL),
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
-           Selection(0, OmniboxPopupModel::NORMAL),
+           Selection(1, OmniboxPopupSelection::NORMAL),
+           Selection(2, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
+           Selection(0, OmniboxPopupSelection::NORMAL),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                                 OmniboxPopupModel::kStateOrLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                                 OmniboxPopupSelection::kStateOrLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
   for (auto selection : {
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
-           Selection(1, OmniboxPopupModel::NORMAL),
+           Selection(2, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
+           Selection(1, OmniboxPopupSelection::NORMAL),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                                 OmniboxPopupModel::kStateOrLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                                 OmniboxPopupSelection::kStateOrLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
 
   // Test the kWholeLine case, forwards and backwards.
   for (auto selection : {
-           Selection(0, OmniboxPopupModel::NORMAL),
-           Selection(1, OmniboxPopupModel::NORMAL),
+           Selection(0, OmniboxPopupSelection::NORMAL),
+           Selection(1, OmniboxPopupSelection::NORMAL),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                                 OmniboxPopupModel::kWholeLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                                 OmniboxPopupSelection::kWholeLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
   for (auto selection : {
-           Selection(0, OmniboxPopupModel::NORMAL),
-           Selection(1, OmniboxPopupModel::NORMAL),
+           Selection(0, OmniboxPopupSelection::NORMAL),
+           Selection(1, OmniboxPopupSelection::NORMAL),
        }) {
-    popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                                 OmniboxPopupModel::kWholeLine);
+    popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                                 OmniboxPopupSelection::kWholeLine);
     EXPECT_EQ(selection, model()->popup_model()->selection());
   }
 }
@@ -398,51 +403,51 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                               /*is_temporary_text=*/false, u"1",
                               std::u16string(), {}, std::u16string(), false,
                               std::u16string());
-  EXPECT_EQ(Selection(0, OmniboxPopupModel::NORMAL),
+  EXPECT_EQ(Selection(0, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
   EXPECT_EQ(u"1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
 
   // Tab down to second match.
-  popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                               OmniboxPopupModel::kStateOrLine);
-  EXPECT_EQ(Selection(1, OmniboxPopupModel::NORMAL),
+  popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                               OmniboxPopupSelection::kStateOrLine);
+  EXPECT_EQ(Selection(1, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Tab down to header above the third match, expect that we have an empty
   // string for our temporary text.
-  popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                               OmniboxPopupModel::kStateOrLine);
-  EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
+  popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                               OmniboxPopupSelection::kStateOrLine);
+  EXPECT_EQ(Selection(2, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
   EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab down to the third match, and expect that we update the temporary
   // text to the third match.
-  popup_model()->StepSelection(OmniboxPopupModel::kForward,
-                               OmniboxPopupModel::kStateOrLine);
-  EXPECT_EQ(Selection(2, OmniboxPopupModel::NORMAL),
+  popup_model()->StepSelection(OmniboxPopupSelection::kForward,
+                               OmniboxPopupSelection::kStateOrLine);
+  EXPECT_EQ(Selection(2, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
   EXPECT_EQ(u"a3", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the header again, expect that we have an empty string
   // for our temporary text.
-  popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                               OmniboxPopupModel::kStateOrLine);
-  EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
+  popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                               OmniboxPopupSelection::kStateOrLine);
+  EXPECT_EQ(Selection(2, OmniboxPopupSelection::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
   EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the second match, expect we update the temporary text
   // to the second match.
-  popup_model()->StepSelection(OmniboxPopupModel::kBackward,
-                               OmniboxPopupModel::kStateOrLine);
-  EXPECT_EQ(Selection(1, OmniboxPopupModel::NORMAL),
+  popup_model()->StepSelection(OmniboxPopupSelection::kBackward,
+                               OmniboxPopupSelection::kStateOrLine);
+  EXPECT_EQ(Selection(1, OmniboxPopupSelection::NORMAL),
             model()->popup_model()->selection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
@@ -467,15 +472,16 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(0), true, false);
+  popup_model()->SetSelection(OmniboxPopupSelection(0), true, false);
   // The default state should be unfocused.
-  EXPECT_EQ(OmniboxPopupModel::NORMAL, popup_model()->selected_line_state());
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            popup_model()->selected_line_state());
 
   // Focus the selection.
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(0));
+  popup_model()->SetSelection(OmniboxPopupSelection(0));
   popup_model()->SetSelectedLineState(
-      OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
-  EXPECT_EQ(OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
+      OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
+  EXPECT_EQ(OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH,
             popup_model()->selected_line_state());
 
   // Adding a match at end won't change that we selected first suggestion, so
@@ -487,17 +493,18 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
-  EXPECT_EQ(OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
+  EXPECT_EQ(OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH,
             popup_model()->selected_line_state());
 
   // Changing selection should change focused state.
-  popup_model()->SetSelection(OmniboxPopupModel::Selection(1));
-  EXPECT_EQ(OmniboxPopupModel::NORMAL, popup_model()->selected_line_state());
+  popup_model()->SetSelection(OmniboxPopupSelection(1));
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            popup_model()->selected_line_state());
 
   // Adding a match at end will reset selection to first, so should change
   // selected line, and thus focus.
   popup_model()->SetSelectedLineState(
-      OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
+      OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 999;
   matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
@@ -505,12 +512,13 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0U, popup_model()->selected_line());
-  EXPECT_EQ(OmniboxPopupModel::NORMAL, popup_model()->selected_line_state());
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            popup_model()->selected_line_state());
 
   // Prepending a match won't change selection, but since URL is different,
   // should clear the focus state.
   popup_model()->SetSelectedLineState(
-      OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
+      OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 1100;
   matches[0].contents = u"match4.com";
   matches[0].destination_url = GURL("http://match4.com");
@@ -518,13 +526,15 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0U, popup_model()->selected_line());
-  EXPECT_EQ(OmniboxPopupModel::NORMAL, popup_model()->selected_line_state());
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            popup_model()->selected_line_state());
 
   // Selecting |kNoMatch| should clear focus.
   popup_model()->SetSelectedLineState(
-      OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
+      OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
   popup_model()->SetSelection(
-      OmniboxPopupModel::Selection(OmniboxPopupModel::kNoMatch));
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch));
   popup_model()->OnResultChanged();
-  EXPECT_EQ(OmniboxPopupModel::NORMAL, popup_model()->selected_line_state());
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            popup_model()->selected_line_state());
 }

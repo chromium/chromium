@@ -223,10 +223,10 @@ class OmniboxRowView::HeaderView : public views::View {
     header_toggle_button_->SetToggled(suggestion_group_hidden_);
   }
 
-  // Convenience method to get the OmniboxPopupModel::Selection for this view.
-  OmniboxPopupModel::Selection GetHeaderSelection() const {
-    return OmniboxPopupModel::Selection(
-        row_view_->line_, OmniboxPopupModel::FOCUSED_BUTTON_HEADER);
+  // Convenience method to get the OmniboxPopupSelection for this view.
+  OmniboxPopupSelection GetHeaderSelection() const {
+    return OmniboxPopupSelection(row_view_->line_,
+                                 OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
   }
 
   // Non-owning pointer our parent row view. We access a lot of private members
@@ -257,42 +257,40 @@ class OmniboxRowView::HeaderView : public views::View {
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;
 };
 
-DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
-                       {OmniboxPopupModel::FOCUSED_BUTTON_HEADER,
+DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_HEADER,
                         u"FOCUSED_BUTTON_HEADER"},
-                       {OmniboxPopupModel::NORMAL, u"NORMAL"},
-                       {OmniboxPopupModel::KEYWORD_MODE, u"KEYWORD_MODE"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
+                       {OmniboxPopupSelection::NORMAL, u"NORMAL"},
+                       {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH,
                         u"FOCUSED_BUTTON_TAB_SWITCH"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_ACTION,
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                         u"FOCUSED_BUTTON_ACTION"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION,
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 
 template <>
-struct ui::metadata::TypeConverter<OmniboxPopupModel::Selection>
+struct ui::metadata::TypeConverter<OmniboxPopupSelection>
     : public ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
-      ui::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
-  static absl::optional<OmniboxPopupModel::Selection> FromString(
+      ui::metadata::ArgType<OmniboxPopupSelection> source_value);
+  static absl::optional<OmniboxPopupSelection> FromString(
       const std::u16string& source_value);
   static ui::metadata::ValidStrings GetValidStrings() { return {}; }
 };
 
 // static
-std::u16string
-ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
-    ui::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
+std::u16string ui::metadata::TypeConverter<OmniboxPopupSelection>::ToString(
+    ui::metadata::ArgType<OmniboxPopupSelection> source_value) {
   return u"{" + base::NumberToString16(source_value.line) + u"," +
-         TypeConverter<OmniboxPopupModel::LineState>::ToString(
+         TypeConverter<OmniboxPopupSelection::LineState>::ToString(
              source_value.state) +
          u"}";
 }
 
 // static
-absl::optional<OmniboxPopupModel::Selection>
-ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
-    const std::u16string& source_value) {
+absl::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
+    OmniboxPopupSelection>::FromString(const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (values.size() != 2)
@@ -301,16 +299,16 @@ ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
   // on Mac.
   const absl::optional<uint32_t> line =
       TypeConverter<uint32_t>::FromString(values[0]);
-  const absl::optional<OmniboxPopupModel::LineState> state =
-      TypeConverter<OmniboxPopupModel::LineState>::FromString(values[1]);
+  const absl::optional<OmniboxPopupSelection::LineState> state =
+      TypeConverter<OmniboxPopupSelection::LineState>::FromString(values[1]);
   return (line.has_value() && state.has_value())
-             ? absl::make_optional<OmniboxPopupModel::Selection>(line.value(),
-                                                                 state.value())
+             ? absl::make_optional<OmniboxPopupSelection>(line.value(),
+                                                          state.value())
              : absl::nullopt;
 }
 
 BEGIN_METADATA(OmniboxRowView, HeaderView, views::View)
-ADD_READONLY_PROPERTY_METADATA(OmniboxPopupModel::Selection, HeaderSelection)
+ADD_READONLY_PROPERTY_METADATA(OmniboxPopupSelection, HeaderSelection)
 END_METADATA
 
 OmniboxRowView::OmniboxRowView(size_t line,
@@ -350,7 +348,7 @@ void OmniboxRowView::OnSelectionStateChanged() {
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
   DCHECK(popup_model_->selection().IsButtonFocused());
   if (popup_model_->selected_line_state() ==
-      OmniboxPopupModel::FOCUSED_BUTTON_HEADER) {
+      OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     return header_view_->header_toggle_button();
   }
 

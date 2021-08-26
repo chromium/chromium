@@ -96,8 +96,8 @@ void OmniboxController::ClearPopupKeywordMode() const {
   OmniboxPopupModel* popup = omnibox_edit_model_->popup_model();
   // |popup| can be nullptr in tests.
   if (popup && popup->IsOpen() &&
-      popup->selected_line_state() == OmniboxPopupModel::KEYWORD_MODE) {
-    popup->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+      popup->selected_line_state() == OmniboxPopupSelection::KEYWORD_MODE) {
+    popup->SetSelectedLineState(OmniboxPopupSelection::NORMAL);
   }
 }
 

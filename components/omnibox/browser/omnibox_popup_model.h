@@ -25,8 +25,7 @@ namespace gfx {
 class Image;
 }
 
-class OmniboxPopupModel {
- public:
+struct OmniboxPopupSelection {
   // Directions for stepping through selections. These may apply for going
   // up/down by lines or cycling left/right through states within a line.
   enum Direction { kForward, kBackward };
@@ -45,9 +44,6 @@ class OmniboxPopupModel {
     // PgUp and PgDn keys.
     kAllLines
   };
-
-  // The sentinel value for Selection::line which means no line is selected.
-  static const size_t kNoMatch;
 
   // See |Selection::state| below for details. The numeric values are to aid
   // comparison only. They are not persisted anywhere and can be freely changed.
@@ -82,33 +78,37 @@ class OmniboxPopupModel {
     LINE_STATE_MAX_VALUE
   };
 
-  struct Selection {
-    // The currently selected line.  This is kNoMatch when nothing is selected,
-    // which should only be true when the popup is closed.
-    size_t line;
+  // The sentinel value for Selection::line which means no line is selected.
+  static const size_t kNoMatch;
 
-    // If the selected line has both a normal match and a keyword match, this
-    // determines whether the normal match (if NORMAL) or the keyword match
-    // (if KEYWORD) is selected. Likewise, if the selected line has a normal
-    // match and a secondary button match, this determines whether the button
-    // match (if FOCUSED_BUTTON_*) is selected.
-    LineState state;
+  // The selected line.  This is kNoMatch when nothing is selected,
+  // which should only be true when the popup is closed.
+  size_t line;
 
-    explicit Selection(size_t line, LineState state = NORMAL)
-        : line(line), state(state) {}
+  // If the selected line has both a normal match and a keyword match, this
+  // determines whether the normal match (if NORMAL) or the keyword match
+  // (if KEYWORD) is selected. Likewise, if the selected line has a normal
+  // match and a secondary button match, this determines whether the button
+  // match (if FOCUSED_BUTTON_*) is selected.
+  LineState state;
 
-    bool operator==(const Selection&) const;
-    bool operator!=(const Selection&) const;
-    bool operator<(const Selection&) const;
+  explicit OmniboxPopupSelection(size_t line, LineState state = NORMAL)
+      : line(line), state(state) {}
 
-    // Returns true if going to this selection from given |from| selection
-    // results in activation of keyword state when it wasn't active before.
-    bool IsChangeToKeyword(Selection from) const;
+  bool operator==(const OmniboxPopupSelection&) const;
+  bool operator!=(const OmniboxPopupSelection&) const;
+  bool operator<(const OmniboxPopupSelection&) const;
 
-    // Returns true if this selection represents a button being focused.
-    bool IsButtonFocused() const;
-  };
+  // Returns true if going to this selection from given |from| selection
+  // results in activation of keyword state when it wasn't active before.
+  bool IsChangeToKeyword(OmniboxPopupSelection from) const;
 
+  // Returns true if this selection represents a button being focused.
+  bool IsButtonFocused() const;
+};
+
+class OmniboxPopupModel {
+ public:
   // |pref_service| can be nullptr, in which case OmniboxPopupModel won't
   // account for collapsed headers.
   OmniboxPopupModel(OmniboxPopupView* popup_view,
@@ -133,9 +133,11 @@ class OmniboxPopupModel {
     return autocomplete_controller()->result();
   }
 
-  Selection selection() const { return selection_; }
+  OmniboxPopupSelection selection() const { return selection_; }
   size_t selected_line() const { return selection_.line; }
-  LineState selected_line_state() const { return selection_.state; }
+  OmniboxPopupSelection::LineState selected_line_state() const {
+    return selection_.state;
+  }
 
   // Sets the current selection to |new_selection|. Caller is responsible for
   // making sure |new_selection| is valid. This assumes the popup is open.
@@ -145,14 +147,14 @@ class OmniboxPopupModel {
   //
   // |reset_to_default| restores the original inline autocompletion.
   // |force_update_ui| updates the UI even if the selection has not changed.
-  void SetSelection(Selection new_selection,
+  void SetSelection(OmniboxPopupSelection new_selection,
                     bool reset_to_default = false,
                     bool force_update_ui = false);
 
   // We still need to run through the whole SetSelection method, because
   // changing the line state sometimes requires updating inline autocomplete.
-  void SetSelectedLineState(LineState new_state) {
-    SetSelection(Selection(selected_line(), new_state));
+  void SetSelectedLineState(OmniboxPopupSelection::LineState new_state) {
+    SetSelection(OmniboxPopupSelection(selected_line(), new_state));
   }
 
   // Called when the user hits escape after arrowing around the popup.  This
@@ -190,30 +192,35 @@ class OmniboxPopupModel {
 
   // Gets all the available selections, filtered by |direction| and |step|, as
   // well as feature flags and the matches' states.
-  std::vector<Selection> GetAllAvailableSelectionsSorted(Direction direction,
-                                                         Step step) const;
+  std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step) const;
 
   // Advances selection with consideration for both line number and line state.
   // |direction| indicates direction of step, and |step| determines what kind
   // of step to take. Returns the next selection, which could be anything.
-  Selection GetNextSelection(Direction direction, Step step) const;
+  OmniboxPopupSelection GetNextSelection(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step) const;
 
   // Applies the next selection as provided by GetNextSelection.
   // Stepping the popup model selection gives special consideration for
   // keyword mode state maintained in the edit model.
-  Selection StepSelection(Direction direction, Step step);
+  OmniboxPopupSelection StepSelection(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step);
 
   // Returns true if the control represented by |selection.state| is present on
   // the match in |selection.line|. This is the source-of-truth the UI code
   // should query to decide whether or not to draw the control.
-  bool IsControlPresentOnMatch(Selection selection) const;
+  bool IsControlPresentOnMatch(OmniboxPopupSelection selection) const;
 
   // Triggers the action on |selection| (usually an auxiliary button).
   // If the popup model supports the action and performs it, this returns true.
   // This can't handle all actions currently, and returns false in those cases.
   // The timestamp parameter is currently only used by FOCUSED_BUTTON_TAB_SWITCH
   // and FOCUSED_BUTTON_ACTION, so is set by default for other use cases.
-  bool TriggerSelectionAction(Selection selection,
+  bool TriggerSelectionAction(OmniboxPopupSelection selection,
                               base::TimeTicks timestamp = base::TimeTicks());
 
   // This returns the accessibility label for current selection. This is an
@@ -237,7 +244,7 @@ class OmniboxPopupModel {
   // Non-owning reference to the pref service. Can be nullptr in tests or iOS.
   PrefService* const pref_service_;
 
-  Selection selection_;
+  OmniboxPopupSelection selection_;
 
   // When a result changes, this informs of the URL in the previously selected
   // suggestion whose tab switch button was focused, so that we may compare

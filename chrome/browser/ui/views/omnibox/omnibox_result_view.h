@@ -89,7 +89,7 @@ class OmniboxResultView : public views::View,
   // Stores the image in a local data member and schedules a repaint.
   void SetRichSuggestionImage(const gfx::ImageSkia& image);
 
-  void ButtonPressed(OmniboxPopupModel::LineState state,
+  void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
   // Helper to emit accessibility events (may only emit if conditions are met).
