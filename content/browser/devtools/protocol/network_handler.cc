@@ -450,6 +450,24 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
   return urls;
 }
 
+std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
+  std::vector<GURL> urls;
+  base::queue<FrameTreeNode*> queue;
+  queue.push(frame_host->frame_tree_node());
+  while (!queue.empty()) {
+    FrameTreeNode* node = queue.front();
+    queue.pop();
+    if (node != frame_host->frame_tree_node() &&
+        node->current_frame_host()->is_local_root_subframe())
+      continue;
+
+    urls.push_back(node->current_url());
+    for (size_t i = 0; i < node->child_count(); ++i)
+      queue.push(node->child_at(i));
+  }
+  return urls;
+}
+
 String resourcePriority(net::RequestPriority priority) {
   switch (priority) {
     case net::MINIMUM_PRIORITY:
@@ -1255,18 +1273,26 @@ Response NetworkHandler::Disable() {
 
 #if BUILDFLAG(ENABLE_REPORTING)
 void NetworkHandler::OnReportAdded(const net::ReportingReport& report) {
-  auto protocol_report =
-      protocol::Network::ReportingApiReport::Create()
-          .SetInitiatorUrl(report.url.spec())
-          .SetDestination(report.group)
-          .SetType(report.type)
-          .SetTimestamp(
-              (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
-          .SetDepth(report.depth)
-          .SetBody(protocol::DictionaryValue::cast(
-              protocol::toProtocolValue(report.body.get(), 1000)))
-          .Build();
-  frontend_->ReportingApiReportAdded(std::move(protocol_report));
+  if (!host_) {
+    return;
+  }
+  std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
+  auto iter = std::find(reporting_filter_urls.begin(),
+                        reporting_filter_urls.end(), report.url);
+  if (iter != reporting_filter_urls.end()) {
+    auto protocol_report =
+        protocol::Network::ReportingApiReport::Create()
+            .SetInitiatorUrl(report.url.spec())
+            .SetDestination(report.group)
+            .SetType(report.type)
+            .SetTimestamp(
+                (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
+            .SetDepth(report.depth)
+            .SetBody(protocol::DictionaryValue::cast(
+                protocol::toProtocolValue(report.body.get(), 1000)))
+            .Build();
+    frontend_->ReportingApiReportAdded(std::move(protocol_report));
+  }
 }
 
 Response NetworkHandler::EnableReportingApi(const bool enable) {
