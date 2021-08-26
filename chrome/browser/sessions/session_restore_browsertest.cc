@@ -2114,6 +2114,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 4u);
 
+  // Avoid showing What's New.
+  PrefService* pref_service = g_browser_process->local_state();
+  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+
   // Close all profiles associated with the second profile.
   MultiBrowserObserver removed_observer(2,
                                         MultiBrowserObserver::Event::kRemoved);

@@ -9936,6 +9936,24 @@
             ]
         }
     ],
+    "WhatsNewPageExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeWhatsNewUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "WheelEventRegions": [
         {
             "platforms": [

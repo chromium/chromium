@@ -71,6 +71,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -196,6 +197,10 @@ bool IsWindows10OrNewer() {
 void DisableWelcomePages(const std::vector<Profile*>& profiles) {
   for (Profile* profile : profiles)
     profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+
+  // Also disable What's New.
+  PrefService* pref_service = g_browser_process->local_state();
+  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
 }
 
 Browser* OpenNewBrowser(Profile* profile) {

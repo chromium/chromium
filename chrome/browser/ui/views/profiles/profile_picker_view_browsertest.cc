@@ -249,6 +249,15 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
                                     base::Unretained(this)));
   }
 
+  void SetUpOnMainThread() override {
+    ProfilePickerTestBase::SetUpOnMainThread();
+
+    // Avoid showing the What's New page. These tests assume this isn't the
+    // first update and the NTP opens after sign in.
+    g_browser_process->local_state()->SetInteger(prefs::kLastWhatsNewVersion,
+                                                 CHROME_VERSION_MAJOR);
+  }
+
   virtual void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) {
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
