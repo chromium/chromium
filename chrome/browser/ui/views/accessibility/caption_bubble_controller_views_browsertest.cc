@@ -719,13 +719,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ("No human", GetLabelText());
   OnFinalTranscription("No human has ever seen");
   EXPECT_EQ("No human has ever seen", GetLabelText());
-  OnFinalTranscription("a living");
+  OnFinalTranscription(" a living");
   EXPECT_EQ("No human has ever seen a living", GetLabelText());
-  OnPartialTranscription("giant");
+  OnPartialTranscription(" giant");
   EXPECT_EQ("No human has ever seen a living giant", GetLabelText());
   OnPartialTranscription("");
-  EXPECT_EQ("No human has ever seen a living ", GetLabelText());
-  OnPartialTranscription("giant squid");
+  EXPECT_EQ("No human has ever seen a living", GetLabelText());
+  OnPartialTranscription(" giant squid");
   EXPECT_EQ("No human has ever seen a living giant squid", GetLabelText());
 }
 

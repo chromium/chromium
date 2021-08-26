@@ -78,19 +78,7 @@ void CaptionBubbleModel::ClearText() {
 
 void CaptionBubbleModel::CommitPartialText() {
   final_text_ += partial_text_;
-
-  // If the first character of partial text isn't a space, add a space before
-  // appending it to final text. There is no need to alert the observer because
-  // the text itself has not changed, just its representation, and there is no
-  // need to render a trailing space.
-  // TODO(crbug.com/1055150): This feature is launching for English first.
-  // Make sure spacing is correct for all languages.
-  if (partial_text_.size() > 0 &&
-      partial_text_.compare(partial_text_.size() - 1, 1, " ") != 0) {
-    final_text_ += " ";
-  }
   partial_text_.clear();
-
   if (!observer_)
     return;
 
