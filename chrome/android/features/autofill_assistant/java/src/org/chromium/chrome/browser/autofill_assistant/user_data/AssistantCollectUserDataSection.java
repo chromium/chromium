@@ -325,9 +325,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         updateVisibility();
 
         if (mListener != null && notify) {
-            mListener.onResult(item.mOption != null && item.mOption.mOption.isComplete()
-                            ? item.mOption
-                            : null);
+            mListener.onResult(item.mOption);
         }
     }
 
