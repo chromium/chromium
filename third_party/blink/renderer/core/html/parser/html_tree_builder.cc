@@ -485,11 +485,11 @@ static void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
     MapLoweredLocalNameToName(case_map, svg_tags.get(), svg_names::kTagsCount);
   }
 
-  const QualifiedName& cased_name =
-      case_map->DeprecatedAtOrEmptyValue(token->GetName());
-  if (cased_name.LocalName().IsNull())
-    return;
-  token->SetName(cased_name.LocalName());
+  const auto it = case_map->find(token->GetName());
+  if (it != case_map->end()) {
+    DCHECK(!it->value.LocalName().IsNull());
+    token->SetName(it->value.LocalName());
+  }
 }
 
 template <std::unique_ptr<const QualifiedName* []> getAttrs(), unsigned length>
@@ -502,10 +502,11 @@ static void AdjustAttributes(AtomicHTMLToken* token) {
   }
 
   for (auto& token_attribute : token->Attributes()) {
-    const QualifiedName& cased_name =
-        case_map->DeprecatedAtOrEmptyValue(token_attribute.LocalName());
-    if (!cased_name.LocalName().IsNull())
-      token_attribute.ParserSetName(cased_name);
+    const auto it = case_map->find(token_attribute.LocalName());
+    if (it != case_map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
@@ -552,10 +553,11 @@ static void AdjustForeignAttributes(AtomicHTMLToken* token) {
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {
     Attribute& token_attribute = token->Attributes().at(i);
-    const QualifiedName& name =
-        map->DeprecatedAtOrEmptyValue(token_attribute.LocalName());
-    if (!name.LocalName().IsNull())
-      token_attribute.ParserSetName(name);
+    const auto it = map->find(token_attribute.LocalName());
+    if (it != map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
