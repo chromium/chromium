@@ -227,7 +227,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
   chrome::OpenAllIfAllowed(browser_, get_navigator_, selection,
-                           ui::DispositionFromEventFlags(mouse_event_flags));
+                           ui::DispositionFromEventFlags(mouse_event_flags),
+                           false);
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(

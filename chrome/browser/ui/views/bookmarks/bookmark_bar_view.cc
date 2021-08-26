@@ -1457,7 +1457,8 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
     RecordBookmarkFolderLaunch(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
     chrome::OpenAllIfAllowed(browser_, GetPageNavigatorGetter(), {node},
-                             ui::DispositionFromEventFlags(event.flags()));
+                             ui::DispositionFromEventFlags(event.flags()),
+                             false);
   } else {
     // saved tab groups flag
     if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
@@ -1469,7 +1470,7 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       std::vector<const bookmarks::BookmarkNode*> selection_ = {node};
       DCHECK(chrome::HasBookmarkURLs(selection_));
       chrome::OpenAllIfAllowed(browser_, GetPageNavigatorGetter(), selection_,
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB);
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
       // add to a new tab group
       TabStripModel* model = browser_->tab_strip_model();
       int count =

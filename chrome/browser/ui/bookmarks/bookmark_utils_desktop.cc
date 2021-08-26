@@ -131,7 +131,8 @@ void OpenAllIfAllowed(
     Browser* browser,
     base::OnceCallback<content::PageNavigator*()> get_navigator,
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
-    WindowOpenDisposition initial_disposition) {
+    WindowOpenDisposition initial_disposition,
+    bool add_to_group) {
   std::vector<GURL> urls = GetURLsToOpen(
       nodes, browser->profile(),
       initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
@@ -140,6 +141,7 @@ void OpenAllIfAllowed(
                     base::OnceCallback<content::PageNavigator*()> get_navigator,
                     std::vector<GURL> urls,
                     WindowOpenDisposition initial_disposition,
+                    absl::optional<std::u16string> folder_title,
                     chrome::MessageBoxResult result) {
     if (result != chrome::MESSAGE_BOX_RESULT_YES)
       return;
@@ -148,16 +150,40 @@ void OpenAllIfAllowed(
     content::PageNavigator* navigator = std::move(get_navigator).Run();
     if (!navigator)
       return;
+    int count = urls.size();
+    OpenAllHelper(navigator, std::move(urls), initial_disposition,
+                  browser->profile());
+    if (folder_title.has_value()) {
+      TabStripModel* model = browser->tab_strip_model();
+      std::vector<int> tab_indicies(count);
 
-    return OpenAllHelper(navigator, std::move(urls), initial_disposition,
-                         browser->profile());
+      for (auto i = 0; i < count; i++)
+        tab_indicies[i] = model->count() - count + i;
+
+      tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indicies);
+
+      // Use the bookmark folder's title as the group's title.
+      TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
+      const tab_groups::TabGroupVisualData* current_visual_data =
+          group->visual_data();
+      tab_groups::TabGroupVisualData new_visual_data(
+          folder_title.value(), current_visual_data->color(),
+          current_visual_data->is_collapsed());
+      group->SetVisualData(new_visual_data);
+
+      model->OpenTabGroupEditor(newGroupId);
+    }
   };
 
   // Skip the prompt if there are few bookmarks.
   size_t child_count = urls.size();
   if (child_count < kNumBookmarkUrlsBeforePrompting) {
-    do_open(browser, std::move(get_navigator), std::move(urls),
-            initial_disposition, chrome::MESSAGE_BOX_RESULT_YES);
+    do_open(
+        browser, std::move(get_navigator), std::move(urls), initial_disposition,
+        add_to_group
+            ? absl::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
+            : absl::nullopt,
+        chrome::MESSAGE_BOX_RESULT_YES);
     return;
   }
 
@@ -171,7 +197,10 @@ void OpenAllIfAllowed(
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
                                  base::NumberToString16(child_count)),
       base::BindOnce(do_open, browser, std::move(get_navigator),
-                     std::move(urls), initial_disposition));
+                     std::move(urls), initial_disposition,
+                     add_to_group ? absl::optional<std::u16string>(
+                                        nodes[0]->GetTitledUrlNodeTitle())
+                                  : absl::nullopt));
 }
 
 void OpenAllNow(content::PageNavigator* navigator,
