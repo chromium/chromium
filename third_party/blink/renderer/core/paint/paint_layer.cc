@@ -1482,8 +1482,17 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
   if (!parent_)
     return;
 
-  if (old_style && GetLayoutObject().IsStacked(*old_style))
-    DirtyStackingContextZOrderLists();
+  if (old_style) {
+    if (GetLayoutObject().IsStacked(*old_style))
+      DirtyStackingContextZOrderLists();
+
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        PaintLayerPainter::PaintedOutputInvisible(*old_style)) {
+      // This layer is removed because opacity becomes 1. Do the same as
+      // StyleDidChange() on change of PaintedOutputInvisible().
+      GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
+    }
+  }
 
   bool did_set_paint_invalidation = false;
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
