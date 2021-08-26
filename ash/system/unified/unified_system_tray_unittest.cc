@@ -4,10 +4,15 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/time/time_tray_item_view.h"
+#include "ash/system/time/time_view.h"
+#include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -44,6 +49,14 @@ class UnifiedSystemTrayTest : public AshTestBase {
     auto* bubble =
         GetPrimaryUnifiedSystemTray()->slider_bubble_controller_->bubble_view_;
     return bubble ? bubble->GetBoundsInScreen() : gfx::Rect();
+  }
+
+  tray::TimeTrayItemView* time_view() {
+    return GetPrimaryUnifiedSystemTray()->time_view_;
+  }
+
+  ImeModeView* ime_mode_view() {
+    return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
   }
 
  private:
@@ -163,6 +176,20 @@ TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
 
     SwapPrimaryDisplay();
   }
+}
+
+TEST_F(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
+  ime_mode_view()->label()->SetText(u"US");
+  ime_mode_view()->SetVisible(true);
+
+  gfx::Rect time_bounds = time_view()
+                              ->time_view()
+                              ->horizontal_label_for_test()
+                              ->GetBoundsInScreen();
+  gfx::Rect ime_bounds = ime_mode_view()->label()->GetBoundsInScreen();
+
+  EXPECT_EQ(time_bounds.y(), ime_bounds.y());
+  EXPECT_EQ(time_bounds.height(), ime_bounds.height());
 }
 
 }  // namespace ash

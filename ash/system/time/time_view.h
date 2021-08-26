@@ -70,6 +70,8 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // views::View:
   const char* GetClassName() const override;
 
+  views::Label* horizontal_label_for_test() { return horizontal_label_; }
+
  private:
   friend class TimeViewTest;
   friend class TimeTrayItemViewTest;

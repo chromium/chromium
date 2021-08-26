@@ -18,14 +18,6 @@ namespace ash {
 
 namespace tray {
 
-namespace {
-
-// The top padding of time tray item view so that the time is aligned properly
-// in status area.
-constexpr int kTimeTrayItemTopPadding = 1;
-
-}  // namespace
-
 TimeTrayItemView::TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model)
     : TrayItemView(shelf), model_(model), session_observer_(this) {
   system_tray_model_observation_.Observe(model_);
@@ -35,10 +27,7 @@ TimeTrayItemView::TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model)
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
   time_view_ =
       new TimeView(clock_layout, Shell::Get()->system_tray_model()->clock());
-  int top_padding =
-      shelf->IsHorizontalAlignment() ? kTimeTrayItemTopPadding : 0;
-  time_view_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, 0, top_padding, 0)));
+
   AddChildView(time_view_);
 
   OnSystemTrayButtonSizeChanged(model_->GetSystemTrayButtonSize());
@@ -51,10 +40,6 @@ void TimeTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
   time_view_->UpdateClockLayout(clock_layout);
-  int top_padding =
-      shelf->IsHorizontalAlignment() ? kTimeTrayItemTopPadding : 0;
-  time_view_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, 0, top_padding, 0)));
 }
 
 void TimeTrayItemView::HandleLocaleChange() {
