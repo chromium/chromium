@@ -310,7 +310,7 @@ export let fakeWifiNetwork = {
       security: SecurityType.kNone,
     },
   },
-  guid: 'wifiGuid',
+  observerGuid: 'wifiGuid',
   name: 'Dial Up',
   macAddress: '84:C5:A6:30:3F:31',
   ipConfig: {
@@ -334,7 +334,7 @@ export let fakeWifiNetworkNoNameServers = {
       security: SecurityType.kNone,
     },
   },
-  guid: 'wifiGuid',
+  observerGuid: 'wifiGuid',
   name: 'Dial Up',
   macAddress: '84:C5:A6:30:3F:31',
   ipConfig: {
@@ -358,7 +358,7 @@ export let fakeWifiNetworkEmptyNameServers = {
       security: SecurityType.kNone,
     },
   },
-  guid: 'wifiGuid',
+  observerGuid: 'wifiGuid',
   name: 'Dial Up',
   macAddress: '84:C5:A6:30:3F:31',
   ipConfig: {
@@ -382,7 +382,7 @@ export let fakeWifiNetworkMultipleNameServers = {
       security: SecurityType.kNone,
     },
   },
-  guid: 'wifiGuid',
+  observerGuid: 'wifiGuid',
   name: 'Dial Up',
   macAddress: '84:C5:A6:30:3F:31',
   ipConfig: {
@@ -397,7 +397,7 @@ export let fakeDisconnectedWifiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,
   typeProperties: null,
-  guid: 'wifiDisconnectedGuid',
+  observerGuid: 'wifiDisconnectedGuid',
   name: '',
   macAddress: '84:C5:A6:30:3F:31',
   ipConfig: null,
@@ -410,7 +410,7 @@ export let fakeEthernetNetwork = {
   typeProperties: {
     ethernet: {},
   },
-  guid: 'ethernetGuid',
+  observerGuid: 'ethernetGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:31',
   ipConfig: {
@@ -428,7 +428,7 @@ export let fakeDisconnectedEthernetNetwork = {
   typeProperties: {
     ethernet: {},
   },
-  guid: 'ethernetDisconnectedGuid',
+  observerGuid: 'ethernetDisconnectedGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:32',
   ipConfig: null,
@@ -441,7 +441,7 @@ export let fakeCellularNetwork = {
   typeProperties: {
     cellular: {},
   },
-  guid: 'cellularGuid',
+  observerGuid: 'cellularGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
   ipConfig: null,

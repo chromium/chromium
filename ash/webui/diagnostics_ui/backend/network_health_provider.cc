@@ -218,7 +218,7 @@ void UpdateNetwork(
 void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
                    NetworkObserverInfo* network_info) {
   mojom::Network* network = network_info->network.get();
-  DCHECK(!network->guid.empty());
+  DCHECK(!network->observer_guid.empty());
 
   network->type = ConvertNetworkType(device->type);
   network->mac_address = device->mac_address;
@@ -373,8 +373,8 @@ void NetworkHealthProvider::UpdateMatchingNetwork(
 
   // Get the managed properties using the network guid, and pass the observer
   // guid.
-  GetManagedPropertiesForNetwork(/*network_guid=*/network->guid,
-                                 /*observer_guid=*/network_info->network->guid);
+  GetManagedPropertiesForNetwork(network->guid,
+                                 network_info->network->observer_guid);
 }
 
 void NetworkHealthProvider::OnDeviceStateListReceived(
@@ -408,16 +408,16 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
 
     // If a matching entry could not be found, add a new entry to |networks_|.
     if (!matched) {
-      std::string guid = AddNewNetwork(device);
-      networks_seen.insert(std::move(guid));
+      std::string observer_guid = AddNewNetwork(device);
+      networks_seen.insert(std::move(observer_guid));
       list_changed = true;
     }
   }
 
   // Remove any entry in |networks_| that doesn't match a device.
   for (auto it = networks_.begin(); it != networks_.end();) {
-    const std::string& guid = it->first;
-    if (!base::Contains(networks_seen, guid)) {
+    const std::string& observer_guid = it->first;
+    if (!base::Contains(networks_seen, observer_guid)) {
       it = networks_.erase(it);
       list_changed = true;
       continue;
@@ -438,7 +438,7 @@ std::string NetworkHealthProvider::AddNewNetwork(
     const chromeos::network_config::mojom::DeviceStatePropertiesPtr& device) {
   std::string observer_guid = base::GenerateGUID();
   auto network = mojom::Network::New();
-  network->guid = observer_guid;
+  network->observer_guid = observer_guid;
 
   // Initial state set to kNotConnected.
   network->state = mojom::NetworkState::kNotConnected;
@@ -546,7 +546,8 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
   network_info.observer->OnNetworkStateChanged(
       mojo::Clone(network_info.network));
 
-  if (IsLoggingEnabled() && network_info.network->guid == active_guid_) {
+  if (IsLoggingEnabled() &&
+      network_info.network->observer_guid == active_guid_) {
     networking_log_ptr_->UpdateContents(network_info.network.Clone());
   }
 }

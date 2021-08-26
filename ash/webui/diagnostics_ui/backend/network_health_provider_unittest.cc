@@ -471,18 +471,18 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   // Verify a new network is created, but there is no active guid because
   // the network isn't connected.
   ASSERT_EQ(1u, list_observer.observer_guids().size());
-  const std::string guid = list_observer.observer_guids()[0];
-  EXPECT_FALSE(guid.empty());
+  const std::string observer_guid = list_observer.observer_guids()[0];
+  EXPECT_FALSE(observer_guid.empty());
   EXPECT_TRUE(list_observer.active_guid().empty());
 
   // Observe the network and verify the observer fired.
   FakeNetworkStateObserver observer;
-  SetupObserver(&observer, guid);
+  SetupObserver(&observer, observer_guid);
   size_t state_call_count = 0;
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Get latest state and verify ethernet in not connected state.
-  EXPECT_EQ(observer.GetLatestState()->guid, guid);
+  EXPECT_EQ(observer.GetLatestState()->observer_guid, observer_guid);
   EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kEthernet);
   // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
@@ -503,7 +503,7 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
   // TODO(michaelcheco): Verify ethernet authentication properties once added
   // to the API.
 
@@ -512,7 +512,7 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
 
   // Simulate unplug and network goes back to kNotConnected, and the active
   // guid should be cleared.
@@ -529,7 +529,7 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
 }
 
 // Test the setup and all intermediate states for ethernet network.
@@ -551,18 +551,18 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   // Verify a new network is created, but there is no active guid because
   // the network isn't connected.
   ASSERT_EQ(1u, list_observer.observer_guids().size());
-  const std::string guid = list_observer.observer_guids()[0];
-  EXPECT_FALSE(guid.empty());
+  const std::string observer_guid = list_observer.observer_guids()[0];
+  EXPECT_FALSE(observer_guid.empty());
   EXPECT_TRUE(list_observer.active_guid().empty());
 
   // Observe the network and verify the observer fired.
   FakeNetworkStateObserver observer;
-  SetupObserver(&observer, guid);
+  SetupObserver(&observer, observer_guid);
   size_t state_call_count = 0;
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Get latest state and verify wifi in not connected state.
-  EXPECT_EQ(observer.GetLatestState()->guid, guid);
+  EXPECT_EQ(observer.GetLatestState()->observer_guid, observer_guid);
   EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kWiFi);
   // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
@@ -583,7 +583,7 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
   // TODO(michaelcheco): Verify encryption properties once added to the API.
 
   // Put wifi into online state. It's guid should remain active.
@@ -591,7 +591,7 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
 
   // Simulate disconnect and network goes back to kNotConnected, and the
   // active guid should be cleared.
@@ -609,7 +609,7 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
 }
 
 // Test modifying wifi properties
