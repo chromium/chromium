@@ -1348,8 +1348,7 @@ void NGBoxFragmentPainter::PaintBackground(
   if (layout_box.BackgroundIsKnownToBeObscured())
     return;
 
-  // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
-  BackgroundImageGeometry geometry(layout_box);
+  BackgroundImageGeometry geometry(box_fragment_);
   PaintFillLayers(paint_info, background_color,
                   box_fragment_.Style().BackgroundLayers(), paint_rect,
                   geometry, bleed_avoidance);

@@ -1000,4 +1000,39 @@ wtf_size_t PreviousInnerFragmentainerIndex(
   return idx;
 }
 
+PhysicalOffset OffsetInStitchedFragments(
+    const NGPhysicalBoxFragment& fragment,
+    PhysicalSize* out_stitched_fragments_size) {
+  auto writing_direction = fragment.Style().GetWritingDirection();
+  LayoutUnit stitched_block_size;
+  LayoutUnit fragment_block_offset;
+#if DCHECK_IS_ON()
+  bool found_self = false;
+#endif
+  for (const NGPhysicalBoxFragment& walker :
+       To<LayoutBox>(fragment.GetLayoutObject())->PhysicalFragments()) {
+    if (&walker == &fragment) {
+      fragment_block_offset = stitched_block_size;
+#if DCHECK_IS_ON()
+      found_self = true;
+#endif
+    }
+    stitched_block_size += NGFragment(writing_direction, walker).BlockSize();
+  }
+#if DCHECK_IS_ON()
+  DCHECK(found_self);
+#endif
+  LogicalSize stitched_fragments_logical_size(
+      NGFragment(writing_direction, fragment).InlineSize(),
+      stitched_block_size);
+  PhysicalSize stitched_fragments_physical_size(ToPhysicalSize(
+      stitched_fragments_logical_size, writing_direction.GetWritingMode()));
+  if (out_stitched_fragments_size)
+    *out_stitched_fragments_size = stitched_fragments_physical_size;
+  LogicalOffset offset_in_stitched_box(LayoutUnit(), fragment_block_offset);
+  WritingModeConverter converter(writing_direction,
+                                 stitched_fragments_physical_size);
+  return converter.ToPhysical(offset_in_stitched_box, fragment.Size());
+}
+
 }  // namespace blink
