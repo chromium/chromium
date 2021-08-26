@@ -47059,6 +47059,7 @@ from previous Chrome versions.
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
   <int value="-1959563554" label="ChromeOSAccountManager:enabled"/>
+  <int value="-1958364669" label="QueryTilesSegmentation:enabled"/>
   <int value="-1958315092" label="EnableGamepadButtonAxisEvents:disabled"/>
   <int value="-1957328398" label="MacSystemShareMenu:disabled"/>
   <int value="-1956747298" label="LayeredAPI:enabled"/>
@@ -49281,6 +49282,7 @@ from previous Chrome versions.
   <int value="-205975637" label="WebUIDarkMode:enabled"/>
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
+  <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>

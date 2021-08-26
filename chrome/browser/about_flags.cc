@@ -630,6 +630,20 @@ const FeatureEntry::FeatureVariation kSharingHubLinkToggleVariations[] = {
      base::size(kSharingHubLinkToggle_ImageEnabled), nullptr},
     {"screenshot enabled by default", kSharingHubLinkToggle_ScreenshotEnabled,
      base::size(kSharingHubLinkToggle_ScreenshotEnabled), nullptr}};
+
+const FeatureEntry::FeatureParam kShowSingleRowMVTiles[] = {
+    {"most_visited_max_rows_normal_screen", "1"},
+    {"most_visited_max_rows_small_screen", "1"},
+    {"small_screen_height_threshold_dp", "700"}};
+const FeatureEntry::FeatureParam kShowTwoRowsMVTiles[] = {
+    {"most_visited_max_rows_normal_screen", "2"},
+    {"most_visited_max_rows_small_screen", "2"},
+    {"small_screen_height_threshold_dp", "700"}};
+const FeatureEntry::FeatureVariation kQueryTilesVariations[] = {
+    {"(show single row of MV tiles)", kShowSingleRowMVTiles,
+     base::size(kShowSingleRowMVTiles), nullptr},
+    {"(show two rows of MV tiles)", kShowTwoRowsMVTiles,
+     base::size(kShowTwoRowsMVTiles), nullptr}};
 #endif  // OS_ANDROID
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -3754,7 +3768,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kOfflineIndicatorV2)},
     {"query-tiles", flag_descriptions::kQueryTilesName,
      flag_descriptions::kQueryTilesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTiles)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(query_tiles::features::kQueryTiles,
+                                    kQueryTilesVariations,
+                                    "QueryTilesVariations")},
     {"query-tiles-ntp", flag_descriptions::kQueryTilesNTPName,
      flag_descriptions::kQueryTilesNTPDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesInNTP)},
@@ -3791,6 +3807,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"query-tiles-rank-tiles", flag_descriptions::kQueryTilesRankTilesName,
      flag_descriptions::kQueryTilesRankTilesDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesRankTiles)},
+    {"query-tiles-segmentation", flag_descriptions::kQueryTilesSegmentationName,
+     flag_descriptions::kQueryTilesSegmentationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesSegmentation)},
     {"query-tiles-swap-trending",
      flag_descriptions::kQueryTilesSwapTrendingName,
      flag_descriptions::kQueryTilesSwapTrendingDescription, kOsAndroid,

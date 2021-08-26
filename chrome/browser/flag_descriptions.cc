@@ -3295,6 +3295,10 @@ const char kQueryTilesMoreTrendingDescription[] =
 const char kQueryTilesRankTilesName[] = "Query Tiles - rank tiles on server";
 const char kQueryTilesRankTilesDescription[] =
     "Rank tiles on server based on client context";
+const char kQueryTilesSegmentationName[] =
+    "Query Tiles - use segmentation rules";
+const char kQueryTilesSegmentationDescription[] =
+    "enable segmentation rules to decide whether to show query tiles";
 const char kQueryTilesSwapTrendingName[] =
     "Query Tiles - Swap trending queries";
 const char kQueryTilesSwapTrendingDescription[] =

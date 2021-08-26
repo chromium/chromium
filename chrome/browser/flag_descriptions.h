@@ -1885,6 +1885,8 @@ extern const char kQueryTilesMoreTrendingName[];
 extern const char kQueryTilesMoreTrendingDescription[];
 extern const char kQueryTilesRankTilesName[];
 extern const char kQueryTilesRankTilesDescription[];
+extern const char kQueryTilesSegmentationName[];
+extern const char kQueryTilesSegmentationDescription[];
 extern const char kQueryTilesSwapTrendingName[];
 extern const char kQueryTilesSwapTrendingDescription[];
 
