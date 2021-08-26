@@ -311,7 +311,8 @@ void WebAppMover::OnAllUninstalled(
             // user (and we will segfault). Instead, set the user display mode
             // after installation is complete.
             DCHECK(web_app_info);
-            web_app_info->open_as_window = false;
+            web_app_info->user_display_mode =
+                blink::mojom::DisplayMode::kBrowser;
             std::move(acceptance_callback).Run(true, std::move(web_app_info));
           }),
       base::BindOnce(&WebAppMover::OnInstallCompleted,

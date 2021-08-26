@@ -123,8 +123,9 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
                  l10n_util::GetStringUTF16(IDS_INSTALL_PWA_BUTTON_LABEL));
   base::TrimWhitespace(web_app_info_->title, base::TRIM_ALL,
                        &web_app_info_->title);
-  // PWAs should always be configured to open in a window.
-  DCHECK(web_app_info_->open_as_window);
+  // PWAs should always be configured not to open in a browser tab.
+  DCHECK_NE(web_app_info_->user_display_mode,
+            blink::mojom::DisplayMode::kBrowser);
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 

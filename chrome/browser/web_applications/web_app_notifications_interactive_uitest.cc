@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
       https_server()->GetURL("/web_app_notifications/index.html");
 
   const AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  // The installation opens a new Browser window: |open_as_window| is true.
+  // The installation opens a new Browser window: |user_display_mode| is
+  // kStandalone.
   SetAppBrowserForAppId(app_id);
 
   EXPECT_TRUE(RequestAndAcceptPermission());
@@ -183,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
       https_server()->GetURL("/web_app_notifications/index.html");
 
   const AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  // The installation opens a new Browser window: |open_as_window| is true.
+  // The installation opens a new Browser window: |user_display_mode| is
+  // kStandalone.
   SetAppBrowserForAppId(app_id);
 
   EXPECT_TRUE(RequestAndAcceptPermission());

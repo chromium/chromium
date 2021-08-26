@@ -269,7 +269,7 @@ std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
   info->title = u"Test System App";
   info->theme_color = 0xFF00FF00;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = DisplayMode::kStandalone;
   return info;
 }
 
@@ -423,7 +423,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             info->title = u"Test System App";
             info->theme_color = 0xFF00FF00;
             info->display_mode = blink::mojom::DisplayMode::kStandalone;
-            info->open_as_window = true;
+            info->user_display_mode = DisplayMode::kStandalone;
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
@@ -590,7 +590,7 @@ CreateSystemAppDelegateWithWindowConfig(
         info->title = u"Test System App";
         info->theme_color = 0xFF00FF00;
         info->display_mode = blink::mojom::DisplayMode::kStandalone;
-        info->open_as_window = true;
+        info->user_display_mode = DisplayMode::kStandalone;
         return info;
       }));
 

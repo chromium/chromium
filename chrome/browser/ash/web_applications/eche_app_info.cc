@@ -30,7 +30,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return info;
 }

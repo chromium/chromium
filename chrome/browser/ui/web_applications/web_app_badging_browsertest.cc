@@ -50,7 +50,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     auto sub_app_info = std::make_unique<WebApplicationInfo>();
     sub_app_info->start_url = sub_start_url;
     sub_app_info->scope = sub_start_url;
-    sub_app_info->open_as_window = true;
+    sub_app_info->user_display_mode = DisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
 
     content::WebContents* web_contents = OpenApplication(main_app_id_);

@@ -246,19 +246,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
           : base::UTF8ToUTF16(install_options_.install_url.spec());
   web_app_info.start_url = install_options_.install_url;
 
-  switch (install_options_.user_display_mode) {
-    case DisplayMode::kUndefined:
-    case DisplayMode::kBrowser:
-      web_app_info.open_as_window = false;
-      break;
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kStandalone:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
-      web_app_info.open_as_window = true;
-      break;
-  }
+  web_app_info.user_display_mode = install_options_.user_display_mode;
 
   WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;

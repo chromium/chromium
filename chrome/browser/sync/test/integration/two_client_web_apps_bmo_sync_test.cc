@@ -264,12 +264,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   WebApplicationInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
-  info.open_as_window = true;
+  info.user_display_mode = DisplayMode::kStandalone;
 
   // Install web app to both profiles.
   AppId app_id = InstallApp(info, GetProfile(0));
   // The web app has a different open on the second profile.
-  info.open_as_window = false;
+  info.user_display_mode = DisplayMode::kBrowser;
   AppId app_id2 = InstallApp(info, GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);

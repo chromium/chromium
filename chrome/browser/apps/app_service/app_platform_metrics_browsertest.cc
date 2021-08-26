@@ -28,12 +28,12 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
  public:
   AppId InstallWebApp(const GURL& start_url,
                       blink::mojom::DisplayMode display_mode,
-                      bool open_as_window) {
+                      blink::mojom::DisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = display_mode;
-    web_app_info->open_as_window = open_as_window;
+    web_app_info->user_display_mode = user_display_mode;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
@@ -122,16 +122,17 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, UnknownWebApp) {
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
   const AppId standalone_app_id = InstallWebApp(
       GURL("https://standalone.example.com/"),
-      blink::mojom::DisplayMode::kStandalone, /*open_as_window=*/true);
+      blink::mojom::DisplayMode::kStandalone,
+      /*user_display_mode=*/blink::mojom::DisplayMode::kStandalone);
   const AppId browser_app_id = InstallWebApp(
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
-      /*open_as_window=*/true);
+      /*user_display_mode=*/blink::mojom::DisplayMode::kStandalone);
 
   // Wait for app service to see the newly installed app.
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
-  // When container is specified, |open_as_window| and |display_mode| are
+  // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
 
   EXPECT_EQ(
@@ -154,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
                         apps::mojom::LaunchContainer::kLaunchContainerTab),
       apps::AppTypeName::kChromeBrowser);
 
-  // For a web app with no container given, |open_as_window| true leads to
-  // |AppTypeName::kWeb|.
+  // For a web app with no container given, |user_display_mode| kStandalone
+  // leads to |AppTypeName::kWeb|.
 
   EXPECT_EQ(
       GetWebAppTypeName(standalone_app_id,
@@ -169,18 +170,19 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
-  const AppId standalone_app_id = InstallWebApp(
-      GURL("https://standalone.example.com/"),
-      blink::mojom::DisplayMode::kStandalone, /*open_as_window=*/false);
+  const AppId standalone_app_id =
+      InstallWebApp(GURL("https://standalone.example.com/"),
+                    blink::mojom::DisplayMode::kStandalone,
+                    /*user_display_mode=*/blink::mojom::DisplayMode::kBrowser);
   const AppId browser_app_id = InstallWebApp(
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
-      /*open_as_window=*/false);
+      /*user_display_mode=*/blink::mojom::DisplayMode::kBrowser);
 
   // Wait for app service to see the newly installed app.
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
-  // When container is specified, |open_as_window| and |display_mode| are
+  // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
 
   EXPECT_EQ(
@@ -203,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
                         apps::mojom::LaunchContainer::kLaunchContainerTab),
       apps::AppTypeName::kChromeBrowser);
 
-  // For a web app with no container given, |open_as_window| false leads to
-  // |AppTypeName::kChromeBrowser|.
+  // For a web app with no container given, |user_display_mode| kBrowser leads
+  // to |AppTypeName::kChromeBrowser|.
 
   EXPECT_EQ(
       GetWebAppTypeName(standalone_app_id,

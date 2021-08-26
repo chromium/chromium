@@ -243,7 +243,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     if (!launch_in_browser)
-      web_app_info->open_as_window = true;
+      web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));

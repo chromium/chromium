@@ -1519,7 +1519,7 @@ web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
-  web_app_info->open_as_window = true;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_info->title = u"A Web App";
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
@@ -1745,7 +1745,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     WebApplicationInfo info;
     info.start_url = GURL(kStartUrl);
     info.title = kAppName;
-    info.open_as_window = true;
+    info.user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_finalizer.FinalizeInstall(
         info, options,
         base::BindLambdaForTesting(
@@ -2421,7 +2421,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
-    info->open_as_window = true;
+    info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
     web_app::AppId app_id =
         web_app::test::InstallWebApp(browser()->profile(), std::move(info));

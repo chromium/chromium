@@ -496,13 +496,12 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
 void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
     const WebAppInstallParams& install_params,
     WebApplicationInfo& web_app_info) {
-  if (install_params.user_display_mode != DisplayMode::kUndefined) {
-    web_app_info.open_as_window =
-        install_params.user_display_mode != DisplayMode::kBrowser;
-  }
-  if (!install_params.override_manifest_id.has_value()) {
+  if (install_params.user_display_mode != DisplayMode::kUndefined)
+    web_app_info.user_display_mode = install_params.user_display_mode;
+
+  if (!install_params.override_manifest_id.has_value())
     web_app_info.manifest_id = install_params.override_manifest_id;
-  }
+
   // If `additional_search_terms` was a manifest property, it would be
   // sanitized while parsing the manifest. Since it's not, we sanitize it
   // here.
@@ -787,10 +786,8 @@ void WebAppInstallTask::OnDialogCompleted(
 
     UpdateFinalizerClientData(install_params_, &finalize_options);
 
-    if (install_params_->user_display_mode != DisplayMode::kUndefined) {
-      web_app_info_copy.open_as_window =
-          install_params_->user_display_mode != DisplayMode::kBrowser;
-    }
+    if (install_params_->user_display_mode != DisplayMode::kUndefined)
+      web_app_info_copy.user_display_mode = install_params_->user_display_mode;
   }
 
   install_finalizer_->FinalizeInstall(
@@ -878,14 +875,14 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
 
   auto hooks_created_callback =
       base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
-                     web_app_info->open_as_window, app_id);
+                     web_app_info->user_display_mode, app_id);
 
   os_integration_manager_->InstallOsHooks(app_id,
                                           std::move(hooks_created_callback),
                                           std::move(web_app_info), options);
 }
 
-void WebAppInstallTask::OnOsHooksCreated(bool open_as_window,
+void WebAppInstallTask::OnOsHooksCreated(DisplayMode user_display_mode,
                                          const AppId& app_id,
                                          const OsHooksErrors os_hook_errors) {
   if (ShouldStopInstall())
@@ -898,7 +895,7 @@ void WebAppInstallTask::OnOsHooksCreated(bool open_as_window,
     const bool can_reparent_tab =
         install_finalizer_->CanReparentTab(app_id, !error);
 
-    if (can_reparent_tab && open_as_window) {
+    if (can_reparent_tab && (user_display_mode != DisplayMode::kBrowser)) {
       install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }

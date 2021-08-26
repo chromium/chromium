@@ -66,11 +66,10 @@ std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
   // Most fields are expected to be populated by a manifest data in a subsequent
   // override install process data flow. TODO(loyso): Make it more robust.
   web_application_info->description = base::UTF8ToUTF16(app.description());
-  // |open_as_window| is a user's display mode value and it is typically
+  // |user_display_mode| is a user's display mode value and it is typically
   // populated by a UI dialog in production code. We set it here for testing
   // purposes.
-  web_application_info->open_as_window =
-      app.user_display_mode() == DisplayMode::kStandalone;
+  web_application_info->user_display_mode = app.user_display_mode();
   return web_application_info;
 }
 

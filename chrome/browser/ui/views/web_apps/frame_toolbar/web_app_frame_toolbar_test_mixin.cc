@@ -30,7 +30,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";
   web_app_info->display_mode = web_app::DisplayMode::kMinimalUi;
-  web_app_info->open_as_window = true;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   web_app::AppId app_id =
       web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));

@@ -62,7 +62,7 @@ web_app::AppId InstallTestWebApp(Profile* profile) {
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->start_url = GURL(kStartUrl);
   app_info->title = kAppName;
-  app_info->open_as_window = true;
+  app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return web_app::test::InstallWebApp(profile, std::move(app_info));
 }
 

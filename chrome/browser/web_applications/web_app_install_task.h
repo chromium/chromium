@@ -240,7 +240,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       std::unique_ptr<WebApplicationInfo> web_app_info,
       const AppId& app_id,
       InstallResultCode code);
-  void OnOsHooksCreated(bool open_as_window,
+  void OnOsHooksCreated(DisplayMode user_display_mode,
                         const AppId& app_id,
                         const OsHooksErrors os_hook_errors);
 

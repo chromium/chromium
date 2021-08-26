@@ -35,7 +35,7 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   // TODO(b/195127670): Figure out the theme color.
   info->theme_color = SK_ColorBLACK;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   // TODO(b/195127670): Add info.url_handlers for https://projector.apps.chrome
   // domain. Requires web-app-origin-association file at the new domain to prove

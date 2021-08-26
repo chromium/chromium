@@ -50,7 +50,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   const AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = DisplayMode::kStandalone;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 

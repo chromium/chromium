@@ -538,22 +538,9 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
         base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
   }
 
-  // Preserve the user's choice of opening in browser tab or standalone window.
-  switch (registrar_.GetAppUserDisplayMode(app_id_)) {
-    case DisplayMode::kBrowser:
-      web_application_info_->open_as_window = false;
-      break;
-    case DisplayMode::kStandalone:
-      web_application_info_->open_as_window = true;
-      break;
-    case DisplayMode::kUndefined:
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
-      NOTREACHED();
-      break;
-  }
+  // Preserve the user's choice of form factor to open the app with.
+  web_application_info_->user_display_mode =
+      registrar_.GetAppUserDisplayMode(app_id_);
 
   stage_ = Stage::kPendingMaybeReadExistingIcons;
   // If icon updating is disabled, then read the existing icons so they can be

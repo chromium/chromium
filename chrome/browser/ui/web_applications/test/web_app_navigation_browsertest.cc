@@ -235,7 +235,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->description = u"Test description";
-  web_app_info->open_as_window = true;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return test::InstallWebApp(profile(), std::move(web_app_info));
 }

@@ -448,7 +448,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
                               ->num_add_app_to_quick_launch_bar_calls());
             EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
 
-            EXPECT_FALSE(web_app_info().open_as_window);
+            EXPECT_EQ(web_app_info().user_display_mode, DisplayMode::kBrowser);
             EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
                       finalize_options().install_source);
 
@@ -613,7 +613,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(app_id.has_value());
-                      EXPECT_TRUE(web_app_info().open_as_window);
+                      EXPECT_EQ(web_app_info().user_display_mode,
+                                DisplayMode::kStandalone);
                       run_loop.Quit();
                     }));
 
@@ -638,7 +639,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(app_id.has_value());
-                      EXPECT_FALSE(web_app_info().open_as_window);
+                      EXPECT_EQ(web_app_info().user_display_mode,
+                                DisplayMode::kBrowser);
                       run_loop.Quit();
                     }));
 
@@ -730,7 +732,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
 
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
             EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
-            EXPECT_TRUE(web_app_info.open_as_window);
+            EXPECT_EQ(web_app_info.user_display_mode, DisplayMode::kStandalone);
             EXPECT_TRUE(web_app_info.icon_infos.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
@@ -774,7 +776,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
 
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
             EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
-            EXPECT_TRUE(web_app_info.open_as_window);
+            EXPECT_EQ(web_app_info.user_display_mode, DisplayMode::kStandalone);
             EXPECT_TRUE(web_app_info.icon_infos.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
@@ -1114,7 +1116,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 
         EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
 
-        EXPECT_TRUE(web_app_info().open_as_window);
+        EXPECT_EQ(web_app_info().user_display_mode, DisplayMode::kStandalone);
         EXPECT_EQ(webapps::WebappInstallSource::SYSTEM_DEFAULT,
                   finalize_options().install_source);
 

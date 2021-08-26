@@ -37,7 +37,7 @@ class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
     auto app_info = std::make_unique<WebApplicationInfo>();
     app_info->title = u"Test app 2";
     app_info->start_url = GURL("https://example2.com");
-    app_info->open_as_window = true;
+    app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     return app_info;
   }
 
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   app_info = std::make_unique<WebApplicationInfo>();
   app_info->title = u"Test app 3";
   app_info->start_url = GURL("https://example3.com");
-  app_info->open_as_window = true;
+  app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   chrome::ShowPWAInstallBubble(
       browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       base::DoNothing());

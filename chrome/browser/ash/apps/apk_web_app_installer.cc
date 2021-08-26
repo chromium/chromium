@@ -93,7 +93,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
         static_cast<SkColor>(web_app_info->theme_color), SK_AlphaOPAQUE);
   }
   web_app_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_info_->open_as_window = true;
+  web_app_info_->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   is_web_only_twa_ = web_app_info->is_web_only_twa;
   sha256_fingerprint_ = web_app_info->certificate_sha256_fingerprint;

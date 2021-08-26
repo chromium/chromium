@@ -323,7 +323,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = web_app::DisplayMode::kStandalone;
 
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }

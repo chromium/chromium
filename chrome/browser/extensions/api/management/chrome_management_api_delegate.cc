@@ -253,7 +253,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
-    web_app_info->open_as_window = false;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kBrowser;
 
     if (!image_result.image.IsEmpty()) {
       web_app_info->icon_bitmaps.any[image_result.image.Width()] =

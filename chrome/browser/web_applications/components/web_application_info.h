@@ -241,11 +241,11 @@ struct WebApplicationInfo {
   // App preference to control display fallback ordering
   std::vector<blink::mojom::DisplayMode> display_override;
 
-  // User preference as to whether the app should be opened in a window.
-  // If false, the app will be opened in a tab.
-  // If true, the app will be opened in a window, with minimal-ui buttons
-  // if display_mode is kBrowser or kMinimalUi.
-  bool open_as_window = false;
+  // User preference for whether the app should be opened as a tab or in an app
+  // window. Must be either kBrowser or kStandalone, this will be checked by
+  // WebApp::SetUserDisplayMode().
+  blink::mojom::DisplayMode user_display_mode =
+      blink::mojom::DisplayMode::kBrowser;
 
   // Whether standalone app windows should have a tab strip. Currently a user
   // preference for the sake of experimental exploration.

@@ -415,7 +415,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A minimal-ui app";
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->display_override = display_overrides;
 
     return helper()->InstallAndLaunchCustomWebApp(

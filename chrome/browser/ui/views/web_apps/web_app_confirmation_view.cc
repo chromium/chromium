@@ -127,7 +127,7 @@ WebAppConfirmationView::WebAppConfirmationView(
     open_as_tabbed_window_radio_ =
         layout->AddView(std::move(open_as_tabbed_window_radio));
 
-    if (!web_app_info_->open_as_window)
+    if (web_app_info_->user_display_mode == web_app::DisplayMode::kBrowser)
       open_as_tab_radio_->SetChecked(true);
     else if (!web_app_info_->enable_experimental_tabbed_window)
       open_as_window_radio_->SetChecked(true);
@@ -136,7 +136,8 @@ WebAppConfirmationView::WebAppConfirmationView(
   } else {
     auto open_as_window_checkbox = std::make_unique<views::Checkbox>(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW));
-    open_as_window_checkbox->SetChecked(web_app_info_->open_as_window);
+    open_as_window_checkbox->SetChecked(web_app_info_->user_display_mode !=
+                                        web_app::DisplayMode::kBrowser);
     layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
     layout->SkipColumns(1);
     open_as_window_checkbox_ =
@@ -174,14 +175,18 @@ bool WebAppConfirmationView::Accept() {
   web_app_info_->title = GetTrimmedTitle();
   if (ShowRadioButtons()) {
     if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->open_as_window = true;
+      web_app_info_->user_display_mode = web_app::DisplayMode::kStandalone;
       web_app_info_->enable_experimental_tabbed_window = true;
     } else {
-      web_app_info_->open_as_window = open_as_window_radio_->GetChecked();
+      web_app_info_->user_display_mode = open_as_window_radio_->GetChecked()
+                                             ? web_app::DisplayMode::kStandalone
+                                             : web_app::DisplayMode::kBrowser;
       web_app_info_->enable_experimental_tabbed_window = false;
     }
   } else {
-    web_app_info_->open_as_window = open_as_window_checkbox_->GetChecked();
+    web_app_info_->user_display_mode = open_as_window_checkbox_->GetChecked()
+                                           ? web_app::DisplayMode::kStandalone
+                                           : web_app::DisplayMode::kBrowser;
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;

@@ -41,7 +41,7 @@ void OnWebAppInstallShowInstallDialog(
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);
   if (for_installable_site == ForInstallableSite::kYes) {
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     chrome::ShowPWAInstallBubble(
         initiator_web_contents, std::move(web_app_info),
         std::move(web_app_acceptance_callback), iph_state);

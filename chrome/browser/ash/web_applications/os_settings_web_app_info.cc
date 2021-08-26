@@ -33,7 +33,7 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
   info->theme_color = 0xffffffff;
   info->background_color = 0xffffffff;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
 }
 

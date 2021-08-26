@@ -227,8 +227,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   task->ExpectAppId(sync_app_id);
   task->SetInstallParams(CreateSyncInstallParams(
       web_application_info->manifest_id, start_url, web_application_info->title,
-      web_application_info->open_as_window ? DisplayMode::kStandalone
-                                           : DisplayMode::kBrowser));
+      web_application_info->user_display_mode));
 
   OnceInstallCallback task_completed_callback = base::BindOnce(
       &WebAppInstallManager::
@@ -312,8 +311,7 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
     web_application_info->scope = web_app->sync_fallback_data().scope;
     web_application_info->theme_color =
         web_app->sync_fallback_data().theme_color;
-    web_application_info->open_as_window =
-        web_app->user_display_mode() != DisplayMode::kBrowser;
+    web_application_info->user_display_mode = web_app->user_display_mode();
     web_application_info->icon_infos = web_app->sync_fallback_data().icon_infos;
 
     EnqueueInstallAppFromSync(web_app->app_id(),

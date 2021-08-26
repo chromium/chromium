@@ -411,7 +411,7 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";
     web_app_info->scope = web_app_info->start_url;
     web_app_info->description = web_app_info->title;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
     shortcut_info1.name = u"shortcut_info1";
     shortcut_info1.url = GURL(".");

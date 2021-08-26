@@ -181,9 +181,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   if (webapps::InstallableMetrics::IsUserInitiatedInstallSource(
           options.install_source) ||
       !existing_web_app) {
-    web_app->SetUserDisplayMode(web_app_info.open_as_window
-                                    ? DisplayMode::kStandalone
-                                    : DisplayMode::kBrowser);
+    web_app->SetUserDisplayMode(web_app_info.user_display_mode);
   }
 
   // `WebApp::chromeos_data` has a default value already. Only override if the

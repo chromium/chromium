@@ -106,7 +106,7 @@ std::unique_ptr<WebApplicationInfo> CreateCommonWebAppInfoForMediaWebApp() {
   info->theme_color = 0xff202124;
   info->background_color = 0xff3c4043;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
 }
 

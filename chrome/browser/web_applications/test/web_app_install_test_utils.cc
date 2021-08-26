@@ -70,7 +70,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.scope = start_url;
   web_app_info.title = base::UTF8ToUTF16(app_name);
   web_app_info.description = base::UTF8ToUTF16(app_name);
-  web_app_info.open_as_window = true;
+  web_app_info.user_display_mode = DisplayMode::kStandalone;
 
   WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
@@ -128,7 +128,7 @@ AppId InstallWebAppWithUrlHandlers(
       std::make_unique<WebApplicationInfo>();
   info->start_url = start_url;
   info->title = app_name;
-  info->open_as_window = true;
+  info->user_display_mode = DisplayMode::kStandalone;
   info->url_handlers = url_handlers;
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(info));
