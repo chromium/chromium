@@ -177,9 +177,6 @@ js_library("files_safe_media") {
   ]
 }
 
-js_library("files_safe_media_webview_content") {
-}
-
 js_library("files_spinner") {
 }
 

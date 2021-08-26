@@ -98,4 +98,5 @@ window.onload = () => {
   }, 500);
 };
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media_webview_content.js
+// clang-format off
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/sandboxed/files_media_content.js

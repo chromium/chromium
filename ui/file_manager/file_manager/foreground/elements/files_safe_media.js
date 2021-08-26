@@ -38,15 +38,16 @@ const FilesSafeMedia = Polymer({
    * @return {string}
    */
   sourceFile_: function() {
+    const sandboxedRelativePath = 'foreground/elements/sandboxed/';
     switch (this.type) {
       case 'image':
-        return 'foreground/elements/files_safe_img_webview_content.html';
+        return sandboxedRelativePath + 'files_img_content.html';
       case 'audio':
-        return 'foreground/elements/files_safe_audio_webview_content.html';
+        return sandboxedRelativePath + 'files_audio_content.html';
       case 'video':
-        return 'foreground/elements/files_safe_video_webview_content.html';
+        return sandboxedRelativePath + 'files_video_content.html';
       case 'html':
-        return 'foreground/elements/files_safe_text_webview_content.html';
+        return sandboxedRelativePath + 'files_text_content.html';
       default:
         console.error('Unsupported type: ' + this.type);
         return '';
@@ -66,8 +67,7 @@ const FilesSafeMedia = Polymer({
       webview.partition = 'trusted';
       webview.allowtransparency = 'true';
       this.$.content.appendChild(webview);
-      webview.addEventListener(
-          'contentload', this.onSrcChange_.bind(this));
+      webview.addEventListener('contentload', () => this.onSrcChange_());
       webview.src = this.sourceFile_();
     } else if (this.src && this.webview_.contentWindow) {
       const data = {};
