@@ -1,1 +1,2 @@
-textField name='This is a test.' nameFrom=relatedElement
+# BUG: The expected result is 'This is a test'
+textField name='is a test' nameFrom=relatedElement

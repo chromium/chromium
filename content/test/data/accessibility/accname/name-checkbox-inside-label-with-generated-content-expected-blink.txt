@@ -1,1 +1,2 @@
-checkBox name='foo baz' nameFrom=relatedElement
+# BUG: The expected result is 'foo baz'
+checkBox name=' bar ' nameFrom=title

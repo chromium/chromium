@@ -1,1 +1,2 @@
-radioButton name='foo baz' nameFrom=relatedElement
+# BUG: The expected result is 'foo baz'
+radioButton name=' bar ' nameFrom=title

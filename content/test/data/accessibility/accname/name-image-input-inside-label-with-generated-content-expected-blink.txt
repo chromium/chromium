@@ -1,1 +1,2 @@
-button name='foo baz' nameFrom=relatedElement
+# BUG: The expected result is 'foo baz'
+button name='bar' nameFrom=title
