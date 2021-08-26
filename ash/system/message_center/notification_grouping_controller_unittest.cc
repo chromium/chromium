@@ -5,11 +5,13 @@
 #include "ash/system/message_center/notification_grouping_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/message_center/views/message_popup_view.h"
 
 using message_center::kIdSuffixForGroupContainerNotification;
 using message_center::MessageCenter;
@@ -39,15 +41,18 @@ class NotificationGroupingControllerTest : public AshTestBase {
     return id;
   }
 
-  Notification* GetPopupNotification(const std::string& id) {
-    auto popups = MessageCenter::Get()->GetPopupNotifications();
-    auto it =
-        std::find_if(popups.begin(), popups.end(),
-                     [&](const auto& popup) { return popup->id() == id; });
-    if (it == popups.end())
-      return nullptr;
+  void AnimateUntilIdle() {
+    AshMessagePopupCollection* popup_collection =
+        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
 
-    return *it;
+    while (popup_collection->animation()->is_animating()) {
+      popup_collection->animation()->SetCurrentValue(1.0);
+      popup_collection->animation()->End();
+    }
+  }
+
+  message_center::MessagePopupView* GetPopupView(const std::string& id) {
+    return GetPrimaryUnifiedSystemTray()->GetPopupViewForNotificationID(id);
   }
 
   // Construct a new notification for testing.
@@ -117,6 +122,8 @@ TEST_F(NotificationGroupingControllerTest, BasicRemoval) {
 
 TEST_F(NotificationGroupingControllerTest,
        ParentNotificationReshownWithNewChild) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+
   std::string id0;
   const char group_id[] = "group";
   id0 = AddNotificationWithNotifierId(group_id);
@@ -125,21 +132,23 @@ TEST_F(NotificationGroupingControllerTest,
   tmp = AddNotificationWithNotifierId(group_id);
 
   std::string parent_id = id0 + kIdSuffixForGroupContainerNotification;
-  EXPECT_TRUE(GetPopupNotification(parent_id));
+  EXPECT_TRUE(GetPopupView(parent_id));
 
   // Toggle the system tray to dismiss all popups.
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
-  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  tray->ShowBubble();
+  tray->CloseBubble();
 
-  EXPECT_FALSE(GetPopupNotification(parent_id));
+  EXPECT_FALSE(GetPopupView(parent_id));
 
   // Adding notification with a different notifier id should have no effect.
   AddNotificationWithNotifierId("tmp");
-  EXPECT_FALSE(GetPopupNotification(parent_id));
+  EXPECT_FALSE(GetPopupView(parent_id));
+
+  AnimateUntilIdle();
 
   AddNotificationWithNotifierId(group_id);
 
-  EXPECT_TRUE(GetPopupNotification(parent_id));
+  EXPECT_TRUE(GetPopupView(parent_id));
 }
 
 TEST_F(NotificationGroupingControllerTest,

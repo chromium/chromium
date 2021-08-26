@@ -482,6 +482,9 @@ void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
 
 void MessageCenterImpl::ResetSinglePopup(const std::string& id) {
   notification_list_->ResetSinglePopup(id);
+  for (MessageCenterObserver& observer : observer_list_) {
+    observer.OnNotificationUpdated(id);
+  }
 }
 
 void MessageCenterImpl::DisplayedNotification(

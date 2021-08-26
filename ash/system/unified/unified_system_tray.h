@@ -17,7 +17,6 @@
 
 namespace message_center {
 class MessagePopupView;
-class NotificationViewController;
 }  // namespace message_center
 
 namespace ash {
@@ -27,6 +26,7 @@ class NetworkTrayView;
 class TimeTrayItemView;
 }  // namespace tray
 
+class AshMessagePopupCollection;
 class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
@@ -161,7 +161,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
-  message_center::NotificationViewController* GetMessagePopupCollection();
+  AshMessagePopupCollection* GetMessagePopupCollection();
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
@@ -173,6 +173,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 
+  friend class NotificationGroupingControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 

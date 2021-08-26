@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/notification_grouping_controller.h"
 
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"

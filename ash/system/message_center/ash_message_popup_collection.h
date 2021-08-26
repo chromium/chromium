@@ -77,6 +77,7 @@ class ASH_EXPORT AshMessagePopupCollection
 
  private:
   friend class AshMessagePopupCollectionTest;
+  friend class NotificationGroupingControllerTest;
 
   // message_center::MessageView::Observer:
   void OnSlideOut(const std::string& notification_id) override;

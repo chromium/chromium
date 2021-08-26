@@ -524,8 +524,7 @@ UnifiedSystemTray::GetPopupViewForNotificationID(
   return ui_delegate_->GetPopupViewForNotificationID(notification_id);
 }
 
-message_center::NotificationViewController*
-UnifiedSystemTray::GetMessagePopupCollection() {
+AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
   return ui_delegate_->message_popup_collection();
 }
 
