@@ -190,6 +190,10 @@ extern const char kAutofillEnableToolbarStatusChipDescription[];
 extern const char kAutofillEnableVirtualCardName[];
 extern const char kAutofillEnableVirtualCardDescription[];
 
+extern const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[];
+extern const char
+    kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[];
+
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 

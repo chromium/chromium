@@ -393,6 +393,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "autofill-enable-virtual-cards-risk-based-authentication",
+    "owners": [ "siyua", "jsaul@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "autofill-fill-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 99

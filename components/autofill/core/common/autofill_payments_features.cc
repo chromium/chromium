@@ -108,6 +108,12 @@ const base::Feature kAutofillEnableToolbarStatusChip{
 const base::Feature kAutofillEnableVirtualCard{
     "AutofillEnableVirtualCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, virtual card retrieval will pass an optional
+// authentication based on risk level.
+const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{
+    "AutofillEnableVirtualCardsRiskBasedAuthentication",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.
 const base::Feature kAutofillFillMerchantPromoCodeFields{

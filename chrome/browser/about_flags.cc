@@ -7227,6 +7227,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableOfferNotificationCrossTabTracking)},
 
+    {"autofill-enable-virtual-cards-risk-based-authentication",
+     flag_descriptions::kAutofillEnableVirtualCardsRiskBasedAuthenticationName,
+     flag_descriptions::
+         kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableVirtualCardsRiskBasedAuthentication)},
+
     {"autofill-fix-offer-in-incognito",
      flag_descriptions::kAutofillFixOfferInIncognitoName,
      flag_descriptions::kAutofillFixOfferInIncognitoDescription, kOsAll,

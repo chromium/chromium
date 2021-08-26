@@ -323,6 +323,12 @@ const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
 
+const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[] =
+    "Enable risk based authentication for Autofill Virtual Card Numbers";
+const char kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[] =
+    "When enabled, risk based authentication is used before autofilling "
+    "Virtual Card information into forms.";
+
 const char kAutofillFillMerchantPromoCodeFieldsName[] =
     "Enable Autofill of promo code fields in forms";
 const char kAutofillFillMerchantPromoCodeFieldsDescription[] =

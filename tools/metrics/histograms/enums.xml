@@ -50067,6 +50067,8 @@ from previous Chrome versions.
   <int value="358493847" label="BackgroundLoader:disabled"/>
   <int value="359601954" label="CrostiniUsbSupport:enabled"/>
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
+  <int value="359918746"
+      label="AutofillEnableVirtualCardsRiskBasedAuthentication:disabled"/>
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
   <int value="361984896"
@@ -51354,6 +51356,8 @@ from previous Chrome versions.
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1371092708" label="disable-desktop-capture-picker-old-ui"/>
+  <int value="1371190773"
+      label="AutofillEnableVirtualCardsRiskBasedAuthentication:enabled"/>
   <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
