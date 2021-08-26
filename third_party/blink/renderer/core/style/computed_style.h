@@ -2099,6 +2099,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
+  bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
   bool IsDisplayFlexibleOrGridBox() const {
     return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
   }

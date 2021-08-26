@@ -417,7 +417,9 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     // on). Inline display types end up on a line, and are therefore monolithic,
     // so we can allow those.
     if (!style.IsDisplayInlineType()) {
-      if (style.IsDisplayTableType() || style.IsDisplayFlexibleOrGridBox() ||
+      if (style.IsDisplayTableType() || style.IsDisplayGridBox() ||
+          (style.IsDisplayFlexibleBox() &&
+           !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled()) ||
           style.IsDeprecatedFlexboxUsingFlexLayout()) {
         UseCounter::Count(
             document,
