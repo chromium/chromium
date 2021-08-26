@@ -37,6 +37,10 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
     scoped_feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
   }
 
+  void TearDown() override {
+    FirstPartySetsComponentInstallerPolicy::ResetForTesting();
+  }
+
  protected:
   base::test::TaskEnvironment env_;
 

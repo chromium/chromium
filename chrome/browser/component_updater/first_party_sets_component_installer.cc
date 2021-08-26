@@ -130,13 +130,9 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  if (install_dir.empty())
+  if (install_dir.empty() || !GetConfigPathInstance().empty())
     return;
 
-  if (component_installed_)
-    return;
-
-  component_installed_ = true;
   VLOG(1) << "First-Party Sets Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
@@ -178,6 +174,11 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
           net::features::kFirstPartySetsIsDogfooder.Get() ? "true" : "false",
       },
   };
+}
+
+// static
+void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
+  GetConfigPathInstance().clear();
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
