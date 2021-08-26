@@ -430,11 +430,7 @@ void BrowserAppInstanceTracker::OnTabCreated(Browser* browser,
 
 void BrowserAppInstanceTracker::OnTabAttached(Browser* browser,
                                               content::WebContents* contents) {
-  auto it = app_instances_.find(contents);
-  if (it != app_instances_.end()) {
-    auto& app_instance = it->second;
-    MaybeUpdateAppInstance(*app_instance, browser, contents);
-  }
+  OnTabUpdated(browser, contents);
 }
 
 void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,

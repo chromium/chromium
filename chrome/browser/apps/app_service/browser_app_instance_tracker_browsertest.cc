@@ -213,13 +213,23 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
   }
 
-  web_app::AppId InstallWebApp(const std::string& start_url) {
+  web_app::AppId InstallWebApp(const std::string& start_url,
+                               blink::mojom::DisplayMode user_display_mode) {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(start_url);
+    info->user_display_mode = user_display_mode;
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     auto app_id = web_app::test::InstallWebApp(profile, std::move(info));
     FlushAppService();
     return app_id;
+  }
+
+  web_app::AppId InstallWebAppOpeningAsTab(const std::string& start_url) {
+    return InstallWebApp(start_url, blink::mojom::DisplayMode::kBrowser);
+  }
+
+  web_app::AppId InstallWebAppOpeningAsWindow(const std::string& start_url) {
+    return InstallWebApp(start_url, blink::mojom::DisplayMode::kStandalone);
   }
 
   void UninstallWebApp(const web_app::AppId& app_id) {
@@ -246,8 +256,8 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
     tracker_ = apps::AppServiceProxyFactory::GetForProfile(profile)
                    ->BrowserAppInstanceTracker();
 
-    ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
-    ASSERT_EQ(kAppBId, InstallWebApp("https://b.example.org"));
+    ASSERT_EQ(kAppAId, InstallWebAppOpeningAsTab("https://a.example.org"));
+    ASSERT_EQ(kAppBId, InstallWebAppOpeningAsTab("https://b.example.org"));
   }
 
   void TearDownOnMainThread() override {
@@ -439,21 +449,23 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
+  std::string app_id = InstallWebAppOpeningAsWindow("https://d.example.org");
+
   Browser* browser = nullptr;
   content::WebContents* tab = nullptr;
   aura::Window* window = nullptr;
 
-  // Open app A in a window.
+  // Open app D in a window.(configured to open in a window).
   {
-    SCOPED_TRACE("create a windowed app");
+    SCOPED_TRACE("create a windowed app in a window");
     Recorder recorder(tracker_);
 
-    browser = CreateAppBrowser(kAppAId);
-    tab = InsertForegroundTab(browser, "https://a.example.org");
+    browser = CreateAppBrowser(app_id);
+    tab = InsertForegroundTab(browser, "https://d.example.org");
     EXPECT_EQ(GetWebContentsId(tab), 1);
     window = browser->window()->GetNativeWindow();
     recorder.Verify({
-        {"added", kAppAId, kAppWindow, pid_, window, 1, kVisible, kActive},
+        {"added", app_id, kAppWindow, pid_, window, 1, kVisible, kActive},
     });
   }
 
@@ -464,7 +476,34 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
 
     browser->tab_strip_model()->CloseAllTabs();
     recorder.Verify({
-        {"removed", kAppAId, kAppWindow, pid_, window, 1, kVisible, kActive},
+        {"removed", app_id, kAppWindow, pid_, window, 1, kVisible, kActive},
+    });
+  }
+
+  // Open app A in a window (configured to open in a tab).
+  {
+    SCOPED_TRACE("create a tabbed app in a window");
+    Recorder recorder(tracker_);
+
+    browser = CreateAppBrowser(kAppAId);
+    tab = InsertForegroundTab(browser, "https://a.example.org");
+    EXPECT_EQ(GetWebContentsId(tab), 2);
+    window = browser->window()->GetNativeWindow();
+    // When open in a window it's still an app, even if configured to open in a
+    // tab.
+    recorder.Verify({
+        {"added", kAppAId, kAppWindow, pid_, window, 2, kVisible, kActive},
+    });
+  }
+
+  // Close the browser.
+  {
+    SCOPED_TRACE("close browser");
+    Recorder recorder(tracker_);
+
+    browser->tab_strip_model()->CloseAllTabs();
+    recorder.Verify({
+        {"removed", kAppAId, kAppWindow, pid_, window, 2, kVisible, kActive},
     });
   }
 }
@@ -670,6 +709,46 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabDrag) {
   });
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MoveTabToAppWindow) {
+  // Setup: a browser with two tabs. One tab opens a website that matches the
+  // app configured to open in a window.
+  std::string app_id = InstallWebAppOpeningAsWindow("https://d.example.org");
+
+  auto* browser1 = CreateBrowser();
+  auto* window1 = browser1->window()->GetNativeWindow();
+  InsertForegroundTab(browser1, "https://c.example.org");
+  auto* tab = InsertForegroundTab(browser1, "https://d.example.org");
+  EXPECT_EQ(GetWebContentsId(tab), 0);
+  ASSERT_TRUE(browser1->window()->IsActive());
+
+  // Move the tab from the browser to the newly created app browser. This
+  // simulates "open in window".
+  SCOPED_TRACE("open in window");
+  Recorder recorder(tracker_);
+
+  auto* browser2 = CreateAppBrowser(app_id);
+  auto* window2 = browser2->window()->GetNativeWindow();
+  // Target app browser goes into foreground.
+  browser2->window()->Activate();
+
+  // Detach.
+  int src_index = browser1->tab_strip_model()->GetIndexOfWebContents(tab);
+  auto detached =
+      browser1->tab_strip_model()->DetachWebContentsAtForInsertion(src_index);
+
+  // Attach.
+  int dst_index = browser2->tab_strip_model()->count();
+  browser2->tab_strip_model()->InsertWebContentsAt(
+      dst_index, std::move(detached), TabStripModel::ADD_ACTIVE);
+  recorder.Verify({
+      // source browser goes into background when app browser is created
+      {"updated", kChromeAppId, kChromeWindow, pid_, window1, 0, kVisible,
+       kInactive},
+      // moved tab gets reparented and becomes an app in the new browser
+      {"added", app_id, kAppWindow, pid_, window2, 1, kVisible, kActive},
+  });
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   // Setup: two regular browsers, and one app window browser.
   auto* browser1 = CreateBrowser();
@@ -783,12 +862,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
 
   std::string app_id;
   {
-    SCOPED_TRACE("install app");
+    SCOPED_TRACE("install app opening in a tab");
     Recorder recorder(tracker_);
 
     EXPECT_EQ(GetWebContentsId(tab1), 0);
     EXPECT_EQ(GetWebContentsId(tab3), 0);
-    app_id = InstallWebApp("https://c.example.org");
+    app_id = InstallWebAppOpeningAsTab("https://c.example.org");
     EXPECT_EQ(GetWebContentsId(tab1), 1);
     EXPECT_EQ(GetWebContentsId(tab3), 2);
     recorder.Verify({
@@ -808,5 +887,19 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
         {"removed", app_id, kAppTab, pid_, window1, 1, kVisible, kInactive},
         {"removed", app_id, kAppTab, pid_, window1, 2, kVisible, kActive},
     });
+  }
+
+  {
+    SCOPED_TRACE("install app opening in a window");
+    Recorder recorder(tracker_);
+
+    EXPECT_EQ(GetWebContentsId(tab1), 0);
+    EXPECT_EQ(GetWebContentsId(tab3), 0);
+    app_id = InstallWebAppOpeningAsWindow("https://c.example.org");
+    // This has no effect: apps configured to open in a window aren't counted as
+    // apps when opened in a tab.
+    EXPECT_EQ(GetWebContentsId(tab1), 0);
+    EXPECT_EQ(GetWebContentsId(tab3), 0);
+    recorder.Verify({});
   }
 }
