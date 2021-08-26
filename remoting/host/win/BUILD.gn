@@ -481,7 +481,6 @@ shared_library("remoting_core") {
     "comctl32.lib",
     "rpcns4.lib",
     "rpcrt4.lib",
-    "sas.lib",
     "uuid.lib",
     "wtsapi32.lib",
   ]
