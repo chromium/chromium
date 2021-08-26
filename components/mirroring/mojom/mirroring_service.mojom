@@ -15,7 +15,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 const sandbox.mojom.Sandbox kMirroringSandbox
   = sandbox.mojom.Sandbox.kMirroring;
 [EnableIfNot=is_mac]
-const sandbox.mojom.Sandbox kMirroringSandbox = sandbox.mojom.Sandbox.kUtility;
+const sandbox.mojom.Sandbox kMirroringSandbox = sandbox.mojom.Sandbox.kService;
 
 // This interface is used to control a Cast mirroring session.
 [ServiceSandbox=kMirroringSandbox]
