@@ -29,7 +29,7 @@ VdaVideoFramePool::~VdaVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
+StatusOr<GpuBufferLayout> VdaVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -41,16 +41,16 @@ absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
 
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
-    return absl::nullopt;
+    return Status(StatusCode::kInvalidArgument);
   }
 
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
 
-  if (max_num_frames_ == max_num_frames && fourcc_ && *fourcc_ == fourcc &&
-      coded_size_ == coded_size) {
+  if (layout_ && max_num_frames_ == max_num_frames && fourcc_ &&
+      *fourcc_ == fourcc && coded_size_ == coded_size) {
     DVLOGF(3) << "Arguments related to frame layout are not changed, skip.";
-    return layout_;
+    return *layout_;
   }
 
   // Invalidate weak pointers so the re-import callbacks of the frames we are
@@ -84,7 +84,9 @@ absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
                                          parent_task_runner_, weak_this_)));
   done.Wait();
 
-  return layout_;
+  if (!layout_)
+    return Status(StatusCode::kInvalidArgument);
+  return *layout_;
 }
 
 void VdaVideoFramePool::OnRequestFramesDone(

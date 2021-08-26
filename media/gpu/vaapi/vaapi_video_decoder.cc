@@ -804,9 +804,11 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   }
   const gfx::Size natural_size =
       aspect_ratio_.GetNaturalSize(output_visible_rect);
-  if (!frame_pool_->Initialize(
-          *format_fourcc, output_pic_size, output_visible_rect, natural_size,
-          decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_)) {
+  if (frame_pool_
+          ->Initialize(*format_fourcc, output_pic_size, output_visible_rect,
+                       natural_size, decoder_->GetRequiredNumOfPictures(),
+                       !!cdm_context_ref_)
+          .has_error()) {
     SetErrorState("failed Initialize()ing the frame pool");
     return;
   }

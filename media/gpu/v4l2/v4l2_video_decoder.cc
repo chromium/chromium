@@ -412,27 +412,28 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   // created by VideoFramePool.
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   if (pool) {
-    absl::optional<GpuBufferLayout> layout = pool->Initialize(
+    StatusOr<GpuBufferLayout> status_or_layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
         aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,
         /*use_protected=*/false);
-    if (!layout) {
+    if (status_or_layout.has_error()) {
       VLOGF(1) << "Failed to setup format to VFPool";
       return false;
     }
-    if (layout->size() != adjusted_size) {
+    const GpuBufferLayout layout = std::move(status_or_layout).value();
+    if (layout.size() != adjusted_size) {
       VLOGF(1) << "The size adjusted by VFPool is different from one "
                << "adjusted by a video driver. fourcc: " << fourcc.ToString()
                << ", (video driver v.s. VFPool) " << adjusted_size.ToString()
-               << " != " << layout->size().ToString();
+               << " != " << layout.size().ToString();
       return false;
     }
 
-    VLOGF(1) << "buffer modifier: " << std::hex << layout->modifier();
-    if (layout->modifier() &&
-        layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
+    VLOGF(1) << "buffer modifier: " << std::hex << layout.modifier();
+    if (layout.modifier() &&
+        layout.modifier() != gfx::NativePixmapHandle::kNoModifier) {
       absl::optional<struct v4l2_format> modifier_format =
-          output_queue_->SetModifierFormat(layout->modifier(), picked_size);
+          output_queue_->SetModifierFormat(layout.modifier(), picked_size);
       if (!modifier_format)
         return false;
 

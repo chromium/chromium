@@ -18,13 +18,18 @@ std::unique_ptr<ImageProcessorWithPool> ImageProcessorWithPool::Create(
     size_t num_frames,
     const scoped_refptr<base::SequencedTaskRunner> task_runner) {
   const ImageProcessor::PortConfig& config = image_processor->output_config();
-  absl::optional<GpuBufferLayout> layout = frame_pool->Initialize(
+  StatusOr<GpuBufferLayout> status_or_layout = frame_pool->Initialize(
       config.fourcc, config.size, config.visible_rect, config.size, num_frames,
       /*use_protected=*/false);
-  if (!layout || layout->size() != config.size) {
+  if (status_or_layout.has_error()) {
+    VLOGF(1) << "Failed to initialize the pool.";
+    return nullptr;
+  }
+
+  const GpuBufferLayout layout = std::move(status_or_layout).value();
+  if (layout.size() != config.size) {
     VLOGF(1) << "Failed to request frame with correct size. "
-             << config.size.ToString() << " != "
-             << (layout ? layout->size().ToString() : gfx::Size().ToString());
+             << config.size.ToString() << " != " << layout.size().ToString();
     return nullptr;
   }
 

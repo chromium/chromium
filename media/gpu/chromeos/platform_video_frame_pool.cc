@@ -138,7 +138,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   return wrapped_frame;
 }
 
-absl::optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
+StatusOr<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -152,13 +152,13 @@ absl::optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
   if (format == PIXEL_FORMAT_UNKNOWN) {
     VLOGF(1) << "Unsupported fourcc: " << fourcc.ToString();
-    return absl::nullopt;
+    return Status(StatusCode::kInvalidArgument);
   }
 
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (use_protected) {
     VLOGF(1) << "Protected buffers unsupported";
-    return absl::nullopt;
+    return Status(StatusCode::kInvalidArgument);
   }
 #endif
 
@@ -186,13 +186,19 @@ absl::optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     if (!frame) {
       VLOGF(1) << "Failed to create video frame " << format << " (fourcc "
                << fourcc.ToString() << ")";
-      return absl::nullopt;
+      return Status(StatusCode::kInvalidArgument);
     }
     frame_layout_ = GpuBufferLayout::Create(fourcc, frame->coded_size(),
                                             frame->layout().planes(),
                                             frame->layout().modifier());
+    if (!frame_layout_) {
+      VLOGF(1) << "Failed to create the layout (fourcc=" << fourcc.ToString()
+               << ", coded_size=" << frame->coded_size().ToString() << ")";
+      return Status(StatusCode::kInvalidArgument);
+    }
   }
 
+  DCHECK(frame_layout_);
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
   max_num_frames_ = max_num_frames;
@@ -203,7 +209,7 @@ absl::optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   if (frame_available_cb_ && !IsExhausted_Locked())
     std::move(frame_available_cb_).Run();
 
-  return frame_layout_;
+  return *frame_layout_;
 }
 
 bool PlatformVideoFramePool::IsExhausted() {

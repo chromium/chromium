@@ -60,12 +60,12 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   ~VdaVideoFramePool() override;
 
   // DmabufVideoFramePool implementation.
-  absl::optional<GpuBufferLayout> Initialize(const Fourcc& fourcc,
-                                             const gfx::Size& coded_size,
-                                             const gfx::Rect& visible_rect,
-                                             const gfx::Size& natural_size,
-                                             size_t max_num_frames,
-                                             bool use_protected) override;
+  StatusOr<GpuBufferLayout> Initialize(const Fourcc& fourcc,
+                                       const gfx::Size& coded_size,
+                                       const gfx::Rect& visible_rect,
+                                       const gfx::Size& natural_size,
+                                       size_t max_num_frames,
+                                       bool use_protected) override;
   scoped_refptr<VideoFrame> GetFrame() override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;

@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
+#include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
@@ -40,19 +41,20 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
       scoped_refptr<base::SequencedTaskRunner> parent_task_runner);
 
   // Sets the parameters of allocating frames and the maximum number of frames
-  // which can be allocated. Returns a valid GpuBufferLayout if VideoFrame
-  // will be created by GetFrame().
-  virtual absl::optional<GpuBufferLayout> Initialize(
-      const Fourcc& fourcc,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      size_t max_num_frames,
-      bool use_protected) = 0;
+  // which can be allocated.
+  // Returns a valid GpuBufferLayout if the initialization is successful.
+  // Returns StatusCode::kAborted if the initialization process is aborted.
+  // Returns StatusCode::kInvalidArgument if any other error occurs.
+  virtual StatusOr<GpuBufferLayout> Initialize(const Fourcc& fourcc,
+                                               const gfx::Size& coded_size,
+                                               const gfx::Rect& visible_rect,
+                                               const gfx::Size& natural_size,
+                                               size_t max_num_frames,
+                                               bool use_protected) = 0;
 
-  // Returns a frame from the pool with the parameters assigned by
-  // SetFrameFormat() and zero timestamp. Returns nullptr if the pool is
-  // exhausted.
+  // Returns a frame from the pool with the layout that is returned by the
+  // previous Initialize() method and zero timestamp. Returns nullptr if the
+  // pool is exhausted.
   virtual scoped_refptr<VideoFrame> GetFrame() = 0;
 
   // Checks whether the pool is exhausted. This happens when the pool reached
