@@ -249,6 +249,12 @@ void SetupFragmentBuilderForFragmentation(
   builder->SetSequenceNumber(sequence_number);
 
   builder->AdjustBorderScrollbarPaddingForFragmentation(previous_break_token);
+
+  if (builder->IsInitialColumnBalancingPass()) {
+    const NGBoxStrut& unbreakable = builder->BorderScrollbarPadding();
+    builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
+    builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);
+  }
 }
 
 bool IsNodeFullyGrown(NGBlockNode node,
