@@ -193,14 +193,24 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     }
     remote_->OnHostStateConnected(*remote_username);
   } else if (*new_state == kHostStateError) {
-    absl::optional<int> error_code = message.FindIntKey(kErrorMessageCode);
-    if (!error_code) {
+    const std::string* error_code_string =
+        message.FindStringKey(kErrorMessageCode);
+    if (!error_code_string) {
       LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
       CloseChannel(
           ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
       return;
     }
-    remote_->OnHostStateError(error_code.value());
+
+    protocol::ErrorCode error_code;
+    if (!ParseErrorCode(*error_code_string, &error_code)) {
+      LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
+                 << *error_code_string << "in message.";
+      CloseChannel(
+          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      return;
+    }
+    remote_->OnHostStateError(error_code);
   } else if (*new_state == kHostStateDomainError) {
     remote_->OnInvalidDomainError();
   } else {
@@ -244,14 +254,23 @@ void It2MeNativeMessageHostAsh::HandlePolicyErrorMessage(base::Value message) {
 
 void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<int> error_code = message.FindIntKey(kErrorMessageCode);
-  if (!error_code.has_value()) {
+  const std::string* error_code_string =
+      message.FindStringKey(kErrorMessageCode);
+  if (!error_code_string) {
     LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
     return;
   }
 
-  remote_->OnHostStateError(error_code.value());
+  protocol::ErrorCode error_code;
+  if (!ParseErrorCode(*error_code_string, &error_code)) {
+    LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
+               << *error_code_string << "in message.";
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    return;
+  }
+
+  remote_->OnHostStateError(error_code);
 }
 
 }  // namespace remoting
