@@ -184,8 +184,11 @@ PagedAppsGridView::PagedAppsGridView(
       page_flip_delay_(kPageFlipDelay),
       is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
   DCHECK(contents_view_);
-  view_structure_.Init(IsInFolder() ? PagedViewStructure::Mode::kFullPages
-                                    : PagedViewStructure::Mode::kPartialPages);
+
+  view_structure_.Init(
+      (IsInFolder() || features::IsLauncherRemoveEmptySpaceEnabled())
+          ? PagedViewStructure::Mode::kFullPages
+          : PagedViewStructure::Mode::kPartialPages);
 
   pagination_model_.AddObserver(this);
 
@@ -830,8 +833,8 @@ bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
   // If the user wants to drag an app to the next new page and has not done so
   // during the dragging session, then it is the right target because a new page
   // will be created in OnPageFlipTimer().
-  return !IsInFolder() && !extra_page_opened_ &&
-         pagination_model_.total_pages() == page;
+  return !features::IsLauncherRemoveEmptySpaceEnabled() && !IsInFolder() &&
+         !extra_page_opened_ && pagination_model_.total_pages() == page;
 }
 
 bool PagedAppsGridView::IsPointWithinPageFlipBuffer(

@@ -17,6 +17,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/shell.h"
+#include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -94,6 +95,13 @@ void AppListTestHelper::AddAppItems(int num_apps) {
     app_list_controller_->GetModel()->AddItem(std::make_unique<AppListItem>(
         /*app_id=*/base::NumberToString(i + num_apps_already_added)));
   }
+}
+
+void AppListTestHelper::AddPageBreakItem() {
+  auto page_break_item = std::make_unique<AppListItem>(base::GenerateGUID());
+  page_break_item->set_is_page_break(true);
+  Shell::Get()->app_list_controller()->GetModel()->AddItem(
+      std::move(page_break_item));
 }
 
 AppListView* AppListTestHelper::GetAppListView() {

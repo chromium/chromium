@@ -269,7 +269,11 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
     return GridIndex(0, 0);
 
   if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages) {
-    int view_index = apps_grid_view_->view_model()->view_size() - 1;
+    int view_index = apps_grid_view_->view_model()->view_size();
+
+    // If a view in the current view model is being dragged, then ignore it.
+    if (apps_grid_view_->drag_view())
+      --view_index;
     return GetIndexFromModelIndex(view_index);
   }
 
@@ -414,13 +418,12 @@ int PagedViewStructure::GetTargetItemListIndexForMove(
 
 bool PagedViewStructure::IsValidReorderTargetIndex(
     const GridIndex& index) const {
-  if (mode_ == Mode::kFullPages)
-    return apps_grid_view_->IsValidIndex(index);
-
   if (apps_grid_view_->IsValidIndex(index))
     return true;
 
-  // The user can drag an item view to another page's end.
+  // The user can drag an item view to another page's end. Also covers the case
+  // where a dragged folder item is being reparented to the last target index of
+  // the root level grid.
   if (index.page <= total_pages() &&
       GetLastTargetIndexOfPage(index.page) == index) {
     return true;

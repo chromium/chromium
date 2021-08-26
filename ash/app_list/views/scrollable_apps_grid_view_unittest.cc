@@ -7,7 +7,6 @@
 #include <limits>
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -27,7 +26,6 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -40,13 +38,6 @@ namespace {
 void AddAppListItem(const std::string& id) {
   Shell::Get()->app_list_controller()->GetModel()->AddItem(
       std::make_unique<AppListItem>(id));
-}
-
-void AddPageBreakItem() {
-  auto page_break_item = std::make_unique<AppListItem>(base::GenerateGUID());
-  page_break_item->set_is_page_break(true);
-  Shell::Get()->app_list_controller()->GetModel()->AddItem(
-      std::move(page_break_item));
 }
 
 void PopulateApps(int n) {
@@ -127,6 +118,8 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   ScrollableAppsGridView* GetScrollableAppsGridView() {
     return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
+
+  void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
@@ -225,9 +218,15 @@ TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {
   PagedViewStructure* structure =
       test::AppsGridViewTestApi(view).GetPagedViewStructure();
 
-  // The last visual index is 0,2.
+  // The last visual index to add an item is 0,3.
+  EXPECT_EQ(GridIndex(0, 3), structure->GetLastTargetIndex());
+  EXPECT_EQ(GridIndex(0, 3), structure->GetLastTargetIndexOfPage(0));
+
+  // During a drag, the last visual index to add an item is 0,2.
+  StartDragOnItemViewAt(0);
   EXPECT_EQ(GridIndex(0, 2), structure->GetLastTargetIndex());
   EXPECT_EQ(GridIndex(0, 2), structure->GetLastTargetIndexOfPage(0));
+  GetEventGenerator()->ReleaseLeftButton();
 
   // Visual index directly maps to target index in "view model".
   EXPECT_EQ(0, structure->GetTargetModelIndexForMove(nullptr, GridIndex(0, 0)));

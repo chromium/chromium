@@ -30,6 +30,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -906,17 +907,23 @@ void AppsGridView::Update() {
   if (!folder_delegate_)
     RecordPageMetrics();
 }
+
 void AppsGridView::UpdatePaging() {
-  if (!folder_delegate_) {
+  if (!folder_delegate_ && !features::IsLauncherRemoveEmptySpaceEnabled()) {
     pagination_model_.SetTotalPages(view_structure_.total_pages());
     return;
   }
 
-  // Folders have the same number of tiles on every page.
-  const int tiles_per_page = TilesPerPage(0);
-  const int tiles = view_model_.view_size();
-  const int total_pages =
-      tiles / tiles_per_page + (tiles % tiles_per_page ? 1 : 0);
+  // Folders have the same number of tiles on every page, while the root
+  // level grid can have a different number of tiles per page.
+  int tiles = view_model_.view_size();
+  int total_pages = 1;
+  int tiles_on_page = TilesPerPage(0);
+  while (tiles > tiles_on_page) {
+    tiles -= tiles_on_page;
+    ++total_pages;
+    tiles_on_page = TilesPerPage(total_pages - 1);
+  }
   pagination_model_.SetTotalPages(total_pages);
 }
 
@@ -2544,6 +2551,9 @@ void AppsGridView::RecordPageMetrics() {
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages",
                            pagination_model_.total_pages());
 
+  if (features::IsLauncherRemoveEmptySpaceEnabled())
+    return;
+
   // Calculate the number of pages that have empty slots.
   int page_count = 0;
   const auto& pages = view_structure_.pages();
@@ -2558,16 +2568,21 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   if (page < 0 || page >= pagination_model_.total_pages())
     return 0;
 
-  if (!folder_delegate_)
+  if (!folder_delegate_ && !features::IsLauncherRemoveEmptySpaceEnabled())
     return view_structure_.items_on_page(page);
 
-  // Folders have the same number of tiles on every page.
-  const int tiles_per_page = TilesPerPage(0);
+  // We are guaranteed not on the last page, so the page must be full.
   if (page < pagination_model_.total_pages() - 1)
-    return tiles_per_page;
+    return TilesPerPage(page);
 
-  return item_list_->item_count() -
-         (pagination_model_.total_pages() - 1) * tiles_per_page;
+  // We are on the last page, so calculate the number of items on the page.
+  int item_count = view_model_.view_size();
+  int current_page = 0;
+  while (current_page < pagination_model_.total_pages() - 1) {
+    item_count -= TilesPerPage(current_page);
+    ++current_page;
+  }
+  return item_count;
 }
 
 void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {

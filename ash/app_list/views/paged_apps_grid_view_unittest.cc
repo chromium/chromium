@@ -11,18 +11,43 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 
 namespace ash {
 namespace {
 
+class PageFlipWaiter : public PaginationModelObserver {
+ public:
+  explicit PageFlipWaiter(PaginationModel* model) : model_(model) {
+    model_->AddObserver(this);
+  }
+  ~PageFlipWaiter() override { model_->RemoveObserver(this); }
+
+  void Wait() {
+    ui_run_loop_ = std::make_unique<base::RunLoop>();
+    ui_run_loop_->Run();
+  }
+
+ private:
+  void SelectedPageChanged(int old_selected, int new_selected) override {
+    ui_run_loop_->QuitWhenIdle();
+  }
+
+  std::unique_ptr<base::RunLoop> ui_run_loop_;
+  PaginationModel* model_ = nullptr;
+};
+
 class PagedAppsGridViewTest : public AshTestBase {
  public:
-  PagedAppsGridViewTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+  PagedAppsGridViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_features_.InitWithFeatures(
+        {features::kAppListBubble, features::kLauncherRemoveEmptySpace}, {});
   }
   ~PagedAppsGridViewTest() override = default;
 
@@ -31,6 +56,19 @@ class PagedAppsGridViewTest : public AshTestBase {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     grid_test_api_ = std::make_unique<test::AppsGridViewTestApi>(
         GetAppListTestHelper()->GetRootPagedAppsGridView());
+  }
+
+  AppListItemView* StartDragOnItemViewAtVisualIndex(int page, int slot) {
+    AppListItemView* item = grid_test_api_->GetViewAtVisualIndex(page, slot);
+    auto* generator = GetEventGenerator();
+    generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
+    generator->PressLeftButton();
+    item->FireMouseDragTimerForTest();
+    return item;
+  }
+
+  PagedAppsGridView* GetPagedAppsGridView() {
+    return GetAppListTestHelper()->GetRootPagedAppsGridView();
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
@@ -53,6 +91,55 @@ TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
   EXPECT_EQ(15, grid_test_api_->AppsOnPage(0));
   EXPECT_EQ(20, grid_test_api_->AppsOnPage(1));
   EXPECT_EQ(5, grid_test_api_->AppsOnPage(2));
+}
+
+// Test that spacing between pages is removed when the remove empty space flag
+// is enabled.
+TEST_F(PagedAppsGridViewTest, TestPaging) {
+  GetAppListTestHelper()->AddAppItems(1);
+  GetAppListTestHelper()->AddPageBreakItem();
+  GetAppListTestHelper()->AddAppItems(1);
+  GetAppListTestHelper()->AddPageBreakItem();
+  GetAppListTestHelper()->AddAppItems(1);
+
+  EXPECT_EQ(1, GetAppListTestHelper()
+                   ->GetRootPagedAppsGridView()
+                   ->pagination_model()
+                   ->total_pages());
+  EXPECT_EQ(3, grid_test_api_->AppsOnPage(0));
+}
+
+// Test that an app cannot be dragged to create a new page when the remove empty
+// space flag is enabled.
+TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
+  PaginationModel* pagination_model =
+      GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
+
+  // Populate with enough apps to fill 2 pages.
+  GetAppListTestHelper()->AddAppItems(35);
+  EXPECT_EQ(2, pagination_model->total_pages());
+
+  // Drag the item at page 0 slot 0 to the next page.
+  StartDragOnItemViewAtVisualIndex(0, 0);
+  auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
+  gfx::Point next_page_point =
+      GetPagedAppsGridView()->GetBoundsInScreen().bottom_center();
+  GetEventGenerator()->MoveMouseTo(next_page_point);
+  page_flip_waiter->Wait();
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // With the drag complete, check that page 1 is now selected.
+  EXPECT_EQ(1, pagination_model->selected_page());
+
+  // Drag the item at page 1 slot 0 to the next page and hold it there.
+  StartDragOnItemViewAtVisualIndex(1, 0);
+  GetEventGenerator()->MoveMouseTo(next_page_point);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // With the drag complete, check that page 1 is still selected, because a new
+  // page cannot be created.
+  EXPECT_EQ(1, pagination_model->selected_page());
 }
 
 }  // namespace

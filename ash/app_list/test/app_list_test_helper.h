@@ -73,6 +73,9 @@ class AppListTestHelper {
   // Adds `num_apps` to the app list model.
   void AddAppItems(int num_apps);
 
+  // Adds a page break item to the app list model.
+  void AddPageBreakItem();
+
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
 
