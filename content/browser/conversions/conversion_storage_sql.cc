@@ -842,8 +842,8 @@ void ConversionStorageSql::ClearData(
   // See this comment for more information:
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
   static constexpr char kScanCandidateData[] =
-      "SELECT C.conversion_id,I.impression_id,"
-      "I.impression_origin,I.conversion_origin,I.reporting_origin "
+      "SELECT I.impression_origin,I.conversion_origin,I.reporting_origin,"
+      "I.impression_id,C.conversion_id "
       "FROM impressions I LEFT JOIN conversions C ON "
       "C.impression_id = I.impression_id WHERE"
       "(I.impression_time BETWEEN ?1 AND ?2)OR"
@@ -856,14 +856,12 @@ void ConversionStorageSql::ClearData(
   std::vector<StorableImpression::Id> impression_ids_to_delete;
   std::vector<ConversionReport::Id> conversion_ids_to_delete;
   while (statement.Step()) {
-    int64_t conversion_id = statement.ColumnInt64(0);
-    StorableImpression::Id impression_id(statement.ColumnInt64(1));
-    if (filter.Run(DeserializeOrigin(statement.ColumnString(2))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(3))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(4)))) {
-      impression_ids_to_delete.push_back(impression_id);
-      if (conversion_id != 0)
-        conversion_ids_to_delete.push_back(ConversionReport::Id(conversion_id));
+    if (filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
+        filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
+        filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
+      impression_ids_to_delete.emplace_back(statement.ColumnInt64(3));
+      if (statement.GetColumnType(4) != sql::ColumnType::kNull)
+        conversion_ids_to_delete.emplace_back(statement.ColumnInt64(4));
     }
   }
 
