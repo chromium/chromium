@@ -259,6 +259,10 @@ TEST_P(WaylandPointerTest, AxisHorizontal) {
 }
 
 TEST_P(WaylandPointerTest, SetBitmap) {
+  wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
+                        wl_fixed_from_int(10), wl_fixed_from_int(10));
+  Sync();
+
   SkBitmap dummy_cursor;
   dummy_cursor.setInfo(
       SkImageInfo::Make(16, 16, kUnknown_SkColorType, kUnknown_SkAlphaType));
@@ -274,11 +278,15 @@ TEST_P(WaylandPointerTest, SetBitmap) {
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(pointer_);
+
+  wl_pointer_send_leave(pointer_->resource(), 2, surface_->resource());
+  Sync();
 }
 
 // Tests that bitmap is set on pointer focus and the pointer surface respects
 // provided scale of the surface image.
 TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
+  uint32_t serial = 0;
   for (int32_t scale = 1; scale < 5; scale++) {
     gfx::Size size = {10 * scale, 10 * scale};
     SkBitmap dummy_cursor;
@@ -292,6 +300,10 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     auto cursor = cursor_factory.CreateImageCursor(
         mojom::CursorType::kCustom, dummy_cursor, gfx::Point(5, 8));
 
+    wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
+                          wl_fixed_from_int(10), wl_fixed_from_int(10));
+    Sync();
+
     // Set a cursor.
     wl_resource* surface_resource = nullptr;
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8))
@@ -299,6 +311,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     window_->SetCursor(cursor);
     connection_->ScheduleFlush();
 
+    wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
     Sync();
     Mock::VerifyAndClearExpectations(pointer_);
 
@@ -309,7 +322,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 
     // Update the focus.
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
-    wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
+    wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                           wl_fixed_from_int(50), wl_fixed_from_int(75));
     Sync();
 
@@ -319,7 +332,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     Mock::VerifyAndClearExpectations(pointer_);
 
     // Reset the focus for the next iteration.
-    wl_pointer_send_leave(pointer_->resource(), 1, surface_->resource());
+    wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
     Sync();
     connection_->ScheduleFlush();
     Sync();

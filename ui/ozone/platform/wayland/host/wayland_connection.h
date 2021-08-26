@@ -154,11 +154,6 @@ class WaylandConnection {
   uint32_t serial() const { return serial_.serial; }
   EventSerial event_serial() const { return serial_; }
 
-  void set_pointer_enter_serial(uint32_t serial) {
-    pointer_enter_serial_ = serial;
-  }
-  uint32_t pointer_enter_serial() const { return pointer_enter_serial_; }
-
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
 
   void SetCursorBufferListener(WaylandCursorBufferListener* listener);
@@ -420,8 +415,6 @@ class WaylandConnection {
   bool scheduled_flush_ = false;
 
   EventSerial serial_;
-
-  uint32_t pointer_enter_serial_ = 0;
 
   wl::SerialTracker serial_tracker_;
 

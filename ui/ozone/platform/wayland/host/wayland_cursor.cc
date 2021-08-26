@@ -15,6 +15,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
 namespace ui {
@@ -75,8 +76,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
     listener_->OnCursorBufferAttached(nullptr);
 }
 
-void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
-                                     int buffer_scale) {
+void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data, int buffer_scale) {
   if (!pointer_)
     return;
 
@@ -95,9 +95,16 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
 }
 
 void WaylandCursor::HideCursor() {
+  auto pointer_enter_serial =
+      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
+  if (!pointer_enter_serial) {
+    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+    return;
+  }
+
   DCHECK(pointer_);
-  wl_pointer_set_cursor(pointer_->wl_object(),
-                        connection_->pointer_enter_serial(), nullptr, 0, 0);
+  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
+                        nullptr, 0, 0);
 
   wl_surface_attach(pointer_surface_.get(), nullptr, 0, 0);
   wl_surface_commit(pointer_surface_.get());
@@ -139,10 +146,15 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
                                     uint32_t buffer_height,
                                     uint32_t hotspot_x_dip,
                                     uint32_t hotspot_y_dip) {
-  DCHECK(pointer_);
+  auto pointer_enter_serial =
+      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
+  if (!pointer_enter_serial) {
+    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+    return;
+  }
 
-  wl_pointer_set_cursor(pointer_->wl_object(),
-                        connection_->pointer_enter_serial(),
+  DCHECK(pointer_);
+  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
                         pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
