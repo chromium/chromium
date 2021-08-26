@@ -124,8 +124,12 @@ std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
-  return signin_ui_util::GetShortProfileIdentityToDisplay(
-      *GetProfileAttributesEntry(profile_), profile_);
+  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
+  // If the profile is being deleted, it doesn't matter what name is shown.
+  if (!entry)
+    return std::u16string();
+
+  return signin_ui_util::GetShortProfileIdentityToDisplay(*entry, profile_);
 }
 
 gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
