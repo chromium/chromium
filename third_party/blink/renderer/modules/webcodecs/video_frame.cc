@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -339,7 +340,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
-  if (image->IsTextureBacked()) {
+  if (image->IsTextureBacked() && SharedGpuContext::IsGpuCompositingEnabled()) {
     DCHECK(image->IsStaticBitmapImage());
     auto format = media::VideoPixelFormatFromSkColorType(
         paint_image.GetColorType(),
