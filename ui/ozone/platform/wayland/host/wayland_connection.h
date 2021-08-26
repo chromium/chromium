@@ -148,6 +148,7 @@ class WaylandConnection {
     return xdg_output_manager_.get();
   }
 
+  // TODO(crbug.com/1211874): Drop once SerialTracker migration is complete.
   void set_serial(uint32_t serial, EventType event_type) {
     serial_ = {serial, event_type};
   }
@@ -416,7 +417,7 @@ class WaylandConnection {
 
   EventSerial serial_;
 
-  wl::SerialTracker serial_tracker_;
+  wl::SerialTracker serial_tracker_{this};
 
   // Global Wayland interfaces available in the current session, with their
   // versions.
