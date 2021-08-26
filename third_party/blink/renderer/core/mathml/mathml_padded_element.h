@@ -33,6 +33,8 @@ class CORE_EXPORT MathMLPaddedElement final : public MathMLRowElement {
                                             MutableCSSPropertyValueSet*) final;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout legacy) final;
+
+  bool IsGroupingElement() const final { return false; }
 };
 }  // namespace blink
 

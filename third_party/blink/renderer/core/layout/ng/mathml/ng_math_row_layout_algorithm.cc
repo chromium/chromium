@@ -59,6 +59,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     ChildrenVector* children,
     LayoutUnit* max_row_block_baseline,
     LogicalSize* row_total_size) {
+  bool should_add_space =
+      Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
   LayoutUnit inline_offset, max_row_ascent, max_row_descent;
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-block-axis
@@ -132,7 +134,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     const auto child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;
-    DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
+    if (should_add_space)
+      DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
     const NGPhysicalFragment& physical_fragment =
         child_layout_result->PhysicalFragment();
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
@@ -146,7 +149,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     *max_row_block_baseline = std::max(*max_row_block_baseline, ascent);
 
     // TODO(crbug.com/1125136): take into account italic correction.
-    inline_offset += lspace;
+    if (should_add_space)
+      inline_offset += lspace;
 
     children->emplace_back(
         To<NGBlockNode>(child), margins,
@@ -155,7 +159,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
 
     inline_offset += fragment.InlineSize() + margins.inline_end;
 
-    inline_offset += rspace;
+    if (should_add_space)
+      inline_offset += rspace;
 
     max_row_ascent = std::max(max_row_ascent, ascent + margins.block_start);
     max_row_descent = std::max(
@@ -216,6 +221,9 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
+  bool should_add_space =
+      Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
+
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
@@ -225,9 +233,11 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
         ChildAvailableSize().block_size);
     sizes += child_result.sizes;
 
-    LayoutUnit lspace, rspace;
-    DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
-    sizes += lspace + rspace;
+    if (should_add_space) {
+      LayoutUnit lspace, rspace;
+      DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
+      sizes += lspace + rspace;
+    }
     depends_on_block_constraints |= child_result.depends_on_block_constraints;
 
     // TODO(crbug.com/1125136): take into account italic correction.

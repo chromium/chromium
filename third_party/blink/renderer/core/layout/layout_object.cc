@@ -1131,6 +1131,11 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       return false;
   }
 
+  // MathML subtrees can't be relayout roots because of the embellished operator
+  // and space-like logic.
+  if (object->IsMathML() && !object->IsMathMLRoot())
+    return false;
+
   if (object->ShouldApplyLayoutContainment() &&
       object->ShouldApplySizeContainment()) {
     return true;

@@ -166,6 +166,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsMathRoot() const { return box_->IsMathMLRoot(); }
   bool IsMathML() const { return box_->IsMathML(); }
 
+  bool IsAnonymous() const { return box_->IsAnonymous(); }
   bool IsAnonymousBlock() const { return box_->IsAnonymousBlock(); }
 
   // If the node is a quirky container for margin collapsing, see:
