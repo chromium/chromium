@@ -645,6 +645,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # https://crbug.com/1000382\n')
                 sb.append('  proguard_configs = ["androidx_mediarouter.flags"]\n')
                 break
+            case 'androidx_room_room_runtime':
+                sb.append('  enable_bytecode_checks = false\n')
+                break
             case 'androidx_transition_transition':
                 // Not specified in the POM, compileOnly dependency not supposed to be used unless
                 // the library is present: b/70887421
