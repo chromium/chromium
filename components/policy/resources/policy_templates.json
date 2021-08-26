@@ -2296,6 +2296,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable curtaining of the remote access host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable curtaining of the remote access host',
+        },
+      ],
       'example_value': False,
       'id': 157,
       'caption': '''Enable curtaining of remote access hosts''',
@@ -2315,6 +2325,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable PIN-less authentication for the remote access host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable PIN-less authentication for the remote access host',
+        },
+      ],
       'example_value': False,
       'id': 234,
       'caption': '''Enable or disable PIN-less authentication for remote access hosts''',
@@ -2335,6 +2355,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable gnubby authentication for the remote access host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable gnubby authentication for the remote access host',
+        },
+      ],
       'example_value': True,
       'id': 257,
       'caption': '''Allow gnubby authentication for remote access hosts''',
@@ -2356,6 +2386,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the use of relay servers by the remote access host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the use of relay servers by the remote access host',
+        },
+      ],
       'example_value': False,
       'id': 263,
       'caption': '''Enable the use of relay servers by the remote access host''',
@@ -2396,6 +2436,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Require matching local user and remote access host owner',
+        },
+        {
+          'value': False,
+          'caption': 'Do not require matching local user and remote access host owner',
+        },
+      ],
       'example_value': False,
       'id': 285,
       'caption': '''Require that the name of the local user and the remote access host owner match''',
@@ -2495,6 +2545,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable remote user interaction with elevated windows in remote assistance sessions',
+        },
+        {
+          'value': False,
+          'caption': 'Disable remote user interaction with elevated windows in remote assistance sessions',
+        },
+      ],
       'default': False,
       'example_value': True,
       'id': 344,
@@ -2515,6 +2575,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable remote access users to transfer files to and from the remote host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable remote access users from transferring files to and from the remote host',
+        },
+      ],
       'default': True,
       'example_value': False,
       'id': 534,
@@ -2536,6 +2606,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable connection-related UI on the remote host desktop when a connection is active',
+        },
+        {
+          'value': False,
+          'caption': 'Disable connection-related UI on the remote host desktop when a connection is active',
+        },
+      ],
       'default': True,
       'example_value': False,
       'id': 803,
