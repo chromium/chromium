@@ -527,18 +527,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.settingsNavigationDelegate settingsWasDismissed];
 }
 
-- (void)presentationControllerDidAttemptToDismiss:
-    (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector
-            (presentationControllerDidAttemptToDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerDidAttemptToDismiss:presentationController];
-    }
-  }
-}
-
 - (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
   if (@available(iOS 13, *)) {
