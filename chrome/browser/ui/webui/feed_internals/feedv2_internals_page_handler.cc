@@ -76,13 +76,6 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
   std::move(callback).Run(std::move(properties));
 }
 
-void FeedV2InternalsPageHandler::GetUserClassifierProperties(
-    GetUserClassifierPropertiesCallback callback) {
-  // TODO(crbug.com/1066230): Either implement this or remove it.
-
-  std::move(callback).Run(feed_internals::mojom::UserClassifier::New());
-}
-
 void FeedV2InternalsPageHandler::GetLastFetchProperties(
     GetLastFetchPropertiesCallback callback) {
   auto properties = feed_internals::mojom::LastFetchProperties::New();
@@ -103,30 +96,12 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
   std::move(callback).Run(std::move(properties));
 }
 
-void FeedV2InternalsPageHandler::ClearUserClassifierProperties() {
-  // TODO(crbug.com/1066230): Remove or implement this.
+void FeedV2InternalsPageHandler::RefreshForYouFeed() {
+  feed_stream_->ForceRefreshForDebugging(feed::kForYouStream);
 }
 
-void FeedV2InternalsPageHandler::ClearCachedDataAndRefreshFeed() {
-  // TODO(crbug.com/1066230): Not sure we need to clear cache since we don't
-  // retain data on refresh.
-  feed_stream_->ForceRefreshForDebugging();
-}
-
-void FeedV2InternalsPageHandler::RefreshFeed() {
-  feed_stream_->ForceRefreshForDebugging();
-}
-
-void FeedV2InternalsPageHandler::GetCurrentContent(
-    GetCurrentContentCallback callback) {
-  if (!IsFeedAllowed()) {
-    std::move(callback).Run({});
-    return;
-  }
-  // TODO(crbug.com/1066230): Content metadata is (yet?) available. I wasn't
-  // able to get this to work for v1 either, so maybe it's not that important
-  // to implement. We should remove |GetCurrentContent| if it's not needed.
-  std::move(callback).Run({});
+void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
+  feed_stream_->ForceRefreshForDebugging(feed::kWebFeedStream);
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(

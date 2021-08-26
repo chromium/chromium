@@ -93,31 +93,12 @@ found in the LICENSE file.
     </tr>
   </table>
 
-  <h2>User Classifier</h2>
-  <table>
-    <tr>
-      <td>User Class Description</td>
-      <td id="user-class-description"></td>
-    </tr>
-    <tr>
-      <td>Average Hours Between Suggestion Views</td>
-      <td id="avg-hours-between-views"></td>
-    </tr>
-    <tr>
-      <td>Average Hours Between Suggestion Uses</td>
-      <td id="avg-hours-between-uses"></td>
-    </tr>
-  </table>
-  <button id="clear-user-classification">
-    Clear User Classification
-  </button>
-
   <h2>Feed Library Actions</h2>
-  <button id="refresh-feed">
-    Refresh Feed
+  <button id="refresh-for-you">
+    Refresh For-You Feed
   </button>
-  <button id="clear-cached-data">
-    Clear Cache & Refresh Feed
+  <button id="refresh-following">
+    Refresh Following Feed
   </button>
 
   <h2>Last Fetch</h2>
@@ -155,33 +136,6 @@ found in the LICENSE file.
       <td id="last-action-upload-time"></td>
     </tr>
   </table>
-
-  <h2>Current Content</h2>
-  <div id="current-content">
-    <template id="suggestion-template">
-      <details>
-        <summary class="title"></summary>
-        <table>
-          <tr>
-            <td>Publisher Name</td>
-            <td class="publisher"></td>
-          </tr>
-          <tr>
-            <td>URL</td>
-            <td><a class="url"></a></td>
-          </tr>
-          <tr>
-            <td>Favicon URL</td>
-            <td><a class="favicon"></a></td>
-          </tr>
-          <tr>
-            <td>Image URL</td>
-            <td><a class="image"></a></td>
-          </tr>
-        </table>
-      </details>
-    </template>
-  </div>
 
   <h2>Feed Histograms</h2>
   <button id="load-feed-histograms">

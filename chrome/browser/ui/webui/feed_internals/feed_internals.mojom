@@ -48,19 +48,6 @@ struct Properties {
   FeedOrder following_feed_order;
 };
 
-struct UserClassifier {
-  // User class description.
-  string user_class_description;
-
-  // Estimated average length of time between two successive suggestion views of
-  // in hours.
-  float avg_hours_between_views;
-
-  // Estimated average length of time between two successive uses of suggestions
-  // in hours.
-  float avg_hours_between_uses;
-};
-
 struct LastFetchProperties {
   // Last fetch status.
   int32 last_fetch_status;
@@ -85,48 +72,20 @@ struct LastFetchProperties {
   mojo_base.mojom.TimeDelta last_action_upload_time;
 };
 
-// Models a single suggestion in the Feed.
-struct Suggestion {
-  // Title of the suggestion.
-  string title;
-
-  // URL of the suggested page.
-  url.mojom.Url url;
-
-  // Name of the content's publisher.
-  string publisher_name;
-
-  // URL of the image associated with the suggestion.
-  url.mojom.Url image_url;
-
-  // URL of the suggested page's favicon.
-  url.mojom.Url favicon_url;
-};
-
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
   // Get general property values.
   GetGeneralProperties() => (Properties properties);
 
-  // Get user classifier property values.
-  GetUserClassifierProperties() => (UserClassifier properties);
-
-  // Clear stored properties for the user classifier.
-  ClearUserClassifierProperties();
-
   // Get last fetch data.
   GetLastFetchProperties() => (LastFetchProperties properties);
 
-  // Clear all data cached by the Feed library. Also triggers a refresh of the
-  // Feed.
-  ClearCachedDataAndRefreshFeed();
+  // Trigger a refresh of the For-you Feed.
+  RefreshForYouFeed();
 
-  // Trigger a refresh of the Feed.
-  RefreshFeed();
-
-  // Get the last known content with metadata.
-  GetCurrentContent() => (array<Suggestion> suggestions);
+  // Trigger a refresh of the Following Feed.
+  RefreshFollowingFeed();
 
   // Internal state dump of the Feed library's process scope. Human-readable.
   GetFeedProcessScopeDump() => (string dump);

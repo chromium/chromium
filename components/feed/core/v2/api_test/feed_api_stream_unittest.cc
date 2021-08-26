@@ -401,24 +401,20 @@ TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
-TEST_F(FeedApiTest, ForceRefreshForDebugging) {
+TEST_P(FeedStreamTestForAllStreamTypes, ForceRefreshForDebugging) {
   // WebFeed stream is only fetched when there's a subscription.
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
-  // Force a refresh that results in a successful load of both feed types.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  stream_->ForceRefreshForDebugging();
+  stream_->ForceRefreshForDebugging(GetStreamType());
 
   WaitForIdleTaskQueue();
 
   is_offline_ = true;
 
-  TestForYouSurface surface(stream_.get());
-  TestWebFeedSurface web_feed_surface(stream_.get());
+  TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   EXPECT_EQ("2 slices", surface.DescribeState());
-  EXPECT_EQ("2 slices", web_feed_surface.DescribeState());
 }
 
 TEST_F(FeedApiTest, RefreshScheduleFlow) {

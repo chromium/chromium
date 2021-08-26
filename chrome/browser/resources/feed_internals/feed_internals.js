@@ -51,19 +51,6 @@ function updatePageWithProperties() {
 }
 
 /**
- * Get and display user classifier properties.
- */
-function updatePageWithUserClass() {
-  pageHandler.getUserClassifierProperties().then(response => {
-    /** @type {!feedInternals.mojom.UserClassifier} */
-    const properties = response.properties;
-    $('user-class-description').textContent = properties.userClassDescription;
-    $('avg-hours-between-views').textContent = properties.avgHoursBetweenViews;
-    $('avg-hours-between-uses').textContent = properties.avgHoursBetweenUses;
-  });
-}
-
-/**
  * Get and display last fetch data.
  */
 function updatePageWithLastFetchProperties() {
@@ -80,37 +67,6 @@ function updatePageWithLastFetchProperties() {
         properties.lastActionUploadStatus;
     $('last-action-upload-time').textContent =
         toDateString(properties.lastActionUploadTime);
-  });
-}
-
-/**
- * Get and display last known content.
- */
-function updatePageWithCurrentContent() {
-  pageHandler.getCurrentContent().then(response => {
-    const before = $('current-content');
-    const after = before.cloneNode(false);
-
-    /** @type {!Array<feedInternals.mojom.Suggestion>} */
-    const suggestions = response.suggestions;
-
-    for (const suggestion of suggestions) {
-      // Create new content item from template.
-      const item = document.importNode($('suggestion-template').content, true);
-
-      // Populate template with text metadata.
-      item.querySelector('.title').textContent = suggestion.title;
-      item.querySelector('.publisher').textContent = suggestion.publisherName;
-
-      // Populate template with link metadata.
-      setLinkNode(item.querySelector('a.url'), suggestion.url.url);
-      setLinkNode(item.querySelector('a.image'), suggestion.imageUrl.url);
-      setLinkNode(item.querySelector('a.favicon'), suggestion.faviconUrl.url);
-
-      after.appendChild(item);
-    }
-
-    before.replaceWith(after);
   });
 }
 
@@ -141,17 +97,12 @@ function toDateString(timeSinceEpoch) {
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  $('clear-user-classification').addEventListener('click', function() {
-    pageHandler.clearUserClassifierProperties();
-    updatePageWithUserClass();
+  $('refresh-for-you').addEventListener('click', function() {
+    pageHandler.refreshForYouFeed();
   });
 
-  $('clear-cached-data').addEventListener('click', function() {
-    pageHandler.clearCachedDataAndRefreshFeed();
-  });
-
-  $('refresh-feed').addEventListener('click', function() {
-    pageHandler.refreshFeed();
+  $('refresh-following').addEventListener('click', function() {
+    pageHandler.refreshFollowingFeed();
   });
 
   $('dump-feed-process-scope').addEventListener('click', function() {
@@ -225,9 +176,7 @@ function setupEventListeners() {
 
 function updatePage() {
   updatePageWithProperties();
-  updatePageWithUserClass();
   updatePageWithLastFetchProperties();
-  updatePageWithCurrentContent();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
