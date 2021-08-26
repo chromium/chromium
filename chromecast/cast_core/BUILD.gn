@@ -201,7 +201,7 @@ cast_source_set("renderer") {
 
   deps = [
     "//base",
-    "//chromecast/renderer",
+    "//chromecast/renderer:renderer_base",
     "//components/cast_streaming/renderer",
     "//content/public/renderer",
     "//media",
@@ -303,7 +303,7 @@ if (enable_cast_media_runtime) {
       "//base",
       "//chromecast/browser",
       "//chromecast/common:cors_exempt_headers",
-      "//chromecast/renderer",
+      "//chromecast/renderer:renderer_base",
     ]
 
     if (chromecast_branding != "public") {
@@ -317,15 +317,19 @@ cast_executable("core_runtime_simple") {
 
   deps = [
     ":cast_core",
-    "//chromecast/app",
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser:simple_main_parts",
     "//chromecast/utility:simple_client",
     "//content/public/app",
   ]
 
-  if (!enable_cast_media_runtime) {
-    deps += [ "//chromecast/browser:simple_client" ]
+  if (enable_cast_media_runtime) {
+    deps += [ "//chromecast/app:app_core" ]
+  } else {
+    deps += [
+      "//chromecast/app",
+      "//chromecast/browser:simple_client",
+    ]
   }
 }
 
