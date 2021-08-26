@@ -167,6 +167,16 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     }
 
     @Override
+    public void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        // If the view is gone, i.e. switching to tab switcher mode, reset any effect that is still
+        // in progress.
+        if (visibility == View.GONE) {
+            reset();
+        }
+    }
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         ensureTarget();
