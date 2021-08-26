@@ -25,6 +25,7 @@
 
 namespace {
 
+const int kCdpMethodNotFoundCode = -32601;
 const char kInspectorDefaultContextError[] =
     "Cannot find default execution context";
 const char kInspectorContextError[] = "Cannot find context with specified id";
@@ -705,9 +706,19 @@ Status ParseInspectorError(const std::string& error_json) {
   base::DictionaryValue* error_dict;
   if (!error || !error->GetAsDictionary(&error_dict))
     return Status(kUnknownError, "inspector error with no error message");
-  std::string error_message;
-  bool error_found = error_dict->GetString("message", &error_message);
-  if (error_found) {
+
+  absl::optional<int> maybe_code = error_dict->FindIntKey("code");
+  std::string* maybe_message = error_dict->FindStringKey("message");
+
+  if (maybe_code.has_value()) {
+    if (maybe_code.value() == kCdpMethodNotFoundCode) {
+      return Status(kUnknownCommand,
+                    maybe_message ? *maybe_message : "UnknownCommand");
+    }
+  }
+
+  if (maybe_message) {
+    std::string error_message = *maybe_message;
     if (error_message == kInspectorDefaultContextError ||
         error_message == kInspectorContextError) {
       return Status(kNoSuchWindow);

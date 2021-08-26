@@ -296,6 +296,11 @@ Status ChromeImpl::SetWindowBounds(
     params.SetStringPath("bounds.windowState", normal);
     status = devtools_websocket_client_->SendCommand("Browser.setWindowBounds",
                                                      params);
+    // Return success in case of `Browser.setWindowBounds` not implemented like
+    // on Android. crbug.com/1237183
+    if (status.code() == kUnknownCommand)
+      return Status(kOk);
+
     if (status.IsError())
       return status;
     base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
@@ -346,6 +351,12 @@ Status ChromeImpl::SetWindowBounds(
   params.SetKey("bounds", bounds->Clone());
   status = devtools_websocket_client_->SendCommand("Browser.setWindowBounds",
                                                    params);
+
+  // Return success in case of `Browser.setWindowBounds` not implemented like
+  // on Android. crbug.com/1237183
+  if (status.code() == kUnknownCommand)
+    return Status(kOk);
+
   if (status.IsError())
     return status;
 

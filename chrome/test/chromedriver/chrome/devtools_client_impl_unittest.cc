@@ -682,6 +682,13 @@ TEST(ParseInspectorError, UnknownError) {
             status.message());
 }
 
+TEST(ParseInspectorError, CdpNotImplementedError) {
+  const std::string error("{\"code\":-32601,\"message\":\"SOME MESSAGE\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kUnknownCommand, status.code());
+  ASSERT_EQ("unknown command: SOME MESSAGE", status.message());
+}
+
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
   MockListener listener;
   SyncWebSocketFactory factory =
