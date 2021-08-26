@@ -162,6 +162,9 @@ int ExtractAndCountAllTapTargets(
   vertices.clear();
   int tap_targets = 0;
   for (LayoutObject* object = root; object;) {
+    if (IsTimeBudgetExpired(started))
+      return -1;
+
     Node* node = object->GetNode();
     const ComputedStyle* style = object->Style();
     if (!node || !IsTapTargetCandidate(node)) {
@@ -200,9 +203,6 @@ int ExtractAndCountAllTapTargets(
       x_positions.push_back(right);
       x_positions.push_back(center);
       tap_targets++;
-
-      if (IsTimeBudgetExpired(started))
-        return -1;
     }
     object = object->NextInPreOrder();
   }
