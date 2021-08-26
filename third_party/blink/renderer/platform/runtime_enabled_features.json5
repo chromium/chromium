@@ -978,7 +978,7 @@
     },
     {
       name: "EyeDropperAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FaceDetector",
