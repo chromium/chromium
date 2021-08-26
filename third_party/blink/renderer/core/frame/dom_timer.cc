@@ -107,13 +107,13 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   }
   MoveToNewTaskRunner(context->GetTaskRunner(task_type));
 
-  // Clamping up to 1ms for historical reasons crbug.com/402694.
-  timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(1));
-
-  if (single_shot)
+  if (single_shot) {
     StartOneShot(timeout, FROM_HERE);
-  else
+  } else {
+    // TODO(crbug.com/402694): Don't clamp interval timers to 1ms here
+    timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(1));
     StartRepeating(timeout, FROM_HERE);
+  }
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "TimerInstall", inspector_timer_install_event::Data, context, timeout_id,

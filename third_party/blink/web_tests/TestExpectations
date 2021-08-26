@@ -2713,7 +2713,7 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/prerender/wpt_internal/prerender/activate-from-iframe.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/prerender/wpt_internal/prerender/activate-from-iframe.html [ Pass Timeout ]
 crbug.com/626703 [ Mac10.13 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
