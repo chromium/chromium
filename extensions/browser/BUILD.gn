@@ -185,6 +185,8 @@ source_set("browser_sources") {
     "api/web_request/web_request_proxying_url_loader_factory.h",
     "api/web_request/web_request_proxying_websocket.cc",
     "api/web_request/web_request_proxying_websocket.h",
+    "api/web_request/web_request_proxying_webtransport.cc",
+    "api/web_request/web_request_proxying_webtransport.h",
     "api/web_request/web_request_resource_type.cc",
     "api/web_request/web_request_resource_type.h",
     "api/web_request/web_request_time_tracker.cc",

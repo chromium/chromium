@@ -496,6 +496,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
@@ -4955,6 +4956,7 @@ void ChromeContentBrowserClient::CreateWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/1243518): Request w/o a frame also should be proxied.
   if (!frame) {
     return;
   }
@@ -4972,10 +4974,12 @@ void ChromeContentBrowserClient::CreateWebSocket(
 void ChromeContentBrowserClient::WillCreateWebTransport(
     content::RenderFrameHost* frame,
     const GURL& url,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
     WillCreateWebTransportCallback callback) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!frame) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
     return;
   }
   int frame_tree_node_id = frame->GetFrameTreeNodeId();
@@ -5000,23 +5004,64 @@ void ChromeContentBrowserClient::WillCreateWebTransport(
       url,
       base::BindOnce(
           &ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked,
-          weak_factory_.GetWeakPtr(), std::move(checker), std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(checker), frame->GetGlobalId(),
+          url, std::move(handshake_client), std::move(callback)));
 #else
-  std::move(callback).Run(absl::nullopt);
+  MaybeInterceptWebTransport(frame->GetGlobalId(), url,
+                             std::move(handshake_client), std::move(callback));
 #endif
 }
 
 void ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked(
     std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
+    const content::GlobalRenderFrameHostId& frame_id,
+    const GURL& url,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
     WillCreateWebTransportCallback callback,
     safe_browsing::WebApiHandshakeChecker::CheckResult result) {
   if (result == safe_browsing::WebApiHandshakeChecker::CheckResult::kProceed) {
-    std::move(callback).Run(absl::nullopt);
+    MaybeInterceptWebTransport(frame_id, url, std::move(handshake_client),
+                               std::move(callback));
   } else {
-    std::move(callback).Run(network::mojom::WebTransportError::New(
-        net::ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
-        "SafeBrowsing check failed", false));
+    std::move(callback).Run(std::move(handshake_client),
+                            network::mojom::WebTransportError::New(
+                                net::ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                                "SafeBrowsing check failed", false));
   }
+}
+
+void ChromeContentBrowserClient::MaybeInterceptWebTransport(
+    const content::GlobalRenderFrameHostId& frame_id,
+    const GURL& url,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
+    WillCreateWebTransportCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::RenderFrameHost* frame = RenderFrameHost::FromID(frame_id);
+  // TODO(crbug.com/1243518): Request w/o a frame also should be proxied.
+  if (!frame) {
+    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+    return;
+  }
+
+  content::BrowserContext* browser_context =
+      frame->GetProcess()->GetBrowserContext();
+  auto* web_request_api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          browser_context);
+  // NOTE: Some unit test environments do not initialize BrowserContextKeyedAPI
+  // factories like WebRequestAPI.
+  if (!web_request_api) {
+    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+    return;
+  }
+  web_request_api->ProxyWebTransport(*frame, url, std::move(handshake_client),
+                                     std::move(callback));
+#else
+  std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+#endif
 }
 
 bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(

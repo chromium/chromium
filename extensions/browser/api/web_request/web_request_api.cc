@@ -54,6 +54,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
+#include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 #include "extensions/browser/api_activity_monitor.h"
@@ -90,6 +91,7 @@
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -803,6 +805,24 @@ void WebRequestAPI::ProxyWebSocket(
       frame->GetProcess()->GetID(), frame->GetRoutingID(), ukm_source_id,
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
+}
+
+void WebRequestAPI::ProxyWebTransport(
+    content::RenderFrameHost& frame,
+    const GURL& url,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
+    content::ContentBrowserClient::WillCreateWebTransportCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!MayHaveProxies()) {
+    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+    return;
+  }
+  DCHECK(proxies_);
+  StartWebRequestProxyingWebTransport(
+      frame, url, std::move(handshake_client),
+      request_id_generator_.Generate(MSG_ROUTING_NONE, 0), *proxies_.get(),
+      std::move(callback));
 }
 
 void WebRequestAPI::ForceProxyForTesting() {

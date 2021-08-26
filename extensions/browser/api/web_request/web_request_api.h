@@ -228,6 +228,14 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);
 
+  // Starts proxying WebTransport handshake.
+  void ProxyWebTransport(
+      content::RenderFrameHost& frame,
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
+      content::ContentBrowserClient::WillCreateWebTransportCallback callback);
+
   void ForceProxyForTesting();
 
   // Indicates whether or not the WebRequestAPI may have one or more proxies

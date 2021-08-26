@@ -519,9 +519,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client) override;
-  void WillCreateWebTransport(content::RenderFrameHost* frame,
-                              const GURL& url,
-                              WillCreateWebTransportCallback callback) override;
+  void WillCreateWebTransport(
+      content::RenderFrameHost* frame,
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
+      WillCreateWebTransportCallback callback) override;
 
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
@@ -807,8 +810,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SafeBrowsingWebApiHandshakeChecked(
       std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
+      const content::GlobalRenderFrameHostId& frame_id,
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
       WillCreateWebTransportCallback callback,
       safe_browsing::WebApiHandshakeChecker::CheckResult result);
+  void MaybeInterceptWebTransport(
+      const content::GlobalRenderFrameHostId& frame_id,
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
+      WillCreateWebTransportCallback callback);
 
 #if !defined(OS_ANDROID)
   void OnKeepaliveTimerFired(

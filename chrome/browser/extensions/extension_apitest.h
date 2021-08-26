@@ -134,6 +134,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // If it failed, what was the error message?
   std::string message_;
 
+  base::DictionaryValue* GetTestConfig() { return test_config_.get(); }
+
  private:
   void OpenURL(const GURL& url, bool open_in_incognito);
 

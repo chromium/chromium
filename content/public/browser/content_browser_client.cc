@@ -821,8 +821,10 @@ void ContentBrowserClient::CreateWebSocket(
 void ContentBrowserClient::WillCreateWebTransport(
     RenderFrameHost* frame,
     const GURL& url,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
     WillCreateWebTransportCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::move(handshake_client), absl::nullopt);
 }
 
 bool ContentBrowserClient::WillCreateRestrictedCookieManager(

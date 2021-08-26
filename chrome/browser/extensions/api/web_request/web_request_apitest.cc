@@ -91,6 +91,7 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1559,6 +1560,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketCleanClose) {
                                {.page_url = "test_websocket_clean_close.html"}))
       << message_;
 }
+
+class ExtensionWebRequestApiWebTransportTest
+    : public ExtensionWebRequestApiTest {
+ public:
+  ExtensionWebRequestApiWebTransportTest() { server_.Start(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionWebRequestApiTest::SetUpCommandLine(command_line);
+    server_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionWebRequestApiTest::SetUpOnMainThread();
+    ASSERT_TRUE(StartEmbeddedTestServer());
+    GetTestConfig()->SetInteger("testWebTransportPort",
+                                server_.server_address().port());
+  }
+
+ protected:
+  content::WebTransportSimpleTestServer server_;
+};
+
+// Test that the webRequest events are dispatched for the WebTransport
+// handshake.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest,
+                       WebTransportConnectionEstablished) {
+  ASSERT_TRUE(
+      RunExtensionTest("webrequest", {.page_url = "test_webtransport.html"}))
+      << message_;
+}
+
+// TODO(crbug.com/1240935): Add test for this OnBeforeRequest reject case.
+// TODO(crbug.com/1240935): Add test for dedicated worker.
 
 // Test behavior when intercepting requests from a browser-initiated url fetch.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,

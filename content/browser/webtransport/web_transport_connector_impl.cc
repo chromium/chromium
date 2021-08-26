@@ -82,11 +82,10 @@ void WebTransportConnectorImpl::Connect(
   }
 
   GetContentClient()->browser()->WillCreateWebTransport(
-      frame_.get(), url,
+      frame_.get(), url, std::move(handshake_client),
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
-          weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
-          std::move(handshake_client)));
+          weak_factory_.GetWeakPtr(), url, std::move(fingerprints)));
 }
 
 void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(

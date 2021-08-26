@@ -49,6 +49,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/network_param.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/web_transport.mojom-forward.h"
@@ -1488,11 +1489,18 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to control if establishing a WebTransport connection is
   // allowed. When the connection is blocked, `callback` is called with `error`.
+  // `handshake_client` will be proxied to block the connection while
+  // handshaking.
   using WillCreateWebTransportCallback = base::OnceCallback<void(
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
       absl::optional<network::mojom::WebTransportErrorPtr> error)>;
-  virtual void WillCreateWebTransport(RenderFrameHost* frame,
-                                      const GURL& url,
-                                      WillCreateWebTransportCallback callback);
+  virtual void WillCreateWebTransport(
+      RenderFrameHost* frame,
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+          handshake_client,
+      WillCreateWebTransportCallback callback);
 
   // Allows the embedder to intercept or replace the mojo objects used for
   // preference-following access to cookies. This is primarily used for objects
