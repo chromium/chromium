@@ -88,7 +88,7 @@ void PersistentDesksBarController::OnSessionStateChanged(
     DestroyBarWidget();
 }
 
-void PersistentDesksBarController::OnOverviewModeWillStart() {
+void PersistentDesksBarController::OnOverviewModeStarting() {
   DestroyBarWidget();
 }
 
@@ -228,6 +228,31 @@ void PersistentDesksBarController::DestroyBarWidget() {
   // created in the primary display.
   WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
       ->SetPersistentDeskBarHeight(0);
+}
+
+void PersistentDesksBarController::UpdateBarOnWindowStateChanges(
+    aura::Window* window) {
+  if (window->GetRootWindow() != Shell::GetPrimaryRootWindow())
+    return;
+
+  MruWindowTracker::WindowList windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  if (std::find(windows.begin(), windows.end(), window) == windows.end())
+    return;
+
+  if (WindowState::Get(window)->IsFullscreen())
+    DestroyBarWidget();
+  else
+    MaybeInitBarWidget();
+}
+
+void PersistentDesksBarController::UpdateBarOnWindowDestroying(
+    aura::Window* window) {
+  if (!WindowState::Get(window)->IsFullscreen() ||
+      window->GetRootWindow() != Shell::GetPrimaryRootWindow()) {
+    return;
+  }
+  MaybeInitBarWidget();
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
