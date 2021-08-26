@@ -100,7 +100,7 @@ class SingleClientArcPackageOsSyncTest : public SyncConsentOptionalSyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
   ASSERT_TRUE(SetupSync());
   syncer::SyncService* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();

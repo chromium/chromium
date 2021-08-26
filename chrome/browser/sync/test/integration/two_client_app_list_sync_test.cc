@@ -588,12 +588,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, FolderAddRemove) {
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 }
 
-// Tests for SplitSettingsSync.
+// Tests for SyncSettingsCategorization and SyncConsentOptional.
 class TwoClientAppListOsSyncTest : public TwoClientAppListSyncTest {
  public:
   TwoClientAppListOsSyncTest() {
-    settings_feature_list_.InitAndEnableFeature(
-        chromeos::features::kSplitSettingsSync);
+    settings_feature_list_.InitWithFeatures(
+        {chromeos::features::kSyncSettingsCategorization,
+         chromeos::features::kSyncConsentOptional},
+        {});
   }
   ~TwoClientAppListOsSyncTest() override = default;
 

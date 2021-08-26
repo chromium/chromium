@@ -446,7 +446,10 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   // See crbug/1013732 for details.
   if (app_list::AppListSyncableServiceFactory::GetForProfile(profile_) &&
       !chromeos::switches::IsTabletFormFactor()) {
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    // TODO(https://crbug.com/1227417): Remove SplitSettingsSync after migrating
+    // the affected tests.
+    if (chromeos::features::IsSplitSettingsSyncEnabled() ||
+        chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       // Runs in sync transport-mode and full-sync mode.
       controllers.push_back(
           std::make_unique<OsSyncableServiceModelTypeController>(
@@ -500,8 +503,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
               GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
               dump_stack, profile_->GetPrefs(), sync_service));
     }
-  }
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
     if (!disabled_types.Has(syncer::PRINTERS)) {
       // Use the same delegate in full-sync and transport-only modes.
       syncer::ModelTypeControllerDelegate* delegate =
@@ -529,7 +530,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
           profile_->GetPrefs(), sync_service));
     }
   } else {
-    // SplitSettingsSync is disabled.
+    // SplitSettingsSync and SyncSettingsCategorization are disabled.
     if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
         base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
@@ -709,7 +710,7 @@ std::unique_ptr<syncer::ModelTypeController>
 ChromeSyncClient::CreateAppsModelTypeController(
     syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     return AppsModelTypeController::Create(
         GetModelTypeStoreService()->GetStoreFactory(),
         GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(),
@@ -726,7 +727,7 @@ std::unique_ptr<syncer::ModelTypeController>
 ChromeSyncClient::CreateAppSettingsModelTypeController(
     syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     return std::make_unique<AppSettingsModelTypeController>(
         GetModelTypeStoreService()->GetStoreFactory(),
         extensions::settings_sync_util::GetSyncableServiceProvider(
@@ -747,19 +748,6 @@ ChromeSyncClient::CreateWebAppsModelTypeController(
     syncer::SyncService* sync_service) {
   syncer::ModelTypeControllerDelegate* delegate =
       GetControllerDelegateForModelType(syncer::WEB_APPS).get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    // Use the same delegate in full-sync and transport-only modes.
-    return std::make_unique<OsSyncModelTypeController>(
-        syncer::WEB_APPS,
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-        profile_->GetPrefs(), sync_service);
-  }
-  // Fall through.
-#endif
   return std::make_unique<syncer::ModelTypeController>(
       syncer::WEB_APPS,
       std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));

@@ -8,13 +8,11 @@
 
 SyncConsentOptionalSyncTest::SyncConsentOptionalSyncTest(TestType type)
     : SyncTest(type) {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync after migrating
-  // the affected tests.
+  // SyncSettingsCategorization is required for SyncConsentOptional.
   settings_feature_list_.InitWithFeatures(
       {
           ash::features::kSyncSettingsCategorization,
           ash::features::kSyncConsentOptional,
-          ash::features::kSplitSettingsSync,
       },
       {});
 }

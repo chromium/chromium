@@ -43,24 +43,18 @@ const char kVersion[] = "1.0.0.1";
 
 // These tests test the new Web Apps system with next generation sync.
 //
-// Chrome OS syncs apps as an OS type.
+// Chrome OS syncs Web apps as a browser type, so it shouldn't be affected by
+// the OS sync feature.
 class SingleClientWebAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
   SingleClientWebAppsOsSyncTest() : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
-#endif
   }
   ~SingleClientWebAppsOsSyncTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
-                       DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+                       DisablingOsSyncFeatureKeepsWebAppsEnabled) {
+  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
   ASSERT_TRUE(SetupSync());
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
@@ -70,7 +64,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
 
   settings->SetOsSyncFeatureEnabled(false);
   EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+  // WEB_APPS is a browser type, so they shouldn't be affected by the OS sync.
+  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

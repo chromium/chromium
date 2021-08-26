@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Tests for SplitSettingsSync.
+// Tests for SyncConsentOptional.
 class SingleClientExtensionAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
   SingleClientExtensionAppsOsSyncTest()
@@ -131,7 +131,7 @@ class SingleClientExtensionAppsOsSyncTest : public SyncConsentOptionalSyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
   ASSERT_TRUE(SetupSync());
   syncer::SyncService* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
