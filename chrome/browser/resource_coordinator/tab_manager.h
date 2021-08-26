@@ -37,13 +37,10 @@ class GURL;
 class TabStripModel;
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace resource_coordinator {
-
-class BackgroundTabNavigationThrottle;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class TabManagerDelegate;
@@ -51,9 +48,6 @@ class TabManagerDelegate;
 class TabManagerStatsCollector;
 
 // TabManager is responsible for triggering tab lifecycle state transitions.
-//
-// The TabManager also delays background tabs' navigation when needed in order
-// to improve users' experience with the foreground tab.
 //
 // Note that the browser tests are only active for platforms that use
 // TabManager (CrOS only for now) and need to be adjusted accordingly if
@@ -110,23 +104,6 @@ class TabManager : public LifecycleUnitObserver,
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
 
-  // Indicates how TabManager should load pending background tabs. The mode is
-  // recorded in tracing for easier debugging. The existing explicit numbering
-  // should be kept as is when new modes are added.
-  enum BackgroundTabLoadingMode {
-    kStaggered = 0,  // Load a background tab after another tab is done loading.
-    kPaused = 1      // Pause loading background tabs unless a user selects it.
-  };
-
-  // Maybe throttle a tab's navigation based on current system status.
-  content::NavigationThrottle::ThrottleCheckResult MaybeThrottleNavigation(
-      BackgroundTabNavigationThrottle* throttle);
-
-  // Notifies TabManager that one navigation has finished (committed, aborted or
-  // replaced). TabManager should clean up the NavigationHandle objects bookkept
-  // before.
-  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
-
   // Notifies TabManager that one tab WebContents has been destroyed. TabManager
   // needs to clean up data related to that tab.
   void OnWebContentsDestroyed(content::WebContents* contents);
@@ -135,14 +112,6 @@ class TabManager : public LifecycleUnitObserver,
   bool IsSessionRestoreLoadingTabs() const {
     return is_session_restore_loading_tabs_;
   }
-
-  // Returns the number of background tabs that are loading in a background tab
-  // opening session.
-  size_t GetBackgroundTabLoadingCount() const;
-
-  // Returns the number of background tabs that are pending in a background tab
-  // opening session.
-  size_t GetBackgroundTabPendingCount() const;
 
   // Returns the number of tabs open in all browser instances.
   int GetTabCount() const;
@@ -165,38 +134,23 @@ class TabManager : public LifecycleUnitObserver,
   friend class TabManagerStatsCollectorTest;
 
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, AutoDiscardable);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabLoadingMode);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabLoadingSlots);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabsLoadingOrdering);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, CanOnlyDiscardOnce);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ChildProcessNotifications);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, EnablePageAlmostIdleSignal);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, InvalidOrEmptyURL);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabDiscardDoneCallback);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsInBackgroundTabOpeningSession);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsInternalPage);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsTabRestoredInForeground);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, MaybeThrottleNavigation);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OnDelayedTabSelected);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OnDidFinishNavigation);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OnTabIsLoaded);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OnWebContentsDestroyed);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, OomPressureListener);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, PauseAndResumeBackgroundTabOpening);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectDevToolsTabsFromDiscarding);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectPDFPages);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            ProtectRecentlyUsedTabsFromUrgentDiscarding);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectVideoTabs);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           SessionRestoreAfterBackgroundTabOpeningSession);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
-                           SessionRestoreBeforeBackgroundTabOpeningSession);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerBasics);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerWasDiscarded);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            TabManagerWasDiscardedCrossSiteSubFrame);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TimeoutWhenLoadingBackgroundTabs);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            TrackingNumberOfLoadedLifecycleUnits);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, UrgentFastShutdownSharedTabProcess);
@@ -205,17 +159,10 @@ class TabManager : public LifecycleUnitObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            UrgentFastShutdownWithBeforeunloadHandler);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, UrgentFastShutdownWithUnloadHandler);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerWithExperimentDisabledTest,
-                           IsInBackgroundTabOpeningSession);
 
   // Returns true if the |url| represents an internal Chrome web UI page that
   // can be easily reloaded and hence makes a good choice to discard.
   static bool IsInternalPage(const GURL& url);
-
-  // Pause or resume background tab opening according to memory pressure change
-  // if there are pending background tabs.
-  void PauseBackgroundTabOpeningIfNeeded();
-  void ResumeBackgroundTabOpeningIfNeeded();
 
   // Called by the memory pressure listener when the memory pressure rises.
   void OnMemoryPressure(
@@ -265,70 +212,10 @@ class TabManager : public LifecycleUnitObserver,
   void OnSessionRestoreFinishedLoadingTabs();
   void OnWillRestoreTab(content::WebContents* contents);
 
-  // Returns true if it is in BackgroundTabOpening session, which is defined as
-  // the duration from the time when the browser starts to load background tabs
-  // until the time when browser has finished loading those tabs. During the
-  // session, the session can end when background tabs' loading are paused due
-  // to memory pressure. A new session starts when background tabs' loading
-  // resume when memory pressure returns to normal.
-  bool IsInBackgroundTabOpeningSession() const;
-
-  // Returns true if TabManager can start loading next tab.
-  bool CanLoadNextTab() const;
-
-  // Start |force_load_timer_| to load the next background tab if the timer
-  // expires before the current tab loading is finished.
-  void StartForceLoadTimer();
-
-  // Start loading the next background tab if needed. This is called when:
-  // 1. a tab has finished loading;
-  // 2. or a tab has been destroyed;
-  // 3. or memory pressure is relieved;
-  // 4. or |force_load_timer_| fires.
-  void LoadNextBackgroundTabIfNeeded();
-
-  // Resume the tab's navigation if it is pending right now. This is called when
-  // a tab is selected.
-  void ResumeTabNavigationIfNeeded(content::WebContents* contents);
-
-  // Resume navigation.
-  void ResumeNavigation(BackgroundTabNavigationThrottle* throttle);
-
-  // Remove the pending navigation for the provided WebContents. Return the
-  // removed NavigationThrottle. Return nullptr if it doesn't exists.
-  BackgroundTabNavigationThrottle* RemovePendingNavigationIfNeeded(
-      content::WebContents* contents);
-
-  // Returns true if |first| is considered to resume navigation before |second|.
-  static bool ComparePendingNavigations(
-      const BackgroundTabNavigationThrottle* first,
-      const BackgroundTabNavigationThrottle* second);
-
   // Returns the number of tabs that are not pending load or discarded.
   int GetNumAliveTabs() const;
 
-  // Check if the tab is loading. Use only in tests.
-  bool IsTabLoadingForTest(content::WebContents* contents) const;
-
-  // Check if the navigation is delayed. Use only in tests.
-  bool IsNavigationDelayedForTest(
-      const content::NavigationHandle* navigation_handle) const;
-
-  // Set |loading_slots_|. Use only in tests.
-  void SetLoadingSlotsForTest(size_t loading_slots) {
-    loading_slots_ = loading_slots;
-  }
-
-  // Reset |memory_pressure_listener_| in test so that the test is not affected
-  // by memory pressure.
-  void ResetMemoryPressureListenerForTest() {
-    memory_pressure_listener_.reset();
-  }
-
   TabManagerStatsCollector* stats_collector() { return stats_collector_.get(); }
-
-  // Returns true if the background tab force load timer is running.
-  bool IsForceLoadTimerRunning() const;
 
   // LifecycleUnitObserver:
   void OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) override;
@@ -355,24 +242,6 @@ class TabManager : public LifecycleUnitObserver,
 
   class TabManagerSessionRestoreObserver;
   std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;
-
-  // The mode that TabManager is using to load pending background tabs.
-  BackgroundTabLoadingMode background_tab_loading_mode_;
-
-  // When the timer fires, it forces loading the next background tab if needed.
-  std::unique_ptr<base::OneShotTimer> force_load_timer_;
-
-  // The list of navigations that are delayed.
-  std::vector<BackgroundTabNavigationThrottle*> pending_navigations_;
-
-  // The tabs that are currently loading. We will consider loading the next
-  // background tab when these tabs have finished loading or a background tab
-  // is brought to foreground.
-  std::set<content::WebContents*> loading_contents_;
-
-  // The number of loading slots that TabManager can use to load background tabs
-  // in parallel.
-  size_t loading_slots_;
 
   // Records UMAs for tab and system-related events and properties during
   // session restore.

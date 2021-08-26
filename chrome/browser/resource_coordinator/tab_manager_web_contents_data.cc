@@ -44,7 +44,6 @@ void TabManager::WebContentsData::DidStartNavigation(
 void TabManager::WebContentsData::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   SetIsInSessionRestore(false);
-  g_browser_process->GetTabManager()->OnDidFinishNavigation(navigation_handle);
 }
 
 void TabManager::WebContentsData::WebContentsDestroyed() {
