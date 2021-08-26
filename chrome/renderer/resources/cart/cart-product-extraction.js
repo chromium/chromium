@@ -528,17 +528,42 @@ function extractPrice(item) {
   return choosePrice(captured_prices);
 }
 
-function extractProductId(item, imageUrl) {
-  productIdMatches = item.outerHTML.match(productIdHTMLRegex);
+function getProductIdFromMatches(productIdMatches, matchIndex = undefined) {
   if (productIdMatches === null) {
-    productIdMatches = imageUrl.match(productIdURLRegex);
+    return null;
   }
-  // Return the last valid match result.
-  if (productIdMatches !== null) {
-    for (var i = productIdMatches.length - 1; i >= 0; i--) {
-      if (productIdMatches[i] !== undefined) {
-        return productIdMatches[i];
-      }
+  if (matchIndex !== undefined) {
+    return productIdMatches[matchIndex];
+  }
+  for (var i = productIdMatches.length - 1; i >= 0; i--) {
+    if (productIdMatches[i] !== undefined) {
+      return productIdMatches[i];
+    }
+  }
+  return null;
+}
+
+function extractProductId(url, imageUrl, item) {
+  const hostname = window.location.hostname;
+  if (idExtractionMap === undefined) {
+    return null;
+  }
+  const source_map = {"product_url": url,
+    "product_image_url": imageUrl,
+    "product_element": item.outerHTML};
+  for (const source_name of Object.keys(source_map)) {
+    if (idExtractionMap[source_name] === undefined ||
+      !(hostname in idExtractionMap[source_name])) {
+      continue;
+    }
+    const source = source_map[source_name];
+    const heuristic = idExtractionMap[source_name][hostname];
+    if (Array.isArray(heuristic)) {
+      return getProductIdFromMatches(source.match(
+        new RegExp(heuristic[0], 'i')), heuristic[1]);
+    } else {
+      return getProductIdFromMatches(source.match(
+        new RegExp(heuristic, 'i')));
     }
   }
   return null;
@@ -577,7 +602,7 @@ function extractItem(item) {
   let extractionResult =
       {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
   // productId is an optional field for extraction.
-  const productId = extractProductId(item, imageUrl);
+  const productId = extractProductId(url, imageUrl, item);
   if (productId !== null) {
     extractionResult['productId'] = productId;
   }

@@ -99,8 +99,6 @@ const char kMockExampleFallbackURL[] = "https://www.guitarcenter.com/cart";
 const char kMockExampleLinkURL[] =
     "https://www.guitarcenter.com/shopping-cart/";
 const char kMockExampleURL[] = "https://www.guitarcenter.com/cart.html";
-const char kMockExampleURL2[] =
-    "https://www.guitarcenter.com/shopping-cart.html";
 
 const cart_db::ChromeCartContentProto kMockExampleProtoFallbackCart =
     BuildProto(kMockExample, kMockExampleFallbackURL);
@@ -112,15 +110,15 @@ const cart_db::ChromeCartContentProto kMockExampleProtoWithProducts =
     BuildProtoWithProducts(
         kMockExample,
         kMockExampleURL,
-        {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
-         "https://images.cymax.com/Images/3/bar_456-baz_789-0-medium",
-         "https://static.guitarcenter.com/product-image/qux_357-0-medium"});
+        {"https://static.guitarcenter.com/product-image/foo_123",
+         "https://images.cymax.com/Images/3/bar_456-baz_789",
+         "https://static.guitarcenter.com/product-image/qux_357"});
 const cart_db::ChromeCartContentProto
     kMockExampleProtoWithProductsWithoutSaved = BuildProtoWithProducts(
         kMockExample,
         kMockExampleURL,
-        {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
-         "https://images.cymax.com/Images/3/bar_456-baz_789-0-medium"});
+        {"https://static.guitarcenter.com/product-image/foo_123",
+         "https://images.cymax.com/Images/3/bar_456-baz_789"});
 
 const char kMockAmazon[] = "amazon.com";
 const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
@@ -598,8 +596,23 @@ class CommerceHintProductInfoTest : public CommerceHintAgentTest {
         {{ntp_features::kNtpChromeCartModule,
           {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
             "true"},
-           {"partner-merchant-pattern", "(guitarcenter.com)"},
-           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
+           {"partner-merchant-pattern",
+            "(guitarcenter.com|aaa.com|bbb.com|ccc.com|ddd.com)"},
+           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
+           {"product-id-pattern-mapping",
+            R"###(
+              {
+                "product_element":
+                {"www.aaa.com": "<a href=\"#modal-(\\w+)"},
+                "product_image_url":
+                {"www.bbb.com": "(\\w+)-\\d+-medium",
+                 "www.ddd.com": ["(\\w+)-\\d+-medium", 0]
+                },
+                "product_url":
+                {"www.ccc.com": "products-(\\w+)",
+                 "www.guitarcenter.com": "products-(\\w+)"}
+              }
+            )###"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -629,33 +642,62 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, AddToCartByURL_CaptureId) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
-                       ExtractCart_CaptureId_FromURL) {
+                       ExtractCart_CaptureId_FromElement) {
   // This page has two products.
-  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  NavigateToURL("https://www.aaa.com/shopping-cart.html");
 
   const cart_db::ChromeCartContentProto expected_cart_protos =
       BuildProtoWithProducts(
-          kMockExample, kMockExampleURL,
-          {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
-           "https://images.cymax.com/Images/3/bar_456-baz_789-0-medium",
-           "https://static.guitarcenter.com/product-image/qux_357-0-medium"},
-          {"foo_123", "bar_456", "qux_357"});
-  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+          "aaa.com", "https://www.aaa.com/shopping-cart.html",
+          {"https://static.guitarcenter.com/product-image/foo_2-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
+          {"foo_1", "bar_1"});
+  const ShoppingCarts expected_carts = {{"aaa.com", expected_cart_protos}};
   WaitForProductCount(expected_carts);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
-                       ExtractCart_CaptureId_FromElement) {
+                       ExtractCart_CaptureId_FromImageURL) {
   // This page has two products.
-  NavigateToURL("https://www.guitarcenter.com/shopping-cart.html");
+  NavigateToURL("https://www.bbb.com/shopping-cart.html");
 
   const cart_db::ChromeCartContentProto expected_cart_protos =
       BuildProtoWithProducts(
-          kMockExample, kMockExampleURL2,
-          {"https://static.guitarcenter.com/product-image/foo",
-           "https://static.guitarcenter.com/product-image/bar"},
-          {"foo_123", "bar_456"});
-  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+          "bbb.com", "https://www.bbb.com/shopping-cart.html",
+          {"https://static.guitarcenter.com/product-image/foo_2-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
+          {"foo_2", "bar_2"});
+  const ShoppingCarts expected_carts = {{"bbb.com", expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       ExtractCart_CaptureId_FromProductURL) {
+  // This page has two products.
+  NavigateToURL("https://www.ccc.com/shopping-cart.html");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(
+          "ccc.com", "https://www.ccc.com/shopping-cart.html",
+          {"https://static.guitarcenter.com/product-image/foo_2-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
+          {"foo_3", "bar_3"});
+  const ShoppingCarts expected_carts = {{"ccc.com", expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       ExtractCart_CaptureId_CaptureGroupIndex) {
+  // This page has two products.
+  NavigateToURL("https://www.ddd.com/shopping-cart.html");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(
+          "ddd.com", "https://www.ddd.com/shopping-cart.html",
+          {"https://static.guitarcenter.com/product-image/foo_2-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_2-0-medium"},
+          {"foo_2-0-medium", "bar_2-0-medium"});
+  const ShoppingCarts expected_carts = {{"ddd.com", expected_cart_protos}};
   WaitForProductCount(expected_carts);
 }
 

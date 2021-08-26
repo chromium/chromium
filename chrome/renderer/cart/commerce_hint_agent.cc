@@ -81,6 +81,11 @@ constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
     // Gap time is 0.5s by default.
     base::TimeDelta::FromSecondsD(0.5)};
 
+constexpr base::FeatureParam<std::string> kProductIdPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -548,6 +553,14 @@ const WebString& GetProductExtractionScript() {
     if (IsCartHeuristicsImprovementEnabled()) {
       script_string = "var isImprovementEnabled = true;\n" + script_string;
     }
+    const std::string id_extraction_map =
+        kProductIdPatternMapping.Get().empty()
+            ? std::string(
+                  ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+                      IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON))
+            : kProductIdPatternMapping.Get();
+    script_string =
+        "var idExtractionMap = " + id_extraction_map + ";\n" + script_string;
     return WebString::FromUTF8(std::move(script_string));
   }());
   return *script;
