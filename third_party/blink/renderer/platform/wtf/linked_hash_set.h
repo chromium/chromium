@@ -174,6 +174,16 @@ class LinkedHashSet {
   const_iterator find(ValuePeekInType) const;
   bool Contains(ValuePeekInType) const;
 
+  // An alternate version of find() that finds the object by hashing and
+  // comparing with some other type, to avoid the cost of type conversion.
+  // The HashTranslator interface is defined in HashSet.
+  template <typename HashTranslator, typename T>
+  iterator Find(const T&);
+  template <typename HashTranslator, typename T>
+  const_iterator Find(const T&) const;
+  template <typename HashTranslator, typename T>
+  bool Contains(const T&) const;
+
   template <typename IncomingValueType>
   AddResult insert(IncomingValueType&&);
 
@@ -275,6 +285,48 @@ template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 bool LinkedHashSet<T, TraitsArg, HashArg, Allocator>::Contains(
     ValuePeekInType value) const {
   return value_to_index_.Contains(value);
+}
+
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+inline
+    typename LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::iterator
+    LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Find(
+        const T& value) {
+  typename Map::const_iterator it =
+      value_to_index_.template Find<HashTranslator>(value);
+  if (it == value_to_index_.end())
+    return end();
+  return MakeIterator(list_.MakeIterator(it->value));
+}
+
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+inline typename LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::
+    const_iterator
+    LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Find(
+        const T& value) const {
+  typename Map::const_iterator it =
+      value_to_index_.template Find<HashTranslator>(value);
+  if (it == value_to_index_.end())
+    return end();
+  return MakeIterator(list_.MakeConstIterator(it->value));
+}
+
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+bool LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Contains(
+    const T& value) const {
+  return value_to_index_.template Contains<HashTranslator>(value);
 }
 
 template <typename T, typename TraitsArg, typename HashArg, typename Allocator>

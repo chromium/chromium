@@ -453,20 +453,12 @@ struct Simple {
 
 struct Complicated {
   Complicated() : Complicated(0) {}
-  Complicated(int value) : simple_(value) { objects_constructed_++; }
-
-  Complicated(const Complicated& other) : simple_(other.simple_) {
-    objects_constructed_++;
-  }
-
+  explicit Complicated(int value) : simple_(value) {}
   Simple simple_;
-  static int objects_constructed_;
   bool operator==(const Complicated& other) const {
     return simple_.value_ == other.simple_.value_;
   }
 };
-
-int Complicated::objects_constructed_ = 0;
 
 struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
   static const bool kEmptyValueIsZero = false;
@@ -528,37 +520,36 @@ TYPED_TEST(ListOrLinkedHashSetHashFunctionsTest, CustomHashFunction) {
 template <typename Set>
 class ListOrLinkedHashSetTranslatorTest : public testing::Test {};
 
-// TODO(bartekn): Add LinkedHashSet once it supports custom hash function.
 using TranslatorSetTypes =
     testing::Types<ListHashSet<Complicated, 256, ComplicatedHashFunctions>,
-                   ListHashSet<Complicated, 1, ComplicatedHashFunctions>>;
+                   ListHashSet<Complicated, 1, ComplicatedHashFunctions>,
+                   LinkedHashSet<Complicated,
+                                 ComplicatedHashTraits,
+                                 ComplicatedHashFunctions>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetTranslatorTest, TranslatorSetTypes);
 
 TYPED_TEST(ListOrLinkedHashSetTranslatorTest, ComplexityTranslator) {
   using Set = TypeParam;
   Set set;
   set.insert(Complicated(42));
-  int base_line = Complicated::objects_constructed_;
+
+  EXPECT_TRUE(set.template Contains<ComplexityTranslator>(Simple(42)));
 
   typename Set::iterator it =
       set.template Find<ComplexityTranslator>(Simple(42));
   EXPECT_NE(it, set.end());
-  EXPECT_EQ(base_line, Complicated::objects_constructed_);
 
   it = set.template Find<ComplexityTranslator>(Simple(103));
   EXPECT_EQ(it, set.end());
-  EXPECT_EQ(base_line, Complicated::objects_constructed_);
 
   const Set& const_set(set);
 
   typename Set::const_iterator const_iterator =
       const_set.template Find<ComplexityTranslator>(Simple(42));
   EXPECT_NE(const_iterator, const_set.end());
-  EXPECT_EQ(base_line, Complicated::objects_constructed_);
 
   const_iterator = const_set.template Find<ComplexityTranslator>(Simple(103));
   EXPECT_EQ(const_iterator, const_set.end());
-  EXPECT_EQ(base_line, Complicated::objects_constructed_);
 }
 
 TEST(ListHashSetTest, WithOwnPtr) {
