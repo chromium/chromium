@@ -113,7 +113,7 @@ class ChromeOSTokenManager {
     explicit TPMModuleAndSlot(SECMODModule* init_chaps_module)
         : chaps_module(init_chaps_module) {}
     SECMODModule* chaps_module;
-    crypto::ScopedPK11Slot tpm_slot;
+    ScopedPK11Slot tpm_slot;
   };
 
   ScopedPK11Slot OpenPersistentNSSDBForPath(const std::string& db_name,
@@ -161,9 +161,9 @@ class ChromeOSTokenManager {
     }
 
     // If everything is already initialized, then return true.
-    // Note that only |tpm_slot_| is checked, since |chaps_module_| could be
-    // nullptr in tests while |tpm_slot_| has been set to the test DB.
-    if (tpm_slot_) {
+    // Note that only |system_slot_| is checked, since |chaps_module_| could be
+    // nullptr in tests while |system_slot_| has been set to the test DB.
+    if (system_slot_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), true));
       return;
@@ -215,25 +215,25 @@ class ChromeOSTokenManager {
              << ", got tpm slot: " << !!tpm_args->tpm_slot;
 
     chaps_module_ = tpm_args->chaps_module;
-    tpm_slot_ = std::move(tpm_args->tpm_slot);
+    system_slot_ = std::move(tpm_args->tpm_slot);
     if (!chaps_module_ && test_system_slot_) {
       // chromeos_unittests try to test the TPM initialization process. If we
       // have a test DB open, pretend that it is the TPM slot.
-      tpm_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
+      system_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
     }
     initializing_tpm_token_ = false;
 
-    if (tpm_slot_)
+    if (system_slot_)
       RunAndClearTPMReadyCallbackList();
 
-    std::move(callback).Run(!!tpm_slot_);
+    std::move(callback).Run(!!system_slot_);
   }
 
   void RunAndClearTPMReadyCallbackList() { tpm_ready_callback_list_.Notify(); }
 
   bool IsTPMTokenReady(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    if (tpm_slot_)
+    if (system_slot_)
       return true;
 
     if (!callback.is_null())
@@ -245,9 +245,8 @@ class ChromeOSTokenManager {
   // Note that CK_SLOT_ID is an unsigned long, but cryptohome gives us the slot
   // id as an int. This should be safe since this is only used with chaps, which
   // we also control.
-  static crypto::ScopedPK11Slot GetTPMSlotForIdInThreadPool(
-      SECMODModule* chaps_module,
-      CK_SLOT_ID slot_id) {
+  static ScopedPK11Slot GetTPMSlotForIdInThreadPool(SECMODModule* chaps_module,
+                                                    CK_SLOT_ID slot_id) {
     DCHECK(chaps_module);
 
     DVLOG(3) << "Poking chaps module.";
@@ -258,7 +257,7 @@ class ChromeOSTokenManager {
     PK11SlotInfo* slot = SECMOD_LookupSlot(chaps_module->moduleID, slot_id);
     if (!slot)
       LOG(ERROR) << "TPM slot " << slot_id << " not found.";
-    return crypto::ScopedPK11Slot(slot);
+    return ScopedPK11Slot(slot);
   }
 
   bool InitializeNSSForChromeOSUser(const std::string& username_hash,
@@ -400,10 +399,10 @@ class ChromeOSTokenManager {
     DCHECK(!slot || !test_system_slot_);
     test_system_slot_ = std::move(slot);
     if (test_system_slot_) {
-      tpm_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
+      system_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
       RunAndClearTPMReadyCallbackList();
     } else {
-      tpm_slot_.reset();
+      system_slot_.reset();
     }
   }
 
@@ -413,9 +412,9 @@ class ChromeOSTokenManager {
     // Ensure that a previous value of test_system_slot_ is not overwritten.
     // Unsetting, i.e. setting a nullptr, however is allowed.
     DCHECK(!slot || !test_system_slot_);
-    if (tpm_slot_ && tpm_slot_ == test_system_slot_) {
-      // Unset |tpm_slot_| if it was initialized from |test_system_slot_|.
-      tpm_slot_.reset();
+    if (system_slot_ && system_slot_ == test_system_slot_) {
+      // Unset |system_slot_| if it was initialized from |test_system_slot_|.
+      system_slot_.reset();
     }
     test_system_slot_ = std::move(slot);
   }
@@ -432,7 +431,7 @@ class ChromeOSTokenManager {
   void GetSystemNSSKeySlotCallback(
       base::OnceCallback<void(ScopedPK11Slot)> callback) {
     std::move(callback).Run(
-        ScopedPK11Slot(PK11_ReferenceSlot(tpm_slot_.get())));
+        ScopedPK11Slot(PK11_ReferenceSlot(system_slot_.get())));
   }
 
   ScopedPK11Slot GetSystemNSSKeySlot(
@@ -440,7 +439,7 @@ class ChromeOSTokenManager {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     // TODO(mattm): chromeos::TPMTokenloader always calls
     // InitializeTPMTokenAndSystemSlot with slot 0.  If the system slot is
-    // disabled, tpm_slot_ will be the first user's slot instead. Can that be
+    // disabled, system_slot_ will be the first user's slot instead. Can that be
     // detected and return nullptr instead?
 
     base::OnceClosure wrapped_callback;
@@ -450,7 +449,7 @@ class ChromeOSTokenManager {
           base::Unretained(this) /* singleton is leaky */, std::move(callback));
     }
     if (IsTPMTokenReady(std::move(wrapped_callback)))
-      return ScopedPK11Slot(PK11_ReferenceSlot(tpm_slot_.get()));
+      return ScopedPK11Slot(PK11_ReferenceSlot(system_slot_.get()));
     return ScopedPK11Slot();
   }
 
@@ -469,7 +468,7 @@ class ChromeOSTokenManager {
   using TPMReadyCallbackList = base::OnceClosureList;
   TPMReadyCallbackList tpm_ready_callback_list_;
   SECMODModule* chaps_module_ = nullptr;
-  crypto::ScopedPK11Slot tpm_slot_;
+  ScopedPK11Slot system_slot_;
   std::map<std::string, std::unique_ptr<ChromeOSUserData>> chromeos_user_map_;
   ScopedPK11Slot test_system_slot_;
   ScopedPK11Slot prepared_test_private_slot_;
