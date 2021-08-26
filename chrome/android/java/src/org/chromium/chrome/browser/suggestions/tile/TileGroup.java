@@ -494,6 +494,15 @@ public class TileGroup implements MostVisitedSites.Observer {
         return newTileData;
     }
 
+    /**
+     * Called before this instance is abandoned to the garbage collector.
+     */
+    public void destroy() {
+        // The mOfflineModelObserver which implements SuggestionsOfflineModelObserver adds itself
+        // as the offlinePageBridge's observer. Calling onDestroy() removes itself from subscribers.
+        mOfflineModelObserver.onDestroy();
+    }
+
     // TODO(dgn): I would like to move that to TileRenderer, but setting the data on the tile,
     // notifying the observer and updating the tasks make it awkward.
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
