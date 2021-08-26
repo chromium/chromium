@@ -1157,6 +1157,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.{operation}Time" units="ms"
+    expires_after="2022-08-24">
+  <owner>cduvall@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken to query the content settings in the browser process for the
+    ${operation} operation. This is recorded each time a sync call is made.
+  </summary>
+  <token key="operation">
+    <variant name="AllowCacheStorage"/>
+    <variant name="AllowIndexedDB"/>
+    <variant name="AllowWebLocks"/>
+    <variant name="RequestFileSystemAccess"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorkerCache.Cache" units="ms" expires_after="M95">
   <owner>wanderview@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
