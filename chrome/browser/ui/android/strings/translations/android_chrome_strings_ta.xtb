@@ -310,6 +310,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> இன் சேமிப்பகம்</translation>
 <translation id="2932222164150889403">கீபோர்டு மாற்றப்படாது</translation>
 <translation id="2942036813789421260">மாதிரிக்காட்சித் தாவல் மூடப்பட்டுள்ளது</translation>
+<translation id="2946420957526726953">பிற சாதனங்களுடன் இணைப்பதற்காக Chromeமைப் புதுப்பிக்கிறது</translation>
 <translation id="2956410042958133412">இந்தக் கணக்கு <ph name="PARENT_NAME_1" /> மற்றும் <ph name="PARENT_NAME_2" /> ஆல் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{படிக்காத பக்கம்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{படிக்காத பக்கங்கள்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
 <translation id="2961210776189273067">பெயரின் முன்னொட்டு</translation>
@@ -616,6 +617,7 @@
 <translation id="4881695831933465202">திற</translation>
 <translation id="488187801263602086">ஃபைலின் பெயரை மாற்றவும்</translation>
 <translation id="4885273946141277891">ஆதரிக்கப்படாத Chrome நிகழ்வுகளின் எண்ணிக்கை.</translation>
+<translation id="4905823827770127520">பக்கத்திற்கான இணைப்பைச் சேருங்கள்</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">கட்டணம் செலுத்துவதற்கான ஆப்ஸ்</translation>
 <translation id="4912413785358399818">பக்கத்தை நகர்த்து</translation>

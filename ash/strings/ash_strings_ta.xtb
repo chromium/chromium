@@ -92,6 +92,7 @@
 <translation id="1611993646327628135">இயக்கு</translation>
 <translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
+<translation id="1637505162081889933"><ph name="NUM_DEVICES" /> சாதனங்கள்</translation>
 <translation id="1654477262762802994">குரல் வினவலைத் தொடங்கு</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistantடில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="1667964833127753507">வால்பேப்பரிலிருந்து எடுக்கப்பட்ட வண்ணங்களை நியூட்ரல் வண்ணப் பயன்முறை பயன்படுத்தாது. அவற்றுக்குப் பதிலாக நியூட்ரலாக டோன் செய்யப்பட்ட லைட் அல்லது டார்க் நிறச்சாயல்களின் தொகுப்பைப் பயன்படுத்தும்.</translation>
@@ -321,6 +322,7 @@
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3510164367642747937">மவுஸ் கர்சரைத் தனிப்படுத்து</translation>
 <translation id="3513798432020909783">கணக்கை நிர்வகிப்பது: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="353086728817903341"><ph name="NUM_DEVICES" /> சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="3552189655002856821">வைஃபை முடக்கப்பட்டது</translation>
 <translation id="3560866052109807830">மார்க்கர் கருவிகள்</translation>
 <translation id="3563775809269155755">ஹாட்ஸ்பாட்டை இயக்குதல்</translation>
@@ -557,6 +559,7 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="523505283826916779">அணுகல்தன்மை அமைப்புகள்</translation>
+<translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
 <translation id="5283198616748585639">1 நிமிடத்தைச் சேர்</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
@@ -769,6 +772,7 @@
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="698231206551913481">இந்தப் பயனர் அகற்றப்பட்டதும், பயனருடன் தொடர்புடைய எல்லா கோப்புகளும் அகத் தரவும் நிரந்தரமாக நீக்கப்படும்.</translation>
 <translation id="7007983414944123363">உங்கள் பின்னையோ கடவுச்சொல்லையோ சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="7014684956566476813"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />க்கு மீண்டும் சாதனத்தைப் பயன்படுத்தலாம்.</translation>
 <translation id="70168403932084660">டெஸ்க் 6</translation>
 <translation id="7025533177575372252">உங்கள் <ph name="DEVICE_NAME" />ஐ ஃபோனுடன் இணைக்கவும்</translation>
