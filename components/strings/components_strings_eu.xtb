@@ -405,7 +405,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> domeinuak kudeatzen du gailua; <ph name="ACCOUNT_MANAGER" /> domeinuak, berriz, kontua.</translation>
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Egun bat baino gutxiago barru}=1{Egun bat barru}other{{NUM_DAYS} egun barru}}</translation>
 <translation id="2359629602545592467">Bat baino gehiago</translation>
-<translation id="2359808026110333948">Jarraitu</translation>
+<translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="236340516568226369">Tamaina aldatzeko etengailuaren menua</translation>
 <translation id="2367567093518048410">Maila</translation>
 <translation id="2372464001869762664">Berretsi ondoren, webgune honekin partekatuko dira Google-ko kontuarekin lotutako txartelaren xehetasunak. Bilatu CVC kodea Plex-eko kontuaren xehetasunetan.</translation>
@@ -1151,7 +1151,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" softwareak instalatuta ez dagoen erroko ziurtagiri bat behar du. Arazoa konpontzeko, IKT saileko administratzaileak "<ph name="SOFTWARE_NAME" />" bilatu behar du konfigurazio-argibideetan. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate zerbitzuari buruz</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ostalariak zure kamera eta mikrofonoa erabili nahi ditu</translation>
-<translation id="5039762155821394373">Letraren tamaina</translation>
+<translation id="5039762155821394373">Letra-tamaina</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="5043480802608081735">Kopiatu duzun esteka</translation>
@@ -2037,7 +2037,7 @@ Xehetasun gehiago:
 <translation id="8238581221633243064">Ireki orria ezkutuko moduko fitxa berri batean</translation>
 <translation id="8241707690549784388">Bilatzen ari zaren orriak idatzi duzun informazioa erabili du. Orrira itzultzen bazara, baliteke egin dituzun ekintzak errepikatzea. Jarraitu nahi duzu?</translation>
 <translation id="8241712895048303527">Blokeatu webgune honetan</translation>
-<translation id="8242426110754782860">Jarraitu</translation>
+<translation id="8242426110754782860">Egin aurrera</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="8249320324621329438">Eskuratutako azkena:</translation>
 <translation id="8253091569723639551">Fakturazio-helbidea behar da</translation>

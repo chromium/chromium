@@ -48,6 +48,7 @@
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5846292395804797011">Fermez le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6510648526783655549">Fermer la barre d'onglets</translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>

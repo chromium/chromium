@@ -48,6 +48,7 @@
 <translation id="58326064309361797">拖动标签可进行分组</translation>
 <translation id="5846292395804797011">关闭包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”组</translation>
 <translation id="6040143037577758943">关闭</translation>
+<translation id="6054741997831917303">这件商品的价格最近从 <ph name="PREVIOUS_PRICE" />降至 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6510648526783655549">关闭标签栏</translation>
 <translation id="6562820390860419811">左移标签页</translation>
