@@ -581,7 +581,7 @@
   'CROS_ATLAS_TOT': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R95-14161.0.0',
+      'cros_img': 'atlas-release/R96-14161.0.0',
     },
     'identifier': 'ATLAS_TOT',
   },
@@ -602,7 +602,7 @@
   'CROS_EVE_TOT': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R95-14161.0.0',
+      'cros_img': 'eve-release/R96-14161.0.0',
     },
     'identifier': 'EVE_TOT',
   },
@@ -623,7 +623,7 @@
   'CROS_KEVIN_TOT': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin-release/R95-14161.0.0',
+      'cros_img': 'kevin-release/R96-14161.0.0',
     },
     'identifier': 'KEVIN_TOT',
   },
