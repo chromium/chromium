@@ -807,25 +807,35 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
 
 // Tests that events are dispatched to the correct profile for split mode
 // extensions.
-// TODO(https://crbug.com/1212866): Crashes or times out when running as a
-// Service Worker-based extension. When fixed, make this a
-// BrowserActionApiTestWithContextType test.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoSplit) {
-  ResultCatcher catcher;
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
-                    {.allow_in_incognito = true});
-  ASSERT_TRUE(extension) << message_;
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
+  ExtensionTestMessageListener listener_ready("regular ready", false);
+  ExtensionTestMessageListener incognito_ready("incognito ready", false);
 
   // Open an incognito browser.
+  // Note: It is important that we create incognito profile before loading
+  // |extension| below. "event_page" based test fails otherwise.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("browser_action/split_mode"),
+      {.allow_in_incognito = true,
+       .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  ASSERT_TRUE(extension) << message_;
+
   ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
                    ->NumberOfBrowserActions());
+
+  // NOTE: It is necessary to ensure that browser.onClicked listener was
+  // registered from the extension. Otherwise SW based extension occasionally
+  // times out.
+  EXPECT_TRUE(listener_ready.WaitUntilSatisfied());
 
   // A click in the regular profile should open a tab in the regular profile.
   ExecuteExtensionAction(browser(), extension);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
+  EXPECT_TRUE(incognito_ready.WaitUntilSatisfied());
   // A click in the incognito profile should open a tab in the
   // incognito profile.
   ExecuteExtensionAction(incognito_browser, extension);

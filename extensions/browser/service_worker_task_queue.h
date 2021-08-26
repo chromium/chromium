@@ -126,6 +126,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
   absl::optional<ActivationSequence> GetCurrentSequence(
       const ExtensionId& extension_id) const;
 
+  // Activates incognito split mode extensions that are activated in |other|
+  // task queue.
+  void ActivateIncognitoSplitModeExtensions(ServiceWorkerTaskQueue* other);
+
   // content::ServiceWorkerContextObserver:
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,

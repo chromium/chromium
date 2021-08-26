@@ -6,6 +6,7 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker_task_queue.h"
 
@@ -36,7 +37,18 @@ ServiceWorkerTaskQueueFactory::~ServiceWorkerTaskQueueFactory() {}
 
 KeyedService* ServiceWorkerTaskQueueFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
-  return new ServiceWorkerTaskQueue(context);
+  ServiceWorkerTaskQueue* task_queue = new ServiceWorkerTaskQueue(context);
+  BrowserContext* original_context =
+      ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  if (original_context != context) {
+    // To let incognito context's ServiceWorkerTaskQueue know about extensions
+    // that were activated (which has its own instance of
+    // ServiceWorkerTaskQueue), we'd need to activate extensions from
+    // |original_context|'s ServiceWorkerTaskQueue.
+    task_queue->ActivateIncognitoSplitModeExtensions(
+        ServiceWorkerTaskQueue::Get(original_context));
+  }
+  return task_queue;
 }
 
 BrowserContext* ServiceWorkerTaskQueueFactory::GetBrowserContextToUse(
