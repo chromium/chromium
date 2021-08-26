@@ -729,8 +729,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   }
 
   // If all data is received, there is no point in decoding progressively.
-  // TODO(crbug.com/1239472): Re-enable progressive support once fixed.
-  decoder_->allowProgressive = false;
+  decoder_->allowProgressive = !IsAllDataReceived();
 
   auto ret = avifDecoderParse(decoder_.get());
   if (ret == AVIF_RESULT_WAITING_ON_IO)
