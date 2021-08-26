@@ -6394,9 +6394,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Normal" label="Normal"/>
   <suffix name="PowerResume" label="PowerResume"/>
   <affected-histogram name="GPU.WatchdogThread.ExtraThreadTime"/>
-  <obsolete>
-    Removed 08/2021.
-  </obsolete>
   <affected-histogram name="GPU.WatchdogThread.Timeout"/>
   <affected-histogram name="GPU.WatchdogThread.WaitTime">
     <obsolete>
