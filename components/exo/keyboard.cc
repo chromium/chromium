@@ -196,7 +196,7 @@ bool Keyboard::HasDeviceConfigurationDelegate() const {
 void Keyboard::SetDeviceConfigurationDelegate(
     KeyboardDeviceConfigurationDelegate* delegate) {
   device_configuration_delegate_ = delegate;
-  OnKeyboardEnabledChanged(IsVirtualKeyboardEnabled());
+  UpdateKeyboardType();
 }
 
 void Keyboard::AddObserver(KeyboardObserver* observer) {
@@ -397,14 +397,9 @@ void Keyboard::OnSurfaceFocused(Surface* gained_focus) {
 ////////////////////////////////////////////////////////////////////////////////
 // ash::KeyboardControllerObserver overrides:
 
-void Keyboard::OnKeyboardEnabledChanged(bool enabled) {
-  if (device_configuration_delegate_) {
-    // Ignore kAndroidDisabled which affects |enabled| and just test for a11y
-    // and touch enabled keyboards. TODO(yhanada): Fix this using an Android
-    // specific KeyboardUI implementation. https://crbug.com/897655.
-    bool is_physical = !IsVirtualKeyboardEnabled();
-    device_configuration_delegate_->OnKeyboardTypeChanged(is_physical);
-  }
+void Keyboard::OnKeyboardEnableFlagsChanged(
+    const std::set<keyboard::KeyboardEnableFlag>& flags) {
+  UpdateKeyboardType();
 }
 
 void Keyboard::OnKeyRepeatSettingsChanged(
@@ -514,6 +509,17 @@ void Keyboard::RemoveEventHandler() {
     toplevel_window->RemovePreTargetHandler(this);
   else
     toplevel_window->RemovePostTargetHandler(this);
+}
+
+void Keyboard::UpdateKeyboardType() {
+  if (!device_configuration_delegate_)
+    return;
+
+  // Ignore kAndroidDisabled which affects |enabled| and just test for a11y
+  // and touch enabled keyboards. TODO(yhanada): Fix this using an Android
+  // specific KeyboardUI implementation. https://crbug.com/897655.
+  const bool is_physical = !IsVirtualKeyboardEnabled();
+  device_configuration_delegate_->OnKeyboardTypeChanged(is_physical);
 }
 
 }  // namespace exo
