@@ -32,11 +32,12 @@ namespace autofill {
 
 namespace {
 
+// Return the card art url to displayed in the autofill suggestions. The card
+// art is only supported for virtual cards. For other cards, we show the default
+// network icon.
 GURL GetCardArtUrl(const CreditCard& card) {
-  return card.record_type() == CreditCard::MASKED_SERVER_CARD &&
-                 card.virtual_card_enrollment_state() == CreditCard::ENROLLED
-             ? card.card_art_url()
-             : GURL();
+  return card.record_type() == CreditCard::VIRTUAL_CARD ? card.card_art_url()
+                                                        : GURL();
 }
 
 std::u16string GetTitle(bool has_suggestions) {

@@ -110,7 +110,8 @@ UserInfo& UserInfo::operator=(UserInfo&& user_info) = default;
 
 bool UserInfo::operator==(const UserInfo& user_info) const {
   return fields_ == user_info.fields_ && origin_ == user_info.origin_ &&
-         is_psl_match_ == user_info.is_psl_match_;
+         is_psl_match_ == user_info.is_psl_match_ &&
+         icon_url_ == user_info.icon_url_;
 }
 
 size_t UserInfo::EstimateMemoryUsage() const {
@@ -120,6 +121,7 @@ size_t UserInfo::EstimateMemoryUsage() const {
 std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   os << "origin: \"" << user_info.origin() << "\", "
      << "is_psl_match: " << std::boolalpha << user_info.is_psl_match() << ", "
+     << "icon_url: " << user_info.icon_url() << ","
      << "fields: [\n";
   for (const AccessorySheetField& field : user_info.fields()) {
     os << field << ", \n";
