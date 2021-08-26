@@ -557,7 +557,14 @@ TEST_P(NativeIOManagerTest, DeleteFile_ReportsLengths) {
   EXPECT_EQ(delete_result.second, static_cast<uint64_t>(kTestData.size()));
 }
 
-TEST_P(NativeIOManagerTest, GetAllFiles_Empty) {
+#if defined(ADDRESS_SANITIZER)
+// Test is flaky under ASAN: https://crbug.com/1243689
+#define MAYBE_GetAllFiles_Empty DISABLED_GetAllFiles_Empty
+#else
+#define MAYBE_GetAllFiles_Empty GetAllFiles_Empty
+#endif
+
+TEST_P(NativeIOManagerTest, MAYBE_GetAllFiles_Empty) {
   std::vector<std::string> file_names = example_host_->GetAllFileNames();
   EXPECT_EQ(0u, file_names.size());
 }
