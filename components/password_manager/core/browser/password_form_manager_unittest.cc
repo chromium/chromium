@@ -475,7 +475,9 @@ class PasswordFormManagerTest : public testing::Test,
                          /*account_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>())
                    : std::make_unique<PasswordSaveManagerImpl>(
-                         std::make_unique<NiceMock<MockFormSaver>>());
+                         /*profile_form_saver=*/std::make_unique<
+                             NiceMock<MockFormSaver>>(),
+                         /*account_form_saver=*/nullptr);
 
     form_manager_ = std::make_unique<PasswordFormManager>(
         &client_, driver_.AsWeakPtr(), observed_form, fetcher_.get(),
@@ -493,7 +495,9 @@ class PasswordFormManagerTest : public testing::Test,
                          /*account_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>())
                    : std::make_unique<PasswordSaveManagerImpl>(
-                         std::make_unique<NiceMock<MockFormSaver>>());
+                         /*profile_form_saver=*/std::make_unique<
+                             NiceMock<MockFormSaver>>(),
+                         /*account_form_saver=*/nullptr);
     fetcher_->set_scheme(PasswordFormDigest(base_auth_observed_form).scheme);
     form_manager_ = std::make_unique<PasswordFormManager>(
         &client_, PasswordFormDigest(base_auth_observed_form), fetcher_.get(),

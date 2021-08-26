@@ -50,14 +50,15 @@ class MockPasswordFormManager : public PasswordFormManager {
       const autofill::FormData& form,
       password_manager::FormFetcher* form_fetcher,
       scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder)
-      : PasswordFormManager(
-            client,
-            driver,
-            form,
-            form_fetcher,
-            std::make_unique<PasswordSaveManagerImpl>(
-                std::make_unique<password_manager::StubFormSaver>()),
-            metrics_recorder) {}
+      : PasswordFormManager(client,
+                            driver,
+                            form,
+                            form_fetcher,
+                            std::make_unique<PasswordSaveManagerImpl>(
+                                /*profile_form_saver=*/std::make_unique<
+                                    password_manager::StubFormSaver>(),
+                                /*account_form_saver=*/nullptr),
+                            metrics_recorder) {}
 
   // Constructor for federation credentials.
   MockPasswordFormManager(password_manager::PasswordManagerClient* client,
@@ -67,7 +68,9 @@ class MockPasswordFormManager : public PasswordFormManager {
             std::make_unique<password_manager::PasswordForm>(form),
             std::make_unique<password_manager::FakeFormFetcher>(),
             std::make_unique<PasswordSaveManagerImpl>(
-                std::make_unique<password_manager::StubFormSaver>())) {
+                /*profile_form_saver=*/std::make_unique<
+                    password_manager::StubFormSaver>(),
+                /*account_form_saver=*/nullptr)) {
     CreatePendingCredentials();
   }
 

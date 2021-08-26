@@ -28,12 +28,10 @@ class PasswordManagerDriver;
 struct PasswordForm;
 
 // Implementations of this interface should encapsulate the password Save/Update
-// logic. One implementation of this class will provide the Save/Update logic in
-// case of multiple password stores. This ensures that the PasswordFormManager
-// stays agnostic to whether one password store or multiple password stores are
-// active. While FormSaver abstracts the implementation of different
-// operations (e.g. Save()), PasswordSaveManager is responsible for deciding
-// what and where to Save().
+// logic. This ensures that the PasswordFormManager stays agnostic to whether
+// one password store or multiple password stores are active. While FormSaver
+// abstracts the implementation of different operations (e.g. Save()),
+// PasswordSaveManager is responsible for deciding what and where to Save().
 class PasswordSaveManager {
  public:
   PasswordSaveManager() = default;

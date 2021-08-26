@@ -21,7 +21,9 @@ enum class PendingCredentialsState {
 
 class PasswordSaveManagerImpl : public PasswordSaveManager {
  public:
-  explicit PasswordSaveManagerImpl(std::unique_ptr<FormSaver> form_saver);
+  explicit PasswordSaveManagerImpl(
+      std::unique_ptr<FormSaver> profile_form_saver,
+      std::unique_ptr<FormSaver> account_form_saver);
   ~PasswordSaveManagerImpl() override;
 
   // Returns a MultiStorePasswordSaveManager if the password account storage
@@ -115,9 +117,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);
 
-  // FormSaver instance used by |this| to all tasks related to storing
-  // credentials.
-  const std::unique_ptr<FormSaver> form_saver_;
+  // FormSaver instances for all tasks related to storing credentials - one
+  // for the profile store, one for the account store.
+  const std::unique_ptr<FormSaver> profile_store_form_saver_;
+  // May be null on platforms that don't support the account store.
+  const std::unique_ptr<FormSaver> account_store_form_saver_;
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;

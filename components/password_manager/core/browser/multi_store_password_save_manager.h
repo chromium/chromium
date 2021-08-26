@@ -65,9 +65,6 @@ class MultiStorePasswordSaveManager : public PasswordSaveManagerImpl {
   bool IsOptedInForAccountStorage() const;
   bool AccountStoreIsDefault() const;
 
-  // May be null on platforms that don't support the account store.
-  const std::unique_ptr<FormSaver> account_store_form_saver_;
-
   DISALLOW_COPY_AND_ASSIGN(MultiStorePasswordSaveManager);
 };
 

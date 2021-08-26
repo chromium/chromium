@@ -109,8 +109,8 @@ PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
 MultiStorePasswordSaveManager::MultiStorePasswordSaveManager(
     std::unique_ptr<FormSaver> profile_form_saver,
     std::unique_ptr<FormSaver> account_form_saver)
-    : PasswordSaveManagerImpl(std::move(profile_form_saver)),
-      account_store_form_saver_(std::move(account_form_saver)) {}
+    : PasswordSaveManagerImpl(std::move(profile_form_saver),
+                              std::move(account_form_saver)) {}
 
 MultiStorePasswordSaveManager::~MultiStorePasswordSaveManager() = default;
 
@@ -145,16 +145,16 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
                                         old_account_password);
       }
     } else {
-      form_saver_->Save(pending_credentials_, profile_matches,
-                        old_profile_password);
+      profile_store_form_saver_->Save(pending_credentials_, profile_matches,
+                                      old_profile_password);
     }
     return;
   }
 
   switch (states.profile_store_state) {
     case PendingCredentialsState::AUTOMATIC_SAVE:
-      form_saver_->Save(pending_credentials_, profile_matches,
-                        old_profile_password);
+      profile_store_form_saver_->Save(pending_credentials_, profile_matches,
+                                      old_profile_password);
       break;
     case PendingCredentialsState::UPDATE:
     case PendingCredentialsState::EQUAL_TO_SAVED_MATCH: {
@@ -172,8 +172,8 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
       // UpdateFormPreservingDifferentFieldsAcrossStores() preserved the
       // original times_used, and hence we should increment it here.
       form_to_update.times_used++;
-      form_saver_->Update(form_to_update, profile_matches,
-                          old_profile_password);
+      profile_store_form_saver_->Update(form_to_update, profile_matches,
+                                        old_profile_password);
     } break;
     // The NEW_LOGIN case was already handled separately above.
     case PendingCredentialsState::NEW_LOGIN:
@@ -226,7 +226,7 @@ void MultiStorePasswordSaveManager::Blocklist(
   } else {
     // For users who aren't yet opted-in to the account storage, we store their
     // blocklisted entries in the profile store.
-    form_saver_->Blocklist(form_digest);
+    profile_store_form_saver_->Blocklist(form_digest);
   }
 }
 
@@ -234,14 +234,14 @@ void MultiStorePasswordSaveManager::Unblocklist(
     const PasswordFormDigest& form_digest) {
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
-  form_saver_->Unblocklist(form_digest);
+  profile_store_form_saver_->Unblocklist(form_digest);
   if (account_store_form_saver_ && IsOptedInForAccountStorage())
     account_store_form_saver_->Unblocklist(form_digest);
 }
 
 std::unique_ptr<PasswordSaveManager> MultiStorePasswordSaveManager::Clone() {
   auto result = std::make_unique<MultiStorePasswordSaveManager>(
-      form_saver_->Clone(),
+      profile_store_form_saver_->Clone(),
       account_store_form_saver_ ? account_store_form_saver_->Clone() : nullptr);
   CloneInto(result.get());
   return result;
@@ -289,7 +289,7 @@ void MultiStorePasswordSaveManager::MoveCredentialsToAccountStore(
       account_store_form_saver_->Save(match_copy, account_store_matches,
                                       /*old_password=*/std::u16string());
     }
-    form_saver_->Remove(*match);
+    profile_store_form_saver_->Remove(*match);
   }
 }
 
@@ -318,8 +318,8 @@ void MultiStorePasswordSaveManager::BlockMovingToAccountStoreFor(
   // No need to pass matches to Update(). It's only used for post processing
   // (e.g. updating the password for other credentials with the same
   // old password).
-  form_saver_->Update(form_to_block, /*matches=*/{},
-                      form_to_block.password_value);
+  profile_store_form_saver_->Update(form_to_block, /*matches=*/{},
+                                    form_to_block.password_value);
 }
 
 std::pair<const PasswordForm*, PendingCredentialsState>
@@ -350,7 +350,7 @@ MultiStorePasswordSaveManager::FindSimilarSavedFormAndComputeState(
 FormSaver* MultiStorePasswordSaveManager::GetFormSaverForGeneration() {
   return (account_store_form_saver_ && IsOptedInForAccountStorage())
              ? account_store_form_saver_.get()
-             : form_saver_.get();
+             : profile_store_form_saver_.get();
 }
 
 std::vector<const PasswordForm*>

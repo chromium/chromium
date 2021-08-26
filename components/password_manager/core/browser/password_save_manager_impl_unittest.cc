@@ -297,12 +297,13 @@ class PasswordSaveManagerImplTest : public testing::Test,
     mock_form_saver_ = mock_form_saver.get();
 
     if (!GetParam()) {
-      password_save_manager_impl_ =
-          std::make_unique<PasswordSaveManagerImpl>(std::move(mock_form_saver));
+      password_save_manager_impl_ = std::make_unique<PasswordSaveManagerImpl>(
+          /*profile_form_saver=*/std::move(mock_form_saver),
+          /*account_form_saver=*/nullptr);
     } else {
       password_save_manager_impl_ = std::make_unique<
           MultiStorePasswordSaveManager>(
-          /*account_form_saver=*/std::move(mock_form_saver),
+          /*profile_form_saver=*/std::move(mock_form_saver),
           /*account_form_saver=*/std::make_unique<NiceMock<MockFormSaver>>());
     }
 

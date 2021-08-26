@@ -120,7 +120,8 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
     form_manager_ = std::make_unique<PasswordFormManager>(
         client_.get(), driver_.AsWeakPtr(), pending_.form_data, &fetcher_,
         std::make_unique<PasswordSaveManagerImpl>(
-            std::make_unique<StubFormSaver>()),
+            /*profile_form_saver=*/std::make_unique<StubFormSaver>(),
+            /*account_form_saver=*/nullptr),
         nullptr /* metrics_recorder */);
     filter_ = std::make_unique<SyncCredentialsFilter>(
         client_.get(), base::BindRepeating(&SyncUsernameTestBase::sync_service,

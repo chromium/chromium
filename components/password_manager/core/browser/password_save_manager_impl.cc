@@ -122,8 +122,10 @@ PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(
 }
 
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(
-    std::unique_ptr<FormSaver> form_saver)
-    : form_saver_(std::move(form_saver)) {}
+    std::unique_ptr<FormSaver> profile_form_saver,
+    std::unique_ptr<FormSaver> account_form_saver)
+    : profile_store_form_saver_(std::move(profile_form_saver)),
+      account_store_form_saver_(std::move(account_form_saver)) {}
 
 PasswordSaveManagerImpl::~PasswordSaveManagerImpl() = default;
 
@@ -137,7 +139,7 @@ const std::u16string& PasswordSaveManagerImpl::GetGeneratedPassword() const {
 }
 
 FormSaver* PasswordSaveManagerImpl::GetProfileStoreFormSaverForTesting() const {
-  return form_saver_.get();
+  return profile_store_form_saver_.get();
 }
 
 void PasswordSaveManagerImpl::Init(
@@ -252,12 +254,12 @@ void PasswordSaveManagerImpl::Update(
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
   DCHECK(!client_->IsIncognito());
-  form_saver_->Blocklist(form_digest);
+  profile_store_form_saver_->Blocklist(form_digest);
 }
 
 void PasswordSaveManagerImpl::Unblocklist(
     const PasswordFormDigest& form_digest) {
-  form_saver_->Unblocklist(form_digest);
+  profile_store_form_saver_->Unblocklist(form_digest);
 }
 
 void PasswordSaveManagerImpl::PresaveGeneratedPassword(
@@ -337,7 +339,9 @@ bool PasswordSaveManagerImpl::HasGeneratedPassword() const {
 }
 
 std::unique_ptr<PasswordSaveManager> PasswordSaveManagerImpl::Clone() {
-  auto result = std::make_unique<PasswordSaveManagerImpl>(form_saver_->Clone());
+  auto result = std::make_unique<PasswordSaveManagerImpl>(
+      profile_store_form_saver_->Clone(),
+      account_store_form_saver_ ? account_store_form_saver_->Clone() : nullptr);
   CloneInto(result.get());
   return result;
 }
@@ -470,12 +474,14 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
   auto matches = form_fetcher_->GetAllRelevantMatches();
   std::u16string old_password = GetOldPassword(parsed_submitted_form);
   if (IsNewLogin()) {
-    form_saver_->Save(pending_credentials_, matches, old_password);
+    profile_store_form_saver_->Save(pending_credentials_, matches,
+                                    old_password);
   } else {
     // It sounds wrong that we still update even if the state is NONE. We
     // should double check if this actually necessary. Currently some tests
     // depend on this behavior.
-    form_saver_->Update(pending_credentials_, matches, old_password);
+    profile_store_form_saver_->Update(pending_credentials_, matches,
+                                      old_password);
   }
 }
 
@@ -552,8 +558,8 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
 }
 
 FormSaver* PasswordSaveManagerImpl::GetFormSaverForGeneration() {
-  DCHECK(form_saver_);
-  return form_saver_.get();
+  DCHECK(profile_store_form_saver_);
+  return profile_store_form_saver_.get();
 }
 
 std::vector<const PasswordForm*>

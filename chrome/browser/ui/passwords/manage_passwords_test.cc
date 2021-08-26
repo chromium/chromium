@@ -218,7 +218,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
   auto form_manager = std::make_unique<PasswordFormManager>(
       &client_, driver_.AsWeakPtr(), observed_form_, &fetcher_,
       std::make_unique<password_manager::PasswordSaveManagerImpl>(
-          base::WrapUnique(new password_manager::StubFormSaver)),
+          /*profile_form_saver=*/std::make_unique<
+              password_manager::StubFormSaver>(),
+          /*account_form_saver=*/nullptr),
       nullptr /*  metrics_recorder */);
 
   password_manager::InsecureCredential credential(
