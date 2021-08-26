@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.feed.webfeed.R;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -60,8 +59,8 @@ public class FollowManagementCoordinator {
         mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
-        mMediator = new FollowManagementMediator(activity, listItems, adapter,
-                new LargeIconBridge(Profile.getLastUsedRegularProfile()));
+        mMediator = new FollowManagementMediator(
+                activity, listItems, adapter, WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {
