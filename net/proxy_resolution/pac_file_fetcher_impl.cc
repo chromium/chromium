@@ -329,8 +329,8 @@ PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
 }
 
 bool PacFileFetcherImpl::IsUrlSchemeAllowed(const GURL& url) const {
-  // Always allow http://, https://, data:, and ftp://.
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("ftp") || url.SchemeIs("data"))
+  // Always allow http://, https://, and data:.
+  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("data"))
     return true;
 
   // Disallow any other URL scheme.

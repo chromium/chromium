@@ -3509,7 +3509,7 @@ class URLRequestTestHTTP : public URLRequestTest {
 
   // URLRequestTest interface:
   void SetUpFactory() override {
-    // Add FTP support to the default URLRequestContext.
+    // Add support for an unsafe scheme to the default URLRequestContext.
     job_factory_->SetProtocolHandler(
         "unsafe", std::make_unique<UnsafeRedirectProtocolHandler>());
   }

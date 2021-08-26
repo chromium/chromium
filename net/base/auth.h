@@ -31,8 +31,8 @@ class NET_EXPORT AuthChallengeInfo {
   // The service issuing the challenge.
   url::Origin challenger;
 
-  // The authentication scheme used, such as "basic" or "digest". If the
-  // |source| is FTP_SERVER, this is an empty string. The encoding is ASCII.
+  // The authentication scheme used, such as "basic" or "digest". The encoding
+  // is ASCII.
   std::string scheme;
 
   // The realm of the challenge. May be empty. The encoding is UTF-8.
