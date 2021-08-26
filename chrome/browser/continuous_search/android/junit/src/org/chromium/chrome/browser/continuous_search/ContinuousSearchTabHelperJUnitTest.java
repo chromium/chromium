@@ -5,11 +5,17 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -38,6 +44,15 @@ public class ContinuousSearchTabHelperJUnitTest {
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Before
+    public void setUp() {
+        Context context = mock(Context.class);
+        Resources resources = mock(Resources.class);
+        when(mTabMock.getContext()).thenReturn(context);
+        when(context.getResources()).thenReturn(resources);
+        when(resources.getInteger(anyInt())).thenReturn(0);
+    }
 
     /**
      * Tests initialization success of all tab observers.
