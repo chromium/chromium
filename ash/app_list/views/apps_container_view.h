@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "ash/app_list/model/app_list_folder_item.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"
 #include "base/callback_helpers.h"
@@ -18,7 +19,6 @@ namespace ash {
 
 class ApplicationDragAndDropHost;
 class AppListFolderItem;
-class AppListFolderView;
 class AppListModel;
 class ContentsView;
 class FolderBackgroundView;
@@ -29,7 +29,8 @@ class SuggestionChipContainerView;
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the
 // active folder.
-class ASH_EXPORT AppsContainerView : public AppListPage {
+class ASH_EXPORT AppsContainerView : public AppListPage,
+                                     public AppListFolderView::Delegate {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
   ~AppsContainerView() override;
@@ -37,15 +38,9 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
   // Shows the active folder content specified by |folder_item|.
   void ShowActiveFolder(AppListFolderItem* folder_item);
 
-  // Shows the root level apps list. This is called when UI navigate back from
-  // a folder view with |folder_item|. If |folder_item| is nullptr skips
-  // animation.
-  void ShowApps(AppListFolderItem* folder_item);
-
   // Resets the app list to a state where it shows the main grid view. This is
   // called when the user opens the launcher for the first time or when the user
-  // hides and then shows it. This is necessary because we only hide and show
-  // the launcher on Windows and Linux so we need to reset to a fresh state.
+  // hides and then shows it.
   void ResetForShowApps();
 
   // Sets |drag_and_drop_host_| for the current app list in both
@@ -53,15 +48,8 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
   void SetDragAndDropHostOfCurrentAppList(
       ApplicationDragAndDropHost* drag_and_drop_host);
 
-  // Transits the UI from folder view to root level apps grid view when
-  // re-parenting a child item of |folder_item|.
-  void ReparentFolderItemTransit(AppListFolderItem* folder_item);
-
   // Returns true if it is currently showing an active folder page.
   bool IsInFolderView() const;
-
-  // Called to notify the AppsContainerView that a reparent drag has completed.
-  void ReparentDragEnded();
 
   // Updates the visibility of the items in this view according to
   // |app_list_state| and |is_in_drag|.
@@ -118,6 +106,11 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
   void AnimateYPosition(AppListViewState target_view_state,
                         const TransformAnimator& animator,
                         float default_offset) override;
+
+  // AppListFolderView::Delegate:
+  void ShowApps(AppListFolderItem* folder_item) override;
+  void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
+  void ReparentDragEnded() override;
 
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {

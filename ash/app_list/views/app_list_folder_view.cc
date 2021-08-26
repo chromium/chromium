@@ -14,9 +14,6 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_item_view.h"
-#include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/apps_container_view.h"
-#include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
@@ -49,6 +46,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -81,7 +79,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   ~BackgroundAnimation() override = default;
 
  private:
-  // AppListView::Animation:
+  // AppListFolderView::Animation:
   void ScheduleAnimation() override {
     // Calculate the source and target states.
     const int icon_radius =
@@ -442,14 +440,18 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 
 }  // namespace
 
-AppListFolderView::AppListFolderView(AppsContainerView* container_view,
+AppListFolderView::AppListFolderView(Delegate* delegate,
+                                     AppsGridView* root_apps_grid_view,
                                      AppListModel* model,
                                      ContentsView* contents_view,
                                      AppListA11yAnnouncer* a11y_announcer,
                                      AppListViewDelegate* view_delegate)
-    : container_view_(container_view),
+    : delegate_(delegate),
+      root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
       model_(model) {
+  DCHECK(delegate_);
+  DCHECK(root_apps_grid_view_);
   DCHECK(a11y_announcer_);
   DCHECK(view_delegate);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -606,7 +608,7 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
     // the container view to show the app list instead.
     // Pass nullptr to ShowApps() to avoid triggering animation from the deleted
     // folder.
-    container_view_->ShowApps(nullptr);
+    delegate_->ShowApps(nullptr);
   }
 }
 
@@ -616,15 +618,14 @@ void AppListFolderView::UpdatePreferredBounds() {
   if (!activated_folder_item_view)
     return;
 
-  // Calculate the folder icon's bounds relative to AppsContainerView.
+  // Calculate the folder icon's bounds relative to our parent.
   gfx::RectF rect(activated_folder_item_view->GetIconBounds());
-  ConvertRectToTarget(activated_folder_item_view, container_view_, &rect);
+  ConvertRectToTarget(activated_folder_item_view, parent(), &rect);
   gfx::Rect icon_bounds_in_container =
-      container_view_->GetMirroredRect(gfx::ToEnclosingRect(rect));
+      parent()->GetMirroredRect(gfx::ToEnclosingRect(rect));
 
   // The opened folder view's center should try to overlap with the folder
-  // item's center while it must fit within the bounds of AppsContainerView and
-  // below the search box.
+  // item's center while it must fit within the bounds of the parent.
   preferred_bounds_ = gfx::Rect(GetPreferredSize());
   preferred_bounds_ += (icon_bounds_in_container.CenterPoint() -
                         preferred_bounds_.CenterPoint());
@@ -680,7 +681,7 @@ void AppListFolderView::SetBoundingBox(const gfx::Rect& bounding_box) {
 }
 
 AppListItemView* AppListFolderView::GetActivatedFolderItemView() {
-  return container_view_->apps_grid_view()->activated_folder_item_view();
+  return root_apps_grid_view_->activated_folder_item_view();
 }
 
 void AppListFolderView::RecordAnimationSmoothness() {
@@ -721,41 +722,40 @@ void AppListFolderView::ReparentItem(
     const gfx::Point& drag_point_in_folder_grid) {
   // Convert the drag point relative to the root level AppsGridView.
   gfx::Point to_root_level_grid = drag_point_in_folder_grid;
-  ConvertPointToTarget(items_grid_view_, container_view_->apps_grid_view(),
+  ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
                        &to_root_level_grid);
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
-  container_view_->apps_grid_view()
-      ->InitiateDragFromReparentItemInRootLevelGridView(original_drag_view,
-                                                        to_root_level_grid);
-  container_view_->ReparentFolderItemTransit(folder_item_);
+  root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
+      original_drag_view, to_root_level_grid);
+  delegate_->ReparentFolderItemTransit(folder_item_);
 }
 
 void AppListFolderView::DispatchDragEventForReparent(
     AppsGridView::Pointer pointer,
     const gfx::Point& drag_point_in_folder_grid) {
-  AppsGridView* root_grid = container_view_->apps_grid_view();
-
   gfx::Point drag_point_in_root_grid = drag_point_in_folder_grid;
   // Temporarily reset the transform of the contents container so that the point
   // can be correctly converted to the root grid's coordinates.
   gfx::Transform original_transform = contents_container_->GetTransform();
   contents_container_->SetTransform(gfx::Transform());
-  ConvertPointToTarget(items_grid_view_, root_grid, &drag_point_in_root_grid);
+  ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
+                       &drag_point_in_root_grid);
   contents_container_->SetTransform(original_transform);
 
-  root_grid->UpdateDragFromReparentItem(pointer, drag_point_in_root_grid);
+  root_apps_grid_view_->UpdateDragFromReparentItem(pointer,
+                                                   drag_point_in_root_grid);
 }
 
 void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
-  container_view_->apps_grid_view()->EndDragFromReparentItemInRootLevel(
+  root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
       events_forwarded_to_drag_drop_host, cancel_drag,
       std::move(drag_icon_proxy));
-  container_view_->ReparentDragEnded();
+  delegate_->ReparentDragEnded();
 
   // The view was not hidden in order to keeping receiving mouse events. Hide it
   // now as the reparenting ended.
@@ -790,7 +790,7 @@ void AppListFolderView::CloseFolderPage() {
   const bool should_show_focus_ring_on_hide =
       items_grid_view()->has_selected_view();
   ResetItemsGridForClose();
-  container_view_->ShowApps(folder_item_);
+  delegate_->ShowApps(folder_item_);
   if (should_show_focus_ring_on_hide) {
     GetActivatedFolderItemView()->RequestFocus();
   } else {
@@ -804,9 +804,8 @@ bool AppListFolderView::IsOEMFolder() const {
 
 void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
                                                ui::KeyboardCode key_code) {
-  container_view_->ReparentFolderItemTransit(folder_item_);
-  container_view_->apps_grid_view()->HandleKeyboardReparent(reparented_view,
-                                                            key_code);
+  delegate_->ReparentFolderItemTransit(folder_item_);
+  root_apps_grid_view_->HandleKeyboardReparent(reparented_view, key_code);
 }
 
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

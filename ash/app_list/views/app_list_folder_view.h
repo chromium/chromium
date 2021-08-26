@@ -31,6 +31,8 @@ class FolderHeaderView;
 class PagedAppsGridView;
 class PageSwitcher;
 
+// Displays folder contents via an AppsGridView. App items can be dragged out
+// of the folder to the main apps grid.
 class ASH_EXPORT AppListFolderView : public views::View,
                                      public FolderHeaderViewDelegate,
                                      public AppListModelObserver,
@@ -38,7 +40,22 @@ class ASH_EXPORT AppListFolderView : public views::View,
  public:
   METADATA_HEADER(AppListFolderView);
 
-  AppListFolderView(AppsContainerView* container_view,
+  // The container that owns the AppListFolderView must implement this.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    // Shows the root level apps list. This is called when UI navigate back from
+    // a folder view with |folder_item|. If |folder_item| is nullptr skips
+    // animation.
+    virtual void ShowApps(AppListFolderItem* folder_item) = 0;
+    // Transits the UI from folder view to root level apps grid view when
+    // re-parenting a child item of |folder_item|.
+    virtual void ReparentFolderItemTransit(AppListFolderItem* folder_item) = 0;
+    // Notifies the container that a reparent drag has completed.
+    virtual void ReparentDragEnded() = 0;
+  };
+  AppListFolderView(Delegate* delegate,
+                    AppsGridView* root_apps_grid_view,
                     AppListModel* model,
                     ContentsView* contents_view,
                     AppListA11yAnnouncer* a11y_announcer,
@@ -50,7 +67,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // An interface for the folder opening and closing animations.
   class Animation {
    public:
-    virtual ~Animation() {}
+    virtual ~Animation() = default;
     virtual void ScheduleAnimation() = 0;
     virtual bool IsAnimationRunning() = 0;
   };
@@ -76,6 +93,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
@@ -122,9 +140,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
-  // Overridden from views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // Overridden from FolderHeaderViewDelegate:
   void SetItemName(AppListFolderItem* item, const std::string& name) override;
 
@@ -150,8 +165,11 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
 
-  // Views below are not owned by views hierarchy.
-  AppsContainerView* container_view_;
+  // Delegate interface for the container.
+  Delegate* const delegate_;
+
+  // The root (non-folder) apps grid view.
+  AppsGridView* const root_apps_grid_view_;
 
   // Used to send accessibility alerts. Owned by the parent apps container.
   AppListA11yAnnouncer* const a11y_announcer_;
@@ -166,7 +184,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   PagedAppsGridView* items_grid_view_;    // Owned by views hierarchy.
   PageSwitcher* page_switcher_;           // Owned by views hierarchy.
 
-  AppListModel* model_;                       // Not owned.
+  AppListModel* const model_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
 
   // The bounds of the activated folder item icon relative to this view.
