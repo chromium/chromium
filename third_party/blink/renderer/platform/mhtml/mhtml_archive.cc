@@ -444,7 +444,8 @@ void MHTMLArchive::AddSubresource(ArchiveResource* resource) {
 }
 
 ArchiveResource* MHTMLArchive::SubresourceForURL(const KURL& url) const {
-  return subresources_.DeprecatedAtOrEmptyValue(url.GetString());
+  const auto it = subresources_.find(url.GetString());
+  return it != subresources_.end() ? it->value : nullptr;
 }
 
 String MHTMLArchive::GetCacheIdentifier() const {
