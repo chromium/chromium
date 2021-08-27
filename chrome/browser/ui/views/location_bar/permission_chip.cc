@@ -78,9 +78,22 @@ PermissionChip::PermissionChip(
 }
 
 PermissionChip::~PermissionChip() {
+  views::Widget* const bubble_widget = GetPromptBubbleWidget();
+  if (bubble_widget) {
+    bubble_widget->RemoveObserver(this);
+    bubble_widget->Close();
+  }
   CHECK(!IsInObserverList());
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
+}
+
+void PermissionChip::OpenBubble() {
+  // The prompt bubble is either not opened yet or already closed on
+  // deactivation.
+  DCHECK(!GetPromptBubbleWidget());
+
+  prompt_bubble_tracker_.SetView(CreateBubble());
 }
 
 void PermissionChip::Hide() {
@@ -121,7 +134,7 @@ void PermissionChip::AddedToWidget() {
   }
 }
 
-void PermissionChip::OnWidgetClosing(views::Widget* widget) {
+void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   // If permission request is still active after the prompt was closed,
   // collapse the chip.
@@ -129,7 +142,17 @@ void PermissionChip::OnWidgetClosing(views::Widget* widget) {
 }
 
 bool PermissionChip::IsBubbleShowing() const {
-  return false;
+  return prompt_bubble_tracker_.view() != nullptr;
+}
+
+views::Widget* PermissionChip::GetPromptBubbleWidgetForTesting() {
+  return GetPromptBubbleWidget();
+}
+
+views::Widget* PermissionChip::GetPromptBubbleWidget() {
+  return prompt_bubble_tracker_.view()
+             ? prompt_bubble_tracker_.view()->GetWidget()
+             : nullptr;
 }
 
 void PermissionChip::Show(bool always_open_bubble) {

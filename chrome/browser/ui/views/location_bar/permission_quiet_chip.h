@@ -24,17 +24,10 @@ class PermissionQuietChip : public PermissionChip {
   PermissionQuietChip& operator=(const PermissionQuietChip& chip) = delete;
   ~PermissionQuietChip() override;
 
-  // PermissionChip:
-  void OpenBubble() override;
-  views::BubbleDialogDelegateView* GetPermissionPromptBubbleForTest() override;
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
-
-  // BubbleOwnerDelegate:
-  bool IsBubbleShowing() const override;
-
  private:
+  // PermissionChip:
+  views::View* CreateBubble() override;
+
   void RecordChipButtonPressed();
   LocationBarView* GetLocationBarView();
 
@@ -42,8 +35,6 @@ class PermissionQuietChip : public PermissionChip {
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;
-
-  views::BubbleDialogDelegateView* quiet_request_bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_QUIET_CHIP_H_

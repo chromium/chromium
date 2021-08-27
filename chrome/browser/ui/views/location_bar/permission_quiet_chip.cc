@@ -74,50 +74,30 @@ PermissionQuietChip::PermissionQuietChip(
   chip_shown_time_ = base::TimeTicks::Now();
 }
 
-PermissionQuietChip::~PermissionQuietChip() {
-  if (quiet_request_bubble_) {
-    views::Widget* widget = quiet_request_bubble_->GetWidget();
-    widget->RemoveObserver(this);
-    widget->Close();
-  }
-}
+PermissionQuietChip::~PermissionQuietChip() = default;
 
-void PermissionQuietChip::OpenBubble() {
-  // The prompt bubble is either not opened yet or already closed on
-  // deactivation.
-  DCHECK(!quiet_request_bubble_);
+views::View* PermissionQuietChip::CreateBubble() {
+  RecordChipButtonPressed();
 
   LocationBarView* lbv = GetLocationBarView();
   content::WebContents* web_contents = lbv->GetContentSettingWebContents();
 
   if (web_contents) {
-    quiet_request_bubble_ = new ContentSettingBubbleContents(
-        std::make_unique<ContentSettingNotificationsBubbleModel>(
-            lbv->GetContentSettingBubbleModelDelegate(), web_contents),
-        web_contents, lbv, views::BubbleBorder::TOP_LEFT);
-    quiet_request_bubble_->SetHighlightedButton(button());
+    ContentSettingBubbleContents* quiet_request_bubble =
+        new ContentSettingBubbleContents(
+            std::make_unique<ContentSettingNotificationsBubbleModel>(
+                lbv->GetContentSettingBubbleModelDelegate(), web_contents),
+            web_contents, lbv, views::BubbleBorder::TOP_LEFT);
+    quiet_request_bubble->SetHighlightedButton(button());
     views::Widget* bubble_widget =
-        views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble_);
+        views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
     bubble_widget->AddObserver(this);
     bubble_widget->Show();
+
+    return quiet_request_bubble;
   }
 
-  RecordChipButtonPressed();
-}
-
-views::BubbleDialogDelegateView*
-PermissionQuietChip::GetPermissionPromptBubbleForTest() {
-  return quiet_request_bubble_;
-}
-
-void PermissionQuietChip::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, quiet_request_bubble_->GetWidget());
-  PermissionChip::OnWidgetClosing(widget);
-  quiet_request_bubble_ = nullptr;
-}
-
-bool PermissionQuietChip::IsBubbleShowing() const {
-  return quiet_request_bubble_;
+  return nullptr;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {
