@@ -50,16 +50,17 @@ src/demo/file_depth_2/in_single_child_dir/r.spec.ts
 src/stress/listing.ts
 src/stress/adapter/device_allocation.ts
 src/webgpu/constants.ts
-src/webgpu/capability_info.ts
 src/webgpu/util/math.ts
-src/webgpu/util/buffer.ts
-src/webgpu/util/conversion.ts
-src/webgpu/util/check_contents.ts
-src/webgpu/util/navigator_gpu.ts
-src/webgpu/util/device_pool.ts
 src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
+src/webgpu/capability_info.ts
+src/webgpu/util/buffer.ts
+src/webgpu/util/conversion.ts
+src/webgpu/util/check_contents.ts
+src/webgpu/util/command_buffer_maker.ts
+src/webgpu/util/navigator_gpu.ts
+src/webgpu/util/device_pool.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/gpu_test.ts
 src/stress/compute/compute_pass.spec.ts
@@ -121,6 +122,7 @@ src/webgpu/api/operation/command_buffer/basic.spec.ts
 src/webgpu/api/operation/command_buffer/copyBufferToBuffer.spec.ts
 src/webgpu/api/operation/command_buffer/copyTextureToTexture.spec.ts
 src/webgpu/api/operation/command_buffer/image_copy.spec.ts
+src/webgpu/api/operation/command_buffer/programmable/programmable_state_test.ts
 src/webgpu/api/operation/command_buffer/programmable/state_tracking.spec.ts
 src/webgpu/api/operation/command_buffer/render/dynamic_state.spec.ts
 src/webgpu/api/operation/command_buffer/render/state_tracking.spec.ts
@@ -162,7 +164,6 @@ src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/basic.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
-src/webgpu/api/validation/util/command_buffer_maker.ts
 src/webgpu/api/validation/validation_test.ts
 src/webgpu/api/validation/attachment_compatibility.spec.ts
 src/webgpu/api/validation/createBindGroup.spec.ts
@@ -177,7 +178,6 @@ src/webgpu/api/validation/create_pipeline.spec.ts
 src/webgpu/api/validation/error_scope.spec.ts
 src/webgpu/api/validation/layout_shader_compat.spec.ts
 src/webgpu/api/validation/render_pass_descriptor.spec.ts
-src/webgpu/api/validation/vertex_access.spec.ts
 src/webgpu/api/validation/vertex_state.spec.ts
 src/webgpu/api/validation/buffer/create.spec.ts
 src/webgpu/api/validation/buffer/destroy.spec.ts
@@ -197,6 +197,7 @@ src/webgpu/api/validation/encoding/cmds/debug.spec.ts
 src/webgpu/api/validation/encoding/cmds/index_access.spec.ts
 src/webgpu/api/validation/encoding/cmds/render_pass.spec.ts
 src/webgpu/api/validation/encoding/cmds/setBindGroup.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/render.ts
 src/webgpu/api/validation/encoding/cmds/render/indirect_draw.spec.ts
@@ -254,4 +255,5 @@ src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
 src/webgpu/web_platform/reftests/canvas_clear.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
+src/webgpu/web_platform/reftests/canvas_composite_alpha.html.ts
 src/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.html.ts

@@ -124,7 +124,6 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:required_bytes_in_copy:method="CopyB2T";format="r8unorm";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:required_bytes_in_copy:method="CopyT2B";format="r8unorm";*',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:texel_block_alignment_on_offset:method="WriteTexture";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:array_stride_zero:format="uint8x2";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:format="uint8x2";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_overlapped:format="uint8x2";*',
