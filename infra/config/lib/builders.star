@@ -734,6 +734,13 @@ def builder(
         )]
         properties.setdefault("xcode_build_version", xcode.version)
 
+    experiments = kwargs.get("experiments", {})
+
+    # TODO(crbug.com/1143122): remove this after migration.
+    if "chromium.chromium_tests.use_rbe_cas" not in experiments:
+        experiments["chromium.chromium_tests.use_rbe_cas"] = 5
+    kwargs["experiments"] = experiments
+
     history_options = None
     resultdb_index_by_timestamp = defaults.get_value(
         "resultdb_index_by_timestamp",
