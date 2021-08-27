@@ -154,14 +154,14 @@ android_library("junit") {
   bypass_platform_checks = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcherTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroViewTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinatorTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediatorTest.java",
   ]
 
   deps = [
