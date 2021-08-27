@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -612,6 +613,24 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
   pref_service_.SetManagedPref(prefs::kSafeBrowsingEnhanced,
                                std::make_unique<base::Value>(true));
   EXPECT_EQ(UserState::MANAGED, metrics_collector_->GetUserState());
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
+  EXPECT_EQ(absl::nullopt, metrics_collector_->GetLatestEventTimestamp(
+                               EventType::DATABASE_INTERSTITIAL_BYPASS));
+  // Timestamps are rounded to second when stored in prefs.
+  base::Time rounded_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+            metrics_collector_->GetLatestEventTimestamp(
+                EventType::DATABASE_INTERSTITIAL_BYPASS));
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+            metrics_collector_->GetLatestEventTimestamp(
+                EventType::DATABASE_INTERSTITIAL_BYPASS));
 }
 
 }  // namespace safe_browsing
