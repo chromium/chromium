@@ -243,6 +243,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
   ~CanvasResourceProviderSharedImage() override {
     GetFlushForImageListener()->RemoveObserver(this);
+    // Issue any skia work using this resource before destroying any buffer
+    // that may have a reference in skia.
+    if (is_accelerated_ && !use_oop_rasterization_)
+      FlushGrContext();
   }
 
   bool IsAccelerated() const final { return is_accelerated_; }
