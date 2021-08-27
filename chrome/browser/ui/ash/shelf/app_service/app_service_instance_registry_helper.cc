@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/app_types.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
@@ -28,6 +29,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -232,8 +234,13 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   // and activated status when we have the shelf id.
   window = window->GetToplevelWindow();
   const std::string top_app_id = GetAppId(apps::Instance::InstanceKey(window));
-  if (!top_app_id.empty())
+  if (!top_app_id.empty()) {
     app_id = top_app_id;
+  } else if (static_cast<ash::AppType>(window->GetProperty(
+                 aura::client::kAppType)) == ash::AppType::BROWSER) {
+    // For a normal browser window, set the app id as the browser app id.
+    app_id = extension_misc::kChromeAppId;
+  }
   OnWindowVisibilityChanged(ash::ShelfID(app_id), window, window->IsVisible());
   auto* client = wm::GetActivationClient(window->GetRootWindow());
   if (client) {
