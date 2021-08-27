@@ -46,8 +46,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     @Override
     public boolean isIncognito() {
-        if (mTab == null) return false;
-        return mTab.isIncognito();
+        return false;
     }
 
     @Override
