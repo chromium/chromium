@@ -44,7 +44,6 @@ WebFeedMetadata MakeWebFeedMetadata(
   }
   result.title = web_feed_info.title();
   result.subscription_status = subscribe_status;
-  result.favicon_url = GURL(web_feed_info.favicon().url());
   return result;
 }
 

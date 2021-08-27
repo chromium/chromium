@@ -150,7 +150,6 @@ struct WebFeedMetadata {
   WebFeedMetadata();
   WebFeedMetadata(const WebFeedMetadata&);
   WebFeedMetadata(WebFeedMetadata&&);
-  ~WebFeedMetadata();
   WebFeedMetadata& operator=(const WebFeedMetadata&);
   WebFeedMetadata& operator=(WebFeedMetadata&&);
 
@@ -165,7 +164,6 @@ struct WebFeedMetadata {
   GURL publisher_url;
   WebFeedSubscriptionStatus subscription_status =
       WebFeedSubscriptionStatus::kUnknown;
-  GURL favicon_url;
 };
 std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value);
 

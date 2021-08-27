@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +41,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,7 +59,6 @@ import org.chromium.url.JUnitTestGURLs;
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL FAVICON_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -63,6 +66,8 @@ public final class WebFeedMainMenuItemTest {
     private Activity mActivity;
     @Mock
     private FeedLauncher mFeedLauncher;
+    @Mock
+    private Bitmap mBitmap;
     @Mock
     private AppMenuHandler mAppMenuHandler;
     @Mock
@@ -75,7 +80,6 @@ public final class WebFeedMainMenuItemTest {
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     public UrlFormatter.Natives mUrlFormatterJniMock;
-    private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
 
@@ -107,12 +111,22 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_hasFavicon_displaysFavicon() {
-        initializeWebFeedMainMenuItem();
-        mFaviconFetcher.answerWithBitmap();
+        initializeWebFeedMainMenuItem(mBitmap);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         Bitmap actualIcon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        assertEquals("Icon should be favicon.", mFaviconFetcher.getTestBitmap(), actualIcon);
+        assertEquals("Icon should be favicon.", mBitmap, actualIcon);
+        assertEquals("Icon should be visible.", View.VISIBLE, imageView.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_noFavicon_hasMonogram() {
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
+
+        ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
+        Bitmap actualIcon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        assertNotNull("Icon should not be null.", actualIcon);
         assertEquals("Icon should be visible.", View.VISIBLE, imageView.getVisibility());
     }
 
@@ -120,9 +134,8 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
-        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
-        mFaviconFetcher.answerWithNull();
+        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(null),
+                mFeedLauncher, mDialogManager, mSnackBarManager);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -131,7 +144,7 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_displaysCorrectTitle() {
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
         assertEquals("Title should be shortened URL.",
@@ -144,7 +157,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_noMetadata_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(null);
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         verifyFollowChip(/*enabled=*/true);
     }
@@ -153,9 +166,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         verifyFollowChip(/*enabled=*/true);
     }
@@ -165,9 +178,9 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_errorPage_displaysDisabledFollowChip() {
         doReturn(true).when(mTab).isShowingErrorPage();
         setGetWebFeedMetadataForPageRepsonse(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         verifyFollowChip(/*enabled=*/false);
     }
@@ -176,9 +189,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_unknownFollowStatus_displaysFollowChip() {
         setGetWebFeedMetadataForPageRepsonse(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN, GURL.emptyGURL()));
+                createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         verifyFollowChip(/*enabled=*/true);
     }
@@ -187,9 +200,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_followed_displaysFollowingChip() {
         setGetWebFeedMetadataForPageRepsonse(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
         ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
@@ -205,10 +218,10 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_unfollowInProgress_displaysLoadingFollowingChip() {
-        setGetWebFeedMetadataForPageRepsonse(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
         ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
@@ -224,10 +237,10 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_followInProgress_displaysLoadingFollowChip() {
-        setGetWebFeedMetadataForPageRepsonse(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS));
 
-        initializeWebFeedMainMenuItem();
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
         ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
         ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
@@ -260,11 +273,13 @@ public final class WebFeedMainMenuItemTest {
 
     /**
      * Helper method to initialize {@code mWebFeedMainMenuItem} with standard parameters.
+     *
+     * @param bitmap Bitmap returned by the {@link MockLargeIconBridge}.
      */
-    private void initializeWebFeedMainMenuItem() {
+    private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
-        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
+        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(bitmap),
+                mFeedLauncher, mDialogManager, mSnackBarManager);
     }
 
     /**
@@ -273,10 +288,9 @@ public final class WebFeedMainMenuItemTest {
      * @param subscriptionStatus {@link WebFeedSubscriptionStatus} for the metadata.
      */
     private WebFeedBridge.WebFeedMetadata createWebFeedMetadata(
-            @WebFeedSubscriptionStatus int subscriptionStatus, GURL faviconUrl) {
+            @WebFeedSubscriptionStatus int subscriptionStatus) {
         return new WebFeedBridge.WebFeedMetadata("id".getBytes(), "title", TEST_URL,
-                subscriptionStatus, WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false,
-                faviconUrl);
+                subscriptionStatus, WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false);
     }
 
     private void setGetWebFeedMetadataForPageRepsonse(WebFeedBridge.WebFeedMetadata metadata) {
@@ -286,5 +300,20 @@ public final class WebFeedMainMenuItemTest {
         })
                 .when(mWebFeedBridgeJniMock)
                 .findWebFeedInfoForPage(any(), any(Callback.class));
+    }
+
+    private static class MockLargeIconBridge extends LargeIconBridge {
+        private final Bitmap mBitmap;
+
+        MockLargeIconBridge(Bitmap bitmap) {
+            mBitmap = bitmap;
+        }
+
+        @Override
+        public boolean getLargeIconForUrl(
+                GURL pageUrl, int desiredSizePx, final LargeIconBridge.LargeIconCallback callback) {
+            callback.onLargeIconAvailable(mBitmap, Color.BLACK, false, IconType.FAVICON);
+            return true;
+        }
     }
 }

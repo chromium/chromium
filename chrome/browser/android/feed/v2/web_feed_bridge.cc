@@ -168,8 +168,7 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
       base::android::ConvertUTF8ToJavaString(env, metadata.title),
       url::GURLAndroid::FromNativeGURL(env, metadata.publisher_url),
       static_cast<int>(metadata.subscription_status),
-      static_cast<int>(metadata.availability_status), metadata.is_recommended,
-      url::GURLAndroid::FromNativeGURL(env, metadata.favicon_url));
+      static_cast<int>(metadata.availability_status), metadata.is_recommended);
 }
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(

@@ -69,21 +69,17 @@ public class WebFeedBridge {
         public final @WebFeedAvailabilityStatus int availabilityStatus;
         /** Whether the web feed is recommended. */
         public final boolean isRecommended;
-        /** Favicon URL for the Web Feed, if one is provided. */
-        public final GURL faviconUrl;
 
         @CalledByNative("WebFeedMetadata")
         public WebFeedMetadata(byte[] id, String title, GURL visitUrl,
                 @WebFeedSubscriptionStatus int subscriptionStatus,
-                @WebFeedAvailabilityStatus int availabilityStatus, boolean isRecommended,
-                GURL faviconUrl) {
+                @WebFeedAvailabilityStatus int availabilityStatus, boolean isRecommended) {
             this.id = id;
             this.title = title;
             this.visitUrl = visitUrl;
             this.subscriptionStatus = subscriptionStatus;
             this.availabilityStatus = availabilityStatus;
             this.isRecommended = isRecommended;
-            this.faviconUrl = faviconUrl;
         }
     }
 
