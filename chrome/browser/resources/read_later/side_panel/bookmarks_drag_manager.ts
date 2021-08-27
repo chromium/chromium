@@ -7,7 +7,7 @@ import '../strings.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {getBookmarkFromDragEvent, isBookmarkFolderElement, isValidDropTarget} from './bookmark_folder.js';
+import {getBookmarkFromElement, isBookmarkFolderElement, isValidDropTarget} from './bookmark_folder.js';
 
 export const DROP_POSITION_ATTR = 'drop-position';
 
@@ -17,14 +17,20 @@ export enum DropPosition {
   BELOW = 'below',
 }
 
-interface BookmarksDragDelegate extends HTMLElement {}
+interface BookmarksDragDelegate extends HTMLElement {
+  getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number;
+}
 
 class DragSession {
+  private delegate_: BookmarksDragDelegate;
   private dragData_: chrome.bookmarkManagerPrivate.DragData;
   private lastDragOverElement_: HTMLElement|null = null;
   private lastPointerWasTouch_ = false;
 
-  constructor(dragData: chrome.bookmarkManagerPrivate.DragData) {
+  constructor(
+      delegate: BookmarksDragDelegate,
+      dragData: chrome.bookmarkManagerPrivate.DragData) {
+    this.delegate_ = delegate;
     this.dragData_ = dragData;
   }
 
@@ -72,6 +78,31 @@ class DragSession {
     this.clearStyles_();
   }
 
+  finish() {
+    if (!this.lastDragOverElement_) {
+      return;
+    }
+
+    const dropTargetBookmark =
+        getBookmarkFromElement(this.lastDragOverElement_);
+    const dropPosition = this.lastDragOverElement_.getAttribute(
+                             DROP_POSITION_ATTR) as DropPosition;
+    this.clearStyles_();
+
+    if (isBookmarkFolderElement(this.lastDragOverElement_) &&
+        dropPosition === DropPosition.INTO) {
+      chrome.bookmarkManagerPrivate.drop(
+          dropTargetBookmark.id, /* index */ undefined,
+          /* callback */ undefined);
+      return;
+    }
+
+    let toIndex = this.delegate_.getIndex(dropTargetBookmark);
+    toIndex += dropPosition === DropPosition.BELOW ? 1 : 0;
+    chrome.bookmarkManagerPrivate.drop(
+        dropTargetBookmark.parentId!, toIndex, /* callback */ undefined);
+  }
+
   private clearStyles_() {
     if (!this.lastDragOverElement_) {
       return;
@@ -79,8 +110,10 @@ class DragSession {
     this.lastDragOverElement_.removeAttribute(DROP_POSITION_ATTR);
   }
 
-  static createFromBookmark(bookmark: chrome.bookmarks.BookmarkTreeNode) {
-    return new DragSession({
+  static createFromBookmark(
+      delegate: BookmarksDragDelegate,
+      bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    return new DragSession(delegate, {
       elements: [bookmark],
       sameProfile: true,
     });
@@ -104,6 +137,8 @@ export class BookmarksDragManager {
     this.eventTracker_.add(
         this.delegate_, 'dragleave', () => this.onDragLeave_());
     this.eventTracker_.add(this.delegate_, 'dragend', () => this.cancelDrag_());
+    this.eventTracker_.add(
+        this.delegate_, 'drop', e => this.onDrop_(e as DragEvent));
   }
 
   stopObserving() {
@@ -124,14 +159,17 @@ export class BookmarksDragManager {
       return;
     }
 
-    const bookmark = getBookmarkFromDragEvent(e);
+    const bookmark = getBookmarkFromElement(
+        e.composedPath().find(target => (target as HTMLElement).draggable) as
+        HTMLElement);
     if (!bookmark ||
         /* Cannot drag root's children. */ bookmark.parentId === '0' ||
         bookmark.unmodifiable) {
       return;
     }
 
-    this.dragSession_ = DragSession.createFromBookmark(bookmark);
+    this.dragSession_ =
+        DragSession.createFromBookmark(this.delegate_, bookmark);
     this.dragSession_.start(e);
   }
 
@@ -149,5 +187,14 @@ export class BookmarksDragManager {
     }
 
     this.dragSession_.cancel();
+  }
+
+  private onDrop_(e: DragEvent) {
+    if (!this.dragSession_) {
+      return;
+    }
+
+    e.preventDefault();
+    this.dragSession_.finish();
   }
 }

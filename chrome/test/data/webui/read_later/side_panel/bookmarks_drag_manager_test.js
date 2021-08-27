@@ -30,16 +30,19 @@ suite('SidePanelBookmarkDragManagerTest', () => {
       {
         id: '2',
         title: 'Google',
+        parentId: '1',
         url: 'http://google.com',
       },
       {
         id: '3',
         title: 'Google Docs',
+        parentId: '1',
         url: 'http://docs.google.com',
       },
       {
         id: '4',
         title: 'My folder',
+        parentId: '1',
         children: [],
       },
     ],
@@ -135,5 +138,73 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     assertDropPosition(dragOverFolder, 0.2, DropPosition.ABOVE);
     assertDropPosition(dragOverFolder, 0.5, DropPosition.INTO);
     assertDropPosition(dragOverFolder, 0.8, DropPosition.BELOW);
+  });
+
+  test('DropsIntoFolder', () => {
+    let calledId, calledIndex;
+    chrome.bookmarkManagerPrivate.startDrag = () => {};
+    chrome.bookmarkManagerPrivate.drop = (id, index) => {
+      calledId = id;
+      calledIndex = index;
+    };
+
+    const draggableElements = getDraggableElements();
+    const draggedBookmark = draggableElements[0];
+    draggedBookmark.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
+
+    const dropFolder = draggableElements[2];
+    const dragOverRect = dropFolder.getBoundingClientRect();
+    dropFolder.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top + (dragOverRect.height * .5),
+    }));
+    dropFolder.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, composed: true}));
+
+    assertEquals('4', calledId);
+    assertEquals(undefined, calledIndex);
+  });
+
+  test('DropsBookmarksToReorder', () => {
+    let calledId, calledIndex;
+    chrome.bookmarkManagerPrivate.startDrag = () => {};
+    chrome.bookmarkManagerPrivate.drop = (id, index) => {
+      calledId = id;
+      calledIndex = index;
+    };
+
+    const draggableElements = getDraggableElements();
+    const draggedBookmark = draggableElements[2];
+    draggedBookmark.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
+
+    const dragAboveBookmark = draggableElements[0];
+    const dragAboveRect = dragAboveBookmark.getBoundingClientRect();
+    dragAboveBookmark.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragAboveRect.left,
+      clientY: dragAboveRect.top + (dragAboveRect.height * .1),
+    }));
+    dragAboveBookmark.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, composed: true}));
+    assertEquals('1', calledId);
+    assertEquals(0, calledIndex);
+
+    const dragBelowBookmark = draggableElements[1];
+    const dragBelowRect = dragBelowBookmark.getBoundingClientRect();
+    dragBelowBookmark.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragBelowRect.left,
+      clientY: dragBelowRect.top + (dragBelowRect.height * .9),
+    }));
+    dragBelowBookmark.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, composed: true}));
+    assertEquals('1', calledId);
+    assertEquals(2, calledIndex);
   });
 });

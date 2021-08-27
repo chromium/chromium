@@ -99,6 +99,15 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.bookmarksDragManager_.stopObserving();
   }
 
+  getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number {
+    const path = this.findPathToId_(bookmark.id);
+    const parent = path[path.length - 2];
+    if (!parent || !parent.children) {
+      return -1;
+    }
+    return parent.children.findIndex((child) => child.id === bookmark.id);
+  }
+
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
     this.listeners_.set(eventName, callback);
