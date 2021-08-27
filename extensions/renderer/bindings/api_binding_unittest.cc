@@ -1056,6 +1056,113 @@ TEST_F(APIBindingUnittest, TestReturningResultFromCustomJSHook) {
   EXPECT_EQ("\"ping pong\"", ValueToString(*json_result));
 }
 
+// Tests that the setHandleRequest hook can use callbacks and promises.
+TEST_F(APIBindingUnittest, TestReturningPromiseFromHandleRequestHook) {
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityFlag(&context_allows_promises);
+
+  // Register a hook for supportsPromises.
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setHandleRequest('supportsPromises', (firstArg, callback) => {
+          this.firstArgument = firstArg;
+          this.secondArgument = callback;
+        });
+      }))";
+
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctionsWithPromiseSignatures);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
+
+  {
+    // Calling supportsPromises normally with a callback should work fine and
+    // the callback should be invoked immediately.
+    const char kFunctionCall[] =
+        R"((function(obj) {
+             return obj.supportsPromises(5, (arg) => {
+               this.sentToCallback = arg;
+             });
+           }))";
+    v8::Local<v8::Function> function =
+        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object};
+
+    auto result = RunFunction(function, context, v8::Undefined(isolate()),
+                              base::size(args), args);
+
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsUndefined());
+    EXPECT_EQ("5", GetStringPropertyFromObject(context->Global(), context,
+                                               "firstArgument"));
+    v8::Local<v8::Value> resolve_callback =
+        GetPropertyFromObject(context->Global(), context, "secondArgument");
+    EXPECT_TRUE(resolve_callback->IsFunction());
+
+    // The callback arg will not be set until the callback has been invoked.
+    EXPECT_TRUE(
+        GetPropertyFromObject(context->Global(), context, "sentToCallabck")
+            ->IsUndefined());
+    v8::Local<v8::Value> callback_arguments[] = {
+        gin::StringToV8(isolate(), "foo")};
+    RunFunctionOnGlobal(resolve_callback.As<v8::Function>(), context,
+                        base::size(callback_arguments), callback_arguments);
+    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
+                              context->Global(), context, "sentToCallback"));
+  }
+
+  {
+    // Calling supportsPromises normally without the callback should work fine
+    // and a promise should be returned that is resolved when the callback is
+    // invoked.
+    v8::Local<v8::Function> function = FunctionFromString(
+        context, "(function(obj) { return obj.supportsPromises(6); })");
+    v8::Local<v8::Value> args[] = {binding_object};
+
+    auto result = RunFunction(function, context, v8::Undefined(isolate()),
+                              base::size(args), args);
+
+    ASSERT_FALSE(result.IsEmpty());
+    ASSERT_TRUE(result->IsPromise());
+    v8::Local<v8::Promise> promise = result.As<v8::Promise>();
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+    EXPECT_EQ("6", GetStringPropertyFromObject(context->Global(), context,
+                                               "firstArgument"));
+
+    // Since we trigger the promise to be resolved with a function that calls
+    // back into the C++ side, the second argument is actually a function here.
+    v8::Local<v8::Value> resolve_callback =
+        GetPropertyFromObject(context->Global(), context, "secondArgument");
+    EXPECT_TRUE(resolve_callback->IsFunction());
+    // Invoking this callback should result in the promise being resolved.
+    v8::Local<v8::Value> callback_arguments[] = {
+        gin::StringToV8(isolate(), "bar")};
+    RunFunctionOnGlobal(resolve_callback.As<v8::Function>(), context,
+                        base::size(callback_arguments), callback_arguments);
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"("bar")", V8ToString(promise->Result(), context));
+  }
+
+  {
+    // If the context doesn't support promises, there should be an error if a
+    // required callback isn't supplied.
+    context_allows_promises = false;
+    v8::Local<v8::Function> function = FunctionFromString(
+        context, "(function(obj) { return obj.supportsPromises(7); })");
+    v8::Local<v8::Value> args[] = {binding_object};
+    auto expected_error =
+        "Uncaught TypeError: " +
+        api_errors::InvocationError("test.supportsPromises",
+                                    "integer int, function callback",
+                                    api_errors::NoMatchingSignature());
+    RunFunctionAndExpectError(function, context, base::size(args), args,
+                              expected_error);
+  }
+}
+
 // Tests that JS custom hooks can throw exceptions for bad invocations.
 TEST_F(APIBindingUnittest, TestThrowingFromCustomJSHook) {
   // Register a hook for the test.oneString method.

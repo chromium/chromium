@@ -11,6 +11,7 @@
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/arguments.h"
+#include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/per_context_data.h"
@@ -269,22 +270,20 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
   if (post_validate_hook.IsEmpty() && handle_request.IsEmpty())
     return RequestResult(RequestResult::NOT_HANDLED, custom_callback);
 
-  {
-    // ... otherwise, we have to validate the arguments.
-    APISignature::V8ParseResult parse_result =
-        signature->ParseArgumentsToV8(context, *arguments, type_refs);
+  // ... otherwise, we have to validate the arguments.
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, *arguments, type_refs);
 
-    if (!binding::IsContextValid(context))
-      return RequestResult(RequestResult::CONTEXT_INVALIDATED);
+  if (!binding::IsContextValid(context))
+    return RequestResult(RequestResult::CONTEXT_INVALIDATED);
 
-    if (try_catch.HasCaught()) {
-      try_catch.ReThrow();
-      return RequestResult(RequestResult::THROWN);
-    }
-    if (!parse_result.succeeded())
-      return RequestResult(std::move(*parse_result.error));
-    arguments->swap(*parse_result.arguments);
+  if (try_catch.HasCaught()) {
+    try_catch.ReThrow();
+    return RequestResult(RequestResult::THROWN);
   }
+  if (!parse_result.succeeded())
+    return RequestResult(std::move(*parse_result.error));
+  arguments->swap(*parse_result.arguments);
 
   bool updated_args = false;
   if (!post_validate_hook.IsEmpty()) {
@@ -307,6 +306,48 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
     return RequestResult(result, custom_callback);
   }
 
+  RequestResult result(RequestResult::HANDLED, custom_callback);
+
+  // If we're dealing with a promise based request, we add a callback to the
+  // arguments passed to the handle_request hook which will call back into the
+  // C++ side to resolve the promise.
+  // TODO(tjudkins): Currently this won't work correctly for handle request
+  // hooks which use runCallbackWithLastError, as that would end up setting the
+  // last error and then resolving the promise normally (instead of rejecting
+  // the promise with the error).
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    DCHECK(signature->has_async_return());
+    DCHECK(!arguments->empty());
+    // ParseArgumentsToV8 fills missing optional arguments with null and a
+    // promise based request is triggered by leaving off the optional callback
+    // at the back of the arguments, so check this is the case here.
+    DCHECK(arguments->back()->IsNull());
+
+    auto resolve_promise = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+      gin::Arguments arguments(info);
+      v8::Isolate* isolate = arguments.isolate();
+      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      v8::Local<v8::Promise::Resolver> resolver =
+          info.Data().As<v8::Promise::Resolver>();
+      DCHECK_LE(arguments.Length(), 1);
+      v8::Local<v8::Value> result;
+      if (arguments.Length() == 1) {
+        result = arguments.GetAll()[0];
+      } else {
+        result = v8::Undefined(isolate);
+      }
+      v8::Maybe<bool> promise_result = resolver->Resolve(context, result);
+      CHECK(promise_result.IsJust());
+    };
+
+    v8::Local<v8::Promise::Resolver> resolver =
+        v8::Promise::Resolver::New(context).ToLocalChecked();
+    v8::Local<v8::Value> promise_resolver_callback =
+        v8::Function::New(context, resolve_promise, resolver).ToLocalChecked();
+    arguments->back() = promise_resolver_callback;
+    result.return_value = resolver->GetPromise();
+  }
+
   // Safe to use synchronous JS since it's in direct response to JS calling
   // into the binding.
   v8::MaybeLocal<v8::Value> v8_result =
@@ -321,8 +362,12 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
     return RequestResult(RequestResult::THROWN);
   }
 
-  RequestResult result(RequestResult::HANDLED, custom_callback);
-  result.return_value = v8_result.ToLocalChecked();
+  if (!v8_result.ToLocalChecked()->IsUndefined()) {
+    DCHECK(result.return_value.IsEmpty())
+        << "A handleRequest hook cannot return a synchronous result from an "
+           "API that supports promises.";
+    result.return_value = v8_result.ToLocalChecked();
+  }
   return result;
 }
 
