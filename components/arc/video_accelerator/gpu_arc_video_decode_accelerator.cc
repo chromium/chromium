@@ -415,16 +415,7 @@ void GpuArcVideoDecodeAccelerator::Decode(
       DVLOGF(3) << "ProtectedBufferManager is null, treat as normal playback";
       secure_mode_ = false;
     } else {
-      base::ScopedFD dup_fd(HANDLE_EINTR(dup(handle_fd.get())));
-      if (!dup_fd.is_valid()) {
-        client_->NotifyError(
-            mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
-        return;
-      }
-
-      secure_mode_ = protected_buffer_manager_
-                         ->GetProtectedSharedMemoryRegionFor(std::move(dup_fd))
-                         .IsValid();
+      secure_mode_ = IsBufferSecure(protected_buffer_manager_.get(), handle_fd);
       VLOGF(2) << "First input buffer is secure buffer? " << *secure_mode_;
     }
   }

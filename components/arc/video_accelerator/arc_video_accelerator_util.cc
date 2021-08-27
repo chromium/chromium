@@ -8,6 +8,7 @@
 #include "base/files/platform_file.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
@@ -136,6 +137,18 @@ base::ScopedFD CreateTempFileForTesting(const std::string& data) {
   }
 
   return base::ScopedFD(file.TakePlatformFile());
+}
+
+bool IsBufferSecure(ProtectedBufferManager* protected_buffer_manager,
+                    const base::ScopedFD& fd) {
+  DCHECK(protected_buffer_manager);
+  // If we can get the corresponding protected buffer from the protected buffer
+  // manager we can consider the buffer as secure.
+  base::ScopedFD dup_fd(HANDLE_EINTR(dup(fd.get())));
+  return dup_fd.is_valid() &&
+         protected_buffer_manager
+             ->GetProtectedSharedMemoryRegionFor(std::move(dup_fd))
+             .IsValid();
 }
 
 }  // namespace arc
