@@ -6,8 +6,10 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -29,10 +31,13 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
+
+namespace {
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        VisibleSecurityStateChangedNeutralState) {
@@ -413,3 +418,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
   SendCommand("Tracing.end");
   base::Value tracing_complete = WaitForNotification("Tracing.tracingComplete");
 }
+
+}  // namespace

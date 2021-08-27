@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
@@ -101,6 +102,7 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/print_view_manager_basic.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -491,13 +493,18 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
   if (interface_name == printing::mojom::PrintManagerHost::Name_) {
     mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver(
         std::move(*handle));
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-    printing::PrintViewManager::BindPrintManagerHost(std::move(receiver),
-                                                     render_frame_host);
-#else
-    printing::PrintViewManagerBasic::BindPrintManagerHost(std::move(receiver),
+    if (headless::IsChromeNativeHeadless()) {
+      print_to_pdf::PdfPrintManager::BindPrintManagerHost(std::move(receiver),
                                                           render_frame_host);
+    } else {
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+      printing::PrintViewManager::BindPrintManagerHost(std::move(receiver),
+                                                       render_frame_host);
+#else
+      printing::PrintViewManagerBasic::BindPrintManagerHost(std::move(receiver),
+                                                            render_frame_host);
 #endif
+    }
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_PRINTING)

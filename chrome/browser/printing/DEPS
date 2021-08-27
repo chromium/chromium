@@ -5,5 +5,8 @@ include_rules = [
 specific_include_rules = {
   "print_backend_service_test_impl.h": [
     "+chrome/services/printing/print_backend_service_impl.h",
+  ],
+  "printing_init.cc": [
+    "+components/printing/browser/print_to_pdf",
   ]
 }

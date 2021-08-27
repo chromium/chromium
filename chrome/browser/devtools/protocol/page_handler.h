@@ -11,8 +11,14 @@
 #include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/page.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 namespace content {
 struct InstallabilityError;
@@ -23,7 +29,8 @@ class SkBitmap;
 
 class PageHandler : public protocol::Page::Backend {
  public:
-  PageHandler(content::WebContents* web_contents,
+  PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
+              content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
   ~PageHandler() override;
 
@@ -71,9 +78,18 @@ class PageHandler : public protocol::Page::Backend {
   void OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                         const webapps::InstallableData& data);
 
+#if BUILDFLAG(ENABLE_PRINTING)
+  void OnPDFCreated(bool return_as_stream,
+                    std::unique_ptr<PrintToPDFCallback> callback,
+                    print_to_pdf::PdfPrintManager::PrintResult print_result,
+                    scoped_refptr<base::RefCountedMemory> data);
+#endif
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host_;
   base::WeakPtr<content::WebContents> web_contents_;
 
   bool enabled_ = false;
+
   base::WeakPtrFactory<PageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PageHandler);

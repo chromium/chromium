@@ -28,8 +28,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
-    page_handler_ = std::make_unique<PageHandler>(agent_host->GetWebContents(),
-                                                  &dispatcher_);
+    page_handler_ = std::make_unique<PageHandler>(
+        agent_host, agent_host->GetWebContents(), &dispatcher_);
     security_handler_ = std::make_unique<SecurityHandler>(
         agent_host->GetWebContents(), &dispatcher_);
     if (channel->GetClient()->MayAttachToBrowser()) {

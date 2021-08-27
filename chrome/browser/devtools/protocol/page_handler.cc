@@ -11,9 +11,21 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/image/image.h"
 
-PageHandler::PageHandler(content::WebContents* web_contents,
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+template <typename T>
+absl::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
+  return maybe.isJust() ? absl::optional<T>(maybe.fromJust()) : absl::nullopt;
+}
+#endif
+
+PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
+                         content::WebContents* web_contents,
                          protocol::UberDispatcher* dispatcher)
-    : web_contents_(web_contents->GetWeakPtr()) {
+    : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
   protocol::Page::Dispatcher::wire(dispatcher, this);
 }
 
@@ -146,8 +158,62 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
                              protocol::Maybe<bool> prefer_css_page_size,
                              protocol::Maybe<protocol::String> transfer_mode,
                              std::unique_ptr<PrintToPDFCallback> callback) {
+  DCHECK(callback);
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (!web_contents_) {
+    callback->sendFailure(
+        protocol::Response::ServerError("No web contents to print"));
+    return;
+  }
+
+  absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
+      print_pages_params = print_to_pdf::GetPrintPagesParams(
+          web_contents_->GetMainFrame()->GetLastCommittedURL(),
+          OptionalFromMaybe<bool>(landscape),
+          OptionalFromMaybe<bool>(display_header_footer),
+          OptionalFromMaybe<bool>(print_background),
+          OptionalFromMaybe<double>(scale),
+          OptionalFromMaybe<double>(paper_width),
+          OptionalFromMaybe<double>(paper_height),
+          OptionalFromMaybe<double>(margin_top),
+          OptionalFromMaybe<double>(margin_bottom),
+          OptionalFromMaybe<double>(margin_left),
+          OptionalFromMaybe<double>(margin_right),
+          OptionalFromMaybe<std::string>(header_template),
+          OptionalFromMaybe<std::string>(footer_template),
+          OptionalFromMaybe<bool>(prefer_css_page_size));
+  if (absl::holds_alternative<std::string>(print_pages_params)) {
+    callback->sendFailure(protocol::Response::InvalidParams(
+        absl::get<std::string>(print_pages_params)));
+    return;
+  }
+
+  DCHECK(absl::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
+      print_pages_params));
+
+  bool return_as_stream =
+      transfer_mode.fromMaybe("") ==
+      protocol::Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
+
+  if (auto* print_manager =
+          print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
+    print_manager->PrintToPdf(
+        web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
+        ignore_invalid_page_ranges.fromMaybe(false),
+        std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
+            print_pages_params)),
+        base::BindOnce(&PageHandler::OnPDFCreated,
+                       weak_ptr_factory_.GetWeakPtr(), return_as_stream,
+                       std::move(callback)));
+  } else {
+    callback->sendFailure(
+        protocol::Response::ServerError("Printing is not available"));
+  }
+#else
   callback->sendFailure(
-      protocol::Response::ServerError("PrintToPDF is not implemented"));
+      protocol::Response::ServerError("Printing is not enabled"));
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
@@ -182,3 +248,25 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
   callback->sendSuccess(
       web_app::GenerateAppIdUnhashed(id, data.manifest.start_url));
 }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+void PageHandler::OnPDFCreated(
+    bool return_as_stream,
+    std::unique_ptr<PrintToPDFCallback> callback,
+    print_to_pdf::PdfPrintManager::PrintResult print_result,
+    scoped_refptr<base::RefCountedMemory> data) {
+  if (print_result != print_to_pdf::PdfPrintManager::PRINT_SUCCESS) {
+    callback->sendFailure(protocol::Response::ServerError(
+        print_to_pdf::PdfPrintManager::PrintResultToString(print_result)));
+    return;
+  }
+
+  if (return_as_stream) {
+    std::string handle = agent_host_->CreateIOStreamFromData(data);
+    callback->sendSuccess(protocol::Binary(), handle);
+  } else {
+    callback->sendSuccess(protocol::Binary::fromRefCounted(data),
+                          protocol::Maybe<std::string>());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
