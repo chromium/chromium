@@ -11,6 +11,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
+import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
 import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
 
 /**
@@ -136,6 +137,7 @@ export class BannerController extends EventTarget {
       // Banners are initialized in their priority order. The order of the array
       // denotes the priority of the banner, 0th index is highest priority.
       this.setWarningBannersInOrder([LocalDiskLowSpaceBannerTagName]);
+      this.setEducationalBannersInOrder([DriveWelcomeBannerTagName]);
     }
 
     for (const banner of this.warningBanners_) {
