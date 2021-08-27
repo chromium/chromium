@@ -151,6 +151,12 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   if (!GetFrameView()->UpdateLifecycleToPrePaintClean(
           DocumentUpdateReason::kHitTest))
     return false;
+
+  // This means the LayoutView is not updated for PrePaint above, probably
+  // because the frame is detached.
+  if (!FirstFragment().HasLocalBorderBoxProperties())
+    return false;
+
   HitTestLatencyRecorder hit_test_latency_recorder(
       result.GetHitTestRequest().AllowsChildFrameContent());
   return HitTestNoLifecycleUpdate(location, result);

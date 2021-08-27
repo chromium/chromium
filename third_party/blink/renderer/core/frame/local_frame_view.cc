@@ -2177,7 +2177,7 @@ void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
 
   // We are printing a detached frame or a descendant of a detached frame which
   // was not reached in some phases during during |local_frame_view_root->
-  // UpdateLifecyclePhasesnormal()|. We need the subtree to be ready for
+  // UpdateLifecyclePhases()|. We need the subtree to be ready for
   // painting.
   detached_frame_view->UpdateLifecyclePhases(
       DocumentLifecycle::kCompositingAssignmentsClean,
