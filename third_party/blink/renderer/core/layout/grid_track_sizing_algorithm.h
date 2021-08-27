@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/core/style/grid_track_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -38,8 +39,6 @@ class GridTrack {
   DISALLOW_NEW();
 
  public:
-  GridTrack() : infinitely_growable_(false) {}
-
   LayoutUnit BaseSize() const;
   void SetBaseSize(LayoutUnit);
 
@@ -82,11 +81,12 @@ class GridTrack {
   LayoutUnit planned_size_;
   LayoutUnit size_during_distribution_;
   absl::optional<LayoutUnit> growth_limit_cap_;
-  bool infinitely_growable_;
+  bool infinitely_growable_ = false;
   absl::optional<GridTrackSize> cached_track_size_;
 };
 
-class GridTrackSizingAlgorithm final {
+class GridTrackSizingAlgorithm final
+    : public GarbageCollected<GridTrackSizingAlgorithm> {
   friend class GridTrackSizingAlgorithmStrategy;
 
  public:
@@ -114,7 +114,7 @@ class GridTrackSizingAlgorithm final {
   LayoutUnit BaselineOffsetForChild(const LayoutBox&, GridAxis) const;
 
   void CacheBaselineAlignedItem(const LayoutBox&, GridAxis);
-  void CopyBaselineItemsCache(const GridTrackSizingAlgorithm&, GridAxis);
+  void CopyBaselineItemsCache(const GridTrackSizingAlgorithm*, GridAxis);
   void ClearBaselineItemsCache();
 
   LayoutSize EstimatedGridAreaBreadthForChild(const LayoutBox& child) const;
@@ -138,6 +138,13 @@ class GridTrackSizingAlgorithm final {
     return has_percent_sized_rows_indefinite_height_;
   }
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(layout_grid_);
+    visitor->Trace(strategy_);
+    visitor->Trace(column_baseline_items_map_);
+    visitor->Trace(row_baseline_items_map_);
+  }
+
  private:
   absl::optional<LayoutUnit> AvailableSpace() const;
   bool IsRelativeGridLengthAsAuto(const GridLength&,
@@ -159,10 +166,11 @@ class GridTrackSizingAlgorithm final {
                                      LayoutBox& grid_item,
                                      GridTrack&);
   bool SpanningItemCrossesFlexibleSizedTracks(const GridSpan&) const;
-  typedef struct GridItemsSpanGroupRange GridItemsSpanGroupRange;
+  typedef class GridItemWithSpan GridItemWithSpan;
   template <TrackSizeComputationPhase phase>
   void IncreaseSizesToAccommodateSpanningItems(
-      const GridItemsSpanGroupRange& grid_items_with_span);
+      const HeapVector<GridItemWithSpan>::iterator& grid_items_with_span_begin,
+      const HeapVector<GridItemWithSpan>::iterator& grid_items_with_span_end);
   LayoutUnit ItemSizeForTrackSizeComputationPhase(TrackSizeComputationPhase,
                                                   LayoutBox&) const;
   template <TrackSizeComputationPhase phase>
@@ -235,8 +243,8 @@ class GridTrackSizingAlgorithm final {
 
   Grid& grid_;
 
-  UntracedMember<const LayoutGrid> layout_grid_;
-  std::unique_ptr<GridTrackSizingAlgorithmStrategy> strategy_;
+  Member<const LayoutGrid> layout_grid_;
+  Member<GridTrackSizingAlgorithmStrategy> strategy_;
 
   // The track sizing algorithm is used for both layout and intrinsic size
   // computation. We're normally just interested in intrinsic inline sizes
@@ -255,7 +263,8 @@ class GridTrackSizingAlgorithm final {
   SizingState sizing_state_;
 
   GridBaselineAlignment baseline_alignment_;
-  using BaselineItemsCache = HashMap<UntracedMember<const LayoutBox>, bool>;
+
+  using BaselineItemsCache = HeapHashMap<Member<const LayoutBox>, bool>;
   BaselineItemsCache column_baseline_items_map_;
   BaselineItemsCache row_baseline_items_map_;
 
@@ -264,8 +273,10 @@ class GridTrackSizingAlgorithm final {
   // rows. Only if required a second iteration is run following the same order,
   // first columns and then rows.
   class StateMachine {
+    STACK_ALLOCATED();
+
    public:
-    StateMachine(GridTrackSizingAlgorithm&);
+    explicit StateMachine(GridTrackSizingAlgorithm&);
     ~StateMachine();
 
    private:
@@ -273,9 +284,8 @@ class GridTrackSizingAlgorithm final {
   };
 };
 
-class GridTrackSizingAlgorithmStrategy {
-  USING_FAST_MALLOC(GridTrackSizingAlgorithmStrategy);
-
+class GridTrackSizingAlgorithmStrategy
+    : public GarbageCollected<GridTrackSizingAlgorithmStrategy> {
  public:
   GridTrackSizingAlgorithmStrategy(const GridTrackSizingAlgorithmStrategy&) =
       delete;
@@ -299,9 +309,10 @@ class GridTrackSizingAlgorithmStrategy {
       LayoutUnit& total_growth) const = 0;
   virtual LayoutUnit FreeSpaceForStretchAutoTracksStep() const = 0;
   virtual bool IsComputingSizeContainment() const = 0;
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(algorithm_); }
 
  protected:
-  GridTrackSizingAlgorithmStrategy(GridTrackSizingAlgorithm& algorithm)
+  explicit GridTrackSizingAlgorithmStrategy(GridTrackSizingAlgorithm& algorithm)
       : algorithm_(algorithm) {}
 
   virtual LayoutUnit MinLogicalSizeForChild(LayoutBox&,
@@ -319,14 +330,14 @@ class GridTrackSizingAlgorithmStrategy {
       absl::optional<LayoutUnit> = absl::nullopt) const;
   LayoutUnit ComputeTrackBasedSize() const;
 
-  GridTrackSizingDirection Direction() const { return algorithm_.direction_; }
+  GridTrackSizingDirection Direction() const { return algorithm_->direction_; }
   double FindFrUnitSize(const GridSpan& tracks_span,
                         LayoutUnit left_over_space) const;
   void DistributeSpaceToTracks(Vector<GridTrack*>& tracks,
                                LayoutUnit& available_logical_space) const;
-  const LayoutGrid* GetLayoutGrid() const { return algorithm_.layout_grid_; }
+  const LayoutGrid* GetLayoutGrid() const { return algorithm_->layout_grid_; }
   absl::optional<LayoutUnit> AvailableSpace() const {
-    return algorithm_.AvailableSpace();
+    return algorithm_->AvailableSpace();
   }
 
   // Helper functions
@@ -345,7 +356,7 @@ class GridTrackSizingAlgorithmStrategy {
       GridTrackSizingDirection,
       LayoutUnit size);
 
-  GridTrackSizingAlgorithm& algorithm_;
+  Member<GridTrackSizingAlgorithm> algorithm_;
 };
 }
 
