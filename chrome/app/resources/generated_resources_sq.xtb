@@ -1536,6 +1536,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2606454609872547359">Jo, vazhdo me ChromeVox</translation>
 <translation id="2606568927909309675">Krijon automatikisht titra për audion dhe videon në anglisht. Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
+<translation id="2607602101932365444">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek dhe mban shtypur tekstin. Personalizo përkthimin duke caktuar gjuhët e tua të preferuara te <ph name="LINK_BEGIN" />Gjuhët e përmbajtjes së uebit<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Krijo shkurtore...</translation>
 <translation id="2609902589050805912">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, pajisje audio</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
@@ -5638,6 +5639,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7086672505018440886">Përfshi skedarët e evidencave të Chrome në arkiv.</translation>
 <translation id="7088434364990739311">Kontrolli i përditësimit dështoi të niset (kodi i gabimit: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Kjo pajisje është vendosur në gjendje jashtë shërbimi nga administratori. Për ta aktivizuar për regjistrim, kërkoji administratorit të vendosë pajisjen në gjendje pritjeje.</translation>
+<translation id="7093220653036489319">Përgjigjet e shpejta</translation>
 <translation id="7093416310351037609">Për sigurinë e të dhënave, organizat jote kërkon që të gjitha shkarkimet e përshtatshme të ruhen në llogarinë <ph name="WEB_DRIVE" /> e organizatës sate.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Shkëmbe të dhëna me pajisjet me emrin: <ph name="HOSTNAMES" /></translation>

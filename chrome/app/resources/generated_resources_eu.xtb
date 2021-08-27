@@ -1538,6 +1538,7 @@ Voice Match-ekin, Google-ren Laguntzailea eginbideak <ph name="SUPERVISED_USER_N
 <translation id="2606454609872547359">Ez, egin aurrera ChromeVox gabe</translation>
 <translation id="2606568927909309675">Automatikoki sortzen ditu ingelesezko audio eta bideoen azpitituluak. Audioa eta azpitituluak ez dira ateratzen gailutik.</translation>
 <translation id="2607101320794533334">Hartzailearen gako publikoaren informazioa</translation>
+<translation id="2607602101932365444">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean. Itzulpena pertsonalizatzeko, ezarri hizkuntza hobetsiak <ph name="LINK_BEGIN" />Web-edukien hizkuntzak<ph name="LINK_END" /> atalean.</translation>
 <translation id="2609896558069604090">Sortu lasterbideak…</translation>
 <translation id="2609902589050805912"><ph name="DEVICE_COUNT" /> gailutatik <ph name="DEVICE_INDEX" />garrena, <ph name="DEVICE_NAME" />, Audio-gailua</translation>
 <translation id="2609980095400624569">Ezin izan da ezarri konexioa</translation>
@@ -5640,6 +5641,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7086672505018440886">Sartu Chrome-ren erregistro-fitxategiak artxiboan.</translation>
 <translation id="7088434364990739311">Ezin izan da eguneratze-egiaztapena hasi (errore-kodea: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Administratzaileak gailuaren hornikuntza kendu du. Erregistratzeko gaitzeko, eskatu administratzaileari gailua zain ezartzeko.</translation>
+<translation id="7093220653036489319">Erantzun bizkorrak</translation>
 <translation id="7093416310351037609">Datuen segurtasuna mantentzeko, deskarga egoki guztiak erakundearen <ph name="WEB_DRIVE" /> zerbitzuko kontuan gordetzea eskatzen du erakundeak.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Partekatu datuak izen hauek dituzten gailuekin: <ph name="HOSTNAMES" /></translation>

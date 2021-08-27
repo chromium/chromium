@@ -899,6 +899,7 @@
 <translation id="6545017243486555795">すべてのデータを削除</translation>
 <translation id="6546511553472444032">有害なファイルの可能性があります</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
+<translation id="6560066289487134861">ハイライト表示のテンプレートを選択します。メインのダイアログに戻るには、上から下にスワイプして、[次へ] をタップしてください。</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>

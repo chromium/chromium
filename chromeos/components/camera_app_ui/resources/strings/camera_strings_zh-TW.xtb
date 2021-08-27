@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">相機解析度</translation>
 <translation id="3260401663013584785">無法偵測文件</translation>
 <translation id="3448774564454087943">無法儲存長度太短的影片</translation>
+<translation id="346539236881580388">重拍</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">確定要移除「<ph name="FILE" />」嗎？</translation>
+<translation id="3573890771273113519">切換為掃描模式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
@@ -106,6 +108,7 @@
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">切換為拍照模式</translation>
+<translation id="8167081290930651932">儲存為相片</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8425673304802773841">向下傾斜</translation>

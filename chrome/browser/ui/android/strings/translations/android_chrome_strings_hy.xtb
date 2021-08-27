@@ -899,6 +899,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
 <translation id="6546511553472444032">Ֆայլը կարող է վտանգավոր լինել</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_ONE" /> ներդիր կփակվեն}one{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}other{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}}</translation>
+<translation id="6560066289487134861">Ընտրեք ձևանմուշ ընդգծված տեքստի համար։ Հիմնական երկխոսության պատուհանին վերադառնալու համար օգտագործեք վերև և ներքև ժեստը, որից հետո հպեք «Առաջ»։</translation>
 <translation id="6560414384669816528">Որոնել Sogou որոնման համակարգով</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>

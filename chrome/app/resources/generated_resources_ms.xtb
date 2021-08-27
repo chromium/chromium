@@ -1553,6 +1553,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
 <translation id="2606568927909309675">Membuat sari kata untuk audio dan video bahasa Inggeris secara automatik. Audio dan sari kata tidak sekali-kali dihantar keluar daripada peranti anda.</translation>
 <translation id="2607101320794533334">Maklumat Penting Subjek Awam</translation>
+<translation id="2607602101932365444">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks. Sesuaikan terjemahan dengan menetapkan bahasa pilihan anda dalam <ph name="LINK_BEGIN" />Bahasa kandungan web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609902589050805912">Peranti <ph name="DEVICE_INDEX" /> daripada <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Peranti audio</translation>
 <translation id="2609980095400624569">Tidak dapat mewujudkan sambungan</translation>
@@ -5657,6 +5658,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7086672505018440886">Sertakan fail log Chrome dalam arkib.</translation>
 <translation id="7088434364990739311">Semakan kemas kini gagal dimulakan (kod ralat <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Peranti ini telah diletakkan dalam keadaan nyahperuntukkan oleh pentadbir. Untuk mendayakannya agar dapat didaftarkan, minta pentadbir meletakkan peranti dalam keadaan belum selesai.</translation>
+<translation id="7093220653036489319">Jawapan segera</translation>
 <translation id="7093416310351037609">Untuk keselamatan data, organisasi anda menghendaki semua muat turun yang layak disimpan pada akaun <ph name="WEB_DRIVE" /> organisasi anda.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Bertukar data dengan peranti yang bernama: <ph name="HOSTNAMES" /></translation>

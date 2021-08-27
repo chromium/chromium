@@ -899,6 +899,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6545017243486555795">Notīrīt visus datus</translation>
 <translation id="6546511553472444032">Fails var būt kaitīgs</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_ONE" /> cilne.}zero{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}one{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilne.}other{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}}</translation>
+<translation id="6560066289487134861">Atlasiet veidni izceltajam tekstam. Lai atgrieztos galvenajā dialoglodziņā, izmantojiet žestu uz augšu un tad — uz leju, pēc tam pieskarieties vienumam Tālāk.</translation>
 <translation id="6560414384669816528">Meklēšana, izmantojot Sogou</translation>
 <translation id="656065428026159829">Skatīt vairāk</translation>
 <translation id="6565959834589222080">Wi-Fi tiek izmantots, ja tas ir pieejams</translation>

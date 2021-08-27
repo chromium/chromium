@@ -1539,6 +1539,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2606454609872547359">Nu, continui fără ChromeVox</translation>
 <translation id="2606568927909309675">Creează automat subtitrări pentru conținut audio și video în limba engleză. Conținutul audio și subtitrările nu părăsesc niciodată dispozitivul.</translation>
 <translation id="2607101320794533334">Informații privind cheia publică a subiectului</translation>
+<translation id="2607602101932365444">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung textul. Personalizează traducerea setând limbile preferate în <ph name="LINK_BEGIN" />Limbi pentru conținutul web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Creați comenzi rapide...</translation>
 <translation id="2609902589050805912">Dispozitivul <ph name="DEVICE_INDEX" /> din <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, dispozitiv audio</translation>
 <translation id="2609980095400624569">Nu s-a stabilit conexiunea</translation>
@@ -5642,6 +5643,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7086672505018440886">Include fișiere jurnal Chrome în arhivă.</translation>
 <translation id="7088434364990739311">Nu a reușit pornirea verificării actualizării (cod de eroare <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Administratorul a trecut acest dispozitiv într-o stare de acces revocat. Pentru a-l activa pentru înscriere, solicitați administratorului să-l treacă într-o stare de așteptare.</translation>
+<translation id="7093220653036489319">Răspunsuri rapide</translation>
 <translation id="7093416310351037609">Pentru siguranța și securitatea datelor, organizația ta solicită ca toate descărcările eligibile să fie salvate în contul său <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Fă schimb de date cu dispozitivele numite: <ph name="HOSTNAMES" /></translation>

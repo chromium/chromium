@@ -1552,6 +1552,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2606454609872547359">En, jatka ilman ChromeVoxia</translation>
 <translation id="2606568927909309675">Tekstittää englanninkielistä audiota ja videota automaattisesti. Audio ja tekstitykset eivät koskaan poistu laitteelta.</translation>
 <translation id="2607101320794533334">Kohteen julkisen avaimen tiedot</translation>
+<translation id="2607602101932365444">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään. Voit yksilöidä käännöksiä valitsemalla ensisijaiset kielesi kohdasta <ph name="LINK_BEGIN" />Verkkosisällön kielet<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Luo pikakuvakkeita...</translation>
 <translation id="2609902589050805912">Laite <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, äänilaite</translation>
 <translation id="2609980095400624569">Yhteyttä ei voitu luoda</translation>
@@ -5653,6 +5654,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7086672505018440886">Sisällytä Chromen lokitiedostot arkistoon.</translation>
 <translation id="7088434364990739311">Päivitystarkistuksen käynnistäminen epäonnistui (virhekoodi <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Järjestelmänvalvoja on asettanut tämän laitteen poistotilaan. Voit asettaa sen käyttöönottotilaan pyytämällä järjestelmänvalvojaa asettamaan laitteen odottavaan tilaan.</translation>
+<translation id="7093220653036489319">Pikavastaukset</translation>
 <translation id="7093416310351037609">Datan suojaamiseksi organisaatiosi edellyttää, että kaikki kelvolliset lataukset tallennetaan organisaation tilille: <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Vaihtaa tietoja isäntää <ph name="HOSTNAMES" /> käyttävien laitteiden kanssa.</translation>

@@ -1540,6 +1540,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2606454609872547359">Nē, turpināt bez ChromeVox</translation>
 <translation id="2606568927909309675">Audio un video saturam angļu valodā tiek automātiski izveidoti subtitri. Audio ieraksti un subtitri vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="2607101320794533334">Subjekta publiskās atslēgas dati</translation>
+<translation id="2607602101932365444">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot. Pielāgojiet tulkojumu, iestatot vēlamās valodas sadaļā <ph name="LINK_BEGIN" />Tīmekļa satura valodas<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Izveidot saīsnes...</translation>
 <translation id="2609902589050805912">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, audioierīce</translation>
 <translation id="2609980095400624569">Nevarēja izveidot savienojumu</translation>
@@ -5643,6 +5644,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7086672505018440886">Iekļaut Chrome žurnālfailus arhīvā.</translation>
 <translation id="7088434364990739311">Neizdevās palaist atjauninājumu pārbaudi (kļūdas kods: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Administrators šai ierīcei ir piešķīris noņemšanas statusu. Lai tiktu aktivizēta šīs ierīces reģistrēšana, lūdziet administratoram piešķirt tai gaidīšanas statusu.</translation>
+<translation id="7093220653036489319">Ātrās atbildes</translation>
 <translation id="7093416310351037609">Lai aizsargātu datus, jūsu organizācija ir noteikusi, ka visas piemērotās lejupielādes ir jāsaglabā jūsu organizācijas <ph name="WEB_DRIVE" /> kontā.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">apmainīties datiem ar šādām ierīcēm: <ph name="HOSTNAMES" /></translation>

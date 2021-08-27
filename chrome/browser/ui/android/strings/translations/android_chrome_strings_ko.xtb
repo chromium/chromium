@@ -899,6 +899,7 @@
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6546511553472444032">유해한 파일일 수도 있음</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
+<translation id="6560066289487134861">강조표시에 사용할 템플릿을 선택하세요. 기본 대화상자로 돌아가려면 위, 아래 동작을 차례로 취한 후 다음을 탭합니다.</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>

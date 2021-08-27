@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Kamera felbontása</translation>
 <translation id="3260401663013584785">Nem észlelhető dokumentum</translation>
 <translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
+<translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
 <translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Váltás a beolvasási módra</translation>
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3838931309141338733">Vonalkód beolvasása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
@@ -106,6 +108,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8145038249676204903">Váltás fotókészítésre</translation>
+<translation id="8167081290930651932">Mentés fotóként</translation>
 <translation id="8239780215768881278">Pillanatkép készítése a videóból</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8425673304802773841">Billentés lefelé</translation>

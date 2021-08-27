@@ -1538,6 +1538,7 @@
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
 <translation id="2606568927909309675">自動建立英文音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2607101320794533334">主體公開金鑰資訊</translation>
+<translation id="2607602101932365444">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果。如要自訂翻譯，請前往<ph name="LINK_BEGIN" />網路內容語言<ph name="LINK_END" />設定你偏好的語言。</translation>
 <translation id="2609896558069604090">建立捷徑...</translation>
 <translation id="2609902589050805912">裝置 <ph name="DEVICE_INDEX" /> (共 <ph name="DEVICE_COUNT" /> 個)，<ph name="DEVICE_NAME" />，音訊裝置</translation>
 <translation id="2609980095400624569">無法建立連線</translation>
@@ -5640,6 +5641,7 @@
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088674813905715446">管理員已將這個裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求你的管理員將裝置設為待處理狀態。</translation>
+<translation id="7093220653036489319">快速解答</translation>
 <translation id="7093416310351037609">為了維護資料安全，貴機構規定所有符合資格的下載內容都必須儲存至機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">與下列名稱的裝置交換資料：<ph name="HOSTNAMES" /></translation>

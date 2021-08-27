@@ -1552,6 +1552,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2606454609872547359">Nem, a ChromeVox nélkül folytatom</translation>
 <translation id="2606568927909309675">Automatikus feliratkészítés az angol nyelvű audio- és videótartalmakhoz. A hanganyagok és a feliratok sosem kerülnek ki az eszközről.</translation>
 <translation id="2607101320794533334">Nyilvános kulcs adatai</translation>
+<translation id="2607602101932365444">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva megjelenítheti a definíciókat, a fordításokat vagy mértékegységek átváltását. A fordítás testreszabása a kívánt nyelvek beállításával hajtható végre a <ph name="LINK_BEGIN" />Webes tartalmak nyelvei<ph name="LINK_END" /> pontnál.</translation>
 <translation id="2609896558069604090">Parancsikonok létrehozása...</translation>
 <translation id="2609902589050805912"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Audioeszköz</translation>
 <translation id="2609980095400624569">Nem sikerült létrehozni a kapcsolatot</translation>
@@ -5656,6 +5657,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7086672505018440886">A Chrome naplófájljai is kerüljenek be az archívumba.</translation>
 <translation id="7088434364990739311">A frissítés ellenőrzésének elindítása sikertelen (hibakód: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Az eszközt a rendszergazda eltávolított állapotba helyezte. Ahhoz, hogy regisztrálhassa az eszközt, helyeztesse azt a rendszergazdával függő állapotba.</translation>
+<translation id="7093220653036489319">Gyors válaszok</translation>
 <translation id="7093416310351037609">Az adatok védelme és biztonsága érdekében szervezete megköveteli, hogy az összes vonatkozó letöltés a szervezet <ph name="WEB_DRIVE" />-fiókjába kerüljön mentésre.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Adatok cseréje a(z) <ph name="HOSTNAMES" /> nevű eszközökkel</translation>

@@ -1537,6 +1537,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2606454609872547359">Xeyr, ChromeVox olmadan davam edin</translation>
 <translation id="2606568927909309675">İngiliscə audio və video üçün avtomatik olaraq altyazılar yaradır. Audio və altyazılar heç vaxt paylaşılmır.</translation>
 <translation id="2607101320794533334">Subyekt İctimai Açar İnfosu</translation>
+<translation id="2607602101932365444">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin. <ph name="LINK_BEGIN" />Veb məzmun dillərində<ph name="LINK_END" /> tərcih etdiyiniz dili ayarlayaraq tərcüməni fərdiləşdirin.</translation>
 <translation id="2609896558069604090">Qısayollar yaradın...</translation>
 <translation id="2609902589050805912">Cihaz <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio cihaz</translation>
 <translation id="2609980095400624569">Bağlantı yaratmaq mümkün olmadı</translation>
@@ -5635,6 +5636,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7086672505018440886">Arxivə Chrome loq fayllarını daxil edin.</translation>
 <translation id="7088434364990739311">Güncəlləmə yoxlanışı başladıla bilmədi (xəta kodu <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Bu cihaz administrator tərəfindən deproviziya edilmiş duruma yerləşdirildi. Qeydiyyatdan keçirmək üçün administrator onu gözləmə durumuna keçirməlidir.</translation>
+<translation id="7093220653036489319">Sürətli cavablar</translation>
 <translation id="7093416310351037609">Data təhlükəsizliyi və güvənliyi üçün təşkilatınız bütün uyğun endirmələrin təşkilatınızın <ph name="WEB_DRIVE" /> hesabında saxlanmasını tələb edir.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> adlı cihazlar ilə data mübadiləsi edin</translation>

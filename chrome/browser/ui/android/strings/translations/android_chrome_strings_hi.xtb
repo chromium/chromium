@@ -899,6 +899,7 @@
 <translation id="6545017243486555795">सभी डेटा साफ़ करें</translation>
 <translation id="6546511553472444032">यह फ़ाइल नुकसान पहुंचा सकती है</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>
+<translation id="6560066289487134861">अपनी हाइलाइट के लिए टेंप्लेट चुनें. मुख्य डायलॉग पर वापस जाने के लिए, पहले 'ऊपर' फिर 'नीचे' जेस्चर का इस्तेमाल करें. इसके बाद 'आगे बढ़ें' पर टैप करें.</translation>
 <translation id="6560414384669816528">Sogou से खोजें</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6565959834589222080">उपलब्ध होने पर वाई-फ़ाई का इस्तेमाल किया जाता है</translation>

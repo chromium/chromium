@@ -1540,6 +1540,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2606454609872547359">Yoʻq, nofaol ChromeVox bilan davom ettirish</translation>
 <translation id="2606568927909309675">Ingliz tilidagi audio va video ijrosida taglavhalarni avtomatik yaratadi. Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="2607101320794533334">Subyekt ochiq kaliti haqida ma’lumot</translation>
+<translation id="2607602101932365444">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing. Kerakli tilni <ph name="LINK_BEGIN" />Veb kontent tillari<ph name="LINK_END" /> orqali tanlab, tarjimani moslang.</translation>
 <translation id="2609896558069604090">Yorliq yaratish...</translation>
 <translation id="2609902589050805912">Qurilma <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio qurilma</translation>
 <translation id="2609980095400624569">Aloqa oʻrnatilmadi</translation>
@@ -5645,6 +5646,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7086672505018440886">Arxivga Chrome jurnal fayllari ham kiritilsin.</translation>
 <translation id="7088434364990739311">Yangilanish mavjudligini tekshirib bo‘lmadi (xatolik kodi: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Bu qurilma administrator tomonidan o‘chirib qo‘yilgan. Ro‘yxatdan o‘tkazish uchun qurilmani ulanishni kutish holatiga o‘tkazish kerak.</translation>
+<translation id="7093220653036489319">Tezkor javoblar</translation>
 <translation id="7093416310351037609">Axborot himoyasi va xavfsizligi uchun tashkilotingiz barcha tegishli yuklanmalar <ph name="WEB_DRIVE" /> hisobiga saqlanishini talab qiladi.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> qurilmalari bilan ma’lumotlar almashish</translation>

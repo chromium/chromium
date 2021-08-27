@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Resolusi kamera</translation>
 <translation id="3260401663013584785">Tidak dapat mendeteksi dokumen</translation>
 <translation id="3448774564454087943">Video tidak disimpan karena terlalu pendek</translation>
+<translation id="346539236881580388">Ambil ulang</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3569311554794739032">Yakin ingin menghapus <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Beralih ke mode pindai</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Pindai kode batang</translation>
 <translation id="3892148308691398805">Salin teks</translation>
@@ -106,6 +108,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8120146556401698679">Geser, miringkan, perbesar/perkecil</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
+<translation id="8167081290930651932">Simpan sebagai Foto</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>

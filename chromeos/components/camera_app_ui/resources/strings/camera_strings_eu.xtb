@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Kameraren bereizmena</translation>
 <translation id="3260401663013584785">Ezin izan da hauteman dokumenturik</translation>
 <translation id="3448774564454087943">Ez da gorde bideoa, laburregia zelako</translation>
+<translation id="346539236881580388">Atera berriro</translation>
 <translation id="3517926952904427380">Ezin da atera erretratu-argazkia</translation>
 <translation id="3569311554794739032">Ziur zaude <ph name="FILE" /> kendu nahi duzula?</translation>
+<translation id="3573890771273113519">Aldatu bilatzeko modura</translation>
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3838931309141338733">Eskaneatu barra-kodea</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
@@ -106,6 +108,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8120146556401698679">Mugitu, okertu, zooma</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8145038249676204903">Aldatu argazkiak ateratzeko modura</translation>
+<translation id="8167081290930651932">Gorde argazki gisa</translation>
 <translation id="8239780215768881278">Atera bideoaren argazkia</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8425673304802773841">Okertu beherantz</translation>

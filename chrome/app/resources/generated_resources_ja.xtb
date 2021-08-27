@@ -1537,6 +1537,7 @@
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
 <translation id="2606568927909309675">英語の音声と動画の字幕を自動生成します。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
+<translation id="2607602101932365444">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。翻訳をカスタマイズするには、[<ph name="LINK_BEGIN" />ウェブ コンテンツの言語<ph name="LINK_END" />] で使用する言語を設定します。</translation>
 <translation id="2609896558069604090">ショートカットの作成...</translation>
 <translation id="2609902589050805912">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、<ph name="DEVICE_NAME" />、オーディオ機器</translation>
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
@@ -5640,6 +5641,7 @@
 <translation id="7086672505018440886">アーカイブに Chrome ログファイルを含める。</translation>
 <translation id="7088434364990739311">更新チェックを起動できませんでした（エラー コード <ph name="ERROR" />）。</translation>
 <translation id="7088674813905715446">このデバイスは、管理者によりプロビジョニングを解除されている状態です。このデバイスを登録できるようにするには、デバイスを待機状態にするよう管理者に依頼してください。</translation>
+<translation id="7093220653036489319">クイック アンサー</translation>
 <translation id="7093416310351037609">お客様の組織では、データの安全性とセキュリティを確保するため、対象となるすべてのダウンロードを組織の <ph name="WEB_DRIVE" /> アカウントに保存することが要件となっています。</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
