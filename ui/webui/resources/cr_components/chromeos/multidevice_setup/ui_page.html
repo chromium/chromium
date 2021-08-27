@@ -53,28 +53,26 @@
         line-height: 28px;
         margin: 0;
         padding-top: 40px;
-      }
-
-      #message-container {
-        min-height: 32px;
-        padding-top: 16px;
-      }
-
-      :host-context([new-layout]) #message-container {
-        color: var(--google-grey-700);
-        line-height: 18px;
-        overflow-wrap: break-word;
         text-align: var(--multidevice-setup-text-alignment);
       }
 
-      :host-context([new-layout]) #main-container {
+      #message-container {
+        color: var(--google-grey-700);
+        line-height: 18px;
+        min-height: 32px;
+        overflow-wrap: break-word;
+        padding-top: 16px;
+        text-align: var(--multidevice-setup-text-alignment);
+      }
+
+      #main-container {
         align-items: var(--multidevice-setup-dialog-item-alignment);
         display: flex;
         flex-direction: var(--multidevice-setup-dialog-content-direction);
         height: 100%;
       }
 
-      :host-context([new-layout]) #header-container {
+      #header-container {
         align-items: var(--multidevice-setup-dialog-item-alignment);
         display: flex;
         flex-direction: column;
@@ -85,15 +83,15 @@
         width: var(--multidevice-setup-dialog-header-width);
       }
 
-      :host-context([new-layout][screen=oobe]) #header-container,
-      :host-context([new-layout][screen=gaia-signin]) #header-container {
+      :host-context([screen=oobe]) #header-container,
+      :host-context([screen=gaia-signin]) #header-container {
         overflow-y: hidden;
         padding-top: calc(var(--multidevice-setup-dialog-content-padding)
           + 2 * clamp(20px, calc(var(--multidevice-setup-dialog-height)
           * 0.035), 40px) + 34px);
       }
 
-      :host-context([new-layout]) #additional-content-container {
+      #additional-content-container {
         border: transparent;
         display: flex;
         flex: 1;
@@ -104,26 +102,20 @@
         width: var(--multidevice-setup-dialog-content-width);
       }
 
-      :host-context([new-layout][orientation=vertical])
-          #additional-content-container {
+      :host-context([orientation=vertical]) #additional-content-container {
         margin-top: 40px;
       }
 
-      :host-context([new-layout][orientation=horizontal][screen=oobe])
+      :host-context([orientation=horizontal][screen=oobe])
           #additional-content-container,
-      :host-context([new-layout][orientation=horizontal][screen=gaia-signin])
+      :host-context([orientation=horizontal][screen=gaia-signin])
           #additional-content-container {
         margin-top: 80px;
       }
 
-      :host-context([new-layout][screen=oobe]) #additional-content-container,
-      :host-context([new-layout][screen=gaia-signin])
-          #additional-content-container {
+      :host-context([screen=oobe]) #additional-content-container,
+      :host-context([screen=gaia-signin]) #additional-content-container {
         overflow-y: auto;
-      }
-
-      :host-context([new-layout]) h1 {
-        text-align: var(--multidevice-setup-text-alignment);
       }
     </style>
     <div id="main-container">

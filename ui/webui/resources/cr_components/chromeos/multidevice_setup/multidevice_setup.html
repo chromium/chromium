@@ -35,60 +35,18 @@
       }
 
       iron-pages {
-        overflow: var(--iron-pages-overflow, visible);
-        padding: 0 32px;
-      }
-
-      :host-context([new-layout]) iron-pages {
         height: 100%;
-        padding: 0;
+        overflow: var(--iron-pages-overflow, visible);
       }
 
-      :host-context([new-layout]) button-bar {
+      button-bar {
         padding: 24px;
       }
 
       @media screen and (orientation: portrait) {
-        :host-context([new-layout][screen=oobe]) button-bar,
-        :host-context([new-layout][screen=gaia-signin]) button-bar {
+        :host-context([screen=oobe]) button-bar,
+        :host-context([screen=gaia-signin]) button-bar {
           align-items: center;
-        }
-      }
-
-      :host-context(html:not([new-layout])) #container {
-        max-width: var(--multidevice-setup-width, var(--default-ui-width));
-        padding: 32px;
-      }
-
-      @media screen and (max-width: 767px) {
-        /* On narrow screens, decrease width/padding. */
-        :host-context(html:not([new-layout])) #container {
-          height: auto;
-          /*
-           * Add height of buttons plus padding on top and bottom of buttons.
-           */
-          margin-bottom: calc(var(--narrow-button-bar-height) +
-                              calc(2 * var(--narrow-button-bar-spacing)));
-          padding: 32px 32px 0 32px;
-        }
-
-        :host-context(html:not([new-layout])) iron-pages {
-          padding: 0;
-        }
-
-        /*
-        * Fix the button bar to the bottom of the window. Some content may be
-        * beneath the button bar, so make the background slightly transparent
-        * so that the content can be seen.
-        */
-        :host-context(html:not([new-layout])) button-bar {
-          background: rgba(255, 255, 255, 0.9);
-          bottom: 0;
-          height: var(--narrow-button-bar-height);
-          left: 0;
-          padding: var(--narrow-button-bar-spacing);
-          position: absolute;
-          right: 0;
         }
       }
     </style>

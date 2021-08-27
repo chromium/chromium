@@ -26,8 +26,6 @@ generate_grd("build_grdp") {
     input_files = [
       "chromeos/multidevice_setup/all_set_1x.svg",
       "chromeos/multidevice_setup/all_set_2x.svg",
-      "chromeos/multidevice_setup/start_setup_icon_1x.png",
-      "chromeos/multidevice_setup/start_setup_icon_2x.png",
       "chromeos/cellular_setup/sim_detect_error.svg",
       "chromeos/cellular_setup/error_1x.png",
       "chromeos/cellular_setup/error_2x.png",

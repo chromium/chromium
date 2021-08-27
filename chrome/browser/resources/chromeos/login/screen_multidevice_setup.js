@@ -15,21 +15,11 @@ Polymer({
     this.initializeLoginScreen('MultiDeviceSetupScreen', {});
   },
 
-
   get defaultControl() {
     return this.$.impl;
   },
 
   updateLocalizedContent() {
     this.$.impl.updateLocalizedContent();
-  },
-
-  onBeforeShow() {
-    if (loadTimeData.valueExists('newLayoutEnabled') &&
-        loadTimeData.getBoolean('newLayoutEnabled')) {
-      document.documentElement.setAttribute('new-layout', '');
-    } else {
-      document.documentElement.removeAttribute('new-layout');
-    }
   },
 });

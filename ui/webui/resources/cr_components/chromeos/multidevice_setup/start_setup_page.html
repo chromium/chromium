@@ -71,77 +71,27 @@
         padding: 12px 0;
       }
 
-      #image-container {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-      }
-
-      #page-icon {
-        background-image: -webkit-image-set(url(chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_icon_1x.png) 1x,
-                                            url(chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_icon_2x.png) 2x);
-        height: 116px;
-        margin-top: 10px;
-        width: 320px;
-      }
-
-      #page-icon-container {
-        display: flex;
-        justify-content: center;
-      }
-
       #feature-details-container-header {
         margin-bottom: 16px;
       }
 
-      :host-context([new-layout][orientation=horizontal])
-          #additional-content-container {
+      :host-context([orientation=horizontal]) #additional-content-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
 
-      :host-context([new-layout]) #feature-details-container {
+      #feature-details-container {
         color: var(--google-grey-900);
         padding-top: 40px;
       }
 
-      :host-context([new-layout]) .feature-detail:not(:last-child) {
+      .feature-detail:not(:last-child) {
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
       }
 
-      :host-context([new-layout]) .feature-detail iron-icon {
+      .feature-detail iron-icon {
         padding: 0 20px;
-      }
-
-      :host-context(html:not([new-layout])) #selector-and-details-container {
-        display: flex;
-        margin-top: 20px;
-        min-height: 246px;
-      }
-
-      :host-context(html:not([new-layout])) #feature-details-container {
-        border-inline-start: 1px solid rgb(218, 220, 224);
-        padding-inline-start: 24px;
-      }
-
-      :host-context(html:not([new-layout])) .feature-detail span {
-        margin-inline-start: 8px;
-      }
-
-      /* On devices with small screens, use a single-column layout. */
-      @media screen and (max-width: 767px) {
-        :host-context(html:not([new-layout])) #selector-and-details-container {
-          display: flex;
-          flex-direction: column;
-          margin-top: 32px;
-        }
-
-        :host-context(html:not([new-layout])) #feature-details-container {
-          border-inline-start: none;
-          margin-top: 32px;
-          padding-inline-start: inherit;
-        }
       }
 
       /* Hide the animation when not enough space in vertical mode. */
@@ -165,7 +115,7 @@
       <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
           "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
       </span>
-      <span slot="message" hidden$="[[!newLayoutEnabled_]]">
+      <span slot="message">
         <div id="animation-container">
           <cr-lottie id="multideviceSetupAnimation"
               animation-url="multidevice_setup.json">
@@ -194,16 +144,6 @@
                 </template>
               </select>
             </div>
-            <div id="image-container" hidden$="[[newLayoutEnabled_]]">
-              <div class="flex"></div>
-              <div id="page-icon-container">
-                <div id="page-icon"></div>
-              </div>
-              <div class="flex"></div>
-              <div class="footnote">
-                [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
-              </div>
-            </div>
           </div>
           <div id="feature-details-container" class="flex">
             <div id="feature-details-container-header">
@@ -225,7 +165,7 @@
               </span>
             </div>
           </div>
-          <div class="footnote" hidden$="[[!newLayoutEnabled_]]">
+          <div class="footnote">
             [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
           </div>
         </div>

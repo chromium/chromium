@@ -77,12 +77,6 @@ Polymer({
 
   /** @override */
   ready() {
-    if (loadTimeData.valueExists('newLayoutEnabled') &&
-        loadTimeData.getBoolean('newLayoutEnabled')) {
-      document.documentElement.setAttribute('new-layout', '');
-    } else {
-      document.documentElement.removeAttribute('new-layout');
-    }
     this.onWindowSizeUpdated_();
   },
 
@@ -150,13 +144,10 @@ Polymer({
         '--oobe-oobe-dialog-height-base', window.innerHeight + 'px');
     document.documentElement.style.setProperty(
         '--oobe-oobe-dialog-width-base', window.innerWidth + 'px');
-    if (loadTimeData.valueExists('newLayoutEnabled') &&
-        loadTimeData.getBoolean('newLayoutEnabled')) {
-      if (window.innerWidth > window.innerHeight) {
-        document.documentElement.setAttribute('orientation', 'horizontal');
-      } else {
-        document.documentElement.setAttribute('orientation', 'vertical');
-      }
+    if (window.innerWidth > window.innerHeight) {
+      document.documentElement.setAttribute('orientation', 'horizontal');
+    } else {
+      document.documentElement.setAttribute('orientation', 'vertical');
     }
   },
 

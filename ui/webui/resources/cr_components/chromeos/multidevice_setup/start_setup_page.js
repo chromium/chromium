@@ -60,19 +60,6 @@ Polymer({
             loadTimeData.getBoolean('wifiSyncEnabled');
       },
     },
-
-    /**
-     * Whether new OOBE layout is enabled.
-     *
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      }
-    },
   },
 
   behaviors: [
@@ -84,7 +71,7 @@ Polymer({
   attached() {
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
-        this.initializeSetupFlow_.bind(this));
+        () => this.initializeSetupFlow_());
   },
 
   /**
