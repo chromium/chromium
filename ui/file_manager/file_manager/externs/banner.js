@@ -17,7 +17,10 @@ export class Banner extends HTMLElement {
   allowedVolumeTypes() {}
 
   /**
-   * The number of Files app sessions a banner can be shown for.
+   * The number of Files app sessions a banner can be shown for. A session is
+   * defined as a new window for Files app. If a user opens a window, the same
+   * session is maintained until either that window is closed or another window
+   * is opened.
    * @return {number|undefined}
    */
   showLimit() {}
@@ -88,4 +91,5 @@ Banner.DiskThresholdMinRatio;
  */
 Banner.Event = {
   BANNER_DISMISSED: 'banner-dismissed',
+  BANNER_DISMISSED_FOREVER: 'banner-dismissed-forever',
 };

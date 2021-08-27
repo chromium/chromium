@@ -21,6 +21,7 @@ group("closure_compile") {
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
+    "educational_banner.js",
     "local_disk_low_space_banner.js",
     "warning_banner.js",
   ]
@@ -36,6 +37,7 @@ js_type_check("closure_compile_jsmodules") {
                   ]
 
   deps = [
+    ":educational_banner",
     ":local_disk_low_space_banner",
     ":warning_banner",
   ]
@@ -45,6 +47,22 @@ js_library("local_disk_low_space_banner") {
   deps = [
     ":warning_banner",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_library("educational_banner") {
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_unittest("educational_banner_unittest.m") {
+  deps = [
+    ":educational_banner",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:banner",
   ]
 }
@@ -65,7 +83,10 @@ js_unittest("warning_banner_unittest.m") {
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
-  deps = [ ":warning_banner_unittest.m" ]
+  deps = [
+    ":educational_banner_unittest.m",
+    ":warning_banner_unittest.m",
+  ]
   is_polymer3 = true
 
   closure_flags = strict_error_checking_closure_args + [

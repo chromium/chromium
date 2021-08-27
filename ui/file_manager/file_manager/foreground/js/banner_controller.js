@@ -117,11 +117,13 @@ export class BannerController extends EventTarget {
      * Bind the onDirectorySizeChanged_ method to this instance once.
      * @private {!function(!chrome.fileManagerPrivate.FileWatchEvent)}
      */
-    this.onDirectorySizeChanged_ = this.onDirectorySizeChanged_.bind(this);
+    this.onDirectorySizeChangedBound_ = async event =>
+        this.onDirectorySizeChanged_(event);
 
-    xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
+    xfm.storage.onChanged.addListener(
+        (changes, areaName) => this.onStorageChanged_(changes, areaName));
     this.directoryModel_.addEventListener(
-        'directory-changed', this.onDirectoryChanged_.bind(this));
+        'directory-changed', event => this.onDirectoryChanged_(event));
   }
 
   /**
@@ -313,7 +315,7 @@ export class BannerController extends EventTarget {
       banner.setAttribute('aria-hidden', 'true');
       banner.addEventListener(
           Banner.Event.BANNER_DISMISSED,
-          this.onBannerDismissedClick_.bind(this));
+          event => this.onBannerDismissedClick_(event));
       this.warningBanners_.push(banner);
     }
   }
@@ -329,8 +331,8 @@ export class BannerController extends EventTarget {
       banner.toggleAttribute('hidden', true);
       banner.setAttribute('aria-hidden', 'true');
       banner.addEventListener(
-          Banner.Event.BANNER_DISMISSED,
-          this.onBannerDismissedClick_.bind(this));
+          Banner.Event.BANNER_DISMISSED_FOREVER,
+          event => this.onBannerDismissedClick_(event));
       this.educationalBanners_.push(banner);
     }
   }
@@ -368,11 +370,20 @@ export class BannerController extends EventTarget {
    */
   onBannerDismissedClick_(event) {
     if (!event.detail || !event.detail.banner) {
-      console.warn(
-          `${Banner.Event.BANNER_DISMISSED} event missing banner detail`);
+      console.warn('Banner dismiss event missing banner detail');
       return;
     }
     const banner = event.detail.banner;
+
+    // If the banner has been dismissed forever (in the case of educational
+    // banners) set the view counter to the max limit to ensure it is not
+    // shown again.
+    if (event.type === Banner.Event.BANNER_DISMISSED_FOREVER) {
+      this.setLocalStorage_(
+          `${banner.tagName}_${VIEW_COUNTER_SUFFIX}`, banner.showLimit());
+      this.hideBannerIfShown_(banner);
+      return;
+    }
 
     // Reset the view counter so that after the dismiss duration elapses the
     // banner can be shown for the showLimit again.
@@ -420,7 +431,7 @@ export class BannerController extends EventTarget {
     if (!this.currentVolume_ ||
         !this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
       chrome.fileManagerPrivate.onDirectoryChanged.removeListener(
-          this.onDirectorySizeChanged_);
+          this.onDirectorySizeChangedBound_);
       return;
     }
 
@@ -429,7 +440,7 @@ export class BannerController extends EventTarget {
     if (!isSubscribedByPreviousVolume &&
         this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
       chrome.fileManagerPrivate.onDirectoryChanged.addListener(
-          this.onDirectorySizeChanged_);
+          this.onDirectorySizeChangedBound_);
     }
   }
 

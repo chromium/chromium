@@ -1,0 +1,111 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {assertEquals} from 'chrome://test/chai_assert.js';
+import {util} from '../../../../common/js/util.js';
+import {Banner} from '../../../../externs/banner.js';
+
+import {EducationalBanner} from './educational_banner.js';
+
+/** @type{!EducationalBanner} */
+let educationalBanner;
+
+/**
+ * Mock out the util.visitURL method such that the URL passed to the function
+ * can be interrogated to ensure it was successfully invoked.
+ * @returns {!Object<string, !function()>}
+ */
+function mockUtilVisitURL() {
+  const oldVisitURL = util.visitURL;
+  let visitedURL;
+  util.visitURL = function(url) {
+    visitedURL = url;
+  };
+  const getURL = () => {
+    return visitedURL;
+  };
+  const restoreVisitURL = () => {
+    util.visitURL = oldVisitURL;
+  };
+  return {getURL, restoreVisitURL};
+}
+
+export function setUp() {
+  const html = `<educational-banner>
+      <span slot="title">Banner title</span>
+      <span slot="subtitle">Subtitle</span>
+      <button slot="extra-button" href="http://test.com">
+        Test Banner
+      </button>
+      <button slot="dismiss-button" class="dismiss-button">
+        Dismiss
+      </button>
+    </educational-banner>
+    `;
+  document.body.innerHTML = html;
+  educationalBanner = /** @type{!EducationalBanner} */ (
+      document.body.querySelector('educational-banner'));
+}
+
+/**
+ * Test that the dismiss handler bubbles the correct event on click.
+ */
+export async function testDismissHandlerEmitsEvent(done) {
+  const handler = () => {
+    done();
+  };
+  educationalBanner.addEventListener(
+      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.querySelector('[slot="dismiss-button"]').click();
+}
+
+/**
+ * Test that the default dismiss button from the educational banner successfully
+ * emits the BANNER_DISMISSED_FOREVER event if no dismiss button has been
+ * supplied.
+ */
+export async function testDefaultDismissButtonEmitsEvent(done) {
+  const html = `<educational-banner>
+      <span slot="title">Banner title text</span>
+      <span slot="subtitle">Banner subtitle text</span>
+      <button slot="extra-button" href="http://test.com">
+        Test Banner
+      </button>
+    </educational-banner>
+    `;
+  document.body.innerHTML = html;
+  educationalBanner = /** @type{!EducationalBanner} */ (
+      document.body.querySelector('educational-banner'));
+
+  const handler = () => {
+    done();
+  };
+  educationalBanner.addEventListener(
+      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.shadowRoot.querySelector('.dismiss-button').click();
+}
+
+/**
+ * Test that the additional button can be set and the link is visited when the
+ * button is clicked.
+ */
+export async function testAdditionalButtonCanBeClicked() {
+  const mockVisitURL = mockUtilVisitURL();
+  educationalBanner.querySelector('[slot="extra-button"]').click();
+  assertEquals(mockVisitURL.getURL(), 'http://test.com');
+  mockVisitURL.restoreVisitURL();
+}
+
+/**
+ * Test that the default configuration is set on the warning banners to ensure
+ * any overridden banners have sensible configuration.
+ */
+export function testEducationalBannerDefaults() {
+  // Ensure the number of app sessions an educational banner is shown is 3.
+  assertEquals(educationalBanner.showLimit(), 3);
+
+  // Ensure the default allowed volume type is empty. This ensures any
+  // banners that don't override this property do not show by default.
+  assertEquals(educationalBanner.allowedVolumeTypes().length, 0);
+}
