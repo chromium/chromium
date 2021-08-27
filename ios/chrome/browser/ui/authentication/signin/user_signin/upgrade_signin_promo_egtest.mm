@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -29,15 +29,11 @@ namespace {
 const NSString* kCanOfferExtendedChromeSyncPromos = [NSString
     stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
 
-// Matcher for the sign-in recall promo.
-id<GREYMatcher> SigninRecallPromo() {
-  return grey_accessibilityID(kUnifiedConsentScrollViewIdentifier);
-}
-
 void VerifySigninPromoSufficientlyVisible() {
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
@@ -51,7 +47,7 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
   config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableSigninRecallPromo);
+                                   switches::kEnableUpgradeSigninPromo);
 
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
@@ -101,7 +97,8 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
-  [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -128,7 +125,8 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
-  [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 

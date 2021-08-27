@@ -31,6 +31,9 @@ id<GREYMatcher> WebSigninContinueButtonMatcher();
 // screen.
 id<GREYMatcher> GoogleSyncSettingsButton();
 
+// Matcher for the upgrade sign-in promo.
+id<GREYMatcher> UpgradeSigninPromoMatcher();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_MATCHERS_H_

@@ -30,7 +30,7 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisableSigninRecallPromo() {
+bool DisableUpgradeSigninPromo() {
   return true;
 }
 

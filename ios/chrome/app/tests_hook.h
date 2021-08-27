@@ -32,9 +32,9 @@ bool DisableFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
-// Returns true if the signin recall promo should be disabled to allow other
+// Returns true if the upgrade sign-in promo should be disabled to allow other
 // tests to run unimpeded.
-bool DisableSigninRecallPromo();
+bool DisableUpgradeSigninPromo();
 
 // Returns true if the update service should be disabled so that the update
 // infobar won't be shown during testing.

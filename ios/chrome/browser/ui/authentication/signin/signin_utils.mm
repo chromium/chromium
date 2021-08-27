@@ -97,7 +97,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   DCHECK(browser_state);
   DCHECK(current_version.IsValid());
 
-  if (tests_hook::DisableSigninRecallPromo())
+  if (tests_hook::DisableUpgradeSigninPromo())
     return false;
 
   if (browser_state->IsOffTheRecord())

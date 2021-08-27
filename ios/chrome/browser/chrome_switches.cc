@@ -43,7 +43,11 @@ const char kEnableThirdPartyKeyboardWorkaround[] =
 const char kEnableDiscoverFeed[] = "enable-discover-feed";
 
 // Enables the sign-in recall promo.
-extern const char kEnableSigninRecallPromo[] = "enable-signin-recall-promo";
+// DEPRECATED: Use kEnableUpgradeSigninPromo
+const char kEnableSigninRecallPromo[] = "enable-upgrade-signin-promo";
+
+// Enables the upgrade sign-in promo.
+const char kEnableUpgradeSigninPromo[] = "enable-upgrade-signin-promo";
 
 // Installs the URLBlocklist and URLAllowlist handlers.
 const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";

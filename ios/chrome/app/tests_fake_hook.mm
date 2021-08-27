@@ -25,7 +25,7 @@ bool DisableFirstRun() {
 bool DisableGeolocation() {
   return false;
 }
-bool DisableSigninRecallPromo() {
+bool DisableUpgradeSigninPromo() {
   return false;
 }
 bool DisableUpdateService() {
