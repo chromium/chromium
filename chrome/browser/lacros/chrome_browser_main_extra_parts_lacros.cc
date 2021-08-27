@@ -36,12 +36,14 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
         monitor->CreateVoter()));
   }
 
+  // Disable chrome apps for now with Lacros since they show up via profile
+  // migration, but are not fully functional.
   extension_apps_publisher_ = std::make_unique<LacrosExtensionAppsPublisher>();
-  extension_apps_publisher_->Initialize();
+  // extension_apps_publisher_->Initialize();
   extension_apps_controller_ =
       std::make_unique<LacrosExtensionAppsController>();
-  extension_apps_controller_->Initialize(
-      extension_apps_publisher_->publisher());
+  // extension_apps_controller_->Initialize(
+  //     extension_apps_publisher_->publisher());
 
   // Start Lacros' drive mount point path caching, since it is available in Ash.
   drivefs_cache_ = std::make_unique<DriveFsCache>();
