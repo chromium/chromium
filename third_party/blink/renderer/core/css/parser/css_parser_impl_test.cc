@@ -602,4 +602,73 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
   }
 }
 
+TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  String sheet_text = R"CSS(
+    @layer foo;
+    @import url(bar.css) layer(bar);
+    @namespace url(http://www.w3.org/1999/xhtml);
+    @layer baz;
+    @layer qux { }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+
+  // All rules should parse successfully.
+  EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
+  EXPECT_EQ(1u, sheet->ImportRules().size());
+  EXPECT_EQ(1u, sheet->NamespaceRules().size());
+  EXPECT_EQ(2u, sheet->ChildRules().size());
+}
+
+TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  {
+    // @layer interleaving with @import rules
+    String sheet_text = R"CSS(
+      @layer foo;
+      @import url(bar.css) layer(bar);
+      @layer baz;
+      @import url(qux.css);
+    )CSS";
+    auto* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+
+    EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
+    EXPECT_EQ(1u, sheet->ChildRules().size());
+
+    // After parsing @layer baz, @import rules are no longer allowed, so the
+    // second @import rule should be ignored.
+    ASSERT_EQ(1u, sheet->ImportRules().size());
+    EXPECT_TRUE(sheet->ImportRules()[0]->IsLayered());
+  }
+
+  {
+    // @layer between @import and @namespace rules
+    String sheet_text = R"CSS(
+      @layer foo;
+      @import url(bar.css) layer(bar);
+      @layer baz;
+      @namespace url(http://www.w3.org/1999/xhtml);
+    )CSS";
+    auto* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+
+    EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
+    EXPECT_EQ(1u, sheet->ImportRules().size());
+    EXPECT_EQ(1u, sheet->ChildRules().size());
+
+    // After parsing @layer baz, @namespace rules are no longer allowed.
+    EXPECT_EQ(0u, sheet->NamespaceRules().size());
+  }
+}
+
 }  // namespace blink

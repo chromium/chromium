@@ -159,8 +159,18 @@ bool StyleSheetContents::IsCacheableForStyleElement() const {
 }
 
 void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
+  if (auto* layer_statement_rule = DynamicTo<StyleRuleLayerStatement>(rule)) {
+    if (import_rules_.IsEmpty() && namespace_rules_.IsEmpty()) {
+      DCHECK(child_rules_.IsEmpty());
+      pre_import_layer_statement_rules_.push_back(layer_statement_rule);
+      return;
+    }
+    // Falls through, insert it into child_rules_ as a regular rule
+  }
+
   if (auto* import_rule = DynamicTo<StyleRuleImport>(rule)) {
-    // Parser enforces that @import rules come before anything else
+    // Parser enforces that @import rules come before anything else other than
+    // empty layer statements
     DCHECK(child_rules_.IsEmpty());
     if (import_rule->MediaQueries())
       SetHasMediaQueries();
@@ -172,7 +182,7 @@ void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
 
   if (auto* namespace_rule = DynamicTo<StyleRuleNamespace>(rule)) {
     // Parser enforces that @namespace rules come before all rules other than
-    // import/charset rules
+    // import/charset rules and empty layer statements
     DCHECK(child_rules_.IsEmpty());
     ParserAddNamespace(namespace_rule->Prefix(), namespace_rule->Uri());
     namespace_rules_.push_back(namespace_rule);
@@ -673,6 +683,7 @@ void StyleSheetContents::FindFontFaceRules(
 
 void StyleSheetContents::Trace(Visitor* visitor) const {
   visitor->Trace(owner_rule_);
+  visitor->Trace(pre_import_layer_statement_rules_);
   visitor->Trace(import_rules_);
   visitor->Trace(namespace_rules_);
   visitor->Trace(child_rules_);

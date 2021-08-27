@@ -442,7 +442,17 @@ static CSSParserImpl::AllowedRulesType ComputeNewAllowedRules(
       allowed_rules == CSSParserImpl::kNoRules)
     return allowed_rules;
   DCHECK_LE(allowed_rules, CSSParserImpl::kRegularRules);
-  if (rule->IsCharsetRule() || rule->IsImportRule())
+  if (rule->IsCharsetRule()) {
+    if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
+      return CSSParserImpl::kAllowLayerStatementRules;
+    return CSSParserImpl::kAllowImportRules;
+  }
+  if (rule->IsLayerStatementRule()) {
+    if (allowed_rules <= CSSParserImpl::kAllowLayerStatementRules)
+      return CSSParserImpl::kAllowLayerStatementRules;
+    return CSSParserImpl::kRegularRules;
+  }
+  if (rule->IsImportRule())
     return CSSParserImpl::kAllowImportRules;
   if (rule->IsNamespaceRule())
     return CSSParserImpl::kAllowNamespaceRules;

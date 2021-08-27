@@ -468,6 +468,11 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
 
   DCHECK(sheet);
 
+  for (const auto& pre_import_layer : sheet->PreImportLayerStatementRules()) {
+    for (const auto& name : pre_import_layer->GetNames())
+      GetOrAddSubLayer(cascade_layer, name);
+  }
+
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {

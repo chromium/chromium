@@ -56,11 +56,12 @@ class CORE_EXPORT CSSParserImpl {
 
   enum AllowedRulesType {
     // As per css-syntax, css-cascade and css-namespaces, @charset rules
-    // must come first, followed by @import then @namespace.
-    // AllowImportRules actually means we allow @import and any rules thay
+    // must come first, followed by @layer, @import then @namespace.
+    // AllowImportRules actually means we allow @import and any rules that
     // may follow it, i.e. @namespace rules and regular rules.
     // AllowCharsetRules and AllowNamespaceRules behave similarly.
     kAllowCharsetRules,
+    kAllowLayerStatementRules,
     kAllowImportRules,
     kAllowNamespaceRules,
     kRegularRules,

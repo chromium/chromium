@@ -513,4 +513,41 @@ TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
             GetLayerByIdRule("three"));
 }
 
+TEST_F(RuleSetCascadeLayerTest, LayerStatementsBeforeAndAfterImport) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest sub_resource("https://example.com/sheet.css",
+                                     "text/css");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @layer foo, bar;
+      @import url(/sheet.css) layer(bar);
+      @layer baz, bar, foo;
+      @layer foo {
+        #two { }
+        #three { }
+      }
+      @layer baz {
+        #four { }
+      }
+    </style>
+  )HTML");
+  sub_resource.Complete(R"CSS(
+    #zero { }
+    #one { }
+  )CSS");
+
+  test::RunPendingTasks();
+
+  EXPECT_EQ("foo,bar,baz", LayersToString());
+
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"baz"})), GetLayerByIdRule("four"));
+}
+
 }  // namespace blink
