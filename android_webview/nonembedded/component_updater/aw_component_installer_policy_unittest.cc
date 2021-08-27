@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
+#include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
 
 #include <stdint.h>
 
@@ -18,6 +18,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -57,27 +58,48 @@ void AssertTestFiles(const base::FilePath& install_dir) {
 
 }  // namespace
 
-class TestAwComponentInstallerPolicyDelegate
-    : public AwComponentInstallerPolicyDelegate {
+class TestAwComponentInstallerPolicy : public AwComponentInstallerPolicy {
  public:
-  TestAwComponentInstallerPolicyDelegate(const std::vector<uint8_t>& hash)
-      : AwComponentInstallerPolicyDelegate(hash) {}
-  ~TestAwComponentInstallerPolicyDelegate() override = default;
+  TestAwComponentInstallerPolicy() {
+    ON_CALL(*this, GetHash).WillByDefault([](std::vector<uint8_t>* hash) {
+      hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
+    });
+  }
+  ~TestAwComponentInstallerPolicy() override = default;
+
+  TestAwComponentInstallerPolicy(const TestAwComponentInstallerPolicy&) =
+      delete;
+  TestAwComponentInstallerPolicy& operator=(
+      const TestAwComponentInstallerPolicy&) = delete;
+
+  MOCK_METHOD2(OnCustomInstall,
+               update_client::CrxInstaller::Result(const base::DictionaryValue&,
+                                                   const base::FilePath&));
+  MOCK_CONST_METHOD2(VerifyInstallation,
+                     bool(const base::DictionaryValue& manifest,
+                          const base::FilePath& dir));
+  MOCK_CONST_METHOD0(SupportsGroupPolicyEnabledComponentUpdates, bool());
+  MOCK_CONST_METHOD0(RequiresNetworkEncryption, bool());
+  MOCK_CONST_METHOD0(GetRelativeInstallDir, base::FilePath());
+  MOCK_CONST_METHOD0(GetName, std::string());
+  MOCK_CONST_METHOD0(GetInstallerAttributes,
+                     update_client::InstallerAttributes());
+  MOCK_CONST_METHOD1(GetHash, void(std::vector<uint8_t>*));
 
  private:
   void IncrementComponentsUpdatedCount() override { /* noop */
   }
 };
 
-class AwComponentInstallerPolicyDelegateTest : public testing::Test {
+class AwComponentInstallerPolicyTest : public testing::Test {
  public:
-  AwComponentInstallerPolicyDelegateTest() = default;
-  ~AwComponentInstallerPolicyDelegateTest() override = default;
+  AwComponentInstallerPolicyTest() = default;
+  ~AwComponentInstallerPolicyTest() override = default;
 
-  AwComponentInstallerPolicyDelegateTest(
-      const AwComponentInstallerPolicyDelegateTest&) = delete;
-  AwComponentInstallerPolicyDelegateTest& operator=(
-      const AwComponentInstallerPolicyDelegateTest&) = delete;
+  AwComponentInstallerPolicyTest(const AwComponentInstallerPolicyTest&) =
+      delete;
+  AwComponentInstallerPolicyTest& operator=(
+      const AwComponentInstallerPolicyTest&) = delete;
 
   // Override from testing::Test
   void SetUp() override {
@@ -92,9 +114,7 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     CreateTestFiles(GetTestInstallPath());
 
-    std::vector<uint8_t> hash;
-    hash.assign(std::begin(kSha256Hash), std::end(kSha256Hash));
-    delegate_ = std::make_unique<TestAwComponentInstallerPolicyDelegate>(hash);
+    delegate_ = std::make_unique<TestAwComponentInstallerPolicy>();
   }
 
   void TearDown() override {
@@ -107,14 +127,14 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
 
  protected:
   base::FilePath cps_component_path_;
-  std::unique_ptr<TestAwComponentInstallerPolicyDelegate> delegate_;
+  std::unique_ptr<TestAwComponentInstallerPolicy> delegate_;
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
 };
 
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestNoExistingVersions) {
+TEST_F(AwComponentInstallerPolicyTest, TestNoExistingVersions) {
   const base::Version testVersion("1.2.3.4");
 
   delegate_->ComponentReady(testVersion, GetTestInstallPath(),
@@ -127,7 +147,7 @@ TEST_F(AwComponentInstallerPolicyDelegateTest, TestNoExistingVersions) {
       cps_component_path_.AppendASCII("1_" + testVersion.GetString()));
 }
 
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestExistingOtherVersions) {
+TEST_F(AwComponentInstallerPolicyTest, TestExistingOtherVersions) {
   const base::Version testVersion("1.2.3.4");
 
   CreateTestFiles(cps_component_path_.AppendASCII("1_4.3.2.1"));
@@ -143,7 +163,7 @@ TEST_F(AwComponentInstallerPolicyDelegateTest, TestExistingOtherVersions) {
       cps_component_path_.AppendASCII("11_" + testVersion.GetString()));
 }
 
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestExistingSameVersion) {
+TEST_F(AwComponentInstallerPolicyTest, TestExistingSameVersion) {
   const base::Version testVersion("1.2.3.4");
 
   CreateTestFiles(

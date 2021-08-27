@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
+#include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
 
 #include <stdint.h>
 
@@ -37,14 +37,9 @@ std::string GetVersionDirName(const uint32_t sequence_number,
 
 }  // namespace
 
-AwComponentInstallerPolicyDelegate::AwComponentInstallerPolicyDelegate(
-    const std::vector<uint8_t>& hash)
-    : component_id_(update_client::GetCrxIdFromPublicKeyHash(hash)) {}
+AwComponentInstallerPolicy::AwComponentInstallerPolicy() = default;
 
-AwComponentInstallerPolicyDelegate::~AwComponentInstallerPolicyDelegate() =
-    default;
-
-void AwComponentInstallerPolicyDelegate::OnCustomUninstall() {
+void AwComponentInstallerPolicy::OnCustomUninstall() {
   // Uninstallation isn't supported in WebView.
   NOTREACHED();
 }
@@ -75,7 +70,7 @@ void AwComponentInstallerPolicyDelegate::OnCustomUninstall() {
 //
 // Directories format should be kept in sync with `ComponentsProviderService`
 // java class.
-void AwComponentInstallerPolicyDelegate::ComponentReady(
+void AwComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
@@ -133,19 +128,23 @@ void AwComponentInstallerPolicyDelegate::ComponentReady(
   IncrementComponentsUpdatedCount();
 }
 
-void AwComponentInstallerPolicyDelegate::IncrementComponentsUpdatedCount() {
+void AwComponentInstallerPolicy::IncrementComponentsUpdatedCount() {
   AwComponentUpdateService::GetInstance()->IncrementComponentsUpdatedCount();
 }
 
 base::FilePath
-AwComponentInstallerPolicyDelegate::GetComponentsProviderServiceDirectory() {
+AwComponentInstallerPolicy::GetComponentsProviderServiceDirectory() {
+  std::vector<uint8_t> hash;
+  GetHash(&hash);
+  std::string component_id = update_client::GetCrxIdFromPublicKeyHash(hash);
+
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::FilePath(
              base::android::ConvertJavaStringToUTF8(
                  env,
                  Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
                      env)))
-      .AppendASCII(component_id_);
+      .AppendASCII(component_id);
 }
 
 }  // namespace android_webview

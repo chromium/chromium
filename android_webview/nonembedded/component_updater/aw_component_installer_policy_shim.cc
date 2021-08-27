@@ -10,10 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "components/component_updater/component_installer.h"
 
 namespace android_webview {
@@ -21,9 +19,6 @@ namespace android_webview {
 AwComponentInstallerPolicyShim::AwComponentInstallerPolicyShim(
     std::unique_ptr<component_updater::ComponentInstallerPolicy> policy)
     : policy_(std::move(policy)) {
-  std::vector<uint8_t> hash;
-  policy_->GetHash(&hash);
-  delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
 }
 
 AwComponentInstallerPolicyShim::~AwComponentInstallerPolicyShim() = default;
@@ -33,17 +28,6 @@ AwComponentInstallerPolicyShim::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
   return policy_->OnCustomInstall(manifest, install_dir);
-}
-
-void AwComponentInstallerPolicyShim::OnCustomUninstall() {
-  delegate_->OnCustomUninstall();
-}
-
-void AwComponentInstallerPolicyShim::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  delegate_->ComponentReady(version, install_dir, std::move(manifest));
 }
 
 bool AwComponentInstallerPolicyShim::

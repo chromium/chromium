@@ -10,27 +10,27 @@
 #include <string>
 #include <vector>
 
-#include "components/component_updater/component_installer.h"
+#include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
 
 namespace base {
 class DictionaryValue;
 class FilePath;
-class Version;
 }  // namespace base
+
+namespace component_updater {
+class ComponentInstallerPolicy;
+}  // namespace component_updater
 
 namespace android_webview {
 
-class AwComponentInstallerPolicyDelegate;
-
 // A shim class that transparently redirects all calls to the passed
 // installer policy object except for the calls that require custom WebView
-// handling, namely `ComponentReady` and `OnCustomUninstall`.
+// implementation, namely `ComponentReady` and `OnCustomUninstall`.
 //
 // This class is handy for installer policies shared between chrome and WebView,
 // it can be used to wrap installer policies written for chrome to modify their
 // behaviour to match the expected WebView behaviour.
-class AwComponentInstallerPolicyShim
-    : public component_updater::ComponentInstallerPolicy {
+class AwComponentInstallerPolicyShim : public AwComponentInstallerPolicy {
  public:
   explicit AwComponentInstallerPolicyShim(
       std::unique_ptr<component_updater::ComponentInstallerPolicy> policy);
@@ -46,19 +46,14 @@ class AwComponentInstallerPolicyShim
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictionaryValue& manifest,
       const base::FilePath& install_dir) override;
-  void OnCustomUninstall() override;
   bool VerifyInstallation(const base::DictionaryValue& manifest,
                           const base::FilePath& install_dir) const override;
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
 
  private:
-  std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
   std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_;
 };
 
