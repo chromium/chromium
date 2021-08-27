@@ -30,7 +30,10 @@ public class NotificationWrapperBuilderFactory {
      * @param channelId The ID of the channel the notification should be posted to. This channel
      *                  will be created if it did not already exist. Must be a known channel within
      *                  {@link ChannelsInitializer#ensureInitialized(String)}.
+     *
+     * @deprecated Use {@link #createNotificationWrapperBuilder(String)} instead
      */
+    @Deprecated
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(
             boolean preferCompat, String channelId) {
         return createNotificationWrapperBuilder(
@@ -39,7 +42,10 @@ public class NotificationWrapperBuilderFactory {
 
     /**
      * See {@link #createNotificationWrapperBuilder(boolean, String, String, NotificationMetadata)}.
+     *
+     * @deprecated Use {@link #createNotificationWrapperBuilder(String)} instead
      */
+    @Deprecated
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(
             boolean preferCompat, String channelId, @Nullable String remoteAppPackageName) {
         return createNotificationWrapperBuilder(
@@ -51,14 +57,37 @@ public class NotificationWrapperBuilderFactory {
      * @param remoteAppPackageName if not null, tries to create a Context from the package name
      * and passes it to the builder.
      * @param metadata Metadata contains notification id, tag, etc.
+     *
+     * @deprecated Use {@link #createNotificationWrapperBuilder(String, NotificationMetadata)}
+     *         instead
      */
+    @Deprecated
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(boolean preferCompat,
             String channelId, @Nullable String remoteAppPackageName,
             @Nullable NotificationMetadata metadata) {
-        // TODO(crbug.com/697104): Remove |preferCompat| and |remoteAppPackageName| arguments.
         assert preferCompat;
         assert remoteAppPackageName == null;
+        return createNotificationWrapperBuilder(channelId, metadata);
+    }
 
+    /**
+     * Creates either a NotificationCompat.Builder under the hood, wrapped in our own interface, and
+     * ensures the notification channel has been initialized.
+     *
+     * @param channelId The ID of the channel the notification should be posted to. This channel
+     *                  will be created if it did not already exist. Must be a known channel within
+     *                  {@link ChannelsInitializer#ensureInitialized(String)}.
+     */
+    public static NotificationWrapperBuilder createNotificationWrapperBuilder(String channelId) {
+        return createNotificationWrapperBuilder(channelId, null /* metadata */);
+    }
+
+    /**
+     * Same as above, with additional parameter:
+     * @param metadata Metadata contains notification id, tag, etc.
+     */
+    public static NotificationWrapperBuilder createNotificationWrapperBuilder(
+            String channelId, @Nullable NotificationMetadata metadata) {
         Context context = ContextUtils.getApplicationContext();
 
         NotificationManagerProxyImpl notificationManagerProxy =
@@ -67,9 +96,7 @@ public class NotificationWrapperBuilderFactory {
         ChannelsInitializer channelsInitializer = new ChannelsInitializer(notificationManagerProxy,
                 ChromeChannelDefinitions.getInstance(), context.getResources());
 
-        return preferCompat ? new ChromeNotificationWrapperCompatBuilder(
-                       context, channelId, channelsInitializer, metadata)
-                            : new ChromeNotificationWrapperStandardBuilder(
-                                    context, channelId, channelsInitializer, metadata);
+        return new ChromeNotificationWrapperCompatBuilder(
+                context, channelId, channelsInitializer, metadata);
     }
 }

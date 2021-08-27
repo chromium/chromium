@@ -5521,11 +5521,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "use-notification-compat-builder",
-    "owners": [ "knollr", "peter" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "use-ozone-platform",
     "owners": [ "rjkroege", "thomasanderson", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
     "expiry_milestone": 98

@@ -256,8 +256,7 @@ public class NotificationPlatformBridgeTest {
         // Validate the notification's behavior. On Android O+ the defaults are ignored as vibrate
         // and silent moved to the notification channel. The silent flag is achieved by using a
         // group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
             Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
         } else {
@@ -452,8 +451,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel. The silent flag is achieved by using a group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(
                     Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
         }
@@ -474,8 +472,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
         } else {
             // Vibration should not be in the defaults.
@@ -531,8 +528,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
         } else {
             // Vibration should not be in the defaults, a custom pattern was provided.

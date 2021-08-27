@@ -15,7 +15,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
@@ -25,7 +24,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
 import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -465,8 +463,7 @@ public abstract class NotificationBuilderBase {
      */
     protected Notification createPublicNotification(Context context) {
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(shouldUseCompat(), mChannelId)
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(mChannelId)
                         .setContentText(context.getString(R.string.notification_hidden_text))
                         .setSmallIcon(R.drawable.ic_chrome);
 
@@ -504,11 +501,6 @@ public abstract class NotificationBuilderBase {
             return input.subSequence(0, MAX_CHARSEQUENCE_LENGTH);
         }
         return input;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    static boolean shouldUseCompat() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER);
     }
 
     /**
@@ -556,38 +548,9 @@ public abstract class NotificationBuilderBase {
      * Adds an action to {@code builder} using a {@code Bitmap} if a bitmap is provided and the API
      * level is high enough, otherwise a resource id is used.
      */
-    protected static void addActionToBuilder(NotificationWrapperBuilder builder, Action action) {
-        if (shouldUseCompat()) {
-            addActionToBuilderCompat(builder, action);
-        } else {
-            addActionToBuilderStandard(builder, action);
-        }
-    }
-
-    @SuppressWarnings("deprecation") // For addAction(Notification.Action)
-    private static void addActionToBuilderStandard(
-            NotificationWrapperBuilder builder, Action action) {
-        Notification.Action.Builder actionBuilder = getActionBuilderStandard(action);
-        if (action.type == Action.Type.TEXT) {
-            assert action.placeholder != null;
-            actionBuilder.addRemoteInput(
-                    new android.app.RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
-                            .setLabel(action.placeholder)
-                            .build());
-        }
-
-        if (action.umaActionType == NotificationUmaTracker.ActionType.UNKNOWN) {
-            builder.addAction(actionBuilder.build());
-        } else {
-            builder.addAction(
-                    actionBuilder.build(), action.intent.getFlags(), action.umaActionType);
-        }
-    }
-
     @SuppressWarnings("deprecation") // For addAction(NotificationCompat.Action)
-    private static void addActionToBuilderCompat(
-            NotificationWrapperBuilder builder, Action action) {
-        NotificationCompat.Action.Builder actionBuilder = getActionBuilderCompat(action);
+    protected static void addActionToBuilder(NotificationWrapperBuilder builder, Action action) {
+        NotificationCompat.Action.Builder actionBuilder = getActionBuilder(action);
         if (action.type == Action.Type.TEXT) {
             assert action.placeholder != null;
             actionBuilder.addRemoteInput(
@@ -618,16 +581,7 @@ public abstract class NotificationBuilderBase {
         // all Chrome notifications on N though (see crbug.com/674015).
     }
 
-    private static Notification.Action.Builder getActionBuilderStandard(Action action) {
-        PendingIntent intent = action.intent.getPendingIntent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && action.iconBitmap != null) {
-            Icon icon = ApiHelperForM.createIconWithBitmap(action.iconBitmap);
-            return ApiHelperForM.newNotificationActionBuilder(icon, action.title, intent);
-        }
-        return new Notification.Action.Builder(action.iconId, action.title, intent);
-    }
-
-    private static NotificationCompat.Action.Builder getActionBuilderCompat(Action action) {
+    private static NotificationCompat.Action.Builder getActionBuilder(Action action) {
         PendingIntent intent = action.intent.getPendingIntent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && action.iconBitmap != null) {
             IconCompat icon = IconCompat.createWithBitmap(action.iconBitmap);

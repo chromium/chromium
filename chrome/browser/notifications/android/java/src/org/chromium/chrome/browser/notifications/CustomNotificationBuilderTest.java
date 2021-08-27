@@ -27,18 +27,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -51,13 +46,9 @@ import java.util.Arrays;
  * Instrumentation unit tests for CustomNotificationBuilder.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class CustomNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;
-
-    @Rule
-    public final TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {

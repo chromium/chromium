@@ -5945,11 +5945,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if defined(OS_ANDROID)
 
-    {"use-notification-compat-builder",
-     flag_descriptions::kUseNotificationCompatBuilderName,
-     flag_descriptions::kUseNotificationCompatBuilderDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kUseNotificationCompatBuilder)},
-
     {"debug-chime-notification",
      flag_descriptions::kChimeAlwaysShowNotificationName,
      flag_descriptions::kChimeAlwaysShowNotificationDescription, kOsAndroid,

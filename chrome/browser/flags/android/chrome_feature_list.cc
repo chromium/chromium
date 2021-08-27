@@ -126,7 +126,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kShareUsageRanking,
     &features::kShareUsageRankingFixedMore,
     &features::kToolbarUseHardwareBitmapDraw,
-    &features::kUseNotificationCompatBuilder,
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kIPHHomepagePromoCardFeature,

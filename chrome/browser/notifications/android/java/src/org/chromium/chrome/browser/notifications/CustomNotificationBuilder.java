@@ -130,7 +130,7 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        shouldUseCompat(), mChannelId, null /* remoteAppPackageName */, metadata);
+                        mChannelId, metadata);
         builder.setTicker(mTickerText);
         builder.setContentIntent(mContentIntent);
         builder.setDeleteIntent(mDeleteIntent);
