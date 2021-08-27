@@ -23,12 +23,6 @@
 <script>
 'use strict';
 
-// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
-// functions that include ...WithTimeRange() should be replaced with the same
-// function but without that ending. For example:
-//
-// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
-
 // --------------------------------------------------------------------
 //
 // TESTS FOR UPDATING THE HOLD TIME
@@ -37,34 +31,9 @@
 
 // CASE 1: playback rate > 0 and current time >= target effect end
 // (Also the start time is resolved and there is pending task)
-
-// Did seek = false
-promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  // Set duration to half of scroll timeline timeRange.
-  anim.effect.updateTiming({ duration: 500 });
-  const scroller = anim.timeline.scrollSource;
-  const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-
-  // Wait for new animation frame which allows the timeline to compute new
-  // current time.
-  await waitForNextFrame();
-  anim.play();
-  // Here and in the following tests we wait until ready resolves as
-  // otherwise we don't have a resolved start time. We test the case
-  // where the start time is unresolved in a subsequent test.
-  await anim.ready;
-
-  scroller.scrollTop = 0.7 * maxScroll;
-  await waitForNextFrame();
-
-  assert_equals(anim.currentTime, 500,
-                'Hold time is set to target end clamping current time');
-}, 'Updating the finished state when playing past end');
-
 // Did seek = true
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   // Wait for new animation frame which allows the timeline to compute new
@@ -74,17 +43,17 @@ promise_test(async t => {
 
   await anim.ready;
 
-  anim.currentTime = 2000;
+  anim.currentTime = CSS.percent(200);
   scroller.scrollTop = 0.7 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 2000,
-                'Hold time is set so current time should NOT change');
+  assert_percents_equal(anim.currentTime, 200,
+      'Hold time is set so current time should NOT change');
 }, 'Updating the finished state when seeking past end');
 
 // Did seek = false
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -97,15 +66,13 @@ promise_test(async t => {
   scroller.scrollTop = maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 1000,
-                'Hold time is set to target end clamping current time');
+  assert_percents_equal(anim.currentTime, 100,
+      'Hold time is set to target end clamping current time');
 }, 'Updating the finished state when playing exactly to end');
 
 // Did seek = true
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  // Set duration to half of scroll timeline timeRange.
-  anim.effect.updateTiming({ duration: 500 });
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -114,12 +81,12 @@ promise_test(async t => {
   await waitForNextFrame();
   await anim.ready;
 
-  anim.currentTime = 500;
+  anim.currentTime = CSS.percent(100);
   scroller.scrollTop = 0.7 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 500,
-                'Hold time is set so current time should NOT change');
+  assert_percents_equal(anim.currentTime, 100,
+      'Hold time is set so current time should NOT change');
 }, 'Updating the finished state when seeking exactly to end');
 
 
@@ -128,9 +95,7 @@ promise_test(async t => {
 
 // Did seek = false
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  // Set duration to half of scroll timeline timeRange.
-  anim.effect.updateTiming({ duration: 500 });
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -143,17 +108,17 @@ promise_test(async t => {
   await anim.ready;
 
   // Seek to 1ms before 0 and then wait 1ms
-  anim.currentTime = 1;
+  anim.currentTime = CSS.percent(1);
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 0,
-                'Hold time is set to zero clamping current time');
+  assert_percents_equal(anim.currentTime, 0,
+      'Hold time is set to zero clamping current time');
 }, 'Updating the finished state when playing in reverse past zero');
 
 // Did seek = true
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -165,17 +130,17 @@ promise_test(async t => {
 
   await anim.ready;
 
-  anim.currentTime = -1000;
+  anim.currentTime = CSS.percent(-100);
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, -1000,
-                'Hold time is set so current time should NOT change');
+  assert_percents_equal(anim.currentTime, -100,
+      'Hold time is set so current time should NOT change');
 }, 'Updating the finished state when seeking a reversed animation past zero');
 
 // Did seek = false
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -189,14 +154,14 @@ promise_test(async t => {
   scroller.scrollTop = maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 0,
-                'Hold time is set to target end clamping current time');
+  assert_percents_equal(anim.currentTime, 0,
+      'Hold time is set to target end clamping current time');
 }, 'Updating the finished state when playing  a reversed animation exactly ' +
    'to zero');
 
 // Did seek = true
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -207,54 +172,23 @@ promise_test(async t => {
   anim.play();
   await anim.ready;
 
-  anim.currentTime = 0;
+  anim.currentTime = CSS.percent(0);
 
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 0 * MS_PER_SEC,
-                'Hold time is set so current time should NOT change');
-}, 'Updating the finished state when seeking a reversed animation exactly'
-   + ' to zero');
+  assert_percents_equal(anim.currentTime, 0,
+      'Hold time is set so current time should NOT change');
+}, 'Updating the finished state when seeking a reversed animation exactly ' +
+   'to zero');
 
 // CASE 3: playback rate > 0 and current time < target end OR
 //         playback rate < 0 and current time > 0
 // (Also the start time is resolved and there is pending task)
 
-// Did seek = false; playback rate > 0
-promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  const scroller = anim.timeline.scrollSource;
-  const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-
-  // Wait for new animation frame which allows the timeline to compute new
-  // current time.
-  await waitForNextFrame();
-  anim.play();
-
-  // We want to test that the hold time is cleared so first we need to
-  // put the animation in a state where the hold time is set.
-  anim.finish();
-  await anim.ready;
-
-  assert_equals(anim.currentTime, 1000,
-                'Hold time is initially set');
-
-  // Then extend the duration so that the hold time is cleared and on
-  // the next tick the current time will increase.
-  anim.effect.updateTiming({
-    duration: anim.effect.getComputedTiming().duration * 2,
-  });
-  scroller.scrollTop = 0.2 * maxScroll;
-  await waitForNextFrame();
-  assert_equals(anim.currentTime, 1200,
-                'Hold time is not set so current time should increase');
-}, 'Updating the finished state when playing before end');
-
-
 // Did seek = true; playback rate > 0
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -264,21 +198,21 @@ promise_test(async t => {
   anim.play();
   anim.finish();
   await anim.ready;
-  assert_equals(anim.startTime, -1000);
+  assert_percents_equal(anim.startTime, -100);
 
-  anim.currentTime = 500;
+  anim.currentTime = CSS.percent(50);
   // When did seek = true, updating the finished state: (i) updates
   // the animation's start time and (ii) clears the hold time.
   // We can test both by checking that the currentTime is initially
   // updated and then increases.
-  assert_equals(anim.currentTime, 500, 'Start time is updated');
-  assert_equals(anim.startTime, -500);
+  assert_percents_equal(anim.currentTime, 50, 'Start time is updated');
+  assert_percents_equal(anim.startTime, -50);
 
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 700,
-                'Hold time is not set so current time should increase');
+  assert_percents_equal(anim.currentTime, 70,
+      'Hold time is not set so current time should increase');
 }, 'Updating the finished state when seeking before end');
 
 // Did seek = false; playback rate < 0
@@ -296,7 +230,7 @@ promise_test(async t => {
 
 // Did seek = true; playback rate < 0
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -307,15 +241,15 @@ promise_test(async t => {
   anim.playbackRate = -1;
   await anim.ready;
 
-  anim.currentTime = 500;
-  assert_equals(anim.startTime, 500, 'Start time is updated');
-  assert_equals(anim.currentTime, 500, 'Current time is updated');
+  anim.currentTime = CSS.percent(50);
+  assert_percents_equal(anim.startTime, 50, 'Start time is updated');
+  assert_percents_equal(anim.currentTime, 50, 'Current time is updated');
 
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 300,
-                'Hold time is not set so current time should decrease');
+  assert_percents_equal(anim.currentTime, 30,
+      'Hold time is not set so current time should decrease');
 }, 'Updating the finished state when seeking a reversed animation before end');
 
 
@@ -323,7 +257,7 @@ promise_test(async t => {
 
 // current time < 0
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -334,20 +268,19 @@ promise_test(async t => {
   anim.playbackRate = 0;
   await anim.ready;
 
-  anim.currentTime = -1000;
+  anim.currentTime = CSS.percent(-100);
 
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, -1000,
-                'Hold time should not be cleared so current time should'
-                + ' NOT change');
-}, 'Updating the finished state when playback rate is zero and the'
-   + ' current time is less than zero');
+  assert_percents_equal(anim.currentTime, -100,
+      'Hold time should not be cleared so current time should NOT change');
+}, 'Updating the finished state when playback rate is zero and the current ' +
+   'time is less than zero');
 
 // current time < target end
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -359,19 +292,18 @@ promise_test(async t => {
   anim.playbackRate = 0;
   await anim.ready;
 
-  anim.currentTime = 500;
+  anim.currentTime = CSS.percent(50);
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 500,
-                'Hold time should not be cleared so current time should'
-                + ' NOT change');
-}, 'Updating the finished state when playback rate is zero and the'
-   + ' current time is less than end');
+  assert_percents_equal(anim.currentTime, 50,
+      'Hold time should not be cleared so current time should NOT change');
+}, 'Updating the finished state when playback rate is zero and the current ' +
+   'time is less than end');
 
 // current time > target end
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -382,20 +314,19 @@ promise_test(async t => {
   anim.playbackRate = 0;
   await anim.ready;
 
-  anim.currentTime = 2000;
+  anim.currentTime = CSS.percent(200);
   scroller.scrollTop = 0.2 * maxScroll;
   await waitForNextFrame();
 
-  assert_equals(anim.currentTime, 2000,
-                'Hold time should not be cleared so current time should'
-                + ' NOT change');
-}, 'Updating the finished state when playback rate is zero and the'
-   + ' current time is greater than end');
+  assert_percents_equal(anim.currentTime, 200,
+      'Hold time should not be cleared so current time should NOT change');
+}, 'Updating the finished state when playback rate is zero and the current' +
+   'time is greater than end');
 
 // CASE 5: current time unresolved
 
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -405,7 +336,7 @@ promise_test(async t => {
   // procedure to run.
   anim.effect.updateTiming({ duration: 2000 });
   assert_equals(anim.currentTime, null,
-                'The animation hold time / start time should not be updated');
+      'The animation hold time / start time should not be updated');
   // The "update the finished state" procedure is supposed to run after any
   // change to timing, but just in case an implementation defers that, let's
   // wait a frame and check that the hold time / start time has still not been
@@ -413,75 +344,28 @@ promise_test(async t => {
   await waitForAnimationFrames(1);
 
   assert_equals(anim.currentTime, null,
-                'The animation hold time / start time should not be updated');
+      'The animation hold time / start time should not be updated');
 }, 'Updating the finished state when current time is unresolved');
-
-// CASE 6: has a pending task
-
-promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  // Wait for new animation frame which allows the timeline to compute new
-  // current time.
-  await waitForNextFrame();
-  anim.play();
-  anim.cancel();
-  anim.currentTime = 750;
-  anim.play();
-  // We now have a pending task and a resolved current time.
-  //
-  // In the next step we will adjust the timing so that the current time
-  // is greater than the target end. At this point the "update the finished
-  // state" procedure should run and if we fail to check for a pending task
-  // we will set the hold time to the target end, i.e. 50ms.
-  anim.effect.updateTiming({ duration: 500 });
-  assert_equals(anim.currentTime, 750,
-                'Hold time should not be updated');
-}, 'Updating the finished state when there is a pending task');
 
 // CASE 7: start time unresolved
 
-// Did seek = false
-promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
-  const scroller = anim.timeline.scrollSource;
-  const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  // Wait for new animation frame which allows the timeline to compute new
-  // current time.
-  await waitForNextFrame();
-  anim.cancel();
-  // Make it so that only the start time is unresolved (to avoid overlapping
-  // with the test case where current time is unresolved)
-  anim.currentTime = 1500;
-  // Trigger a change that will cause the "update the finished state"
-  // procedure to run (did seek = false).
-  anim.effect.updateTiming({ duration: 2000 });
-  scroller.scrollTop = 0.2 * maxScroll;
-  await waitForNextFrame();
-
-  assert_equals(anim.currentTime, 1500,
-                'The animation hold time should not be updated');
-  assert_equals(anim.startTime, null,
-                'The animation start time should not be updated');
-}, 'Updating the finished state when start time is unresolved and'
-   + ' did seek = false');
-
 // Did seek = true
 promise_test(async t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
   anim.cancel();
-  anim.currentTime = 1500;
+  anim.currentTime = CSS.percent(150);
   // Trigger a change that will cause the "update the finished state"
   // procedure to run.
-  anim.currentTime = 500;
-  assert_equals(anim.currentTime, 500,
-                'The animation hold time should not be updated');
+  anim.currentTime = CSS.percent(50);
+  assert_percents_equal(anim.currentTime, 50,
+      'The animation hold time should not be updated');
   assert_equals(anim.startTime, null,
-                'The animation start time should not be updated');
-}, 'Updating the finished state when start time is unresolved and'
-   + ' did seek = true');
+      'The animation start time should not be updated');
+}, 'Updating the finished state when start time is unresolved and did seek = ' +
+   'true');
 
 // --------------------------------------------------------------------
 //
@@ -497,24 +381,25 @@ function waitForFinishEventAndPromise(animation) {
 }
 
 promise_test(t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.play();
   animation.onfinish =
-    t.unreached_func('Seeking to finish should not fire finish event');
+      t.unreached_func('Seeking to finish should not fire finish event');
   animation.finished.then(
-    t.unreached_func('Seeking to finish should not resolve finished promise'));
-  animation.currentTime = 1000;
-  animation.currentTime = 0;
+      t.unreached_func(
+          'Seeking to finish should not resolve finished promise'));
+  animation.currentTime = CSS.percent(100);
+  animation.currentTime = CSS.percent(0);
   animation.pause();
   scroller.scrollTop = 0.2 * maxScroll;
   return waitForAnimationFrames(3);
-}, 'Finish notification steps don\'t run when the animation seeks to finish'
-   + ' and then seeks back again');
+}, 'Finish notification steps don\'t run when the animation seeks to finish ' +
+   'and then seeks back again');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.play();
@@ -525,7 +410,7 @@ promise_test(async t => {
 }, 'Finish notification steps run when the animation completes normally');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   animation.effect.target = null;
@@ -534,20 +419,20 @@ promise_test(async t => {
   await animation.ready;
   scroller.scrollTop = maxScroll;
   return waitForFinishEventAndPromise(animation);
-}, 'Finish notification steps run when an animation without a target'
-   + ' effect completes normally');
+}, 'Finish notification steps run when an animation without a target effect ' +
+   'completes normally');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   animation.play();
   await animation.ready;
 
-  animation.currentTime = 1010;
+  animation.currentTime = CSS.percent(101);
   return waitForFinishEventAndPromise(animation);
 }, 'Finish notification steps run when the animation seeks past finish');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   animation.play();
   await animation.ready;
 
@@ -555,14 +440,14 @@ promise_test(async t => {
   // finished the 'finished' promise will be replaced.
   const finishNotificationSteps = waitForFinishEventAndPromise(animation);
   animation.finish();
-  animation.currentTime = 0;
+  animation.currentTime = CSS.percent(0);
   animation.pause();
   return finishNotificationSteps;
-}, 'Finish notification steps run when the animation completes with .finish(),'
-   + ' even if we then seek away');
+}, 'Finish notification steps run when the animation completes with ' +
+   '.finish(), even if we then seek away');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -571,12 +456,12 @@ promise_test(async t => {
   const initialFinishedPromise = animation.finished;
   await animation.finished;
 
-  animation.currentTime = 0;
+  animation.currentTime = CSS.percent(0);
   assert_not_equals(initialFinishedPromise, animation.finished);
 }, 'Animation finished promise is replaced after seeking back to start');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -594,7 +479,7 @@ promise_test(async t => {
 }, 'Animation finished promise is replaced after replaying from start');
 
 async_test(t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -615,7 +500,7 @@ async_test(t => {
 }, 'Animation finish event is fired again after seeking back to start');
 
 async_test(t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -635,7 +520,7 @@ async_test(t => {
 }, 'Animation finish event is fired again after replaying from start');
 
 async_test(t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
@@ -651,18 +536,18 @@ async_test(t => {
   }).then(t.step_func(() => {
     t.done();
   }));
-}, 'finish event is not fired at the end of the active interval when the'
-   + ' endDelay has not expired');
+}, 'finish event is not fired at the end of the active interval when the ' +
+   'endDelay has not expired');
 
 async_test(t => {
-  const anim = createScrollLinkedAnimationWithTimeRange(t);
+  const anim = createScrollLinkedAnimation(t);
   const scroller = anim.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   anim.effect.updateTiming({ duration: 800,  endDelay: 100});
   anim.play();
   anim.ready.then(() => {
-    scroller.scrollTop = 0.85 * maxScroll; // during endDelay
+    scroller.scrollTop = 0.95 * maxScroll; // during endDelay
     anim.onfinish = t.step_func(event => {
       assert_unreached('onfinish event should not be fired during endDelay');
     });
@@ -671,7 +556,7 @@ async_test(t => {
     anim.onfinish = t.step_func(event => {
       t.done();
     });
-    scroller.scrollTop = 0.95 * maxScroll;
+    scroller.scrollTop = maxScroll;
     return waitForAnimationFrames(2);
   }));
 }, 'finish event is fired after the endDelay has expired');

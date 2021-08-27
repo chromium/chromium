@@ -214,20 +214,6 @@
     // Unknown animation-timeline, current time held at zero.
     await assert_width(element, '100px');
 
-    insertScrollTimeline({timeRange: '1e10s'});
-    await assert_width(element, '120px');
-
-    insertScrollTimeline({timeRange: '1e9s'});
-    await assert_width(element, '102px');
-  }, 'Changing the time-range descriptor switches effective timeline');
-
-  dynamic_rule_test(async (t, assert_width) => {
-    let element = insertElement();
-    insertSheet('#element { animation-timeline: timeline; }');
-
-    // Unknown animation-timeline, current time held at zero.
-    await assert_width(element, '100px');
-
     insertScrollTimeline({start: '0px'});
     await assert_width(element, '120px');
 

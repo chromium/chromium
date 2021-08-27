@@ -116,33 +116,3 @@ function assert_percents_equal(actual, expected, description){
         `for "${description}"`);
   }
 }
-
-// These functions are used for the tests that have not yet been updated to be
-// compatible with progress based scroll animations. Once scroll timeline
-// "timeRange" is removed, these functions should also be removed.
-// Needed work tracked by crbug.com/1216655
-function createScrollTimelineWithTimeRange(test, options) {
-  options = options || {
-    scrollSource: createScroller(test),
-    timeRange: 1000
-  }
-  return new ScrollTimeline(options);
-}
-
-function createScrollTimelineWithOffsetsWithTimeRange(test, startOffset, endOffset) {
-  return createScrollTimelineWithTimeRange(test, {
-    scrollSource: createScroller(test),
-    orientation: "vertical",
-    scrollOffsets: [startOffset, endOffset],
-    timeRange: 1000
-  });
-}
-
-function createScrollLinkedAnimationWithTimeRange(test, timeline) {
-  if (timeline === undefined)
-    timeline = createScrollTimelineWithTimeRange(test);
-  const DURATION = 1000; // ms
-  const KEYFRAMES = { opacity: [0, 1] };
-  return new Animation(
-    new KeyframeEffect(createDiv(test), KEYFRAMES, DURATION), timeline);
-}
