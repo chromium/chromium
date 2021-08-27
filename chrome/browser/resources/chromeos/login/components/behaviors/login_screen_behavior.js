@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OOBE_UI_STATE} from '/components/display_manager_types.m.js';
+// #import {OOBE_UI_STATE} from '../display_manager_types.m.js';
+// #import {OobeTypes} from '../oobe_types.m.js';
+// #import {Oobe} from '../../cr_ui.m.js';
 
 /**
  * @fileoverview
@@ -12,7 +14,7 @@
 const CALLBACK_USER_ACTED = 'userActed';
 
 /** @polymerBehavior */
-var LoginScreenBehavior = {
+/* #export */ var LoginScreenBehavior = {
   // List of methods exported to login.screenName.<method> API.
   // This is expected to be overridden by the Polymer object using this
   // behavior.
@@ -28,14 +30,14 @@ var LoginScreenBehavior = {
     let api = {};
 
     if (this.EXTERNAL_API.length != 0) {
-      for (var i = 0; i < this.EXTERNAL_API.length; ++i) {
-        var methodName = this.EXTERNAL_API[i];
+      for (let i = 0; i < this.EXTERNAL_API.length; ++i) {
+        const methodName = this.EXTERNAL_API[i];
         if (typeof this[methodName] !== 'function') {
           throw Error(
               'External method "' + methodName + '" for screen "' + screenName +
               '" is not a function or is undefined.');
         }
-        api[methodName] = this[methodName].bind(this);
+        api[methodName] = (...args) => this[methodName](...args);
       }
     }
     this.sendPrefix_ = 'login.' + screenName + '.';
