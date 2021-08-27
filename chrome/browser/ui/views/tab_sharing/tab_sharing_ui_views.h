@@ -48,7 +48,8 @@ class TabSharingUIViews : public TabSharingUI,
   // Called when tab sharing has started. Creates infobars on all tabs.
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
 
   // TabSharingUI:
   // Runs |source_callback_| to start sharing the tab containing |infobar|.

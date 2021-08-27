@@ -41,7 +41,8 @@ class SameOriginPolicyUI : public MediaStreamUI {
 
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override {
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override {
     stop_callback_ = std::move(stop_callback);
     return 0;
   }

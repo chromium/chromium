@@ -230,7 +230,8 @@ TabSharingUIViews::~TabSharingUIViews() {
 
 gfx::NativeViewId TabSharingUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_callback_ = std::move(source_callback);
   stop_callback_ = std::move(stop_callback);

@@ -36,7 +36,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
@@ -125,6 +124,16 @@ class CONTENT_EXPORT MediaStreamManager
   // Callback for testing.
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
+
+#if !defined(OS_ANDROID)
+  // Defines a window of opportunity for the Web-application to decide
+  // whether a display-surface which it's capturing should be focused.
+  // After |kConditionalFocusWindow| past the beginning of the capture,
+  // the browser makes its own decision and ignores further instructions
+  // from Web-applications, thereby preventing applications from changing
+  // focus at an arbitrary time.
+  static const base::TimeDelta kConditionalFocusWindow;
+#endif
 
   // Adds |message| to native logs for outstanding device requests, for use by
   // render processes hosts whose corresponding render processes are requesting
@@ -379,6 +388,14 @@ class CONTENT_EXPORT MediaStreamManager
 
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
+
+#if !defined(OS_ANDROID)
+  // Determines whether the captured surface (tab/window) should be focused.
+  // This can be called at most once, and only within the first 1s of the
+  // capture session being initiated. If a call with |focus=false| is not
+  // executed within this time period, the captured surface *is* focused.
+  void SetCapturedDisplaySurfaceFocus(const std::string& label, bool focus);
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);

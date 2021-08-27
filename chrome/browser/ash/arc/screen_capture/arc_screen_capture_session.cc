@@ -148,7 +148,8 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
     notification_ui_->OnStarted(
         base::BindOnce(&ArcScreenCaptureSession::NotificationStop,
                        weak_ptr_factory_.GetWeakPtr()),
-        content::MediaStreamUI::SourceCallback());
+        content::MediaStreamUI::SourceCallback(),
+        std::vector<content::DesktopMediaID>{});
   }
 
   ash::Shell::Get()->display_manager()->inc_screen_capture_active_counter();

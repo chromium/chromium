@@ -565,7 +565,6 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
           webrtc::DesktopCapturer::CreateWindowCapturer(options);
 #endif
       if (window_capturer && window_capturer->SelectSource(source.id)) {
-        window_capturer->FocusOnSelectedSource();
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(window_capturer), options);
         IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);

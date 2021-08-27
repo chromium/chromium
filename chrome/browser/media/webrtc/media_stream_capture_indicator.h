@@ -27,20 +27,22 @@ class ImageSkia;
 
 class StatusIcon;
 
-// Interface to display custom UI during stream capture.
+// Interface to display custom UI during screen-capture (tab/window/screen).
 class MediaStreamUI {
  public:
   // Called when stream capture is stopped.
   virtual ~MediaStreamUI() = default;
 
-  // Called when stream capture starts.
+  // Called when screen capture starts.
   // |stop_callback| is a callback to stop the stream.
   // |source_callback| is a callback to change the desktop capture source.
   // Returns the platform-dependent window ID for the UI, or 0 if not
   // applicable.
+  // |media_ids| represent the display-surfaces whose capture has started.
   virtual gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) = 0;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) = 0;
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display

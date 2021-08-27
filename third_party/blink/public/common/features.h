@@ -448,6 +448,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kSyncLoadDataUrlFonts;
 BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
 
+#if !defined(OS_ANDROID)
+// Enables the MediaStreamTrack.focus() API.
+// TODO(crbug.com/1215480): Add unit-tests and remove.
+BLINK_COMMON_EXPORT extern const base::Feature kConditionalFocus;
+#endif
+
 }  // namespace features
 }  // namespace blink
 

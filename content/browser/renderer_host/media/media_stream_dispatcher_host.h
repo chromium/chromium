@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
@@ -86,6 +87,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       blink::mojom::MediaStreamType type,
       bool is_secure) override;
   void OnStreamStarted(const std::string& label) override;
+#if !defined(OS_ANDROID)
+  void FocusCapturedSurface(const std::string& label, bool focus) override;
+#endif
 
   void DoGenerateStream(
       int32_t request_id,

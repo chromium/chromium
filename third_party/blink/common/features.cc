@@ -1013,6 +1013,11 @@ const base::Feature kReportAllJavascriptFrameworks{
 // inspector issue anyway.
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#if !defined(OS_ANDROID)
+// Enables the MediaStreamTrack.focus() API.
+BLINK_COMMON_EXPORT extern const base::Feature kConditionalFocus{
+    "ConditionalFocus", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Enables deprecating warnings (in Issues tab of DevTools) for third party
 // context use of WebSQL (`DOMWindowWebDatabase::openDatabase`).

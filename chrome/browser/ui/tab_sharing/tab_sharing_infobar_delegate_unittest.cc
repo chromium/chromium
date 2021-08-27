@@ -35,7 +35,8 @@ class MockTabSharingUIViews : public TabSharingUI {
 
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override {
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override {
     return 0;
   }
 };

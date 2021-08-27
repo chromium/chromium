@@ -31,7 +31,8 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
                 test->run_loop_->QuitWhenIdle();
             },
             base::Unretained(this)),
-        content::MediaStreamUI::SourceCallback());
+        content::MediaStreamUI::SourceCallback(),
+        std::vector<content::DesktopMediaID>{});
   }
 
   bool VerifyUi() override {

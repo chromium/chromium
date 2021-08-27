@@ -154,7 +154,8 @@ class TabSharingUIViewsBrowserTest
     tab_sharing_ui_->OnStarted(
         base::OnceClosure(),
         base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        std::vector<content::DesktopMediaID>{});
   }
 
   // Verify that tab sharing infobars are displayed on all tabs, and content
@@ -286,7 +287,8 @@ class TabSharingUIViewsBrowserTest
     tab_sharing_ui_->OnStarted(
         base::OnceClosure(),
         base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        std::vector<content::DesktopMediaID>{});
   }
 
   const bool favicons_used_for_switch_to_tab_button_;
@@ -540,7 +542,8 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
           GetGlobalId(browser, capturing_tab),
           GetDesktopMediaID(browser, captured_tab), u"example-sharing.com"));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
-          base::OnceClosure(), content::MediaStreamUI::SourceCallback());
+          base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+          std::vector<content::DesktopMediaID>{});
     }
   }
 

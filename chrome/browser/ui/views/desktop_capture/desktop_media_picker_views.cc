@@ -648,28 +648,6 @@ bool DesktopMediaPickerDialogView::Accept() {
     source.web_contents_id.disable_local_echo = true;
   }
 
-  if (source.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
-    // Activate the selected tab and bring the browser window for the selected
-    // tab to the front.
-    content::WebContents* tab = content::WebContents::FromRenderFrameHost(
-        content::RenderFrameHost::FromID(
-            source.web_contents_id.render_process_id,
-            source.web_contents_id.main_render_frame_id));
-    if (tab) {
-      tab->GetDelegate()->ActivateContents(tab);
-      Browser* browser = chrome::FindBrowserWithWebContents(tab);
-      if (browser && browser->window())
-        browser->window()->Activate();
-    }
-  } else if (source.type == DesktopMediaID::TYPE_WINDOW) {
-#if defined(USE_AURA)
-    aura::Window* window = DesktopMediaID::GetNativeWindowById(source);
-    Browser* browser = chrome::FindBrowserWithWindow(window);
-    if (browser && browser->window())
-      browser->window()->Activate();
-#endif
-  }
-
   RecordUmaSelection(dialog_type_, web_contents_, source,
                      GetSelectedSourceListType());
 

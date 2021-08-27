@@ -3805,6 +3805,8 @@ static_library("browser") {
       "media/webrtc/display_media_access_handler.cc",
       "media/webrtc/display_media_access_handler.h",
       "media/webrtc/media_authorization_wrapper_mac.h",
+      "media/webrtc/media_stream_focus_delegate.cc",
+      "media/webrtc/media_stream_focus_delegate.h",
       "media/webrtc/system_media_capture_permissions_mac.h",
       "media/webrtc/system_media_capture_permissions_mac.mm",
       "media/webrtc/system_media_capture_permissions_stats_mac.h",

@@ -433,4 +433,13 @@ void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   media_stream_manager_->OnStreamStarted(label);
 }
 
+#if !defined(OS_ANDROID)
+void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
+                                                     bool focus) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  media_stream_manager_->SetCapturedDisplaySurfaceFocus(label, focus);
+}
+#endif
+
 }  // namespace content

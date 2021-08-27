@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -114,6 +115,11 @@ class MediaStreamUI {
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
+
+#if !defined(OS_ANDROID)
+  // Focuses the display surface represented by |media_id|.
+  virtual void SetFocus(const DesktopMediaID& media_id, bool focus) {}
+#endif
 };
 
 // Callback used return results of media access requests.

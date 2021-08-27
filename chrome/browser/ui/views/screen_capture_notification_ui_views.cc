@@ -102,7 +102,8 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   // ScreenCaptureNotificationUI:
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
 
   // views::WidgetDelegateView:
   views::ClientView* CreateClientView(views::Widget* widget) override;
@@ -196,7 +197,8 @@ ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
 
 gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   if (GetWidget())
     return 0;
 
@@ -241,7 +243,14 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
       work_area.y() + work_area.height() - size.height(),
       size.width(), size.height());
   widget->SetBounds(bounds);
-  widget->Show();
+  if (media_ids.empty() ||
+      media_ids.front().type == content::DesktopMediaID::Type::TYPE_SCREEN) {
+    // Focus the notification widget if sharing a screen.
+    widget->Show();
+  } else {
+    // Do not focus the notification widget if sharing a window.
+    widget->ShowInactive();
+  }
   // This has to be called after Show() to have effect.
   widget->SetOpacity(kWindowAlphaValue);
   widget->SetVisibleOnAllWorkspaces(true);
