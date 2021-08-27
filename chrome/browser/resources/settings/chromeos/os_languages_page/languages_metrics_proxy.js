@@ -23,6 +23,7 @@ cr.define('settings', function() {
     RESTART_LATER: 3,
     OPEN_CUSTOM_SPELL_CHECK: 4,
     OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE: 5,
+    OPEN_WEB_LANGUAGES_LEARN_MORE: 6,
   };
 
   /**

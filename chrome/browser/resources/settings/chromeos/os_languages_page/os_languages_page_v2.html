@@ -120,9 +120,11 @@
         <h2 aria-hidden="true">
           [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
         </h2>
-        <settings-localized-link class="cr-row first bottom-margin"
+        <settings-localized-link id="webLanguagesDescription"
+            class="cr-row first bottom-margin"
             localized-string="[[getLanguagePreferenceDescription_(
-                languageSettingsV2Update2Enabled_)]]">
+                languageSettingsV2Update2Enabled_)]]"
+            on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
         </settings-localized-link>
         <div class="list-frame vertical-list" id="languagesList">
           <template is="dom-repeat" items="[[languages.enabled]]">

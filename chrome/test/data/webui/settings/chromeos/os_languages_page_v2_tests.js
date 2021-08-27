@@ -634,6 +634,10 @@ suite('languages page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       Polymer.dom.flush();
 
+      // The below would normally create a new window using `window.open`, which
+      // would change the focus from this test to the new window.
+      // Prevent this from happening by overriding `window.open`.
+      window.open = () => {};
       languagesPage.$$('#manageGoogleAccountLanguage').click();
       Polymer.dom.flush();
       assertEquals(
