@@ -712,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
       OriginStatus::kUnknown, OriginStatusWithThrottling::kUnknownAndThrottled);
 }
 
-// Disabled due to flakiness on Linux https://crbug.com/1229601
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Disabled due to flakiness https://crbug.com/1229601
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
   DISABLED_CreativeOriginStatusWithThrottlingNestedThrottled
 #else
