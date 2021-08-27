@@ -49,3 +49,9 @@ python_library("run_isolated_script_test") {
   pydeps_file = "//testing/scripts/run_isolated_script_test.pydeps"
   data = [ "//.vpython3" ]
 }
+
+python_library("wpt_android_lib") {
+  testonly = true
+  pydeps_file = "//testing/scripts/run_android_wpt.pydeps"
+  data = [ "//.vpython3" ]
+}
