@@ -80,12 +80,12 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
     return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA : id();
   }
 
-  void RecordActionShown() const override {
+  void RecordActionShown(size_t /*position*/) const override {
     base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
                                   OmniboxPedalId::TOTAL_COUNT);
   }
 
-  void RecordActionExecuted() const override {
+  void RecordActionExecuted(size_t /*position*/) const override {
     base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
                                   GetMetricsId(), OmniboxPedalId::TOTAL_COUNT);
   }

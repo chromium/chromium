@@ -514,7 +514,7 @@ bool OmniboxPopupModel::TriggerSelectionAction(OmniboxPopupSelection selection,
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       DCHECK(timestamp != base::TimeTicks());
       DCHECK(match.action);
-      edit_model()->ExecuteAction(match, timestamp);
+      edit_model()->ExecuteAction(match, selection.line, timestamp);
       break;
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:

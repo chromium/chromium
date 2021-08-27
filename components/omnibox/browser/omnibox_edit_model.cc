@@ -90,6 +90,16 @@ void EmitKeywordHistogram(
       static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
 }
 
+void RecordActionShownForAllActions(const AutocompleteResult& result) {
+  // Record the presence of any actions in the result set.
+  for (size_t i = 0; i < result.size(); ++i) {
+    const AutocompleteMatch& match_in_result = result.match_at(i);
+    if (match_in_result.action) {
+      match_in_result.action->RecordActionShown(i);
+    }
+  }
+}
+
 }  // namespace
 
 
@@ -726,15 +736,11 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 
 void OmniboxEditModel::ExecuteAction(
     const AutocompleteMatch& match,
+    size_t match_position,
     base::TimeTicks match_selection_timestamp) {
-  // Record the presence of any actions in the result set.
-  for (const AutocompleteMatch& match_in_result : result()) {
-    if (match_in_result.action) {
-      match_in_result.action->RecordActionShown();
-    }
-  }
+  RecordActionShownForAllActions(result());
 
-  match.action->RecordActionExecuted();
+  match.action->RecordActionExecuted(match_position);
   OmniboxPedal::ExecutionContext context(*client_, *controller_,
                                          match_selection_timestamp);
   match.action->Execute(context);
@@ -763,12 +769,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  // Record the presence of any Pedals in the result set.
-  for (const AutocompleteMatch& match_in_result : result()) {
-    if (match_in_result.action) {
-      match_in_result.action->RecordActionShown();
-    }
-  }
+  RecordActionShownForAllActions(result());
 
   std::u16string input_text(pasted_text);
   if (input_text.empty())

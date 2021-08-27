@@ -204,8 +204,8 @@ class OmniboxPedal : public OmniboxAction {
   bool IsConceptMatch(TokenSequence& match_sequence) const;
 
   // OmniboxAction overrides:
-  void RecordActionShown() const override;
-  void RecordActionExecuted() const override;
+  void RecordActionShown(size_t position) const override;
+  void RecordActionExecuted(size_t position) const override;
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif

@@ -712,6 +712,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ResumeJourneyShown" units="position"
+    expires_after="2022-08-24">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Emits the position of any &quot;Resume Journey&quot; omnibox actions shown
+    in the popup. The position index is 0-based, so an action shown in the
+    topmost match is logged as value 0, consistent with
+    Omnibox.SelectedPosition.
+
+    Note that these are emitted when the user uses the omnibox to go somewhere.
+    When that happens, one count is emitted per action visible in the popup.
+    These are NOT emitted per-keystroke, in order to make this a suitable
+    denominator for Omnibox.SuggestionUsed.ResumeJourney.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
     expires_after="2022-02-02">
   <owner>rhalavati@chromium.org</owner>
@@ -877,6 +894,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     translation dialog or opening a new window in Incognito mode).
 
     This histogram is related to Omnibox.PedalShown.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.ResumeJourney" units="position"
+    expires_after="2022-08-24">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Logs the position of &quot;Resume Journey&quot; omnibox actions actually
+    selected by the user. The position index is 0-based, so a selected action in
+    the topmost match is logged as value 0, consistent with
+    Omnibox.SelectedPosition.
+
+    This can be combined with Omnibox.ResumeJourneyShown to compute the Usage
+    (or CTR) of the &quot;Resume Journey&quot; omnibox action on a per-position
+    basis.
+
+    It's safe to compare the total count of this metric to the total count of
+    Omnibox.ResumeJourneyShown because within a single popup, only zero or one
+    &quot;Resume Journey&quot; can be shown. If multiple actions start being
+    shown in the popup, comparing to the total count becomes misleading to
+    interpret as a CTR.
   </summary>
 </histogram>
 

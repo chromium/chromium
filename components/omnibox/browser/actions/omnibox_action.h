@@ -92,11 +92,11 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
 
-  // Records that the action was shown.
-  virtual void RecordActionShown() const {}
+  // Records that the action was shown at index `position` in the popup.
+  virtual void RecordActionShown(size_t position) const {}
 
-  // Records that the action was executed.
-  virtual void RecordActionExecuted() const {}
+  // Records that the action was executed at index `position` in the popup.
+  virtual void RecordActionExecuted(size_t position) const {}
 
   // Takes the action associated with this Action.  Non-navigation
   // Actions must override the default, but Navigation Actions don't need to.

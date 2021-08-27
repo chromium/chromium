@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,6 +15,40 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
+
+namespace {
+
+class HistoryClustersAction : public OmniboxAction {
+ public:
+  explicit HistoryClustersAction(const std::string& query)
+      : OmniboxAction(
+            OmniboxAction::LabelStrings(
+                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
+                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
+                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
+            GURL(base::StringPrintf(
+                "chrome://history/journeys?q=%s",
+                net::EscapeQueryParamValue(query, /*use_plus=*/false)
+                    .c_str()))) {}
+
+  void RecordActionShown(size_t position) const override {
+    base::UmaHistogramExactLinear(
+        "Omnibox.ResumeJourneyShown", position,
+        AutocompleteResult::kMaxAutocompletePositionValue);
+  }
+
+  void RecordActionExecuted(size_t position) const override {
+    base::UmaHistogramExactLinear(
+        "Omnibox.SuggestionUsed.ResumeJourney", position,
+        AutocompleteResult::kMaxAutocompletePositionValue);
+  }
+
+ private:
+  ~HistoryClustersAction() override = default;
+};
+
+}  // namespace
 
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
@@ -39,15 +74,7 @@ void AttachHistoryClustersActions(
 
     std::string query = base::UTF16ToUTF8(match.contents);
     if (service->DoesQueryMatchAnyCluster(query)) {
-      match.action = base::MakeRefCounted<OmniboxAction>(
-          OmniboxAction::LabelStrings(
-              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
-          GURL(base::StringPrintf(
-              "chrome://history/journeys?q=%s",
-              net::EscapeQueryParamValue(query, /*use_plus=*/false).c_str())));
+      match.action = base::MakeRefCounted<HistoryClustersAction>(query);
 
       // Only ever attach one action (to the highest match), to not overwhelm
       // the user with multiple "Resume Journey" action buttons.

@@ -271,12 +271,12 @@ std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups()
   return {};
 }
 
-void OmniboxPedal::RecordActionShown() const {
+void OmniboxPedal::RecordActionShown(size_t /*position*/) const {
   base::UmaHistogramEnumeration("Omnibox.PedalShown", id(),
                                 OmniboxPedalId::TOTAL_COUNT);
 }
 
-void OmniboxPedal::RecordActionExecuted() const {
+void OmniboxPedal::RecordActionExecuted(size_t /*position*/) const {
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", id(),
                                 OmniboxPedalId::TOTAL_COUNT);
 }
