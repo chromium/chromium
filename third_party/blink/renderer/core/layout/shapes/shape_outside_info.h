@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/style/shape_value.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
@@ -91,10 +92,11 @@ class ShapeOutsideDeltas final {
   bool is_valid_ : 1;
 };
 
-class ShapeOutsideInfo final {
-  USING_FAST_MALLOC(ShapeOutsideInfo);
-
+class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
  public:
+  explicit ShapeOutsideInfo(const LayoutBox& layout_box)
+      : layout_box_(&layout_box), is_computing_shape_(false) {}
+
   void SetReferenceBoxLogicalSize(LayoutSize);
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
@@ -115,7 +117,7 @@ class ShapeOutsideInfo final {
     if (it != info_map.end())
       return *it->value;
     InfoMap::AddResult result =
-        info_map.insert(&key, base::WrapUnique(new ShapeOutsideInfo(key)));
+        info_map.insert(&key, MakeGarbageCollected<ShapeOutsideInfo>(key));
     return *result.stored_value->value;
   }
   static void RemoveInfo(const LayoutBox& key) { GetInfoMap().erase(&key); }
@@ -133,9 +135,7 @@ class ShapeOutsideInfo final {
   FloatPoint ShapeToLayoutObjectPoint(FloatPoint) const;
   const Shape& ComputedShape() const;
 
- protected:
-  explicit ShapeOutsideInfo(const LayoutBox& layout_box)
-      : layout_box_(&layout_box), is_computing_shape_(false) {}
+  void Trace(Visitor* visitor) const;
 
  private:
   static bool IsEnabledFor(const LayoutBox&);
@@ -148,11 +148,11 @@ class ShapeOutsideInfo final {
   LayoutUnit LogicalTopOffset() const;
   LayoutUnit LogicalLeftOffset() const;
 
-  using InfoMap = HeapHashMap<WeakMember<const LayoutBox>,
-                              std::unique_ptr<ShapeOutsideInfo>>;
+  using InfoMap =
+      HeapHashMap<WeakMember<const LayoutBox>, Member<ShapeOutsideInfo>>;
   static InfoMap& GetInfoMap();
 
-  const UntracedMember<const LayoutBox> layout_box_;
+  const Member<const LayoutBox> layout_box_;
   mutable std::unique_ptr<Shape> shape_;
   LayoutSize reference_box_logical_size_;
   LayoutUnit percentage_resolution_inline_size_;

@@ -495,4 +495,8 @@ ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
   return *static_info_map;
 }
 
+void ShapeOutsideInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_box_);
+}
+
 }  // namespace blink
