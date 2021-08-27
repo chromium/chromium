@@ -302,7 +302,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // selection change if the focus did not change.
         BrowserAccessibility* focus = GetFocus();
         BrowserAccessibility* container =
-            focus->PlatformGetSelectionContainer();
+            focus ? focus->PlatformGetSelectionContainer() : nullptr;
 
         if (focus && node == container &&
             container->HasState(ax::mojom::State::kMultiselectable) &&
