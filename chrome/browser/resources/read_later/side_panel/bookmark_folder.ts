@@ -119,8 +119,12 @@ export class BookmarkFolderElement extends PolymerElement {
   }
 
   private onChildrenLengthChanged_() {
-    this.style.setProperty(
-        '--child-count', this.folder.children!.length.toString());
+    if (this.folder.children) {
+      this.style.setProperty(
+          '--child-count', this.folder.children!.length.toString());
+    } else {
+      this.style.setProperty('--child-count', '0');
+    }
   }
 
   private onDepthChanged_() {

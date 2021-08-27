@@ -88,6 +88,24 @@ suite('SidePanelBookmarkFolderTest', () => {
         childElements[2].querySelector('.title').textContent);
   });
 
+  test('UpdatesChildCountVariable', () => {
+    assertEquals('3', bookmarkFolder.style.getPropertyValue('--child-count'));
+
+    bookmarkFolder.folder = Object.assign({}, folder, {
+      children: [
+        {
+          id: '1',
+          title: 'Shopping list',
+          children: [],
+        },
+      ]
+    });
+    assertEquals('1', bookmarkFolder.style.getPropertyValue('--child-count'));
+
+    bookmarkFolder.folder = Object.assign({}, folder, {children: undefined});
+    assertEquals('0', bookmarkFolder.style.getPropertyValue('--child-count'));
+  });
+
   test('ShowsFaviconForBookmarks', () => {
     const fooWebsiteElement = getChildElements()[1];
     assertEquals(

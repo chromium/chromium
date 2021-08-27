@@ -101,7 +101,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
-    this.listeners_.set(eventName, callback.bind(this));
+    this.listeners_.set(eventName, callback);
   }
 
   /**
@@ -176,6 +176,12 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private onCreated_(node: chrome.bookmarks.BookmarkTreeNode) {
     const pathToParent = this.findPathToId_(node.parentId as string);
     const pathToParentString = this.getPathString_(pathToParent);
+    const parent = pathToParent[pathToParent.length - 1];
+    if (parent && !parent.children) {
+      // Newly created folders in this session may not have an array of
+      // children yet, so create an empty one.
+      parent.children = [];
+    }
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
   }
 
