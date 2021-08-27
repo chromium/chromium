@@ -390,20 +390,14 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // TODO(liberato): Handle cleanup better.  Also consider being less chatty in
   // the logs, since this will fall back.
 
-  // TODO(liberato): dxva does this.  don't know if we need to.
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoderSkipMultithreaded)) {
-    ComD3D11Multithread multi_threaded;
-    hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-    if (FAILED(hr)) {
-      NotifyError(Status(StatusCode::kQueryID3D11MultithreadFailed)
-                      .AddCause(HresultToStatus(hr)));
-      return;
-    }
-    // TODO(liberato): This is a hack, since the unittest returns
-    // success without providing |multi_threaded|.
-    if (multi_threaded)
-      multi_threaded->SetMultithreadProtected(TRUE);
+  ComD3D11Multithread multi_threaded;
+  hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+  if (FAILED(hr)) {
+    return NotifyError(Status(StatusCode::kQueryID3D11MultithreadFailed)
+                           .AddCause(HresultToStatus(hr)));
   }
+
+  multi_threaded->SetMultithreadProtected(TRUE);
 
   hr = device_.As(&video_device_);
   if (!SUCCEEDED(hr)) {

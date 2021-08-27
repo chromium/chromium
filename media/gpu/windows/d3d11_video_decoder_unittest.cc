@@ -84,6 +84,10 @@ class D3D11VideoDecoderTest : public ::testing::Test {
         .WillByDefault(
             SetComPointeeAndReturnOk<1>(mock_d3d11_video_device_.Get()));
 
+    mock_multithreaded_ = MakeComPtr<NiceMock<D3D11MultithreadMock>>();
+    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11Multithread, _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_multithreaded_.Get()));
+
     EnableDecoder(D3D11_DECODER_PROFILE_H264_VLD_NOFGT);
 
     mock_d3d11_video_decoder_ = MakeComPtr<D3D11VideoDecoderMock>();
@@ -238,6 +242,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
   Microsoft::WRL::ComPtr<D3D11DeviceMock> mock_d3d11_device_;
   Microsoft::WRL::ComPtr<D3D11DeviceContextMock> mock_d3d11_device_context_;
+  Microsoft::WRL::ComPtr<D3D11MultithreadMock> mock_multithreaded_;
   Microsoft::WRL::ComPtr<D3D11VideoDeviceMock> mock_d3d11_video_device_;
   Microsoft::WRL::ComPtr<D3D11VideoDecoderMock> mock_d3d11_video_decoder_;
   Microsoft::WRL::ComPtr<D3D11VideoContextMock> mock_d3d11_video_context_;

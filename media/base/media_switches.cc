@@ -387,11 +387,6 @@ const base::Feature kD3D11VideoDecoderVP9Profile2{
 const base::Feature kD3D11VideoDecoderAV1{"D3D11VideoDecoderEnableAV1",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Tell D3D11VideoDecoder not to switch the D3D11 device to multi-threaded mode.
-// This is to help us track down IGD crashes.
-const base::Feature kD3D11VideoDecoderSkipMultithreaded{
-    "D3D11VideoDecoderSkipMultithreaded", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, D3D11VideoDecoder will always copy instead of bind textures.
 const base::Feature kD3D11VideoDecoderAlwaysCopy{
     "D3D11VideoDecoderAlwaysCopy", base::FEATURE_DISABLED_BY_DEFAULT};
