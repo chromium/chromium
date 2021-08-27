@@ -19,6 +19,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -128,11 +129,17 @@ void WhatsNewHandler::Fetch(const GURL& url, OnFetchResultCallback on_result) {
 void WhatsNewHandler::OnResponseLoaded(const network::SimpleURLLoader* loader,
                                        OnFetchResultCallback on_result,
                                        std::unique_ptr<std::string> body) {
-  bool success = loader->NetError() == net::OK && loader->ResponseInfo() &&
-                 loader->ResponseInfo()->headers &&
-                 loader->ResponseInfo()->headers->response_code() >= 200 &&
-                 loader->ResponseInfo()->headers->response_code() <= 299 &&
-                 body;
+  int response_code = loader->NetError();
+  const auto& headers =
+      loader->ResponseInfo() ? loader->ResponseInfo()->headers : nullptr;
+  bool success = response_code == net::OK && headers;
+  if (headers) {
+    response_code =
+        net::HttpUtil::MapStatusCodeForHistogram(headers->response_code());
+  }
+
+  base::UmaHistogramSparse("WhatsNew.LoadResponseCode", response_code);
+  success = success && response_code >= 200 && response_code <= 299 && body;
   std::move(on_result).Run(success, std::move(body));
   loader_map_.erase(loader);
 }

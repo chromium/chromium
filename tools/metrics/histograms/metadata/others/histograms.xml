@@ -20218,6 +20218,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WhatsNew.LoadResponseCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-01">
+  <owner>rbpotter@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Records the net error or HTTP response code of the network request for the
+    remote content for the iframe in the What's New page. This request is
+    triggered when the What's New page is opened. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="WheelScrolling.WasLatched" enum="BooleanLatched"
     expires_after="M77">
   <owner>flackr@chromium.org</owner>
