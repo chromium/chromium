@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 from telemetry import story
-from page_sets.desktop_ui import download_shelf_story, tab_search_story, webui_tab_strip_story
+from page_sets.desktop_ui import \
+    download_shelf_story, omnibox_story, tab_search_story, webui_tab_strip_story
 from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
 
@@ -49,6 +50,12 @@ class DesktopUIStorySet(story.StorySet):
       webui_tab_strip_story.WebUITabStripStoryTop10Loading,
   ]
 
+  OMNIBOX_STORIES = [
+      omnibox_story.OmniboxStoryPedal,
+      omnibox_story.OmniboxStoryScopedSearch,
+      omnibox_story.OmniboxStorySearch,
+  ]
+
   def __init__(self):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
@@ -81,3 +88,6 @@ class DesktopUIStorySet(story.StorySet):
                 '--enable-ui-devtools=0',
                 '--top-chrome-touch-ui=enabled',
             ]))
+
+    for cls in self.OMNIBOX_STORIES:
+      self.AddStory(cls(self, ['--enable-ui-devtools=0']))

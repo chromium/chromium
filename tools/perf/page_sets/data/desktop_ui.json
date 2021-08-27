@@ -24,6 +24,15 @@
         "download_shelf_webui:top10:loading": {
             "DEFAULT": "desktop_ui_1d73c3e9ef.wprgo"
         },
+        "omnibox:pedal": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
+        "omnibox:scoped_search": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
+        "omnibox:search": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
         "tab_search:close_and_open:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
