@@ -950,10 +950,16 @@ FourCC ColorParameterInformation::BoxType() const {
 }
 
 bool ColorParameterInformation::Parse(BoxReader* reader) {
+  fully_parsed = false;
+
   FourCC type;
   RCHECK(reader->ReadFourCC(&type));
-  // TODO: Support 'nclc', 'rICC', and 'prof'.
-  RCHECK(type == FOURCC_NCLX);
+
+  if (type != FOURCC_NCLX) {
+    // Ignore currently unsupported color information metadata parsing.
+    // TODO: Support 'nclc', 'rICC', and 'prof'.
+    return true;
+  }
 
   uint8_t full_range_byte;
   RCHECK(reader->Read2(&colour_primaries) &&
@@ -961,6 +967,7 @@ bool ColorParameterInformation::Parse(BoxReader* reader) {
          reader->Read2(&matrix_coefficients) &&
          reader->Read1(&full_range_byte));
   full_range = full_range_byte & 0x80;
+  fully_parsed = true;
 
   return true;
 }
@@ -1221,8 +1228,10 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
   ColorParameterInformation color_parameter_information;
   if (reader->HasChild(&color_parameter_information)) {
     RCHECK(reader->ReadChild(&color_parameter_information));
-    video_color_space = ConvertColorParameterInformationToColorSpace(
-        color_parameter_information);
+    if (color_parameter_information.fully_parsed) {
+      video_color_space = ConvertColorParameterInformationToColorSpace(
+          color_parameter_information);
+    }
   }
 
   MasteringDisplayColorVolume color_volume;
