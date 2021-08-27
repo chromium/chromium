@@ -457,7 +457,15 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyMaxOperations) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Font) {
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_Font \
+  DISABLED_IdentifiabilityStudyDigest_Font
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Font IdentifiabilityStudyDigest_Font
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -485,7 +493,17 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDisabled) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_StrokeText) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  DISABLED_IdentifiabilityStudyDigest_StrokeText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  IdentifiabilityStudyDigest_StrokeText
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_StrokeText) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -498,7 +516,17 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_StrokeText) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillText) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  DISABLED_IdentifiabilityStudyDigest_FillText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  IdentifiabilityStudyDigest_FillText
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillText) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -511,7 +539,17 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillText) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_TextAlign) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  DISABLED_IdentifiabilityStudyDigest_TextAlign
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  IdentifiabilityStudyDigest_TextAlign
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_TextAlign) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -524,8 +562,17 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_TextAlign) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  DISABLED_IdentifiabilityStudyDigest_TextBaseline
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  IdentifiabilityStudyDigest_TextBaseline
+#endif  // defined(OS_ANDROID)
+
 TEST_F(CanvasRenderingContext2DAPITest,
-       IdentifiabilityStudyDigest_TextBaseline) {
+       MAYBE_IdentifiabilityStudyDigest_TextBaseline) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -538,8 +585,17 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  DISABLED_IdentifiabilityStudyDigest_StrokeStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  IdentifiabilityStudyDigest_StrokeStyle
+#endif  // defined(OS_ANDROID)
+
 TEST_F(CanvasRenderingContext2DAPITest,
-       IdentifiabilityStudyDigest_StrokeStyle) {
+       MAYBE_IdentifiabilityStudyDigest_StrokeStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -554,7 +610,17 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillStyle) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  DISABLED_IdentifiabilityStudyDigest_FillStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  IdentifiabilityStudyDigest_FillStyle
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -569,7 +635,16 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillStyle) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_Combo \
+  DISABLED_IdentifiabilityStudyDigest_Combo
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Combo IdentifiabilityStudyDigest_Combo
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_Combo) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
@@ -618,7 +693,17 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_drawImage) {
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  DISABLED_IdentifiabilityStudyDigest_drawImage
+#else
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  IdentifiabilityStudyDigest_drawImage
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_drawImage) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
   NonThrowableExceptionState exception_state;
