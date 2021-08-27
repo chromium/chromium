@@ -250,8 +250,11 @@ void USB::OnDeviceAdded(UsbDeviceInfoPtr device_info) {
 
 void USB::OnDeviceRemoved(UsbDeviceInfoPtr device_info) {
   String guid = device_info->guid;
-  USBDevice* device = device_cache_.DeprecatedAtOrEmptyValue(guid);
-  if (!device) {
+  USBDevice* device = nullptr;
+  const auto it = device_cache_.find(guid);
+  if (it != device_cache_.end()) {
+    device = it->value;
+  } else {
     device = MakeGarbageCollected<USBDevice>(
         std::move(device_info), mojo::NullRemote(), GetExecutionContext());
   }
