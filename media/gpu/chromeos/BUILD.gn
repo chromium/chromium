@@ -31,7 +31,10 @@ source_set("chromeos") {
   ]
 
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
+    deps += [
+      "//media/gpu/vaapi",
+      "//media/gpu/vaapi:common",
+    ]
   }
 
   if (use_v4l2_codec) {

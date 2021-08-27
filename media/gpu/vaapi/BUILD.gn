@@ -182,6 +182,7 @@ source_set("common") {
     "//gpu",
     "//media",
     "//media/gpu:common",
+    "//media/gpu/chromeos:fourcc",
     "//ui/gfx/geometry",
   ]
   deps = [

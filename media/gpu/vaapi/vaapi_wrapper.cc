@@ -1647,6 +1647,24 @@ bool VaapiWrapper::IsVppFormatSupported(uint32_t va_fourcc) {
 }
 
 // static
+std::vector<Fourcc> VaapiWrapper::GetVppSupportedFormats() {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kVideoProcess,
+                                                    VAProfileNone);
+  if (!profile_info)
+    return {};
+
+  std::vector<Fourcc> supported_fourccs;
+  for (uint32_t pixel_format : profile_info->pixel_formats) {
+    auto fourcc = Fourcc::FromVAFourCC(pixel_format);
+    if (!fourcc)
+      continue;
+    supported_fourccs.push_back(*fourcc);
+  }
+  return supported_fourccs;
+}
+
+// static
 bool VaapiWrapper::IsVppSupportedForJpegDecodedSurfaceToFourCC(
     unsigned int rt_format,
     uint32_t fourcc) {
