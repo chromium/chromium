@@ -3926,6 +3926,7 @@ if (is_chromeos_lacros) {
     data = [ "data/media/" ]
 
     data_deps = [
+      "//build/lacros:lacros_version_metadata",
       "//chrome:packed_resources",
       "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
     ]
@@ -3964,6 +3965,7 @@ if (is_chromeos_lacros) {
     ]
 
     data_deps = [
+      "//build/lacros:lacros_version_metadata",
       "//chrome:packed_resources",
       "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
     ]
