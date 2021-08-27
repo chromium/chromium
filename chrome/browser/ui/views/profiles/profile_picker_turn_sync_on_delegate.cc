@@ -53,7 +53,7 @@ void OpenSettingsInBrowser(Browser* browser) {
 }  // namespace
 
 ProfilePickerTurnSyncOnDelegate::ProfilePickerTurnSyncOnDelegate(
-    base::WeakPtr<ProfilePickerSignInFlowController> controller,
+    base::WeakPtr<ProfilePickerSignedInFlowController> controller,
     Profile* profile)
     : controller_(controller), profile_(profile) {}
 
@@ -201,7 +201,7 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     FinishSyncConfirmation(LoginUIService::UI_CLOSED,
                            ProfileMetrics::ProfileAddSignInFlowOutcome::
                                kAbortedOnEnterpriseWelcome);
-    ProfilePicker::CancelSignIn();
+    ProfilePicker::CancelSignedInFlow();
     return;
   }
 

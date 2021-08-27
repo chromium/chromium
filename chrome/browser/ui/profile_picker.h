@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -67,22 +68,24 @@ class ProfilePicker {
   static void Show(EntryPoint entry_point,
                    const GURL& on_select_profile_target_url = GURL());
 
-  // Starts the sign-in flow. The layout of the window gets updated for the
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Starts the Dice sign-in flow. The layout of the window gets updated for the
   // sign-in flow. At the same time, the new profile is created and the sign-in
   // page is rendered using the new profile.
   // The new profile uses a theme generated from `profile_color` if provided or
   // the default theme.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
-  static void SwitchToSignIn(
+  static void SwitchToDiceSignIn(
       absl::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
+#endif
 
-  // Cancel the sign-in flow and returns back to the main picker screen (if the
-  // original EntryPoint was to open the picker). Must only be called from
-  // within the sign-in flow. This will delete the profile previously created
-  // for the sign-in flow.
-  static void CancelSignIn();
+  // Cancel the signed-in flow and returns back to the main picker screen (if
+  // the original EntryPoint was to open the picker). Must only be called from
+  // within the signed-in flow. This will delete the profile previously created
+  // for the signed-in flow.
+  static void CancelSignedInFlow();
 
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current

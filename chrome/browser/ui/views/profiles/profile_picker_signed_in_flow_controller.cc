@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,13 +132,22 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
 
 }  // namespace
 
-ProfilePickerSignInFlowController::ProfilePickerSignInFlowController(
+ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     ProfilePickerWebContentsHost* host,
+    Profile* profile,
+    std::unique_ptr<content::WebContents> contents,
+    absl::optional<SkColor> profile_color,
     base::TimeDelta extended_account_info_timeout)
     : host_(host),
-      extended_account_info_timeout_(extended_account_info_timeout) {}
+      profile_(profile),
+      contents_(std::move(contents)),
+      profile_color_(profile_color),
+      extended_account_info_timeout_(extended_account_info_timeout) {
+  DCHECK(profile_);
+  DCHECK(contents_);
+}
 
-ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
+ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
   if (contents())
     contents()->SetDelegate(nullptr);
 
@@ -149,22 +158,36 @@ ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
     // completely. Figure a way how to delete the profile only if that does not
     // compete with a shutdown.
 
-    if (IsSigningIn()) {
-      ProfileMetrics::LogProfileAddSignInFlowOutcome(
-          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
-    } else {
-      ProfileMetrics::LogProfileAddSignInFlowOutcome(
-          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
-    }
+    ProfileMetrics::LogProfileAddSignInFlowOutcome(
+        ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
   }
 }
 
-void ProfilePickerSignInFlowController::SwitchToSignIn(
-    absl::optional<SkColor> profile_color,
-    base::OnceCallback<void(bool)> switch_finished_callback) {
-  // Update the color even if the profile is already initialized (to respect
-  // potentially different choice now).
-  profile_color_ = profile_color;
+ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
+    ProfilePickerWebContentsHost* host)
+    : host_(host) {}
+
+ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
+  // Record unfinished signed-in profile creation (i.e. when callback was not
+  // called yet).
+  if (callback_) {
+    contents()->SetDelegate(nullptr);
+    // TODO(crbug.com/1227699): Schedule the profile for deletion here, it's not
+    // needed any more. This triggers a crash if the browser is shutting down
+    // completely. Figure a way how to delete the profile only if that does not
+    // compete with a shutdown.
+
+    ProfileMetrics::LogProfileAddSignInFlowOutcome(
+        ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
+  }
+}
+
+void ProfilePickerDiceSignInProvider::SwitchToSignIn(
+    base::OnceCallback<void(bool)> switch_finished_callback,
+    SignedInCallback signin_finished_callback) {
+  // Update the callback even if the profile is already initialized (to respect
+  // that the callback may be different).
+  callback_ = std::move(signin_finished_callback);
 
   if (IsInitialized()) {
     std::move(switch_finished_callback).Run(true);
@@ -182,31 +205,26 @@ void ProfilePickerSignInFlowController::SwitchToSignIn(
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
       icon_index, /*is_hidden=*/true,
-      base::BindRepeating(&ProfilePickerSignInFlowController::OnProfileCreated,
+      base::BindRepeating(&ProfilePickerDiceSignInProvider::OnProfileCreated,
                           weak_ptr_factory_.GetWeakPtr(),
                           base::OwnedRef(std::move(switch_finished_callback))));
 }
 
-bool ProfilePickerSignInFlowController::IsSigningIn() const {
-  // We are in the sign-in flow if the email is not yet determined.
-  return email_.empty();
-}
-
-void ProfilePickerSignInFlowController::ReloadSignInPage() {
-  if (IsInitialized() && contents() && IsSigningIn()) {
+void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
+  if (IsInitialized() && contents()) {
     contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                        true);
   }
 }
 
-const ui::ThemeProvider* ProfilePickerSignInFlowController::GetThemeProvider()
+const ui::ThemeProvider* ProfilePickerDiceSignInProvider::GetThemeProvider()
     const {
   if (!IsInitialized())
     return nullptr;
   return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
-void ProfilePickerSignInFlowController::Cancel() {
+void ProfilePickerSignedInFlowController::Cancel() {
   DCHECK(IsInitialized());
   if (is_finished_)
     return;
@@ -219,7 +237,7 @@ void ProfilePickerSignInFlowController::Cancel() {
       profile_->GetPath(), base::DoNothing());
 }
 
-void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
+void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
     BrowserOpenedCallback callback) {
   DCHECK(IsInitialized());
   // Do nothing if the sign-in flow is aborted or if this has already been
@@ -232,7 +250,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
 
   if (name_for_signed_in_profile_.empty()) {
     on_profile_name_available_ = base::BindOnce(
-        &ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl,
+        &ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl,
         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
         /*enterprise_sync_consent_needed=*/false);
     return;
@@ -242,21 +260,20 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
                            /*enterprise_sync_consent_needed=*/false);
 }
 
-void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
+void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
-  host_->ShowScreen(
-      contents(), GURL(chrome::kChromeUISyncConfirmationURL),
-      /*show_toolbar=*/false,
-      /*enable_navigating_back=*/false,
-      /*navigation_finished_closure=*/
-      base::BindOnce(
-          &ProfilePickerSignInFlowController::SwitchToSyncConfirmationFinished,
-          // Unretained is enough as the callback is called by the
-          // owner of this instance.
-          base::Unretained(this)));
+  host_->ShowScreen(contents(), GURL(chrome::kChromeUISyncConfirmationURL),
+                    /*show_toolbar=*/false,
+                    /*enable_navigating_back=*/false,
+                    /*navigation_finished_closure=*/
+                    base::BindOnce(&ProfilePickerSignedInFlowController::
+                                       SwitchToSyncConfirmationFinished,
+                                   // Unretained is enough as the callback is
+                                   // called by the owner of this instance.
+                                   base::Unretained(this)));
 }
 
-void ProfilePickerSignInFlowController::SwitchToEnterpriseProfileWelcome(
+void ProfilePickerSignedInFlowController::SwitchToEnterpriseProfileWelcome(
     EnterpriseProfileWelcomeUI::ScreenType type,
     base::OnceCallback<void(bool)> proceed_callback) {
   DCHECK(IsInitialized());
@@ -265,7 +282,7 @@ void ProfilePickerSignInFlowController::SwitchToEnterpriseProfileWelcome(
                     /*show_toolbar=*/false,
                     /*enable_navigating_back=*/false,
                     /*navigation_finished_closure=*/
-                    base::BindOnce(&ProfilePickerSignInFlowController::
+                    base::BindOnce(&ProfilePickerSignedInFlowController::
                                        SwitchToEnterpriseProfileWelcomeFinished,
                                    // Unretained is enough as the callback is
                                    // called by the owner of this instance.
@@ -273,7 +290,7 @@ void ProfilePickerSignInFlowController::SwitchToEnterpriseProfileWelcome(
                                    std::move(proceed_callback)));
 }
 
-void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
+void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(IsInitialized());
   // The sign-in flow is finished, no profile window should be shown in the end.
@@ -286,14 +303,21 @@ void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
       /*enable_navigating_back=*/false);
 }
 
-bool ProfilePickerSignInFlowController::HandleContextMenu(
+bool ProfilePickerSignedInFlowController::HandleContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
 }
 
-void ProfilePickerSignInFlowController::AddNewContents(
+bool ProfilePickerDiceSignInProvider::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Ignores context menu.
+  return true;
+}
+
+void ProfilePickerDiceSignInProvider::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -309,34 +333,58 @@ void ProfilePickerSignInFlowController::AddNewContents(
   Navigate(&params);
 }
 
-bool ProfilePickerSignInFlowController::HandleKeyboardEvent(
+bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   return host_->HandleKeyboardEvent(source, event);
 }
 
-void ProfilePickerSignInFlowController::NavigationStateChanged(
+void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  if (IsSigningIn() && source == contents_.get() &&
-      IsExternalURL(contents_->GetVisibleURL())) {
-    FinishAndOpenBrowserForSAML();
+  if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL())) {
+    // The rest of the SAML flow logic is handled by the signed-in flow
+    // controller.
+    FinishFlow(/*is_saml=*/true);
   }
 }
 
 web_modal::WebContentsModalDialogHost*
-ProfilePickerSignInFlowController::GetWebContentsModalDialogHost() {
+ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
   return host_;
 }
 
-void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
+void ProfilePickerDiceSignInProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   DCHECK(!account_info.IsEmpty());
+  FinishFlow(/*is_saml=*/false);
+}
+
+void ProfilePickerSignedInFlowController::Init(bool is_saml) {
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
+
+  if (is_saml) {
+    FinishAndOpenBrowserForSAML();
+    return;
+  }
+
+  contents_->SetDelegate(this);
+
+  // Listen for extended account info getting fetched.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  identity_manager_observation_.Observe(identity_manager);
+
+  const CoreAccountInfo& account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  DCHECK(!account_info.IsEmpty()) << "A profile with valid (unconsented) "
+                                     "primary account must be passed in.";
   email_ = account_info.email;
 
   base::OnceClosure sync_consent_completed_closure =
-      base::BindOnce(&ProfilePickerSignInFlowController::FinishAndOpenBrowser,
+      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&ShowCustomizationBubble, profile_color_));
 
@@ -350,7 +398,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
   // Set up a timeout for extended account info (which cancels any existing
   // timeout closure).
   extended_account_info_timeout_closure_.Reset(base::BindOnce(
-      &ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout,
+      &ProfilePickerSignedInFlowController::OnExtendedAccountInfoTimeout,
       weak_ptr_factory_.GetWeakPtr(), account_info));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, extended_account_info_timeout_closure_.callback(),
@@ -367,7 +415,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
       std::move(sync_consent_completed_closure));
 }
 
-void ProfilePickerSignInFlowController::OnExtendedAccountInfoUpdated(
+void ProfilePickerSignedInFlowController::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
   DCHECK(IsInitialized());
   if (!account_info.IsValid())
@@ -379,7 +427,7 @@ void ProfilePickerSignInFlowController::OnExtendedAccountInfoUpdated(
   extended_account_info_timeout_closure_.Cancel();
 }
 
-void ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout(
+void ProfilePickerSignedInFlowController::OnExtendedAccountInfoTimeout(
     const CoreAccountInfo& account) {
   DCHECK(IsInitialized());
   name_for_signed_in_profile_ =
@@ -387,7 +435,7 @@ void ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout(
   OnProfileNameAvailable();
 }
 
-void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
+void ProfilePickerSignedInFlowController::OnProfileNameAvailable() {
   DCHECK(IsInitialized());
   // Stop listening to further changes.
   DCHECK(identity_manager_observation_.IsObservingSource(
@@ -398,7 +446,7 @@ void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
     std::move(on_profile_name_available_).Run();
 }
 
-void ProfilePickerSignInFlowController::SwitchToSyncConfirmationFinished() {
+void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui =
@@ -408,7 +456,7 @@ void ProfilePickerSignInFlowController::SwitchToSyncConfirmationFinished() {
       GetProfileColor());
 }
 
-void ProfilePickerSignInFlowController::
+void ProfilePickerSignedInFlowController::
     SwitchToEnterpriseProfileWelcomeFinished(
         EnterpriseProfileWelcomeUI::ScreenType type,
         base::OnceCallback<void(bool)> proceed_callback) {
@@ -427,7 +475,7 @@ void ProfilePickerSignInFlowController::
       GetProfileColor(), std::move(proceed_callback));
 }
 
-void ProfilePickerSignInFlowController::OnProfileCreated(
+void ProfilePickerDiceSignInProvider::OnProfileCreated(
     base::OnceCallback<void(bool)>& switch_finished_callback,
     Profile* new_profile,
     Profile::CreateStatus status) {
@@ -471,7 +519,8 @@ void ProfilePickerSignInFlowController::OnProfileCreated(
   }
 
   // Record that the sign in process starts (its end is recorded automatically
-  // by the instance of DiceTurnSyncOnHelper constructed later on).
+  // by the instance of DiceTurnSyncOnHelper constructed later on in
+  // ProfilePickerSignedInFlowController).
   signin_metrics::RecordSigninUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
@@ -497,13 +546,27 @@ void ProfilePickerSignInFlowController::OnProfileCreated(
                     /*show_toolbar=*/true);
 }
 
-bool ProfilePickerSignInFlowController::IsInitialized() const {
+bool ProfilePickerDiceSignInProvider::IsInitialized() const {
   return profile_ != nullptr;
 }
 
-absl::optional<SkColor> ProfilePickerSignInFlowController::GetProfileColor()
-    const {
+void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   DCHECK(IsInitialized());
+  contents()->SetDelegate(nullptr);
+  // Stop the sign-in: hide the toolbar and disallow navigating back (without
+  // navigating to any other page).
+  host_->ShowScreen(contents(), GURL(), /*show_toolbar=*/false,
+                    /*enable_navigating_back=*/false);
+  std::move(callback_).Run(profile_, std::move(contents_), is_saml);
+}
+
+bool ProfilePickerSignedInFlowController::IsInitialized() const {
+  // This is initialized if the `profile_keep_alive_` object exists.
+  return static_cast<bool>(profile_keep_alive_);
+}
+
+absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
+    const {
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
@@ -512,7 +575,7 @@ absl::optional<SkColor> ProfilePickerSignInFlowController::GetProfileColor()
   return profile_color_;
 }
 
-void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
+void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
     BrowserOpenedCallback callback,
     bool enterprise_sync_consent_needed) {
   DCHECK(IsInitialized());
@@ -556,7 +619,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
   // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
   // called once.
   profiles::OpenBrowserWindowForProfile(
-      base::BindOnce(&ProfilePickerSignInFlowController::OnBrowserOpened,
+      base::BindOnce(&ProfilePickerSignedInFlowController::OnBrowserOpened,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       /*always_create=*/false,   // Don't create a window if one already exists.
       /*is_new_profile=*/false,  // Don't create a first run window.
@@ -567,7 +630,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
       profile_, Profile::CREATE_STATUS_INITIALIZED);
 }
 
-void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {
+void ProfilePickerSignedInFlowController::FinishAndOpenBrowserForSAML() {
   DCHECK(IsInitialized());
   // First, free up `contents()` to be moved to a new browser window.
   host_->ShowScreenInSystemContents(
@@ -575,13 +638,13 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {
       /*show_toolbar=*/false, /*enable_navigating_back=*/false,
       /*navigation_finished_closure=*/
       base::BindOnce(
-          &ProfilePickerSignInFlowController::OnSignInContentsFreedUp,
+          &ProfilePickerSignedInFlowController::OnSignInContentsFreedUp,
           // Unretained is enough as the callback is called by a
           // member of `host_` that outlives `this`.
           base::Unretained(this)));
 }
 
-void ProfilePickerSignInFlowController::OnSignInContentsFreedUp() {
+void ProfilePickerSignedInFlowController::OnSignInContentsFreedUp() {
   DCHECK(IsInitialized());
   DCHECK(!is_finished_);
   is_finished_ = true;
@@ -595,7 +658,7 @@ void ProfilePickerSignInFlowController::OnSignInContentsFreedUp() {
       /*enterprise_sync_consent_needed=*/true);
 }
 
-void ProfilePickerSignInFlowController::OnBrowserOpened(
+void ProfilePickerSignedInFlowController::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {

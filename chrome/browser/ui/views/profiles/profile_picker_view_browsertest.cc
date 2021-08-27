@@ -277,8 +277,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     // Simulate a click on the signin button.
     base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
     EXPECT_CALL(switch_finished_callback, Run(true));
-    ProfilePicker::SwitchToSignIn(kProfileColor,
-                                  switch_finished_callback.Get());
+    ProfilePicker::SwitchToDiceSignIn(kProfileColor,
+                                      switch_finished_callback.Get());
 
     // The DICE navigation happens in a new web contents (for the profile being
     // created), wait for it.
@@ -295,8 +295,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     // Add an account - simulate a successful Gaia sign-in.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_being_created);
-    CoreAccountInfo core_account_info =
-        signin::MakeAccountAvailable(identity_manager, email);
+    CoreAccountInfo core_account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, email, signin::ConsentLevel::kSignin);
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         core_account_info.account_id));
 
@@ -514,8 +514,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   const SkColor kDifferentProfileColor = SK_ColorBLUE;
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
   EXPECT_CALL(switch_finished_callback, Run(true));
-  ProfilePicker::SwitchToSignIn(kDifferentProfileColor,
-                                switch_finished_callback.Get());
+  ProfilePicker::SwitchToDiceSignIn(kDifferentProfileColor,
+                                    switch_finished_callback.Get());
 
   // Simulate a successful Gaia sign-in.
   SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
@@ -636,8 +636,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       base::TimeDelta::FromMilliseconds(10));
 
   // Add an account - simulate a successful Gaia sign-in.
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
+  CoreAccountInfo core_account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "joe.consumer@gmail.com",
+      signin::ConsentLevel::kSignin);
   ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
       core_account_info.account_id));
 
@@ -1162,6 +1163,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // The profile switch screen should be displayed.
   WaitForLayoutWithoutToolbar();
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/loading"));
   WaitForLoadStop(web_contents(),
                   GURL("chrome://profile-picker/profile-switch"));
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
@@ -1211,6 +1213,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // The profile switch screen should be displayed.
   WaitForLayoutWithoutToolbar();
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/loading"));
   WaitForLoadStop(web_contents(),
                   GURL("chrome://profile-picker/profile-switch"));
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);

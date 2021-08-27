@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
@@ -89,8 +89,12 @@ constexpr base::TimeDelta kExtendedAccountInfoTimeout =
     base::TimeDelta::FromSeconds(10);
 
 constexpr int kSupportedAcceleratorCommands[] = {
-    IDC_CLOSE_TAB,       IDC_CLOSE_WINDOW, IDC_EXIT,  IDC_FULLSCREEN,
-    IDC_MINIMIZE_WINDOW, IDC_BACK,         IDC_RELOAD};
+    IDC_CLOSE_TAB,  IDC_CLOSE_WINDOW,    IDC_EXIT,
+    IDC_FULLSCREEN, IDC_MINIMIZE_WINDOW, IDC_BACK,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    IDC_RELOAD
+#endif
+};
 
 GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
@@ -172,26 +176,28 @@ GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
 
 // static
 base::FilePath ProfilePicker::GetSwitchProfilePath() {
-  if (g_profile_picker_view && g_profile_picker_view->sign_in_) {
-    return g_profile_picker_view->sign_in_->switch_profile_path();
+  if (g_profile_picker_view && g_profile_picker_view->signed_in_flow_) {
+    return g_profile_picker_view->signed_in_flow_->switch_profile_path();
   }
   return base::FilePath();
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
-void ProfilePicker::SwitchToSignIn(
+void ProfilePicker::SwitchToDiceSignIn(
     absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToSignIn(profile_color,
-                                          std::move(switch_finished_callback));
+    g_profile_picker_view->SwitchToDiceSignIn(
+        profile_color, std::move(switch_finished_callback));
   }
 }
+#endif
 
 // static
-void ProfilePicker::CancelSignIn() {
+void ProfilePicker::CancelSignedInFlow() {
   if (g_profile_picker_view) {
-    g_profile_picker_view->CancelSignIn();
+    g_profile_picker_view->CancelSignedInFlow();
   }
 }
 
@@ -361,9 +367,9 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
 
 const ui::ThemeProvider*
 ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
-  if (!sign_in_)
+  if (!dice_sign_in_provider_)
     return nullptr;
-  return sign_in_->GetThemeProvider();
+  return dice_sign_in_provider_->GetThemeProvider();
 }
 
 void ProfilePickerView::DisplayErrorMessage() {
@@ -583,7 +589,8 @@ void ProfilePickerView::Init(Profile* system_profile) {
   }
 }
 
-void ProfilePickerView::SwitchToSignIn(
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void ProfilePickerView::SwitchToDiceSignIn(
     absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   // TODO(crbug.com/1227029): Consider having forced signin as another
@@ -597,24 +604,50 @@ void ProfilePickerView::SwitchToSignIn(
             .ChooseNameForNewProfile(icon_index),
         icon_index, /*is_hidden=*/true,
         base::BindRepeating(
-            &ProfilePickerView::OnProfileForForcedSigninCreated,
+            &ProfilePickerView::OnProfileForDiceForcedSigninCreated,
             weak_ptr_factory_.GetWeakPtr(),
             base::OwnedRef(std::move(switch_finished_callback))));
     return;
   }
 
-  if (!sign_in_) {
-    sign_in_ = std::make_unique<ProfilePickerSignInFlowController>(
-        this, extended_account_info_timeout_);
+  if (!dice_sign_in_provider_) {
+    dice_sign_in_provider_ =
+        std::make_unique<ProfilePickerDiceSignInProvider>(this);
   }
 
-  sign_in_->SwitchToSignIn(profile_color, std::move(switch_finished_callback));
+  dice_sign_in_provider_->SwitchToSignIn(
+      std::move(switch_finished_callback),
+      base::BindOnce(&ProfilePickerView::OnDiceSigninFinished,
+                     weak_ptr_factory_.GetWeakPtr(), profile_color));
 }
 
-void ProfilePickerView::CancelSignIn() {
-  DCHECK(sign_in_);
+void ProfilePickerView::OnDiceSigninFinished(
+    absl::optional<SkColor> profile_color,
+    Profile* signed_in_profile,
+    std::unique_ptr<content::WebContents> contents,
+    bool is_saml) {
+  dice_sign_in_provider_.reset();
+  SwitchToSignedInFlow(profile_color, signed_in_profile, std::move(contents),
+                       is_saml);
+}
+#endif
 
-  sign_in_->Cancel();
+void ProfilePickerView::SwitchToSignedInFlow(
+    absl::optional<SkColor> profile_color,
+    Profile* signed_in_profile,
+    std::unique_ptr<content::WebContents> contents,
+    bool is_saml) {
+  DCHECK(!signed_in_flow_);
+  signed_in_flow_ = std::make_unique<ProfilePickerSignedInFlowController>(
+      this, signed_in_profile, std::move(contents), profile_color,
+      extended_account_info_timeout_);
+  signed_in_flow_->Init(is_saml);
+}
+
+void ProfilePickerView::CancelSignedInFlow() {
+  DCHECK(signed_in_flow_);
+
+  signed_in_flow_->Cancel();
 
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kOnStartup:
@@ -629,7 +662,7 @@ void ProfilePickerView::CancelSignIn() {
       system_profile_contents_->GetController().GoToIndex(0);
       ShowScreenInSystemContents(GURL(), /*show_toolbar=*/false);
       // Reset the sign-in flow.
-      sign_in_.reset();
+      signed_in_flow_.reset();
       toolbar_->RemoveAllChildViews();
       return;
     }
@@ -641,7 +674,9 @@ void ProfilePickerView::CancelSignIn() {
   }
 }
 
-void ProfilePickerView::OnProfileForForcedSigninCreated(
+// TODO(crbug.com/1227029): Move up to match the declaration order.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
     base::OnceCallback<void(bool)>& switch_finished_callback,
     Profile* profile,
     Profile::CreateStatus status) {
@@ -660,6 +695,7 @@ void ProfilePickerView::OnProfileForForcedSigninCreated(
   ProfilePickerForceSigninDialog::ShowForceSigninDialog(
       web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
 }
+#endif
 
 void ProfilePickerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.
@@ -734,16 +770,18 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       NavigateBack();
       break;
     }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Always reload bypassing cache.
     case IDC_RELOAD:
     case IDC_RELOAD_BYPASSING_CACHE:
     case IDC_RELOAD_CLEARING_CACHE: {
       // Sign-in may fail due to connectivity issues, allow reloading.
-      if (GetSigningIn()) {
-        sign_in_->ReloadSignInPage();
+      if (GetDiceSigningIn()) {
+        dice_sign_in_provider_->ReloadSignInPage();
       }
       break;
     }
+#endif
     default:
       NOTREACHED() << "Unexpected command_id: " << command_id;
       break;
@@ -752,12 +790,14 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::OnThemeChanged() {
   views::WidgetDelegateView::OnThemeChanged();
-  if (!GetSigningIn())
+  if (!GetDiceSigningIn())
     return;
   UpdateToolbarColor();
 }
+#endif
 
 void ProfilePickerView::BuildLayout() {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -832,18 +872,21 @@ void ProfilePickerView::NavigateBack() {
     return;
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Move from sign-in back to the previous screen of profile creation.
   // Do not load any url because the desired screen is still loaded in
   // `system_profile_contents_`.
-  if (GetSigningIn())
+  if (GetDiceSigningIn())
     ShowScreenInSystemContents(GURL(), /*show_toolbar=*/false);
+#endif
 }
 
-bool ProfilePickerView::GetSigningIn() const {
-  // We are in the sign-in flow if the sign-in contents is displayed and is used
-  // for signing in.
-  return sign_in_ && sign_in_->IsSigningIn();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool ProfilePickerView::GetDiceSigningIn() const {
+  // We are on the sign-in screen if the sign-in provider exists.
+  return static_cast<bool>(dice_sign_in_provider_);
 }
+#endif
 
 void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
     base::TimeDelta timeout) {
@@ -896,6 +939,8 @@ GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
 }
 
 BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)
-ADD_READONLY_PROPERTY_METADATA(bool, SigningIn)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+ADD_READONLY_PROPERTY_METADATA(bool, DiceSigningIn)
+#endif
 ADD_READONLY_PROPERTY_METADATA(base::FilePath, ForceSigninProfilePath)
 END_METADATA
