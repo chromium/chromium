@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "v8/include/v8-fast-api-calls.h"
 
 namespace blink {
 
@@ -36,6 +37,33 @@ void NativeValueTraitsInterfaceNotOfType(
     ExceptionState& exception_state) {
   exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
       argument_index, wrapper_type_info->interface_name));
+}
+
+template <>
+CORE_TEMPLATE_EXPORT typename NativeValueTraits<IDLSequence<IDLLong>>::ImplType
+CreateIDLSequenceFromV8Array<IDLLong>(v8::Isolate* isolate,
+                                      v8::Local<v8::Array> v8_array,
+                                      ExceptionState& exception_state) {
+  typename NativeValueTraits<IDLSequence<IDLLong>>::ImplType result;
+
+  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  const uint32_t length = v8_array->Length();
+  if (length >
+      NativeValueTraits<IDLSequence<IDLLong>>::ImplType::MaxCapacity()) {
+    exception_state.ThrowRangeError("Array length exceeds supported limit.");
+    return {};
+  }
+
+  result.ReserveInitialCapacity(length);
+  result.resize(length);
+  if (v8::TryCopyAndConvertArrayToCppBuffer<&v8::kTypeInfoInt32, int32_t>(
+          v8_array, result.data(), length)) {
+    return result;
+  }
+
+  // Slow path
+  return bindings::CreateIDLSequenceFromV8ArraySlow<IDLLong>(isolate, v8_array,
+                                                             exception_state);
 }
 
 }  // namespace bindings

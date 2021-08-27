@@ -786,45 +786,51 @@ struct NativeValueTraits<IDLNullable<IDLPromise>>;
 
 // Sequence types
 
-namespace bindings {
-
-// Fast case: we're iterating over an Array that adheres to
-// %ArrayIteratorPrototype%'s protocol.
+// IDLSequence's implementation is a little tricky due to a historical reason.
+// The following type mapping is used for IDLSequence and its variants.
+//
+// tl;dr: Only IDLNullable<IDLSequence<traceable_type>> is a reference type.
+//   The others are value types.
+//
+// - IDLSequence<T> where T is not traceable
+//   => Vector<T> as a value type
+// - IDLSequence<T> where T is traceable
+//   => HeapVector<T> as a value type despite that HeapVector is
+//      GarbageCollected because HeapVector had been implemented as a non-GC
+//      type (a value type) for years until 2021 January.  This point is very
+//      inconsistent but kept unchanged so far.
+// - IDLNullable<IDLSequence<T>> where T is not traceable
+//   => absl::optional<Vector<T>> as a value type
+// - IDLNullable<IDLSequence<T>> where T is traceable
+//   => HeapVector<T>* as a reference type.  absl::optional<HeapVector<T>> is
+//      not an option because it's not appropriately traceable despite that
+//      the content HeapVector needs tracing.  As same as other
+//      GarbageCollected types, pointer type is used to represent IDL nullable
+//      type.
 template <typename T>
-typename NativeValueTraits<IDLSequence<T>>::ImplType
-CreateIDLSequenceFromV8Array(v8::Isolate* isolate,
-                             v8::Local<v8::Array> v8_array,
-                             ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#create-sequence-from-iterable
-  const uint32_t length = v8_array->Length();
-  if (length > NativeValueTraits<IDLSequence<T>>::ImplType::MaxCapacity()) {
-    exception_state.ThrowRangeError("Array length exceeds supported limit.");
-    return {};
-  }
+struct NativeValueTraits<IDLSequence<T>>
+    : public NativeValueTraitsBase<IDLSequence<T>> {
+  // Nondependent types need to be explicitly qualified to be accessible.
+  using typename NativeValueTraitsBase<IDLSequence<T>>::ImplType;
 
-  typename NativeValueTraits<IDLSequence<T>>::ImplType result;
-  result.ReserveInitialCapacity(length);
-  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-  v8::TryCatch try_block(isolate);
-  // Array length may change if array is mutated during iteration.
-  for (uint32_t i = 0; i < v8_array->Length(); ++i) {
-    v8::Local<v8::Value> v8_element;
-    if (!v8_array->Get(current_context, i).ToLocal(&v8_element)) {
-      exception_state.RethrowV8Exception(try_block.Exception());
-      return {};
-    }
-    // 3.4. Initialize Si to the result of converting nextItem to an IDL value
-    //   of type T.
-    auto&& element =
-        NativeValueTraits<T>::NativeValue(isolate, v8_element, exception_state);
-    if (exception_state.HadException())
-      return {};
-    result.push_back(std::move(element));
-  }
-  // 3.2. If next is false, then return an IDL sequence value of type
-  //   sequence<T> of length i, where the value of the element at index j is Sj.
-  return result;
-}
+  // HeapVector is GarbageCollected, so HeapVector<T>* is used for IDLNullable
+  // while absl::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
+  static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
+
+  // https://heycam.github.io/webidl/#es-sequence
+  static ImplType NativeValue(v8::Isolate* isolate,
+                              v8::Local<v8::Value> value,
+                              ExceptionState& exception_state);
+
+  // https://heycam.github.io/webidl/#es-sequence
+  // This is a special case, used when converting an IDL union that contains a
+  // sequence or frozen array type.
+  static ImplType NativeValue(v8::Isolate* isolate,
+                              ScriptIterator script_iterator,
+                              ExceptionState& exception_state);
+};
+
+namespace bindings {
 
 // Slow case: follow WebIDL's "Creating a sequence from an iterable" steps to
 // iterate through each element.
@@ -862,77 +868,114 @@ CreateIDLSequenceFromIterator(v8::Isolate* isolate,
   return result;
 }
 
+// Faster case: non template-specialized implementation that iterates over an
+// Array that adheres to %ArrayIteratorPrototype%'s protocol.
+template <typename T>
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
+                                 v8::Local<v8::Array> v8_array,
+                                 ExceptionState& exception_state) {
+  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  const uint32_t length = v8_array->Length();
+  if (length > NativeValueTraits<IDLSequence<T>>::ImplType::MaxCapacity()) {
+    exception_state.ThrowRangeError("Array length exceeds supported limit.");
+    return {};
+  }
+
+  typename NativeValueTraits<IDLSequence<T>>::ImplType result;
+  result.ReserveInitialCapacity(length);
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::TryCatch try_block(isolate);
+  // Array length may change if array is mutated during iteration.
+  for (uint32_t i = 0; i < v8_array->Length(); ++i) {
+    v8::Local<v8::Value> v8_element;
+    if (!v8_array->Get(current_context, i).ToLocal(&v8_element)) {
+      exception_state.RethrowV8Exception(try_block.Exception());
+      return {};
+    }
+    // 3.4. Initialize Si to the result of converting nextItem to an IDL value
+    //   of type T.
+    auto&& element =
+        NativeValueTraits<T>::NativeValue(isolate, v8_element, exception_state);
+    if (exception_state.HadException())
+      return {};
+    result.push_back(std::move(element));
+  }
+  // 3.2. If next is false, then return an IDL sequence value of type
+  //   sequence<T> of length i, where the value of the element at index j is Sj.
+  return result;
+}
+
+// Fastest case: template-specialized implementation that directly copies the
+// contents of this JavaScript array into a C++ buffer.
+template <typename T>
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+CreateIDLSequenceFromV8Array(v8::Isolate* isolate,
+                             v8::Local<v8::Array> v8_array,
+                             ExceptionState& exception_state) {
+  return CreateIDLSequenceFromV8ArraySlow<T>(isolate, v8_array,
+                                             exception_state);
+}
+
+template <>
+CORE_EXTERN_TEMPLATE_EXPORT
+    typename NativeValueTraits<IDLSequence<IDLLong>>::ImplType
+    CreateIDLSequenceFromV8Array<IDLLong>(v8::Isolate* isolate,
+                                          v8::Local<v8::Array> v8_array,
+                                          ExceptionState& exception_state);
+
 }  // namespace bindings
 
-// IDLSequence's implementation is a little tricky due to a historical reason.
-// The following type mapping is used for IDLSequence and its variants.
-//
-// tl;dr: Only IDLNullable<IDLSequence<traceable_type>> is a reference type.
-//   The others are value types.
-//
-// - IDLSequence<T> where T is not traceable
-//   => Vector<T> as a value type
-// - IDLSequence<T> where T is traceable
-//   => HeapVector<T> as a value type despite that HeapVector is
-//      GarbageCollected because HeapVector had been implemented as a non-GC
-//      type (a value type) for years until 2021 January.  This point is very
-//      inconsistent but kept unchanged so far.
-// - IDLNullable<IDLSequence<T>> where T is not traceable
-//   => absl::optional<Vector<T>> as a value type
-// - IDLNullable<IDLSequence<T>> where T is traceable
-//   => HeapVector<T>* as a reference type.  absl::optional<HeapVector<T>> is
-//      not an option because it's not appropriately traceable despite that
-//      the content HeapVector needs tracing.  As same as other
-//      GarbageCollected types, pointer type is used to represent IDL nullable
-//      type.
 template <typename T>
-struct NativeValueTraits<IDLSequence<T>>
-    : public NativeValueTraitsBase<IDLSequence<T>> {
-  // Nondependent types need to be explicitly qualified to be accessible.
-  using typename NativeValueTraitsBase<IDLSequence<T>>::ImplType;
-
-  // HeapVector is GarbageCollected, so HeapVector<T>* is used for IDLNullable
-  // while absl::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
-  static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
-
-  // https://heycam.github.io/webidl/#es-sequence
-  static ImplType NativeValue(v8::Isolate* isolate,
-                              v8::Local<v8::Value> value,
-                              ExceptionState& exception_state) {
-    // TODO(https://crbug.com/715122): Checking for IsArray() may not be
-    // enough. Other engines also prefer regular array iteration over a custom
-    // @@iterator when the latter is defined, but it is not clear if this is a
-    // valid optimization.
-    if (value->IsArray()) {
-      return bindings::CreateIDLSequenceFromV8Array<T>(
-          isolate, value.As<v8::Array>(), exception_state);
-    }
-
-    // 1. If Type(V) is not Object, throw a TypeError.
-    if (!value->IsObject()) {
-      exception_state.ThrowTypeError(
-          "The provided value cannot be converted to a sequence.");
-      return ImplType();
-    }
-
-    // 2. Let method be ? GetMethod(V, @@iterator).
-    // 3. If method is undefined, throw a TypeError.
-    // 4. Return the result of creating a sequence from V and method.
-    auto script_iterator = ScriptIterator::FromIterable(
-        isolate, value.As<v8::Object>(), exception_state);
-    if (exception_state.HadException())
-      return ImplType();
-    if (script_iterator.IsNull()) {
-      // A null ScriptIterator with an empty |exception_state| means the
-      // object is lacking a callable @@iterator property.
-      exception_state.ThrowTypeError(
-          "The object must have a callable @@iterator property.");
-      return ImplType();
-    }
-    return bindings::CreateIDLSequenceFromIterator<T>(
-        isolate, std::move(script_iterator), exception_state);
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+NativeValueTraits<IDLSequence<T>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  // TODO(https://crbug.com/715122): Checking for IsArray() may not be
+  // enough. Other engines also prefer regular array iteration over a custom
+  // @@iterator when the latter is defined, but it is not clear if this is a
+  // valid optimization.
+  if (value->IsArray()) {
+    return bindings::CreateIDLSequenceFromV8Array<T>(
+        isolate, value.As<v8::Array>(), exception_state);
   }
-};
+
+  // 1. If Type(V) is not Object, throw a TypeError.
+  if (!value->IsObject()) {
+    exception_state.ThrowTypeError(
+        "The provided value cannot be converted to a sequence.");
+    return ImplType();
+  }
+
+  // 2. Let method be ? GetMethod(V, @@iterator).
+  // 3. If method is undefined, throw a TypeError.
+  // 4. Return the result of creating a sequence from V and method.
+  auto script_iterator = ScriptIterator::FromIterable(
+      isolate, value.As<v8::Object>(), exception_state);
+  if (exception_state.HadException())
+    return ImplType();
+  if (script_iterator.IsNull()) {
+    // A null ScriptIterator with an empty |exception_state| means the
+    // object is lacking a callable @@iterator property.
+    exception_state.ThrowTypeError(
+        "The object must have a callable @@iterator property.");
+    return ImplType();
+  }
+  return bindings::CreateIDLSequenceFromIterator<T>(
+      isolate, std::move(script_iterator), exception_state);
+}
+
+template <typename T>
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+NativeValueTraits<IDLSequence<T>>::NativeValue(
+    v8::Isolate* isolate,
+    ScriptIterator script_iterator,
+    ExceptionState& exception_state) {
+  DCHECK(!script_iterator.IsNull());
+  return bindings::CreateIDLSequenceFromIterator<T>(
+      isolate, std::move(script_iterator), exception_state);
+}
 
 template <typename T>
 struct NativeValueTraits<IDLNullable<IDLSequence<T>>,
