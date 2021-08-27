@@ -48,12 +48,13 @@ void CustomElementReactionStack::PopInvokingReactions() {
 void CustomElementReactionStack::InvokeReactions(ElementQueue& queue) {
   for (wtf_size_t i = 0; i < queue.size(); ++i) {
     Element* element = queue[i];
-    if (CustomElementReactionQueue* reactions =
-            map_.DeprecatedAtOrEmptyValue(element)) {
-      reactions->InvokeReactions(*element);
-      CHECK(reactions->IsEmpty());
-      map_.erase(element);
-    }
+    const auto it = map_.find(element);
+    if (it == map_.end())
+      continue;
+    CustomElementReactionQueue* reactions = it->value;
+    reactions->InvokeReactions(*element);
+    CHECK(reactions->IsEmpty());
+    map_.erase(element);
   }
 }
 
@@ -70,14 +71,15 @@ void CustomElementReactionStack::Enqueue(Member<ElementQueue>& queue,
     queue = MakeGarbageCollected<ElementQueue>();
   queue->push_back(&element);
 
-  CustomElementReactionQueue* reactions =
-      map_.DeprecatedAtOrEmptyValue(&element);
-  if (!reactions) {
-    reactions = MakeGarbageCollected<CustomElementReactionQueue>();
+  const auto it = map_.find(&element);
+  if (it != map_.end()) {
+    it->value->Add(reaction);
+  } else {
+    CustomElementReactionQueue* reactions =
+        MakeGarbageCollected<CustomElementReactionQueue>();
     map_.insert(&element, reactions);
+    reactions->Add(reaction);
   }
-
-  reactions->Add(reaction);
 }
 
 void CustomElementReactionStack::EnqueueToBackupQueue(
@@ -100,10 +102,9 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
 }
 
 void CustomElementReactionStack::ClearQueue(Element& element) {
-  if (CustomElementReactionQueue* reactions =
-          map_.DeprecatedAtOrEmptyValue(&element)) {
-    reactions->Clear();
-  }
+  const auto it = map_.find(&element);
+  if (it != map_.end())
+    it->value->Clear();
 }
 
 void CustomElementReactionStack::InvokeBackupQueue() {
