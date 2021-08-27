@@ -1019,6 +1019,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return base::ios::IsMultipleScenesSupported();
 }
 
++ (BOOL)isContextMenuActionsRefreshEnabled {
+  return IsContextMenuActionsRefreshEnabled();
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 + (ContentSetting)popupPrefValue {

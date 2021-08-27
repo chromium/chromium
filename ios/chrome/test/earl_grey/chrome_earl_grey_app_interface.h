@@ -508,6 +508,9 @@
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
 
+// Returns whether the ContextMenuActionsRefresh feature is enabled.
++ (BOOL)isContextMenuActionsRefreshEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the
