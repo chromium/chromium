@@ -633,7 +633,7 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
 
   // Check if the response seems sensitive and if so include in our CORB
   // protection logging. We have not sniffed yet, so the answer might be
-  // kNeedToSniffMore.
+  // kSniffMore.
   if (seems_sensitive_from_cors_heuristic_ ||
       seems_sensitive_from_cache_heuristic_) {
     // Create a new Origin with a unique internal identifier so we can pretend
@@ -643,16 +643,15 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
     // requests with the CORB Protection heuristics and UMAs.  Using kNoCors
     // simulates an attacker requesting "seems-sensitive" subresources from a
     // script tag.
-    BlockingDecision would_protect_based_on_headers = ShouldBlockBasedOnHeaders(
+    Decision would_protect_based_on_headers = ShouldBlockBasedOnHeaders(
         mojom::RequestMode::kNoCors, request_url,
         cross_origin_request_initiator, response, canonical_mime_type_);
     corb_protection_logging_needs_sniffing_ =
-        (would_protect_based_on_headers ==
-         BlockingDecision::kNeedToSniffMore) &&
+        (would_protect_based_on_headers == Decision::kSniffMore) &&
         base::FeatureList::IsEnabled(features::kCORBProtectionSniffing);
     hypothetical_sniffing_mode_ =
         corb_protection_logging_needs_sniffing_ &&
-        should_block_based_on_headers_ != BlockingDecision::kNeedToSniffMore;
+        should_block_based_on_headers_ != Decision::kSniffMore;
     mime_type_bucket_ = GetMimeTypeBucket(response);
     UMA_HISTOGRAM_BOOLEAN("SiteIsolation.CORBProtection.SensitiveResource",
                           true);
@@ -685,7 +684,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::~CorbResponseAnalyzer() {
 }
 
 // static
-CrossOriginReadBlocking::CorbResponseAnalyzer::BlockingDecision
+Decision
 CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
     mojom::RequestMode request_mode,
     const GURL& request_url,
@@ -701,19 +700,19 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // CorsURLLoaderFactory::IsValidRequest enforces that renderer-initiated
   // requests specify a non-null `request_initiator`.)
   if (!request_initiator.has_value())
-    return kAllow;
+    return Decision::kAllow;
   const url::Origin& initiator = request_initiator.value();
 
   // Don't block same-origin documents.
   url::Origin target_origin = url::Origin::Create(request_url);
   if (initiator.IsSameOriginWith(target_origin))
-    return kAllow;
+    return Decision::kAllow;
 
   // Only block documents from HTTP(S) schemes.  Checking the scheme of
   // |target_origin| ensures that we also protect content of blob: and
   // filesystem: URLs if their nested origins have a HTTP(S) scheme.
   if (!IsBlockableScheme(target_origin.GetURL()))
-    return kAllow;
+    return Decision::kAllow;
 
   // Only apply CORB to `no-cors` requests.
   //
@@ -725,7 +724,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // CORB doesn't need to work with kSameOrigin, kCors, nor
   // kCorsWithForcedPreflight modes, because these are covered by OOR-CORS.
   if (request_mode != mojom::RequestMode::kNoCors)
-    return kAllow;
+    return Decision::kAllow;
 
   // Requests from foo.example.com will consult foo.example.com's service worker
   // first (if one has been registered).  The service worker can handle requests
@@ -744,7 +743,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
       case mojom::FetchResponseType::kDefault:
       case mojom::FetchResponseType::kError:
         // Non-opaque responses shouldn't be blocked.
-        return kAllow;
+        return Decision::kAllow;
       case mojom::FetchResponseType::kOpaque:
       case mojom::FetchResponseType::kOpaqueRedirect:
         // Opaque responses are eligible for blocking. Continue on...
@@ -754,7 +753,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
 
   // Some types (e.g. ZIP) are protected without any confirmation sniffing.
   if (canonical_mime_type == MimeType::kNeverSniffed)
-    return kBlock;
+    return Decision::kBlock;
 
   // If this is a partial response, sniffing is not possible, so allow the
   // response if it's not a protected mime type.
@@ -765,15 +764,15 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
     switch (canonical_mime_type) {
       case MimeType::kOthers:
       case MimeType::kPlain:  // See also https://crbug.com/801709
-        return kAllow;
+        return Decision::kAllow;
       case MimeType::kHtml:
       case MimeType::kJson:
       case MimeType::kXml:
-        return kBlock;
+        return Decision::kBlock;
       case MimeType::kInvalidMimeType:
       case MimeType::kNeverSniffed:  // Handled much earlier.
         NOTREACHED();
-        return kBlock;
+        return Decision::kBlock;
     }
   }
 
@@ -791,23 +790,23 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
     case MimeType::kJson:
     case MimeType::kPlain:
       if (HasNoSniff(response))
-        return kBlock;
-      return kNeedToSniffMore;
+        return Decision::kBlock;
+      return Decision::kSniffMore;
 
     case MimeType::kOthers:
       // Stylesheets shouldn't be sniffed for JSON parser breakers - see
       // https://crbug.com/809259.
       if (base::LowerCaseEqualsASCII(response.mime_type, "text/css"))
-        return kAllow;
-      return kNeedToSniffMore;
+        return Decision::kAllow;
+      return Decision::kSniffMore;
 
     case MimeType::kInvalidMimeType:
     case MimeType::kNeverSniffed:  // Handled much earlier.
       NOTREACHED();
-      return kBlock;
+      return Decision::kBlock;
   }
   NOTREACHED();
-  return kBlock;
+  return Decision::kBlock;
 }
 
 // static
@@ -982,15 +981,15 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldAllow() const {
   // comment in ShouldBlock). Thus we just need to wait until the sniffers are
   // all done (i.e. empty).
   if (hypothetical_sniffing_mode_) {
-    DCHECK_EQ(should_block_based_on_headers_, kAllow);
+    DCHECK_EQ(should_block_based_on_headers_, Decision::kAllow);
     return sniffers_.empty();
   }
   switch (should_block_based_on_headers_) {
-    case kAllow:
+    case Decision::kAllow:
       return true;
-    case kNeedToSniffMore:
+    case Decision::kSniffMore:
       return sniffers_.empty() && !found_blockable_content_;
-    case kBlock:
+    case Decision::kBlock:
       return false;
   }
 }
@@ -1002,15 +1001,15 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlock() const {
   // (2) CORB must have decided to kAllow (if it was kBlock then the protection
   // decision would have been kBlock as well, no hypothetical mode needed).
   if (hypothetical_sniffing_mode_) {
-    DCHECK_EQ(should_block_based_on_headers_, kAllow);
+    DCHECK_EQ(should_block_based_on_headers_, Decision::kAllow);
     return false;
   }
   switch (should_block_based_on_headers_) {
-    case kAllow:
+    case Decision::kAllow:
       return false;
-    case kNeedToSniffMore:
+    case Decision::kSniffMore:
       return sniffers_.empty() && found_blockable_content_;
-    case kBlock:
+    case Decision::kBlock:
       return true;
   }
 }
@@ -1104,13 +1103,13 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
 // static
 CrossOriginReadBlocking::CorbResponseAnalyzer::CrossOriginProtectionDecision
 CrossOriginReadBlocking::CorbResponseAnalyzer::
-    BlockingDecisionToProtectionDecision(BlockingDecision blocking_decision) {
+    BlockingDecisionToProtectionDecision(Decision blocking_decision) {
   switch (blocking_decision) {
-    case kAllow:
+    case Decision::kAllow:
       return CrossOriginProtectionDecision::kAllow;
-    case kBlock:
+    case Decision::kBlock:
       return CrossOriginProtectionDecision::kBlock;
-    case kNeedToSniffMore:
+    case Decision::kSniffMore:
       return CrossOriginProtectionDecision::kNeedToSniffMore;
   }
 }

@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // Whether ShouldBlockBasedOnHeaders asked to sniff the body or the CORB
     // protection logging needs extra sniffing.
     bool needs_sniffing() const {
-      return should_block_based_on_headers_ == kNeedToSniffMore ||
+      return should_block_based_on_headers_ == Decision::kSniffMore ||
              corb_protection_logging_needs_sniffing_;
     }
 
@@ -173,20 +173,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     void LogAllowedResponse();
     void LogBlockedResponse();
 
-    // Three conclusions are possible from looking at the headers:
-    //   - Allow: response doesn't need to be blocked (e.g. if it is same-origin
-    //     or has been allowed via CORS headers)
-    //   - Block: response needs to be blocked (e.g. text/html + nosniff)
-    //   - NeedMoreData: cannot decide yet - need to sniff more body first.
-    enum BlockingDecision {
-      kAllow,
-      kBlock,
-      kNeedToSniffMore,
-    };
-
     // Static because this method is called both during the actual decision, and
     // for the CORB protection logging decision.
-    static BlockingDecision ShouldBlockBasedOnHeaders(
+    static Decision ShouldBlockBasedOnHeaders(
         mojom::RequestMode request_mode,
         const GURL& request_url,
         const absl::optional<url::Origin>& request_initiator,
@@ -218,7 +207,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // Translates a blocking decision into a protection decision for use by
     // LogSensitiveResponseProtection.
     static CrossOriginProtectionDecision BlockingDecisionToProtectionDecision(
-        BlockingDecision would_protect_based_on_headers);
+        Decision would_protect_based_on_headers);
 
     // Returns a protection decision (blocked after sniffing or allowed after
     // sniffing) depending on if the sniffers found blockable content.
@@ -226,7 +215,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         bool found_blockable_content);
 
     // Populates |sniffers_| container based on |canonical_mime_type_|.  Called
-    // if ShouldBlockBasedOnHeaders returns kNeedToSniffMore
+    // if ShouldBlockBasedOnHeaders returns kSniffMore
     void CreateSniffers();
 
     // Reports potentially sensitive responses and whether CORB would have
@@ -236,7 +225,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         CrossOriginProtectionDecision protection_decision) const;
 
     // Outcome of ShouldBlockBasedOnHeaders recorded inside the Create method.
-    BlockingDecision should_block_based_on_headers_ = BlockingDecision::kBlock;
+    Decision should_block_based_on_headers_ = Decision::kBlock;
 
     // The following values store information about the response and are used by
     // the CORB protection logging in LogSensitiveResponseProtection.
