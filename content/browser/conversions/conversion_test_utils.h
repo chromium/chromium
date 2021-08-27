@@ -19,6 +19,7 @@
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/rate_limit_table.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/test/test_content_browser_client.h"
@@ -87,7 +88,8 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
       StorableImpression::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
-  RateLimitConfig GetRateLimits() const override;
+  RateLimitConfig GetRateLimits(
+      ConversionStorage::AttributionType attribution_type) const override;
   StorableImpression::AttributionLogic SelectAttributionLogic(
       const StorableImpression& impression) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
@@ -142,7 +144,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
 
   RateLimitConfig rate_limits_ = {
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = INT_MAX,
+      .max_contributions_per_window = INT_MAX,
   };
 
   StorableImpression::AttributionLogic attribution_logic_ =
@@ -329,6 +331,9 @@ bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::ostream& operator<<(std::ostream& out,
                          ConversionStorage::CreateReportStatus result);
+
+std::ostream& operator<<(std::ostream& out,
+                         RateLimitTable::AttributionAllowedStatus result);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,

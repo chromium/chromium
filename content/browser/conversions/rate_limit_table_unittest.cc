@@ -101,11 +101,13 @@ TEST_F(RateLimitTableTest, TableCreated_TableAndIndicesInitialized) {
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_FALSE(db.DoesTableExist("rate_limits"));
   EXPECT_FALSE(db.DoesIndexExist("rate_limit_impression_site_type_idx"));
-  EXPECT_FALSE(db.DoesIndexExist("rate_limit_conversion_time_idx"));
+  EXPECT_FALSE(
+      db.DoesIndexExist("rate_limit_attribution_type_conversion_time_idx"));
   EXPECT_TRUE(table()->CreateTable(&db));
   EXPECT_TRUE(db.DoesTableExist("rate_limits"));
   EXPECT_TRUE(db.DoesIndexExist("rate_limit_impression_site_type_idx"));
-  EXPECT_TRUE(db.DoesIndexExist("rate_limit_conversion_time_idx"));
+  EXPECT_TRUE(
+      db.DoesIndexExist("rate_limit_attribution_type_conversion_time_idx"));
   EXPECT_EQ(0u, GetRateLimitRows(&db));
 }
 
@@ -116,7 +118,7 @@ TEST_F(RateLimitTableTest, AddRateLimit) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(3),
-      .max_attributions_per_window = INT_MAX,
+      .max_contributions_per_window = INT_MAX,
   });
 
   EXPECT_TRUE(table()->AddRateLimit(
@@ -146,7 +148,7 @@ TEST_F(RateLimitTableTest, AttributionAllowed) {
       // Set this to >9d so |AddRateLimit|'s calls to |DeleteExpiredRateLimits|
       // don't delete any of the rows we're adding.
       .time_window = base::TimeDelta::FromDays(10),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -219,7 +221,7 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(2),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -266,7 +268,7 @@ TEST_F(RateLimitTableTest,
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(4),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -303,7 +305,7 @@ TEST_F(RateLimitTableTest, CheckAttributionAllowed_ImpressionSiteSubdomains) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(4),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -358,7 +360,7 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -408,7 +410,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -465,6 +467,23 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
       &db, base::Time(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), example_a)));
   EXPECT_EQ(0u, GetRateLimitRows(&db));
+
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db,
+                ImpressionBuilder(clock()->Now())
+                    .SetImpressionOrigin(example_a)
+                    .SetConversionOrigin(example_b)
+                    .SetImpressionId(StorableImpression::Id(1))
+                    .Build(),
+                {{.bucket = "a", .value = 2}}));
+  EXPECT_EQ(1u, GetRateLimitRows(&db));
+
+  // Should delete (example_a, example_b).
+  EXPECT_TRUE(table()->ClearDataForOriginsInRange(
+      &db, base::Time(), base::Time::Max(),
+      base::BindRepeating(std::equal_to<url::Origin>(), example_a)));
+  EXPECT_EQ(0u, GetRateLimitRows(&db));
 }
 
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
@@ -488,7 +507,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromMinutes(2),
-      .max_attributions_per_window = INT_MAX,
+      .max_contributions_per_window = INT_MAX,
   });
   clock()->Advance(base::TimeDelta::FromMinutes(1));
   EXPECT_TRUE(table()->AddRateLimit(
@@ -525,7 +544,7 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
 
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   const url::Origin example_a = url::Origin::Create(GURL("https://a.example/"));
@@ -564,6 +583,63 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(
                 &db, NewConversionReport(example_c, example_d), now));
+}
+
+TEST_F(RateLimitTableTest, Aggregate) {
+  sql::Database db;
+  EXPECT_TRUE(db.Open(db_path()));
+  EXPECT_TRUE(table()->CreateTable(&db));
+
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::FromDays(7),
+      .max_contributions_per_window = 16,
+  });
+
+  const auto impression =
+      ImpressionBuilder(clock()->Now())
+          .SetImpressionOrigin(url::Origin::Create(GURL("https://a.example/")))
+          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example/")))
+          .SetImpressionId(StorableImpression::Id(1))
+          .Build();
+
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db, impression,
+                {
+                    {.bucket = "a", .value = 2},
+                    {.bucket = "b", .value = 5},
+                }));
+
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db, impression,
+                {
+                    {.bucket = "a", .value = 10},
+                }));
+
+  clock()->Advance(base::TimeDelta::FromDays(7) -
+                   base::TimeDelta::FromMilliseconds(1));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db, impression,
+                {
+                    {.bucket = "a", .value = 9},
+                }));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db, impression,
+                {
+                    {.bucket = "b", .value = 1},
+                }));
+
+  // This is checking expiry behavior.
+  clock()->Advance(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AddAggregateHistogramContributionsForTesting(
+                &db, impression,
+                {
+                    {.bucket = "a", .value = 7},
+                }));
 }
 
 }  // namespace content

@@ -11,6 +11,12 @@
 
 namespace content {
 
+namespace {
+
+using AttributionType = ::content::ConversionStorage::AttributionType;
+
+}  // namespace
+
 ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
     : debug_mode_(debug_mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -45,13 +51,23 @@ int ConversionStorageDelegateImpl::GetMaxAttributionDestinationsPerEventSource()
 }
 
 ConversionStorage::Delegate::RateLimitConfig
-ConversionStorageDelegateImpl::GetRateLimits() const {
+ConversionStorageDelegateImpl::GetRateLimits(
+    AttributionType attribution_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(csharrison): Finalize max_attributions_per_window value.
-  return {
-      .time_window = base::TimeDelta::FromDays(30),
-      .max_attributions_per_window = 100,
-  };
+  // TODO(csharrison): Finalize `max_contributions_per_window` value.
+  switch (attribution_type) {
+    case AttributionType::kNavigation:
+    case AttributionType::kEvent:
+      return {
+          .time_window = base::TimeDelta::FromDays(30),
+          .max_contributions_per_window = 100,
+      };
+    case AttributionType::kAggregate:
+      return {
+          .time_window = base::TimeDelta::FromDays(7),
+          .max_contributions_per_window = 65536,
+      };
+  }
 }
 
 StorableImpression::AttributionLogic

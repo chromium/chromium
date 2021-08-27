@@ -805,7 +805,7 @@ TEST_F(ConversionStorageTest, DeleteAllNullDeleteBegin) {
 TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 2,
+      .max_contributions_per_window = 2,
   });
 
   auto impression = ImpressionBuilder(clock()->Now()).Build();
@@ -831,7 +831,7 @@ TEST_F(ConversionStorageTest,
        MaxAttributionReportsBetweenSites_RespectsSourceType) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 1,
+      .max_contributions_per_window = 1,
   });
 
   storage()->StoreImpression(
@@ -918,7 +918,7 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_Deactivates) {
 TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 1,
+      .max_contributions_per_window = 1,
   });
 
   delegate()->set_attribution_logic(

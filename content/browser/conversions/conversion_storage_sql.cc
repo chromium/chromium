@@ -90,11 +90,16 @@ const base::FilePath::CharType kDatabasePath[] =
 //
 // Version 11 replaces impression_site_idx with
 // event_source_impression_site_idx, which stores less data.
-const int kCurrentVersionNumber = 11;
+//
+// Version 12 - 2021/08/18 - https://crrev.com/c/3085887
+//
+// Version 12 adds the rate_limits.bucket and rate_limits.value columns and
+// makes rate_limits.rate_limit_id NOT NULL.
+const int kCurrentVersionNumber = 12;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 11;
+const int kCompatibleVersionNumber = 12;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -1319,6 +1324,8 @@ bool ConversionStorageSql::CreateSchema() {
   // |StorableImpression::AttributionLogic| enum.
   // |impression_site| is used to optimize the lookup of impressions;
   // |StorableImpression::ImpressionSite| is always derived from the origin.
+  // TODO(apaseltiner): Make impression_id NOT NULL during the next migration
+  // affecting this table.
   static constexpr char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"
@@ -1382,6 +1389,8 @@ bool ConversionStorageSql::CreateSchema() {
   // should be used for clearing site data. |report_time| is the time a
   // <conversion, impression> pair should be reported, and is specified by
   // |delegate_|.
+  // TODO(apaseltiner): Make conversion_id NOT NULL during the next migration
+  // affecting this table.
   static constexpr char kConversionTableSql[] =
       "CREATE TABLE IF NOT EXISTS conversions"
       "(conversion_id INTEGER PRIMARY KEY,"

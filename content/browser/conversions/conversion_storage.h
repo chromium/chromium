@@ -31,6 +31,13 @@ class StorableConversion;
 // properly should result in no-ops.
 class ConversionStorage {
  public:
+  // The type of attribution used for rate limiting calculations.
+  enum class AttributionType {
+    kNavigation = 0,
+    kEvent = 1,
+    kAggregate = 2,
+  };
+
   // Storage delegate that can supplied to extend basic conversion storage
   // functionality like annotating conversion reports.
   class Delegate {
@@ -79,11 +86,12 @@ class ConversionStorage {
 
     struct RateLimitConfig {
       base::TimeDelta time_window;
-      int max_attributions_per_window;
+      int64_t max_contributions_per_window;
     };
 
-    // Returns the rate limits for capping attributions per window.
-    virtual RateLimitConfig GetRateLimits() const WARN_UNUSED_RESULT = 0;
+    // Returns the rate limits for capping contributions per window.
+    virtual RateLimitConfig GetRateLimits(
+        AttributionType attribution_type) const WARN_UNUSED_RESULT = 0;
 
     // Selects how to handle the given impression; may involve RNG or other
     // dynamic criteria.

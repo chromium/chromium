@@ -43,7 +43,8 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
-  RateLimitConfig GetRateLimits() const override;
+  RateLimitConfig GetRateLimits(
+      ConversionStorage::AttributionType attribution_type) const override;
   StorableImpression::AttributionLogic SelectAttributionLogic(
       const StorableImpression& impression) const override;
   uint64_t GetFakeEventSourceTriggerData() const override;

@@ -6,15 +6,15 @@ CREATE TABLE impressions(impression_id INTEGER PRIMARY KEY,impression_data INTEG
 
 CREATE TABLE conversions(conversion_id INTEGER PRIMARY KEY,impression_id INTEGER NOT NULL,conversion_data INTEGER NOT NULL,conversion_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL);
 
-CREATE TABLE rate_limits(rate_limit_id INTEGER PRIMARY KEY,attribution_type INTEGER NOT NULL,impression_id INTEGER NOT NULL,impression_site TEXT NOT NULL,impression_origin TEXT NOT NULL,conversion_destination TEXT NOT NULL,conversion_origin TEXT NOT NULL,conversion_time INTEGER NOT NULL);
+CREATE TABLE rate_limits(rate_limit_id INTEGER PRIMARY KEY NOT NULL,attribution_type INTEGER NOT NULL,impression_id INTEGER NOT NULL,impression_site TEXT NOT NULL,impression_origin TEXT NOT NULL,conversion_destination TEXT NOT NULL,conversion_origin TEXT NOT NULL,conversion_time INTEGER NOT NULL,bucket TEXT NOT NULL,value INTEGER NOT NULL);
 
 CREATE TABLE dedup_keys(impression_id INTEGER NOT NULL,dedup_key INTEGER NOT NULL,PRIMARY KEY(impression_id,dedup_key))WITHOUT ROWID;
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','11');
-INSERT INTO meta VALUES('last_compatible_version','11');
+INSERT INTO meta VALUES('version','12');
+INSERT INTO meta VALUES('last_compatible_version','12');
 
 CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
@@ -30,11 +30,8 @@ CREATE INDEX conversion_impression_id_idx ON conversions(impression_id);
 
 CREATE INDEX rate_limit_impression_site_type_idx ON rate_limits(attribution_type,conversion_destination,impression_site,conversion_time);
 
-CREATE INDEX rate_limit_conversion_time_idx ON rate_limits(conversion_time);
+CREATE INDEX rate_limit_attribution_type_conversion_time_idx ON rate_limits(attribution_type,conversion_time);
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
-
-INSERT INTO rate_limits VALUES
-  (1, 0, 11, 'https://a.example', 'https://a.a.example', 'https://b.example', 'https://b.b.example', 7);
 
 COMMIT;

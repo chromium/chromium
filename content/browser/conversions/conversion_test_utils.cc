@@ -22,6 +22,8 @@ namespace content {
 
 namespace {
 
+using AttributionAllowedStatus =
+    ::content::RateLimitTable::AttributionAllowedStatus;
 using CreateReportStatus = ::content::ConversionStorage::CreateReportStatus;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
@@ -112,7 +114,8 @@ int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
 }
 
 ConversionStorage::Delegate::RateLimitConfig
-ConfigurableStorageDelegate::GetRateLimits() const {
+ConfigurableStorageDelegate::GetRateLimits(
+    ConversionStorage::AttributionType attribution_type) const {
   return rate_limits_;
 }
 
@@ -400,6 +403,21 @@ std::ostream& operator<<(std::ostream& out, CreateReportStatus result) {
       break;
     case CreateReportStatus::kDroppedForNoise:
       out << "kDroppedForNoise";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, AttributionAllowedStatus status) {
+  switch (status) {
+    case AttributionAllowedStatus::kAllowed:
+      out << "kAllowed";
+      break;
+    case AttributionAllowedStatus::kNotAllowed:
+      out << "kNotAllowed";
+      break;
+    case AttributionAllowedStatus::kError:
+      out << "kError";
       break;
   }
   return out;

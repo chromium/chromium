@@ -341,7 +341,7 @@ TEST_F(ConversionStorageSqlTest,
   delegate()->set_max_conversions_per_impression(1);
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(7),
-      .max_attributions_per_window = INT_MAX,
+      .max_contributions_per_window = INT_MAX,
   });
   const url::Origin impression_origin =
       url::Origin::Create(GURL("https://sub.impression.example/"));
@@ -401,7 +401,7 @@ TEST_F(ConversionStorageSqlTest,
   delegate()->set_max_conversions_per_impression(1);
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::FromDays(7),
-      .max_attributions_per_window = INT_MAX,
+      .max_contributions_per_window = INT_MAX,
   });
   const url::Origin impression_origin =
       url::Origin::Create(GURL("https://b.example/"));

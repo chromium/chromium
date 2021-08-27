@@ -809,7 +809,7 @@ bool MigrateToVersion10(sql::Database* db, sql::MetaTable* meta_table) {
   if (!transaction.Begin())
     return false;
 
-  const char kDedupKeyTableSql[] =
+  static constexpr char kDedupKeyTableSql[] =
       "CREATE TABLE IF NOT EXISTS dedup_keys"
       "(impression_id INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
@@ -841,6 +841,75 @@ bool MigrateToVersion11(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
 
   meta_table->SetVersionNumber(11);
+  return transaction.Commit();
+}
+
+bool MigrateToVersion12(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kNewRateLimitTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_rate_limits"
+      "(rate_limit_id INTEGER PRIMARY KEY NOT NULL,"
+      "attribution_type INTEGER NOT NULL,"
+      "impression_id INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL,"
+      "impression_origin TEXT NOT NULL,"
+      "conversion_destination TEXT NOT NULL,"
+      "conversion_origin TEXT NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "bucket TEXT NOT NULL,"
+      "value INTEGER NOT NULL)";
+  if (!db->Execute(kNewRateLimitTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table, inserting 0 for `bucket` and
+  // 1 for `value`, since all existing rows are non-aggregate.
+  static constexpr char kPopulateNewRateLimitTableSql[] =
+      "INSERT INTO new_rate_limits SELECT "
+      "rate_limit_id,attribution_type,impression_id,impression_site,"
+      "impression_origin,conversion_destination,conversion_origin,"
+      "conversion_time,0,1 "
+      "FROM rate_limits";
+  if (!db->Execute(kPopulateNewRateLimitTableSql))
+    return false;
+
+  static constexpr char kDropOldRateLimitTableSql[] = "DROP TABLE rate_limits";
+  if (!db->Execute(kDropOldRateLimitTableSql))
+    return false;
+
+  static constexpr char kRenameRateLimitTableSql[] =
+      "ALTER TABLE new_rate_limits RENAME TO rate_limits";
+  if (!db->Execute(kRenameRateLimitTableSql))
+    return false;
+
+  // Create the pre-existing indices on the new table.
+
+  static constexpr char kRateLimitImpressionSiteTypeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
+      "ON rate_limits(attribution_type,conversion_destination,"
+      "impression_site,conversion_time)";
+  if (!db->Execute(kRateLimitImpressionSiteTypeIndexSql))
+    return false;
+
+  // Add the attribution_type as a prefix of the index.
+  static constexpr char kRateLimitAttributionTypeConversionTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS "
+      "rate_limit_attribution_type_conversion_time_idx "
+      "ON rate_limits(attribution_type,conversion_time)";
+  if (!db->Execute(kRateLimitAttributionTypeConversionTimeIndexSql))
+    return false;
+
+  static constexpr char kRateLimitImpressionIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_impression_id_idx "
+      "ON rate_limits(impression_id)";
+  if (!db->Execute(kRateLimitImpressionIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(12);
   return transaction.Commit();
 }
 
@@ -888,6 +957,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 10) {
     if (!MigrateToVersion11(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 11) {
+    if (!MigrateToVersion12(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

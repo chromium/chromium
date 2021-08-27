@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_CONVERSIONS_RATE_LIMIT_TABLE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -32,11 +33,22 @@ namespace content {
 
 struct ConversionReport;
 
+struct AggregateHistogramContribution {
+  std::string bucket;
+  uint32_t value;
+};
+
 // Manages storage for rate-limiting reports.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
  public:
+  enum class AttributionAllowedStatus {
+    kAllowed,
+    kNotAllowed,
+    kError,
+  };
+
   RateLimitTable(const ConversionStorage::Delegate* delegate,
                  const base::Clock* clock);
   RateLimitTable(const RateLimitTable& other) = delete;
@@ -49,22 +61,27 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   bool CreateTable(sql::Database* db) WARN_UNUSED_RESULT;
 
-  // Adds a rate limit to the table.
+  // Adds a rate limit to the table for an event-level report.
   // Returns false on failure.
   bool AddRateLimit(sql::Database* db,
                     const ConversionReport& report) WARN_UNUSED_RESULT;
-
-  enum class AttributionAllowedStatus {
-    kAllowed,
-    kNotAllowed,
-    kError,
-  };
 
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
   AttributionAllowedStatus AttributionAllowed(sql::Database* db,
                                               const ConversionReport& report,
                                               base::Time now)
+      WARN_UNUSED_RESULT;
+
+  // Attempts to add a set of histogram contributions to the rate limit. Returns
+  // `kAllowed` if the contributions were added, `kNotAllowed` if the reports
+  // would have exceeded the limit, and `kError` otherwise. This API will change
+  // as we iterate on the aggregate API, so for now it is only available in
+  // tests.
+  AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
+      sql::Database* db,
+      const StorableImpression& impression,
+      const std::vector<AggregateHistogramContribution>& contributions)
       WARN_UNUSED_RESULT;
 
   // These should be 1:1 with |ConversionStorageSql|'s |ClearData| functions.
@@ -86,10 +103,34 @@ class CONTENT_EXPORT RateLimitTable {
                                      impression_ids) WARN_UNUSED_RESULT;
 
  private:
+  // Returns the capacity for the given `attribution_type`, `impression_site`,
+  // `conversion_destination`, according to `delegate_->GetRateLimits()`.
+  // Returns 0 if there is no capacity, -1 on error.
+  int64_t GetCapacity(sql::Database* db,
+                      ConversionStorage::AttributionType attribution_type,
+                      const std::string& serialized_impression_site,
+                      const std::string& serialized_conversion_destination,
+                      base::Time now)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
+  bool AddRow(sql::Database* db,
+              ConversionStorage::AttributionType attribution_type,
+              StorableImpression::Id impression_id,
+              const std::string& serialized_impression_site,
+              const std::string& serialized_impression_origin,
+              const std::string& serialized_conversion_destination,
+              const std::string& serialized_conversion_origin,
+              base::Time time,
+              const std::string& bucket,
+              uint32_t value)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
   // Deletes data in the table older than the window determined by |clock_| and
   // |delegate_->GetRateLimits()|.
   // Returns false on failure.
-  bool DeleteExpiredRateLimits(sql::Database* db)
+  bool DeleteExpiredRateLimits(
+      sql::Database* db,
+      ConversionStorage::AttributionType attribution_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Must outlive |this|.
