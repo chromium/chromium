@@ -1164,20 +1164,16 @@ void LocalFrameMojoHandler::ZoomToFindInPageRect(
 }
 
 void LocalFrameMojoHandler::InstallCoopAccessMonitor(
-    network::mojom::blink::CoopAccessReportType report_type,
     const FrameToken& accessed_window,
-    mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
-        reporter,
-    bool endpoint_defined,
-    const WTF::String& reported_window_url) {
+    network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+        coop_reporter_params) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
   // The Frame might have been deleted during the cross-process communication.
   if (!accessed_frame)
     return;
 
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      report_type, frame_, std::move(reporter), endpoint_defined,
-      std::move(reported_window_url));
+      frame_, std::move(coop_reporter_params));
 }
 
 void LocalFrameMojoHandler::OnPortalActivated(

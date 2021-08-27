@@ -43,6 +43,7 @@
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
@@ -189,6 +190,7 @@ class AgentSchedulingGroupHost;
 class AppCacheNavigationHandle;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
+class CrossOriginOpenerPolicyAccessReportManager;
 class FeatureObserver;
 class FencedFrame;
 class FrameTree;
@@ -1786,10 +1788,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
   }
-  void set_coop_reporter(
-      std::unique_ptr<CrossOriginOpenerPolicyReporter>&& reporter) {
-    coop_reporter_ = std::move(reporter);
-  }
+  void SetCrossOriginOpenerPolicyReporter(
+      std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter);
 
   // Semi-formal definition of COOP:
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
@@ -1797,8 +1797,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return policy_container_host_->cross_origin_opener_policy();
   }
 
-  CrossOriginOpenerPolicyReporter* coop_reporter() {
-    return coop_reporter_.get();
+  CrossOriginOpenerPolicyAccessReportManager* coop_access_report_manager() {
+    return &coop_access_report_manager_;
   }
   int virtual_browsing_context_group() const {
     return virtual_browsing_context_group_;
@@ -3839,7 +3839,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::TimeTicks last_xr_overlay_setup_time_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
-  std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
+  CrossOriginOpenerPolicyAccessReportManager coop_access_report_manager_;
 
   // https://github.com/camillelamy/explainers/blob/master/coop_reporting.md#virtual-browsing-context-group-id
   //

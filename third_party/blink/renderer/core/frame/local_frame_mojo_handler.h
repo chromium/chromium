@@ -203,12 +203,9 @@ class LocalFrameMojoHandler
   void EnablePreferredSizeChangedMode() override;
   void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
   void InstallCoopAccessMonitor(
-      network::mojom::blink::CoopAccessReportType report_type,
       const FrameToken& accessed_window,
-      mojo::PendingRemote<
-          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined,
-      const WTF::String& reported_window_url) final;
+      network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+          coop_reporter_params) final;
   void OnPortalActivated(
       const PortalToken& portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,

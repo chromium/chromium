@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/cross_origin_embedder_policy.h"
+#include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -173,7 +174,9 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
       base::UnguessableToken::Create(), network_isolation_key);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
-          ? frame_tree_node_->current_frame_host()->coop_reporter()
+          ? frame_tree_node_->current_frame_host()
+                ->coop_access_report_manager()
+                ->coop_reporter()
           : coop_reporter_.get();
 
   bool cross_origin_policy_swap =
@@ -251,7 +254,8 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
 
   if (require_browsing_instance_swap_ || virtual_browsing_instance_swap) {
     virtual_browsing_context_group_ =
-        CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
+        CrossOriginOpenerPolicyAccessReportManager::
+            NextVirtualBrowsingContextGroup();
   }
 
   // Check if a COOP of same-origin-allow-popups by default would result in a
@@ -261,7 +265,8 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
           is_initial_navigation_, response_coop.soap_by_default_value,
           response_origin)) {
     soap_by_default_virtual_browsing_context_group_ =
-        CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
+        CrossOriginOpenerPolicyAccessReportManager::
+            NextVirtualBrowsingContextGroup();
   }
 
   // Finally, update the current COOP, origin and reporter to those of the

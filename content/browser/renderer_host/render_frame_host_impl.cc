@@ -1531,10 +1531,11 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // group. Then, they can inherit from:
   // 1) Their opener in RenderFrameHostImpl::CreateNewWindow().
   // 2) Their navigation in RenderFrameHostImpl::DidCommitNavigationInternal().
-  virtual_browsing_context_group_ =
-      CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
+  virtual_browsing_context_group_ = CrossOriginOpenerPolicyAccessReportManager::
+      NextVirtualBrowsingContextGroup();
   soap_by_default_virtual_browsing_context_group_ =
-      CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup();
+      CrossOriginOpenerPolicyAccessReportManager::
+          NextVirtualBrowsingContextGroup();
 
   // IdleManager should be unique per RenderFrame to provide proper isolation
   // of overrides.
@@ -3340,6 +3341,11 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
   // does not have Mojo capability control applied.
   if (broker_.GetMojoBinderPolicyApplier())
     broker_.ReleaseMojoBinderPolicies();
+}
+
+void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
+    std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter) {
+  coop_access_report_manager_.set_coop_reporter(std::move(coop_reporter));
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
@@ -6494,11 +6500,13 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   int popup_virtual_browsing_context_group =
       params->opener_suppressed
-          ? CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup()
+          ? CrossOriginOpenerPolicyAccessReportManager::
+                NextVirtualBrowsingContextGroup()
           : top_level_opener->virtual_browsing_context_group();
   int popup_soap_by_default_virtual_browsing_context_group =
       params->opener_suppressed
-          ? CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup()
+          ? CrossOriginOpenerPolicyAccessReportManager::
+                NextVirtualBrowsingContextGroup()
           : top_level_opener->soap_by_default_virtual_browsing_context_group();
 
   // If the opener is suppressed or script access is disallowed, we should
@@ -6547,8 +6555,9 @@ void RenderFrameHostImpl::CreateNewWindow(
   // If inheriting coop (checking this via |opener_suppressed|) and the original
   // coop page has a reporter we make sure the the newly created popup also has
   // a reporter.
-  if (!params->opener_suppressed && GetMainFrame()->coop_reporter()) {
-    new_main_rfh->set_coop_reporter(
+  if (!params->opener_suppressed &&
+      GetMainFrame()->coop_access_report_manager()->coop_reporter()) {
+    new_main_rfh->SetCrossOriginOpenerPolicyReporter(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
             params->referrer->url, new_main_rfh->cross_origin_opener_policy(),
@@ -10330,7 +10339,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
     }
   }
 
-  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
+  CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
       frame_tree_node_);
 
   // Reset the salt so that media device IDs are reset for the new document
@@ -10347,7 +10356,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     NavigationRequest* navigation_request) {
   is_error_page_ = navigation_request->DidEncounterError();
 
-  coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
+  SetCrossOriginOpenerPolicyReporter(
+      navigation_request->coop_status().TakeCoopReporter());
   virtual_browsing_context_group_ =
       navigation_request->coop_status().virtual_browsing_context_group();
   soap_by_default_virtual_browsing_context_group_ =

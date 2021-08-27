@@ -9476,7 +9476,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CoopReporter) {
   // Navigate to a document that set RenderFrameHostImpl::coop_reporter().
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  EXPECT_TRUE(rfh_a->coop_reporter());
+  EXPECT_TRUE(rfh_a->coop_access_report_manager()->coop_reporter());
 
   // Navigate away and back using the BackForwardCache. The
   // RenderFrameHostImpl::coop_reporter() must still be there.
@@ -9487,7 +9487,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CoopReporter) {
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_EQ(rfh_a, current_frame_host());
 
-  EXPECT_TRUE(rfh_a->coop_reporter());
+  EXPECT_TRUE(rfh_a->coop_access_report_manager()->coop_reporter());
 }
 
 // RenderFrameHostImpl::cross_origin_embedder_policy() must be preserved when

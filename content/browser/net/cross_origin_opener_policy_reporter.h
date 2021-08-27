@@ -49,6 +49,13 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
     storage_partition_ = storage_partition;
   }
 
+  // Returns the information necessary for the renderer process to report
+  // accesses between the COOP document and other pages.
+  network::mojom::CrossOriginOpenerPolicyReporterParamsPtr CreateReporterParams(
+      bool access_from_coop_page,
+      FrameTreeNode* accessing_node,
+      FrameTreeNode* accessed_node);
+
   void QueueAccessReport(network::mojom::CoopAccessReportType report_type,
                          const std::string& property,
                          network::mojom::SourceLocationPtr source_location,
@@ -65,23 +72,10 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
                                          bool same_origin_with_next,
                                          bool is_report_only);
 
-  // For every other window in the same browsing context group, but in a
-  // different virtual browsing context group, install the necessary
-  // CoopAccessMonitor. The first window is identified by |node|.
-  static void InstallAccessMonitorsIfNeeded(FrameTreeNode* node);
-
-  // Generate a new, previously unused, virtualBrowsingContextId.
-  static int NextVirtualBrowsingContextGroup();
-
  private:
   void QueueNavigationReport(base::DictionaryValue body,
                              const std::string& endpoint,
                              bool is_report_only);
-
-  // Install the CoopAccessMonitors monitoring accesses from |accessing_node|
-  // toward |accessed_node|.
-  void MonitorAccesses(FrameTreeNode* accessing_node,
-                       FrameTreeNode* accessed_node);
 
   // See the class comment.
   StoragePartition* storage_partition_;
