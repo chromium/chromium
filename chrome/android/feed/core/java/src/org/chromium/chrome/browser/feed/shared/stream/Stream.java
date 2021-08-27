@@ -133,6 +133,12 @@ public interface Stream {
     void unbind(boolean shouldPlaceSpacer);
 
     /**
+     * Returns a value that uniquely identifies the state of the Stream's content. If this value
+     * changes, then scroll state won't be restored.
+     */
+    String getContentState();
+
+    /**
      * Interface users can implement to know when content in the Stream has changed content on
      * screen.
      */

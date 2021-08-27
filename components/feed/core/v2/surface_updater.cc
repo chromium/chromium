@@ -131,6 +131,11 @@ StreamUpdateAndType MakeStreamUpdate(
     }
   }
 
+  if (model) {
+    update.stream_update.set_fetch_time_ms(
+        model->GetLastAddedTime().ToDeltaSinceWindowsEpoch().InMilliseconds());
+  }
+
   return update;
 }
 

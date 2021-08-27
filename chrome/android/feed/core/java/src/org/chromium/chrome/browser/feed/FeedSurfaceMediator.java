@@ -105,11 +105,15 @@ public class FeedSurfaceMediator
         private static final String SCROLL_LAST_POSITION = "lpos";
         private static final String SCROLL_OFFSET = "off";
         private static final String TAB_ID = "tabId";
+        private static final String FEED_CONTENT_STATE = "contentState";
 
         public int position;
         public int lastPosition;
         public int offset;
         public int tabId;
+        // Represents the state of Feed content. If it changes,
+        // the scroll state should not be retained.
+        public String feedContentState = "";
 
         /** Turns the fields into json. */
         public String toJson() {
@@ -119,6 +123,7 @@ public class FeedSurfaceMediator
                 jsonSavedState.put(SCROLL_LAST_POSITION, lastPosition);
                 jsonSavedState.put(SCROLL_OFFSET, offset);
                 jsonSavedState.put(TAB_ID, tabId);
+                jsonSavedState.put(FEED_CONTENT_STATE, feedContentState);
                 return jsonSavedState.toString();
             } catch (JSONException e) {
                 Log.d(TAG, "Unable to write to a JSONObject.");
@@ -137,6 +142,7 @@ public class FeedSurfaceMediator
                 result.lastPosition = jsonSavedState.getInt(SCROLL_LAST_POSITION);
                 result.offset = jsonSavedState.getInt(SCROLL_OFFSET);
                 result.tabId = jsonSavedState.getInt(TAB_ID);
+                result.feedContentState = jsonSavedState.getString(FEED_CONTENT_STATE);
             } catch (JSONException e) {
                 Log.d(TAG, "Unable to parse a JSONObject from a string.");
                 return null;
@@ -379,6 +385,9 @@ public class FeedSurfaceMediator
                 if (firstVisibleView != null) {
                     state.offset = firstVisibleView.getTop();
                 }
+            }
+            if (mCurrentStream != null) {
+                state.feedContentState = mCurrentStream.getContentState();
             }
         }
         return state.toJson();

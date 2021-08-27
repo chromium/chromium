@@ -157,6 +157,7 @@ public class FeedSurfaceMediatorTest {
         state.position = 2;
         state.lastPosition = 4;
         state.offset = 50;
+        state.feedContentState = "foo";
 
         FeedSurfaceMediator.ScrollState deserializedState =
                 FeedSurfaceMediator.ScrollState.fromJson(state.toJson());
@@ -165,6 +166,22 @@ public class FeedSurfaceMediatorTest {
         assertEquals(4, deserializedState.lastPosition);
         assertEquals(50, deserializedState.offset);
         assertEquals(5, deserializedState.tabId);
+        assertEquals("foo", deserializedState.feedContentState);
+        assertEquals(state.toJson(), deserializedState.toJson());
+    }
+
+    @Test
+    public void testSerializeScrollStateAllFieldsUnset() {
+        FeedSurfaceMediator.ScrollState state = new FeedSurfaceMediator.ScrollState();
+
+        FeedSurfaceMediator.ScrollState deserializedState =
+                FeedSurfaceMediator.ScrollState.fromJson(state.toJson());
+
+        assertEquals(state.position, deserializedState.position);
+        assertEquals(state.lastPosition, deserializedState.lastPosition);
+        assertEquals(state.offset, deserializedState.offset);
+        assertEquals(state.tabId, deserializedState.tabId);
+        assertEquals(state.feedContentState, deserializedState.feedContentState);
         assertEquals(state.toJson(), deserializedState.toJson());
     }
 

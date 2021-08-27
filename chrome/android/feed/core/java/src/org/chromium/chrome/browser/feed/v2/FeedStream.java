@@ -413,6 +413,7 @@ public class FeedStream implements Stream {
     private FeedSurfaceMediator.ScrollState mScrollStateToRestore;
     private int mHeaderCount;
     private boolean mIsPlaceholderShown;
+    private long mLastFetchTimeMs;
 
     // Placeholder view that simply takes up space.
     private NtpListContentManager.NativeViewContent mSpacerViewContent;
@@ -499,6 +500,11 @@ public class FeedStream implements Stream {
     @SectionType
     public int getSectionType() {
         return mIsInterestFeed ? SectionType.FOR_YOU_FEED : SectionType.WEB_FEED;
+    }
+
+    @Override
+    public String getContentState() {
+        return String.valueOf(mLastFetchTimeMs);
     }
 
     @Override
@@ -794,6 +800,16 @@ public class FeedStream implements Stream {
             Log.wtf(TAG, "Unable to parse StreamUpdate proto data", e);
             mReliabilityLoggingBridge.onStreamUpdateError();
             return;
+        }
+
+        mLastFetchTimeMs = streamUpdate.getFetchTimeMs();
+
+        // Invalidate the saved scroll state if the content in the feed has changed.
+        // Don't do anything if mLastFetchTimeMs is unset.
+        if (mScrollStateToRestore != null && mLastFetchTimeMs != 0) {
+            if (!mScrollStateToRestore.feedContentState.equals(getContentState())) {
+                mScrollStateToRestore = null;
+            }
         }
 
         // Update using shared states.
