@@ -1480,6 +1480,151 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"
+    expires_after="2021-10-31">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Final status for prerender pages - either success, or why it was canceled.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NetworkBytesTotalForProfile" units="bytes"
+    expires_after="M77">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Number of bytes transferred on the network for URLRequests (not including
+    HTTP/TLS/TCP/IP overhead). Reported on event of a PrerenderContents
+    deletion. Includes prerender bytes. Bytes are only counted when prerendering
+    is enabled and not in a control group. The sum of the distribution for a
+    single user represents all of that user's network transfers for resource for
+    that time period while prerendering was enabled.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NetworkBytesWasted" units="bytes"
+    expires_after="M77">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Number of bytes transferred on the network for URLRequests (not including
+    HTTP/TLS/TCP/IP overhead) for a prerender that was not used. All
+    nostate-prefetch bytes are currently counted as wasted because it is hard to
+    track byte use in HTTP cache.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NoStatePrefetchMainResourceRedirects"
+    units="redirects" expires_after="M85">
+  <owner>droger@chromium.org</owner>
+  <owner>mattcary@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Length of the redirect chain for main resources loaded by NoStatePrefetch.
+    Recorded when the final response in the chain is received.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NoStatePrefetchRendererLifetimeExtension" units="ms"
+    expires_after="M77">
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time a prefetch renderer is kept alive after parsing to wait for
+    subresources to finish loading.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NoStatePrefetchRendererParseTime" units="ms"
+    expires_after="M81">
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time between prefetch renderer startup and when parsing is complete.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NoStatePrefetchResponseTypes"
+    enum="NoStatePrefetchResponseType" expires_after="M85">
+  <owner>droger@chromium.org</owner>
+  <owner>mattcary@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Type of responses received by NoStatePrefetch, distinguishing cacheable
+    resources from no-store resources, and main resources from sub-resources.
+    Recorded when a response is received, including on each redirect.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.NoStatePrefetchSubResourceRedirects"
+    units="redirects" expires_after="M85">
+  <owner>droger@chromium.org</owner>
+  <owner>mattcary@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Length of the redirect chain for sub-resources loaded by NoStatePrefetch.
+    Recorded when the final response in the chain is received.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.PrerenderLoadComplete" units="BooleanSuccess"
+    expires_after="2022-03-30">
+  <owner>gambard@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Whether the load was completed when the pre-render was used. If the
+    prerender is cancelled, this is not logged. Only on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.PrerenderLoadedOnFirstNTP" enum="Boolean"
+    expires_after="M81">
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Whether or not a successful prerender happens on a NTP with no history.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.PrerenderLoadedOnIndex" units="units"
+    expires_after="M81">
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    The last comitted index before a successful preload is committed. Recorded
+    only on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.PrerendersPerSessionCount" units="units"
+    expires_after="2021-04-22">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The number of sessions that have at least X successful prerenders. Recorded
+    only on iOS since 2017-09.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.PrerenderTimeSaved" units="ms"
+    expires_after="2022-03-30">
+  <owner>gambard@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    This is the time from when a prerendered page begins to load to when it is
+    swapped in as the main page load or to when the pre-loaded page is fully
+    loaded, whichever came first. Recorded when the swap occurs, only on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Prerender.TabContentsDeleterTimeout"
+    enum="BooleanCloseTimeout" expires_after="M85">
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    A boolean that indicates how often we fail to delete an old prerendered tab
+    before the timeout.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
