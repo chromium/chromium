@@ -60,12 +60,13 @@ public class ChipView extends LinearLayout {
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
-        this(new ContextThemeWrapper(context, themeOverlay), null, 0, 0);
+        this(new ContextThemeWrapper(context, themeOverlay), null, R.attr.chipStyle, 0);
     }
 
     /** Constructor for inflating from XML. */
     public ChipView(Context context, AttributeSet attrs) {
-        this(new ContextThemeWrapper(context, R.style.SuggestionChipThemeOverlay), attrs, 0, 0);
+        this(new ContextThemeWrapper(context, R.style.SuggestionChipThemeOverlay), attrs,
+                R.attr.chipStyle, 0);
     }
 
     /** Constructor for base classes and programmatic creation. */
