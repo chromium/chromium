@@ -317,7 +317,7 @@ void InputMethodSyncer::OnIsSyncingChanged() {
   if (!prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods))
     return;
   // Wait for the correct type of prefs to sync before merging.
-  bool is_syncing = features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = features::IsSyncSettingsCategorizationEnabled()
                         ? prefs_->AreOsPrefsSyncing()
                         : prefs_->IsSyncing();
   if (is_syncing)
