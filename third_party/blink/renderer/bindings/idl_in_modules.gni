@@ -418,6 +418,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediastream/constrain_long_range.idl",
           "//third_party/blink/renderer/modules/mediastream/double_range.idl",
           "//third_party/blink/renderer/modules/mediastream/input_device_info.idl",
+          "//third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.idl",
           "//third_party/blink/renderer/modules/mediastream/long_range.idl",
           "//third_party/blink/renderer/modules/mediastream/media_device_info.idl",
           "//third_party/blink/renderer/modules/mediastream/media_devices.idl",

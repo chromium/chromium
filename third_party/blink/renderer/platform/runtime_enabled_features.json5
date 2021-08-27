@@ -431,6 +431,11 @@
       status: "experimental",
     },
     {
+      name: "ConditionalFocus",
+      depends_on: ["GetDisplayMedia"],
+      status: {"Android": "", "default": "experimental"},
+    },
+    {
       name: "ConsolidatedMovementXY",
     },
     {

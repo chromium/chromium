@@ -2679,6 +2679,10 @@ interface FocusEvent : UIEvent
     attribute @@toStringTag
     getter relatedTarget
     method constructor
+interface FocusableMediaStreamTrack : MediaStreamTrack
+    attribute @@toStringTag
+    method constructor
+    method focus
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride

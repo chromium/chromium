@@ -34349,6 +34349,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3988" label="FontSelectorCSSFontFamilyWebKitPrefixBody"/>
   <int value="3989" label="FontBuilderCSSFontFamilyWebKitPrefixBody"/>
   <int value="3990" label="CapabilityDelegationOfPaymentRequest"/>
+  <int value="3991" label="ConditionalFocus"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

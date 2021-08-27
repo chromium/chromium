@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
@@ -192,6 +193,13 @@ void UserMediaClient::StopTrack(MediaStreamComponent* track) {
 bool UserMediaClient::IsCapturing() {
   return user_media_processor_->HasActiveSources();
 }
+
+#if !defined(OS_ANDROID)
+void UserMediaClient::FocusCapturedSurface(const String& label, bool focus) {
+  DCHECK(user_media_processor_);
+  user_media_processor_->FocusCapturedSurface(label, focus);
+}
+#endif
 
 void UserMediaClient::MaybeProcessNextRequestInfo() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
@@ -56,6 +57,10 @@ class MODULES_EXPORT UserMediaClient
   void ContextDestroyed();
 
   bool IsCapturing();
+
+#if !defined(OS_ANDROID)
+  void FocusCapturedSurface(const String& label, bool focus);
+#endif
 
   void Trace(Visitor*) const;
 

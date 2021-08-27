@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -35,6 +36,50 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
+
+namespace {
+
+bool IsFocusable(const ExecutionContext* context,
+                 const MediaStreamComponent* component) {
+  if (!context || !RuntimeEnabledFeatures::ConditionalFocusEnabled(context)) {
+    return false;
+  }
+
+  if (!component) {
+    return false;
+  }
+
+  const MediaStreamTrackPlatform* const platform_track =
+      component->GetPlatformTrack();
+  if (!platform_track) {
+    return false;
+  }
+
+  MediaStreamTrackPlatform::Settings settings;
+  component->GetPlatformTrack()->GetSettings(settings);
+
+  if (!settings.display_surface.has_value()) {
+    return false;
+  }
+
+  const media::mojom::DisplayCaptureSurfaceType display_surface =
+      settings.display_surface.value();
+  return display_surface == media::mojom::DisplayCaptureSurfaceType::BROWSER ||
+         display_surface == media::mojom::DisplayCaptureSurfaceType::WINDOW;
+}
+
+MediaStreamTrack* MakeMediaStreamTrack(ExecutionContext* context,
+                                       MediaStreamComponent* component,
+                                       base::OnceClosure callback,
+                                       const String& descriptor_id) {
+  return IsFocusable(context, component)
+             ? MakeGarbageCollected<FocusableMediaStreamTrack>(
+                   context, component, std::move(callback), descriptor_id)
+             : MakeGarbageCollected<MediaStreamTrack>(context, component,
+                                                      std::move(callback));
+}
+
+}  // namespace
 
 static bool ContainsSource(MediaStreamTrackVector& track_vector,
                            MediaStreamSource* source) {
@@ -135,10 +180,11 @@ MediaStream::MediaStream(ExecutionContext* context,
   uint32_t number_of_video_tracks = descriptor_->NumberOfVideoComponents();
   video_tracks_.ReserveCapacity(number_of_video_tracks);
   for (uint32_t i = 0; i < number_of_video_tracks; i++) {
-    auto* new_track = MakeGarbageCollected<MediaStreamTrack>(
+    MediaStreamTrack* const new_track = MakeMediaStreamTrack(
         context, descriptor_->VideoComponent(i),
         WTF::Bind(&MediaStream::OnMediaStreamTrackInitialized,
-                  WrapPersistent(this)));
+                  WrapPersistent(this)),
+        descriptor_->Id());
     new_track->RegisterMediaStream(this);
     video_tracks_.push_back(new_track);
   }
