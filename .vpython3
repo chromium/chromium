@@ -226,7 +226,7 @@ wheel: <
 #   testing/buildbot/generate_buildbot_json_coveragetest.py
 wheel: <
   name: "infra/python/wheels/coverage/${vpython_platform}"
-  version: "version:5.5"
+  version: "version:5.5.chromium.2"
 >
 
 # Used by:
