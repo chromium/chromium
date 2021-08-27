@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APPS_FETCHER_SERVICE_APPS_FETCHER_UTIL_H_
-#define CHROME_BROWSER_APPS_APPS_FETCHER_SERVICE_APPS_FETCHER_UTIL_H_
+#ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_APP_DISCOVERY_UTIL_H_
+#define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_APP_DISCOVERY_UTIL_H_
 
 #include "base/callback.h"
 
@@ -27,4 +27,4 @@ using ResultCallback = base::OnceCallback<void(const base::Value& result)>;
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APPS_FETCHER_SERVICE_APPS_FETCHER_UTIL_H_
+#endif  // CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_APP_DISCOVERY_UTIL_H_
