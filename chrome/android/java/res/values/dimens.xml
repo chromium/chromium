@@ -250,6 +250,9 @@
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
 
+    <!-- Bookmark visual refresh dimensions. -->
+     <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
+
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
     <dimen name="bookmark_widget_min_height">48dp</dimen>

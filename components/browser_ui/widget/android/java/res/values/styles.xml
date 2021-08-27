@@ -51,6 +51,10 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
     </style>
+    <style name="ListItemContainerV2" parent="ListItemContainer">
+        <item name="android:layout_marginTop">@dimen/list_item_v2_margin</item>
+        <item name="android:layout_marginBottom">@dimen/list_item_v2_margin</item>
+    </style>
     <style name="ListItemStartIcon">
         <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
         <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
@@ -58,6 +62,10 @@
         <item name="android:layout_marginEnd">@dimen/list_item_start_icon_right_margin</item>
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@null</item>
+    </style>
+    <style name="ListItemStartIconV2" parent="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width</item>
     </style>
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>

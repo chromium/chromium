@@ -67,6 +67,26 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
     private Drawable mStartIconDrawable;
 
     /**
+     * Layout res to be used when inflating the view, used to swap in the visual refresh.
+     */
+    private int mLayoutRes;
+
+    /**
+     * The resource for the start icon background.
+     */
+    private int mStartIconBackgroundRes;
+
+    /**
+     * Tracks if inflation is finished.
+     */
+    private boolean mInflationFinished;
+
+    /**
+     * Tracks if the visual refresh is enabled.
+     */
+    private boolean mVisualRefreshEnabled;
+
+    /**
      * Constructor for inflating from XML.
      */
     public SelectableItemView(Context context, AttributeSet attrs) {
@@ -77,13 +97,35 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
         mSelectedLevel = getResources().getInteger(R.integer.list_item_level_selected);
         mCheckDrawable = AnimatedVectorDrawableCompat.create(
                 getContext(), R.drawable.ic_check_googblue_24dp_animated);
+        mStartIconBackgroundRes = R.drawable.list_item_icon_modern_bg;
+        mLayoutRes = R.layout.modern_list_item_view;
+    }
+
+    protected boolean isVisualRefreshEnabled() {
+        return mVisualRefreshEnabled;
+    }
+
+    protected void enableVisualRefresh() {
+        mVisualRefreshEnabled = true;
+
+        mStartIconBackgroundRes = R.drawable.list_item_icon_modern_bg_rect;
+        mLayoutRes = R.layout.modern_list_item_view_v2;
+        if (mInflationFinished) {
+            removeAllViews();
+            inflateAndPopulateViewVariables();
+        }
     }
 
     // FrameLayout implementations.
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        LayoutInflater.from(getContext()).inflate(R.layout.modern_list_item_view, this);
+        inflateAndPopulateViewVariables();
+        mInflationFinished = true;
+    }
+
+    private void inflateAndPopulateViewVariables() {
+        LayoutInflater.from(getContext()).inflate(mLayoutRes, this);
 
         mContentView = findViewById(R.id.content);
         mStartIconView = findViewById(R.id.start_icon);
@@ -92,7 +134,7 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
         mDescriptionView = findViewById(R.id.description);
 
         if (mStartIconView != null) {
-            mStartIconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
+            mStartIconView.setBackgroundResource(mStartIconBackgroundRes);
             ApiCompatibilityUtils.setImageTintList(mStartIconView, getDefaultStartIconTint());
         }
     }

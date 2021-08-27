@@ -20,6 +20,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
@@ -63,6 +64,9 @@ public abstract class BookmarkRow
      */
     public BookmarkRow(Context context, AttributeSet attrs) {
         super(context, attrs);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_REFRESH)) {
+            enableVisualRefresh();
+        }
     }
 
     /**

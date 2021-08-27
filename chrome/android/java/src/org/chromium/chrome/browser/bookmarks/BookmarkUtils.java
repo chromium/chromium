@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -439,9 +438,9 @@ public class BookmarkUtils {
     public static Drawable getFolderIcon(Context context, @BookmarkType int type) {
         if (type == BookmarkType.READING_LIST) {
             return UiUtils.getTintedDrawable(
-                    context, R.drawable.ic_reading_list_folder, getFolderIconTint(type));
+                    context, R.drawable.ic_reading_list_folder_24dp, getFolderIconTint(type));
         }
-        return TintedDrawable.constructTintedDrawable(
+        return UiUtils.getTintedDrawable(
                 context, R.drawable.ic_folder_blue_24dp, getFolderIconTint(type));
     }
 

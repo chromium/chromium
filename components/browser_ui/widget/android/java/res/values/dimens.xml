@@ -52,6 +52,11 @@
     <dimen name="list_item_start_icon_width">36dp</dimen>
     <dimen name="list_item_end_icon_width">56dp</dimen>
 
+    <!-- Modern List Item V2 dimensions -->
+    <dimen name="list_item_v2_margin">8dp</dimen>
+    <dimen name="list_item_v2_start_icon_width">96dp</dimen>
+    <dimen name="list_item_v2_start_icon_corner_radius">16dp</dimen>
+
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
