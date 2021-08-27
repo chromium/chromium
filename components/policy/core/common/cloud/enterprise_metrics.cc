@@ -189,8 +189,6 @@ const char kMetricCBCMRemoteCommandExecutedTemplate[] =
 const char kMetricCBCMUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.Unsigned.%s";
 
-const char kUMAPsmHashDanceComparison[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
 const char kUMAPsmSuccessTime[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
 const char kUMAPsmResult[] = "Enterprise.AutoEnrollmentPsmResult";
