@@ -203,12 +203,6 @@ static bool ConvertFontFamilyName(
   if (auto* font_family_value = DynamicTo<CSSFontFamilyValue>(value)) {
     generic_family = FontDescription::kNoFamily;
     family_name = font_family_value->Value();
-#if defined(OS_MAC)
-    if (family_name == FontCache::LegacySystemFontFamily()) {
-      document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
-      family_name = font_family_names::kSystemUi;
-    }
-#endif
   } else if (font_builder) {
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
     auto cssValueID = To<CSSIdentifierValue>(value).GetValueID();
@@ -247,6 +241,10 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
   FontFamily* curr_family = nullptr;
 
+#if defined(OS_MAC)
+  bool has_seen_system_ui = false;
+#endif
+
   for (auto& family : To<CSSValueList>(value)) {
     FontDescription::GenericFamilyType generic_family =
         FontDescription::kNoFamily;
@@ -267,6 +265,21 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
     bool is_generic = generic_family != FontDescription::kNoFamily ||
                       IsA<CSSIdentifierValue>(*family);
+#if defined(OS_MAC)
+    // TODO(https://crbug.com/554590): Remove this counter when it's no longer
+    // necessary.
+    if (!has_seen_system_ui) {
+      has_seen_system_ui =
+          is_generic && family_name == font_family_names::kSystemUi;
+    }
+    if (IsA<CSSFontFamilyValue>(*family) &&
+        family_name == FontCache::LegacySystemFontFamily()) {
+      family_name = font_family_names::kSystemUi;
+      if (!has_seen_system_ui)
+        document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
+    }
+#endif
+
     curr_family->SetFamily(family_name, is_generic
                                             ? FontFamily::Type::kGenericFamily
                                             : FontFamily::Type::kFamilyName);
