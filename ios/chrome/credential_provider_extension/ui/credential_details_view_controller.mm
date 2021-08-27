@@ -242,12 +242,15 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Creates an enter button for the navigation item
 - (UIBarButtonItem*)navigationEnterButton {
-  UIBarButtonItem* enterButton = [[UIBarButtonItem alloc]
-      initWithTitle:NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ENTER",
-                                      @"Enter")
-              style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(enterPassword)];
+  NSString* title =
+      IsPasswordCreationEnabled()
+          ? NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_USE", @"Use")
+          : NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ENTER", @"Enter");
+  UIBarButtonItem* enterButton =
+      [[UIBarButtonItem alloc] initWithTitle:title
+                                       style:UIBarButtonItemStyleDone
+                                      target:self
+                                      action:@selector(enterPassword)];
   enterButton.tintColor = [UIColor colorNamed:kBlueColor];
   return enterButton;
 }
