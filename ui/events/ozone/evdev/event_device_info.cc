@@ -54,6 +54,7 @@ constexpr struct {
     {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x1369},  // SteelSeries Sensei RAW Frost Blue
+    {0x1038, 0x1824},  // SteelSeries Rival 3 Wired
     {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless (USB dongle)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
