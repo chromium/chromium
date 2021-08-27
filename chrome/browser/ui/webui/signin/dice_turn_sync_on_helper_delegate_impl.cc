@@ -63,11 +63,16 @@ void OnEmailConfirmation(DiceTurnSyncOnHelper::SigninChoiceCallback callback,
 
 void OnProfileCheckComplete(const std::string& email,
                             DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-                            Browser* browser,
+                            base::WeakPtr<Browser> browser,
                             bool prompt_for_new_profile) {
+  if (!browser) {
+    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+    return;
+  }
+
   DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
       email, /*prompt_for_new_profile=*/prompt_for_new_profile,
-      std::move(callback), browser);
+      std::move(callback), browser.get());
 }
 
 }  // namespace
@@ -98,7 +103,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
   // asynchronous.
   ui::CheckShouldPromptForNewProfile(
       profile_, base::BindOnce(&OnProfileCheckComplete, email,
-                               std::move(callback), browser_));
+                               std::move(callback), browser_->AsWeakPtr()));
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
