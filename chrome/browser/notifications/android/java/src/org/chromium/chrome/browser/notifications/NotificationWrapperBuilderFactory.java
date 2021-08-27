@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ALLOW_REMOTE_CONTEXT_FOR_NOTIFICATIONS;
-
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -59,16 +55,11 @@ public class NotificationWrapperBuilderFactory {
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(boolean preferCompat,
             String channelId, @Nullable String remoteAppPackageName,
             @Nullable NotificationMetadata metadata) {
+        // TODO(crbug.com/697104): Remove |preferCompat| and |remoteAppPackageName| arguments.
+        assert preferCompat;
+        assert remoteAppPackageName == null;
+
         Context context = ContextUtils.getApplicationContext();
-        if (remoteAppPackageName != null) {
-            assert ChromeFeatureList.isEnabled(ALLOW_REMOTE_CONTEXT_FOR_NOTIFICATIONS);
-            try {
-                context = context.createPackageContext(remoteAppPackageName, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException(
-                        "Failed to create context for package " + remoteAppPackageName, e);
-            }
-        }
 
         NotificationManagerProxyImpl notificationManagerProxy =
                 new NotificationManagerProxyImpl(context);

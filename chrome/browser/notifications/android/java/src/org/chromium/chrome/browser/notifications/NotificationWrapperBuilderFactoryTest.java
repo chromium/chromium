@@ -69,19 +69,6 @@ public class NotificationWrapperBuilderFactoryTest {
 
     @MediumTest
     @Test
-    public void buildNotificationAndNotifyDoesNotCrash() {
-        NotificationWrapperBuilder notificationBuilder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        false, ChromeChannelDefinitions.ChannelId.BROWSER);
-
-        Notification notification = notificationBuilder.setContentTitle("Title")
-                                            .setSmallIcon(R.drawable.ic_chrome)
-                                            .build();
-        mNotificationManager.notify(TEST_NOTIFICATION_ID, notification);
-    }
-
-    @MediumTest
-    @Test
     public void buildCompatNotificationAndNotifyDoesNotCrash() {
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(

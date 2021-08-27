@@ -25,7 +25,7 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
     public NotificationWrapper build(NotificationMetadata metadata) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        shouldUseCompat(), mChannelId, mRemotePackageForBuilderContext, metadata);
+                        shouldUseCompat(), mChannelId, null /* remoteAppPackageName */, metadata);
 
         builder.setContentTitle(mTitle);
         builder.setContentText(mBody);

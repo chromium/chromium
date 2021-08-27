@@ -122,7 +122,7 @@ public class WebApkServiceClient {
             builder.setContentSmallIconForRemoteApp(icon);
         }
         if (!builder.hasStatusBarIconBitmap()) {
-            builder.setStatusBarIconForRemoteApp(iconId, icon, webApkPackage);
+            builder.setStatusBarIconForRemoteApp(iconId, icon);
         }
     }
 

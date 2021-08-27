@@ -140,14 +140,6 @@ public abstract class NotificationBuilderBase {
     @Nullable
     protected Bitmap mSmallIconBitmapForContent;
 
-    /**
-     * Package name to use for creating remote package context to be passed to NotificationBuilder.
-     * If null, Chrome's context is used. Currently only used as a workaround for a certain issue,
-     * see {@link #setStatusBarIconForRemoteApp}, {@link #deviceSupportsBitmapStatusBarIcons}.
-     */
-    @Nullable
-    protected String mRemotePackageForBuilderContext;
-
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
     protected List<Action> mActions = new ArrayList<>(MAX_AUTHOR_PROVIDED_ACTION_BUTTONS);
@@ -267,34 +259,22 @@ public abstract class NotificationBuilderBase {
      * This is safe to use for any app.
      * @param iconId An iconId for a resource in the package that will display the notification.
      * @param iconBitmap The decoded bitmap. Depending on the device we need either id or bitmap.
-     * @param packageName The package name of the package that will display the notification.
      */
     public NotificationBuilderBase setStatusBarIconForRemoteApp(
-            int iconId, @Nullable Bitmap iconBitmap, String packageName) {
+            int iconId, @Nullable Bitmap iconBitmap) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // On Android M+, the small icon has to be from the resources of the app whose context
             // is passed to the Notification.Builder constructor. Thus we can't use iconId directly,
             // and instead use the decoded Bitmap.
             if (deviceSupportsBitmapStatusBarIcons()) {
                 setStatusBarIcon(iconBitmap);
-            } else if (usingRemoteAppContextAllowed()) {
-                // For blacklisted M devices we can use neither iconId (see comment below), nor
-                // iconBitmap, because that leads to crashes. Here we attempt to work around that by
-                // using remote app context: with that context iconId can be used.
-                mRemotePackageForBuilderContext = packageName;
-                setSmallIconId(iconId);
-            } // else we're out of luck.
+            }
         } else {
             // Pre Android M, the small icon has to be from the resources of the app whose
             // NotificationManager is used in NotificationManager#notify.
             setSmallIconId(iconId);
         }
         return this;
-    }
-
-    private static boolean usingRemoteAppContextAllowed() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ALLOW_REMOTE_CONTEXT_FOR_NOTIFICATIONS);
     }
 
     /**
