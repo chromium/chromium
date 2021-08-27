@@ -476,7 +476,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Code installation result for ARC boot continue.</summary>
 </histogram>
 
-<histogram name="Arc.ChromeOsImeLatency" units="ms" expires_after="2021-10-01">
+<histogram name="Arc.ChromeOsImeLatency" units="ms" expires_after="2022-04-01">
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
