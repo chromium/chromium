@@ -4342,6 +4342,15 @@
       },
     },
 
+    # Lacros tests that run on Skylab, and these tests are usually HW sensative,
+    # For example, Tast tests and GPU/display related gtest tests.
+    'lacros_skylab_tests': {
+      'lacros_all_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+        'timeout_sec': 10800,
+      },
+    },
+
     'layout_ng_gtests': {
       'webkit_unit_tests_ng': {
         'args': [
@@ -7493,6 +7502,20 @@
       'lacros_skylab_poc': {
         'variants': [
           'CROS_KEVIN_TOT',
+        ]
+      },
+    },
+
+    # Check go/lacros-on-skylab for details of Skylab configurations.
+    'lacros_skylab_tests_amd64_generic': {
+      'lacros_skylab_tests': {
+        'variants': [
+          'CROS_ATLAS_TOT',
+          'CROS_ATLAS_TOT-1',
+          'CROS_ATLAS_TOT-2',
+          'CROS_EVE_TOT',
+          'CROS_EVE_TOT-1',
+          'CROS_EVE_TOT-2',
         ]
       },
     },

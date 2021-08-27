@@ -105,6 +105,28 @@
         },
         'os_type': 'chromeos',
       },
+      # TODO(crbug.com/1218582): Merge this to lacros-amd64-generic-chrome once
+      # it's proven to be stable and easy to debug. This is the first time we
+      # run Skylab on CI, so wanted to be cautious to avoid causing trouble to
+      # LKGM rolls etc.
+      'lacros-amd64-generic-chrome-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic',
+        },
+        'os_type': 'chromeos',
+      },
       'lacros-arm-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
