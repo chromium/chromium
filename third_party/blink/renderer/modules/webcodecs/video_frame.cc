@@ -35,9 +35,9 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -258,7 +258,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         source_frame = source->GetAsVideoFrame()->frame();
         if (!init->hasTimestamp() && !init->hasDuration() &&
             (init->alpha() == kAlphaKeep ||
-             media::IsOpaque(source_frame->format()))) {
+             media::IsOpaque(source_frame->format())) &&
+            !init->hasVisibleRect() && !init->hasDisplayWidth() &&
+            !init->hasDisplayHeight()) {
+          // TODO(https://crbug.com/1243829): assess value of this shortcut and
+          // consider expanding usage where feasible.
           return source->GetAsVideoFrame()->clone(exception_state);
         }
         break;
@@ -279,15 +283,24 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     const bool force_opaque = init->alpha() == kAlphaDiscard &&
                               !media::IsOpaque(source_frame->format());
 
-    // We can't modify the timestamp or duration directly since there may be
-    // other owners accessing these fields concurrently.
-    if (init->hasTimestamp() || init->hasDuration() || force_opaque) {
+    // We can't modify frame metadata directly since there may be other owners
+    // accessing these fields concurrently.
+    if (init->hasTimestamp() || init->hasDuration() || force_opaque ||
+        init->hasVisibleRect() || init->hasDisplayWidth()) {
       const auto wrapped_format =
           force_opaque ? ToOpaqueMediaPixelFormat(source_frame->format())
                        : source_frame->format();
+      const gfx::Size& coded_size = source_frame->coded_size();
+      const gfx::Rect default_visible_rect = source_frame->visible_rect();
+      const gfx::Size default_display_size = source_frame->natural_size();
+      ParsedVideoFrameInit parsed_init(init, wrapped_format, coded_size,
+                                       default_visible_rect,
+                                       default_display_size, exception_state);
+      if (exception_state.HadException())
+        return nullptr;
       auto wrapped_frame = media::VideoFrame::WrapVideoFrame(
-          source_frame, wrapped_format, source_frame->visible_rect(),
-          source_frame->natural_size());
+          source_frame, wrapped_format, parsed_init.visible_rect,
+          parsed_init.display_size);
       wrapped_frame->set_color_space(source_frame->ColorSpace());
       if (init->hasTimestamp()) {
         wrapped_frame->set_timestamp(
@@ -328,23 +341,28 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   auto gfx_color_space = gfx::ColorSpace(*sk_color_space);
   if (!gfx_color_space.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid color space");
+    exception_state.ThrowTypeError("Invalid color space");
     return nullptr;
   }
 
-  const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
-  const gfx::Rect visible_rect(coded_size);
-  const gfx::Size natural_size = coded_size;
   const auto orientation = image->CurrentFrameOrientation().Orientation();
+  const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
+  const gfx::Rect default_visible_rect(coded_size);
+  const gfx::Size default_display_size(coded_size);
 
   sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
   if (image->IsTextureBacked() && SharedGpuContext::IsGpuCompositingEnabled()) {
     DCHECK(image->IsStaticBitmapImage());
-    auto format = media::VideoPixelFormatFromSkColorType(
+    const auto format = media::VideoPixelFormatFromSkColorType(
         paint_image.GetColorType(),
         image->CurrentFrameKnownToBeOpaque() || init->alpha() == kAlphaDiscard);
+
+    ParsedVideoFrameInit parsed_init(init, format, coded_size,
+                                     default_visible_rect, default_display_size,
+                                     exception_state);
+    if (exception_state.HadException())
+      return nullptr;
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
     gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
@@ -362,7 +380,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     frame = media::VideoFrame::WrapNativeTextures(
         format, mailbox_holders, std::move(release_cb), coded_size,
-        visible_rect, natural_size, timestamp);
+        parsed_init.visible_rect, parsed_init.display_size, timestamp);
 
     if (frame)
       frame->metadata().texture_origin_is_top_left = is_origin_top_left;
@@ -385,8 +403,21 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     const bool force_opaque =
         init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
 
-    frame = media::CreateFromSkImage(sk_image, visible_rect, natural_size,
-                                     timestamp, force_opaque);
+    const auto format = media::VideoPixelFormatFromSkColorType(
+        sk_image->colorType(), sk_image->isOpaque() || force_opaque);
+    ParsedVideoFrameInit parsed_init(init, format, coded_size,
+                                     default_visible_rect, default_display_size,
+                                     exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+
+    frame = media::CreateFromSkImage(sk_image, parsed_init.visible_rect,
+                                     parsed_init.display_size, timestamp,
+                                     force_opaque);
+
+    // Above format determination unfortunately uses a bit of internal knowledge
+    // from CreateFromSkImage(). Make sure they stay in sync.
+    DCHECK_EQ(frame->format(), format);
   }
 
   if (!frame) {
@@ -467,57 +498,20 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  // Validate natural size.
-  uint32_t natural_width = static_cast<uint32_t>(visible_rect.width());
-  uint32_t natural_height = static_cast<uint32_t>(visible_rect.height());
+  // Validate display (natural) size.
+  gfx::Size display_size(static_cast<uint32_t>(visible_rect.width()),
+                         static_cast<uint32_t>(visible_rect.height()));
   if (init->hasDisplayWidth() || init->hasDisplayHeight()) {
-    if (!init->hasDisplayWidth()) {
-      exception_state.ThrowTypeError(
-          "displayHeight specified without displayWidth.");
+    display_size = ParseAndValidateDisplaySize(init, exception_state);
+    if (exception_state.HadException())
       return nullptr;
-    }
-    if (!init->hasDisplayHeight()) {
-      exception_state.ThrowTypeError(
-          "displayWidth specified without displayHeight.");
-      return nullptr;
-    }
-
-    natural_width = init->displayWidth();
-    natural_height = init->displayHeight();
-    if (natural_width == 0) {
-      exception_state.ThrowTypeError("displayWidth must be nonzero.");
-      return nullptr;
-    }
-    if (natural_height == 0) {
-      exception_state.ThrowTypeError("displayHeight must be nonzero.");
-      return nullptr;
-    }
-    // There is no limit on display size in //media; 2 * kMaxDimension is
-    // arbitrary. A big difference is that //media computes display size such
-    // that at least one dimension is the same as the visible size (and the
-    // other is not smaller than the visible size), while WebCodecs apps can
-    // specify any combination.
-    //
-    // Note that at large display sizes, it can become impossible to allocate
-    // a texture large enough to render into. It may be impossible, for example,
-    // to create an ImageBitmap without also scaling down.
-    if (natural_width > 2 * media::limits::kMaxDimension ||
-        natural_height > 2 * media::limits::kMaxDimension) {
-      exception_state.ThrowTypeError(
-          String::Format("Invalid display size (%u, %u); exceeds "
-                         "implementation limit.",
-                         natural_width, natural_height));
-      return nullptr;
-    }
   }
-  const gfx::Size natural_size(static_cast<int>(natural_width),
-                               static_cast<int>(natural_height));
 
   // Create a frame.
   const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
   auto& frame_pool = CachedVideoFramePool::From(*execution_context);
   auto frame = frame_pool.CreateFrame(media_fmt, coded_size, visible_rect,
-                                      natural_size, timestamp);
+                                      display_size, timestamp);
   if (!frame) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
@@ -526,7 +520,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                        VideoPixelFormatToString(media_fmt).c_str(),
                        coded_size.ToString().c_str(),
                        visible_rect.ToString().c_str(),
-                       natural_size.ToString().c_str()));
+                       display_size.ToString().c_str()));
     return nullptr;
   }
 

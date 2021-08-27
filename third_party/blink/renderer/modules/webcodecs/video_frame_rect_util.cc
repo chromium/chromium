@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 
 #include <stdint.h>
 #include <cmath>
 #include <limits>
 
+#include "media/base/limits.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,6 +53,7 @@ int32_t ToInt31(double value,
 }  // namespace
 
 gfx::Rect ToGfxRect(DOMRectInit* rect,
+                    const gfx::Size& coded_size,
                     const char* name,
                     ExceptionState& exception_state) {
   int32_t x = ToInt31(rect->x(), name, "x", exception_state);
@@ -84,7 +87,49 @@ gfx::Rect ToGfxRect(DOMRectInit* rect,
     return gfx::Rect();
   }
 
-  return gfx::Rect(x, y, width, height);
+  gfx::Rect gfxRect = gfx::Rect(x, y, width, height);
+  if (gfxRect.right() > coded_size.width()) {
+    exception_state.ThrowTypeError(
+        String::Format("%s.right %i exceeds codedWidth %i.", name,
+                       gfxRect.right(), coded_size.width()));
+    return gfx::Rect();
+  }
+
+  if (gfxRect.bottom() > coded_size.height()) {
+    exception_state.ThrowTypeError(
+        String::Format("%s.bottom %u exceeds codedHeight %u.", name,
+                       gfxRect.bottom(), coded_size.height()));
+    return gfx::Rect();
+  }
+
+  return gfxRect;
+}
+
+void VerifyRectSampleAlignment(const gfx::Rect& rect,
+                               media::VideoPixelFormat format,
+                               ExceptionState& exception_state) {
+  for (size_t i = 0; i < media::VideoFrame::NumPlanes(format); i++) {
+    gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
+    if (rect.x() % sample_size.width() != 0) {
+      exception_state.ThrowTypeError(String::Format(
+          "rect.x %d is not sample-aligned in plane %zu.", rect.x(), i));
+      return;
+    } else if (rect.width() % sample_size.width() != 0) {
+      exception_state.ThrowTypeError(
+          String::Format("rect.width %d is not sample-aligned in plane %zu.",
+                         rect.width(), i));
+      return;
+    } else if (rect.y() % sample_size.height() != 0) {
+      exception_state.ThrowTypeError(String::Format(
+          "rect.y %d is not sample-aligned in plane %zu.", rect.y(), i));
+      return;
+    } else if (rect.height() % sample_size.height() != 0) {
+      exception_state.ThrowTypeError(
+          String::Format("rect.height %d is not sample-aligned in plane %zu.",
+                         rect.height(), i));
+      return;
+    }
+  }
 }
 
 }  // namespace blink
