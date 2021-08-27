@@ -347,7 +347,8 @@ void MaybeEnableWebShare() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS) && \
+    BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsTerminalSystemWebAppNaClPage(GURL url) {
   url::Replacements<char> replacements;
   replacements.ClearQuery();
