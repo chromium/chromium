@@ -21,6 +21,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-v23/default_icon_color_secondary_tint_list.xml",
+    "java/res/color-v23/default_icon_color_tint_list.xml",
     "java/res/color/blue_mode_tint.xml",
     "java/res/color/checkbox_tint.xml",
     "java/res/color/default_icon_color_light_tint_list.xml",
