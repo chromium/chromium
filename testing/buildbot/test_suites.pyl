@@ -1635,6 +1635,9 @@
       'events_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
+      'extensions_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'fuchsia_mojo_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
@@ -1774,9 +1777,6 @@
         ],
       },
       'content_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'extensions_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
       'jingle_unittests': {
