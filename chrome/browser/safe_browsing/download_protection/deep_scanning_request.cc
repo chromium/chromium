@@ -12,6 +12,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -141,6 +144,52 @@ void ResponseToDownloadCheckResult(
   }
 
   *download_result = DownloadCheckResult::DEEP_SCANNED_SAFE;
+}
+
+EventResult GetEventResult(download::DownloadDangerType danger_type,
+                           download::DownloadItem* item) {
+  DownloadCoreService* download_core_service =
+      DownloadCoreServiceFactory::GetForBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item));
+  if (download_core_service) {
+    ChromeDownloadManagerDelegate* delegate =
+        download_core_service->GetDownloadManagerDelegate();
+    if (delegate && delegate->ShouldBlockFile(danger_type, item)) {
+      return EventResult::BLOCKED;
+    }
+  }
+
+  switch (danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+      return EventResult::WARNED;
+
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+      return EventResult::ALLOWED;
+
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return EventResult::BYPASSED;
+
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+      NOTREACHED();
+      return EventResult::UNKNOWN;
+  }
 }
 
 EventResult GetEventResult(DownloadCheckResult download_result,
@@ -286,6 +335,7 @@ void DeepScanningRequest::RemoveObserver(Observer* observer) {
 
 void DeepScanningRequest::Start() {
   // Indicate we're now scanning the file.
+  pre_scan_danger_type_ = item_->GetDangerType();
   callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
 
   if (save_package_files_.empty())
@@ -452,6 +502,7 @@ void DeepScanningRequest::OnScanComplete(
       /*total_size=*/item_->GetTotalBytes(), /*result=*/result,
       /*response=*/response);
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
+  bool use_pre_scan_danger_type = false;
   if (result == BinaryUploadService::Result::SUCCESS) {
     ResponseToDownloadCheckResult(response, &download_result);
     base::UmaHistogramEnumeration(
@@ -474,16 +525,22 @@ void DeepScanningRequest::OnScanComplete(
       observer.OnModalShown(this);
 
     return;
-  } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-    if (analysis_settings_.block_large_files)
-      download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
-  } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED) {
-    if (analysis_settings_.block_password_protected_files)
-      download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
+  } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+             analysis_settings_.block_large_files) {
+    download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
+  } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+             analysis_settings_.block_password_protected_files) {
+    download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
   } else if (result ==
-             BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE) {
-    if (analysis_settings_.block_unsupported_file_types)
-      download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
+                 BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE &&
+             analysis_settings_.block_unsupported_file_types) {
+    download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
+  } else {
+    // Reaching this branch implies that scanning did not occur and that the
+    // download didn't reach a scanning-specific special UX state (too large,
+    // password protected, etc), so `event_result` needs to be tweaked to
+    // reflect whatever danger type was known pre-deep scanning.
+    use_pre_scan_danger_type = true;
   }
 
   Profile* profile = Profile::FromBrowserContext(
@@ -491,13 +548,16 @@ void DeepScanningRequest::OnScanComplete(
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile && trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+    EventResult event_result =
+        use_pre_scan_danger_type ? GetEventResult(pre_scan_danger_type_, item_)
+                                 : GetEventResult(download_result, profile);
     const auto& file_metadata = file_metadata_.at(current_path);
     MaybeReportDeepScanningVerdict(
         profile, item_->GetURL(), file_metadata.filename, file_metadata.sha256,
         file_metadata.mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, file_metadata.size, result,
-        file_metadata.scan_response, GetEventResult(download_result, profile));
+        file_metadata.scan_response, event_result);
 
     enterprise_connectors::ScanResult* stored_result =
         static_cast<enterprise_connectors::ScanResult*>(

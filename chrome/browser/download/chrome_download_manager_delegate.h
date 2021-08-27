@@ -166,6 +166,11 @@ class ChromeDownloadManagerDelegate
   static void ConnectToQuarantineService(
       mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver);
 
+  // Return true if the downloaded file should be blocked based on the current
+  // download restriction pref and |danger_type|.
+  bool ShouldBlockFile(download::DownloadDangerType danger_type,
+                       download::DownloadItem* item) const;
+
  protected:
   virtual safe_browsing::DownloadProtectionService*
       GetDownloadProtectionService();
@@ -258,11 +263,6 @@ class ChromeDownloadManagerDelegate
 
   // Returns true if |path| should open in the browser.
   bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path);
-
-  // Return true if the downloaded file should be blocked based on the current
-  // download restriction pref and |danger_type|.
-  bool ShouldBlockFile(download::DownloadDangerType danger_type,
-                       download::DownloadItem* item) const;
 
   void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* download,
                                               bool show_download_in_folder);

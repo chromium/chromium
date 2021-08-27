@@ -37,6 +37,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -395,6 +398,10 @@ class DownloadProtectionServiceTestBase
         profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
     sb_service_->CreateTestURLLoaderFactoryForProfile(profile());
+
+    DownloadCoreServiceFactory::GetForBrowserContext(profile())
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile()));
   }
 
   void TearDown() override {

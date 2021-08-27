@@ -207,6 +207,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   DownloadCheckResult download_check_result_ =
       DownloadCheckResult::DEEP_SCANNED_SAFE;
 
+  // Cached danger type for the download to be used by reporting in case
+  // scanning is skipped for any reason.
+  download::DownloadDangerType pre_scan_danger_type_;
+
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
 

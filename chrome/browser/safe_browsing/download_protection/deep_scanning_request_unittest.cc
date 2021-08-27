@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+
 #include <unordered_map>
 
 #include "base/bind.h"
@@ -14,6 +15,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -232,6 +236,10 @@ class DeepScanningRequestTest : public testing::Test {
 
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+    DownloadCoreServiceFactory::GetForBrowserContext(profile_)
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile_));
   }
 
   void TearDown() override {
@@ -1123,6 +1131,18 @@ class DeepScanningDownloadRestrictionsTest
         return EventResult::BLOCKED;
     }
   }
+
+  EventResult expected_event_result_for_safe_large_file() const {
+    switch (download_restriction()) {
+      case DownloadPrefs::DownloadRestriction::NONE:
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+        return EventResult::ALLOWED;
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+        return EventResult::BLOCKED;
+    }
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1219,6 +1239,79 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     request.Start();
 
     EXPECT_EQ(DownloadCheckResult::POTENTIALLY_UNWANTED, last_result_);
+  }
+
+  {
+    DeepScanningRequest request(
+        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                            base::Unretained(this)),
+        &download_protection_service_, settings().value());
+
+    enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(kScanId);
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        download_path_, BinaryUploadService::Result::FILE_TOO_LARGE, response);
+
+    EventReportValidator validator(client_.get());
+    validator.ExpectUnscannedFileEvent(
+        /*url*/ "https://example.com/download.exe",
+        /*filename*/ download_path_.AsUTF8Unsafe(),
+        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
+        /*sha256*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*reason*/ "FILE_TOO_LARGE",
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("download contents").size(),
+        /*result*/
+        EventResultToString(expected_event_result_for_safe_large_file()),
+        /*username*/ kUserName);
+
+    request.Start();
+
+    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+  }
+
+  {
+    // If `item_` has a dangerous DownloadDangerType before a deep scan and that
+    // deep scan fails, the corresponding unscanned file event should match the
+    // EventResult imposed by DownloadRestrictions.
+    EXPECT_CALL(item_, GetDangerType())
+        .WillRepeatedly(Return(download::DownloadDangerType::
+                                   DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
+    DeepScanningRequest request(
+        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                            base::Unretained(this)),
+        &download_protection_service_, settings().value());
+
+    enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(kScanId);
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        download_path_, BinaryUploadService::Result::FILE_TOO_LARGE, response);
+
+    EventReportValidator validator(client_.get());
+    validator.ExpectUnscannedFileEvent(
+        /*url*/ "https://example.com/download.exe",
+        /*filename*/ download_path_.AsUTF8Unsafe(),
+        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
+        /*sha256*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*reason*/ "FILE_TOO_LARGE",
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("download contents").size(),
+        /*result*/ EventResultToString(expected_event_result_for_malware()),
+        /*username*/ kUserName);
+
+    request.Start();
+
+    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
   }
 }
 
