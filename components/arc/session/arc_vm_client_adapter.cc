@@ -185,7 +185,7 @@ std::vector<std::string> GenerateUpgradeProps(
     }
   }
 
-  // TODO(niwa): Handle |is_account_managed| and
+  // TODO(lgcheng): Handle |is_account_managed| and
   // |is_managed_adb_sideloading_allowed| in |upgrade_params| when we
   // implement apk sideloading for ARCVM.
   return result;
@@ -258,9 +258,6 @@ std::vector<std::string> GenerateKernelCmdline(
   // (go/arcvm-android-sh-restricted)
   if (channel == "testimage")
     result.push_back("androidboot.vshd_service_override=vshd_for_test");
-
-  // TODO(niwa): Check if we need to set ro.boot.enable_adb_sideloading for
-  // ARCVM.
 
   // Only add boot property if flag to disable media store maintenance is set.
   if (start_params.disable_media_store_maintenance)
