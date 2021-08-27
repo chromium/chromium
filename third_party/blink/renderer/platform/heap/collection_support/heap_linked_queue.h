@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_STACK_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_STACK_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_QUEUE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_QUEUE_H_
 
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
@@ -39,32 +39,34 @@
 
 namespace blink {
 
-// HeapLinkedStack<> is an Oilpan-managed stack that avoids pre-allocation
+// HeapLinkedQueue<> is an Oilpan-managed queue that avoids pre-allocation
 // of memory and heap fragmentation.
 //
 // The API was originally implemented on the call stack by LinkedStack<>
-// (now removed: https://codereview.chromium.org/2761853003/).
+// (now removed: https://codereview.chromium.org/2761853003/), and then
+// converted into a queue (https://crrev.com/c/3119837).
 // See https://codereview.chromium.org/17314010 for the original use-case.
 template <typename T>
-class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
+class HeapLinkedQueue final : public GarbageCollected<HeapLinkedQueue<T>> {
  public:
-  HeapLinkedStack() { CheckType(); }
+  HeapLinkedQueue() { CheckType(); }
 
   inline wtf_size_t size() const;
   inline bool IsEmpty() const;
 
-  inline void Push(const T&);
-  inline const T& Peek() const;
-  inline void Pop();
+  inline void push_back(const T&);
+  inline const T& front() const;
+  inline void pop_front();
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(head_);
+    visitor->Trace(tail_);
   }
 
  private:
   class Node final : public GarbageCollected<Node> {
    public:
-    Node(const T&, Node*);
+    explicit Node(const T&);
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(data_);
@@ -77,46 +79,54 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
 
   static void CheckType() {
     static_assert(WTF::IsMemberType<T>::value,
-                  "HeapLinkedStack supports only Member.");
+                  "HeapLinkedQueue supports only Member.");
   }
 
   Member<Node> head_;
+  Member<Node> tail_;
   wtf_size_t size_ = 0;
 };
 
 template <typename T>
-HeapLinkedStack<T>::Node::Node(const T& data, Node* next)
-    : data_(data), next_(next) {}
+HeapLinkedQueue<T>::Node::Node(const T& data) : data_(data) {}
 
 template <typename T>
-bool HeapLinkedStack<T>::IsEmpty() const {
+bool HeapLinkedQueue<T>::IsEmpty() const {
+  DCHECK(head_ || !size_);
   return !head_;
 }
 
 template <typename T>
-void HeapLinkedStack<T>::Push(const T& data) {
-  head_ = MakeGarbageCollected<Node>(data, head_);
+void HeapLinkedQueue<T>::push_back(const T& data) {
+  Node* new_entry = MakeGarbageCollected<Node>(data);
+  if (tail_)
+    tail_->next_ = new_entry;
+  else
+    head_ = new_entry;
+  tail_ = new_entry;
   ++size_;
 }
 
 template <typename T>
-const T& HeapLinkedStack<T>::Peek() const {
+const T& HeapLinkedQueue<T>::front() const {
+  DCHECK(!IsEmpty());
   return head_->data_;
 }
 
 template <typename T>
-void HeapLinkedStack<T>::Pop() {
-  DCHECK(head_);
-  DCHECK(size_);
+void HeapLinkedQueue<T>::pop_front() {
+  DCHECK(!IsEmpty());
   head_ = head_->next_;
+  if (!head_)
+    tail_ = nullptr;
   --size_;
 }
 
 template <typename T>
-wtf_size_t HeapLinkedStack<T>::size() const {
+wtf_size_t HeapLinkedQueue<T>::size() const {
   return size_;
 }
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_STACK_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_LINKED_QUEUE_H_
