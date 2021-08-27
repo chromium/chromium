@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/memory/memory_ablation_study.h"
+#include "chrome/browser/memory/memory_ablation_study.h"
 
 #include <algorithm>
 #include <cstring>
@@ -12,15 +12,16 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "crypto/random.h"
 
-namespace chromeos {
+namespace memory {
 
 namespace {
 
 // The name of the Finch study that turns on the experiment.
-const base::Feature kCrosMemoryAblationStudy{"CrosMemoryAblationStudy",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMemoryAblationStudy{"MemoryAblationStudy",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The total amount of memory to ablate in MB.
 const char kAblationSizeMb[] = "ablation-size-mb";
@@ -37,21 +38,29 @@ constexpr int kReadTimerIntervalSeconds = 30;
 // Size in bytes of the uncompressible region.
 constexpr int kUncompressibleRegionSize = 4096;
 
+// Theres some variance on exact ram values so we use values slightly under 2GB
+// and 4GB.
+#if defined(OS_ANDROID)
+constexpr int kMinimumRamMB = 1700;
+#else
+constexpr int kMinimumRamMB = 3700;
+#endif
+
 }  // namespace
 
 MemoryAblationStudy::MemoryAblationStudy() {
-  // We restrict the memory ablation study to 4GB+ devices. There's some
-  // variance on exact RAM values, so we use 3500 as a rough threshold.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() < 3500)
+  // On Android we restrict to 2GB+ devices.
+  // On Desktop we restrict to 4GB+ devices.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() < kMinimumRamMB)
     return;
 
   // This class does nothing if the study is disabled.
-  if (!base::FeatureList::IsEnabled(kCrosMemoryAblationStudy)) {
+  if (!base::FeatureList::IsEnabled(kMemoryAblationStudy)) {
     return;
   }
 
   remaining_allocation_mb_ = base::GetFieldTrialParamByFeatureAsInt(
-      kCrosMemoryAblationStudy, kAblationSizeMb, /*default_value=*/0);
+      kMemoryAblationStudy, kAblationSizeMb, /*default_value=*/0);
   if (remaining_allocation_mb_ <= 0)
     return;
 
@@ -117,4 +126,4 @@ void MemoryAblationStudy::Read() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace memory

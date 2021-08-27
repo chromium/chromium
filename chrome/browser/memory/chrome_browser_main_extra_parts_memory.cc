@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
+#include "chrome/browser/memory/memory_ablation_study.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
@@ -51,4 +52,6 @@ void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_evaluator_.reset();
 #endif
+
+  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }

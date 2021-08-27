@@ -34,8 +34,6 @@ component("memory") {
     "kstaled.h",
     "memory.cc",
     "memory.h",
-    "memory_ablation_study.cc",
-    "memory_ablation_study.h",
     "pagemap.cc",
     "pagemap.h",
     "pressure/system_memory_pressure_evaluator.cc",
@@ -59,7 +57,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
-    "memory_ablation_study_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
   ]

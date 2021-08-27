@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_MEMORY_MEMORY_ABLATION_STUDY_H_
-#define CHROMEOS_MEMORY_MEMORY_ABLATION_STUDY_H_
+#ifndef CHROME_BROWSER_MEMORY_MEMORY_ABLATION_STUDY_H_
+#define CHROME_BROWSER_MEMORY_MEMORY_ABLATION_STUDY_H_
 
 #include <cstdint>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
-#include "chromeos/chromeos_export.h"
 
-namespace chromeos {
+namespace memory {
 
 // This class is the implementation of a memory ablation study. It artificially
 // increases memory usage for different experiment arms.
-class CHROMEOS_EXPORT MemoryAblationStudy {
+class MemoryAblationStudy {
  public:
   MemoryAblationStudy();
   MemoryAblationStudy(const MemoryAblationStudy&) = delete;
@@ -24,7 +23,7 @@ class CHROMEOS_EXPORT MemoryAblationStudy {
   ~MemoryAblationStudy();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CrosMemoryAblationStudy, Basic);
+  FRIEND_TEST_ALL_PREFIXES(MemoryAblationStudyTest, Basic);
 
   using Region = std::vector<uint8_t>;
 
@@ -60,6 +59,6 @@ class CHROMEOS_EXPORT MemoryAblationStudy {
   Region uncompressible_region_;
 };
 
-}  // namespace chromeos
+}  // namespace memory
 
-#endif  // CHROMEOS_MEMORY_MEMORY_ABLATION_STUDY_H_
+#endif  // CHROME_BROWSER_MEMORY_MEMORY_ABLATION_STUDY_H_

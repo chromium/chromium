@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/memory/memory_ablation_study.h"
+#include "chrome/browser/memory/memory_ablation_study.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace memory {
 
 namespace {
-const base::Feature kCrosMemoryAblationStudy{"CrosMemoryAblationStudy",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMemoryAblationStudy{"MemoryAblationStudy",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace
 
-class CrosMemoryAblationStudy : public testing::Test {
+class MemoryAblationStudyTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -23,12 +23,11 @@ class CrosMemoryAblationStudy : public testing::Test {
 };
 
 // Tests basic functionality of the MemoryAblationStudy class.
-TEST_F(CrosMemoryAblationStudy, Basic) {
+TEST_F(MemoryAblationStudyTest, Basic) {
   // Ablate 137MB.
   base::FieldTrialParams params;
   params["ablation-size-mb"] = "137";
-  feature_list.InitAndEnableFeatureWithParameters(kCrosMemoryAblationStudy,
-                                                  params);
+  feature_list.InitAndEnableFeatureWithParameters(kMemoryAblationStudy, params);
 
   // 450s should be enough to both allocate the memory and trigger a read.
   MemoryAblationStudy study;
@@ -40,4 +39,4 @@ TEST_F(CrosMemoryAblationStudy, Basic) {
   EXPECT_EQ(total_size, 137 * 1024 * 1024u);
 }
 
-}  // namespace chromeos
+}  // namespace memory

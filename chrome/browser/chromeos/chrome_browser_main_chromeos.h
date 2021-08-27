@@ -93,7 +93,6 @@ class DebugdNotificationHandler;
 class FastTransitionObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
-class MemoryAblationStudy;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
@@ -228,7 +227,6 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;
-  std::unique_ptr<MemoryAblationStudy> memory_ablation_study_;
 
   std::unique_ptr<ash::quick_pair::QuickPairBrowserDelegateImpl>
       quick_pair_delegate_;
