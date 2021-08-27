@@ -168,7 +168,7 @@ Polymer({
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
-      computed: 'computePageSizes_(selectedSource)',
+      computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
     },
 
     /**
@@ -482,13 +482,12 @@ Polymer({
   },
 
   /**
-   * @param {string} selectedSource
    * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
    */
-  computePageSizes_(selectedSource) {
+  computePageSizes_() {
     for (const source of this.capabilities_.sources) {
-      if (source.name === selectedSource) {
+      if (source.name === this.selectedSource) {
         return source.pageSizes;
       }
     }
