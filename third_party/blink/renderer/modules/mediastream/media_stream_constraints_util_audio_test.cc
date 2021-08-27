@@ -805,7 +805,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(features::kWebRtcEnableCaptureMultiChannelApm,
+  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
                                 true);
   if (!IsDeviceCapture())
     return;
@@ -877,7 +877,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
 TEST_P(MediaStreamConstraintsUtilAudioTest,
        MultiChannelEchoCancellationDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(features::kWebRtcEnableCaptureMultiChannelApm,
+  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
                                 false);
   if (!IsDeviceCapture())
     return;
