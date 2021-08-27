@@ -8,18 +8,11 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kEnableCloseAllTabsConfirmation{
-    "EnableCloseAllTabsConfirmation", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kTabGridContextMenu{"TabGridContextMenu",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTabsBulkActions{"TabsBulkActions",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsCloseAllTabsConfirmationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation);
-}
 
 bool IsTabGridContextMenuEnabled() {
   if (@available(iOS 13, *)) {

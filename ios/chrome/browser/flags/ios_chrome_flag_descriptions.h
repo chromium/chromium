@@ -163,11 +163,6 @@ extern const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[];
 extern const char
     kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[];
 
-// Title and description for the flag to enable the confirmational action sheet
-// for the tab grid "Close All" action.
-extern const char kEnableCloseAllTabsConfirmationName[];
-extern const char kEnableCloseAllTabsConfirmationDescription[];
-
 // Title and description for the flag to enable the discover feed live preview
 // in long-press feed context menu.
 extern const char kEnableDiscoverFeedPreviewName[];

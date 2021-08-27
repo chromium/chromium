@@ -174,12 +174,6 @@
 // Returns the index of active tab in normal mode.
 + (NSUInteger)indexOfActiveNormalTab;
 
-// Resets Close All Tabs Confirmation feature to its default value.
-+ (void)resetCloseAllTabsConfirmation;
-
-// Disables Close All Tabs Confirmation feature.
-+ (void)disableCloseAllTabsConfirmation;
-
 #pragma mark - Window utilities (EG2)
 
 // Returns screen position of the given |windowNumber|
@@ -513,9 +507,6 @@
 // Returns whether the app is configured to, and running in an environment which
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
-
-// Returns whether the Close All Tabs Confirmation feature is enabled.
-+ (BOOL)isCloseAllTabsConfirmationEnabled;
 
 #pragma mark - Popup Blocking
 

@@ -408,8 +408,6 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-// TODO(crbug.com/1123536): Merges this method with |closeAllItems| once
-// EnableCloseAllTabsConfirmation is landed.
 - (void)saveAndCloseAllItems {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
@@ -443,15 +441,6 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   self.syncedClosedTabsCount = 0;
   self.closedSessionWindow = nil;
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
-}
-
-- (void)showCloseAllConfirmationActionSheetWithAnchor:
-    (UIBarButtonItem*)buttonAnchor {
-  [self.delegate
-      showCloseAllConfirmationActionSheetWitTabGridMediator:self
-                                               numberOfTabs:self.webStateList
-                                                                ->count()
-                                                     anchor:buttonAnchor];
 }
 
 - (void)

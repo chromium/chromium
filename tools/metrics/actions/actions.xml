@@ -16078,6 +16078,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridCloseAllIncognitoTabsConfirmationPresented">
+  <obsolete>Deprecated as of 8/2021</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
@@ -16096,6 +16097,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridCloseAllRegularTabsConfirmationPresented">
+  <obsolete>Deprecated as of 8/2021</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
@@ -16105,6 +16107,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridCloseAllTabsConfirmationCanceled">
+  <obsolete>Deprecated as of 8/2021</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
@@ -16114,6 +16117,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridCloseAllTabsConfirmationConfirmed">
+  <obsolete>Deprecated as of 8/2021</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>

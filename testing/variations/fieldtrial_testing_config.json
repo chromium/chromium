@@ -3479,21 +3479,6 @@
             ]
         }
     ],
-    "EnableCloseAllTabsConfirmation": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "CloseAllTabsConfirmationEnabled",
-                    "enable_features": [
-                        "EnableCloseAllTabsConfirmation"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableManualPasswordGenerationIOS": [
         {
             "platforms": [

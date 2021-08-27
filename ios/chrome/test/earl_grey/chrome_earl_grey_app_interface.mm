@@ -92,11 +92,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   serializer.Serialize(*value);
   return base::SysUTF8ToNSString(serialized_value);
 }
-
-// ScopedFeatureList used to disable the kEnableCloseAllTabsConfirmation
-// feature. It's kept alive to preserve the state of
-// kEnableCloseAllTabsConfirmation feature during testing.
-base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 @implementation ChromeEarlGreyAppInterface
@@ -331,15 +326,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (NSUInteger)indexOfActiveNormalTab {
   return chrome_test_util::GetIndexOfActiveNormalTab();
-}
-
-+ (void)resetCloseAllTabsConfirmation {
-  closeAllTabsScopedFeatureList.Reset();
-}
-
-+ (void)disableCloseAllTabsConfirmation {
-  closeAllTabsScopedFeatureList.InitAndDisableFeature(
-      kEnableCloseAllTabsConfirmation);
 }
 
 #pragma mark - Window utilities (EG2)
@@ -1031,10 +1017,6 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (BOOL)areMultipleWindowsSupported {
   return base::ios::IsMultipleScenesSupported();
-}
-
-+ (BOOL)isCloseAllTabsConfirmationEnabled {
-  return IsCloseAllTabsConfirmationEnabled();
 }
 
 #pragma mark - ScopedBlockPopupsPref

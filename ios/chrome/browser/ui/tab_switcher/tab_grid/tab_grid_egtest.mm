@@ -56,16 +56,6 @@ char kResponse4[] = "Test Page 4 content";
 const CFTimeInterval kSnackbarAppearanceTimeout = 5;
 const CFTimeInterval kSnackbarDisappearanceTimeout = 11;
 
-// Matcher for the 'Close All' confirmation button.
-id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
-    NSInteger numberOfTabs) {
-  NSString* closeTabs =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION, numberOfTabs));
-  return grey_allOf(grey_accessibilityLabel(closeTabs),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-}
-
 id<GREYMatcher> TabWithTitle(NSString* title) {
   return grey_allOf(grey_accessibilityLabel(title), grey_sufficientlyVisible(),
                     nil);
@@ -184,11 +174,6 @@ id<GREYMatcher> SelectAllButton() {
 // Tests that tapping Close All shows no tabs, shows Undo button, and displays
 // the empty state. Then tests tapping Undo shows Close All button again.
 - (void)testCloseAllAndUndoCloseAll {
-  if ([ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Close All Tabs Confirmation feature flag is on.");
-  }
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
@@ -215,11 +200,6 @@ id<GREYMatcher> SelectAllButton() {
 // Tests that the Undo button is no longer available after tapping Close All,
 // then creating a new tab, then coming back to the tab grid.
 - (void)testUndoCloseAllNotAvailableAfterNewTabCreation {
-  if ([ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Close All Tabs Confirmation feature flag is on.");
-  }
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
@@ -416,53 +396,6 @@ id<GREYMatcher> SelectAllButton() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-#pragma mark -
-
-// Tests that tapping on "Close All" shows a confirmation dialog.
-// It also tests that tapping on "Close x Tab(s)" on the confirmation dialog
-// displays an empty grid and tapping on "Cancel" doesn't modify the grid.
-- (void)testCloseAllTabsConfirmation {
-  if (![ChromeEarlGrey isCloseAllTabsConfirmationEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Close All Tabs Confirmation feature flag is off.");
-  }
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-
-  // Taps on "Close All" and Confirm.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:CloseAllTabsConfirmationWithNumberOfTabs(
-                                          1)] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
-      assertWithMatcher:grey_nil()];
-
-  // Checks that "Close All" is grayed out.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
-
-  // Creates a new tab then come back to tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-
-  // Taps on "Close All" and Cancel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      performAction:grey_tap()];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-        performAction:grey_tap()];
-  }
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

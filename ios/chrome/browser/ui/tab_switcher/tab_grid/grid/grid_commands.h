@@ -44,10 +44,6 @@
 // closed items, it will discard them. Otherwise, this is a no-op.
 - (void)discardSavedClosedItems;
 // Shows an action sheet, anchored to the UIBarButtonItem, that asks for
-// confirmation when 'Close All' button is tapped.
-- (void)showCloseAllConfirmationActionSheetWithAnchor:
-    (UIBarButtonItem*)buttonAnchor;
-// Shows an action sheet, anchored to the UIBarButtonItem, that asks for
 // confirmation when 'Close Items' button is tapped.
 - (void)
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items

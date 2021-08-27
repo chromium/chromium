@@ -58,20 +58,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 @implementation ErrorPageTestCase
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Features are enabled or disabled based on the name of the test that is
-  // running. This is done because it is inefficient to use
-  // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testRestoreErrorPage)]) {
-    config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-  } else {
-    config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 

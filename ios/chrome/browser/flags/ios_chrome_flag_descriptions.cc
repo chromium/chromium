@@ -184,12 +184,6 @@ const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
     "When enabled, UI indicating user's e-mail address will appear at the"
     "bottom of save card infobar.";
 
-const char kEnableCloseAllTabsConfirmationName[] =
-    "Enable Close All Tabs confirmation";
-const char kEnableCloseAllTabsConfirmationDescription[] =
-    "Enable showing an action sheet that asks for confirmation when 'Close "
-    "All' button is tapped on the tab grid to avoid unwanted clearing.";
-
 const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
 const char kEnableDiscoverFeedPreviewDescription[] =
     "Enable showing a live preview for discover feed long-press menu.";

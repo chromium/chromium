@@ -159,10 +159,6 @@ enum class TabGridPageConfiguration {
 - (void)contentDidAppear;
 - (void)contentWillDisappearAnimated:(BOOL)animated;
 
-// Notifies the ViewController that the Close All Tabs confirmation action sheet
-// has been closed.
-- (void)closeAllTabsConfirmationClosed;
-
 // Dismisses any modal UI which may be presented.
 - (void)dismissModals;
 

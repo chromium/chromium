@@ -685,8 +685,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 }
 
 - (void)triggerRestoreViaTabGridRemoveAllUndo {
-  [ChromeEarlGreyAppInterface disableCloseAllTabsConfirmation];
-
   [ChromeEarlGrey showTabSwitcher];
   GREYWaitForAppToIdle(@"App failed to idle");
   [ChromeEarlGrey
@@ -696,8 +694,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
   [self waitForRestoreSessionToFinish];
   [self waitForPageToFinishLoading];
-
-  [ChromeEarlGreyAppInterface resetCloseAllTabsConfirmation];
 }
 
 - (BOOL)webStateWebViewUsesContentInset {
@@ -1217,10 +1213,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (BOOL)areMultipleWindowsSupported {
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
-}
-
-- (BOOL)isCloseAllTabsConfirmationEnabled {
-  return [ChromeEarlGreyAppInterface isCloseAllTabsConfirmationEnabled];
 }
 
 #pragma mark - ScopedBlockPopupsPref
