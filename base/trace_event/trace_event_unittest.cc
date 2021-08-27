@@ -2798,8 +2798,13 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
   const Value* args_dict = dict->FindDictKey("args");
   ASSERT_TRUE(args_dict);
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  EXPECT_EQ(*args_dict->FindStringKey("arg"), "foobar");
+#else
+  // Pre-client-lib, these types of TracedValues can't be serialized to JSON.
   EXPECT_EQ(*args_dict->FindStringKey("arg"),
             "Unsupported (crbug.com/1225176)");
+#endif
 }
 
 }  // namespace trace_event

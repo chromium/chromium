@@ -37,8 +37,7 @@ constexpr const char kRecordAllCategoryFilter[] = "*";
 
 void EnableTrace() {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  g_tracing_session =
-      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+  g_tracing_session = perfetto::Tracing::NewTrace();
   g_tracing_session->Setup(test::TracingEnvironment::GetDefaultTraceConfig());
   g_tracing_session->StartBlocking();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
