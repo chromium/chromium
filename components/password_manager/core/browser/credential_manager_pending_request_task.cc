@@ -16,6 +16,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -30,16 +31,6 @@
 
 namespace password_manager {
 namespace {
-
-// Returns true iff |form1| is better suitable for showing in the account
-// chooser than |form2|. Inspired by PasswordFormManager::ScoreResult.
-bool IsBetterMatch(const PasswordForm& form1, const PasswordForm& form2) {
-  if (!form1.is_public_suffix_match && form2.is_public_suffix_match)
-    return true;
-  if (form1.date_last_used > form2.date_last_used)
-    return true;
-  return form1.date_created > form2.date_created;
-}
 
 // Inserts `form` into `set` if no equally comparing element exists yet, or
 // replaces an existing `old_form` if `pred(old_form, form)` evaluates to true.
@@ -80,14 +71,7 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
         return std::make_pair(form->username_value, form->federation_origin);
       });
 
-  // The key is [username, signon_realm, store]. signon_realm is used only for
-  // PSL matches because those entries have it in the UI.
-  auto credentials = MakeFlatSet(/*key_getter=*/[](const auto& form) {
-    return std::make_tuple(
-        form->username_value,
-        form->is_public_suffix_match ? form->signon_realm : std::string(),
-        form->in_store);
-  });
+  std::vector<const PasswordForm*> all_non_federated_forms;
   for (auto& form : *forms) {
     if (!form->federation_origin.opaque()) {
       // |forms| contains credentials from both the profile and account stores.
@@ -98,32 +82,27 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
                           return new_form->IsUsingAccountStore();
                         });
     } else {
-      InsertOrReplaceIf(credentials, std::move(form),
-                        [](const auto& old_form, const auto& new_form) {
-                          return IsBetterMatch(*new_form, *old_form);
-                        });
+      all_non_federated_forms.push_back(form.get());
     }
   }
-  // |credentials| contains credentials from both profile and account stores.
-  // There could potentially be duplicate credentials with the same password in
-  // which case it doesn't make sense to show both in the UI. When such
-  // duplicates exist, we favor the account store version to make it clear in
-  // the UI that this credential is available on other devices.
-  auto credentials_with_unique_passwords =
-      MakeFlatSet(/*key_getter=*/[](const auto& form) {
-        return std::make_tuple(
-            form->username_value,
-            form->is_public_suffix_match ? form->signon_realm : std::string(),
-            form->password_value);
-      });
 
-  for (auto& form : std::move(credentials).extract()) {
-    InsertOrReplaceIf(credentials_with_unique_passwords, std::move(form),
-                      [](const auto& old_form, const auto& new_form) {
-                        return new_form->IsUsingAccountStore();
-                      });
+  std::vector<const PasswordForm*> other_matches;
+  std::vector<const PasswordForm*> best_matches;
+  const password_manager::PasswordForm* preferred_match = nullptr;
+  password_manager_util::FindBestMatches(
+      all_non_federated_forms, PasswordForm::Scheme::kHtml, &other_matches,
+      &best_matches, &preferred_match);
+
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  for (const PasswordForm* best_match : best_matches) {
+    auto it = base::ranges::find_if(*forms, [best_match](const auto& form) {
+      return best_match == form.get();
+    });
+    DCHECK(it != forms->end());
+    result.push_back(std::move(*it));
   }
-  *forms = std::move(credentials_with_unique_passwords).extract();
+
+  *forms = std::move(result);
 
   std::vector<std::unique_ptr<PasswordForm>> federated_forms =
       std::move(federated_forms_with_unique_username).extract();
@@ -242,11 +221,11 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     // PasswordForm definition: scheme, host, port and path.
     // GURL definition: scheme, host, and port.
     // So we can't compare them directly.
-    if (form->is_affiliation_based_match ||
-        url::Origin::Create(form->url) == origin_) {
-      local_results.push_back(std::move(form));
-    } else if (form->is_public_suffix_match) {
+    if (password_manager_util::GetMatchType(*form) ==
+        password_manager_util::GetLoginMatchType::kPSL) {
       psl_results.push_back(std::move(form));
+    } else {
+      local_results.push_back(std::move(form));
     }
   }
 

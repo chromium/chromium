@@ -40,13 +40,6 @@ namespace {
 
 constexpr char16_t kPreferredUsername[] = u"test@gmail.com";
 constexpr char16_t kPreferredPassword[] = u"password";
-constexpr char16_t kPreferredAlternatePassword[] = u"new_password";
-
-constexpr char16_t kDuplicateLocalUsername[] = u"local@gmail.com";
-constexpr char16_t kDuplicateLocalPassword[] = u"local_password";
-
-constexpr char16_t kSyncedUsername[] = u"synced@gmail.com";
-constexpr char16_t kSyncedPassword[] = u"password";
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
@@ -72,16 +65,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
 };
-
-PasswordForm CreateForm(std::u16string username,
-                        std::u16string password,
-                        Store store) {
-  PasswordForm form;
-  form.username_value = username;
-  form.password_value = password;
-  form.in_store = store;
-  return form;
-}
 
 // Matcher for PasswordAndMetadata.
 MATCHER_P3(IsLogin, username, password, uses_account_store, std::string()) {
@@ -712,56 +695,6 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   // Check that nor username nor password fields are set.
   EXPECT_TRUE(result.username_field.unique_renderer_id.is_null());
   EXPECT_TRUE(result.password_field.unique_renderer_id.is_null());
-}
-
-// Tests that matches are retained without duplicates.
-TEST(PasswordFormFillDataTest, DeduplicatesFillData) {
-  // Create the current form on the page.
-  PasswordForm form;
-  form.username_element = u"username";
-  form.password_element = u"password";
-
-  // Create an exact match in the database.
-  PasswordForm preferred_match = form;
-  preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
-  preferred_match.in_store = Store::kProfileStore;
-
-  // Create two discarded and one retained duplicate.
-  const PasswordForm duplicate_of_preferred =
-      CreateForm(kPreferredUsername, kPreferredPassword, Store::kProfileStore);
-  const PasswordForm account_duplicate_of_preferred =
-      CreateForm(kPreferredUsername, kPreferredPassword, Store::kAccountStore);
-  const PasswordForm non_duplicate_of_preferred = CreateForm(
-      kPreferredUsername, kPreferredAlternatePassword, Store::kAccountStore);
-
-  // Create a local password and its discarded duplicate.
-  const PasswordForm local = CreateForm(
-      kDuplicateLocalUsername, kDuplicateLocalPassword, Store::kProfileStore);
-  const PasswordForm duplicate_of_local = local;
-
-  // Create a synced password and its discarded local duplicate.
-  const PasswordForm remote =
-      CreateForm(kSyncedUsername, kSyncedPassword, Store::kProfileStore);
-  const PasswordForm duplicate_of_remote =
-      CreateForm(kSyncedUsername, kSyncedPassword, Store::kAccountStore);
-
-  PasswordFormFillData result = CreatePasswordFormFillData(
-      form,
-      {&duplicate_of_preferred, &account_duplicate_of_preferred,
-       &non_duplicate_of_preferred, &local, &duplicate_of_local, &remote,
-       &duplicate_of_remote},
-      preferred_match, true);
-
-  EXPECT_EQ(preferred_match.username_value, result.username_field.value);
-  EXPECT_EQ(preferred_match.password_value, result.password_field.value);
-  EXPECT_TRUE(result.uses_account_store);
-  EXPECT_THAT(
-      result.additional_logins,
-      testing::ElementsAre(
-          IsLogin(kPreferredUsername, kPreferredAlternatePassword, true),
-          IsLogin(kDuplicateLocalUsername, kDuplicateLocalPassword, false),
-          IsLogin(kSyncedUsername, kSyncedPassword, true)));
 }
 
 // Tests that the constructing a PasswordFormFillData behaves correctly when

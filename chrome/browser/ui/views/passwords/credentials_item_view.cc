@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -128,7 +129,8 @@ CredentialsItemView::CredentialsItemView(
     lower_label_ = text_container->AddChildView(std::move(lower_label));
   }
 
-  if (form->is_public_suffix_match) {
+  if (password_manager_util::GetMatchType(*form) !=
+      password_manager_util::GetLoginMatchType::kExact) {
     info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(
         base::UTF8ToUTF16(form->url.GetOrigin().spec())));
   }

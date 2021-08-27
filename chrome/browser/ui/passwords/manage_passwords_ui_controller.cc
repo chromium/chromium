@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
@@ -207,12 +208,14 @@ bool ManagePasswordsUIController::OnChooseCredentials(
   if (!HasBrowserWindow())
     return false;
   // If |local_credentials| contains PSL matches they shouldn't be propagated to
-  // the state because PSL matches aren't saved for current page. This logic is
-  // implemented here because Android uses ManagePasswordsState as a data source
-  // for account chooser.
+  // the state (unless they are also web affiliations) because PSL matches
+  // aren't saved for current page. This logic is implemented here because
+  // Android uses ManagePasswordsState as a data source for account chooser.
   CredentialManagerDialogController::FormsVector locals;
-  if (!local_credentials[0]->is_public_suffix_match)
+  if (password_manager_util::GetMatchType(*local_credentials[0]) !=
+      password_manager_util::GetLoginMatchType::kPSL) {
     locals = CopyFormVector(local_credentials);
+  }
   passwords_data_.OnRequestCredentials(std::move(locals), origin);
   passwords_data_.set_credentials_callback(std::move(callback));
   auto* raw_controller = new CredentialManagerDialogControllerImpl(

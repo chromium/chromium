@@ -362,7 +362,8 @@ PendingCredentialsState PasswordSaveManagerImpl::ComputePendingCredentialsState(
   // If the autofilled credentials were a PSL match, store a copy with the
   // current origin and signon realm. This ensures that on the next visit, a
   // precise match is found.
-  if (similar_saved_form->is_public_suffix_match)
+  if (password_manager_util::GetMatchType(*similar_saved_form) ==
+      password_manager_util::GetLoginMatchType::kPSL)
     return PendingCredentialsState::AUTOMATIC_SAVE;
 
   return PendingCredentialsState::EQUAL_TO_SAVED_MATCH;

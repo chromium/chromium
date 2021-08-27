@@ -56,7 +56,9 @@ void PostProcessMatches(const PasswordForm& pending,
     const bool same_password = match->password_value == pending.password_value;
     const bool username_was_added =
         match->username_value.empty() && !pending.username_value.empty();
-    if (same_password && username_was_added && !match->is_public_suffix_match) {
+    if (same_password && username_was_added &&
+        password_manager_util::GetMatchType(*match) ==
+            password_manager_util::GetLoginMatchType::kExact) {
       store->RemoveLogin(*match);
       continue;
     }

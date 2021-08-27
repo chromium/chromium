@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -48,12 +49,19 @@ using password_manager::PasswordForm;
 namespace password_manager_util {
 namespace {
 
-// Return true if 1.|lhs| is non-PSL match, |rhs| is PSL match or 2.|lhs| and
-// |rhs| have the same value of |is_public_suffix_match|, and |lhs| is more
-// recently used than |rhs|.
+std::tuple<int, base::Time, int> GetPriorityProperties(
+    const PasswordForm* form) {
+  return std::make_tuple(-static_cast<int>(GetMatchType(*form)),
+                         form->date_last_used,
+                         static_cast<int>(form->in_store));
+}
+
+// Consider the following properties:
+// 1. Match strength for the original form (Exact > Web Affiliations > PSL).
+// 2. Last time used. Most recent is better.
+// 3. Account vs. profile store. Account is better.
 bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
-  return std::make_pair(!lhs->is_public_suffix_match, lhs->date_last_used) >
-         std::make_pair(!rhs->is_public_suffix_match, rhs->date_last_used);
+  return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
 
 }  // namespace
@@ -214,6 +222,19 @@ base::StringPiece GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
   return signon_realm.substr(std::min(after_protocol, signon_realm.size()));
 }
 
+GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
+  if (password_manager::IsValidAndroidFacetURI(form.signon_realm)) {
+    DCHECK(form.is_affiliation_based_match);
+    DCHECK(!form.is_public_suffix_match);
+    return GetLoginMatchType::kExact;
+  }
+  if (form.is_affiliation_based_match)
+    return GetLoginMatchType::kAffiliated;
+
+  return form.is_public_suffix_match ? GetLoginMatchType::kPSL
+                                     : GetLoginMatchType::kExact;
+}
+
 void FindBestMatches(
     const std::vector<const PasswordForm*>& non_federated_matches,
     PasswordForm::Scheme scheme,
@@ -241,15 +262,30 @@ void FindBestMatches(
   std::sort(non_federated_same_scheme->begin(),
             non_federated_same_scheme->end(), IsBetterMatch);
 
-  std::set<std::pair<PasswordForm::Store, std::u16string>> store_usernames;
-  for (const auto* match : *non_federated_same_scheme) {
-    auto store_username =
-        std::make_pair(match->in_store, match->username_value);
-    // The first match for |store_username| in the sorted array is best
+  // Map from usernames to the best matching password forms.
+  std::map<std::u16string, std::vector<const PasswordForm*>>
+      matches_per_username;
+  for (const PasswordForm* match : *non_federated_same_scheme) {
+    auto it = matches_per_username.find(match->username_value);
+    // The first match for |username_value| in the sorted array is best
     // match.
-    if (!base::Contains(store_usernames, store_username)) {
-      store_usernames.insert(store_username);
+    if (it == matches_per_username.end()) {
+      matches_per_username[match->username_value] = {match};
       best_matches->push_back(match);
+    } else {
+      // Insert another credential only if the store is different as well as the
+      // password value.
+      if (base::Contains(it->second, match->in_store,
+                         [](const auto* form) { return form->in_store; })) {
+        continue;
+      };
+      if (base::Contains(
+              it->second, match->password_value,
+              [](const auto* form) { return form->password_value; })) {
+        continue;
+      };
+      best_matches->push_back(match);
+      it->second.push_back(match);
     }
   }
 
@@ -279,7 +315,7 @@ const PasswordForm* GetMatchForUpdating(
   const PasswordForm* username_match =
       FindFormByUsername(credentials, submitted_form.username_value);
   if (username_match) {
-    if (!username_match->is_public_suffix_match)
+    if (GetMatchType(*username_match) != GetLoginMatchType::kPSL)
       return username_match;
 
     const auto& password_to_save = submitted_form.new_password_value.empty()
