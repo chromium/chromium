@@ -553,6 +553,8 @@ if (is_win || is_mac) {
     copy("test_service_files") {
       testonly = true
       sources = [
+        "test/service/win/impersonate.py",
+        "test/service/win/rpc_handler.py",
         "test/service/win/updater_test_service.py",
         "test/service/win/updater_test_service_control.py",
       ]

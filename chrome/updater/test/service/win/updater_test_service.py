@@ -13,19 +13,11 @@ import win32api
 import win32service
 import win32serviceutil
 
+import rpc_handler
 
 # TODO(crbug.com/1233612): Use portpick to choose an available port, and
 # propagate the port to clients (for example, via a pre-defined registry key).
 _XML_RPC_SERVER_PORT = 9090
-
-
-class UpdaterTestRPCHandler():
-
-  # TODO(crbug.com/1233612): Replace this placeholder function with real ones to
-  # serve test requests. Also consider to move this class into a separate
-  # module.
-  def echo(self, message):
-    return message
 
 
 class UpdaterTestRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
@@ -55,7 +47,7 @@ class UpdaterTestXmlRpcServer(SimpleXMLRPCServer.SimpleXMLRPCServer):
   def run(self):
     """xml-rpc server main loop."""
     self.register_introspection_functions()
-    self.register_instance(UpdaterTestRPCHandler())
+    self.register_instance(rpc_handler.UpdaterTestRPCHandler())
     self.serve_forever()
 
 
