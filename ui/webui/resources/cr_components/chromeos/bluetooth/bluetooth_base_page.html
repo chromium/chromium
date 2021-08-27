@@ -1,0 +1,32 @@
+<style include="iron-positioning">
+  #button-bar {
+    align-self: flex-end;
+    margin-bottom: 14px;
+    margin-top: auto;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 8px;
+  }
+
+  #title {
+    color: var(--google-grey-900);
+    font-weight: normal;
+    line-height: 24px;
+  }
+</style>
+<div id="container">
+  <h3 id="title" class="">[[i18n('bluetoothPairNewDevice')]]</h3>
+  <!-- TODO(crbug.com/1010321): Add a subtext div here -->
+  <slot name="page-body"></slot>
+  <div id="button-bar">
+    <!-- TODO(crbug.com/1010321): Add confirm and pair buttons here -->
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      [[i18n('cancel')]]
+    </cr-button>
+  </div>
+</div>
+

@@ -12,13 +12,24 @@ js_type_check("closure_compile") {
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
-  deps = [ ":bluetooth_pairing_ui_test" ]
+  deps = [
+    ":bluetooth_base_page_test",
+    ":bluetooth_pairing_ui_test",
+  ]
 }
 
 js_library("bluetooth_pairing_ui_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("bluetooth_base_page_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_base_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

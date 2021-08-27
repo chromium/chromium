@@ -8,35 +8,19 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './bluetooth_base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @constructor
- * @implements {I18nBehaviorInterface}
- * @extends {PolymerElement}
- */
-const SettingsBluetoothPairingUiElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-export class SettingsBluetoothPairingUiElement extends
-    SettingsBluetoothPairingUiElementBase {
+export class SettingsBluetoothPairingUiElement extends PolymerElement {
   static get is() {
     return 'bluetooth-pairing-ui';
   }
 
   static get template() {
     return html`{__html_template__}`;
-  }
-
-  /** @private */
-  onCancelClick_() {
-    this.dispatchEvent(new CustomEvent('cancel', {
-      bubbles: true,
-      composed: true,
-    }));
   }
 }
 

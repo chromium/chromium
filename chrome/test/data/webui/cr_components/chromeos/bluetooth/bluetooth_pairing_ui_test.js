@@ -7,8 +7,7 @@ import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothPairingUiElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 suite('CrComponentsBluetoothPairingUiTest', function() {
@@ -22,11 +21,9 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     flush();
   });
 
-  test('Title is shown', function() {
-    const title = bluetoothPairingUi.shadowRoot.querySelector('#title');
-    assertTrue(!!title);
-    assertEquals(
-        bluetoothPairingUi.i18n('bluetoothPairNewDevice'),
-        title.textContent.trim());
+  test('Base test', function() {
+    const basePage =
+        bluetoothPairingUi.shadowRoot.querySelector('bluetooth-base-page');
+    assertTrue(!!basePage);
   });
 });
