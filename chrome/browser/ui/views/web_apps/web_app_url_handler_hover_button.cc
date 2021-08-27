@@ -22,7 +22,6 @@
 #include "url/gurl.h"
 
 WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
-    size_t total_buttons,
     views::Button::PressedCallback callback,
     const web_app::UrlHandlerLaunchParams& url_handler_launch_params,
     web_app::WebAppProvider* provider,
@@ -34,27 +33,39 @@ WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
                         display_name,
                         app_start_url),
       url_handler_launch_params_(url_handler_launch_params),
-      is_app_(true),
-      total_buttons_(total_buttons) {}
+      is_app_(true) {}
 
 WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
-    size_t total_buttons,
     views::Button::PressedCallback callback)
     : WebAppHoverButton(
           std::move(callback),
           *(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_PRODUCT_LOGO_32)),
           l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)),
-      is_app_(false),
-      total_buttons_(total_buttons) {}
+      is_app_(false) {}
 
 WebAppUrlHandlerHoverButton::~WebAppUrlHandlerHoverButton() = default;
 
 void WebAppUrlHandlerHoverButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   WebAppHoverButton::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kRadioButton;
+  const ax::mojom::CheckedState checked_state =
+      selected() ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse;
+  node_data->SetCheckedState(checked_state);
+}
 
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, tag() + 1);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, total_buttons_);
+void WebAppUrlHandlerHoverButton::MarkAsSelected(const ui::Event* event) {
+  WebAppHoverButton::MarkAsSelected(event);
+  selected_ = true;
+  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,
+                           /*send_native_event=*/true);
+}
+
+void WebAppUrlHandlerHoverButton::MarkAsUnselected(const ui::Event* event) {
+  WebAppHoverButton::MarkAsUnselected(event);
+  selected_ = false;
+  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,
+                           /*send_native_event=*/true);
 }

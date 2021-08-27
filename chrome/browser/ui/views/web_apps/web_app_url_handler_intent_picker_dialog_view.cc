@@ -254,11 +254,12 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   hover_buttons_.reserve(total_buttons);
   // Create a WebAppUrlHandlerHoverButton to open the link in browser and
   // list it as the first choice.
-  auto app_button = std::make_unique<WebAppUrlHandlerHoverButton>(
-      total_buttons, base::BindRepeating(
-                         &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
-                         base::Unretained(this), 0));
+  auto app_button =
+      std::make_unique<WebAppUrlHandlerHoverButton>(base::BindRepeating(
+          &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
+          base::Unretained(this), 0));
   app_button->set_tag(0);
+  app_button->GetViewAccessibility().OverridePosInSet(1, total_buttons);
   hover_buttons_.push_back(app_button.get());
   scrollable_view->AddChildViewAt(std::move(app_button), 0);
 
@@ -284,13 +285,14 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
     // TODO(crbug.com/1072058): Make sure the UI is reasonable when
     // |app_title| is long.
     auto app_button = std::make_unique<WebAppUrlHandlerHoverButton>(
-        total_buttons,
         base::BindRepeating(
             &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
             base::Unretained(this), button_index),
         launch_params, provider, app_title,
         registrar.GetAppStartUrl(launch_params.app_id));
     app_button->set_tag(button_index);
+    app_button->GetViewAccessibility().OverridePosInSet(button_index + 1,
+                                                        total_buttons);
     hover_buttons_.push_back(app_button.get());
     scrollable_view->AddChildViewAt(std::move(app_button), button_index);
   }
@@ -304,7 +306,8 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   // The added 0.5 on the else block allow us to let the user know there are
   // more than |kMaxAppResults| apps accessible by scrolling the list.
   scroll_view->ClipHeightTo(kRowHeight, (kMaxAppResults + 0.5) * kRowHeight);
-  scroll_view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kListBox);
+  scroll_view->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kRadioGroup);
 
   constexpr int kColumnSetId = 0;
   views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);
