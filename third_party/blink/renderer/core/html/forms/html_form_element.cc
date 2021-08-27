@@ -99,7 +99,7 @@ HTMLFormElement::HTMLFormElement(Document& document)
       has_elements_associated_by_form_attribute_(false),
       did_finish_parsing_children_(false),
       is_in_reset_function_(false) {
-  static unsigned next_unique_renderer_form_id = 1;
+  static uint64_t next_unique_renderer_form_id = 1;
   unique_renderer_form_id_ = next_unique_renderer_form_id++;
 
   UseCounter::Count(document, WebFeature::kFormElement);

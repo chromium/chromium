@@ -129,7 +129,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool BlocksFormSubmission() const { return blocks_form_submission_; }
   void SetBlocksFormSubmission(bool value) { blocks_form_submission_ = value; }
 
-  unsigned UniqueRendererFormControlId() const {
+  uint64_t UniqueRendererFormControlId() const {
     return unique_renderer_form_control_id_;
   }
 
@@ -161,7 +161,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsValidElement() override;
   bool MatchesValidityPseudoClasses() const override;
 
-  unsigned unique_renderer_form_control_id_;
+  uint64_t unique_renderer_form_control_id_;
 
   WebString autofill_section_;
   enum WebAutofillState autofill_state_;

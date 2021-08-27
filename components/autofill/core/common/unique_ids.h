@@ -11,6 +11,7 @@
 
 #include "base/types/id_type.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -54,14 +55,18 @@ using FrameToken = absl::variant<RemoteFrameToken, LocalFrameToken>;
 
 namespace internal {
 
+#if defined(OS_IOS)
 using FormRendererIdType = ::base::IdTypeU32<class FormRendererIdMarker>;
 using FieldRendererIdType = ::base::IdTypeU32<class FieldRendererIdMarker>;
+#else
+using FormRendererIdType = ::base::IdTypeU64<class FormRendererIdMarker>;
+using FieldRendererIdType = ::base::IdTypeU64<class FieldRendererIdMarker>;
+#endif
 
 }  // namespace internal
 
 // FormRendererId and FieldRendererId uniquely identify a DOM form or field
-// element, respectively, among all such elements in one frame, until they
-// overflow after 2**32 elements have been created in the renderer process.
+// element, respectively, among all such elements in one frame.
 //
 // To uniquely identify frames across frames, see FormGlobalId and
 // FieldGlobalId.
@@ -119,8 +124,7 @@ bool operator<(const GlobalId<RendererId>& a, const GlobalId<RendererId>& b) {
 }  // namespace internal
 
 // FormGlobalId and FieldGlobalId uniquely identify a DOM form or field
-// element, respectively, among all such elements in all frames, until they
-// overflow after 2**32 elements have been created in one renderer process.
+// element, respectively, among all such elements in all frames.
 //
 // As a sentinel value, the FormRendererId of a synthetic form converts to
 // `false`. A synthetic form is the collection of form fields outside of the

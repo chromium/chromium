@@ -137,9 +137,8 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
 
   // Returns the identifier which is unique among all form control elements in
   // the current renderer process. In the current implementation ids are
-  // consecutive numbers so their uniqueness might be broken in case of
-  // overflow.
-  unsigned UniqueRendererFormControlId() const;
+  // consecutive numbers.
+  uint64_t UniqueRendererFormControlId() const;
 
   // Returns the ax node id of the form control element in the accessibility
   // tree. The ax node id is consistent across renderer and browser processes.
