@@ -154,9 +154,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
 }
 
 // Check that attempting to start a video-only receiver properly disables audio.
-// TODO(crbug.com/1240354): Enable this test once the fix has landed in
-// openscreen.
-IN_PROC_BROWSER_TEST_F(CastStreamingTest, DISABLED_VideoOnlyReceiver) {
+IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kPageUrl(
       embedded_test_server()->GetURL(kCastStreamingReceiverPath));
