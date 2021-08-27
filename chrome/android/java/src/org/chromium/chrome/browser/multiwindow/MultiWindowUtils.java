@@ -555,6 +555,25 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ctaTasks;
     }
 
+    static String lastAccessedTimeKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
+                String.valueOf(index));
+    }
+
+    static long readLastAccessedTime(int index) {
+        return SharedPreferencesManager.getInstance().readLong(lastAccessedTimeKey(index));
+    }
+
+    /**
+     * Write the time this instance is accessed.
+     * @param index Instance ID
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void writeLastAccessedTime(int index) {
+        SharedPreferencesManager.getInstance().writeLong(
+                lastAccessedTimeKey(index), System.currentTimeMillis());
+    }
+
     @VisibleForTesting
     public Boolean getTabbedActivity2TaskRunning() {
         return mTabbedActivity2TaskRunning;

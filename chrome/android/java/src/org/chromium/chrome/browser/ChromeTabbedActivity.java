@@ -217,7 +217,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private static final String HELP_URL_PREFIX = "https://support.google.com/chrome/";
 
-    private static final String WINDOW_INDEX = "window_index";
+    protected static final String WINDOW_INDEX = "window_index";
 
     private static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 

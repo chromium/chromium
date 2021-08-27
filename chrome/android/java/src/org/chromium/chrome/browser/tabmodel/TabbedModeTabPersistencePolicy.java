@@ -65,7 +65,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     private final int mSelectorIndex;
     private final int mOtherSelectorIndex;
-    private final boolean mMergeTabs;
+    private final boolean mMergeTabsOnStartup;
     private final boolean mTabMergingEnabled;
     private final int mMaxSelectors;
 
@@ -75,16 +75,17 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     /**
      * Constructs a persistence policy that handles the Tabbed mode specific logic.
      * @param selectorIndex The index that represents which state file to pull and save state to.
-     *                      This is used when there can be more than one TabModelSelector.
-     * @param mergeTabs     Whether this policy should handle merging tabs from all available
-     *                      tabbed mode files.
-     * @param tabMergingEnabled Whether we are on the platform where tab merging is enabled.
+     *            This is used when there can be more than one TabModelSelector.
+     * @param mergeTabsOnStartup Whether this policy should handle merging tabs from all available
+     *            tabbed mode files at startup.
+     * @param tabMergingEnabled Whether tab merging operation should be done for multi-window/
+     *            instance feature in general.
      */
     public TabbedModeTabPersistencePolicy(
-            int selectorIndex, boolean mergeTabs, boolean tabMergingEnabled) {
+            int selectorIndex, boolean mergeTabsOnStartup, boolean tabMergingEnabled) {
         mSelectorIndex = selectorIndex;
         mOtherSelectorIndex = selectorIndex == 0 ? 1 : 0;
-        mMergeTabs = mergeTabs;
+        mMergeTabsOnStartup = mergeTabsOnStartup;
         mTabMergingEnabled = tabMergingEnabled;
         mMaxSelectors = TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors();
     }
@@ -101,13 +102,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public boolean shouldMergeOnStartup() {
-        return mMergeTabs;
+        return mMergeTabsOnStartup;
     }
 
     @Override
     public List<String> getStateToBeMergedFileNames() {
         List<String> mergedFileNames = new ArrayList<>();
-        if (mTabMergingEnabled) {
+        if (mMergeTabsOnStartup || mTabMergingEnabled) {
             mergedFileNames.add(getStateFileName(mOtherSelectorIndex));
         }
         // TODO(peconn): Can I clean up this code now that Browser Actions are gone?

@@ -480,18 +480,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     private static String lastAccessedTimeKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
-                String.valueOf(index));
+        return MultiWindowUtils.lastAccessedTimeKey(index);
     }
 
     private static long readLastAccessedTime(int index) {
-        return SharedPreferencesManager.getInstance().readLong(lastAccessedTimeKey(index));
+        return MultiWindowUtils.readLastAccessedTime(index);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void writeLastAccessedTime(int index) {
-        SharedPreferencesManager.getInstance().writeLong(
-                lastAccessedTimeKey(index), System.currentTimeMillis());
+        MultiWindowUtils.writeLastAccessedTime(index);
     }
 
     /**
