@@ -30,26 +30,20 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -712,15 +706,6 @@ public class VoiceRecognitionHandler {
         return results;
     }
 
-    /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
-    private static @Nullable PrefService getPrefService() {
-        if (!ProfileManager.isInitialized()) {
-            return null;
-        }
-
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
-    }
-
     /**
      * Triggers a voice recognition intent to allow the user to specify a search query.
      *
@@ -742,19 +727,9 @@ public class VoiceRecognitionHandler {
             return;
         }
 
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
-            // TODO(crbug.com/1161022): Rather than checking here we should instead hide the mics
-            // when disabled via policy. Since the policy isn't available at layout time, we'll need
-            // to add observers that can notify the different mic surfaces of voice search being
-            // disabled.
-            @Nullable
-            PrefService prefService = getPrefService();
-            if (prefService == null || !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
-                mDelegate.notifyVoiceRecognitionCanceled();
-                return;
-            }
+        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck=*/true)) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
         }
 
         if (mAssistantVoiceSearchServiceSupplier.hasValue()) {
@@ -1037,33 +1012,8 @@ public class VoiceRecognitionHandler {
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
         if (windowAndroid == null) return false;
         if (windowAndroid.getActivity().get() == null) return false;
-        if (!isVoiceSearchEnabled(windowAndroid)) return false;
+        if (!VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid)) return false;
         return true;
-    }
-
-    /** Returns whether voice search is enabled. */
-    public static boolean isVoiceSearchEnabled(
-            AndroidPermissionDelegate androidPermissionDelegate) {
-        if (androidPermissionDelegate == null) return false;
-        if (!androidPermissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)
-                && !androidPermissionDelegate.canRequestPermission(
-                        Manifest.permission.RECORD_AUDIO)) {
-            return false;
-        }
-
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
-            @Nullable
-            PrefService prefService = getPrefService();
-            // If the PrefService isn't initialized yet we won't know here whether or not voice
-            // search is allowed by policy. In that case, treat voice search as enabled but check
-            // again when a Profile is set and PrefService becomes available.
-            if (prefService != null && !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
-                return false;
-            }
-        }
-        return isRecognitionIntentPresent(true);
     }
 
     /** Start tracking query duration by capturing when it started */

@@ -36,11 +36,12 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -83,7 +84,7 @@ public class AdaptiveToolbarButtonControllerTest {
         }
     }
 
-    @Implements(VoiceRecognitionHandler.class)
+    @Implements(VoiceRecognitionUtil.class)
     static class ShadowVoiceRecognitionHandler {
         static boolean sIsVoiceRecognitionEnabled;
 
@@ -115,6 +116,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowRecordHistogram.reset();
         ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = true;

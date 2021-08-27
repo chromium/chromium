@@ -122,7 +122,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",
   ]
 
-  public_deps = [ ":partner_location_descriptor_proto_java" ]
+  public_deps = [
+    ":partner_location_descriptor_proto_java",
+    ":util_java",
+  ]
 
   deps = [
     ":java_resources",
@@ -186,6 +189,41 @@ android_library("java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.omnibox"
+}
+
+android_library("util_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtil.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtilTest.java" ]
+
+  deps = [
+    ":util_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }
 
 generate_jni("jni_headers") {

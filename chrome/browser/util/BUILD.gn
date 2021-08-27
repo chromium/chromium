@@ -14,7 +14,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/KeyNavigationUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
-    "android/java/src/org/chromium/chrome/browser/util/VoiceRecognitionUtil.java",
   ]
   deps = [
     "//base:base_java",
@@ -40,7 +39,6 @@ android_library("javatests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProviderTest.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtilTest.java",
-    "android/java/src/org/chromium/chrome/browser/util/VoiceRecognitionUtilTest.java",
   ]
   deps = [
     ":java",

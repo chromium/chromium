@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -212,7 +212,7 @@ public class AdaptiveToolbarStatePredictor {
     private boolean isVariantEnabled(@AdaptiveToolbarButtonVariant int variant) {
         if (variant == AdaptiveToolbarButtonVariant.VOICE) {
             if (mAndroidPermissionDelegate == null) return true;
-            return VoiceRecognitionHandler.isVoiceSearchEnabled(mAndroidPermissionDelegate);
+            return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
         }
         return true;
     }
