@@ -45,13 +45,11 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
         *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
   }
   DCHECK(base::FeatureList::IsEnabled(kD3D11VideoDecoder));
-  const bool enable_hdr =
-      gl::DirectCompositionSurfaceWin::IsHDRSupported() ||
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderForceEnableHDR);
   return D3D11VideoDecoder::Create(
       traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-      GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(), enable_hdr);
+      GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(),
+      gl::DirectCompositionSurfaceWin::IsHDRSupported());
 }
 
 absl::optional<SupportedVideoDecoderConfigs>
