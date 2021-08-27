@@ -166,6 +166,34 @@ TEST(ShareRankingStaticTest, MoreTargetReplacesLast) {
   EXPECT_EQ(persisted, current);
 }
 
+TEST_F(ShareRankingStaticTest, PromotedTargetIsVisible) {
+  // Regression test for <https://crbug.com/1240355>: in "fix more" mode, the
+  // last slot on the screen is actually unusable for display since it gets
+  // replaced with the "More" option that invokes the system share hub. The
+  // logic to promote a target into being visible should therefore not promote
+  // targets into this slot in the ranking.
+  std::map<std::string, int> history = {
+      {"bar", 2},
+      {"foo", 3},
+      {"baz", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "baz"};
+
+  ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
+                               3, true, &displayed, &persisted);
+
+  std::vector<std::string> expected_displayed{"foo", "baz",
+                                              ShareRanking::kMoreTarget};
+  std::vector<std::string> expected_persisted{"foo", "baz", "bar"};
+
+  ASSERT_EQ(displayed.size(), expected_displayed.size());
+  ASSERT_EQ(persisted.size(), current.size());
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
 // Regression test for https://crbug.com/1233232
 TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
   std::map<std::string, int> history = {

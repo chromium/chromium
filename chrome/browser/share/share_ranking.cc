@@ -340,18 +340,24 @@ void ShareRanking::ComputeRanking(
   DCHECK_GE(old_ranking.size(), fold);
   DCHECK_GE(available_on_system.size(), fold);
 
+  // When using the last slot for More, pretend that the fold is one slot less
+  // than it normally is - otherwise the logic for ensuring that targets are
+  // visible may try to move targets into the slot that is about to be
+  // overwritten with More.
+  int logical_fold = fix_more ? fold - 1 : fold;
+
   std::vector<std::string> new_ranking = MaybeUpdateRankingFromHistory(
-      old_ranking, all_share_history, recent_share_history, fold);
+      old_ranking, all_share_history, recent_share_history, logical_fold);
 
   Ranking computed_display_ranking =
       ReplaceUnavailableEntries(new_ranking, available_on_system);
 
-  FillGaps(computed_display_ranking, available_on_system, fold);
+  FillGaps(computed_display_ranking, available_on_system, logical_fold);
 
   computed_display_ranking.resize(fold);
 
   if (fix_more)
-    computed_display_ranking[fold - 1] = kMoreTarget;
+    computed_display_ranking[logical_fold] = kMoreTarget;
 
   *persisted_ranking = new_ranking;
   *display_ranking = computed_display_ranking;
@@ -363,9 +369,10 @@ void ShareRanking::ComputeRanking(
     available.push_back(kMoreTarget);
 
     DCHECK(EveryElementInList(*display_ranking, available));
-    DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking, fold));
-    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, fold));
-    DCHECK(NoEmptySlots(*display_ranking, fold));
+    DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking,
+                                      logical_fold));
+    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, logical_fold));
+    DCHECK(NoEmptySlots(*display_ranking, logical_fold));
 
     DCHECK_GE(persisted_ranking->size(), fold);
   }
