@@ -53,7 +53,7 @@ public class AdaptiveToolbarFeatures {
      * feature config must be ignored (disabled).
      */
     @VisibleForTesting
-    static final int VERSION = 2;
+    static final int VERSION = 3;
 
     /** Default value to use in case finch param isn't available for default segment. */
     private static final String DEFAULT_PARAM_VALUE_DEFAULT_SEGMENT = NEW_TAB;

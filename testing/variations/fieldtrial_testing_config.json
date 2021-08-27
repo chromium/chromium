@@ -5743,7 +5743,7 @@
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "false",
-                        "min_version_adaptive": "2",
+                        "min_version_adaptive": "3",
                         "segment_selection_ttl_days": "14",
                         "show_ui_only_after_ready": "false"
                     },
@@ -5761,7 +5761,7 @@
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "false",
-                        "min_version_adaptive": "2",
+                        "min_version_adaptive": "3",
                         "segment_selection_ttl_days": "14",
                         "show_ui_only_after_ready": "true"
                     },
@@ -5779,7 +5779,7 @@
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "true",
-                        "min_version_adaptive": "2",
+                        "min_version_adaptive": "3",
                         "segment_selection_ttl_days": "14",
                         "show_ui_only_after_ready": "true"
                     },
