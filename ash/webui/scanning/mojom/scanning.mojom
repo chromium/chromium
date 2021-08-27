@@ -193,6 +193,12 @@ interface MultiPageScanController {
   // specified |page_index|. |page_index| is zero-based.
   RemovePage(uint32 page_index);
 
+  // Starts a new scan in an ongoing multi-page scan session then replaces the
+  // scanned image specified at |page_index| on completion. If the scan fails,
+  // no existing image is deleted or replaced. |page_index| is zero-based.
+  RescanPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, uint32 page_index) => (bool success);
+
   // Ends a multi-page scan session and saves the scan to disk.
   CompleteMultiPageScan();
 };

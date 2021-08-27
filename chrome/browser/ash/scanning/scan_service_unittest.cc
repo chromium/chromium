@@ -372,9 +372,20 @@ class ScanServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void RemovePage(const int page_number) {
-    multi_page_scan_controller_remote_->RemovePage(page_number);
+  void RemovePage(const uint32_t page_index) {
+    multi_page_scan_controller_remote_->RemovePage(page_index);
     task_environment_.RunUntilIdle();
+  }
+
+  bool RescanPage(const base::UnguessableToken& scanner_id,
+                  mojo_ipc::ScanSettingsPtr settings,
+                  const uint32_t page_index) {
+    bool success;
+    mojo_ipc::MultiPageScanControllerAsyncWaiter(
+        multi_page_scan_controller_remote_.get())
+        .RescanPage(scanner_id, std::move(settings), page_index, &success);
+    task_environment_.RunUntilIdle();
+    return success;
   }
 
  protected:
@@ -1010,6 +1021,94 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 page
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+}
+
+// Test that a page can be rescanned and replaced from a multi-page scan with
+// one scanned image.
+TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kScanAppMultiPageScan}, {});
+
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  mojo_ipc::ScanSettings settings = CreateScanSettings(
+      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+
+  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::vector<std::string> first_scan_data = {first_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+
+  // Rescan the page.
+  const std::string rescanned_scanned_image = CreatePng(/*alpha=*/2);
+  const std::vector<std::string> rescanned_scan_data = {
+      rescanned_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(rescanned_scan_data);
+  EXPECT_TRUE(RescanPage(scanners[0]->id, settings.Clone(), /*page_index=*/0));
+  CompleteMultiPageScan();
+
+  const std::vector<std::string> scanned_images =
+      scan_service_->GetScannedImagesForTesting();
+  EXPECT_EQ(1, scanned_images.size());
+  EXPECT_EQ(rescanned_scanned_image, scanned_images[0]);
+
+  // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages
+  // scanned bucket.
+  histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+}
+
+// Test that a page can be rescanned and replaced from a multi-page scan with
+// three scanned images.
+TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kScanAppMultiPageScan}, {});
+
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  mojo_ipc::ScanSettings settings = CreateScanSettings(
+      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+
+  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::vector<std::string> first_scan_data = {first_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+
+  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::vector<std::string> second_scan_data = {second_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
+  EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+
+  const std::string third_scanned_image = CreatePng(/*alpha=*/3);
+  const std::vector<std::string> third_scan_data = {third_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(third_scan_data);
+  EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+
+  // Rescan the second page.
+  const std::string rescanned_scanned_image = CreatePng(/*alpha=*/4);
+  const std::vector<std::string> rescanned_scan_data = {
+      rescanned_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(rescanned_scan_data);
+  EXPECT_TRUE(RescanPage(scanners[0]->id, settings.Clone(), /*page_index=*/1));
+  CompleteMultiPageScan();
+
+  const std::vector<std::string> scanned_images =
+      scan_service_->GetScannedImagesForTesting();
+  EXPECT_EQ(3, scanned_images.size());
+  EXPECT_EQ(first_scanned_image, scanned_images[0]);
+  EXPECT_EQ(rescanned_scanned_image, scanned_images[1]);
+  EXPECT_EQ(third_scanned_image, scanned_images[2]);
+
+  // Expect 1 record of the Scanning.NumPagesScanned metric in the 3 pages
+  // scanned bucket.
+  histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 3, 1);
 }
 
 }  // namespace ash

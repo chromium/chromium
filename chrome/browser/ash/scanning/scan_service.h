@@ -73,6 +73,10 @@ class ScanService : public scanning::mojom::ScanService,
                     scanning::mojom::ScanSettingsPtr settings,
                     ScanNextPageCallback callback) override;
   void RemovePage(uint32_t page_index) override;
+  void RescanPage(const base::UnguessableToken& scanner_id,
+                  scanning::mojom::ScanSettingsPtr settings,
+                  uint32_t page_index,
+                  ScanNextPageCallback callback) override;
   void CompleteMultiPageScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.
@@ -105,9 +109,11 @@ class ScanService : public scanning::mojom::ScanService,
   // Processes each |scanned_image| received after calling
   // LorgnetteScannerManager::Scan(). |scan_to_path| is where images will be
   // saved, and |file_type| specifies the file type to use when saving scanned
-  // images.
+  // images. If |page_index_to_replace| >= 0 then |scanned_image| will replace
+  // an existing scanned image instead of being appended.
   void OnPageReceived(const base::FilePath& scan_to_path,
                       const scanning::mojom::FileType file_type,
+                      const absl::optional<uint32_t> page_index_to_replace,
                       std::string scanned_image,
                       uint32_t page_number);
 
@@ -134,6 +140,7 @@ class ScanService : public scanning::mojom::ScanService,
   bool SendScanRequest(
       const base::UnguessableToken& scanner_id,
       scanning::mojom::ScanSettingsPtr settings,
+      const absl::optional<uint32_t> page_index_to_replace,
       base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>
           completion_callback);
 

@@ -355,6 +355,8 @@ class FakeMultiPageScanController {
     this.pageIndexToRemove_ = pageIndex;
   }
 
+  rescanPage() {}
+
   completeMultiPageScan() {
     this.methodCalled('completeMultiPageScan');
   }

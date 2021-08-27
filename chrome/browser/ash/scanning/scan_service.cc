@@ -204,10 +204,10 @@ void ScanService::StartScan(
     StartScanCallback callback) {
   ClearScanState();
   SetScanJobObserver(std::move(observer));
-  std::move(callback).Run(
-      SendScanRequest(scanner_id, std::move(settings),
-                      base::BindOnce(&ScanService::OnScanCompleted,
-                                     weak_ptr_factory_.GetWeakPtr())));
+  std::move(callback).Run(SendScanRequest(
+      scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
+      base::BindOnce(&ScanService::OnScanCompleted,
+                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ScanService::StartMultiPageScan(
@@ -225,10 +225,10 @@ void ScanService::StartMultiPageScan(
 
   ClearScanState();
   SetScanJobObserver(std::move(observer));
-  const bool success =
-      SendScanRequest(scanner_id, std::move(settings),
-                      base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  const bool success = SendScanRequest(
+      scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
+      base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
   if (!success) {
     std::move(callback).Run(mojo::NullRemote());
     return;
@@ -248,6 +248,7 @@ void ScanService::StartMultiPageScan(
 bool ScanService::SendScanRequest(
     const base::UnguessableToken& scanner_id,
     mojo_ipc::ScanSettingsPtr settings,
+    const absl::optional<uint32_t> page_index_to_replace,
     base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>
         completion_callback) {
   const std::string scanner_name = GetScannerName(scanner_id);
@@ -275,9 +276,9 @@ bool ScanService::SendScanRequest(
                          mojo_ipc::ScanSettingsPtr>::ToMojom(settings),
       base::BindRepeating(&ScanService::OnProgressPercentReceived,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&ScanService::OnPageReceived,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          settings->scan_to_path, settings->file_type),
+      base::BindRepeating(
+          &ScanService::OnPageReceived, weak_ptr_factory_.GetWeakPtr(),
+          settings->scan_to_path, settings->file_type, page_index_to_replace),
       std::move(completion_callback));
   return true;
 }
@@ -290,10 +291,10 @@ void ScanService::CancelScan() {
 void ScanService::ScanNextPage(const base::UnguessableToken& scanner_id,
                                scanning::mojom::ScanSettingsPtr settings,
                                ScanNextPageCallback callback) {
-  std::move(callback).Run(
-      SendScanRequest(scanner_id, std::move(settings),
-                      base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
-                                     weak_ptr_factory_.GetWeakPtr())));
+  std::move(callback).Run(SendScanRequest(
+      scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
+      base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
+                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ScanService::RemovePage(uint32_t page_index) {
@@ -318,6 +319,29 @@ void ScanService::RemovePage(uint32_t page_index) {
 
   scanned_images_.erase(scanned_images_.begin() + page_index);
   --num_pages_scanned_;
+}
+
+void ScanService::RescanPage(const base::UnguessableToken& scanner_id,
+                             scanning::mojom::ScanSettingsPtr settings,
+                             uint32_t page_index,
+                             ScanNextPageCallback callback) {
+  if (scanned_images_.size() == 0) {
+    mojo::ReportBadMessage(
+        "Invalid call to ScanService::RescanPage(), no scanned images "
+        "available to rescan");
+    return;
+  }
+
+  if (page_index >= scanned_images_.size()) {
+    mojo::ReportBadMessage(
+        "Invalid page_index passed to ScanService::RescanPage()");
+    return;
+  }
+
+  std::move(callback).Run(
+      SendScanRequest(scanner_id, std::move(settings), page_index,
+                      base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
+                                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ScanService::CompleteMultiPageScan() {
@@ -388,10 +412,12 @@ void ScanService::OnProgressPercentReceived(uint32_t progress_percent,
   scan_job_observer_->OnPageProgress(page_number, progress_percent);
 }
 
-void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
-                                 const mojo_ipc::FileType file_type,
-                                 std::string scanned_image,
-                                 uint32_t page_number) {
+void ScanService::OnPageReceived(
+    const base::FilePath& scan_to_path,
+    const mojo_ipc::FileType file_type,
+    const absl::optional<uint32_t> page_index_to_replace,
+    std::string scanned_image,
+    uint32_t page_number) {
   // TODO(b/172670649): Update LorgnetteManagerClient to pass scan data as a
   // vector.
   // In case the last reported progress percent was less than 100, send one
@@ -399,12 +425,23 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   scan_job_observer_->OnPageProgress(page_number, kMaxProgressPercent);
   scan_job_observer_->OnPageComplete(
       std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
-  ++num_pages_scanned_;
+
+  // Only increment the |num_pages_scanned_| tracker if appending, not
+  // replacing, a page.
+  if (!page_index_to_replace.has_value()) {
+    ++num_pages_scanned_;
+  }
 
   // If the selected file type is PDF, the PDF will be created after all the
   // scanned images are received.
   if (file_type == mojo_ipc::FileType::kPdf) {
-    scanned_images_.push_back(std::move(scanned_image));
+    if (!page_index_to_replace.has_value()) {
+      scanned_images_.push_back(std::move(scanned_image));
+    } else {
+      DCHECK(page_index_to_replace.value() >= 0 &&
+             page_index_to_replace.value() < scanned_images_.size());
+      scanned_images_[page_index_to_replace.value()] = std::move(scanned_image);
+    }
 
     // The output of multi-page PDF scans is a single file so only create and
     // append a single file path.
