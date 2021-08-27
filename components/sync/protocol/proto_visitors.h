@@ -790,6 +790,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ReadingListSpecifics& proto) {
   VISIT_ENUM(status);
   VISIT(first_read_time_us);
   VISIT(update_title_time_us);
+  VISIT(estimated_read_time_seconds);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
