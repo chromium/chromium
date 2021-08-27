@@ -251,7 +251,7 @@ void BrowserAppInstanceTracker::OnWindowDestroying(aura::Window* window) {
 
 void BrowserAppInstanceTracker::OnBrowserAdded(Browser* browser) {
   // TODO(crbug.com/1236273): Remove when confident it does not happen.
-  if (!tracked_browsers_.empty()) {
+  if (base::Contains(tracked_browsers_, browser)) {
     base::debug::DumpWithoutCrashing();
   }
 }
@@ -266,7 +266,7 @@ void BrowserAppInstanceTracker::OnBrowserNoLongerActive(Browser* browser) {
 
 void BrowserAppInstanceTracker::OnBrowserRemoved(Browser* browser) {
   // TODO(crbug.com/1236273): Remove when confident it does not happen.
-  if (!tracked_browsers_.empty()) {
+  if (base::Contains(tracked_browsers_, browser)) {
     base::debug::DumpWithoutCrashing();
   }
 }
