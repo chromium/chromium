@@ -177,7 +177,8 @@ void BackgroundFetchDelegateProxy::StartRequest(
 
   delegate->DownloadUrl(
       job_unique_id, request->download_guid(), fetch_request->method,
-      fetch_request->url, traffic_annotation, headers,
+      fetch_request->url, fetch_request->credentials_mode, traffic_annotation,
+      headers,
       /* has_request_body= */ request->request_body_size() > 0u);
 }
 

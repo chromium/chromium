@@ -36,6 +36,7 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    const std::string& download_guid,
                    const std::string& method,
                    const GURL& url,
+                   ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
                    bool has_request_body) override;
