@@ -45,6 +45,8 @@ source_set("vaapi") {
     "vaapi_image_decode_accelerator_worker.h",
     "vaapi_image_decoder.cc",
     "vaapi_image_decoder.h",
+    "vaapi_image_processor_backend.cc",
+    "vaapi_image_processor_backend.h",
     "vaapi_jpeg_decoder.cc",
     "vaapi_jpeg_decoder.h",
     "vaapi_jpeg_encoder.cc",

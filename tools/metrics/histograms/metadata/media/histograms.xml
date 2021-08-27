@@ -5015,6 +5015,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="VaapiClientName">
     <variant name="VaapiImageDecodeAcceleratorWorker" summary=""/>
+    <variant name="VaapiImageProcessorBackend" summary=""/>
     <variant name="VaapiJpegEncodeAccelerator" summary=""/>
     <variant name="VaapiJpegEncodeAccelerator.Vpp" summary=""/>
     <variant name="VaapiMjpegDecodeAccelerator" summary=""/>

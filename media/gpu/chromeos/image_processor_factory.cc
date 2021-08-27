@@ -15,6 +15,10 @@
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/macros.h"
 
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_image_processor_backend.h"
+#endif  // BUILDFLAG(USE_VAAPI)
+
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
@@ -92,7 +96,8 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     ImageProcessor::ErrorCB error_cb) {
   std::vector<ImageProcessor::CreateBackendCB> create_funcs;
 #if BUILDFLAG(USE_VAAPI)
-  NOTIMPLEMENTED();
+  create_funcs.push_back(
+      base::BindRepeating(&VaapiImageProcessorBackend::Create));
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(USE_V4L2_CODEC)
   create_funcs.push_back(base::BindRepeating(
