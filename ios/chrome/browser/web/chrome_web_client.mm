@@ -202,24 +202,7 @@ std::unique_ptr<web::WebMainParts> ChromeWebClient::CreateWebMainParts() {
       *base::CommandLine::ForCurrentProcess());
 }
 
-void ChromeWebClient::PreWebViewCreation() const {
-  // TODO(crbug.com/1082371): Confirm that this code is no longer needed and
-  // remove it entirely. Until then, prevent this from running on iOS 13.4+, as
-  // it occasionally triggers a permissions prompt.
-  if (!base::ios::IsRunningOnOrLater(13, 4, 0)) {
-    // Initialize the audio session to allow a web page's audio to continue
-    // playing after the app is backgrounded.
-    VoiceSearchProvider* voice_provider =
-        ios::GetChromeBrowserProvider().GetVoiceSearchProvider();
-    if (voice_provider) {
-      AudioSessionController* audio_controller =
-          voice_provider->GetAudioSessionController();
-      if (audio_controller) {
-        audio_controller->InitializeSessionIfNecessary();
-      }
-    }
-  }
-}
+void ChromeWebClient::PreWebViewCreation() const {}
 
 void ChromeWebClient::AddAdditionalSchemes(Schemes* schemes) const {
   schemes->standard_schemes.push_back(kChromeUIScheme);
