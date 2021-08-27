@@ -6664,7 +6664,7 @@ ci.cipd_builder(
         luci.notifier(
             name = "rts-model-packager-notifier",
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
-            notify_emails = ["guterman@google.com", "nodir@google.com"],
+            notify_emails = ["guterman@google.com"],
         ),
     ],
 )
