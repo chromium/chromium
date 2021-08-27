@@ -629,12 +629,7 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   EXPECT_TRUE(auto_enrollment_request().has_remainder());
   EXPECT_TRUE(auto_enrollment_request().has_modulus());
   EXPECT_EQ(16, auto_enrollment_request().modulus());
-  if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
-    EXPECT_EQ(kStateKeyHash[31] & 0xf, auto_enrollment_request().remainder());
-  } else {
-    EXPECT_EQ(kInitialEnrollmentIdHash[7] & 0xf,
-              auto_enrollment_request().remainder());
-  }
+  EXPECT_EQ(kStateKeyHash[31] & 0xf, auto_enrollment_request().remainder());
   VerifyCachedResult(false, kPowerLimit);
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -763,35 +758,19 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
                   /*with_hashes=*/false,
                   /*with_id_hash=*/false);
 
-  if (GetAutoEnrollmentProtocol() ==
-      AutoEnrollmentProtocol::kInitialEnrollment) {
-    // For initial enrollment, a modulus power higher or equal to
-    // |kInitialEnrollmentModulusPowerOutdatedServer| means that the client will
-    // detect the server as outdated and will skip enrollment.
-    client()->Start();
-    base::RunLoop().RunUntilIdle();
-    ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                          /*dm_status_count=*/1);
-    EXPECT_EQ(auto_enrollment_job_type_,
-              DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-    EXPECT_TRUE(HasCachedDecision());
-    EXPECT_FALSE(HasServerBackedState());
-  } else {
-    // For FRE, such a detection does not exist. The client will do the second
-    // round and upload bits of its device identifier hash.
-    ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
-                    /*with_id_hash=*/false);
-    client()->Start();
-    base::RunLoop().RunUntilIdle();
-    ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                          /*dm_status_count=*/2);
-    EXPECT_EQ(auto_enrollment_job_type_,
-              DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-    EXPECT_TRUE(HasCachedDecision());
-    EXPECT_FALSE(HasServerBackedState());
-  }
+  // For FRE, such a detection does not exist. The client will do the second
+  // round and upload bits of its device identifier hash.
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
+  EXPECT_EQ(auto_enrollment_job_type_,
+            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  EXPECT_TRUE(HasCachedDecision());
+  EXPECT_FALSE(HasServerBackedState());
 }
 
 TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
@@ -810,12 +789,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   EXPECT_TRUE(auto_enrollment_request().has_remainder());
   EXPECT_TRUE(auto_enrollment_request().has_modulus());
   EXPECT_EQ(128, auto_enrollment_request().modulus());
-  if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
-    EXPECT_EQ(kStateKeyHash[31] & 0x7f, auto_enrollment_request().remainder());
-  } else {
-    EXPECT_EQ(kInitialEnrollmentIdHash[7] & 0x7f,
-              auto_enrollment_request().remainder());
-  }
+  EXPECT_EQ(kStateKeyHash[31] & 0x7f, auto_enrollment_request().remainder());
   VerifyCachedResult(false, kPowerLimit);
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -896,11 +870,6 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
-  // Requesting re-enrollment is currently not supported in the
-  // initial-enrollment exchange.
-  if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kInitialEnrollment)
-    return;
-
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -988,9 +957,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
-  int64_t bottom62 = GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
-                         ? INT64_C(0x386e7244d097c3e6)
-                         : INT64_C(0x3018b70f7609c5c7);
+  int64_t bottom62 = INT64_C(0x386e7244d097c3e6);
   for (int i = 0; i <= 62; ++i) {
     CreateClient(/*power_initial=*/i, /*power_limit=*/i);
     ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
@@ -1013,12 +980,6 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
-  // Skip for initial enrollment, because the outdated server detection would
-  // kick in when more than |kInitialEnrollmentModulusPowerOutdatedServer| bits
-  // are requested.
-  if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kInitialEnrollment)
-    return;
-
   CreateClient(/*power_initial=*/10, /*power_limit=*/37);
   InSequence sequence;
   ServerWillReply(/*modulus=*/INT64_C(1) << 37, /*with_hashes=*/false,
