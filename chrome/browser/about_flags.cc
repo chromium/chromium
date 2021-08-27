@@ -7573,14 +7573,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
   }
 
-  // wallpaper-webui is only available for Unknown/Canary/Dev channels.
-  if (!strcmp(kWallpaperWebUIInternalName, entry.internal_name) &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::UNKNOWN) {
-    return true;
-  }
-
   // Leave the feature only for ARCVM.
   if (!strcmp(kArcUseHighMemoryDalvikProfileInternalName,
               entry.internal_name)) {
