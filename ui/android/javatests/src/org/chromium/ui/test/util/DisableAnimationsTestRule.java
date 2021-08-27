@@ -109,6 +109,12 @@ public class DisableAnimationsTestRule implements TestRule {
     }
 
     private void setAnimationScaleFactors(float scaleFactor) throws Exception {
+        // TODO(https://crbug.com/1225707): Remove once this works on Android S.
+        if (mGetAnimationScalesMethod == null || mSetAnimationScalesMethod == null
+                || mWindowManagerObject == null) {
+            return;
+        }
+
         float[] scaleFactors = (float[]) mGetAnimationScalesMethod.invoke(mWindowManagerObject);
         Arrays.fill(scaleFactors, scaleFactor);
         mSetAnimationScalesMethod.invoke(mWindowManagerObject, scaleFactors);
