@@ -100,6 +100,28 @@ cast_source_set("resampler") {
   ]
 }
 
+cast_source_set("audio_renderer") {
+  sources = [
+    "cast_audio_renderer.cc",
+    "cast_audio_renderer.h",
+  ]
+
+  deps = [
+    ":audio_io_thread",
+    "//base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/cma/base",
+    "//chromecast/public/media",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//third_party/blink/public/common",
+  ]
+}
+
 cast_source_set("audio") {
   sources = [
     "cast_audio_input_stream.cc",

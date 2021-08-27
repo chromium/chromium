@@ -112,6 +112,10 @@
 #include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
+#include "content/renderer/media/cast_renderer_factory.h"
+#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
+
 #if BUILDFLAG(IS_CHROMECAST)
 // Enable remoting receiver
 #include "media/remoting/receiver_controller.h"        // nogncheck
@@ -685,6 +689,18 @@ MediaFactory::CreateRendererFactorySelector(
                               base::Unretained(render_thread)),
           render_frame_->GetBrowserInterfaceBroker()));
 #endif  // defined(OS_FUCHSIA)
+
+#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
+  DCHECK(!use_media_player_renderer);
+  use_default_renderer_factory = false;
+  factory_selector->AddBaseFactory(
+      RendererType::kCast,
+      std::make_unique<CastRendererFactory>(
+          media_log, decoder_factory,
+          base::BindRepeating(&RenderThreadImpl::GetGpuFactories,
+                              base::Unretained(render_thread)),
+          render_frame_->GetBrowserInterfaceBroker()));
+#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
   if (use_default_renderer_factory) {
     DCHECK(!use_media_player_renderer);

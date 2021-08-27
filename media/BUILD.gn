@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
@@ -21,6 +22,7 @@ buildflag_header("media_buildflags") {
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
+    "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",
     "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",
     "ENABLE_CDM_STORAGE_ID=$enable_cdm_storage_id",
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
