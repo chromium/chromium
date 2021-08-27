@@ -4,6 +4,9 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -13,11 +16,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 
 namespace {
 constexpr int kExpandButtonSize = 24;
@@ -81,19 +87,72 @@ void AshNotificationView::ExpandButton::OnThemeChanged() {
 
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification)
-    : NotificationView(notification) {
+    : NotificationViewBase(notification) {
+  // Instantiate view instances and define layout and view hierarchy.
+  using Orientation = views::BoxLayout::Orientation;
+
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kVertical, gfx::Insets(), 0));
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kEnd);
+
+  // TODO(crbug/1232197): fix views and layout to match spec.
+
+  // Main view contains all the views besides control buttons.
+  auto main_view = std::make_unique<views::View>();
+  main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kHorizontal, gfx::Insets(), 0));
+
+  // TODO(crbug/1241990): add an icon view here.
+  auto icon_view = std::make_unique<views::View>();
+
+  // Main right view contains all the views besides control buttons and icon.
+  auto main_right_view = std::make_unique<views::View>();
+  main_right_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kVertical, gfx::Insets(), 0));
+
+  auto content_row = CreateContentRow();
+
+  // Header left content contains header row and left content.
+  auto header_left_content = std::make_unique<views::View>();
+  header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kVertical, gfx::Insets(), 0));
+
   auto expand_button = std::make_unique<ExpandButton>(base::BindRepeating(
       &AshNotificationView::ToggleExpand, base::Unretained(this)));
-  expand_button->SetVisible(IsExpandable());
-  expand_button_ = GetViewByID(NotificationView::kContentRow)
-                       ->AddChildView(std::move(expand_button));
+
+  header_left_content->AddChildView(CreateHeaderRow());
+  header_left_content->AddChildView(CreateLeftContentView());
+
+  auto* header_left_content_ptr =
+      content_row->AddChildView(std::move(header_left_content));
+  static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
+      ->SetFlexForView(header_left_content_ptr, 1);
+  content_row->AddChildView(CreateRightContentView());
+  expand_button_ = content_row->AddChildView(std::move(expand_button));
+
+  main_right_view->AddChildView(std::move(content_row));
+  main_right_view->AddChildView(CreateInlineSettingsView());
+  main_right_view->AddChildView(CreateImageContainerView());
+  main_right_view->AddChildView(CreateActionsRow());
+
+  main_view->AddChildView(std::move(icon_view));
+  main_view->AddChildView(std::move(main_right_view));
+
+  AddChildView(CreateControlButtonsView());
+  AddChildView(std::move(main_view));
+
+  CreateOrUpdateViews(notification);
+  UpdateControlButtonsVisibilityWithNotification(notification);
+
+  expand_button_->SetVisible(IsExpandable());
 }
 
 AshNotificationView::~AshNotificationView() = default;
 
 void AshNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
-  NotificationView::UpdateWithNotification(notification);
+  NotificationViewBase::UpdateWithNotification(notification);
   expand_button_->SetVisible(IsExpandable());
 }
 
@@ -103,7 +162,7 @@ void AshNotificationView::ToggleExpand() {
 
 void AshNotificationView::SetExpanded(bool expanded) {
   expand_button_->SetExpanded(expanded);
-  NotificationView::SetExpanded(expanded);
+  NotificationViewBase::SetExpanded(expanded);
 }
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
