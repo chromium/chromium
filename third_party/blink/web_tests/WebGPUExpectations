@@ -262,9 +262,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:textu
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:viewDimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=32;dimension="3d";format="rgba32float";* [ Failure ]
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=32;dimension="3d";format="rgba32uint";* [ Failure ]
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=32;dimension="3d";format="rgba32sint";* [ Failure ]
 
 # Dawn treats 0 and undefined as the same
 crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:mipLevelCount=0;* [ Failure ]
