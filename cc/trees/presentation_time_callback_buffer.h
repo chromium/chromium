@@ -34,6 +34,11 @@ namespace cc {
 // CC_EXPORT is only needed for testing.
 class CC_EXPORT PresentationTimeCallbackBuffer {
  public:
+  // Maximum expected buffer size for presentation callbacks. We generally
+  // don't expect many frames waiting for a presentation feedback, hence we
+  // don't expect many presentation callbacks waiting for a frame presentation.
+  static constexpr size_t kMaxBufferSize = 60u;
+
   // TODO(crbug.com/1199373): Compositor thread callbacks are only run for
   // successful presentations and only need the presentation timestamp. On the
   // other hand, main thread callbacks can be run on both successful and failed
