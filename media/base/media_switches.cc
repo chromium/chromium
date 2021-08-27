@@ -387,10 +387,6 @@ const base::Feature kD3D11VideoDecoderVP9Profile2{
 const base::Feature kD3D11VideoDecoderAV1{"D3D11VideoDecoderEnableAV1",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, D3D11VideoDecoder will always copy instead of bind textures.
-const base::Feature kD3D11VideoDecoderAlwaysCopy{
-    "D3D11VideoDecoderAlwaysCopy", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, D3D11VideoDecoder may (but is not required to) choose to mark
 // VideoFrames as overlayable.
 const base::Feature kD3D11VideoDecoderAllowOverlay{

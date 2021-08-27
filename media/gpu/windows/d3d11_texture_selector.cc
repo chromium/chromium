@@ -52,9 +52,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   DXGI_FORMAT output_dxgi_format;
   absl::optional<gfx::ColorSpace> output_color_space;
 
-  bool needs_texture_copy =
-      !SupportsZeroCopy(gpu_preferences, workarounds) ||
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
+  bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
 
   auto supports_fmt = [format_checker](auto fmt) {
     return format_checker->CheckOutputFormatSupport(fmt);
