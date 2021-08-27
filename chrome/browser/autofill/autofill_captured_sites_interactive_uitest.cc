@@ -242,7 +242,8 @@ class AutofillCapturedSitesInteractiveTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAcrossIframes,
                               features::kAutofillShowTypePredictions,
-                              features::kAutofillUseNewFormExtraction},
+                              features::kAutofillUseNewFormExtraction,
+                              features::kAutofillUseUnassociatedListedElements},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
