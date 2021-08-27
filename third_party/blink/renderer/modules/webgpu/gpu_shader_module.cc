@@ -105,8 +105,8 @@ ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnCallback(&GPUShaderModule::OnCompilationInfoCallback,
-                       WrapPersistent(this), WrapPersistent(resolver));
+      BindDawnOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
+                           WrapPersistent(this), WrapPersistent(resolver));
 
   GetProcs().shaderModuleGetCompilationInfo(
       GetHandle(), callback->UnboundCallback(), callback->AsUserdata());
