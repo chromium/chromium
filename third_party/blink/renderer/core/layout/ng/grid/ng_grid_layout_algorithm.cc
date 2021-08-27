@@ -501,65 +501,6 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
 }
 
-NGGridLayoutAlgorithm::AutoPlacementType
-NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
-    const GridTrackSizingDirection major_direction) const {
-  const GridTrackSizingDirection minor_direction =
-      (major_direction == kForColumns) ? kForRows : kForColumns;
-  DCHECK(!Span(major_direction).IsUntranslatedDefinite() &&
-         !Span(minor_direction).IsUntranslatedDefinite());
-
-  const bool is_major_indefinite = Span(major_direction).IsIndefinite();
-  const bool is_minor_indefinite = Span(minor_direction).IsIndefinite();
-
-  if (is_minor_indefinite && is_major_indefinite)
-    return AutoPlacementType::kBoth;
-  if (is_minor_indefinite)
-    return AutoPlacementType::kMinor;
-  if (is_major_indefinite)
-    return AutoPlacementType::kMajor;
-  return AutoPlacementType::kNotNeeded;
-}
-
-const GridSpan& NGGridLayoutAlgorithm::GridItemData::Span(
-    GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? resolved_position.columns
-                                          : resolved_position.rows;
-}
-
-void NGGridLayoutAlgorithm::GridItemData::SetSpan(
-    const GridSpan& span,
-    GridTrackSizingDirection track_direction) {
-  if (track_direction == kForColumns)
-    resolved_position.columns = span;
-  else
-    resolved_position.rows = span;
-}
-
-wtf_size_t NGGridLayoutAlgorithm::GridItemData::StartLine(
-    GridTrackSizingDirection track_direction) const {
-  const GridSpan& span = (track_direction == kForColumns)
-                             ? resolved_position.columns
-                             : resolved_position.rows;
-  return span.StartLine();
-}
-
-wtf_size_t NGGridLayoutAlgorithm::GridItemData::EndLine(
-    GridTrackSizingDirection track_direction) const {
-  const GridSpan& span = (track_direction == kForColumns)
-                             ? resolved_position.columns
-                             : resolved_position.rows;
-  return span.EndLine();
-}
-
-wtf_size_t NGGridLayoutAlgorithm::GridItemData::SpanSize(
-    GridTrackSizingDirection track_direction) const {
-  const GridSpan& span = (track_direction == kForColumns)
-                             ? resolved_position.columns
-                             : resolved_position.rows;
-  return span.IntegerSpan();
-}
-
 const TrackSpanProperties&
 NGGridLayoutAlgorithm::GridItemData::GetTrackSpanProperties(
     GridTrackSizingDirection track_direction) const {
@@ -793,16 +734,6 @@ void NGGridLayoutAlgorithm::GridItemData::ComputeOutOfFlowItemPlacement(
       end_offset -= track_collection.RangeTrackNumber(end_range_index);
     }
   }
-}
-
-NGGridLayoutAlgorithm::GridItems::Iterator
-NGGridLayoutAlgorithm::GridItems::begin() {
-  return Iterator(&item_data, reordered_item_indices.begin());
-}
-
-NGGridLayoutAlgorithm::GridItems::Iterator
-NGGridLayoutAlgorithm::GridItems::end() {
-  return Iterator(&item_data, reordered_item_indices.end());
 }
 
 void NGGridLayoutAlgorithm::GridItems::Append(
@@ -1712,7 +1643,12 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
         track_collection->FinalizeRanges(start_offset);
       };
 
-  grid_placement->RunAutoPlacementAlgorithm(grid_items);
+  Vector<GridArea> resolved_positions =
+      grid_placement->RunAutoPlacementAlgorithm(*grid_items);
+  auto* resolved_position = resolved_positions.begin();
+  for (auto& grid_item : grid_items->item_data)
+    grid_item.resolved_position = *(resolved_position++);
+
   BuildBlockTrackCollection(column_track_collection);
   BuildBlockTrackCollection(row_track_collection);
 }

@@ -23,8 +23,6 @@ class CORE_EXPORT NGGridPlacement {
 
   using GridItems = NGGridLayoutAlgorithm::GridItems;
   using GridItemData = NGGridLayoutAlgorithm::GridItemData;
-  using GridItemVector = NGGridLayoutAlgorithm::GridItemVector;
-  using AutoPlacementType = NGGridLayoutAlgorithm::AutoPlacementType;
 
   NGGridPlacement(const ComputedStyle& grid_style,
                   const wtf_size_t column_auto_repetitions,
@@ -32,7 +30,7 @@ class CORE_EXPORT NGGridPlacement {
                   const wtf_size_t column_start_offset = 0,
                   const wtf_size_t row_start_offset = 0);
 
-  void RunAutoPlacementAlgorithm(GridItems* grid_items);
+  Vector<GridArea> RunAutoPlacementAlgorithm(const GridItems& grid_items);
   // Helper function to resolve start and end lines of out of flow items.
   void ResolveOutOfFlowItemGridLines(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
@@ -62,7 +60,7 @@ class CORE_EXPORT NGGridPlacement {
     friend class DoublyLinkedListNode<PlacedGridItem>;
 
    public:
-    PlacedGridItem(const GridItemData& grid_item,
+    PlacedGridItem(const GridArea& position,
                    const GridTrackSizingDirection major_direction,
                    const GridTrackSizingDirection minor_direction);
 
@@ -134,29 +132,32 @@ class CORE_EXPORT NGGridPlacement {
     bool needs_to_sort_item_vector : 1;
   };
 
+  using PositionVector = Vector<GridArea*, 16>;
+
   // Place non auto-positioned elements from |grid_items|; returns true if any
   // item needs to resolve an automatic position. Otherwise, false.
-  bool PlaceNonAutoGridItems(GridItems* grid_items,
-                             GridItemVector* items_locked_to_major_axis,
-                             GridItemVector* items_not_locked_to_major_axis,
+  bool PlaceNonAutoGridItems(const GridItems& grid_items,
+                             Vector<GridArea>* positions,
+                             PositionVector* positions_locked_to_major_axis,
+                             PositionVector* positions_not_locked_to_major_axis,
                              PlacedGridItemsList* placed_items);
   // Place elements from |grid_items| that have a definite position on the major
   // axis but need auto-placement on the minor axis.
   void PlaceGridItemsLockedToMajorAxis(
-      const GridItemVector& items_locked_to_major_axis,
+      const PositionVector& positions_locked_to_major_axis,
       PlacedGridItemsList* placed_items);
   // Place an item that has a definite position on the minor axis but need
   // auto-placement on the major axis.
-  void PlaceAutoMajorAxisGridItem(GridItemData* grid_item,
+  void PlaceAutoMajorAxisGridItem(GridArea* position,
                                   PlacedGridItemsList* placed_items,
                                   AutoPlacementCursor* placement_cursor) const;
   // Place an item that needs auto-placement on both the major and minor axis.
-  void PlaceAutoBothAxisGridItem(GridItemData* grid_item,
+  void PlaceAutoBothAxisGridItem(GridArea* position,
                                  PlacedGridItemsList* placed_items,
                                  AutoPlacementCursor* placement_cursor) const;
   // Update the list of placed grid items and auto-placement cursor using the
   // resolved position of the specified grid item.
-  void PlaceGridItemAtCursor(const GridItemData& grid_item,
+  void PlaceGridItemAtCursor(const GridArea& position,
                              PlacedGridItemsList* placed_items,
                              AutoPlacementCursor* placement_cursor) const;
 

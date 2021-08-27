@@ -25,7 +25,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  public:
   using SetOffsetData = NGGridData::SetData;
 
-  enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
   enum class AxisEdge : uint8_t { kStart, kCenter, kEnd, kBaseline };
   enum class ItemType : uint8_t { kInGridFlow, kOutOfFlow };
 
@@ -62,15 +61,18 @@ class CORE_EXPORT NGGridLayoutAlgorithm
    public:
     explicit GridItemData(const NGBlockNode node) : node(node) {}
 
-    AutoPlacementType AutoPlacement(
-        const GridTrackSizingDirection major_direction) const;
-    const GridSpan& Span(GridTrackSizingDirection track_direction) const;
-    void SetSpan(const GridSpan& span,
-                 GridTrackSizingDirection track_direction);
-
-    wtf_size_t StartLine(GridTrackSizingDirection track_direction) const;
-    wtf_size_t EndLine(GridTrackSizingDirection track_direction) const;
-    wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const;
+    const GridSpan& Span(GridTrackSizingDirection track_direction) const {
+      return resolved_position.Span(track_direction);
+    }
+    wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {
+      return resolved_position.StartLine(track_direction);
+    }
+    wtf_size_t EndLine(GridTrackSizingDirection track_direction) const {
+      return resolved_position.EndLine(track_direction);
+    }
+    wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const {
+      return resolved_position.SpanSize(track_direction);
+    }
 
     const TrackSpanProperties& GetTrackSpanProperties(
         GridTrackSizingDirection track_direction) const;
@@ -179,23 +181,23 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         return *this;
       }
 
-      GridItemData* operator->() {
-        DCHECK(current_index_ && *current_index_ < item_data_->size());
-        return &(item_data_->at(*current_index_));
-      }
-
-      GridItemData& operator*() {
+      GridItemData& operator*() const {
         DCHECK(current_index_ && *current_index_ < item_data_->size());
         return item_data_->at(*current_index_);
       }
+      GridItemData* operator->() const { return &operator*(); }
 
      private:
       GridItemStorageVector* item_data_;
       Vector<wtf_size_t>::const_iterator current_index_;
     };
 
-    Iterator begin();
-    Iterator end();
+    Iterator begin() {
+      return Iterator(&item_data, reordered_item_indices.begin());
+    }
+    Iterator end() {
+      return Iterator(&item_data, reordered_item_indices.end());
+    }
 
     void Append(const GridItemData& new_item_data);
 

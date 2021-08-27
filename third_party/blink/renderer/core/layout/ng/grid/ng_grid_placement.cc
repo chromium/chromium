@@ -6,6 +6,34 @@
 
 namespace blink {
 
+namespace {
+
+enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
+
+AutoPlacementType AutoPlacement(
+    const GridArea& position,
+    const GridTrackSizingDirection major_direction) {
+  const GridTrackSizingDirection minor_direction =
+      (major_direction == kForColumns) ? kForRows : kForColumns;
+  DCHECK(!position.Span(major_direction).IsUntranslatedDefinite() &&
+         !position.Span(minor_direction).IsUntranslatedDefinite());
+
+  const bool is_major_indefinite =
+      position.Span(major_direction).IsIndefinite();
+  const bool is_minor_indefinite =
+      position.Span(minor_direction).IsIndefinite();
+
+  if (is_minor_indefinite && is_major_indefinite)
+    return AutoPlacementType::kBoth;
+  if (is_minor_indefinite)
+    return AutoPlacementType::kMinor;
+  if (is_major_indefinite)
+    return AutoPlacementType::kMajor;
+  return AutoPlacementType::kNotNeeded;
+}
+
+}  // namespace
+
 NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                  const wtf_size_t column_auto_repetitions,
                                  const wtf_size_t row_auto_repetitions,
@@ -33,23 +61,26 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
       row_start_offset_(row_start_offset) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
-void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {
-  DCHECK(grid_items);
+Vector<GridArea> NGGridPlacement::RunAutoPlacementAlgorithm(
+    const GridItems& grid_items) {
+  Vector<GridArea> positions(grid_items.Size());
 
   // Step 1. Position anything that’s not auto-placed; if no items need
   // auto-placement, then we are done.
   PlacedGridItemsList placed_items;
-  GridItemVector items_locked_to_major_axis;
-  GridItemVector items_not_locked_to_major_axis;
+  PositionVector positions_locked_to_major_axis;
+  PositionVector positions_not_locked_to_major_axis;
 
-  if (!PlaceNonAutoGridItems(grid_items, &items_locked_to_major_axis,
-                             &items_not_locked_to_major_axis, &placed_items)) {
-    return;
+  if (!PlaceNonAutoGridItems(
+          grid_items, &positions, &positions_locked_to_major_axis,
+          &positions_not_locked_to_major_axis, &placed_items)) {
+    return positions;
   }
   placed_items.AppendCurrentItemsToOrderedList();
 
   // Step 2. Process the items locked to the major axis.
-  PlaceGridItemsLockedToMajorAxis(items_locked_to_major_axis, &placed_items);
+  PlaceGridItemsLockedToMajorAxis(positions_locked_to_major_axis,
+                                  &placed_items);
 
   // Step 3. Determine the number of minor tracks in the implicit grid.
   // This is already accomplished within the |PlaceNonAutoGridItems| and
@@ -57,13 +88,13 @@ void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {
 
   // Step 4. Position remaining grid items.
   AutoPlacementCursor placement_cursor(placed_items.FirstPlacedItem());
-  for (GridItemData* grid_item : items_not_locked_to_major_axis) {
-    switch (grid_item->AutoPlacement(major_direction_)) {
+  for (auto* position : positions_not_locked_to_major_axis) {
+    switch (AutoPlacement(*position, major_direction_)) {
       case AutoPlacementType::kBoth:
-        PlaceAutoBothAxisGridItem(grid_item, &placed_items, &placement_cursor);
+        PlaceAutoBothAxisGridItem(position, &placed_items, &placement_cursor);
         break;
       case AutoPlacementType::kMajor:
-        PlaceAutoMajorAxisGridItem(grid_item, &placed_items, &placement_cursor);
+        PlaceAutoMajorAxisGridItem(position, &placed_items, &placement_cursor);
         break;
       case AutoPlacementType::kMinor:
       case AutoPlacementType::kNotNeeded:
@@ -77,18 +108,23 @@ void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {
       placement_cursor = AutoPlacementCursor(placed_items.FirstPlacedItem());
     }
   }
+
+  return positions;
 }
 
 bool NGGridPlacement::PlaceNonAutoGridItems(
-    GridItems* grid_items,
-    GridItemVector* items_locked_to_major_axis,
-    GridItemVector* items_not_locked_to_major_axis,
+    const GridItems& grid_items,
+    Vector<GridArea>* positions,
+    PositionVector* positions_locked_to_major_axis,
+    PositionVector* positions_not_locked_to_major_axis,
     PlacedGridItemsList* placed_items) {
-  DCHECK(grid_items && items_locked_to_major_axis &&
-         items_not_locked_to_major_axis && placed_items);
+  DCHECK(positions && positions_locked_to_major_axis &&
+         positions_not_locked_to_major_axis && placed_items);
 
   column_start_offset_ = row_start_offset_ = 0;
-  for (auto& grid_item : grid_items->item_data) {
+
+  auto* item_position = positions->begin();
+  for (const auto& grid_item : grid_items.item_data) {
     const auto& item_style = grid_item.node.Style();
 
     GridSpan item_column_span =
@@ -96,13 +132,13 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
             grid_style_, item_style, kForColumns,
             column_auto_repeat_track_count_);
     DCHECK(!item_column_span.IsTranslatedDefinite());
-    grid_item.SetSpan(item_column_span, kForColumns);
+    item_position->SetSpan(item_column_span, kForColumns);
 
     GridSpan item_row_span =
         GridPositionsResolver::ResolveGridPositionsFromStyle(
             grid_style_, item_style, kForRows, row_auto_repeat_track_count_);
     DCHECK(!item_row_span.IsTranslatedDefinite());
-    grid_item.SetSpan(item_row_span, kForRows);
+    item_position->SetSpan(item_row_span, kForRows);
 
     // When we have negative indices that go beyond the start of the explicit
     // grid we need to prepend tracks to it; count how many tracks are needed by
@@ -117,6 +153,8 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
       row_start_offset_ = std::max<int>(row_start_offset_,
                                         -item_row_span.UntranslatedStartLine());
     }
+
+    ++item_position;
   }
 
   minor_max_end_line_ =
@@ -130,22 +168,22 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
 
   placed_items->needs_to_sort_item_vector = false;
   auto& non_auto_placed_items = placed_items->item_vector;
-  non_auto_placed_items.ReserveInitialCapacity(grid_items->Size());
+  non_auto_placed_items.ReserveInitialCapacity(grid_items.Size());
 
-  for (auto& grid_item : grid_items->item_data) {
-    GridSpan item_major_span = grid_item.Span(major_direction_);
-    GridSpan item_minor_span = grid_item.Span(minor_direction_);
+  for (auto& position : *positions) {
+    GridSpan item_major_span = position.Span(major_direction_);
+    GridSpan item_minor_span = position.Span(minor_direction_);
 
     const bool has_indefinite_major_span = item_major_span.IsIndefinite();
     const bool has_indefinite_minor_span = item_minor_span.IsIndefinite();
 
     if (!has_indefinite_major_span) {
       item_major_span.Translate(StartOffset(major_direction_));
-      grid_item.SetSpan(item_major_span, major_direction_);
+      position.SetSpan(item_major_span, major_direction_);
     }
     if (!has_indefinite_minor_span) {
       item_minor_span.Translate(StartOffset(minor_direction_));
-      grid_item.SetSpan(item_minor_span, minor_direction_);
+      position.SetSpan(item_minor_span, minor_direction_);
     }
 
     minor_max_end_line_ = std::max<wtf_size_t>(
@@ -155,7 +193,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
 
     if (!has_indefinite_major_span && !has_indefinite_minor_span) {
       auto* placed_item =
-          new PlacedGridItem(grid_item, major_direction_, minor_direction_);
+          new PlacedGridItem(position, major_direction_, minor_direction_);
 
       // We will need to sort the item vector if the new placed item should be
       // inserted to the ordered list before the last item in the vector.
@@ -166,17 +204,17 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
       non_auto_placed_items.emplace_back(placed_item);
     } else {
       if (has_indefinite_major_span)
-        items_not_locked_to_major_axis->emplace_back(&grid_item);
+        positions_not_locked_to_major_axis->emplace_back(&position);
       else
-        items_locked_to_major_axis->emplace_back(&grid_item);
+        positions_locked_to_major_axis->emplace_back(&position);
     }
   }
-  return !items_not_locked_to_major_axis->IsEmpty() ||
-         !items_locked_to_major_axis->IsEmpty();
+  return !positions_not_locked_to_major_axis->IsEmpty() ||
+         !positions_locked_to_major_axis->IsEmpty();
 }
 
 void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
-    const GridItemVector& items_locked_to_major_axis,
+    const PositionVector& positions_locked_to_major_axis,
     PlacedGridItemsList* placed_items) {
   DCHECK(placed_items);
 
@@ -188,13 +226,13 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
           WTF::UnsignedWithZeroKeyHashTraits<wtf_size_t>>
       minor_cursors;
 
-  for (GridItemData* grid_item : items_locked_to_major_axis) {
-    DCHECK_EQ(grid_item->AutoPlacement(major_direction_),
+  for (auto* position : positions_locked_to_major_axis) {
+    DCHECK_EQ(AutoPlacement(*position, major_direction_),
               AutoPlacementType::kMinor);
 
     const wtf_size_t minor_span_size =
-        grid_item->Span(minor_direction_).IndefiniteSpanSize();
-    const wtf_size_t major_start_line = grid_item->StartLine(major_direction_);
+        position->Span(minor_direction_).IndefiniteSpanSize();
+    const wtf_size_t major_start_line = position->StartLine(major_direction_);
 
     AutoPlacementCursor placement_cursor(placed_items->FirstPlacedItem());
     placement_cursor.MoveToMajorLine(major_start_line);
@@ -202,7 +240,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
       placement_cursor.MoveToMinorLine(minor_cursors.at(major_start_line));
 
     placement_cursor.MoveCursorToFitGridSpan(
-        grid_item->SpanSize(major_direction_), minor_span_size,
+        position->SpanSize(major_direction_), minor_span_size,
         minor_max_end_line_, CursorMovementBehavior::kForceMajorLine);
 
     wtf_size_t minor_end_line = placement_cursor.MinorLine() + minor_span_size;
@@ -213,44 +251,44 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
     // Update grid item placement for minor axis.
     GridSpan grid_item_span = GridSpan::TranslatedDefiniteGridSpan(
         placement_cursor.MinorLine(), minor_end_line);
-    grid_item->SetSpan(grid_item_span, minor_direction_);
+    position->SetSpan(grid_item_span, minor_direction_);
 
-    PlaceGridItemAtCursor(*grid_item, placed_items, &placement_cursor);
+    PlaceGridItemAtCursor(*position, placed_items, &placement_cursor);
   }
 }
 
 void NGGridPlacement::PlaceAutoMajorAxisGridItem(
-    GridItemData* grid_item,
+    GridArea* position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
-  DCHECK(grid_item && placed_items);
+  DCHECK(position && placed_items);
   const wtf_size_t major_span_size =
-      grid_item->Span(major_direction_).IndefiniteSpanSize();
+      position->Span(major_direction_).IndefiniteSpanSize();
 
-  placement_cursor->MoveToMinorLine(grid_item->StartLine(minor_direction_));
+  placement_cursor->MoveToMinorLine(position->StartLine(minor_direction_));
   placement_cursor->MoveCursorToFitGridSpan(
-      major_span_size, grid_item->SpanSize(minor_direction_),
+      major_span_size, position->SpanSize(minor_direction_),
       minor_max_end_line_, CursorMovementBehavior::kForceMinorLine);
 
   // Update grid item placement for major axis.
   GridSpan grid_item_span = GridSpan::TranslatedDefiniteGridSpan(
       placement_cursor->MajorLine(),
       placement_cursor->MajorLine() + major_span_size);
-  grid_item->SetSpan(grid_item_span, major_direction_);
+  position->SetSpan(grid_item_span, major_direction_);
 
-  PlaceGridItemAtCursor(*grid_item, placed_items, placement_cursor);
+  PlaceGridItemAtCursor(*position, placed_items, placement_cursor);
 }
 
 void NGGridPlacement::PlaceAutoBothAxisGridItem(
-    GridItemData* grid_item,
+    GridArea* position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
-  DCHECK(grid_item && placed_items && placement_cursor);
+  DCHECK(position && placed_items && placement_cursor);
 
   const wtf_size_t major_span_size =
-      grid_item->Span(major_direction_).IndefiniteSpanSize();
+      position->Span(major_direction_).IndefiniteSpanSize();
   const wtf_size_t minor_span_size =
-      grid_item->Span(minor_direction_).IndefiniteSpanSize();
+      position->Span(minor_direction_).IndefiniteSpanSize();
 
   placement_cursor->MoveCursorToFitGridSpan(major_span_size, minor_span_size,
                                             minor_max_end_line_,
@@ -260,24 +298,24 @@ void NGGridPlacement::PlaceAutoBothAxisGridItem(
   GridSpan grid_item_span = GridSpan::TranslatedDefiniteGridSpan(
       placement_cursor->MajorLine(),
       placement_cursor->MajorLine() + major_span_size);
-  grid_item->SetSpan(grid_item_span, major_direction_);
+  position->SetSpan(grid_item_span, major_direction_);
 
   grid_item_span = GridSpan::TranslatedDefiniteGridSpan(
       placement_cursor->MinorLine(),
       placement_cursor->MinorLine() + minor_span_size);
-  grid_item->SetSpan(grid_item_span, minor_direction_);
+  position->SetSpan(grid_item_span, minor_direction_);
 
-  PlaceGridItemAtCursor(*grid_item, placed_items, placement_cursor);
+  PlaceGridItemAtCursor(*position, placed_items, placement_cursor);
 }
 
 void NGGridPlacement::PlaceGridItemAtCursor(
-    const GridItemData& grid_item,
+    const GridArea& position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
   DCHECK(placed_items && placement_cursor);
 
   auto* new_placed_item =
-      new PlacedGridItem(grid_item, major_direction_, minor_direction_);
+      new PlacedGridItem(position, major_direction_, minor_direction_);
   placed_items->item_vector.emplace_back(new_placed_item);
 
   const auto* next_placed_item = placement_cursor->NextPlacedItem();
@@ -325,13 +363,13 @@ bool NGGridPlacement::GridPosition::operator<(const GridPosition& other) const {
 }
 
 NGGridPlacement::PlacedGridItem::PlacedGridItem(
-    const GridItemData& grid_item,
+    const GridArea& position,
     const GridTrackSizingDirection major_direction,
     const GridTrackSizingDirection minor_direction)
-    : start_{grid_item.StartLine(major_direction),
-             grid_item.StartLine(minor_direction)},
-      end_{grid_item.EndLine(major_direction),
-           grid_item.EndLine(minor_direction)} {}
+    : start_{position.StartLine(major_direction),
+             position.StartLine(minor_direction)},
+      end_{position.EndLine(major_direction),
+           position.EndLine(minor_direction)} {}
 
 NGGridPlacement::GridPosition
 NGGridPlacement::PlacedGridItem::EndOnPreviousMajorLine() const {

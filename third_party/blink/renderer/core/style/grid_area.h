@@ -190,6 +190,29 @@ struct GridArea {
 
   GridArea(const GridSpan& r, const GridSpan& c) : columns(c), rows(r) {}
 
+  const GridSpan& Span(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? columns : rows;
+  }
+
+  void SetSpan(const GridSpan& span, GridTrackSizingDirection track_direction) {
+    if (track_direction == kForColumns)
+      columns = span;
+    else
+      rows = span;
+  }
+
+  wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).StartLine();
+  }
+
+  wtf_size_t EndLine(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).EndLine();
+  }
+
+  wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).IntegerSpan();
+  }
+
   bool operator==(const GridArea& o) const {
     return columns == o.columns && rows == o.rows;
   }
