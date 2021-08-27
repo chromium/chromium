@@ -163,11 +163,11 @@ way to rebaseline tests for a particular platform.
 * Paste.
 * Add files into git and commit.
 
-Unlike other rebaseline methods, the above process may create redundant baselines,
-so optionally you may want to run the following to optimize the baselines before
-the last step above:
-* In the result page, click "Copy test names"
-* In local console, run `third_party/blink/tools/blink_tools.py optimize-baselines <paste>`.
+The generated command includes `blink_tool.py optimize-baselines <tests>` which
+removes redundant baselines. However, the optimization doesn't work for
+flag-specific baselines for now, so the rebaseline script may create redundant
+baselines for flag-specific results. We prefer local manual rebaselining (see
+below) for flag-specific rebaselines when possible.
 
 ### Local manual rebaselining
 

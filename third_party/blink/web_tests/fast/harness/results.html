@@ -462,10 +462,12 @@ class Traversal {
     this.reset();
   }
 
-  traverse(filter, action) {
+  traverse(filter, action, endAction) {
     console.time("traverse");
     action = action || function() {};
     this._helper(this.root, "", filter, action);
+    if (endAction)
+      endAction(this);
     console.timeEnd("traverse");
   }
 
@@ -571,7 +573,7 @@ const Report = {
       case "textmismatch":
         return {print: Report.printTextMismatch, render: Report.renderGroupTextMismatch};
       case "rebaseline":
-        return {print: Report.printRebaseline, render: Report.renderResultList};
+        return {print: Report.printRebaseline, endPrint: Report.endPrintRebaseline, render: Report.renderResultList};
       case "plain":
       default:
         return {print: Report.printPlainTest, render: Report.renderResultList};
@@ -679,13 +681,10 @@ const Report = {
     // Change directory if in wrong place
     let dir = parser.dir;
     if (dir != traversal.rebaselineDir) {
-      if (traversal.rebaselineDir) {
-        let depth = (traversal.rebaselineDir.match(/\//g) || []).length;
-        if (depth)
-          traversal.html.push(`<div>cd ${'..' + '/..'.repeat(depth - 1)};</div>`);
-      }
+      if (traversal.rebaselineDir)
+        traversal.html.push('<div>popd >/dev/null;</div>');
       traversal.html.push(`<div>mkdir -p ${dir};</div>`);
-      traversal.html.push(`<div>cd ${dir};</div>`);
+      traversal.html.push(`<div>pushd ${dir};</div>`);
       traversal.rebaselineDir = dir;
     }
     for (let i=0; i<actualNames.length; i++) {
@@ -697,6 +696,18 @@ const Report = {
         traversal.html.push(`<div>wget ${url.href};</div>`);
         traversal.html.push(`<div>mv ${parser.basename + actualNames[i]} ${parser.basename + expectedNames[i]};</div>`);
       }
+    }
+    traversal.rebaselinedTests = `${traversal.rebaselinedTests || ''} ${parser.dir}${parser.file}`;
+  },
+
+  endPrintRebaseline: (traversal) => {
+    if (traversal.rebaselineDir)
+      traversal.html.push('<div>popd >/dev/null;</div>');
+    if (traversal.rebaselinedTests) {
+      traversal.html.push(
+          `<div>if ! blink_tool.py optimize-baselines ${traversal.rebaselinedTests}; then</div>`,
+          '<div>echo The above command needs third_party/blink/tools in PATH</div>',
+          '<div>fi</div>');
     }
   },
 
@@ -1009,7 +1020,7 @@ const Query = {
       }
     };
     window.setTimeout( _ => {
-      traversal.traverse(filter, report.print);
+      traversal.traverse(filter, report.print, report.endPrint);
       this.updateFilters();
       this.completeReportPromise(traversal);
       this.currentRAF = window.requestAnimationFrame(callback);
@@ -1449,7 +1460,7 @@ const GUI = {
       } else {
         printer.print(test, path, traversal);
       }
-    });
+    }, printer.endPrint);
     let div = document.createElement("div");
     div.setAttribute("style", "overflow: hidden; color: white; height: 1px");
     if (asSingleLine)
