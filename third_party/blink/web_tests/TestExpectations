@@ -6985,6 +6985,3 @@ crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-atta
 # Sheriff 2021-08-26
 crbug.com/1243933 [ Win7 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure ]
 crbug.com/1243978 [ Mac ] wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Timeout ]
-
-# Sheriff 2021-08-27
-crbug.com/1244038 [ Win ] http/tests/devtools/console/console-uncaught-promise.js [ Failure Pass ]
