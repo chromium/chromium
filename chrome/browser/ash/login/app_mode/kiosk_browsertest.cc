@@ -2284,7 +2284,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
   EXPECT_TRUE(PrimaryAppUpdateIsPending());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
+// TODO(crbug.com/1243885): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
+                       DISABLED_IncompliantPlatformDelayInstall) {
   base::test::ScopedChromeOSVersionInfo version(
       "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
 
