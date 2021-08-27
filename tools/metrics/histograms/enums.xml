@@ -47468,6 +47468,7 @@ from previous Chrome versions.
   <int value="-1730755478" label="ClosedTabCache:disabled"/>
   <int value="-1729926412" label="enable-webusb-notifications"/>
   <int value="-1729808721" label="SubresourceRedirect:enabled"/>
+  <int value="-1729264718" label="WebAuthenticationAssertionTransport:enabled"/>
   <int value="-1728605240" label="UseXpsForPrintingFromPdf:enabled"/>
   <int value="-1727530898" label="LookalikeUrlNavigationSuggestionsUI:enabled"/>
   <int value="-1727173228" label="OmniboxZeroSuggestionsOnNTP:enabled"/>
@@ -50497,6 +50498,7 @@ from previous Chrome versions.
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
+  <int value="674777894" label="WebAuthenticationAssertionTransport:disabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>

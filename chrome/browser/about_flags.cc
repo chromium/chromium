@@ -4920,6 +4920,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kLogNetLog)},
 
+    {"enable-web-authentication-assertion-transport",
+     flag_descriptions::kEnableWebAuthenticationAssertionTransportName,
+     flag_descriptions::kEnableWebAuthenticationAssertionTransportDescription,
+     kOsAll, FEATURE_VALUE_TYPE(features::kWebAuthAssertionTransport)},
+
     {"enable-web-authentication-cable-v2-support",
      flag_descriptions::kEnableWebAuthenticationCableV2SupportName,
      flag_descriptions::kEnableWebAuthenticationCableV2SupportDescription,

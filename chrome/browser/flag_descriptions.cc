@@ -1190,6 +1190,12 @@ const char kEnableSubresourceRedirectName[] =
 const char kEnableSubresourceRedirectDescription[] =
     "Allow subresource compression for data savings";
 
+const char kEnableWebAuthenticationAssertionTransportName[] =
+    "Web Authentication Assertion Transport support";
+const char kEnableWebAuthenticationAssertionTransportDescription[] =
+    "Enable Web Authentication to provide the Assertion Transport value on "
+    "authentication success.";
+
 const char kEnableWebAuthenticationCableV2SupportName[] =
     "Web Authentication caBLE v2 support";
 const char kEnableWebAuthenticationCableV2SupportDescription[] =

@@ -683,6 +683,9 @@ extern const char kEnableUseZoomForDsfChoiceDefault[];
 extern const char kEnableUseZoomForDsfChoiceEnabled[];
 extern const char kEnableUseZoomForDsfChoiceDisabled[];
 
+extern const char kEnableWebAuthenticationAssertionTransportName[];
+extern const char kEnableWebAuthenticationAssertionTransportDescription[];
+
 extern const char kEnableWebAuthenticationCableV2SupportName[];
 extern const char kEnableWebAuthenticationCableV2SupportDescription[];
 
