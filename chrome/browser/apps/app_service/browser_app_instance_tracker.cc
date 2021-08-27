@@ -53,17 +53,33 @@ Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
   return nullptr;
 }
 
+aura::Window* AuraWindowForBrowser(Browser* browser) {
+  BrowserWindow* window = browser->window();
+  DCHECK(window && window->GetNativeWindow());
+  aura::Window* aura_window = window->GetNativeWindow();
+  DCHECK(aura_window);
+  return aura_window;
+}
+
+wm::ActivationClient* ActivationClientForBrowser(Browser* browser) {
+  aura::Window* window = AuraWindowForBrowser(browser)->GetRootWindow();
+  wm::ActivationClient* client = wm::GetActivationClient(window);
+  DCHECK(client);
+  return client;
+}
+
 std::string GetAppId(content::WebContents* contents) {
   return GetInstanceAppIdForWebContents(contents).value_or("");
 }
 
 bool IsBrowserVisible(Browser* browser) {
-  aura::Window* window = browser->window()->GetNativeWindow();
-  return window->IsVisible();
+  return AuraWindowForBrowser(browser)->IsVisible();
 }
 
 bool IsBrowserActive(Browser* browser) {
-  return browser->window()->IsActive();
+  auto* aura_window = AuraWindowForBrowser(browser);
+  auto* activation_client = ActivationClientForBrowser(browser);
+  return activation_client->GetActiveWindow() == aura_window;
 }
 
 bool IsAppVisible(Browser* browser, content::WebContents* contents) {
@@ -125,6 +141,10 @@ BrowserAppInstanceTracker::BrowserAppInstanceTracker(
 BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   BrowserList::GetInstance()->RemoveObserver(this);
   if (browser_window_observations_.GetSourcesCount() > 0) {
+    // TODO(crbug.com/1236273): Remove when confident it does not happen.
+    base::debug::DumpWithoutCrashing();
+  }
+  if (activation_client_observations_.GetSourcesCount() > 0) {
     // TODO(crbug.com/1236273): Remove when confident it does not happen.
     base::debug::DumpWithoutCrashing();
   }
@@ -249,19 +269,22 @@ void BrowserAppInstanceTracker::OnWindowDestroying(aura::Window* window) {
   base::debug::DumpWithoutCrashing();
 }
 
+void BrowserAppInstanceTracker::OnWindowActivated(ActivationReason reason,
+                                                  aura::Window* gained_active,
+                                                  aura::Window* lost_active) {
+  if (Browser* browser = GetBrowserWithAuraWindow(lost_active)) {
+    OnBrowserWindowUpdated(browser);
+  }
+  if (Browser* browser = GetBrowserWithAuraWindow(gained_active)) {
+    OnBrowserWindowUpdated(browser);
+  }
+}
+
 void BrowserAppInstanceTracker::OnBrowserAdded(Browser* browser) {
   // TODO(crbug.com/1236273): Remove when confident it does not happen.
   if (base::Contains(tracked_browsers_, browser)) {
     base::debug::DumpWithoutCrashing();
   }
-}
-
-void BrowserAppInstanceTracker::OnBrowserSetLastActive(Browser* browser) {
-  OnBrowserWindowUpdated(browser);
-}
-
-void BrowserAppInstanceTracker::OnBrowserNoLongerActive(Browser* browser) {
-  OnBrowserWindowUpdated(browser);
 }
 
 void BrowserAppInstanceTracker::OnBrowserRemoved(Browser* browser) {
@@ -276,6 +299,8 @@ void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
     return;
   }
   // Sync app instances for existing tabs.
+  // Iterate over the full list of browsers instead of tracked_browsers_ in case
+  // tracked_browsers_ is out of date with global state.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!IsBrowserTracked(browser)) {
       continue;
@@ -403,21 +428,36 @@ void BrowserAppInstanceTracker::OnTabStripModelChangeSelection(
 }
 
 void BrowserAppInstanceTracker::OnBrowserFirstTabAttached(Browser* browser) {
+  // Observe the browser's aura window.
+  browser_window_observations_.AddObservation(AuraWindowForBrowser(browser));
+
+  // Observe the activation client of the root window of the browser's aura
+  // window if this is the first browser matching it (there is no other tracked
+  // browser matching it).
+  wm::ActivationClient* activation_client = ActivationClientForBrowser(browser);
+  if (!IsActivationClientTracked(activation_client)) {
+    activation_client_observations_.AddObservation(activation_client);
+  }
+
   tracked_browsers_.insert(browser);
-  BrowserWindow* window = browser->window();
-  DCHECK(window && window->GetNativeWindow());
-  browser_window_observations_.AddObservation(window->GetNativeWindow());
   if (browser->is_type_normal()) {
     CreateChromeInstance(browser);
   }
 }
 
 void BrowserAppInstanceTracker::OnBrowserLastTabDetached(Browser* browser) {
-  BrowserWindow* window = browser->window();
-  DCHECK(window && window->GetNativeWindow());
-  browser_window_observations_.RemoveObservation(window->GetNativeWindow());
   RemoveChromeInstanceIfExists(browser);
   tracked_browsers_.erase(browser);
+
+  // Unobserve the activation client of the root window of the browser's aura
+  // window if the last browser using it was just removed.
+  wm::ActivationClient* activation_client = ActivationClientForBrowser(browser);
+  if (!IsActivationClientTracked(activation_client)) {
+    activation_client_observations_.RemoveObservation(activation_client);
+  }
+
+  // Unobserve the browser's aura window.
+  browser_window_observations_.RemoveObservation(AuraWindowForBrowser(browser));
 }
 
 void BrowserAppInstanceTracker::OnTabCreated(Browser* browser,
@@ -591,6 +631,21 @@ bool BrowserAppInstanceTracker::IsBrowserTracked(Browser* browser) const {
 
 bool BrowserAppInstanceTracker::IsWindowTracked(aura::Window* window) const {
   return browser_window_observations_.IsObservingSource(window);
+}
+
+bool BrowserAppInstanceTracker::IsActivationClientTracked(
+    wm::ActivationClient* client) const {
+  // Iterate over the full list of browsers instead of tracked_browsers_ in case
+  // tracked_browsers_ is out of date with global state
+  // TODO(crbug.com/1236273): This can be changed to iterate tracked_browsers_
+  // when confident it doesn't get out of sync.
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (IsBrowserTracked(browser) &&
+        ActivationClientForBrowser(browser) == client) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template <typename KeyT>

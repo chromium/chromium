@@ -24,6 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 class Browser;
 class Profile;
@@ -40,6 +42,7 @@ class BrowserAppInstanceObserver;
 class BrowserAppInstanceTracker : public TabStripModelObserver,
                                   public BrowserTabStripTrackerDelegate,
                                   public aura::WindowObserver,
+                                  public wm::ActivationChangeObserver,
                                   public AppRegistryCache::Observer,
                                   public BrowserListObserver {
  public:
@@ -98,10 +101,13 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  // wm::ActivationChangeObserver overrides:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
   // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
   // apps::AppRegistryCache::Observer:
@@ -178,6 +184,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   bool IsBrowserTracked(Browser* browser) const;
   bool IsWindowTracked(aura::Window* window) const;
+  bool IsActivationClientTracked(wm::ActivationClient* client) const;
 
   // Removes the instance given a map (app or browser), if it exists, and
   // notifies observers.
@@ -198,6 +205,11 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // A set of observed browser windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       browser_window_observations_{this};
+
+  // A set of observed activation clients for all browser's windows.
+  base::ScopedMultiSourceObservation<wm::ActivationClient,
+                                     wm::ActivationChangeObserver>
+      activation_client_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
