@@ -218,10 +218,12 @@ export class BannerController extends EventTarget {
     // Check if the banner has exceeded the maximum number of times it can be
     // shown over multiple Files app sessions.
     const showLimit = banner.showLimit();
-    const timesShown =
-        this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`];
-    if (showLimit && timesShown >= showLimit) {
-      return false;
+    if (showLimit) {
+      const timesShown =
+          this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`];
+      if (timesShown >= showLimit && !banner.isConnected) {
+        return false;
+      }
     }
 
     // Check if the threshold has been breached for the banner to be shown.
@@ -256,14 +258,16 @@ export class BannerController extends EventTarget {
    * @private
    */
   async showBanner_(banner) {
-    if (banner.parentElement !== this.container_) {
+    if (!banner.isConnected) {
       this.container_.appendChild(/** @type {Node} */ (banner));
 
       // Views are set when the banner is first appended to the DOM. This
       // denotes a new app session.
-      const localStorageKey = `${banner.tagName}_${VIEW_COUNTER_SUFFIX}`;
-      await this.setLocalStorage_(
-          localStorageKey, this.localStorageCache_[localStorageKey] + 1);
+      if (banner.showLimit()) {
+        const localStorageKey = `${banner.tagName}_${VIEW_COUNTER_SUFFIX}`;
+        await this.setLocalStorage_(
+            localStorageKey, this.localStorageCache_[localStorageKey] + 1);
+      }
     }
 
     banner.removeAttribute('hidden');

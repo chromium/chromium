@@ -271,6 +271,16 @@ function mockDate() {
   return {setDate, restoreDate};
 }
 
+/**
+ * Imitates a new Files app session. The Banner controller looks to see if the
+ * banner has been connected to the DOM and so clearing the DOM should
+ * sufficiently demonstrate this.
+ */
+async function startNewFilesAppSession() {
+  bannerContainer.textContent = '';
+  await controller.reconcile();
+}
+
 export function setUpPage() {
   bannerContainer = document.createElement('div');
   bannerContainer.setAttribute('id', 'banners');
@@ -448,9 +458,7 @@ export async function testBannersChangeAfterShowLimitReached() {
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
-  // Clearing the DOM should imitate a new Files app session.
-  bannerContainer.textContent = '';
-  await controller.reconcile();
+  await startNewFilesAppSession();
 
   // After a new Files app session has started, the previous counter has
   // exceeded it's show limit, assert the next priority banner is shown.
@@ -514,9 +522,9 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
   await waitUntil(isBannerVisible(testWarningBanners[0]));
 
-  // Start a new Files app session (clearing the container emulates this).
+  await startNewFilesAppSession();
+
   // Change the directory back Downloads.
-  bannerContainer.textContent = '';
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
@@ -524,10 +532,10 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
   await waitUntil(isBannerVisible(testWarningBanners[0]));
 
-  // Emulate starting a new Files app session and change back to Downloads
-  // volume. This time the educational banner should no longer be showing as it
-  // has exceeded it's show limit.
-  bannerContainer.textContent = '';
+  await startNewFilesAppSession();
+
+  // Educational banner should no longer be showing as it has exceeded it's show
+  // limit.
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isAllBannersHidden);
 }
@@ -763,4 +771,49 @@ export async function testDismissedBannerShowsAfterDuration() {
 
   // Restore the Date.now() function to prior to it's mock.
   mock.restoreDate();
+}
+
+/**
+ * Test that a navigating around a Files app session after a banner has been
+ * shown does not hide the banner if the showLimit has been reached, only the
+ * next Files app session should hide the banner.
+ */
+export async function testBannerContinuesShowingThroughoutAppSession() {
+  // Add warning banner.
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+
+  // Set the showLimit for the warning banner.
+  testWarningBanners[0].setShowLimit(2);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+
+  // The first reconciliation should increment the counter and append to DOM.
+  // Show counter should equal 1.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  await startNewFilesAppSession();
+
+  // Navigating to Downloads should increment the counter and append to the DOM.
+  // Show counter should equal 2.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Changing to another volume should hide the banner.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isAllBannersHidden);
+
+  // Navigating back to Downloads should still have the banner shown. The same
+  // Files app session is still active (even though the count is 2 which is the
+  // showLimit).
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  await startNewFilesAppSession();
+
+  // This is the 3rd Files app session, when navigating to Downloads the banner
+  // should not be visible, the counter should now be 3 exceeding the showLimit
+  // of 2.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isAllBannersHidden);
 }
