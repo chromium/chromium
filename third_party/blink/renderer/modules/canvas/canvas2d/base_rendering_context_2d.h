@@ -409,9 +409,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         const SkIRect& transformed_clip_bounds,
                         SkIRect*);
 
-  template <typename DrawFunc, typename DrawCoversClipBoundsFunc>
+  template <typename DrawFunc>
   void Draw(const DrawFunc&,
-            const DrawCoversClipBoundsFunc&,
             const SkRect& bounds,
             CanvasRenderingContext2DState::PaintType,
             CanvasRenderingContext2DState::ImageType,
@@ -442,11 +441,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     kClipFill,  // Fill that is already known to cover the current clip
     kUntransformedUnclippedFill
   };
-
-  void CheckOverdraw(const SkRect&,
-                     const PaintFlags*,
-                     CanvasRenderingContext2DState::ImageType,
-                     DrawType);
 
   HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
   // Counts how many states have been pushed with BeginLayer.
@@ -525,9 +519,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
            image_type == CanvasRenderingContext2DState::kNonOpaqueImage;
   }
 
-  template <typename DrawFunc, typename DrawCoversClipBoundsFunc>
+  template <typename DrawFunc>
   void DrawInternal(const DrawFunc&,
-                    const DrawCoversClipBoundsFunc&,
                     const SkRect& bounds,
                     CanvasRenderingContext2DState::PaintType,
                     CanvasRenderingContext2DState::ImageType,
@@ -570,7 +563,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
 
   void ClearCanvas();
-  bool RectContainsTransformedRect(const FloatRect&, const SkIRect&) const;
+
   // Sets the origin to be tainted by the content of the canvas, such
   // as a cross-origin image. This is as opposed to some other reason
   // such as tainting from a filter applied to the canvas.
@@ -597,10 +590,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   DISALLOW_COPY_AND_ASSIGN(BaseRenderingContext2D);
 };
 
-template <typename DrawFunc, typename DrawCoversClipBoundsFunc>
+template <typename DrawFunc>
 void BaseRenderingContext2D::DrawInternal(
     const DrawFunc& draw_func,
-    const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
     const SkRect& bounds,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
@@ -614,7 +606,7 @@ void BaseRenderingContext2D::DrawInternal(
     CompositedDraw(draw_func, GetPaintCanvasForDraw(clip_bounds, draw_type),
                    paint_type, image_type);
   } else if (global_composite == SkBlendMode::kSrc) {
-    ClearCanvas();  // takes care of checkOverdraw()
+    ClearCanvas();
     const PaintFlags* flags =
         state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
     draw_func(GetPaintCanvasForDraw(clip_bounds, draw_type), flags);
@@ -623,18 +615,14 @@ void BaseRenderingContext2D::DrawInternal(
     if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
       const PaintFlags* flags =
           state.GetFlags(paint_type, kDrawShadowAndForeground, image_type);
-      if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
-          draw_covers_clip_bounds(clip_bounds))
-        CheckOverdraw(bounds, flags, image_type, kClipFill);
       draw_func(GetPaintCanvasForDraw(dirty_rect, draw_type), flags);
     }
   }
 }
 
-template <typename DrawFunc, typename DrawCoversClipBoundsFunc>
+template <typename DrawFunc>
 void BaseRenderingContext2D::Draw(
     const DrawFunc& draw_func,
-    const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
     const SkRect& bounds,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
@@ -650,13 +638,11 @@ void BaseRenderingContext2D::Draw(
   if (UNLIKELY(GetState().IsFilterUnresolved())) {
     // Resolving a filter requires allocating garbage-collected objects.
     PostDeferrableAction(WTF::Bind(
-        &BaseRenderingContext2D::DrawInternal<DrawFunc,
-                                              DrawCoversClipBoundsFunc>,
-        WrapPersistent(this), draw_func, draw_covers_clip_bounds, bounds,
-        paint_type, image_type, clip_bounds, draw_type));
+        &BaseRenderingContext2D::DrawInternal<DrawFunc>, WrapPersistent(this),
+        draw_func, bounds, paint_type, image_type, clip_bounds, draw_type));
   } else {
-    DrawInternal(draw_func, draw_covers_clip_bounds, bounds, paint_type,
-                 image_type, clip_bounds, draw_type);
+    DrawInternal(draw_func, bounds, paint_type, image_type, clip_bounds,
+                 draw_type);
   }
 }
 

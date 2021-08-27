@@ -968,8 +968,7 @@ void CanvasRenderingContext2D::fillFormattedText(
       wrap_width, bounds);
   Draw([recording](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { c->drawPicture(recording); },
-       [](const SkIRect& rect) { return false; }, bounds,
-       CanvasRenderingContext2DState::PaintType::kFillPaintType,
+       bounds, CanvasRenderingContext2DState::PaintType::kFillPaintType,
        CanvasRenderingContext2DState::kNoImage,
        CanvasPerformanceMonitor::DrawType::kText);
 }
@@ -1084,8 +1083,6 @@ void CanvasRenderingContext2D::DrawTextInternal(
                                         Font::kUseFallbackIfFontNotReady,
                                         kCDeviceScaleFactor, *flags);
       },
-      [](const SkIRect& rect)  // overdraw test lambda
-      { return false; },
       bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 }
