@@ -324,6 +324,29 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    @Feature("RenderTest")
+    public void testFRESyncConsentScreenWhenSignedInWithoutSyncDynamically() throws IOException {
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+        launchActivityWithFragment(fragment);
+
+        mAccountManagerTestRule.addTestAccountThenSignin();
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mActivityTestRule.getActivity()
+                            .findViewById(R.id.signin_account_picker)
+                            .isShown();
+        });
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "fre_sync_consent_fragment_when_signed_in_without_sync_dynamically");
+    }
+
+    @Test
+    @LargeTest
     public void testClickingSettingsDoesNotSetFirstSetupComplete() {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
