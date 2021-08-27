@@ -1390,6 +1390,18 @@ void FrameSchedulerImpl::OnWebSchedulingTaskQueuePriorityChanged(
                     frame_task_queue_controller_->GetQueueEnabledVoter(queue));
 }
 
+void FrameSchedulerImpl::OnWebSchedulingTaskQueueDestroyed(
+    MainThreadTaskQueue* queue) {
+  if (queue->CanBeThrottled())
+    RemoveThrottleableQueueFromBudgetPools(queue);
+
+  CleanUpQueue(queue);
+
+  // After this is called, the queue will be destroyed. Do not attempt
+  // to use it further.
+  frame_task_queue_controller_->RemoveWebSchedulingTaskQueue(queue);
+}
+
 const base::UnguessableToken& FrameSchedulerImpl::GetAgentClusterId() const {
   if (!delegate_)
     return base::UnguessableToken::Null();

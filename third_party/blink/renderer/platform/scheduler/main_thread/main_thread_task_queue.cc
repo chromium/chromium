@@ -257,6 +257,10 @@ void MainThreadTaskQueue::SetWebSchedulingPriority(
   frame_scheduler_->OnWebSchedulingTaskQueuePriorityChanged(this);
 }
 
+void MainThreadTaskQueue::OnWebSchedulingTaskQueueDestroyed() {
+  frame_scheduler_->OnWebSchedulingTaskQueueDestroyed(this);
+}
+
 absl::optional<WebSchedulingPriority>
 MainThreadTaskQueue::web_scheduling_priority() const {
   return web_scheduling_priority_;

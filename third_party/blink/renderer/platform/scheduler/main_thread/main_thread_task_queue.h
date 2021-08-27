@@ -449,6 +449,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
   absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
 
+  void OnWebSchedulingTaskQueueDestroyed();
+
   // TODO(kdillon): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
   TaskQueue* GetTaskQueue() { return task_queue_.get(); }
