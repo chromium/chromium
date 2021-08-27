@@ -15768,6 +15768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="SecurityInterstitialSSLType" separator="."
     ordering="prefix">
   <suffix name="bad_clock" label=""/>
+  <suffix name="https_first_mode" label=""/>
   <suffix name="legacy_tls" label=""/>
   <suffix name="ssl_nonoverridable" label=""/>
   <suffix name="ssl_overridable" label=""/>

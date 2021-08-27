@@ -1647,6 +1647,8 @@ static_library("browser") {
     "ssl/connection_help_tab_helper.h",
     "ssl/https_defaulted_callbacks.cc",
     "ssl/https_defaulted_callbacks.h",
+    "ssl/https_first_mode_settings_tracker.cc",
+    "ssl/https_first_mode_settings_tracker.h",
     "ssl/https_only_mode_controller_client.cc",
     "ssl/https_only_mode_controller_client.h",
     "ssl/https_only_mode_navigation_throttle.cc",

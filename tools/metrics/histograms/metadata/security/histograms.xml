@@ -54,6 +54,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Security.HttpsFirstMode.NavigationEvent"
+    enum="HttpsFirstModeNavigationEvent" expires_after="2022-01-31">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Events for navigations that are upgraded from HTTP to HTTPS by HTTPS-First
+    Mode. Recorded for eligible navigations (HTTP main frame navigations that
+    are not allowlisted), if the profile is opted in to HTTPS-First Mode.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
+    expires_after="2022-01-31">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the HTTPS-First Mode preference state when it changes for a profile.
+    Recorded for regular profiles only (not for Incognito, Guest, or Sign-in
+    profiles).
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
+    enum="BooleanEnabled" expires_after="2022-01-31">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether the HTTPS-First Mode preference is enabled at profile
+    startup. Recorded for regular profiles only (not for Incognito, Guest, or
+    Sign-in profiles).
+  </summary>
+</histogram>
+
 <histogram name="Security.LegacyTLS.DownloadStarted" enum="Boolean"
     expires_after="2021-08-09">
   <owner>cthomp@chromium.org</owner>

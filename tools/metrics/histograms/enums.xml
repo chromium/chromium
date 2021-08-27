@@ -41262,6 +41262,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="14" label="CLEAR_SERVER_NETWORK_STATS"/>
 </enum>
 
+<enum name="HttpsFirstModeNavigationEvent">
+  <int value="0" label="kUpgradeAttempted">Upgrade attempted</int>
+  <int value="1" label="kUpgradeSucceeded">Upgrade succeeded</int>
+  <int value="2" label="kUpgradeFailed">Upgrade failed (for any reason)</int>
+  <int value="3" label="kUpgradeCertError">
+    Upgrade failed due to cert error
+  </int>
+  <int value="4" label="kUpgradeNetError">Upgrade failed due to net error</int>
+  <int value="5" label="kUpgradeTimedOut">Upgrade failed due to timing out</int>
+</enum>
+
 <enum name="HttpsImageCompressionInfoBarAction">
   <int value="0" label="Infobar shown"/>
   <int value="1" label="Infobar dismissed by user"/>

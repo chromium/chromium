@@ -34,9 +34,22 @@ HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     std::unique_ptr<SecurityInterstitialControllerClient> controller_client)
     : SecurityInterstitialPage(web_contents,
                                request_url,
-                               std::move(controller_client)) {}
+                               std::move(controller_client)) {
+  controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
+  controller()->metrics_helper()->RecordUserInteraction(
+      MetricsHelper::TOTAL_VISITS);
+}
 
 HttpsOnlyModeBlockingPage::~HttpsOnlyModeBlockingPage() = default;
+
+void HttpsOnlyModeBlockingPage::OnInterstitialClosing() {
+  // If the page is closing without an explicit decision, record it as not
+  // proceeding.
+  if (!user_made_decision_) {
+    controller()->metrics_helper()->RecordUserDecision(
+        MetricsHelper::DONT_PROCEED);
+  }
+}
 
 SecurityInterstitialPage::TypeID
 HttpsOnlyModeBlockingPage::GetTypeForTesting() {
@@ -54,9 +67,15 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
   DCHECK(retval);
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:
+      user_made_decision_ = true;
+      controller()->metrics_helper()->RecordUserDecision(
+          MetricsHelper::DONT_PROCEED);
       controller()->GoBack();
       break;
     case security_interstitials::CMD_PROCEED:
+      user_made_decision_ = true;
+      controller()->metrics_helper()->RecordUserDecision(
+          MetricsHelper::PROCEED);
       controller()->Proceed();
       break;
     case security_interstitials::CMD_OPEN_HELP_CENTER: {
