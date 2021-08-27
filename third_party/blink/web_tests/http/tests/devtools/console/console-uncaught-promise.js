@@ -98,11 +98,26 @@
   `);
 
   while (await TestRunner.evaluateInPagePromise('runNextPromiseTest()')) {
-      // Run all the test cases until there are no more.
+    // Run all the test cases until there are no more.
   }
 
   ConsoleTestRunner.expandConsoleMessages(async () => {
-      await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
-      TestRunner.completeTest();
+    const printOriginatingCommand = false;
+    const dumpClassNames = false;
+    const messageFormatter = undefined;
+    const array = await ConsoleTestRunner.dumpConsoleMessagesIntoArray(
+    printOriginatingCommand, dumpClassNames,
+    ConsoleTestRunner.formatterIgnoreStackFrameUrls.bind(this, messageFormatter))
+    const messageFromServiceWorkerIndex = array.indexOf('A bad HTTP response code (404) was received when fetching the script.');
+    if (messageFromServiceWorkerIndex !== -1) {
+      // The message from the service worker is not strictly ordered with the corresponding promise rejection, swap it to the end if necessary.
+      const messageFromServiceWorker = array[messageFromServiceWorkerIndex];
+      array[messageFromServiceWorkerIndex] = array[array.length - 1];
+      array[array.length - 1] = messageFromServiceWorker;
+    } else {
+        TestRunner.addResult('Missing message from service worker.');
+    }
+    TestRunner.addResults(array);
+    TestRunner.completeTest();
   });
 })();

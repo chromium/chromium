@@ -65,6 +65,6 @@ timeout @ console-uncaught-promise.js:19
 setTimeout (async)
 runNextPromiseTest @ console-uncaught-promise.js:18
 (anonymous) @ console-uncaught-promise.js:100
-A bad HTTP response code (404) was received when fetching the script.
 inspected-page.html:1 Uncaught (in promise) TypeError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/devtools/console/') with script ('http://127.0.0.1:8000/devtools/console/404'): A bad HTTP response code (404) was received when fetching the script.
+A bad HTTP response code (404) was received when fetching the script.
 
