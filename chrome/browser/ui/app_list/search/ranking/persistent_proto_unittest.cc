@@ -103,8 +103,8 @@ class PersistentProtoTest : public testing::Test {
 // Test that the underlying proto is nullptr until a read is complete, and isn't
 // after that.
 TEST_F(PersistentProtoTest, Initialization) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   EXPECT_EQ(pproto.get(), nullptr);
   Wait();
   EXPECT_NE(pproto.get(), nullptr);
@@ -112,8 +112,8 @@ TEST_F(PersistentProtoTest, Initialization) {
 
 // Test bool conversion and has_value.
 TEST_F(PersistentProtoTest, BoolTests) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   EXPECT_EQ(pproto.get(), nullptr);
   EXPECT_FALSE(pproto);
   EXPECT_FALSE(pproto.has_value());
@@ -125,8 +125,8 @@ TEST_F(PersistentProtoTest, BoolTests) {
 
 // Test -> and *.
 TEST_F(PersistentProtoTest, Getters) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   Wait();
   // We're really just checking these don't crash.
   EXPECT_EQ(pproto->value(), 0);
@@ -138,8 +138,8 @@ TEST_F(PersistentProtoTest, Getters) {
 
 // Test that the pproto correctly saves the in-memory proto to disk.
 TEST_F(PersistentProtoTest, Read) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   // Underlying proto should be nullptr until read is complete.
   EXPECT_EQ(pproto.get(), nullptr);
 
@@ -161,8 +161,8 @@ TEST_F(PersistentProtoTest, Read) {
 TEST_F(PersistentProtoTest, ReadInvalidProto) {
   ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
 
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   Wait();
   EXPECT_EQ(read_status_, ReadStatus::kParseError);
   EXPECT_EQ(read_count_, 1);
@@ -174,8 +174,8 @@ TEST_F(PersistentProtoTest, Write) {
   const auto test_proto = MakeTestProto();
   WriteToDisk(test_proto);
 
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   EXPECT_EQ(pproto.get(), nullptr);
 
   Wait();
@@ -188,8 +188,8 @@ TEST_F(PersistentProtoTest, Write) {
 
 // Test that several saves all happen correctly.
 TEST_F(PersistentProtoTest, MultipleWrites) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   EXPECT_EQ(pproto.get(), nullptr);
 
   Wait();
@@ -209,8 +209,8 @@ TEST_F(PersistentProtoTest, MultipleWrites) {
 // Test that many calls to QueueWrite get batched, leading to only one real
 // write.
 TEST_F(PersistentProtoTest, QueueWrites) {
-  PersistentProto<TestProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                    WriteCallback());
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   Wait();
   EXPECT_EQ(write_count_, 1);
 

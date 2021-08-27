@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -22,7 +23,8 @@
 
 namespace app_list {
 
-// The result of reading a backing file from disk.
+// The result of reading a backing file from disk. These values persist to logs.
+// Entries should not be renumbered and numeric values should never be reused.
 enum class ReadStatus {
   kOk = 0,
   kMissing = 1,
@@ -30,7 +32,8 @@ enum class ReadStatus {
   kParseError = 3,
 };
 
-// The result of writing a backing file to disk.
+// The result of writing a backing file to disk. These values persist to logs.
+// Entries should not be renumbered and numeric values should never be reused.
 enum class WriteStatus {
   kOk = 0,
   kWriteError = 1,
@@ -100,17 +103,20 @@ class PersistentProto {
   using ReadCallback = base::OnceCallback<void(ReadStatus)>;
   using WriteCallback = base::RepeatingCallback<void(WriteStatus)>;
 
-  PersistentProto(const base::FilePath& path,
-                  const base::TimeDelta write_delay,
-                  PersistentProto<T>::ReadCallback on_read,
-                  PersistentProto<T>::WriteCallback on_write)
-      : path_(path),
-        write_delay_(write_delay),
-        on_read_(std::move(on_read)),
-        on_write_(std::move(on_write)),
-        task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+  PersistentProto()
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+
+  void Init(const base::FilePath& path,
+            const base::TimeDelta write_delay,
+            PersistentProto<T>::ReadCallback on_read,
+            PersistentProto<T>::WriteCallback on_write) {
+    path_ = path;
+    write_delay_ = write_delay;
+    on_read_ = std::move(on_read);
+    on_write_ = std::move(on_write);
+
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&Read<T>, path_),
         base::BindOnce(&PersistentProto<T>::OnReadComplete,
@@ -227,10 +233,10 @@ class PersistentProto {
   }
 
   // Path on disk to read from and write to.
-  const base::FilePath path_;
+  base::FilePath path_;
 
   // How long to delay writing to disk for on a call to QueueWrite.
-  const base::TimeDelta write_delay_;
+  base::TimeDelta write_delay_;
 
   // Whether the proto has finished reading from disk. |proto_| will be empty
   // before |initialized_| is true.

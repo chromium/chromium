@@ -33,6 +33,8 @@ class MrfuCacheTest : public testing::Test {
     MrfuCache::Params params;
     params.half_life = 10.0f;
     params.boost_factor = 5.0f;
+    params.max_items = 3u;
+    params.min_score = 0.01f;
     params.write_delay = base::TimeDelta::FromSeconds(0);
     return params;
   }
@@ -118,6 +120,28 @@ TEST_F(MrfuCacheTest, UseIgnoredBeforeInitComplete) {
   // Now the class is finished initializing.
   Wait();
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+}
+
+TEST_F(MrfuCacheTest, CleanupOnTooManyItems) {
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+
+  for (std::string item : {"A", "B", "C", "D", "E", "F"}) {
+    cache.Use(item);
+  }
+
+  // We should have retained only D, E, F as the three highest-scoring items.
+  EXPECT_GT(cache.Get("F"), cache.Get("E"));
+  EXPECT_GT(cache.Get("E"), cache.Get("D"));
+  EXPECT_GT(cache.Get("D"), cache.Get("C"));
+  EXPECT_FLOAT_EQ(cache.Get("C"), 0.0f);
+  EXPECT_FLOAT_EQ(cache.Get("B"), 0.0f);
+  EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+
+  // And there should only be three items on disk.
+  Wait();
+  MrfuCacheProto proto = ReadFromDisk();
+  EXPECT_EQ(proto.items_size(), 3);
 }
 
 TEST_F(MrfuCacheTest, WriteToDisk) {

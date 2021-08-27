@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/ranking/mrfu_cache.pb.h"
 #include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
 
@@ -64,9 +65,6 @@ namespace app_list {
 //
 //  def get(item):
 //    item.score = item.score * decay(item)
-//
-// TODO(crbug.com/1199206): Deleting under a minimum score, and keeping a
-// maximum number of items, are both unimplemented.
 class MrfuCache {
  public:
   // All user-settable parameters of the MRFU cache. The struct has some
@@ -76,6 +74,10 @@ class MrfuCache {
     float half_life = 10.0f;
     // How many consecutive uses of an item it takes to reach a score of 2/3.
     float boost_factor = 5.0f;
+    // A soft limit on the number of items stored.
+    size_t max_items = 50;
+    // Items below min_score may be deleted.
+    float min_score = 0.01f;
     // How long to wait until writing any updates to disk.
     base::TimeDelta write_delay = base::TimeDelta::FromSeconds(30);
   };
@@ -96,11 +98,17 @@ class MrfuCache {
   using Score = MrfuCacheProto::Score;
 
   void Decay(Score* score);
+  void MaybeCleanup();
+  void OnProtoRead(ReadStatus status);
 
   PersistentProto<MrfuCacheProto> proto_;
 
   float decay_coeff_;
   float boost_coeff_;
+  size_t max_items_;
+  float min_score_;
+
+  base::WeakPtrFactory<MrfuCache> weak_factory_{this};
 };
 
 }  // namespace app_list

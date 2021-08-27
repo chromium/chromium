@@ -14,6 +14,8 @@
 namespace app_list {
 namespace {
 
+constexpr int kVersion = 1;
+
 // We boost scores with the equation
 //
 //   score = score + (1 - score) * k
@@ -70,24 +72,19 @@ float ApproximateBoostCoefficient(float decay_coefficient, float boost_factor) {
 
 }  // namespace
 
-MrfuCache::MrfuCache(const base::FilePath& path, const Params& params)
-    : proto_(path, params.write_delay, base::DoNothing(), base::DoNothing()) {
+MrfuCache::MrfuCache(const base::FilePath& path, const Params& params) {
+  proto_.Init(
+      path, params.write_delay,
+      base::BindOnce(&MrfuCache::OnProtoRead, weak_factory_.GetWeakPtr()),
+      base::DoNothing());
   // See header comment for explanation.
-  decay_coeff_ = exp(log(0.5) / params.half_life);
+  decay_coeff_ = exp(log(0.5f) / params.half_life);
   boost_coeff_ = ApproximateBoostCoefficient(decay_coeff_, params.boost_factor);
+  max_items_ = params.max_items;
+  min_score_ = params.min_score;
 }
 
 MrfuCache::~MrfuCache() {}
-
-void MrfuCache::Decay(Score* score) {
-  int64_t update_count = proto_->update_count();
-  int64_t count_delta = update_count - score->last_update_count();
-  if (count_delta > 0) {
-    score->set_score(score->score() * std::pow(decay_coeff_, count_delta));
-    score->set_last_update_count(update_count);
-    proto_.QueueWrite();
-  }
-}
 
 void MrfuCache::Use(const std::string& item) {
   if (!proto_.initialized())
@@ -111,6 +108,8 @@ void MrfuCache::Use(const std::string& item) {
   proto_->set_update_count(proto_->update_count() + 1);
   Decay(score);
   score->set_score(score->score() + boost_coeff_ * (1.0f - score->score()));
+
+  MaybeCleanup();
   proto_.QueueWrite();
 }
 
@@ -127,6 +126,49 @@ float MrfuCache::Get(const std::string& item) {
   Score* score = &it->second;
   Decay(score);
   return score->score();
+}
+
+void MrfuCache::Decay(Score* score) {
+  int64_t update_count = proto_->update_count();
+  int64_t count_delta = update_count - score->last_update_count();
+  if (count_delta > 0) {
+    score->set_score(score->score() * std::pow(decay_coeff_, count_delta));
+    score->set_last_update_count(update_count);
+    proto_.QueueWrite();
+  }
+}
+
+void MrfuCache::MaybeCleanup() {
+  if (proto_->items_size() < 2 * max_items_)
+    return;
+
+  // Ensure all scores are up to date, and then keep all those over the
+  // |min_score_| threshold.
+  std::vector<std::pair<std::string, Score>> kept_items;
+  for (auto& item_score : *proto_->mutable_items()) {
+    Score& score = item_score.second;
+    Decay(&score);
+    if (score.score() > min_score_)
+      kept_items.emplace_back(item_score.first, item_score.second);
+  }
+
+  // Sort them high-to-low by score.
+  std::sort(kept_items.begin(), kept_items.end(),
+            [](auto const& a, auto const& b) {
+              return a.second.score() > b.second.score();
+            });
+
+  // Clear the proto and reinsert at most |max_items_| items.
+  proto_->clear_items();
+  for (size_t i = 0; i < std::min(max_items_, kept_items.size()); ++i) {
+    proto_->mutable_items()->insert(
+        {kept_items[i].first, kept_items[i].second});
+  }
+  proto_.QueueWrite();
+}
+
+void MrfuCache::OnProtoRead(ReadStatus status) {
+  proto_->set_version(kVersion);
 }
 
 }  // namespace app_list
