@@ -418,9 +418,9 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     // so we can allow those.
     if (!style.IsDisplayInlineType()) {
       if (style.IsDisplayTableType() || style.IsDisplayGridBox() ||
-          (style.IsDisplayFlexibleBox() &&
-           !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled()) ||
-          style.IsDeprecatedFlexboxUsingFlexLayout()) {
+          ((style.IsDisplayFlexibleBox() ||
+            style.IsDeprecatedFlexboxUsingFlexLayout()) &&
+           !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled())) {
         UseCounter::Count(
             document,
             WebFeature::
