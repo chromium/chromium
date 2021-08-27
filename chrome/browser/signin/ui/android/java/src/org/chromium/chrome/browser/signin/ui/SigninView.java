@@ -23,7 +23,6 @@ import org.chromium.ui.widget.ButtonCompat;
 /** View that wraps signin screen and caches references to UI elements. */
 public class SigninView extends LinearLayout {
     private SigninScrollView mScrollView;
-    private ImageView mHeaderImage;
     private TextView mTitle;
     private View mAccountPicker;
     private ImageView mAccountImage;
@@ -32,10 +31,6 @@ public class SigninView extends LinearLayout {
     private ImageView mAccountPickerEndImage;
     private TextView mSyncTitle;
     private TextView mSyncDescription;
-    private TextView mTapToSearchTitle;
-    private TextView mTapToSearchDescription;
-    private TextView mSafeBrowsingTitle;
-    private TextView mSafeBrowsingDescription;
     private TextView mDetailsDescription;
     private ButtonCompat mAcceptButton;
     private Button mRefuseButton;
@@ -52,7 +47,6 @@ public class SigninView extends LinearLayout {
         super.onFinishInflate();
 
         mScrollView = findViewById(R.id.signin_scroll_view);
-        mHeaderImage = findViewById(R.id.signin_header_image);
         mTitle = findViewById(R.id.signin_title);
         mAccountPicker = findViewById(R.id.signin_account_picker);
         mAccountImage = findViewById(R.id.account_image);
@@ -67,7 +61,8 @@ public class SigninView extends LinearLayout {
         mMoreButton = findViewById(R.id.more_button);
         mAcceptButtonEndPadding = findViewById(R.id.positive_button_end_padding);
 
-        mAnimationLooper = new AnimationLooper(mHeaderImage.getDrawable());
+        ImageView headerImage = findViewById(R.id.signin_header_image);
+        mAnimationLooper = new AnimationLooper(headerImage.getDrawable());
     }
 
     /**
