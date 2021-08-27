@@ -141,6 +141,9 @@ public class GeolocationHeaderUnitTest {
         when(mWebsitePreferenceBridgeJniMock.isPermissionControlledByDSE(
                      any(BrowserContextHandle.class), anyInt(), anyString()))
                 .thenReturn(true);
+        when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
+                     any(BrowserContextHandle.class), anyString()))
+                .thenReturn(true);
         when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         when(mProfileMock.isOffTheRecord()).thenReturn(false);

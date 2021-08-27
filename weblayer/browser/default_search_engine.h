@@ -25,6 +25,10 @@ const url::Origin& GetDseOrigin();
 bool IsPermissionControlledByDse(ContentSettingsType type,
                                  const url::Origin& origin);
 
+// Returns whether the provided |origin| matches the Weblayer's default search
+// engine logic.
+bool IsDseOrigin(const url::Origin& origin);
+
 // Resets all permissions managed by WebLayer for the default search engine.
 // TODO(crbug.com/1063433): If this logic gets more complicated consider
 // refactoring SearchPermissionsService to be used in WebLayer.
