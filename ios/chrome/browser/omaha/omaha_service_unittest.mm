@@ -22,8 +22,7 @@
 #include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/omaha/omaha_service_provider.h"
+#include "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/http/http_status_code.h"
@@ -111,9 +110,7 @@ class OmahaServiceTest : public PlatformTest {
   }
 
   std::string test_application_id() const {
-    return ios::GetChromeBrowserProvider()
-        .GetOmahaServiceProvider()
-        ->GetApplicationID();
+    return ios::provider::GetOmahaApplicationId();
   }
 
  protected:
@@ -138,8 +135,8 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
-      " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
+      "<app brand=\"[A-Z][A-Z][A-Z][A-Z]\" appid=\"{[^}]*}\" version=\"[^\"]*\""
+      " nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\" client=\"\""
       " installage=\"0\">"
       "<updatecheck/>"
       "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/></app></request>";
@@ -167,8 +164,8 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
-      " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\">"
+      "<app brand=\"[A-Z][A-Z][A-Z][A-Z]\" appid=\"{[^}]*}\" version=\"[^\"]*\""
+      " nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\" client=\"\">"
       "<updatecheck/>"
       "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/></app></request>";
 
@@ -197,8 +194,8 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*(\\.[0-9][0-9]*)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"%s\" nextversion=\"[^\"]*\" ap=\"[^\"]*\" lang=\"[^\"]*\""
-      " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\""
+      "<app brand=\"[A-Z][A-Z][A-Z][A-Z]\" appid=\"{[^}]*}\" version=\"%s\""
+      " nextversion=\"[^\"]*\" ap=\"[^\"]*\" lang=\"[^\"]*\" client=\"\""
       " installage=\"%d\">"
       "<event eventtype=\"%d\" eventresult=\"1\"/>"
       "<ping active=\"1\" ad=\"-1\" rd=\"-1\"/>"
@@ -547,8 +544,8 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
-      "<app version=\"[^\"]*\" nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\""
-      " brand=\"[A-Z][A-Z][A-Z][A-Z]\" client=\"\" appid=\"{[^}]*}\">"
+      "<app brand=\"[A-Z][A-Z][A-Z][A-Z]\" appid=\"{[^}]*}\" version=\"[^\"]*\""
+      " nextversion=\"\" ap=\"[^\"]*\" lang=\"[^\"]*\" client=\"\">"
       "<updatecheck/>"
       "<ping active=\"1\" ad=\"4088\" rd=\"4088\"/></app></request>";
 
