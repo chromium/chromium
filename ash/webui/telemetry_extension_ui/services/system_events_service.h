@@ -13,36 +13,40 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
 
-class SystemEventsService : public ash::health::mojom::SystemEventsService {
+class SystemEventsService : public health::mojom::SystemEventsService {
  public:
   explicit SystemEventsService(
-      mojo::PendingReceiver<ash::health::mojom::SystemEventsService> receiver);
+      mojo::PendingReceiver<health::mojom::SystemEventsService> receiver);
   SystemEventsService(const SystemEventsService&) = delete;
   SystemEventsService& operator=(const SystemEventsService&) = delete;
   ~SystemEventsService() override;
 
   void AddBluetoothObserver(
-      mojo::PendingRemote<ash::health::mojom::BluetoothObserver> observer)
-      override;
+      mojo::PendingRemote<health::mojom::BluetoothObserver> observer) override;
 
   void AddLidObserver(
-      mojo::PendingRemote<ash::health::mojom::LidObserver> observer) override;
+      mojo::PendingRemote<health::mojom::LidObserver> observer) override;
 
   void AddPowerObserver(
-      mojo::PendingRemote<ash::health::mojom::PowerObserver> observer) override;
+      mojo::PendingRemote<health::mojom::PowerObserver> observer) override;
 
   void FlushForTesting();
 
  private:
-  mojo::Receiver<ash::health::mojom::SystemEventsService> receiver_;
+  mojo::Receiver<health::mojom::SystemEventsService> receiver_;
 
   BluetoothObserver bluetooth_observer_;
   LidObserver lid_observer_;
   PowerObserver power_observer_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::SystemEventsService;
 }  // namespace chromeos
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_SYSTEM_EVENTS_SERVICE_H_

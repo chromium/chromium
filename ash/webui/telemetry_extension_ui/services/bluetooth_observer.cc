@@ -10,12 +10,7 @@
 #include "base/bind.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
+namespace ash {
 
 BluetoothObserver::BluetoothObserver() : receiver_{this} {
   Connect();
@@ -80,4 +75,4 @@ void BluetoothObserver::FlushForTesting() {
   receiver_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace chromeos
+}  // namespace ash

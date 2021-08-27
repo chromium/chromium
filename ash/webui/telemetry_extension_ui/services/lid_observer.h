@@ -11,7 +11,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
 
 class LidObserver : public cros_healthd::mojom::CrosHealthdLidObserver {
  public:
@@ -20,8 +25,7 @@ class LidObserver : public cros_healthd::mojom::CrosHealthdLidObserver {
   LidObserver& operator=(const LidObserver&) = delete;
   ~LidObserver() override;
 
-  void AddObserver(
-      mojo::PendingRemote<ash::health::mojom::LidObserver> observer);
+  void AddObserver(mojo::PendingRemote<health::mojom::LidObserver> observer);
 
   void OnLidClosed() override;
   void OnLidOpened() override;
@@ -34,9 +38,9 @@ class LidObserver : public cros_healthd::mojom::CrosHealthdLidObserver {
   void Connect();
 
   mojo::Receiver<cros_healthd::mojom::CrosHealthdLidObserver> receiver_;
-  mojo::RemoteSet<ash::health::mojom::LidObserver> observers_;
+  mojo::RemoteSet<health::mojom::LidObserver> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_LID_OBSERVER_H_

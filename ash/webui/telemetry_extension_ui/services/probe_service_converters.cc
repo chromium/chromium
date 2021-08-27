@@ -13,13 +13,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace converters {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace health = ::ash::health;
 
 cros_healthd::mojom::ProbeCategoryEnum Convert(
     health::mojom::ProbeCategoryEnum input) {
@@ -393,4 +390,4 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash

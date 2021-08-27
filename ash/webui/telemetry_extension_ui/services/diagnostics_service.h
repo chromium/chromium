@@ -11,12 +11,17 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
-class DiagnosticsService : public ash::health::mojom::DiagnosticsService {
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
+
+class DiagnosticsService : public health::mojom::DiagnosticsService {
  public:
   explicit DiagnosticsService(
-      mojo::PendingReceiver<ash::health::mojom::DiagnosticsService> receiver);
+      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
   DiagnosticsService(const DiagnosticsService&) = delete;
   DiagnosticsService& operator=(const DiagnosticsService&) = delete;
   ~DiagnosticsService() override;
@@ -29,18 +34,17 @@ class DiagnosticsService : public ash::health::mojom::DiagnosticsService {
   void OnDisconnect();
 
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
-  void GetRoutineUpdate(
-      int32_t id,
-      ash::health::mojom::DiagnosticRoutineCommandEnum command,
-      bool include_output,
-      GetRoutineUpdateCallback callback) override;
+  void GetRoutineUpdate(int32_t id,
+                        health::mojom::DiagnosticRoutineCommandEnum command,
+                        bool include_output,
+                        GetRoutineUpdateCallback callback) override;
   void RunBatteryCapacityRoutine(
       RunBatteryCapacityRoutineCallback callback) override;
   void RunBatteryHealthRoutine(
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunAcPowerRoutine(ash::health::mojom::AcPowerStatusEnum expected_status,
+  void RunAcPowerRoutine(health::mojom::AcPowerStatusEnum expected_status,
                          const absl::optional<std::string>& expected_power_type,
                          RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
@@ -54,9 +58,9 @@ class DiagnosticsService : public ash::health::mojom::DiagnosticsService {
       uint32_t wear_level_threshold,
       RunNvmeWearLevelRoutineCallback callback) override;
   void RunNvmeSelfTestRoutine(
-      ash::health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+      health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void RunDiskReadRoutine(ash::health::mojom::DiskReadRoutineTypeEnum type,
+  void RunDiskReadRoutine(health::mojom::DiskReadRoutineTypeEnum type,
                           uint32_t length_seconds,
                           uint32_t file_size_mb,
                           RunDiskReadRoutineCallback callback) override;
@@ -79,9 +83,14 @@ class DiagnosticsService : public ash::health::mojom::DiagnosticsService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<ash::health::mojom::DiagnosticsService> receiver_;
+  mojo::Receiver<health::mojom::DiagnosticsService> receiver_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::DiagnosticsService;
 }  // namespace chromeos
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_

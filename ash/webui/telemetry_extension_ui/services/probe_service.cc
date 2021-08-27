@@ -15,12 +15,9 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace health = ::ash::health;
-
 constexpr char kOemDataLogName[] = "oemdata";
 }  // namespace
 
@@ -71,4 +68,4 @@ void ProbeService::OnDisconnect() {
   service_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

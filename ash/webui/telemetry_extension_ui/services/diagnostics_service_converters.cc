@@ -12,13 +12,8 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace converters {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
 
 namespace unchecked {
 
@@ -230,4 +225,4 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash

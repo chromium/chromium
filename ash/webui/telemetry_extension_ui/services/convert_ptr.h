@@ -13,7 +13,7 @@
 // To use ConvertPtr with other functions, headers to function definitions
 // must be included in this file.
 
-namespace chromeos {
+namespace ash {
 namespace converters {
 
 template <class InputT>
@@ -23,6 +23,6 @@ auto ConvertPtr(InputT input) {
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_CONVERT_PTR_H_

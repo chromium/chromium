@@ -15,13 +15,14 @@
 
 using testing::ElementsAre;
 
-namespace chromeos {
-namespace converters {
+namespace ash {
 
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
+
+namespace converters {
 
 // Note: in some tests we intentionally use New() with no arguments for
 // cros_healthd::mojom types, because there can be some fields that we don't
@@ -707,4 +708,4 @@ TEST(ProbeServiceConvertors, TelemetryInfoPtrWithNullFields) {
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash

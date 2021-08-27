@@ -11,7 +11,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
 
 class PowerObserver : public cros_healthd::mojom::CrosHealthdPowerObserver {
  public:
@@ -20,8 +25,7 @@ class PowerObserver : public cros_healthd::mojom::CrosHealthdPowerObserver {
   PowerObserver& operator=(const PowerObserver&) = delete;
   ~PowerObserver() override;
 
-  void AddObserver(
-      mojo::PendingRemote<ash::health::mojom::PowerObserver> observer);
+  void AddObserver(mojo::PendingRemote<health::mojom::PowerObserver> observer);
 
   void OnAcInserted() override;
   void OnAcRemoved() override;
@@ -36,9 +40,9 @@ class PowerObserver : public cros_healthd::mojom::CrosHealthdPowerObserver {
   void Connect();
 
   mojo::Receiver<cros_healthd::mojom::CrosHealthdPowerObserver> receiver_;
-  mojo::RemoteSet<ash::health::mojom::PowerObserver> observers_;
+  mojo::RemoteSet<health::mojom::PowerObserver> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_POWER_OBSERVER_H_

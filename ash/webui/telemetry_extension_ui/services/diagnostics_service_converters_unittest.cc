@@ -8,7 +8,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace converters {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
@@ -99,4 +99,4 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash

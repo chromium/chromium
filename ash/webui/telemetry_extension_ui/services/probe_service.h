@@ -13,19 +13,24 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
-class ProbeService : public ash::health::mojom::ProbeService {
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
+
+class ProbeService : public health::mojom::ProbeService {
  public:
   explicit ProbeService(
-      mojo::PendingReceiver<ash::health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
   ProbeService(const ProbeService&) = delete;
   ProbeService& operator=(const ProbeService&) = delete;
   ~ProbeService() override;
 
  private:
   void ProbeTelemetryInfo(
-      const std::vector<ash::health::mojom::ProbeCategoryEnum>& categories,
+      const std::vector<health::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
   void GetOemData(GetOemDataCallback callback) override;
 
@@ -42,9 +47,14 @@ class ProbeService : public ash::health::mojom::ProbeService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<ash::health::mojom::ProbeService> receiver_;
+  mojo::Receiver<health::mojom::ProbeService> receiver_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::ProbeService;
 }  // namespace chromeos
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_

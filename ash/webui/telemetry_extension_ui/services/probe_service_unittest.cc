@@ -18,12 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
+namespace ash {
 
 class ProbeServiceTest : public testing::Test {
  public:
@@ -114,4 +109,4 @@ TEST_F(ProbeServiceTest, GetOemDataSuccess) {
   run_loop.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

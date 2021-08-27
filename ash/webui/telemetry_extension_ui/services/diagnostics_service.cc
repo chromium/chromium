@@ -13,12 +13,7 @@
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
+namespace ash {
 
 DiagnosticsService::DiagnosticsService(
     mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver)
@@ -249,4 +244,4 @@ void DiagnosticsService::RunBatteryChargeRoutine(
           std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

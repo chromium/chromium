@@ -26,7 +26,7 @@ class TelemetryApiFunctionBase : public ExtensionFunction {
   mojo::Remote<ash::health::mojom::ProbeService> remote_probe_service_;
 
  private:
-  ProbeService probe_service_;
+  ash::ProbeService probe_service_;
 };
 
 class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {

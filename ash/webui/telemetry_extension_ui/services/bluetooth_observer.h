@@ -11,7 +11,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
 
 class BluetoothObserver
     : public cros_healthd::mojom::CrosHealthdBluetoothObserver {
@@ -22,7 +27,7 @@ class BluetoothObserver
   ~BluetoothObserver() override;
 
   void AddObserver(
-      mojo::PendingRemote<ash::health::mojom::BluetoothObserver> observer);
+      mojo::PendingRemote<health::mojom::BluetoothObserver> observer);
 
   void OnAdapterAdded() override;
   void OnAdapterRemoved() override;
@@ -39,9 +44,9 @@ class BluetoothObserver
   void Connect();
 
   mojo::Receiver<cros_healthd::mojom::CrosHealthdBluetoothObserver> receiver_;
-  mojo::RemoteSet<ash::health::mojom::BluetoothObserver> observers_;
+  mojo::RemoteSet<health::mojom::BluetoothObserver> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_BLUETOOTH_OBSERVER_H_

@@ -18,12 +18,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace health = ::ash::health;
 
 class MockBluetoothObserver : public health::mojom::BluetoothObserver {
  public:
@@ -264,4 +261,4 @@ TEST_F(SystemEventsServiceTest, PowerObserverReconnect) {
   run_loop2.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,13 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
+namespace cros_healthd {
+namespace mojom = ::chromeos::cros_healthd::mojom;
+}  // namespace cros_healthd
+
 namespace converters {
 
 // Tests that |ConvertPtr| function returns nullptr if input is nullptr.
@@ -18,4 +24,4 @@ TEST(TelemetryConvertPtr, ConvertPtrTakesNullPtr) {
 }
 
 }  // namespace converters
-}  // namespace chromeos
+}  // namespace ash

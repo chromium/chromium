@@ -8,12 +8,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace {
-namespace health = ::ash::health;
-}  // namespace
+namespace ash {
 
 SystemEventsService::SystemEventsService(
     mojo::PendingReceiver<health::mojom::SystemEventsService> receiver)
@@ -42,4 +37,4 @@ void SystemEventsService::FlushForTesting() {
   power_observer_.FlushForTesting();      // IN-TEST
 }
 
-}  // namespace chromeos
+}  // namespace ash
