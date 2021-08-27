@@ -67,6 +67,10 @@ const base::Feature kScriptStreaming{"ScriptStreaming",
 const base::Feature kSmallScriptStreaming{"SmallScriptStreaming",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls off-thread code cache consumption.
+const base::Feature kConsumeCodeCacheOffThread{
+    "ConsumeCodeCacheOffThread", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables user level memory pressure signal generation on Android.
 const base::Feature kUserLevelMemoryPressureSignal{
     "UserLevelMemoryPressureSignal", base::FEATURE_DISABLED_BY_DEFAULT};

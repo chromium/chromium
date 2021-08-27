@@ -73,17 +73,29 @@ bool V8CodeCache::HasCodeCache(
   return cache_handler->GetCachedMetadata(code_cache_tag, behavior).get();
 }
 
-v8::ScriptCompiler::CachedData* V8CodeCache::CreateCachedData(
+std::unique_ptr<v8::ScriptCompiler::CachedData> V8CodeCache::CreateCachedData(
     const SingleCachedMetadataHandler* cache_handler) {
-  DCHECK(cache_handler);
-  uint32_t code_cache_tag = V8CodeCache::TagForCodeCache(cache_handler);
-  scoped_refptr<CachedMetadata> cached_metadata =
-      cache_handler->GetCachedMetadata(code_cache_tag);
+  return V8CodeCache::CreateCachedData(GetCachedMetadata(cache_handler));
+}
+
+std::unique_ptr<v8::ScriptCompiler::CachedData> V8CodeCache::CreateCachedData(
+    scoped_refptr<CachedMetadata> cached_metadata) {
   DCHECK(cached_metadata);
   const uint8_t* data = cached_metadata->Data();
   int length = cached_metadata->size();
-  return new v8::ScriptCompiler::CachedData(
+  return std::make_unique<v8::ScriptCompiler::CachedData>(
       data, length, v8::ScriptCompiler::CachedData::BufferNotOwned);
+}
+
+scoped_refptr<CachedMetadata> V8CodeCache::GetCachedMetadata(
+    const SingleCachedMetadataHandler* cache_handler,
+    SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior) {
+  DCHECK(cache_handler);
+  uint32_t code_cache_tag = V8CodeCache::TagForCodeCache(cache_handler);
+  scoped_refptr<CachedMetadata> cached_metadata =
+      cache_handler->GetCachedMetadata(code_cache_tag, behavior);
+  DCHECK(cached_metadata);
+  return cached_metadata;
 }
 
 std::tuple<v8::ScriptCompiler::CompileOptions,

@@ -476,6 +476,12 @@ void Data(perfetto::TracedValue context,
           const String& url);
 }
 
+namespace inspector_deserialize_script_event {
+void Data(perfetto::TracedValue context,
+          uint64_t identifier,
+          const String& url);
+}
+
 namespace inspector_compile_script_event {
 
 struct V8ConsumeCacheResult {

@@ -104,6 +104,15 @@
     "args": ["--enable-features=V8OffThreadFinalization,SmallScriptStreaming,SharedArrayBuffer"]
   },
   {
+    "prefix": "consume-code-cache-off-thread",
+    "bases": [
+      "external/wpt/html/semantics/scripting-1",
+      "external/wpt/workers/modules",
+      "external/wpt/worklets"
+    ],
+    "args": ["--enable-features=ConsumeCodeCacheOffThread"]
+  },
+  {
     "prefix": "exotic-color-space",
     "bases": ["images"],
     "args": ["--force-color-profile=srgb",

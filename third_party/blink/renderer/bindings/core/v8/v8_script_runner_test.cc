@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -48,7 +51,7 @@ class V8ScriptRunnerTest : public testing::Test {
                                counter_);
   }
   WTF::String DifferentCode() const {
-    return WTF::String::Format("a = function() { 1 + 2; } // %01000d\n",
+    return WTF::String::Format("a = function() { 1 + 12; } // %01000d\n",
                                counter_);
   }
   KURL Url() const {
@@ -130,8 +133,18 @@ class V8ScriptRunnerTest : public testing::Test {
   }
 
   ScriptResource* CreateResource(const WTF::TextEncoding& encoding,
-                                 Vector<uint8_t> serialized_metadata = {},
+                                 Vector<uint8_t> serialized_metadata,
                                  absl::optional<String> code = {}) {
+    return CreateResource(
+        encoding,
+        base::make_span(serialized_metadata.data(), serialized_metadata.size()),
+        code);
+  }
+
+  ScriptResource* CreateResource(
+      const WTF::TextEncoding& encoding,
+      base::span<const uint8_t> serialized_metadata = {},
+      absl::optional<String> code = {}) {
     ScriptResource* resource = ScriptResource::CreateForTest(Url(), encoding);
     if (!code)
       code = Code();
@@ -139,9 +152,7 @@ class V8ScriptRunnerTest : public testing::Test {
     response.SetHttpStatusCode(200);
     resource->ResponseReceived(response);
     if (serialized_metadata.size() != 0) {
-      const uint8_t* begin = serialized_metadata.data();
-      resource->SetSerializedCachedMetadata(
-          base::make_span(begin, serialized_metadata.size()));
+      resource->SetSerializedCachedMetadata(serialized_metadata);
     }
     StringUTF8Adaptor code_utf8(code.value());
     resource->AppendData(code_utf8.data(), code_utf8.size());
@@ -149,10 +160,48 @@ class V8ScriptRunnerTest : public testing::Test {
     return resource;
   }
 
+  Vector<uint8_t> CreateCachedData() {
+    V8TestingScope scope;
+    ScriptSourceCode source_code(
+        nullptr, nullptr, CreateResource(UTF8Encoding()),
+        ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+    // Set timestamp to simulate a warm run.
+    ScriptCachedMetadataHandler* cache_handler =
+        static_cast<ScriptCachedMetadataHandler*>(source_code.CacheHandler());
+    ExecutionContext* execution_context =
+        ExecutionContext::From(scope.GetScriptState());
+    SetCacheTimeStamp(
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        cache_handler);
+
+    // Warm run - should produce code cache.
+    EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                              source_code,
+                              mojom::blink::V8CacheOptions::kCode));
+
+    // Check the produced cache is for code cache.
+    scoped_refptr<CachedMetadata> cached_metadata =
+        cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler));
+
+    // Copy the serialized data to return it at an independent vector.
+    base::span<const uint8_t> serialized_data_view =
+        cached_metadata->SerializedData();
+    Vector<uint8_t> ret;
+    ret.AppendRange(serialized_data_view.begin(), serialized_data_view.end());
+    return ret;
+  }
+
+  // TODO(leszeks): Change this from needing an explicit quit callback to
+  // manually flushing the thread pool.
+  void RunLoopUntilQuit(base::Location location = base::Location::Current()) {
+    run_loop_.Run(location);
+  }
+
  protected:
   static int counter_;
   bool code_cache_with_hashing_scheme_ = false;
   base::test::ScopedFeatureList feature_list_;
+  base::RunLoop run_loop_;
 };
 
 int V8ScriptRunnerTest::counter_ = 0;
@@ -208,7 +257,7 @@ TEST_F(V8ScriptRunnerTest, emptyResourceDoesNotHaveCacheHandler) {
 TEST_F(V8ScriptRunnerTest, codeOption) {
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
   ExecutionContext* execution_context =
@@ -233,7 +282,7 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithoutDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   // Set timestamp to simulate a warm run.
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
@@ -272,7 +321,7 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   // Set timestamp to simulate a warm run.
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
@@ -320,7 +369,7 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOptionWithoutDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
 
@@ -360,7 +409,7 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOptionWithDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
 
@@ -401,7 +450,7 @@ TEST_F(V8ScriptRunnerTest, cacheRequestedBeforeProduced) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
   base::HistogramTester tester;
@@ -417,7 +466,7 @@ TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
   EXPECT_FALSE(
@@ -442,7 +491,7 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
       "codecachewithhashing");
   code_cache_with_hashing_scheme_ = true;
   ScriptSourceCode source_code(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
   EXPECT_TRUE(cache_handler->HashRequired());
@@ -485,7 +534,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   code_cache_with_hashing_scheme_ = true;
 
   ScriptSourceCode source_code_1(
-      nullptr, CreateResource(UTF8Encoding()),
+      nullptr, nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   ScriptCachedMetadataHandlerWithHashing* cache_handler_1 =
       static_cast<ScriptCachedMetadataHandlerWithHashing*>(
@@ -504,7 +553,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A second ScriptSourceCode with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the first ScriptSourceCode.
   ScriptSourceCode source_code_2(
-      nullptr,
+      nullptr, nullptr,
       CreateResource(UTF8Encoding(),
                      cache_handler_1->GetSerializedCachedMetadata()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
@@ -523,7 +572,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A third ScriptSourceCode with different script text, using the state of
   // the ScriptCachedMetadataHandler from the second ScriptSourceCode.
   ScriptSourceCode source_code_3(
-      nullptr,
+      nullptr, nullptr,
       CreateResource(UTF8Encoding(),
                      cache_handler_2->GetSerializedCachedMetadata(),
                      DifferentCode()),
@@ -547,7 +596,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A fourth ScriptSourceCode with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the third ScriptSourceCode.
   ScriptSourceCode source_code_4(
-      nullptr,
+      nullptr, nullptr,
       CreateResource(UTF8Encoding(),
                      cache_handler_3->GetSerializedCachedMetadata()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
@@ -565,6 +614,188 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
       cache_handler_4->GetCachedMetadata(TagForTimeStamp(cache_handler_4)));
   EXPECT_FALSE(
       cache_handler_4->GetCachedMetadata(TagForCodeCache(cache_handler_4)));
+}
+
+namespace {
+
+class StubScriptCacheConsumerClient final
+    : public GarbageCollected<StubScriptCacheConsumerClient>,
+      public ScriptCacheConsumerClient {
+ public:
+  explicit StubScriptCacheConsumerClient(base::OnceClosure finish_closure)
+      : finish_closure_(std::move(finish_closure)) {}
+
+  void NotifyCacheConsumeFinished() override {
+    cache_consume_finished_ = true;
+    std::move(finish_closure_).Run();
+  }
+
+  bool cache_consume_finished() { return cache_consume_finished_; }
+
+ private:
+  base::OnceClosure finish_closure_;
+  bool cache_consume_finished_ = false;
+};
+
+}  // namespace
+
+TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
+  feature_list_.InitAndEnableFeature(
+      blink::features::kConsumeCodeCacheOffThread);
+
+  Vector<uint8_t> cached_data = CreateCachedData();
+  EXPECT_GT(cached_data.size(), 0u);
+
+  V8TestingScope scope;
+
+  // Hot run - should start an off-thread code cache consumption.
+  ScriptResource* resource = CreateResource(UTF8Encoding(), cached_data);
+  EXPECT_TRUE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
+
+  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
+  EXPECT_NE(cache_consumer, nullptr);
+
+  auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
+      run_loop_.QuitClosure());
+  cache_consumer->NotifyClientWaiting(consumer_client,
+                                      base::ThreadTaskRunnerHandle::Get());
+
+  // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
+  // post a task for the client to signal that it has completed, which will
+  // post a QuitClosure to this RunLoop.
+  RunLoopUntilQuit();
+
+  EXPECT_TRUE(consumer_client->cache_consume_finished());
+
+  ScriptSourceCode source_code(
+      nullptr, cache_consumer, resource,
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+
+  base::HistogramTester tester;
+  HistogramCounter counter(tester);
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     source_code);
+  EXPECT_EQ(1, counter.GetTotal());
+  EXPECT_EQ(1, counter.GetPresent());
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code, compile_options, no_cache_reason,
+                            produce_cache_options));
+  EXPECT_EQ(2, counter.GetTotal());
+  EXPECT_EQ(2, counter.GetPresent());
+  EXPECT_EQ(0, counter.GetDiscarded());
+}
+
+TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
+  feature_list_.InitAndEnableFeature(
+      blink::features::kConsumeCodeCacheOffThread);
+
+  Vector<uint8_t> cached_data = CreateCachedData();
+  EXPECT_GT(cached_data.size(), 0u);
+
+  V8TestingScope scope;
+
+  // Hot run - should start an off-thread code cache consumption.
+  ScriptResource* resource =
+      CreateResource(UTF8Encoding(), cached_data, DifferentCode());
+
+  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
+  EXPECT_NE(cache_consumer, nullptr);
+
+  auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
+      run_loop_.QuitClosure());
+  cache_consumer->NotifyClientWaiting(consumer_client,
+                                      base::ThreadTaskRunnerHandle::Get());
+
+  // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
+  // post a task for the client to signal that it has completed, which will
+  // post a QuitClosure to this RunLoop.
+  RunLoopUntilQuit();
+
+  ScriptSourceCode source_code(
+      nullptr, cache_consumer, resource,
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+
+  base::HistogramTester tester;
+  HistogramCounter counter(tester);
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     source_code);
+  EXPECT_EQ(1, counter.GetTotal());
+  EXPECT_EQ(1, counter.GetPresent());
+  EXPECT_EQ(produce_cache_options,
+            V8CodeCache::ProduceCacheOptions::kNoProduceCache);
+  EXPECT_EQ(compile_options,
+            v8::ScriptCompiler::CompileOptions::kConsumeCodeCache);
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code, compile_options, no_cache_reason,
+                            produce_cache_options));
+  EXPECT_EQ(2, counter.GetTotal());
+  EXPECT_EQ(2, counter.GetPresent());
+  // Code cache should have been cleared after being rejected.
+  EXPECT_FALSE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
+}
+
+TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
+  feature_list_.InitAndEnableFeature(
+      blink::features::kConsumeCodeCacheOffThread);
+
+  Vector<uint8_t> cached_data = CreateCachedData();
+  EXPECT_GT(cached_data.size(), 0u);
+
+  V8TestingScope scope;
+
+  // Corrupt the cached data.
+  Vector<uint8_t> corrupted_data = cached_data;
+  corrupted_data[10] ^= 0x1;
+
+  // Hot run - should start an off-thread code cache consumption.
+  ScriptResource* resource = CreateResource(UTF8Encoding(), corrupted_data);
+
+  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
+  EXPECT_NE(cache_consumer, nullptr);
+
+  auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
+      run_loop_.QuitClosure());
+  cache_consumer->NotifyClientWaiting(consumer_client,
+                                      base::ThreadTaskRunnerHandle::Get());
+
+  // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
+  // post a task for the client to signal that it has completed, which will
+  // post a QuitClosure to this RunLoop.
+  RunLoopUntilQuit();
+
+  ScriptSourceCode source_code(
+      nullptr, cache_consumer, resource,
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+
+  base::HistogramTester tester;
+  HistogramCounter counter(tester);
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     source_code);
+  EXPECT_EQ(1, counter.GetTotal());
+  EXPECT_EQ(1, counter.GetPresent());
+  EXPECT_EQ(produce_cache_options,
+            V8CodeCache::ProduceCacheOptions::kNoProduceCache);
+  EXPECT_EQ(compile_options,
+            v8::ScriptCompiler::CompileOptions::kConsumeCodeCache);
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code, compile_options, no_cache_reason,
+                            produce_cache_options));
+  EXPECT_EQ(2, counter.GetTotal());
+  EXPECT_EQ(2, counter.GetPresent());
+  // Code cache should have been cleared after being rejected.
+  EXPECT_FALSE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
 }
 
 }  // namespace

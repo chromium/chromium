@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
@@ -121,6 +122,15 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   bool HasRunningStreamer() { return streamer_ && !streamer_->IsFinished(); }
   bool HasFinishedStreamer() { return streamer_ && streamer_->IsFinished(); }
 
+  // Gets the cache consumer from the ScriptResource, clearing it from the
+  // resource so that it cannot be used twice.
+  //
+  // It's fine to return a non-null ScriptCacheConsumer for one user of
+  // ScriptResource while returning null for others, as the ScriptCacheConsumer
+  // is associated with individual ScriptResource users and not with the
+  // ScriptResource itself.
+  ScriptCacheConsumer* TakeCacheConsumer();
+
   // Visible for tests.
   void SetRevalidatingRequest(const ResourceRequestHead&) override;
 
@@ -152,6 +162,24 @@ class CORE_EXPORT ScriptResource final : public TextResource {
     // Streaming was disabled, either manually or because we got a body with
     // no data-pipe.
     kStreamingDisabled,
+  };
+
+  // Valid state transitions:
+  //
+  //            kWaitingForCache              DisableOffThreadConsumeCache()
+  //                    |---------------------------.
+  //                    |                           |
+  //                    v                           v
+  //            kRunningOffThread ----------> kOffThreadConsumeCacheDisabled
+  //
+  enum class ConsumeCacheState {
+    // No cached data has been received.
+    kWaitingForCache,
+    // Cache is being consumed off-thread.
+    kRunningOffThread,
+    // Off-thread consume was disabled, either because it wasn't possible,
+    // wasn't allowed, or had completed and the consumer has already been taken.
+    kOffThreadConsumeCacheDisabled,
   };
 
   class ScriptResourceFactory : public ResourceFactory {
@@ -187,6 +215,13 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // Check that invariants for the state hold.
   void CheckStreamingState() const;
 
+  void DisableOffThreadConsumeCache();
+
+  void AdvanceConsumeCacheState(ConsumeCacheState new_state);
+
+  // Check that invariants for the state hold.
+  void CheckConsumeCacheState() const;
+
   void OnDataPipeReadable(MojoResult result,
                           const mojo::HandleSignalsState& state);
 
@@ -197,6 +232,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
+  Member<ScriptCacheConsumer> cache_consumer_;
+  ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;
 };
 

@@ -120,11 +120,16 @@ ClassicPendingScript::ClassicPendingScript(
   MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
-ClassicPendingScript::~ClassicPendingScript() {}
+ClassicPendingScript::~ClassicPendingScript() = default;
 
 NOINLINE void ClassicPendingScript::CheckState() const {
   DCHECK(GetElement());
   DCHECK_EQ(is_external_, !!GetResource());
+  if (ready_state_ == kWaitingForCacheConsumer) {
+    DCHECK(cache_consumer_);
+  } else if (ready_state_ == kWaitingForResource) {
+    DCHECK(!cache_consumer_);
+  }
 }
 
 
@@ -249,10 +254,32 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
                          });
 
   bool error_occurred = GetResource()->ErrorOccurred() || integrity_failure_;
-  AdvanceReadyState(error_occurred ? kErrorOccurred : kReady);
+  if (error_occurred) {
+    AdvanceReadyState(kErrorOccurred);
+    return;
+  }
+
+  auto* script_resource = To<ScriptResource>(GetResource());
+  CHECK(!cache_consumer_);
+  cache_consumer_ = script_resource->TakeCacheConsumer();
+  if (cache_consumer_) {
+    AdvanceReadyState(kWaitingForCacheConsumer);
+    // TODO(leszeks): Decide whether kNetworking is the right task type here.
+    cache_consumer_->NotifyClientWaiting(
+        this,
+        element->GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
+  } else {
+    AdvanceReadyState(kReady);
+  }
+}
+
+void ClassicPendingScript::NotifyCacheConsumeFinished() {
+  CHECK_EQ(ready_state_, kWaitingForCacheConsumer);
+  AdvanceReadyState(kReady);
 }
 
 void ClassicPendingScript::Trace(Visitor* visitor) const {
+  visitor->Trace(cache_consumer_);
   ResourceClient::Trace(visitor);
   MemoryPressureListener::Trace(visitor);
   PendingScript::Trace(visitor);
@@ -346,7 +373,8 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
                          TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
                          not_streamed_reason);
 
-  ScriptSourceCode source_code(streamer, resource, not_streamed_reason);
+  ScriptSourceCode source_code(streamer, cache_consumer_, resource,
+                               not_streamed_reason);
   // The base URL for external classic script is
   //
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
@@ -359,18 +387,30 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
           : SanitizeScriptErrors::kSanitize);
 }
 
+// static
+bool ClassicPendingScript::StateIsReady(ReadyState state) {
+  return state >= kReady;
+}
+
 bool ClassicPendingScript::IsReady() const {
   CheckState();
-  return ready_state_ >= kReady;
+  return StateIsReady(ready_state_);
 }
 
 void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
   // We will allow exactly these state transitions:
   //
-  // kWaitingForResource -> [kReady, kErrorOccurred]
+  // kWaitingForResource -> kWaitingForCacheConsumer -> [kReady, kErrorOccurred]
+  //                     |                           ^
+  //                     `---------------------------'
+  //
   switch (ready_state_) {
     case kWaitingForResource:
-      CHECK(new_ready_state == kReady || new_ready_state == kErrorOccurred);
+      CHECK(new_ready_state == kReady || new_ready_state == kErrorOccurred ||
+            new_ready_state == kWaitingForCacheConsumer);
+      break;
+    case kWaitingForCacheConsumer:
+      CHECK(new_ready_state == kReady);
       break;
     case kReady:
     case kErrorOccurred:
@@ -378,11 +418,14 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
       break;
   }
 
-  bool old_is_ready = IsReady();
+  // All the ready states are marked not reachable above, so we can't have been
+  // ready beforehand.
+  DCHECK(!StateIsReady(ready_state_));
+
   ready_state_ = new_ready_state;
 
   // Did we transition into a 'ready' state?
-  if (IsReady() && !old_is_ready && IsWatchingForLoad())
+  if (IsReady() && IsWatchingForLoad())
     PendingScriptFinished();
 }
 

@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -163,9 +164,17 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     case v8::ScriptCompiler::kConsumeCodeCache: {
       // Compile a script, and consume a V8 cache that was generated previously.
       SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
-      v8::ScriptCompiler::CachedData* cached_data =
-          V8CodeCache::CreateCachedData(cache_handler);
-      v8::ScriptCompiler::Source source(code, origin, cached_data);
+      ScriptCacheConsumer* cache_consumer = source_code.CacheConsumer();
+      scoped_refptr<CachedMetadata> cached_metadata =
+          V8CodeCache::GetCachedMetadata(cache_handler);
+      v8::ScriptCompiler::Source source(
+          code, origin,
+          V8CodeCache::CreateCachedData(cached_metadata).release(),
+          cache_consumer
+              ? cache_consumer->TakeV8ConsumeTask(cached_metadata.get())
+              : nullptr);
+      const v8::ScriptCompiler::CachedData* cached_data =
+          source.GetCachedData();
       v8::MaybeLocal<v8::Script> script =
           v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                       v8::ScriptCompiler::kConsumeCodeCache);
@@ -327,9 +336,12 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         // previously.
         SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
-        v8::ScriptCompiler::CachedData* cached_data =
-            V8CodeCache::CreateCachedData(cache_handler);
-        v8::ScriptCompiler::Source source(code, origin, cached_data);
+        // TODO(leszeks): Add support for passing in ScriptCacheConsumer.
+        v8::ScriptCompiler::Source source(
+            code, origin,
+            V8CodeCache::CreateCachedData(cache_handler).release());
+        const v8::ScriptCompiler::CachedData* cached_data =
+            source.GetCachedData();
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);
         // The ScriptState also has an associated context. We expect the current

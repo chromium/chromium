@@ -72,7 +72,13 @@ class CORE_EXPORT V8CodeCache final {
                     size_t source_text_length,
                     ScriptSourceLocationType);
 
-  static v8::ScriptCompiler::CachedData* CreateCachedData(
+  static scoped_refptr<CachedMetadata> GetCachedMetadata(
+      const SingleCachedMetadataHandler* cache_handler,
+      SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          SingleCachedMetadataHandler::kCrashIfUnchecked);
+  static std::unique_ptr<v8::ScriptCompiler::CachedData> CreateCachedData(
+      scoped_refptr<CachedMetadata>);
+  static std::unique_ptr<v8::ScriptCompiler::CachedData> CreateCachedData(
       const SingleCachedMetadataHandler*);
 
   static void ProduceCache(v8::Isolate*,

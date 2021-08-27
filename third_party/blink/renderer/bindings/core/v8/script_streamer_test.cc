@@ -158,15 +158,17 @@ class ScriptStreamingTest : public testing::Test {
 
   ScriptSourceCode GetScriptSourceCode() const {
     ScriptStreamer* streamer = resource_->TakeStreamer();
+    ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
     if (streamer) {
       if (streamer->IsStreamingSuppressed()) {
-        return ScriptSourceCode(nullptr, resource_,
+        return ScriptSourceCode(nullptr, cache_consumer, resource_,
                                 streamer->StreamingSuppressedReason());
       }
-      return ScriptSourceCode(streamer, resource_,
+      return ScriptSourceCode(streamer, cache_consumer, resource_,
                               ScriptStreamer::NotStreamingReason::kInvalid);
     }
-    return ScriptSourceCode(nullptr, resource_, resource_->NoStreamerReason());
+    return ScriptSourceCode(nullptr, cache_consumer, resource_,
+                            resource_->NoStreamerReason());
   }
 
   Settings* GetSettings() const {
