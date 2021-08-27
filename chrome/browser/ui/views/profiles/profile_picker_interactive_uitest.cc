@@ -192,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
   EXPECT_CALL(switch_finished_callback, Run(true));
-  ProfilePicker::SwitchToDiceSignIn(SK_ColorRED,
-                                    switch_finished_callback.Get());
+  ProfilePicker::SwitchToSignIn(SK_ColorRED, switch_finished_callback.Get());
 
   // Switch to the signin webview.
   WaitForLayoutWithToolbar();
@@ -233,8 +232,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
   EXPECT_CALL(switch_finished_callback, Run(true));
-  ProfilePicker::SwitchToDiceSignIn(SK_ColorRED,
-                                    switch_finished_callback.Get());
+  ProfilePicker::SwitchToSignIn(SK_ColorRED, switch_finished_callback.Get());
 
   // Switch to the signin webview.
   WaitForLayoutWithToolbar();
