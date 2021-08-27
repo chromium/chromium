@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -29,6 +31,27 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
+
+namespace {
+
+class DisplayModeChangeWaiter : public AppRegistrarObserver {
+ public:
+  explicit DisplayModeChangeWaiter(WebAppRegistrar& registrar) {
+    observation_.Observe(&registrar);
+  }
+  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
+                                      DisplayMode user_display_mode) override {
+    run_loop_.Quit();
+  }
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
+      this};
+};
+
+}  // namespace
 
 class TwoClientWebAppsSyncTest : public SyncTest {
  public:
@@ -381,6 +404,33 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
             GURL("https://does-not-exist.org/scope"));
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppThemeColor(synced_app_id),
             SK_ColorBLUE);
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
+  WebAppTestInstallObserver install_observer(GetProfile(1));
+  install_observer.BeginListening();
+
+  WebApplicationInfo info;
+  info.title = u"Test name";
+  info.description = u"Test description";
+  info.start_url = GURL("http://www.chromium.org/path");
+  info.scope = GURL("http://www.chromium.org/");
+  info.user_display_mode = DisplayMode::kStandalone;
+  AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
+
+  EXPECT_EQ(install_observer.Wait(), app_id);
+  EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+
+  auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
+  WebAppRegistrar& registrar1 = provider1->registrar();
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), DisplayMode::kStandalone);
+
+  DisplayModeChangeWaiter display_mode_change_waiter(registrar1);
+  provider1->sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kTabbed,
+                                                 /*is_user_action=*/true);
+  display_mode_change_waiter.Wait();
+
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), DisplayMode::kTabbed);
 }
 
 }  // namespace web_app

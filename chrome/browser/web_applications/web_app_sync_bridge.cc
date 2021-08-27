@@ -195,6 +195,10 @@ void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
       case DisplayMode::kBrowser:
         base::RecordAction(base::UserMetricsAction("WebApp.SetWindowMode.Tab"));
         break;
+      case DisplayMode::kTabbed:
+        base::RecordAction(
+            base::UserMetricsAction("WebApp.SetWindowMode.Tabbed"));
+        break;
       default:
         NOTREACHED();
     }
@@ -253,24 +257,6 @@ void WebAppSyncBridge::UpdateAppsDisableMode() {
     return;
 
   registrar_->NotifyWebAppsDisabledModeChanged();
-}
-
-void WebAppSyncBridge::SetExperimentalTabbedWindowMode(const AppId& app_id,
-                                                       bool enabled,
-                                                       bool is_user_action) {
-  if (enabled) {
-    DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip));
-    UpdateBoolWebAppPref(profile_->GetPrefs(), app_id,
-                         kExperimentalTabbedWindowMode, true);
-
-    // Set non-experimental window mode to standalone for when the user disables
-    // this flag.
-    SetAppUserDisplayMode(app_id, DisplayMode::kStandalone, is_user_action);
-  } else {
-    RemoveWebAppPref(profile_->GetPrefs(), app_id,
-                     kExperimentalTabbedWindowMode);
-  }
-  registrar_->NotifyWebAppExperimentalTabbedWindowModeChanged(app_id, enabled);
 }
 
 void WebAppSyncBridge::SetAppIsLocallyInstalled(const AppId& app_id,

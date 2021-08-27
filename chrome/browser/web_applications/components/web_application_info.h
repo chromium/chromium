@@ -247,10 +247,6 @@ struct WebApplicationInfo {
   blink::mojom::DisplayMode user_display_mode =
       blink::mojom::DisplayMode::kBrowser;
 
-  // Whether standalone app windows should have a tab strip. Currently a user
-  // preference for the sake of experimental exploration.
-  bool enable_experimental_tabbed_window = false;
-
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;
 

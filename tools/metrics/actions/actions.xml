@@ -28540,6 +28540,14 @@ should be able to be added at any place in this file.
   <description>The user set a web app to open in a browser tab.</description>
 </action>
 
+<action name="WebApp.SetWindowMode.Tabbed">
+  <owner>loubrett@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user set a web app to open in a tabbed app window.
+  </description>
+</action>
+
 <action name="WebApp.SetWindowMode.Window">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>

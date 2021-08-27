@@ -24,8 +24,6 @@ extern const char kFileHandlingOriginTrialExpiryTime[];
 
 extern const char kFileHandlersEnabled[];
 
-extern const char kExperimentalTabbedWindowMode[];
-
 extern const char kLatestWebAppInstallSource[];
 
 extern const char kIphIgnoreCount[];

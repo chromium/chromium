@@ -219,9 +219,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns whether the app should be opened in tabbed window mode.
   bool IsTabbedWindowModeEnabled(const AppId& app_id) const;
 
-  // TODO(crbug.com/897314): This can be removed once feature has launched.
-  bool IsInExperimentalTabbedWindowMode(const AppId& app_id) const;
-
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 
@@ -245,8 +242,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
   void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
                                           DisplayMode user_display_mode);
-  void NotifyWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
-                                                       bool enabled);
 
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(

@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->FlushMojoCallsForTesting();
 
-  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tabbed"),
             1);
 
   // App window should have tab strip.

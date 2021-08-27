@@ -103,8 +103,6 @@ const char kFileHandlersEnabled[] = "file_handlers_enabled";
 const char kFileHandlingOriginTrialExpiryTime[] =
     "file_handling_origin_trial_expiry_time";
 
-const char kExperimentalTabbedWindowMode[] = "experimental_tabbed_window_mode";
-
 const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
 
 const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";

@@ -156,13 +156,6 @@ void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
 
-void WebAppRegistrar::NotifyWebAppExperimentalTabbedWindowModeChanged(
-    const AppId& app_id,
-    bool enabled) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppExperimentalTabbedWindowModeChanged(app_id, enabled);
-}
-
 void WebAppRegistrar::NotifyAppRegistrarShutdown() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarShutdown();
@@ -369,22 +362,10 @@ DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
   return GetAppDisplayMode(app_id);
 }
 
-bool WebAppRegistrar::IsInExperimentalTabbedWindowMode(
-    const AppId& app_id) const {
-  return base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
-         base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings) &&
-         GetBoolWebAppPref(profile()->GetPrefs(), app_id,
-                           kExperimentalTabbedWindowMode);
-}
-
 bool WebAppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
     return false;
-
-  DisplayMode display = GetAppEffectiveDisplayMode(app_id);
-
-  return IsInExperimentalTabbedWindowMode(app_id) ||
-         display == DisplayMode::kTabbed;
+  return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kTabbed;
 }
 
 const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {

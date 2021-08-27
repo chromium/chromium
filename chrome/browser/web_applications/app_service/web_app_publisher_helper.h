@@ -175,12 +175,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   // Converts |display_mode| to a |window_mode|.
   apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
-      blink::mojom::DisplayMode display_mode,
-      bool in_experimental_tabbed_window);
+      blink::mojom::DisplayMode display_mode);
 
   void PublishWindowModeUpdate(const std::string& app_id,
-                               blink::mojom::DisplayMode display_mode,
-                               bool in_experimental_tabbed_window);
+                               blink::mojom::DisplayMode display_mode);
 
   // Execute the user command from the context menu items. Currently
   // on the web app shortcut need to be execute in the publisher.
@@ -229,8 +227,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                       DisplayMode user_display_mode) override;
-  void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
-                                                   bool enabled) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;

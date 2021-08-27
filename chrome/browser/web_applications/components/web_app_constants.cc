@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/compiler_specific.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/common/content_features.h"
 
@@ -138,8 +139,12 @@ DisplayMode ResolveEffectiveDisplayMode(
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
       NOTREACHED();
+      FALLTHROUGH;
+    case DisplayMode::kTabbed:
+      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
+        return user_display_mode;
+      // Treat as standalone.
       FALLTHROUGH;
     case DisplayMode::kStandalone:
       break;

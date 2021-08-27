@@ -162,13 +162,13 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
 void WebApp::SetUserDisplayMode(DisplayMode user_display_mode) {
   switch (user_display_mode) {
     case DisplayMode::kBrowser:
-      user_display_mode_ = DisplayMode::kBrowser;
+    case DisplayMode::kTabbed:
+      user_display_mode_ = user_display_mode;
       break;
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:

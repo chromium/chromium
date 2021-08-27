@@ -1042,6 +1042,8 @@ DisplayMode ToMojomDisplayMode(
   switch (user_display_mode) {
     case ::sync_pb::WebAppSpecifics::BROWSER:
       return DisplayMode::kBrowser;
+    case ::sync_pb::WebAppSpecifics::TABBED:
+      return DisplayMode::kTabbed;
     // New display modes will most likely be of the window variety than the
     // browser tab variety so default to windowed if it's an enum value we don't
     // know about.

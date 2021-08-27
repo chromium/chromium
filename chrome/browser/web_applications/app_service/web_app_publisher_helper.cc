@@ -264,9 +264,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   app->publisher_id = web_app->start_url().spec();
 
   auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
-  app->window_mode = ConvertDisplayModeToWindowMode(
-      display_mode,
-      registrar().IsInExperimentalTabbedWindowMode(web_app->app_id()));
+  app->window_mode = ConvertDisplayModeToWindowMode(display_mode);
 
   // app->version is left empty here.
   PopulateWebAppPermissions(web_app, &app->permissions);
@@ -645,40 +643,33 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       display_mode = blink::mojom::DisplayMode::kStandalone;
       break;
     case apps::mojom::WindowMode::kTabbedWindow:
-      provider_->sync_bridge().SetExperimentalTabbedWindowMode(
-          app_id, /*enabled=*/true, /*is_user_action=*/true);
-      return;
+      display_mode = blink::mojom::DisplayMode::kTabbed;
+      break;
   }
-  provider_->sync_bridge().SetExperimentalTabbedWindowMode(
-      app_id, /*enabled=*/false, /*is_user_action=*/true);
   provider_->sync_bridge().SetAppUserDisplayMode(app_id, display_mode,
                                                  /*is_user_action=*/true);
 }
 
 apps::mojom::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
-    blink::mojom::DisplayMode display_mode,
-    bool in_experimental_tabbed_window) {
-  if (in_experimental_tabbed_window) {
-    return apps::mojom::WindowMode::kTabbedWindow;
-  }
+    blink::mojom::DisplayMode display_mode) {
   switch (display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
       return apps::mojom::WindowMode::kUnknown;
     case blink::mojom::DisplayMode::kBrowser:
       return apps::mojom::WindowMode::kBrowser;
+    case blink::mojom::DisplayMode::kTabbed:
+      return apps::mojom::WindowMode::kTabbedWindow;
     case blink::mojom::DisplayMode::kMinimalUi:
     case blink::mojom::DisplayMode::kStandalone:
     case blink::mojom::DisplayMode::kFullscreen:
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
-    case blink::mojom::DisplayMode::kTabbed:
       return apps::mojom::WindowMode::kWindow;
   }
 }
 
 void WebAppPublisherHelper::PublishWindowModeUpdate(
     const std::string& app_id,
-    blink::mojom::DisplayMode display_mode,
-    bool in_experimental_tabbed_window) {
+    blink::mojom::DisplayMode display_mode) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
     return;
@@ -687,8 +678,7 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = app_type();
   app->app_id = app_id;
-  app->window_mode = ConvertDisplayModeToWindowMode(
-      display_mode, in_experimental_tabbed_window);
+  app->window_mode = ConvertDisplayModeToWindowMode(display_mode);
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -788,15 +778,7 @@ void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
 void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
     DisplayMode user_display_mode) {
-  PublishWindowModeUpdate(app_id, user_display_mode,
-                          registrar().IsInExperimentalTabbedWindowMode(app_id));
-}
-
-void WebAppPublisherHelper::OnWebAppExperimentalTabbedWindowModeChanged(
-    const AppId& app_id,
-    bool enabled) {
-  auto display_mode = registrar().GetAppUserDisplayMode(app_id);
-  PublishWindowModeUpdate(app_id, display_mode, enabled);
+  PublishWindowModeUpdate(app_id, user_display_mode);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

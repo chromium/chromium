@@ -149,11 +149,12 @@ absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
   switch (user_display_mode) {
     case DisplayMode::kBrowser:
       return ::sync_pb::WebAppSpecifics::BROWSER;
+    case DisplayMode::kTabbed:
+      return ::sync_pb::WebAppSpecifics::TABBED;
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:

@@ -129,10 +129,10 @@ WebAppConfirmationView::WebAppConfirmationView(
 
     if (web_app_info_->user_display_mode == web_app::DisplayMode::kBrowser)
       open_as_tab_radio_->SetChecked(true);
-    else if (!web_app_info_->enable_experimental_tabbed_window)
-      open_as_window_radio_->SetChecked(true);
-    else
+    else if (web_app_info_->user_display_mode == web_app::DisplayMode::kTabbed)
       open_as_tabbed_window_radio_->SetChecked(true);
+    else
+      open_as_window_radio_->SetChecked(true);
   } else {
     auto open_as_window_checkbox = std::make_unique<views::Checkbox>(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW));
@@ -175,13 +175,11 @@ bool WebAppConfirmationView::Accept() {
   web_app_info_->title = GetTrimmedTitle();
   if (ShowRadioButtons()) {
     if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->user_display_mode = web_app::DisplayMode::kStandalone;
-      web_app_info_->enable_experimental_tabbed_window = true;
+      web_app_info_->user_display_mode = web_app::DisplayMode::kTabbed;
     } else {
       web_app_info_->user_display_mode = open_as_window_radio_->GetChecked()
                                              ? web_app::DisplayMode::kStandalone
                                              : web_app::DisplayMode::kBrowser;
-      web_app_info_->enable_experimental_tabbed_window = false;
     }
   } else {
     web_app_info_->user_display_mode = open_as_window_checkbox_->GetChecked()

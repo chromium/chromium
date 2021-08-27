@@ -161,8 +161,8 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     tabbed_window_checkbox_ = labels->AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW)));
-    tabbed_window_checkbox_->SetChecked(
-        web_app_info_->enable_experimental_tabbed_window);
+    tabbed_window_checkbox_->SetChecked(web_app_info_->user_display_mode ==
+                                        web_app::DisplayMode::kTabbed);
   }
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PWA_CONFIRMATION);
@@ -203,10 +203,10 @@ void PWAConfirmationBubbleView::WindowClosing() {
 
 bool PWAConfirmationBubbleView::Accept() {
   DCHECK(web_app_info_);
-  if (tabbed_window_checkbox_) {
-    web_app_info_->enable_experimental_tabbed_window =
-        tabbed_window_checkbox_->GetChecked();
-  }
+  web_app_info_->user_display_mode =
+      tabbed_window_checkbox_ && tabbed_window_checkbox_->GetChecked()
+          ? web_app::DisplayMode::kTabbed
+          : web_app::DisplayMode::kStandalone;
 
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id = web_app::GenerateAppId(web_app_info_->manifest_id,

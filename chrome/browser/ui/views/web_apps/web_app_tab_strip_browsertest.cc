@@ -67,8 +67,7 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
-    web_app_info->user_display_mode = DisplayMode::kStandalone;
-    web_app_info->enable_experimental_tabbed_window = true;
+    web_app_info->user_display_mode = DisplayMode::kTabbed;
     AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = LaunchWebAppBrowser(profile, app_id);

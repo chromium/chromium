@@ -212,12 +212,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
   UpdateIntWebAppPref(profile_->GetPrefs(), app_id, kLatestWebAppInstallSource,
                       static_cast<int>(options.install_source));
 
-  // TODO(crbug.com/897314): Store this as a display mode on WebApp to
-  // participate in the DB transactional model.
-  sync_bridge_->SetExperimentalTabbedWindowMode(
-      app_id, web_app_info.enable_experimental_tabbed_window,
-      /*is_user_action=*/false);
-
   file_handlers_helper_->WillInstallApp(web_app_info);
 
   CommitCallback commit_callback = base::BindOnce(

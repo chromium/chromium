@@ -480,7 +480,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "origin": "https://app-9974471692.com",
       "paths": [  ]
    } ],
-   "user_display_mode": "standalone",
+   "user_display_mode": "browser",
    "user_launch_ordinal": "INVALID[]",
    "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false

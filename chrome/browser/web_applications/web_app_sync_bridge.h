@@ -90,12 +90,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   virtual void UpdateAppsDisableMode();
 
-  // TODO(crbug.com/897314): Finish experiment by legitimising it as a
-  // DisplayMode or removing entirely.
-  virtual void SetExperimentalTabbedWindowMode(const AppId& app_id,
-                                               bool enabled,
-                                               bool is_user_action);
-
   virtual void SetAppIsLocallyInstalled(const AppId& app_id,
                                         bool is_locally_installed);
 

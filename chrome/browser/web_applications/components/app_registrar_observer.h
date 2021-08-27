@@ -67,8 +67,6 @@ class AppRegistrarObserver : public base::CheckedObserver {
                                           const base::Time& time) {}
   virtual void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                               DisplayMode user_display_mode) {}
-  virtual void OnWebAppExperimentalTabbedWindowModeChanged(const AppId& app_id,
-                                                           bool enabled) {}
 };
 
 }  // namespace web_app

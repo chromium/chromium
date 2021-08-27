@@ -274,8 +274,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetBackgroundColor(background_color);
   app->SetIsLocallyInstalled(random.next_bool());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
-  app->SetUserDisplayMode(random.next_bool() ? DisplayMode::kBrowser
-                                             : DisplayMode::kStandalone);
+
+  const DisplayMode user_display_modes[3] = {
+      DisplayMode::kBrowser, DisplayMode::kStandalone, DisplayMode::kTabbed};
+  app->SetUserDisplayMode(user_display_modes[random.next_uint(3)]);
 
   const base::Time last_badging_time =
       base::Time::UnixEpoch() +

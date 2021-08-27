@@ -467,7 +467,7 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb: {
-      // Web apps can only toggle between kWindow and kBrowser.
+      // Web apps can only toggle between kWindow, kTabbed and kBrowser.
       apps::mojom::WindowMode user_window_mode =
           ConvertLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::mojom::WindowMode::kUnknown) {
