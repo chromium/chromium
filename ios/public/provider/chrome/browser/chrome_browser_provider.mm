@@ -85,10 +85,6 @@ id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
   return nil;
 }
 
-OmahaServiceProvider* ChromeBrowserProvider::GetOmahaServiceProvider() const {
-  return nullptr;
-}
-
 UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
   return nullptr;
 }

@@ -19,7 +19,6 @@
 
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
-class OmahaServiceProvider;
 class UserFeedbackProvider;
 class VoiceSearchProvider;
 
@@ -107,9 +106,6 @@ class ChromeBrowserProvider {
   virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
                                           web::WebState* web_state) const
       NS_RETURNS_RETAINED;
-
-  // Returns an instance of the omaha service provider.
-  virtual OmahaServiceProvider* GetOmahaServiceProvider() const;
 
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
