@@ -2566,9 +2566,19 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam kCategoricalSearch_Unranked[] = {
     {"ranking", "none"}};
 
+const FeatureEntry::FeatureParam kCategoricalSearch_ByItem[] = {
+    {"ranking", "item"}};
+
+const FeatureEntry::FeatureParam kCategoricalSearch_ByUsage[] = {
+    {"ranking", "usage"}};
+
 const FeatureEntry::FeatureVariation kCategoricalSearchVariations[] = {
     {"Unranked", kCategoricalSearch_Unranked,
-     base::size(kCategoricalSearch_Unranked), nullptr}};
+     base::size(kCategoricalSearch_Unranked), nullptr},
+    {"By item", kCategoricalSearch_ByItem,
+     base::size(kCategoricalSearch_ByItem), nullptr},
+    {"By usage", kCategoricalSearch_ByUsage,
+     base::size(kCategoricalSearch_ByUsage), nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
