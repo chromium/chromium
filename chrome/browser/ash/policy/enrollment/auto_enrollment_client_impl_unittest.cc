@@ -755,7 +755,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
-  CreateClient(0, kInitialEnrollmentModulusPowerOutdatedServer + 1);
+  CreateClient(
+      /*power_initial=*/0,
+      /*power_limit=*/kInitialEnrollmentModulusPowerOutdatedServer + 1);
   InSequence sequence;
   ServerWillReply(/*modulus=*/1 << kInitialEnrollmentModulusPowerOutdatedServer,
                   /*with_hashes=*/false,
@@ -967,7 +969,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
-  CreateClient(0, 0);
+  CreateClient(/*power_initial=*/0, /*power_limit=*/0);
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
   client()->Start();
@@ -990,7 +992,7 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
                          ? INT64_C(0x386e7244d097c3e6)
                          : INT64_C(0x3018b70f7609c5c7);
   for (int i = 0; i <= 62; ++i) {
-    CreateClient(i, i);
+    CreateClient(/*power_initial=*/i, /*power_limit=*/i);
     ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
                     /*with_id_hash=*/false);
     client()->Start();
@@ -1017,7 +1019,7 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
   if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kInitialEnrollment)
     return;
 
-  CreateClient(10, 37);
+  CreateClient(/*power_initial=*/10, /*power_limit=*/37);
   InSequence sequence;
   ServerWillReply(/*modulus=*/INT64_C(1) << 37, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -1074,7 +1076,7 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
                             std::make_unique<base::Value>(false));
   local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
                             std::make_unique<base::Value>(8));
-  CreateClient(5, 10);
+  CreateClient(/*power_initial=*/5, /*power_limit=*/10);
 
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
