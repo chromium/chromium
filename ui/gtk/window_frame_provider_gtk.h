@@ -5,6 +5,7 @@
 #ifndef UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 #define UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 
+#include "base/containers/flat_map.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/linux_ui/window_frame_provider.h"
 
@@ -28,27 +29,46 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
                         bool focused) override;
 
  private:
-  // Paint the window frame and update any metrics (like the frame thickness)
-  // based on it.  This is a no-op if the input parameters haven't changed.
-  void MaybeUpdateBitmaps();
+  // Data and metrics that depend on the scale.
+  struct Asset {
+    Asset();
+    Asset(const Asset&);
+    Asset& operator=(const Asset&);
+    ~Asset();
 
-  int BitmapSizePx() const;
+    // Whether this record has valid data.
+    bool valid = false;
+
+    // TODO(crbug.com/1240905): should the corner radius be DIP?
+    int top_corner_radius_px = 0;
+    int frame_size_px = 0;
+    gfx::Insets frame_thickness_px;
+
+    // These are texture maps that we will sample from to draw the frame.  The
+    // corners are drawn directly and the edges are tiled.
+    SkBitmap focused_bitmap;
+    SkBitmap unfocused_bitmap;
+
+   private:
+    void CloneFrom(const Asset&);
+  };
+
+  // Paint the window frame and update any metrics (like the frame thickness)
+  // based on it.  Bitmaps and metrics are cached in |assets_|, so this is a
+  // no-op if there is a cache entry created earlier.
+  void MaybeUpdateBitmaps(float scale);
+
+  int BitmapSizePx(const Asset& asset) const;
 
   // Input parameters used for drawing.
   const bool solid_frame_;
-  float scale_ = 0;
   std::string theme_name_;
 
-  // These are texture maps that we will sample from to draw the frame.  The
-  // corners are drawn directly and the edges are tiled.
-  SkBitmap focused_bitmap_;
-  SkBitmap unfocused_bitmap_;
-
-  // Metrics calculated based on the bitmaps.
-  int top_corner_radius_ = 0;
-  int frame_size_px_ = 0;
+  // Scale-independent metric calculated based on the bitmaps.
   gfx::Insets frame_thickness_dip_;
-  gfx::Insets frame_thickness_px_;
+
+  // Cached bitmaps and metrics.  The scale is rounded to percent.
+  base::flat_map<int, Asset> assets_;
 };
 
 }  // namespace gtk

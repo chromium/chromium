@@ -4,6 +4,7 @@
 
 #include "ui/gtk/window_frame_provider_gtk.h"
 
+#include "base/logging.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -126,7 +127,40 @@ int ComputeTopCornerRadius(float scale) {
   return bitmap.width();
 }
 
+// Returns int(scale * 100), which essentially limits the scale to fractions of
+// 100 and secures from rounding errors.
+int ToRoundedScale(float scale) {
+  return round(scale * 100);
+}
+
 }  // namespace
+
+WindowFrameProviderGtk::Asset::Asset() = default;
+
+WindowFrameProviderGtk::Asset::Asset(const WindowFrameProviderGtk::Asset& src) {
+  CloneFrom(src);
+}
+
+WindowFrameProviderGtk::Asset& WindowFrameProviderGtk::Asset::operator=(
+    const WindowFrameProviderGtk::Asset& src) {
+  CloneFrom(src);
+  return *this;
+}
+
+WindowFrameProviderGtk::Asset::~Asset() = default;
+
+void WindowFrameProviderGtk::Asset::CloneFrom(
+    const WindowFrameProviderGtk::Asset& src) {
+  valid = src.valid;
+  if (!valid)
+    return;
+
+  top_corner_radius_px = src.top_corner_radius_px;
+  frame_size_px = src.frame_size_px;
+  frame_thickness_px = src.frame_thickness_px;
+  focused_bitmap = src.focused_bitmap;
+  unfocused_bitmap = src.unfocused_bitmap;
+}
 
 WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame)
     : solid_frame_(solid_frame) {}
@@ -134,12 +168,18 @@ WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame)
 WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
 int WindowFrameProviderGtk::GetTopCornerRadius() {
-  MaybeUpdateBitmaps();
-  return top_corner_radius_;
+  const auto scale = GetDeviceScaleFactor();
+  MaybeUpdateBitmaps(scale);
+  // TODO(crbug.com/1240905): this looks weird.  Either the corner radius should
+  // be measured in DIP, or we should know the scale that the raduis is queried
+  // for.  The return value of this is used in shaping the corners of the clip
+  // region for the window, so slight mismatch in radii should not cause major
+  // issues, but this should be sorted out at some time.
+  return assets_[ToRoundedScale(scale)].top_corner_radius_px;
 }
 
 gfx::Insets WindowFrameProviderGtk::GetFrameThickness() {
-  MaybeUpdateBitmaps();
+  MaybeUpdateBitmaps(GetDeviceScaleFactor());
   return frame_thickness_dip_;
 }
 
@@ -147,26 +187,30 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
                                               const gfx::Rect& rect_dip,
                                               int top_area_height_dip,
                                               bool focused) {
-  MaybeUpdateBitmaps();
-
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
 
+  MaybeUpdateBitmaps(scale);
+
+  const auto& asset = assets_[ToRoundedScale(scale)];
+  DCHECK(asset.valid);
+
   auto client_bounds_px = gfx::ScaleToRoundedRect(rect_dip, scale);
-  client_bounds_px.Inset(frame_thickness_px_);
+  client_bounds_px.Inset(asset.frame_thickness_px);
 
-  gfx::Rect src_rect(gfx::Size(BitmapSizePx(), BitmapSizePx()));
-  src_rect.Inset(gfx::Insets(frame_size_px_) - frame_thickness_px_);
+  gfx::Rect src_rect(gfx::Size(BitmapSizePx(asset), BitmapSizePx(asset)));
+  src_rect.Inset(gfx::Insets(asset.frame_size_px) - asset.frame_thickness_px);
 
-  auto corner_w = std::min(frame_size_px_, client_bounds_px.width() / 2);
-  auto corner_h = std::min(frame_size_px_, client_bounds_px.height() / 2);
+  auto corner_w = std::min(asset.frame_size_px, client_bounds_px.width() / 2);
+  auto corner_h = std::min(asset.frame_size_px, client_bounds_px.height() / 2);
   auto edge_w = client_bounds_px.width() - 2 * corner_w;
   auto edge_h = client_bounds_px.height() - 2 * corner_h;
 
-  auto corner_insets = frame_thickness_px_ + gfx::Insets(corner_h, corner_w);
+  auto corner_insets =
+      asset.frame_thickness_px + gfx::Insets(corner_h, corner_w);
 
-  auto image = gfx::ImageSkia::CreateFrom1xBitmap(focused ? focused_bitmap_
-                                                          : unfocused_bitmap_);
+  auto image = gfx::ImageSkia::CreateFrom1xBitmap(
+      focused ? asset.focused_bitmap : asset.unfocused_bitmap);
 
   auto draw_image = [&](int src_x, int src_y, int src_w, int src_h, int dst_x,
                         int dst_y, int dst_w, int dst_h) {
@@ -181,38 +225,42 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
              corner_insets.top(), 0, 0, corner_insets.left(),
              corner_insets.top());
   // Top right corner
-  draw_image(BitmapSizePx() - frame_size_px_ - corner_w, src_rect.y(),
+  draw_image(BitmapSizePx(asset) - asset.frame_size_px - corner_w, src_rect.y(),
              corner_insets.right(), corner_insets.top(),
              client_bounds_px.right() - corner_w, 0, corner_insets.right(),
              corner_insets.top());
   // Bottom left corner
-  draw_image(src_rect.x(), BitmapSizePx() - frame_size_px_ - corner_h,
+  draw_image(src_rect.x(), BitmapSizePx(asset) - asset.frame_size_px - corner_h,
              corner_insets.left(), corner_insets.bottom(), 0,
              client_bounds_px.bottom() - corner_h, corner_insets.left(),
              corner_insets.bottom());
   // Bottom right corner
-  draw_image(BitmapSizePx() - frame_size_px_ - corner_w,
-             BitmapSizePx() - frame_size_px_ - corner_h, corner_insets.right(),
-             corner_insets.bottom(), client_bounds_px.right() - corner_w,
+  draw_image(BitmapSizePx(asset) - asset.frame_size_px - corner_w,
+             BitmapSizePx(asset) - asset.frame_size_px - corner_h,
+             corner_insets.right(), corner_insets.bottom(),
+             client_bounds_px.right() - corner_w,
              client_bounds_px.bottom() - corner_h, corner_insets.right(),
              corner_insets.bottom());
   // Top edge
-  draw_image(2 * frame_size_px_, src_rect.y(), 1, frame_thickness_px_.top(),
-             corner_insets.left(), 0, edge_w, frame_thickness_px_.top());
+  draw_image(2 * asset.frame_size_px, src_rect.y(), 1,
+             asset.frame_thickness_px.top(), corner_insets.left(), 0, edge_w,
+             asset.frame_thickness_px.top());
   // Left edge
-  draw_image(src_rect.x(), 2 * frame_size_px_, frame_thickness_px_.left(), 1, 0,
-             corner_insets.top(), frame_thickness_px_.left(), edge_h);
+  draw_image(src_rect.x(), 2 * asset.frame_size_px,
+             asset.frame_thickness_px.left(), 1, 0, corner_insets.top(),
+             asset.frame_thickness_px.left(), edge_h);
   // Bottom edge
-  draw_image(2 * frame_size_px_, BitmapSizePx() - frame_size_px_, 1,
-             frame_thickness_px_.bottom(), corner_insets.left(),
-             client_bounds_px.bottom(), edge_w, frame_thickness_px_.bottom());
+  draw_image(2 * asset.frame_size_px, BitmapSizePx(asset) - asset.frame_size_px,
+             1, asset.frame_thickness_px.bottom(), corner_insets.left(),
+             client_bounds_px.bottom(), edge_w,
+             asset.frame_thickness_px.bottom());
   // Right edge
-  draw_image(BitmapSizePx() - frame_size_px_, 2 * frame_size_px_,
-             frame_thickness_px_.right(), 1, client_bounds_px.right(),
-             corner_insets.top(), frame_thickness_px_.right(), edge_h);
+  draw_image(BitmapSizePx(asset) - asset.frame_size_px, 2 * asset.frame_size_px,
+             asset.frame_thickness_px.right(), 1, client_bounds_px.right(),
+             corner_insets.top(), asset.frame_thickness_px.right(), edge_h);
 
   int top_area_height_px =
-      top_area_height_dip * scale - frame_thickness_px_.top();
+      top_area_height_dip * scale - asset.frame_thickness_px.top();
 
   auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
                                HeaderContext(solid_frame_, focused), scale);
@@ -221,27 +269,29 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
              client_bounds_px.y(), header.width(), header.height());
 }
 
-void WindowFrameProviderGtk::MaybeUpdateBitmaps() {
-  auto scale = GetDeviceScaleFactor();
+void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
   std::string theme_name = GetThemeName();
-  if (scale_ == scale && theme_name_ == theme_name)
-    return;
-  scale_ = scale;
-  theme_name_ = theme_name;
+  if (theme_name_ != theme_name) {
+    assets_.clear();
+    theme_name_ = theme_name;
+  }
 
-  frame_size_px_ = std::ceil(kMaxFrameSizeDip * scale);
-  if (!solid_frame_)
-    top_corner_radius_ = ComputeTopCornerRadius(scale);
+  auto& asset = assets_[ToRoundedScale(scale)];
+  if (asset.valid)
+    return;
+
+  asset.frame_size_px = std::ceil(kMaxFrameSizeDip * scale);
+  asset.top_corner_radius_px = ComputeTopCornerRadius(scale);
 
   gfx::Rect frame_bounds_dip(kMaxFrameSizeDip, kMaxFrameSizeDip,
                              2 * kMaxFrameSizeDip, 2 * kMaxFrameSizeDip);
   auto focused_context = DecorationContext(solid_frame_, true);
   frame_bounds_dip.Inset(-GtkStyleContextGetPadding(focused_context));
   frame_bounds_dip.Inset(-GtkStyleContextGetBorder(focused_context));
-  gfx::Size bitmap_size(BitmapSizePx(), BitmapSizePx());
-  focused_bitmap_ =
+  gfx::Size bitmap_size(BitmapSizePx(asset), BitmapSizePx(asset));
+  asset.focused_bitmap =
       PaintBitmap(bitmap_size, frame_bounds_dip, focused_context, scale);
-  unfocused_bitmap_ =
+  asset.unfocused_bitmap =
       PaintBitmap(bitmap_size, frame_bounds_dip,
                   DecorationContext(solid_frame_, false), scale);
 
@@ -249,41 +299,57 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps() {
   // directly, so we must determine it experimentally based on the drawn
   // bitmaps.
   auto get_inset = [&](auto&& pixel_iterator) -> int {
-    for (int i = 0; i < frame_size_px_; ++i) {
+    for (int i = 0; i < asset.frame_size_px; ++i) {
       if (SkColorGetA(pixel_iterator(i))) {
-        int inset_px = frame_size_px_ - i;
+        int inset_px = asset.frame_size_px - i;
         return std::ceil(inset_px / scale);
       }
     }
     return 0;
   };
+  const auto previous_frame_thickness_dip_ = frame_thickness_dip_;
   frame_thickness_dip_ = gfx::Insets(
       // top
       get_inset([&](int i) {
-        return focused_bitmap_.getColor(2 * frame_size_px_, i);
+        return asset.focused_bitmap.getColor(2 * asset.frame_size_px, i);
       }),
       // left
       get_inset([&](int i) {
-        return focused_bitmap_.getColor(i, 2 * frame_size_px_);
+        return asset.focused_bitmap.getColor(i, 2 * asset.frame_size_px);
       }),
       // bottom
       get_inset([&](int i) {
-        return focused_bitmap_.getColor(2 * frame_size_px_,
-                                        BitmapSizePx() - i - 1);
+        return asset.focused_bitmap.getColor(2 * asset.frame_size_px,
+                                             BitmapSizePx(asset) - i - 1);
       }),
       // right
       get_inset([&](int i) {
-        return focused_bitmap_.getColor(BitmapSizePx() - i - 1,
-                                        2 * frame_size_px_);
+        return asset.focused_bitmap.getColor(BitmapSizePx(asset) - i - 1,
+                                             2 * asset.frame_size_px);
       }));
-  frame_thickness_px_ = gfx::ScaleToRoundedInsets(frame_thickness_dip_, scale);
+  if (!previous_frame_thickness_dip_.IsEmpty() &&
+      frame_thickness_dip_ != previous_frame_thickness_dip_) {
+    // The possibility of the mismatch is quite low because this logic affects
+    // only mixed DPI setups on Linux, which itself is a rare configuration
+    // already, and there the user needs to use some unusual scale that would
+    // cause the mismatch.  So in theory, this is possible, but in practice, it
+    // should never happen.
+    LOG(ERROR) << "Frame thickness mismatch!  Old: ["
+               << previous_frame_thickness_dip_.ToString() << "], new: ["
+               << frame_thickness_dip_.ToString() << "].  Current scale is "
+               << scale << ".  Please report to crbug.com/1240905.";
+  }
+  asset.frame_thickness_px =
+      gfx::ScaleToRoundedInsets(frame_thickness_dip_, scale);
+
+  asset.valid = true;
 }
 
-int WindowFrameProviderGtk::BitmapSizePx() const {
+int WindowFrameProviderGtk::BitmapSizePx(const Asset& asset) const {
   // The window decoration will be rendered into a square with this side length.
   // The left and right sides of the decoration add 2 * kMaxDecorationThickness,
   // and the window itself has size 2 * kMaxDecorationThickness.
-  return 4 * frame_size_px_;
+  return 4 * asset.frame_size_px;
 }
 
 }  // namespace gtk
