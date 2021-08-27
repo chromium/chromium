@@ -604,4 +604,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         mSwipeRefreshLayout.addView(directChildHolder);
         mContainerView = directChildHolder;
     }
+
+    @VisibleForTesting
+    boolean isSecondaryTasksSurfaceEmptyForTesting() {
+        return mSecondaryTasksSurface == null;
+    }
 }

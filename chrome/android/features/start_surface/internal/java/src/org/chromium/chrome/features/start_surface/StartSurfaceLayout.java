@@ -525,6 +525,18 @@ public class StartSurfaceLayout extends Layout {
         return mGridTabListDelegate;
     }
 
+    private TabListDelegate getLastUsedTabListDelegate() {
+        // It is possible that the StartSurfaceState becomes StartSurfaceState.NOT_SHOWN when hiding
+        // the overview page, thus, the last used TabListDelegate is returned.
+        if (mController.getStartSurfaceState() == StartSurfaceState.NOT_SHOWN) {
+            assert mGridTabListDelegate != null || mCarouselOrSingleTabListDelegate != null;
+            return mGridTabListDelegate != null ? mGridTabListDelegate
+                                                : mCarouselOrSingleTabListDelegate;
+        }
+        return isShowingStartSurface() ? getCarouselOrSingleTabListDelegate()
+                                       : getGridTabListDelegate();
+    }
+
     private boolean isShowingStartSurface() {
         return mController.getStartSurfaceState() == StartSurfaceState.SHOWN_HOMEPAGE
                 || mController.getStartSurfaceState() == StartSurfaceState.SHOWING_HOMEPAGE
@@ -602,9 +614,8 @@ public class StartSurfaceLayout extends Layout {
         super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
                 resourceManager, browserControls);
         assert mSceneLayer != null;
-        TabListDelegate currentTabListDelegate = isShowingStartSurface()
-                ? getCarouselOrSingleTabListDelegate()
-                : getGridTabListDelegate();
+        TabListDelegate currentTabListDelegate = getLastUsedTabListDelegate();
+
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 layerTitleCache, tabContentManager, resourceManager, browserControls,
