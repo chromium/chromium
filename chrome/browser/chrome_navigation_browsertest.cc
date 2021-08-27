@@ -974,6 +974,49 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// Tests scenario where a blank iframe inside a blank popup (a popup with no
+// navigation entry) does a same document navigation. This test was added as a
+// regression test for crbug.com/1237874.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       SameDocumentNavigationInIframeInBlankDocument) {
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/title1.html"));
+  content::RenderFrameHost* opener =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+
+  // 1. Create a new blank window that won't create a NavigationEntry.
+  content::WebContents* popup = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        opener, content::JsReplace("window.open($1, 'my-popup')", GURL())));
+    popup = popup_observer.GetWebContents();
+  }
+  content::RenderFrameHost* popup_main_rfh = popup->GetMainFrame();
+  // Popup shouldn't have a navigation entry.
+  EXPECT_EQ(popup->GetController().GetLastCommittedEntry(), nullptr);
+
+  // 2. Add blank iframe in popup.
+  EXPECT_TRUE(content::ExecJs(popup_main_rfh,
+                              "let iframe = document.createElement('iframe');"
+                              "document.body.appendChild(iframe);"));
+
+  // 3. Same-document navigation in iframe.
+  {
+    const GURL kSameDocUrl("about:blank#foo");
+    content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
+    EXPECT_TRUE(content::ExecJs(
+        popup_main_rfh,
+        content::JsReplace("document.querySelector('iframe').src = $1",
+                           kSameDocUrl)));
+    navigation_manager.WaitForNavigationFinished();
+  }
+
+  // Check that same-document navigation doesn't commit a new navigation entry
+  // if no entry existed previously.
+  EXPECT_EQ(popup->GetController().GetLastCommittedEntry(), nullptr);
+}
+
 class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
  public:
   SignInIsolationBrowserTest()
