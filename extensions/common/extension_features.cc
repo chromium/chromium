@@ -63,9 +63,8 @@ const base::Feature kStrictExtensionIsolation{"StrictExtensionIsolation",
 
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
-// TODO(crbug.com/1199491): Remove the feature in M97 if everything goes well.
+// TODO(crbug.com/1184892): Flip this in M95.
 const base::Feature kAllowSharedArrayBuffersUnconditionally{
-    "AllowSharedArrayBuffersUnconditionally",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "AllowSharedArrayBuffersUnconditionally", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace extensions_features
