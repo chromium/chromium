@@ -163,6 +163,9 @@ class AssistantOptInFlowScreenHandler
   // Whether the use has completed voice match enrollment.
   bool voice_match_enrollment_done_ = false;
 
+  // Whether error occurs during voice match enrollment.
+  bool voice_match_enrollment_error_ = false;
+
   // Assistant optin flow type.
   ash::FlowType flow_type_ = ash::FlowType::kConsentFlow;
 

@@ -252,6 +252,7 @@ void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentDone() {
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentFailure() {
   StopSpeakerIdEnrollment();
   RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_ERROR);
+  voice_match_enrollment_error_ = true;
   CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate",
          base::Value("failure"));
   LOG(ERROR) << "Speaker ID enrollment failure.";
@@ -323,7 +324,9 @@ void AssistantOptInFlowScreenHandler::OnScreenContextOptInResult(
 
 void AssistantOptInFlowScreenHandler::OnDialogClosed() {
   // Disable hotword for user if voice match enrollment has not completed.
-  if (!voice_match_enrollment_done_ &&
+  // No need to disable for retrain flow since user has a model.
+  // No need to disable if there's error during the enrollment.
+  if (!voice_match_enrollment_done_ && !voice_match_enrollment_error_ &&
       flow_type_ == ash::FlowType::kSpeakerIdEnrollment) {
     ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
         assistant::prefs::kAssistantHotwordEnabled, false);
@@ -575,11 +578,15 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
   if (action == kVoiceMatchDone) {
     RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_DONE);
     voice_match_enrollment_done_ = true;
+    voice_match_enrollment_error_ = false;
     ShowNextScreen();
   } else if (action == kSkipPressed) {
     RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_SKIPPED);
-    if (flow_type_ != ash::FlowType::kSpeakerIdRetrain) {
-      // No need to disable hotword for retrain flow since user has a model.
+    // Disable hotword for user if voice match enrollment has not completed.
+    // No need to disable for retrain flow since user has a model.
+    // No need to disable if there's error during the enrollment.
+    if (flow_type_ != ash::FlowType::kSpeakerIdRetrain &&
+        !voice_match_enrollment_error_) {
       prefs->SetBoolean(assistant::prefs::kAssistantHotwordEnabled, false);
     }
     if (voice_match_enrollment_started_)
