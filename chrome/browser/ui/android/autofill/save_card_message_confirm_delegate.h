@@ -27,7 +27,7 @@ class SaveCardMessageConfirmDelegate {
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) = 0;
 
-  virtual void PromptDismissed(
+  virtual void DialogDismissed(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) = 0;
 

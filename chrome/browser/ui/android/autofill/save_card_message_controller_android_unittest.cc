@@ -71,6 +71,7 @@ class SaveCardMessageControllerAndroidTest
         base::android::JavaParamRef<jstring>(
             env,
             base::android::ConvertUTF8ToJavaString(env, "test").Release()));
+    OnConfirmationDialogDismissed();
   }
 
   void OnDateConfirmed() {
@@ -81,16 +82,29 @@ class SaveCardMessageControllerAndroidTest
             env, base::android::ConvertUTF8ToJavaString(env, "12").Release()),
         base::android::JavaParamRef<jstring>(
             env, base::android::ConvertUTF8ToJavaString(env, "25").Release()));
+    OnConfirmationDialogDismissed();
   }
 
   void OnConfirmationDialogDismissed() {
     JNIEnv* env = base::android::AttachCurrentThread();
-    controller_.PromptDismissed(env, nullptr);
+    controller_.DialogDismissed(env, nullptr);
   }
+
+  void OnLegalMessageLinkClicked() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    controller_.OnLegalMessageLinkClicked(
+        env, nullptr,
+        base::android::JavaParamRef<jstring>(
+            env, base::android::ConvertUTF16ToJavaString(env, u"").obj()));
+  }
+
+  void OnWebContentsFocused() { controller_.OnWebContentsFocused(); }
 
   bool IsDateConfirmed() { return controller_.is_date_confirmed_for_testing_; }
 
   bool IsNameConfirmed() { return controller_.is_name_confirmed_for_testing_; }
+
+  bool IsRestoreRequired() { return controller_.reprompt_required_; }
 
  private:
   SaveCardMessageControllerAndroid controller_;
@@ -357,9 +371,10 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
   EXPECT_CALL(mock_upload_callback_receiver,
               Run(AutofillClient::ACCEPTED, testing::_));
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnNameConfirmed();
-
-  DismissMessage();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".RequestingCardholderName"}),
@@ -381,8 +396,10 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
   EXPECT_CALL(mock_upload_callback_receiver,
               Run(AutofillClient::ACCEPTED, testing::_));
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnDateConfirmed();
-  DismissMessage();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".RequestingExpirationDate"}),
@@ -403,10 +420,44 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPromoDismissedUpload) {
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
   EXPECT_CALL(mock_upload_callback_receiver,
               Run(AutofillClient::DECLINED, testing::_));
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnConfirmationDialogDismissed();
-  DismissMessage();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kDenied, 1);
+}
+
+// -- Others --
+TEST_F(SaveCardMessageControllerAndroidTest, DialogRestoredOnTabSwitching) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  base::HistogramTester histogram_tester;
+  AutofillClient::SaveCreditCardOptions options;
+  options.should_request_expiration_date_from_user = true;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  EXPECT_CALL(mock_upload_callback_receiver,
+              Run(AutofillClient::ACCEPTED, testing::_));
+
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+  OnLegalMessageLinkClicked();
+  EXPECT_TRUE(IsRestoreRequired());
+  OnWebContentsFocused();
+  OnDateConfirmed();
+  EXPECT_FALSE(IsRestoreRequired());
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".RequestingExpirationDate"}),
+      MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".RequestingExpirationDate"}),
+      MessageMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
+                                     1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,

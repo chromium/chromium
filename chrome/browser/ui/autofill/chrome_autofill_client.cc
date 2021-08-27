@@ -862,6 +862,13 @@ void ChromeAutofillClient::WebContentsDestroyed() {
   HideAutofillPopup(PopupHidingReason::kTabGone);
 }
 
+void ChromeAutofillClient::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+#if defined(OS_ANDROID)
+  save_card_message_controller_android_.OnWebContentsFocused();
+#endif
+}
+
 #if !defined(OS_ANDROID)
 void ChromeAutofillClient::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {

@@ -40,6 +40,8 @@ class SaveCardMessageConfirmController {
   // Legal Message should be set before confirm* is called.
   void SetLegalMessageLine(const LegalMessageLine& line);
 
+  void DismissDialog();
+
  private:
   // Returns either the fully initialized java counterpart of this bridge or
   // a is_null() reference if the creation failed. By using this method, the

@@ -46,7 +46,7 @@ public class AutofillMessageConfirmFlowBridge
         if (mNativeSaveCardMessageConfirmDelegate == 0) {
             return;
         }
-        AutofillMessageConfirmFlowBridgeJni.get().promptDismissed(
+        AutofillMessageConfirmFlowBridgeJni.get().dialogDismissed(
                 mNativeSaveCardMessageConfirmDelegate, AutofillMessageConfirmFlowBridge.this);
     }
 
@@ -158,7 +158,7 @@ public class AutofillMessageConfirmFlowBridge
     interface Natives {
         void onDateConfirmed(long nativeSaveCardMessageConfirmDelegate,
                 AutofillMessageConfirmFlowBridge caller, String month, String year);
-        void promptDismissed(
+        void dialogDismissed(
                 long nativeSaveCardMessageConfirmDelegate, AutofillMessageConfirmFlowBridge caller);
         void onNameConfirmed(long nativeSaveCardMessageConfirmDelegate,
                 AutofillMessageConfirmFlowBridge caller, String name);

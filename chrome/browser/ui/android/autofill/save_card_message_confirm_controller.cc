@@ -108,4 +108,12 @@ SaveCardMessageConfirmController::GetOrCreateJavaObject() {
              view_android->GetWindowAndroid()->GetJavaObject());
 }
 
+void SaveCardMessageConfirmController::DismissDialog() {
+  auto java_object = GetOrCreateJavaObject();
+  if (!java_object)
+    return;
+  Java_AutofillMessageConfirmFlowBridge_dismiss(
+      base::android::AttachCurrentThread(), java_object);
+}
+
 }  // namespace autofill

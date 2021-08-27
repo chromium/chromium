@@ -45,12 +45,16 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
             AutofillClient::LocalSaveCardPromptCallback
                 local_save_card_prompt_callback);
 
+  void OnWebContentsFocused();
+
  private:
   friend class SaveCardMessageControllerAndroidTest;
 
   void HandleMessageDismiss(messages::DismissReason dismiss_reason);
   void HandleMessageAction();
   void DismissMessage();
+
+  void MaybeShowDialog();
 
   void ConfirmDate(const int month, const int year);
   void ConfirmDate();
@@ -66,15 +70,13 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) override;
-  void PromptDismissed(
+  void DialogDismissed(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) override;
   void OnLegalMessageLinkClicked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url) override;
-
-  void MaybeShowDialog();
 
   bool IsGooglePayBrandingEnabled() const;
 
@@ -90,6 +92,10 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
 
   // Did the user ever explicitly accept or dismiss this message?
   bool HadUserInteraction();
+
+  // Reset pointers to message and dialog. Should be called when dismiss
+  // callback of message and dialog is executed.
+  void ResetInternal();
 
   // Whether the action is an upload or a local save.
   bool is_upload_;
@@ -120,11 +126,15 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
       save_card_message_confirm_controller_;
 
   std::u16string inferred_name_;
+  std::u16string card_label_;
 
   // Whether we need to request users to fill in more info
   bool promo_continue_;
   int expiration_date_year_;
   int expiration_date_month_;
+
+  // Whether we should re-show the dialog to users when users return to the tab.
+  bool reprompt_required_ = false;
 
   bool is_name_confirmed_for_testing_ = false;
   bool is_date_confirmed_for_testing_ = false;
