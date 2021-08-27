@@ -413,19 +413,8 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   PersistentDesksBarController* bar_controller =
       Shell::Get()->persistent_desks_bar_controller();
-  if (bar_controller &&
-      window_->GetRootWindow() == Shell::GetPrimaryRootWindow()) {
-    if (event->type() == WM_EVENT_TOGGLE_FULLSCREEN) {
-      if (IsFullscreen())
-        bar_controller->DestroyBarWidget();
-      else
-        bar_controller->MaybeInitBarWidget();
-    } else if (event->type() == WM_EVENT_MINIMIZE) {
-      bar_controller->MaybeInitBarWidget();
-    } else if (event->type() == WM_EVENT_FULLSCREEN) {
-      bar_controller->DestroyBarWidget();
-    }
-  }
+  if (bar_controller)
+    bar_controller->UpdateBarOnWindowStateChanges(window_);
 }
 
 void WindowState::SaveCurrentBoundsForRestore() {
@@ -1044,6 +1033,11 @@ void WindowState::OnWindowAddedToRootWindow(aura::Window* window) {
 void WindowState::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
 
+  PersistentDesksBarController* bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  if (bar_controller)
+    bar_controller->UpdateBarOnWindowDestroying(window_);
+
   // If the window is destroyed during PIP, count that as exiting.
   if (IsPip())
     CollectPipEnterExitMetrics(/*enter=*/false);
@@ -1056,18 +1050,6 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
   delegate_.reset();
 }
 
-void WindowState::OnWindowVisibilityChanged(aura::Window* window,
-                                            bool visible) {
-  PersistentDesksBarController* bar_controller =
-      Shell::Get()->persistent_desks_bar_controller();
-  if (bar_controller && IsFullscreen() &&
-      window->GetRootWindow() == Shell::GetPrimaryRootWindow()) {
-    if (visible)
-      bar_controller->DestroyBarWidget();
-    else
-      bar_controller->MaybeInitBarWidget();
-  }
-}
 
 void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& old_bounds,

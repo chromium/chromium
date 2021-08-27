@@ -5902,9 +5902,22 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
 
   NewDesk();
   EXPECT_TRUE(GetBarWidget());
+  // Create a window thus `UpdateBarOnWindowStateChanges()` will be called while
+  // entering overview mode. Bento bar should not be created and the desks bar
+  // should be at the top of the display in this case.
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 300, 300));
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Minimize();
+
   // Entering overview mode should destroy the bar. Exiting overview mode with
   // more than one desk should create the bar and show it.
   EnterOverview();
+  EXPECT_EQ(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                ->desks_bar_view()
+                ->GetBoundsInScreen()
+                .origin(),
+            gfx::Point(0, 0));
   EXPECT_FALSE(GetBarWidget());
   EXPECT_EQ(2u, desks_controller->desks().size());
   ExitOverview();
@@ -6211,15 +6224,6 @@ TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithFullscreenedWindow) {
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
 
-  // The bar should be created after `window1` being hidden.
-  window_state1->OnWMEvent(&event_toggle_fullscreen);
-  window1->Hide();
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
-  window1->Show();
-  EXPECT_FALSE(GetBarWidget());
-
   // The bar should be created after `window1` being minimized.
   window_state1->Minimize();
   EXPECT_TRUE(GetBarWidget());
@@ -6233,11 +6237,9 @@ TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithFullscreenedWindow) {
   // closed.
   window_state1->OnWMEvent(&event_toggle_fullscreen);
   window_state2->OnWMEvent(&event_toggle_fullscreen);
-  views::Widget::GetWidgetForNativeWindow(window1.get())
-      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  window1.reset();
   EXPECT_FALSE(GetBarWidget());
-  views::Widget::GetWidgetForNativeWindow(window2.get())
-      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  window2.reset();
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
