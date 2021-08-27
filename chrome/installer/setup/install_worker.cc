@@ -318,11 +318,10 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
   list->AddWorkItem(install_service_work_item);
 }
 
-// Adds work items to add or remove the "store-dmtoken" command to Chrome's
-// version key. This method is a no-op if this is anything other than
-// system-level Chrome. The command is used when enrolling Chrome browser
-// instances into enterprise management. |new_version| is the version currently
-// being installed -- can be empty on uninstall.
+// Adds work items to add the "store-dmtoken" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used when enrolling Chrome browser instances into enterprise
+// management.
 void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
                                       const base::FilePath& setup_path,
                                       const base::Version& new_version,
@@ -333,34 +332,28 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   const HKEY root_key = installer_state.root_key();
   const std::wstring cmd_key(GetCommandKey(kCmdStoreDMToken));
 
-  if (installer_state.operation() == InstallerState::UNINSTALL) {
-    install_list->AddDeleteRegKeyWorkItem(root_key, cmd_key, KEY_WOW64_32KEY)
-        ->set_log_message("Removing store DM token command");
-  } else {
-    // Register a command to allow Chrome to request Google Update to run
-    // setup.exe --store-dmtoken=<token>, which will store the specified token
-    // in the registry.
-    base::CommandLine cmd_line(
-        installer_state.GetInstallerDirectory(new_version)
-            .Append(setup_path.BaseName()));
-    cmd_line.AppendSwitchASCII(switches::kStoreDMToken, "%1");
-    cmd_line.AppendSwitch(switches::kSystemLevel);
-    cmd_line.AppendSwitch(switches::kVerboseLogging);
-    InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+  // Register a command to allow Chrome to request Google Update to run
+  // setup.exe --store-dmtoken=<token>, which will store the specified token
+  // in the registry.
+  base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
+                                 .Append(setup_path.BaseName()));
+  cmd_line.AppendSwitchASCII(switches::kStoreDMToken, "%1");
+  cmd_line.AppendSwitch(switches::kSystemLevel);
+  cmd_line.AppendSwitch(switches::kVerboseLogging);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
 
-    // The substitution for the insert sequence "%1" here is performed safely by
-    // Google Update rather than insecurely by the Windows shell. Disable the
-    // safety check for unsafe insert sequences since the right thing is
-    // happening. Do not blindly copy this pattern in new code. Check with a
-    // member of base/win/OWNERS if in doubt.
-    AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+  // The substitution for the insert sequence "%1" here is performed safely by
+  // Google Update rather than insecurely by the Windows shell. Disable the
+  // safety check for unsafe insert sequences since the right thing is
+  // happening. Do not blindly copy this pattern in new code. Check with a
+  // member of base/win/OWNERS if in doubt.
+  AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
 
-    // TODO(alito): For now setting this command as web accessible is required
-    // by Google Update.  Could revisit this should Google Update change the
-    // way permissions are handled for commands.
-    cmd.set_is_web_accessible(true);
-    cmd.AddWorkItems(root_key, cmd_key, install_list);
-  }
+  // TODO(rogerta): For now setting this command as web accessible is required
+  // by Google Update.  Could revisit this should Google Update change the
+  // way permissions are handled for commands.
+  cmd.set_is_web_accessible(true);
+  cmd.AddWorkItems(root_key, cmd_key, install_list);
 }
 
 // Adds work items to add the "rotate-dtkey" command to Chrome's version key.
