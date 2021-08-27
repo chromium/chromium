@@ -207,7 +207,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
-  web_app->SetStorageIsolated(web_app_info.is_storage_isolated);
 
   UpdateIntWebAppPref(profile_->GetPrefs(), app_id, kLatestWebAppInstallSource,
                       static_cast<int>(options.install_source));

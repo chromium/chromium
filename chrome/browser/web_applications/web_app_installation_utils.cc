@@ -101,6 +101,8 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
       GetSquareSizePxs(web_app_info.icon_bitmaps.monochrome));
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 
+  web_app.SetStorageIsolated(web_app_info.is_storage_isolated);
+
   web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
   web_app.SetDownloadedShortcutsMenuIconsSizes(
       GetDownloadedShortcutsMenuIconsSizes(
