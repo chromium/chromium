@@ -191,6 +191,11 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         'the test harness will attempt to detect whether it is running on a '
         'workstation or not and set this option accordingly.')
     parser.add_option(
+        '--skia-gold-local-png-write-directory',
+        help='Specifies a directory to save local image diffs to instead of '
+        'the default of a temporary directory. Only has an effect when running '
+        'tests locally, not on a bot.')
+    parser.add_option(
         '--no-luci-auth',
         action='store_true',
         default=False,

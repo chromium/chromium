@@ -49,7 +49,8 @@ class SkiaGoldSessionRunComparisonTest(fake_filesystem_unittest.TestCase):
     auth_mock.return_value = (0, None)
     init_mock.return_value = (0, None)
     compare_mock.return_value = (0, None)
-    session = skia_gold_session.SkiaGoldSession(self._working_dir, None,
+    sgp = skia_gold_properties.SkiaGoldProperties(createSkiaGoldArgs())
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
                                                 self._json_keys, None, None)
     status, _ = session.RunComparison(None, None, None)
     self.assertEqual(status,
@@ -65,7 +66,8 @@ class SkiaGoldSessionRunComparisonTest(fake_filesystem_unittest.TestCase):
   @mock.patch.object(skia_gold_session.SkiaGoldSession, 'Authenticate')
   def test_authFailure(self, auth_mock, init_mock, compare_mock, diff_mock):
     auth_mock.return_value = (1, 'Auth failed')
-    session = skia_gold_session.SkiaGoldSession(self._working_dir, None,
+    sgp = skia_gold_properties.SkiaGoldProperties(createSkiaGoldArgs())
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
                                                 self._json_keys, None, None)
     status, error = session.RunComparison(None, None, None)
     self.assertEqual(status,
@@ -83,7 +85,8 @@ class SkiaGoldSessionRunComparisonTest(fake_filesystem_unittest.TestCase):
   def test_initFailure(self, auth_mock, init_mock, compare_mock, diff_mock):
     auth_mock.return_value = (0, None)
     init_mock.return_value = (1, 'Init failed')
-    session = skia_gold_session.SkiaGoldSession(self._working_dir, None,
+    sgp = skia_gold_properties.SkiaGoldProperties(createSkiaGoldArgs())
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
                                                 self._json_keys, None, None)
     status, error = session.RunComparison(None, None, None)
     self.assertEqual(status,
@@ -783,8 +786,9 @@ class SkiaGoldSessionTriageLinkOmissionTest(fake_filesystem_unittest.TestCase):
     self._working_dir = tempfile.mkdtemp()
 
   def _CreateSession(self):
+    sgp = skia_gold_properties.SkiaGoldProperties(createSkiaGoldArgs())
     json_keys = tempfile.NamedTemporaryFile(delete=False).name
-    session = skia_gold_session.SkiaGoldSession(self._working_dir, None,
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
                                                 json_keys, None, None)
     session._comparison_results = {
         'foo': skia_gold_session.SkiaGoldSession.ComparisonResults(),
