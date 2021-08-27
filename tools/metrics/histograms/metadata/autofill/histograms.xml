@@ -1319,6 +1319,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Autofill.GetUnownedFormFieldsDuration" units="microseconds"
+    expires_after="2022-07-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time it takes to get the unowned form field elements. This is
+    done by measuring the time it takes for GetUnownedFormFieldElements() to
+    execute.
+
+    Note that histogram samples for clients without high-resolution clocks are
+    dropped.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards"
     enum="BooleanOptedIn" expires_after="2021-11-30">
   <owner>jsaul@google.com</owner>

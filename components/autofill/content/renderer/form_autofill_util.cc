@@ -2132,6 +2132,7 @@ GetUnownedFormFieldElementsWithListedElements(
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
     const WebDocument& document,
     std::vector<WebElement>* fieldsets) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Autofill.GetUnownedFormFieldsDuration");
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseUnassociatedListedElements)) {
     return GetUnownedFormFieldElementsWithListedElements(document, fieldsets);
