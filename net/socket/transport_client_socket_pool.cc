@@ -21,8 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -721,12 +719,6 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
   }
   dict.SetKey("groups", std::move(all_groups_dict));
   return dict;
-}
-
-void TransportClientSocketPool::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  // TODO(crbug.com/1239513): Remove this.
 }
 
 bool TransportClientSocketPool::IdleSocket::IsUsable(

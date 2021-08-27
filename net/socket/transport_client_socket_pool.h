@@ -41,12 +41,6 @@
 #include "net/socket/stream_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}  // namespace base
-
 namespace net {
 
 struct CommonConnectJobParams;
@@ -223,9 +217,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                          const ClientSocketHandle* handle) const override;
   base::Value GetInfoAsValue(const std::string& name,
                              const std::string& type) const override;
-  void DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_dump_absolute_name) const override;
 
   bool RequestInGroupWithHandleHasJobForTesting(
       const GroupId& group_id,

@@ -33,9 +33,6 @@ class MockClientSocketPoolManager : public ClientSocketPoolManager {
   void CloseIdleSockets(const char* net_log_reason_utf8) override;
   ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) override;
   std::unique_ptr<base::Value> SocketPoolInfoToValue() const override;
-  void DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_dump_absolute_name) const override;
 
  private:
   using ClientSocketPoolMap =

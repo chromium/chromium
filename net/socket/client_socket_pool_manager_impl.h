@@ -19,12 +19,6 @@
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
-
 namespace net {
 
 class ProxyServer;
@@ -50,10 +44,6 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
 
   // Creates a Value summary of the state of the socket pools.
   std::unique_ptr<base::Value> SocketPoolInfoToValue() const override;
-
-  void DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_dump_absolute_name) const override;
 
  private:
   using SocketPoolMap =

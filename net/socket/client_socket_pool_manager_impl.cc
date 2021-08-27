@@ -111,14 +111,4 @@ ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
   return std::move(list);
 }
 
-void ClientSocketPoolManagerImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  SocketPoolMap::const_iterator socket_pool =
-      socket_pools_.find(ProxyServer::Direct());
-  if (socket_pool == socket_pools_.end())
-    return;
-  socket_pool->second->DumpMemoryStats(pmd, parent_dump_absolute_name);
-}
-
 }  // namespace net
