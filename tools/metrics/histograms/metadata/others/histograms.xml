@@ -4905,13 +4905,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Display.GenerateDisplayId.CollisionDetection"
     enum="BooleanDisplayIdCollision" expires_after="2022-09-01">
-  <owner>gildekel@google.com</owner>
+  <obsolete>
+    Replaced by Display.MultipleDisplays.GenerateId.CollisionDetection in M95.
+  </obsolete>
+  <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
-    Whether or not two (or more) connected displays produced identical display
-    IDs due to insufficient EDIDs. This may occur when identical displays (same
-    make and model) lack serial numbers in both the EDID's block zero or S/N
+    Whether or not displays produced identical display IDs due to insufficient
+    EDIDs. This may occur when identical displays (same make and model) lack
+    serial numbers in both the EDID's block zero or S/N descriptor block.
+    Recorded every time Chrome OS detects a change in display configuration and
+    attempts to get an updated list of available displays.
+  </summary>
+</histogram>
+
+<histogram name="Display.MultipleDisplays.GenerateId.CollisionDetection"
+    enum="BooleanDisplayIdCollision" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    Whether or not multiple connected displays produced identical display IDs
+    due to incomplete EDIDs. This may occur when identical displays (same make
+    and model) lack serial numbers in both the EDID's block zero or S/N
     descriptor block. Recorded every time Chrome OS detects a change in display
     configuration and attempts to get an updated list of available displays.
   </summary>

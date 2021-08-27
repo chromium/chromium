@@ -24,8 +24,8 @@
 namespace ui {
 
 namespace {
-constexpr char kDisplayIdCollisionDetected[] =
-    "Display.GenerateDisplayId.CollisionDetection";
+constexpr char kMultipleDisplayIdsCollisionDetected[] =
+    "Display.MultipleDisplays.GenerateId.CollisionDetection";
 using MapDisplayIdToIndexAndSnapshotPair =
     base::flat_map<int64_t, display::DisplaySnapshot*>;
 
@@ -168,7 +168,12 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     }
     device_index++;
   }
-  base::UmaHistogramBoolean(kDisplayIdCollisionDetected, collision_detected);
+
+  const bool multiple_connected_displays = params_list.size() > 1;
+  if (multiple_connected_displays) {
+    base::UmaHistogramBoolean(kMultipleDisplayIdsCollisionDetected,
+                              collision_detected);
+  }
 
   NotifyScreenManager(displays_, old_displays);
   return params_list;
