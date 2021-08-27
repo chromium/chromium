@@ -48,6 +48,10 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  bool override_in_new_tabs);
 #endif
 
+#if defined(OS_WIN)
+int GetHighestKnownUniversalApiContractVersionForTesting();
+#endif  // defined(OS_WIN)
+
 }  // namespace embedder_support
 
 #endif  // COMPONENTS_EMBEDDER_SUPPORT_USER_AGENT_UTILS_H_

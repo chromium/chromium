@@ -7,9 +7,11 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/embedder_support/switches.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -20,7 +22,95 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+
+#include "base/win/registry.h"
+#include "base/win/windows_version.h"
+#endif  // defined(OS_WIN)
+
 namespace embedder_support {
+
+#if defined(OS_WIN)
+namespace {
+
+// The registry key where the UniversalApiContract version value can be read
+// from.
+constexpr wchar_t kWindowsRuntimeWellKnownContractsRegKeyName[] =
+    L"SOFTWARE\\Microsoft\\WindowsRuntime\\WellKnownContracts";
+
+// Name of the UniversalApiContract registry.
+constexpr wchar_t kUniversalApiContractName[] =
+    L"Windows.Foundation.UniversalApiContract";
+
+// There's a chance that access to the registry key that contains the
+// UniversalApiContract Version will not be available in the future. After we
+// confirm that our Windows version is RS5 or greater, it is best to have the
+// default return value be the highest known version number at the time this
+// code is submitted. If the UniversalApiContract registry key is no longer
+// available, there will either be a new API introduced, or we will need
+// to rely on querying the IsApiContractPresentByMajor function used by
+// user_agent_utils_unittest.cc.
+const int kHighestKnownUniversalApiContractVersion = 14;
+
+int GetPreRS5UniversalApiContractVersion() {
+  if (base::win::GetVersion() == base::win::Version::WIN10)
+    return 1;
+  if (base::win::GetVersion() == base::win::Version::WIN10_TH2)
+    return 2;
+  if (base::win::GetVersion() == base::win::Version::WIN10_RS1)
+    return 3;
+  if (base::win::GetVersion() == base::win::Version::WIN10_RS2)
+    return 4;
+  if (base::win::GetVersion() == base::win::Version::WIN10_RS3)
+    return 5;
+  if (base::win::GetVersion() == base::win::Version::WIN10_RS4)
+    return 6;
+  // The list above should account for all Windows versions prior to
+  // RS5.
+  NOTREACHED();
+  return 0;
+}
+// Returns the UniversalApiContract version number, which is available for
+// Windows versions greater than RS5. Otherwise, returns 0.
+std::string GetUniversalApiContractVersion() {
+  // Do not use this for runtime environment detection logic. This method should
+  // only be used to help populate the Sec-CH-UA-Platform client hint. If
+  // authoring code that depends on a minimum API contract version being
+  // available, you should instead leverage the OS's IsApiContractPresentByMajor
+  // method.
+  int major_version = 0;
+  int minor_version = 0;
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
+    if (base::win::GetVersion() <= base::win::Version::WIN10_RS4) {
+      major_version = GetPreRS5UniversalApiContractVersion();
+    } else {
+      base::win::RegKey version_key(HKEY_LOCAL_MACHINE,
+                                    kWindowsRuntimeWellKnownContractsRegKeyName,
+                                    KEY_QUERY_VALUE);
+      if (version_key.Valid()) {
+        DWORD universal_api_contract_version = 0;
+        LONG result = version_key.ReadValueDW(kUniversalApiContractName,
+                                              &universal_api_contract_version);
+        if (result == ERROR_SUCCESS) {
+          major_version = HIWORD(universal_api_contract_version);
+          minor_version = LOWORD(universal_api_contract_version);
+        } else {
+          major_version = kHighestKnownUniversalApiContractVersion;
+        }
+      } else {
+        major_version = kHighestKnownUniversalApiContractVersion;
+      }
+    }
+  }
+  // The major version of the contract is stored in the HIWORD, while the
+  // minor version is stored in the LOWORD.
+  return base::StrCat({base::NumberToString(major_version), ".",
+                       base::NumberToString(minor_version), ".0"});
+}
+
+}  // namespace
+#endif  // defined(OS_WIN)
 
 std::string GetProduct() {
   return version_info::GetProductNameAndVersionForUserAgent();
@@ -152,10 +242,15 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
       switches::kUseMobileUserAgent);
 #endif
 
+#if defined(OS_WIN)
+  metadata.platform_version = GetUniversalApiContractVersion();
+#else
   int32_t major, minor, bugfix = 0;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
   metadata.platform_version =
       base::StringPrintf("%d.%d.%d", major, minor, bugfix);
+#endif
+
   // These methods use the same information as the User-Agent string, but are
   // "low entropy" in that they reduce the number of options for output to a
   // set number. For more information, see the respective headers.
@@ -189,5 +284,11 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
   web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }
 #endif  // OS_ANDROID
+
+#if defined(OS_WIN)
+int GetHighestKnownUniversalApiContractVersionForTesting() {
+  return kHighestKnownUniversalApiContractVersion;
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace embedder_support

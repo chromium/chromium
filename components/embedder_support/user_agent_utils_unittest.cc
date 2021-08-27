@@ -24,6 +24,17 @@
 #include <sys/utsname.h>
 #endif
 
+#if defined(OS_WIN)
+#include <windows.foundation.metadata.h>
+#include <wrl.h>
+
+#include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
+#include "base/win/scoped_hstring.h"
+#include "base/win/scoped_winrt_initializer.h"
+#include "base/win/windows_version.h"
+#endif  // defined(OS_WIN)
+
 namespace embedder_support {
 
 namespace {
@@ -188,6 +199,70 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   }
 }
 
+#if defined(OS_WIN)
+bool ResolveCoreWinRT() {
+  return base::win::ResolveCoreWinRTDelayload() &&
+         base::win::ScopedHString::ResolveCoreWinRTStringDelayload() &&
+         base::win::HStringReference::ResolveCoreWinRTStringDelayload();
+}
+
+// On Windows, the client hint sec-ch-ua-platform-version should be
+// the highest supported version of the UniversalApiContract.
+void VerifyWinPlatformVersion(std::string version) {
+  ASSERT_TRUE(ResolveCoreWinRT());
+  base::win::ScopedWinrtInitializer scoped_winrt_initializer;
+  ASSERT_TRUE(scoped_winrt_initializer.Succeeded());
+
+  base::win::HStringReference api_info_class_name(
+      RuntimeClass_Windows_Foundation_Metadata_ApiInformation);
+
+  Microsoft::WRL::ComPtr<
+      ABI::Windows::Foundation::Metadata::IApiInformationStatics>
+      api;
+  HRESULT result = base::win::RoGetActivationFactory(api_info_class_name.Get(),
+                                                     IID_PPV_ARGS(&api));
+  ASSERT_EQ(result, S_OK);
+
+  base::win::HStringReference universal_contract_name(
+      L"Windows.Foundation.UniversalApiContract");
+
+  std::vector<std::string> version_parts = base::SplitString(
+      version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  EXPECT_EQ(version_parts[2], "0");
+
+  int major_version;
+  base::StringToInt(version_parts[0], &major_version);
+
+  // If this check fails, our highest known UniversalApiContract version
+  // needs to be updated.
+  EXPECT_LE(major_version,
+            GetHighestKnownUniversalApiContractVersionForTesting());
+
+  int minor_version;
+  base::StringToInt(version_parts[1], &minor_version);
+
+  boolean is_supported = false;
+  // Verify that the major and minor versions are supported.
+  api->IsApiContractPresentByMajor(universal_contract_name.Get(), major_version,
+                                   &is_supported);
+  EXPECT_TRUE(is_supported);
+  api->IsApiContractPresentByMajorAndMinor(universal_contract_name.Get(),
+                                           major_version, minor_version,
+                                           &is_supported);
+  EXPECT_TRUE(is_supported);
+
+  // Verify that the next highest value is not supported.
+  api->IsApiContractPresentByMajorAndMinor(universal_contract_name.Get(),
+                                           major_version, minor_version + 1,
+                                           &is_supported);
+  EXPECT_FALSE(is_supported);
+  api->IsApiContractPresentByMajor(universal_contract_name.Get(),
+                                   major_version + 1, &is_supported);
+  EXPECT_FALSE(is_supported);
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 TEST(UserAgentUtilsTest, UserAgentStringOrdering) {
@@ -292,10 +367,18 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
 
   EXPECT_EQ(metadata.full_version, version_info::GetVersionNumber());
 
+#if defined(OS_WIN)
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    EXPECT_EQ(metadata.platform_version, "0.0.0");
+  } else {
+    VerifyWinPlatformVersion(metadata.platform_version);
+  }
+#else
   int32_t major, minor, bugfix = 0;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
   EXPECT_EQ(metadata.platform_version,
             base::StringPrintf("%d.%d.%d", major, minor, bugfix));
+#endif
   // This makes sure no extra information is added to the platform version.
   EXPECT_EQ(metadata.platform_version.find(";"), std::string::npos);
   // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
