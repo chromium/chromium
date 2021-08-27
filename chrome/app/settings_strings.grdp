@@ -1845,10 +1845,19 @@
   <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES" desc="Label for the Manage Search Engines button.">
     Manage search engines
   </message>
+  <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Label for the Manage Search Engines and Site Search button.">
+    Manage search engines and site search
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_EXPLANATION" desc="Explanation for the Manage Search Engines button.">
+    Create shortcuts for searching sites and manage your search engine
+  </message>
 
   <!-- Search Engines Page -->
   <message name="IDS_SETTINGS_SEARCH_ENGINES" desc="Name of the settings page which manages search engines.">
     Search Engines
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_PAGE_EXPLANATION" desc="Explanation of the Manage Search Engines page">
+    You can use shortcuts in the address bar to quickly search a specific site or to use a different search engine
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
     Search
@@ -1862,8 +1871,23 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DEFAULT_ENGINES" desc="Label for 'default' Search Engines section">
     Default search engines
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_YOUR_ENGINES" desc="Label for 'active' (used or manually modified/added by user) Search Engines section">
-    Your search engines
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINES" desc="Label for 'Search Engines' section">
+    Search engines
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINES_EXPLANATION" desc="Explanation for 'Search Engines' section">
+    To use a search engine other than the default, type its shortcut followed by your preferred keyboard shortcut. You can also change your default search engine here.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH" desc="Label for 'Site Search' section">
+    Site search
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION" desc="Explanation for 'Site Search' section. Used interchangeably with IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK">
+    To search a specific site or part of Chrome, you can type the shortcuts here into the address bar, then press Tab or Space.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK" desc="Explanation for 'Site Search' section">
+    To search a specific site or part of Chrome, you can use the shortcuts here. For example, to search only Gmail, type "@gmail", then press Tab or Space.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SHORTCUTS" desc="Label for 'Inactive shortcuts' section">
+    Inactive shortcuts
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_OTHER_ENGINES" desc="Label for 'other' Search Engines section">
     Other search engines
@@ -1872,13 +1896,25 @@
     Other saved search engines will appear here
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES" desc="Label for a section that displays search engines added by extensions">
-    Search engines added by extensions
+    Extensions
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES_EXPLANATION" desc="Explanation for a section that displays search engines added by extensions">
+    Some extensions can add search engines to Chrome
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINE" desc="Label for a table column that holds the name of a search engine">
     Search engine
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_OR_PAGE" desc="Label for a table column that holds the name of a site or page in the 'Site search' section">
+    Site or page
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SITE" desc="Label for a table column that holds the name of a site or page in the 'Inactive shortcuts' section">
+    Inactive sites
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYWORD" desc="Label for Keyword column header for a search engine">
     Keyword
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT" desc="Label for Shortcut column header for a search engine or site search entry">
+    Shortcut
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL" desc="Label for Query URL column header for a search engine">
     Query URL
@@ -1902,16 +1938,22 @@
     Manage
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TITLE" desc="Label for scoped search mode trigger options section">
-    Keyboard shortcuts for search keywords
+    Keyboard shortcut
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION" desc="Text explaining how to use keyword mode">
     In the address bar, enter the keyword for the website you want to search. Then, use a keyboard shortcut to continue.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION_STARTER_PACK" desc="Text explaining how to use keyboard mode, if scoped search starter pack is enabled">
+    In the address bar, enter the shortcut for the site you want to search, such as "@gmail". Then, press your preferred keyboard shortcut, and enter your search term.
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Space or Tab
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Tab
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_SHOW_ALL" desc="Label for button that expands the list of search engines to show all entries">
+    Show all
   </message>
 
 
