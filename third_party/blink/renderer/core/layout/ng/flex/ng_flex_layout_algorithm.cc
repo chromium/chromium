@@ -53,8 +53,7 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
     const NGBlockNode& child) const {
-  return child.Style().IsHorizontalWritingMode() ==
-         FlexLayoutAlgorithm::IsHorizontalFlow(Style());
+  return child.Style().IsHorizontalWritingMode() == is_horizontal_flow_;
 }
 
 LayoutUnit NGFlexLayoutAlgorithm::MainAxisContentExtent(
