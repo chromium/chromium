@@ -42,18 +42,6 @@ Polymer({
     },
 
     /**
-     * Whether new OOBE layout is enabled.
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      }
-    },
-
-    /**
      * Indicates whether user is minor mode user (e.g. under age of 18).
      */
     isMinorMode_: {
@@ -309,8 +297,6 @@ Polymer({
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
     this.$['title-text'].textContent = data['valuePropTitle'];
-    this.$['user-image'].src = data['valuePropUserImage'];
-    this.$['user-name'].textContent = data['valuePropIdentity'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
     this.$['skip-button'].labelForAria = data['valuePropSkipButton'];
@@ -361,9 +347,7 @@ Polymer({
                 encodeURIComponent(zippy.getWrappedIcon(
                     data['iconUri'], data['title'], background)));
         zippy.setAttribute('step', i);
-        if (!this.newLayoutEnabled_) {
-          zippy.setAttribute('hide-line', true);
-        } else if (this.isMinorMode_) {
+        if (this.isMinorMode_) {
           zippy.setAttribute('hide-line', true);
           zippy.setAttribute('card-style', true);
         }
@@ -420,7 +404,7 @@ Polymer({
   addSubtitle_(data, step) {
     var subtitle = document.createElement('div');
     subtitle.setAttribute('step', step);
-    if (this.newLayoutEnabled_ && this.isMinorMode_) {
+    if (this.isMinorMode_) {
       var title = document.createElement('div');
       title.innerHTML = this.sanitizer_.sanitizeHtml(data['title']);
       title.classList.add('subtitle-text');
@@ -449,10 +433,10 @@ Polymer({
     // The webview animation only starts playing when it is focused (in order
     // to make sure the animation and the caption are in sync).
     this.valuePropView_.focus();
-    this.async(function() {
+    this.async(() => {
       this.buttonsDisabled = false;
       this.$['next-button'].focus();
-    }.bind(this), 300);
+    }, 300);
 
     if (!this.hidden && !this.screenShown_) {
       this.browserProxy_.screenShown(VALUE_PROP_SCREEN_ID);
@@ -465,17 +449,13 @@ Polymer({
    */
   onShow() {
     this.$['overlay-close-button'].addEventListener(
-        'click', this.hideOverlay.bind(this));
+        'click', () => this.hideOverlay());
 
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['next-button'].focus());
 
     if (!this.initialized_) {
-      if (this.newLayoutEnabled_) {
-        this.valuePropView_ = this.$['value-prop-view'];
-      } else {
-        this.valuePropView_ = this.$['value-prop-view-old'];
-      }
+      this.valuePropView_ = this.$['value-prop-view'];
       this.initializeWebview_(this.valuePropView_);
       this.reloadPage();
       this.initialized_ = true;
@@ -510,11 +490,11 @@ Polymer({
   initializeWebview_(webview) {
     const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
     webview.request.onErrorOccurred.addListener(
-        this.onWebViewErrorOccurred.bind(this), requestFilter);
+        details => this.onWebViewErrorOccurred(details), requestFilter);
     webview.request.onHeadersReceived.addListener(
-        this.onWebViewHeadersReceived.bind(this), requestFilter);
+        details => this.onWebViewHeadersReceived(details), requestFilter);
     webview.addEventListener(
-        'contentload', this.onWebViewContentLoad.bind(this));
+        'contentload', details => this.onWebViewContentLoad(details));
     webview.addContentScripts([webviewStripLinksContentScript]);
   },
 

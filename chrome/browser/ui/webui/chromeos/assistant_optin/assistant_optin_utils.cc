@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -21,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -164,14 +162,6 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
 
   // Add activity control string constants.
   if (activity_control_needed) {
-    scoped_refptr<base::RefCountedMemory> image =
-        chromeos::UserImageSource::GetUserImage(
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
-    std::string icon_url = webui::GetPngDataUrl(image->front(), image->size());
-    dictionary.SetKey("valuePropUserImage", base::Value(icon_url));
-
-    dictionary.SetKey("valuePropIdentity",
-                      base::Value(activity_control_ui.identity()));
     dictionary.SetKey("valuePropTitle",
                       base::Value(activity_control_ui.title()));
     if (activity_control_ui.footer_paragraph_size()) {

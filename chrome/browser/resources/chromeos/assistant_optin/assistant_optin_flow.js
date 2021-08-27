@@ -47,16 +47,15 @@ Polymer({
 
   /** @override */
   attached() {
-    window.addEventListener(
-        'orientationchange', this.onWindowResized_.bind(this));
-    window.addEventListener('resize', this.onWindowResized_.bind(this));
+    window.addEventListener('orientationchange', () => this.onWindowResized_());
+    window.addEventListener('resize', () => this.onWindowResized_());
   },
 
   /** @override */
   detached() {
     window.removeEventListener(
-        'orientationchange', this.onWindowResized_.bind(this));
-    window.removeEventListener('resize', this.onWindowResized_.bind(this));
+        'orientationchange', () => this.onWindowResized_());
+    window.removeEventListener('resize', () => this.onWindowResized_());
   },
 
   /**
@@ -101,12 +100,12 @@ Polymer({
         break;
     }
 
-    this.boundShowLoadingScreen = this.showLoadingScreen.bind(this);
-    this.boundOnScreenLoadingError = this.onScreenLoadingError.bind(this);
-    this.boundOnScreenLoaded = this.onScreenLoaded.bind(this);
+    this.boundShowLoadingScreen = () => this.showLoadingScreen();
+    this.boundOnScreenLoadingError = () => this.onScreenLoadingError();
+    this.boundOnScreenLoaded = () => this.onScreenLoaded();
 
     this.$.loading.onBeforeShow();
-    this.$.loading.addEventListener('reload', this.onReload.bind(this));
+    this.$.loading.addEventListener('reload', () => this.onReload());
 
     switch (this.flowType) {
       case this.FlowType.SPEAKER_ID_ENROLLMENT:
@@ -280,13 +279,10 @@ Polymer({
           '--oobe-oobe-dialog-height-base', window.innerHeight + 'px');
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-width-base', window.innerWidth + 'px');
-      if (loadTimeData.valueExists('newLayoutEnabled') &&
-          loadTimeData.getBoolean('newLayoutEnabled')) {
-        if (window.innerWidth > window.innerHeight) {
-          document.documentElement.setAttribute('orientation', 'horizontal');
-        } else {
-          document.documentElement.setAttribute('orientation', 'vertical');
-        }
+      if (window.innerWidth > window.innerHeight) {
+        document.documentElement.setAttribute('orientation', 'horizontal');
+      } else {
+        document.documentElement.setAttribute('orientation', 'vertical');
       }
     }
     // In landscape mode, animation element should reside in subtitle slot which

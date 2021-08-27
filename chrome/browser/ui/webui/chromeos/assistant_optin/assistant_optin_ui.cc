@@ -93,8 +93,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->AddResourcePath("voice_match_already_setup_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION);
-  // TODO(crbug.com/1202135): Remove along with JS part.
-  source->AddBoolean("newLayoutEnabled", true);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
   source->DisableTrustedTypesCSP();
