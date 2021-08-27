@@ -34,6 +34,8 @@ namespace chrome_pdf {
 
 namespace {
 
+using ::testing::SaveArg;
+
 // Keep it in-sync with the `kFinalFallbackName` returned by
 // net::GetSuggestedFilename().
 constexpr char kDefaultDownloadFileName[] = "download";
@@ -135,6 +137,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::InitializeEngine;
+  using PdfViewPluginBase::LoadUrl;
   using PdfViewPluginBase::set_document_load_state;
   using PdfViewPluginBase::set_full_frame;
 
@@ -236,6 +239,17 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   std::vector<base::Value> sent_messages_;
 
   base::WeakPtrFactory<FakePdfViewPluginBase> weak_factory_{this};
+};
+
+class MockUrlLoader : public UrlLoader {
+ public:
+  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
+  MOCK_METHOD(void, Open, (const UrlRequest&, ResultCallback), (override));
+  MOCK_METHOD(void,
+              ReadResponseBody,
+              (base::span<char>, ResultCallback),
+              (override));
+  MOCK_METHOD(void, Close, (), (override));
 };
 
 base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
@@ -390,6 +404,29 @@ class PdfViewPluginBaseWithDocInfoTest
 
 using PdfViewPluginBaseWithoutDocInfoTest =
     PdfViewPluginBaseWithScopedLocaleTest;
+
+TEST_F(PdfViewPluginBaseTest, LoadUrl) {
+  UrlRequest saved_request;
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal)
+      .WillOnce([&saved_request]() {
+        auto mock_loader = std::make_unique<testing::NiceMock<MockUrlLoader>>();
+        EXPECT_CALL(*mock_loader, Open)
+            .WillOnce(testing::SaveArg<0>(&saved_request));
+        return mock_loader;
+      });
+
+  // Note that `is_print_preview` only controls the load callback. */
+  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/false);
+
+  EXPECT_EQ("fake-url", saved_request.url);
+  EXPECT_EQ("GET", saved_request.method);
+  EXPECT_TRUE(saved_request.ignore_redirects);
+  EXPECT_EQ("", saved_request.custom_referrer_url);
+  EXPECT_EQ("", saved_request.headers);
+  EXPECT_EQ("", saved_request.body);
+  EXPECT_LE(saved_request.buffer_lower_threshold,
+            saved_request.buffer_upper_threshold);
+}
 
 TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
   fake_plugin_.set_full_frame(true);

@@ -1011,11 +1011,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
 // Test that if the plugin tries to load a URL that redirects then it will fail
 // to load. This is to avoid the source origin of the document changing during
 // the redirect, which can have security implications. https://crbug.com/653749.
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride,
-                       RedirectsFailInPlugin) {
-  RunTestsInJsModule("redirects_fail_test.js", "test.pdf");
-}
-
+//
+// Note that this can happen only during partial loading, as the initial URL
+// load is handled by MimeHandlerView, and the plugin only gets the response.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithPartialLoading,
                        PartialRedirectsFailInPlugin) {
   // Should match values used by `chrome_pdf::DocumentLoaderImpl`.
