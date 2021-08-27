@@ -97,7 +97,9 @@ IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest, PRE_Basics) {
 }
 
 // Restart Chrome with the feature disabled.
-IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest, Basics) {
+// TODO(crbug.com/1243890): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(AppListRemoveSpaceSyncCompatibilityTest,
+                       DISABLED_Basics) {
   // The flag to remove empty spaces is turned off so there should be two pages.
   EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
   EXPECT_EQ(5, app_list_test_api_.GetTopListItemCount());
