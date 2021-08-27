@@ -34,7 +34,8 @@
 
 namespace blink {
 
-DragCaret::DragCaret() : display_item_client_(new CaretDisplayItemClient()) {}
+DragCaret::DragCaret()
+    : display_item_client_(MakeGarbageCollected<CaretDisplayItemClient>()) {}
 
 DragCaret::~DragCaret() = default;
 
@@ -90,6 +91,7 @@ void DragCaret::NodeWillBeRemoved(Node& node) {
 
 void DragCaret::Trace(Visitor* visitor) const {
   visitor->Trace(position_);
+  visitor->Trace(display_item_client_);
   SynchronousMutationObserver::Trace(visitor);
 }
 

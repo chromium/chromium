@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FRAME_CARET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FRAME_CARET_H_
 
-#include <memory>
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -101,7 +100,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
 
   const Member<const SelectionEditor> selection_editor_;
   const Member<LocalFrame> frame_;
-  const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
+  const Member<CaretDisplayItemClient> display_item_client_;
   // TODO(https://crbug.com/668758): Consider using BeginFrame update for this.
   HeapTaskRunnerTimer<FrameCaret> caret_blink_timer_;
   bool is_caret_enabled_ = false;
