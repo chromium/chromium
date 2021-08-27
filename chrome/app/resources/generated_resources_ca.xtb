@@ -1544,6 +1544,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2606454609872547359">No, continua sense ChromeVox</translation>
 <translation id="2606568927909309675">Crea subtítols automàticament per a àudios i vídeos en anglès. L'àudio i els subtítols no surten mai del dispositiu.</translation>
 <translation id="2607101320794533334">Informació de clau pública del subjecte</translation>
+<translation id="2607602101932365444">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret. Personalitza la traducció definint els idiomes que prefereixis a <ph name="LINK_BEGIN" />Idiomes del contingut web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Crea dreceres...</translation>
 <translation id="2609980095400624569">No s'ha pogut establir la connexió</translation>
 <translation id="2610157865375787051">Repòs</translation>
@@ -5662,6 +5663,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7088434364990739311">La comprovació d'actualització no s'ha pogut iniciar (codi d'error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">ZIP Archiver: obre i empaqueta fitxers ZIP a l'aplicació Fitxers.</translation>
 <translation id="7088674813905715446">L'administrador ha canviat l'estat d'aquest dispositiu perquè no es pugui utilitzar. Per permetre que us hi pugueu registrar, demaneu a l'administrador que en defineixi l'estat com a pendent.</translation>
+<translation id="7093220653036489319">Respostes ràpides</translation>
 <translation id="7093416310351037609">Per motius de seguretat de les dades, la teva organització requereix que totes les baixades aptes es desin al compte de <ph name="WEB_DRIVE" /> de la teva organització.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Intercanviar dades amb els dispositius <ph name="HOSTNAMES" /></translation>

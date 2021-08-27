@@ -900,6 +900,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6545017243486555795">Izbriši sve podatke</translation>
 <translation id="6546511553472444032">Datoteka bi mogla biti štetna</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zatvorit će se kartica <ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_ONE" /> kartica}one{Zatvorit će se kartica <ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica}few{Zatvorit će se kartica <ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartice}other{Zatvorit će se kartica <ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
+<translation id="6560066289487134861">Odaberite predložak za isticanje. Da biste se vratili na glavni dijalog, upotrijebite pokret gore pa dolje, a zatim dodirnite Dalje.</translation>
 <translation id="6560414384669816528">Pretražujte na usluzi Sogou</translation>
 <translation id="656065428026159829">Prikaži više</translation>
 <translation id="6565959834589222080">Wi-Fi se koristi kad je dostupan</translation>

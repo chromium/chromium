@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Kameraets opløsning</translation>
 <translation id="3260401663013584785">Der blev ikke registreret et dokument</translation>
 <translation id="3448774564454087943">Videoen blev ikke gemt, fordi den er for kort</translation>
+<translation id="346539236881580388">Tag igen</translation>
 <translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Skift til scanningstilstand</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -110,6 +112,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8120146556401698679">Panorer drej zoom</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
+<translation id="8167081290930651932">Gem som billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8425673304802773841">Drej nedad</translation>

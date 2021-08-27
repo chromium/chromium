@@ -1545,6 +1545,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2606454609872547359">Não, continuar com o ChromeVox</translation>
 <translation id="2606568927909309675">Cria automaticamente legendas para áudio e vídeo em inglês. O áudio e as legendas nunca saem do seu dispositivo.</translation>
 <translation id="2607101320794533334">Informações de chave pública do requerente</translation>
+<translation id="2607602101932365444">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto. Personalize a tradução ao definir os seus idiomas preferidos em <ph name="LINK_BEGIN" />Idiomas de conteúdo Web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Criar Atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível ligar</translation>
 <translation id="2610157865375787051">Suspensão</translation>
@@ -5664,6 +5665,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7088434364990739311">Falha ao iniciar a verificação de atualizações (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – abra e comprima ficheiros ZIP na aplicação Ficheiros.</translation>
 <translation id="7088674813905715446">Este dispositivo foi colocado num estado descontinuado pelo gestor. Para ativá-lo para inscrição, solicite ao gestor que coloque o dispositivo num estado pendente.</translation>
+<translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093416310351037609">Para segurança e proteção dos dados, a sua entidade exige que todas as transferências elegíveis sejam guardadas na conta do <ph name="WEB_DRIVE" /> da sua entidade.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Trocar dados com os seguintes dispositivos: <ph name="HOSTNAMES" /></translation>

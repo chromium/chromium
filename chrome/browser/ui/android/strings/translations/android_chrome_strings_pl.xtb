@@ -900,6 +900,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6545017243486555795">Wyczyść wszystkie dane</translation>
 <translation id="6546511553472444032">Plik może być szkodliwy</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_ONE" /> inna}few{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> inne}many{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innych}other{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innej}}</translation>
+<translation id="6560066289487134861">Wybierz szablon dla zaznaczenia. Aby wrócić do okna głównego, użyj gestów w górę i w dół, a potem kliknij Dalej.</translation>
 <translation id="6560414384669816528">Szukaj w Sogou</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
 <translation id="6565959834589222080">Sieć Wi-Fi jest używana, gdy jest dostępna</translation>

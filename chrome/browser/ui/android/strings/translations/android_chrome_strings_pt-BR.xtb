@@ -901,6 +901,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O arquivo pode ser nocivo</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> outra serão fechadas}one{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outra serão fechadas}other{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outras serão fechadas}}</translation>
+<translation id="6560066289487134861">Selecione um modelo para seu destaque. Para voltar à caixa de diálogo principal, faça o gesto para cima e depois para baixo e toque em "Próxima".</translation>
 <translation id="6560414384669816528">Pesquisar usando o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6565959834589222080">O Wi-Fi será usado quando disponível</translation>

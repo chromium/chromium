@@ -900,6 +900,7 @@
 <translation id="6545017243486555795">ሁሉንም ውሂብ አጽዳ</translation>
 <translation id="6546511553472444032">ፋይል ጎጂ ሊሆን ይችላል</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_ONE" /> ተጨማሪ ትር ይዘጋል}one{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}other{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}}</translation>
+<translation id="6560066289487134861">ለድምቀትዎ አንድ የቅንብር ደንብ ይምረጡ። ወደ ዋናው መገናኛ ለመመለስ ወደ ላይ ከዚያ ወደ ታች የእጅ ምልክት ይጠቀሙ፣ ከዚያ ቀጣይ ላይ መታ ያድርጉ።</translation>
 <translation id="6560414384669816528">ከSogou ጋር ይፈልጉ</translation>
 <translation id="656065428026159829">ተጨማሪ ይመልከቱ</translation>
 <translation id="6565959834589222080">Wi-Fi የሚገኝ ሲሆን ስራ ላይ ይውላል</translation>

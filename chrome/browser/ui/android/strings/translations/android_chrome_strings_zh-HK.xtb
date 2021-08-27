@@ -900,6 +900,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉 <ph name="TAB_TITLE" /> 和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="TAB_TITLE" /> 和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="6560066289487134861">選取突顯內容的範本。如要返回主要對話框，請使用先往上再往下的手勢，然後輕按 [下一步]。</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>

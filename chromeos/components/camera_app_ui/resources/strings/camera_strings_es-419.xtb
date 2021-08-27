@@ -44,8 +44,10 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3259149966178251584">Resolución de la cámara</translation>
 <translation id="3260401663013584785">No se pudo detectar ningún documento</translation>
 <translation id="3448774564454087943">No se guardó el video porque es demasiado breve.</translation>
+<translation id="346539236881580388">Repetir</translation>
 <translation id="3517926952904427380">No es posible cambiar al modo vertical para tomar fotos.</translation>
 <translation id="3569311554794739032">¿Confirmas que quieres quitar <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Cambiar al modo de escaneo</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Escanear el código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -109,6 +111,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8120146556401698679">Desplazamiento inclinación ampliación</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar al modo para tomar fotos</translation>
+<translation id="8167081290930651932">Guardar como foto</translation>
 <translation id="8239780215768881278">Tomar una instantánea del video</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>

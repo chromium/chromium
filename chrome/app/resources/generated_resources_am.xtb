@@ -1554,6 +1554,7 @@
 <translation id="2606454609872547359">አይ፣ ያለChromeVox ቀጥል</translation>
 <translation id="2606568927909309675">ለእንግሊዝኛ ኦዲዮ እና ቪዲዮ የመግለጫ ጽሑፎችን በራስ-ሰር ይፈጥራል። ኦዲዮ እና መግለጫ ጽሑፎች መሣሪያዎን በጭራሽ አይተዉም።</translation>
 <translation id="2607101320794533334">የርዕሰ ጉዳዩ ህዝባዊ ቁልፍ መረጃ</translation>
+<translation id="2607602101932365444">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ። <ph name="LINK_BEGIN" />በድር ይዘት ቋንቋዎች<ph name="LINK_END" /> ውስጥ የመረጧቸውን ቋንቋዎች በማቀናበር ትርጉምን ያብጁ።</translation>
 <translation id="2609896558069604090">አቋራጮችን ይፍጠሩ...</translation>
 <translation id="2609980095400624569">ግንኙነት መፍጠር አልተቻለም</translation>
 <translation id="2610157865375787051">አንቀላፋ</translation>
@@ -5669,6 +5670,7 @@
 <translation id="7088434364990739311">የዝማኔ ፍተሻ መጀመር አልተሳካም (የስህተት ኮድ <ph name="ERROR" />)።</translation>
 <translation id="7088561041432335295">የዚህ ማህደር ሰሪ - በፋይሎች መተግበሪያው ውስጥ የዚፕ ፋይሎችን ይክፈቱ እና ይጠቅልሉ።</translation>
 <translation id="7088674813905715446">ይህ መሳሪያ በአስተዳዳሪው ወዳልተከፋፈለ ሁኔታ ተቀምጧል። ለምዝገባ ለማንቃት፣ እባክዎ አስተዳዳሪዎ እየተካሄደ ወዳለ ሁኔታ እንዲለውጠው ያድርጉ።</translation>
+<translation id="7093220653036489319">ፈጣን መልሶች</translation>
 <translation id="7093416310351037609">ለውሂብ ጥንቃቄ እና ደህንነት ሲባል ድርጅትዎ ሁሉም ብቁ የሆኑ ውርዶች በድርጅትዎ <ph name="WEB_DRIVE" /> መለያ ላይ እንዲቀመጡ ይፈልጋል።</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">ስማቸው እንደሚከተለው ከሆኑ መሣሪያዎች ጋር ውሂብ ተለዋወጥ፦ <ph name="HOSTNAMES" /></translation>

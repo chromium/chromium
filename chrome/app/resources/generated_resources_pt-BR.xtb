@@ -1561,6 +1561,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2606454609872547359">Não, continuar sem o ChromeVox</translation>
 <translation id="2606568927909309675">Cria legendas automaticamente para áudios e vídeos em inglês. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="2607101320794533334">Informações da chave pública do requerente</translation>
+<translation id="2607602101932365444">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado. Defina seus idiomas preferidos em <ph name="LINK_BEGIN" />Idiomas de conteúdo da Web<ph name="LINK_END" /> para personalizar as traduções.</translation>
 <translation id="2609896558069604090">Criar atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível estabelecer a conexão</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -5681,6 +5682,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7088434364990739311">A atualização da verificação falhou ao iniciar (código do erro <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver: abra e compacte arquivos ZIP no app Arquivos.</translation>
 <translation id="7088674813905715446">O administrador pôs este dispositivo no estado de provisionamento cancelado. Para ativar a inscrição do dispositivo, solicite que o administrador o coloque no estado "Pendente".</translation>
+<translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093416310351037609">Para proteger os dados, sua organização exige que todos os downloads qualificados sejam salvos na conta dela no <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Trocar dados com os dispositivos chamados: <ph name="HOSTNAMES" /></translation>

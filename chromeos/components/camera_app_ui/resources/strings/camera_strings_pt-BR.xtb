@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Resolução da câmera</translation>
 <translation id="3260401663013584785">Não foi possível detectar um documento</translation>
 <translation id="3448774564454087943">O vídeo não foi salvo porque é curto demais</translation>
+<translation id="346539236881580388">Tirar outra</translation>
 <translation id="3517926952904427380">Não foi possível capturar o retrato</translation>
 <translation id="3569311554794739032">Tem certeza de que quer remover <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Mudar para o modo de digitalização</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Ler código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -109,6 +111,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8120146556401698679">Panorâmica, inclinação, zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Alternar para tirar foto</translation>
+<translation id="8167081290930651932">Salvar como foto</translation>
 <translation id="8239780215768881278">Fazer um instantâneo de vídeo</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8425673304802773841">Inclinar para baixo</translation>

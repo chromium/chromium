@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Разделителна способност на камерата</translation>
 <translation id="3260401663013584785">Не бе открит документ</translation>
 <translation id="3448774564454087943">Видеоклипът не е запазен, тъй като е прекалено кратък</translation>
+<translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
+<translation id="3573890771273113519">Превключване към режима на сканиране</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
@@ -109,6 +111,7 @@
 <translation id="8120146556401698679">Панорамно придвижване, накланяне и промяна на мащаба</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
+<translation id="8167081290930651932">Запазване като снимка</translation>
 <translation id="8239780215768881278">Моментна снимка от видеоклипа</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8425673304802773841">Накланяне надолу</translation>

@@ -900,6 +900,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_ONE" /> раздел ще бъдат затворени}other{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_MANY" /> раздела ще бъдат затворени}}</translation>
+<translation id="6560066289487134861">Изберете шаблон за открояването. За да се върнете към основния диалогов прозорец, използвайте жеста за прекарване на пръст нагоре и след това надолу и докоснете „Напред“.</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>

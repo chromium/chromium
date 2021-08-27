@@ -900,6 +900,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6545017243486555795">Slett alle data</translation>
 <translation id="6546511553472444032">Filen kan være skadelig</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
+<translation id="6560066289487134861">Velg en mal for markeringen. For å gå tilbake til hoveddialogboksen, gjør en opp-og-ned-bevegelse og trykk på Neste.</translation>
 <translation id="6560414384669816528">Søk med Sogou</translation>
 <translation id="656065428026159829">Se mer</translation>
 <translation id="6565959834589222080">Wi-Fi brukes når det er tilgjengelig</translation>

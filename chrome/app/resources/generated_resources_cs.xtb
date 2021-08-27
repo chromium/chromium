@@ -1547,6 +1547,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2606454609872547359">Ne, pokračovat bez čtečky ChromeVox</translation>
 <translation id="2606568927909309675">Automatické vytváření titulků pro zvuk a videa v angličtině. Zvuk ani titulky nikdy neopouštějí zařízení.</translation>
 <translation id="2607101320794533334">Informace o veřejném klíči subjektu</translation>
+<translation id="2607602101932365444">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek. Překlad si můžete přizpůsobit nastavením preferovaného jazyka v sekci <ph name="LINK_BEGIN" />Jazyky webového obsahu<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Vytvořit zástupce…</translation>
 <translation id="2609980095400624569">Nepodařilo se navázat spojení</translation>
 <translation id="2610157865375787051">Režim spánku</translation>
@@ -5662,6 +5663,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7088434364990739311">Kontrolu aktualizace se nepodařilo spustit (kód chyby <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – otevírejte a vytvářejte soubory ZIP v aplikaci Soubory.</translation>
 <translation id="7088674813905715446">Zařízení bylo vyřazeno administrátorem. Chcete-li zařízení zaregistrovat, požádejte administrátora, aby jeho registraci umožnil.</translation>
+<translation id="7093220653036489319">Rychlé odpovědi</translation>
 <translation id="7093416310351037609">Vaše organizace z důvodu bezpečnosti dat a zabezpečení vyžaduje, aby všechna aktivní stahování byla ukládána do jejího účtu <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Výměna dat s následujícími zařízeními: <ph name="HOSTNAMES" /></translation>

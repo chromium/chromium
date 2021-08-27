@@ -814,7 +814,7 @@
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
 <translation id="1830550083491357902">Non connecté</translation>
 <translation id="1832511806131704864">Changement de téléphone mis à jour</translation>
-<translation id="1832848789136765277">Pour toujours accès à vos données synchronisées, confirmez votre identité</translation>
+<translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1834503245783133039">Échec du téléchargement : <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mettre à niveau Linux</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
@@ -1546,6 +1546,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
 <translation id="2606568927909309675">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais. Le flux audio et les sous-titres ne sont jamais exportés hors de votre appareil.</translation>
 <translation id="2607101320794533334">Infos sur la clé publique de l'objet</translation>
+<translation id="2607602101932365444">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte. Personnalisez la traduction en définissant vos langues préférées dans <ph name="LINK_BEGIN" />Langues du contenu Web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Créer des raccourcis…</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
@@ -5664,6 +5665,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7088434364990739311">Échec du lancement de la vérification des mises à jour (code d'erreur <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Ouvrir et regrouper des fichiers au format ZIP dans l'application Fichiers.</translation>
 <translation id="7088674813905715446">L'administrateur a associé l'état "Non géré" à cet appareil. Pour activer son inscription, veuillez demander à l'administrateur d'activer l'état "En attente" pour cet appareil.</translation>
+<translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093416310351037609">Pour la protection et la sécurité des données, votre organisation exige que tous les téléchargements éligibles soient enregistrés sur le compte <ph name="WEB_DRIVE" /> de votre organisation.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Échanger des données avec les appareils suivants : "<ph name="HOSTNAMES" />"</translation>

@@ -901,6 +901,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6545017243486555795">Rensa all data</translation>
 <translation id="6546511553472444032">Filen kan vara skadlig</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
+<translation id="6560066289487134861">Välj en mall för markeringen. Du återgår till huvudrutan genom att göra en uppåtrörelse följd av en nedåtrörelse och sedan trycka på Nästa.</translation>
 <translation id="6560414384669816528">Sök med Sogou</translation>
 <translation id="656065428026159829">Visa fler</translation>
 <translation id="6565959834589222080">wifi används när det är tillgängligt</translation>

@@ -900,6 +900,7 @@
 <translation id="6545017243486555795">پاک کردن همه داده‌ها</translation>
 <translation id="6546511553472444032">ممکن است فایل مضر باشد</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>
+<translation id="6560066289487134861">الگویی برای برجسته‌سازی‌تان انتخاب کنید. برای برگشتن به کادر گفتگوی اصلی، از اشاره بالا و سپس پایین استفاده کنید، سپس روی «بعدی» ضربه بزنید.</translation>
 <translation id="6560414384669816528">‏جستجو با Sogou</translation>
 <translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>

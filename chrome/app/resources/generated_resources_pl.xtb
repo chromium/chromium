@@ -1543,6 +1543,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2606454609872547359">Nie, kontynuuj bez ChromeVoksa</translation>
 <translation id="2606568927909309675">Automatycznie tworzy napisy dla dźwięku i wideo w języku angielskim. Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="2607101320794533334">Informacje o kluczu publicznym podmiotu</translation>
+<translation id="2607602101932365444">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek. Dostosuj tłumaczenie, ustawiając swoje preferowane języki w sekcji <ph name="LINK_BEGIN" />Języki treści internetowych<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Utwórz skróty...</translation>
 <translation id="2609980095400624569">Nie udało się nawiązać połączenia</translation>
 <translation id="2610157865375787051">Uśpienie</translation>
@@ -5659,6 +5660,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7088434364990739311">Nie udało się uruchomić sprawdzania aktualizacji (kod błędu <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – otwieraj i pakuj pliki ZIP w aplikacji Pliki.</translation>
 <translation id="7088674813905715446">Administrator ustawił to urządzenie jako nieobsługiwane. Aby umożliwić jego rejestrację, poproś administratora, by ustawił je jako oczekujące.</translation>
+<translation id="7093220653036489319">Szybkie podpowiedzi</translation>
 <translation id="7093416310351037609">Aby zapewnić bezpieczeństwo danych, Twoja organizacja wymaga, aby wszystkie kwalifikujące się pobrane pliki były zapisywane na jej koncie w usłudze <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Wymiana danych z urządzeniami o nazwach: <ph name="HOSTNAMES" /></translation>

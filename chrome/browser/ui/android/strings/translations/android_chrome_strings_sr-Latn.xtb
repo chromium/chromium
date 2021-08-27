@@ -900,6 +900,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6545017243486555795">Obriši sve podatke</translation>
 <translation id="6546511553472444032">Fajl može da bude štetan</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_ONE" /> kartica će biti zatvorene}one{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}few{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartice će biti zatvorene}other{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}}</translation>
+<translation id="6560066289487134861">Izaberite šablon za istaknutu stavku. Da biste se vratili na glavni dijalog, koristite pokret nagore, pa nadole, a onda dodirnite Dalje.</translation>
 <translation id="6560414384669816528">Pretraga pomoću Sogou-a</translation>
 <translation id="656065428026159829">Prikaži još</translation>
 <translation id="6565959834589222080">WiFi se koristi kada je dostupan</translation>

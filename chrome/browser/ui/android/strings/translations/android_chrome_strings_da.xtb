@@ -900,6 +900,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6545017243486555795">Ryd alle data</translation>
 <translation id="6546511553472444032">Filen kan være skadelig</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
+<translation id="6560066289487134861">Vælg en skabelon til din fremhævning. Hvis du vil gå tilbage til den primære dialogboks, skal du lave en bevægelse, hvor du stryger opad og derefter nedad, og bagefter skal du trykke på Næste.</translation>
 <translation id="6560414384669816528">Søg via Sogou</translation>
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6565959834589222080">Wi-Fi anvendes, når det er tilgængeligt</translation>

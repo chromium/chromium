@@ -100,7 +100,7 @@
 <translation id="183183971458492120">தகவலை ஏற்றுகிறது...</translation>
 <translation id="1838709767668011582">Google தளம்</translation>
 <translation id="1844692022597038441">இந்த ஃபைல் ஆஃப்லைனில் கிடைக்காது.</translation>
-<translation id="1853795129690976061">இந்தக் கோப்புறையானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
+<translation id="1853795129690976061">இந்த ஃபோல்டரானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
 <translation id="1864756863218646478">கோப்பைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="1884013283844450420">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இணை</translation>
 <translation id="1920670151694390848">மலையாள ஒலிபெயர்ப்பு</translation>
@@ -171,7 +171,7 @@
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2534460670861217804">பாதுகாப்பான HTTP ப்ராக்ஸி</translation>
-<translation id="2541377937973966830">இந்தக் கோப்புறையில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
+<translation id="2541377937973966830">இந்த ஃபோல்டரில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
 <translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> இல் சேர்</translation>
@@ -382,7 +382,7 @@
 <translation id="4508265954913339219">செயலாக்கம் தோல்வியுற்றது</translation>
 <translation id="4509667233588080747">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் சர்வதேசக் கீபோர்டு</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
-<translation id="4527800702232535228">Parallels Desktopபுடன் இந்தக் கோப்புறை பகிரப்பட்டுள்ளது</translation>
+<translation id="4527800702232535228">Parallels Desktopபுடன் இந்த ஃபோல்டர் பகிரப்பட்டுள்ளது</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> நெட்வொர்க், சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> நீக்கப்பட்டது</translation>
@@ -620,7 +620,7 @@
 <translation id="6558280019477628686">பிழை ஏற்பட்டது. சில உருப்படிகள் நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ஐ நீக்குகிறது...</translation>
 <translation id="6581162200855843583">Google இயக்கக இணைப்பு</translation>
-<translation id="6594855146910089723">Linux, Parallels Desktop ஆகியவற்றுடன் இந்தக் கோப்புறை பகிரப்பட்டது</translation>
+<translation id="6594855146910089723">Linux, Parallels Desktop ஆகியவற்றுடன் இந்த ஃபோல்டர் பகிரப்பட்டது</translation>
 <translation id="6607272825297743757">கோப்புத் தகவல்</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> கோப்புறைகள் Parallels Desktop உடன் பகிரப்பட்டன</translation>
 <translation id="6629518321609546825">குறைந்தது 4 எண்களை உள்ளிடவும்</translation>
@@ -640,7 +640,7 @@
 <translation id="6806796368146926706">ஜாப்பனீஸ் கீபோர்டு (எண்ணெழுத்துகள்)</translation>
 <translation id="6808193438228982088">நரி</translation>
 <translation id="6820687829547641339">Gzip compressed tar archive</translation>
-<translation id="6823166707458800069">இந்தக் கோப்புறையில் சேமிக்கப்படும் அனைத்துக் கோப்புகளும் ஆன்லைனில் தானாகவே காப்புப் பிரதி எடுக்கப்படும்.</translation>
+<translation id="6823166707458800069">இந்த ஃபோல்டரில் சேமிக்கப்படும் அனைத்துக் கோப்புகளும் ஆன்லைனில் தானாகவே காப்புப் பிரதி எடுக்கப்படும்.</translation>
 <translation id="6825883775269213504">ரஷ்யன்</translation>
 <translation id="6827236167376090743">இந்த வீடியோவானது தொடர்ந்து நீண்ட நேரம் இயங்கும்.</translation>
 <translation id="6847101934483209767">தேர்விலிருந்து <ph name="ENTRY_NAME" /> அகற்றப்பட்டது.</translation>

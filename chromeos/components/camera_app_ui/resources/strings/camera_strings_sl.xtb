@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Ločljivost fotoaparata</translation>
 <translation id="3260401663013584785">Dokumenta ni bilo mogoče zaznati</translation>
 <translation id="3448774564454087943">Videoposnetek se ni shranil, ker je prekratek</translation>
+<translation id="346539236881580388">Znova posnemi</translation>
 <translation id="3517926952904427380">Portretne fotografije ni bilo mogoče posneti</translation>
 <translation id="3569311554794739032">Ali res želite odstraniti datoteko <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Preklop na način iskanja</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Optično branje črtne kode</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
@@ -109,6 +111,7 @@
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>
+<translation id="8167081290930651932">Shrani kot fotografijo</translation>
 <translation id="8239780215768881278">Posnetek videa</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8425673304802773841">Nagni navzdol</translation>

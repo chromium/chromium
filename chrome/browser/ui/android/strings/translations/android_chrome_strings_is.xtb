@@ -900,6 +900,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6545017243486555795">Hreinsa öll gögn</translation>
 <translation id="6546511553472444032">Skráin er hugsanlega skaðleg</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> flipa til viðbótar verður lokað}one{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> flipa til viðbótar verður lokað}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> flipum til viðbótar verður lokað}}</translation>
+<translation id="6560066289487134861">Veldu sniðmát fyrir áherslumerkingu. Til að fara aftur í aðalgluggann skaltu nota upp- og svo niðurbendingu og ýta því næst á „Áfram“.</translation>
 <translation id="6560414384669816528">Leita með Sogou</translation>
 <translation id="656065428026159829">Sjá meira</translation>
 <translation id="6565959834589222080">Wi-Fi er notað þegar það er í boði</translation>

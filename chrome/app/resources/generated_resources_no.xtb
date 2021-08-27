@@ -1554,6 +1554,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
 <translation id="2606568927909309675">Lager automatisk teksting for engelsk lyd og video. Lyden og tekstingen forlater aldri enheten.</translation>
 <translation id="2607101320794533334">Informasjon om enhetens offentlige nøkkel</translation>
+<translation id="2607602101932365444">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst. Tilpass oversettingen ved å angi språkene du foretrekker, i <ph name="LINK_BEGIN" />Språk for nettinnhold<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Opprett snarveier</translation>
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
 <translation id="2610157865375787051">Hvilemodus</translation>
@@ -5669,6 +5670,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7088434364990739311">Kunne ikke starte søk etter oppdateringer (feilkode <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Åpne og pakk ZIP-filer i Filer-appen.</translation>
 <translation id="7088674813905715446">Administratoren har gitt denne enheten status som «ikke klargjort». For å aktivere den for registrering, må du be administratoren gi enheten status som «ventende».</translation>
+<translation id="7093220653036489319">Hurtigsvar</translation>
 <translation id="7093416310351037609">Av hensyn til datatrygghet og -sikkerhet krever organisasjonen din at alle kvalifiserte nedlastinger lagres i organisasjonens <ph name="WEB_DRIVE" />-konto.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Utveksle data med enhetene <ph name="HOSTNAMES" /></translation>

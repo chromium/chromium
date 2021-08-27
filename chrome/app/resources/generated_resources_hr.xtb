@@ -1548,6 +1548,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2606454609872547359">Ne, nastavi bez ChromeVoxa</translation>
 <translation id="2606568927909309675">Automatski izrađuje titlove za zvuk i videozapise na engleskom jeziku. Audiozapisi i titlovi nikad se ne šalju s uređaja.</translation>
 <translation id="2607101320794533334">Informacije predmeta javnog ključa</translation>
+<translation id="2607602101932365444">Pronađite definicije, prijevode ili pretvorbe jedinica kada tekst kliknete desnom tipkom ili ga dodirnete i držite. Prilagodite prijevod tako da postavite preferirane jezike u odjeljku <ph name="LINK_BEGIN" />Jezici web-sadržaja<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Stvaranje prečaca...</translation>
 <translation id="2609980095400624569">Nije bilo moguće uspostaviti vezu</translation>
 <translation id="2610157865375787051">Mirovanje</translation>
@@ -5665,6 +5666,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7088434364990739311">Nije uspjelo pokretanje ažuriranja (kôd pogreške <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – otvaranje i pakiranje ZIP datoteka u aplikaciji Datoteke.</translation>
 <translation id="7088674813905715446">Administrator je postavio uređaj u stanje uklonjenog pristupa. Da biste omogućili njegovu prijavu, zamolite administratora da postavi uređaj u stanje na čekanju.</translation>
+<translation id="7093220653036489319">Brzi odgovori</translation>
 <translation id="7093416310351037609">Za potrebe sigurnosti i zaštite vaša organizacija zahtijeva da se sva preuzimanja koja ispunjavaju uvjete spreme na račun <ph name="WEB_DRIVE" /> vaše organizacije.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">razmjenjivati podatke s uređajima naziva: <ph name="HOSTNAMES" /></translation>

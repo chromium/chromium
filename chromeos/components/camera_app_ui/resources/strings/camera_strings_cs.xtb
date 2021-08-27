@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Rozlišení fotoaparátu</translation>
 <translation id="3260401663013584785">Dokument nelze rozpoznat</translation>
 <translation id="3448774564454087943">Video se neuložilo, protože je moc krátké</translation>
+<translation id="346539236881580388">Pořídit další</translation>
 <translation id="3517926952904427380">Portrétovou fotku nelze pořídit</translation>
 <translation id="3569311554794739032">Opravdu soubor <ph name="FILE" /> chcete odstranit?</translation>
+<translation id="3573890771273113519">Přepnout na režim skenování</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovat čárový kód</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
@@ -109,6 +111,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8145038249676204903">Přepnout na focení</translation>
+<translation id="8167081290930651932">Uložit jako fotku</translation>
 <translation id="8239780215768881278">Pořídit snímek videa</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8425673304802773841">Naklonit dolů</translation>

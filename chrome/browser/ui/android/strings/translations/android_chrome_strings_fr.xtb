@@ -900,6 +900,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6545017243486555795">Supprimer toutes les données</translation>
 <translation id="6546511553472444032">Fichier potentiellement corrompu</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
+<translation id="6560066289487134861">Sélectionnez un modèle pour le texte en surbrillance. Pour retourner à la boîte de dialogue principale, faites un geste vers le haut, puis vers le bas, puis appuyez sur "Suivant".</translation>
 <translation id="6560414384669816528">Rechercher avec Sogou</translation>
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6565959834589222080">Le réseau Wi-Fi est utilisé s'il est disponible</translation>

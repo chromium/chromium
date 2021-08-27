@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Роздільна здатність камери</translation>
 <translation id="3260401663013584785">Не вдалося виявити документ</translation>
 <translation id="3448774564454087943">Відео не збережено, оскільки воно закоротке</translation>
+<translation id="346539236881580388">Зробити інше фото</translation>
 <translation id="3517926952904427380">Не вдалося зробити портретне фото</translation>
 <translation id="3569311554794739032">Видалити файл "<ph name="FILE" />"?</translation>
+<translation id="3573890771273113519">Перейти в режим сканування</translation>
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3838931309141338733">Сканувати штрих-код</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
@@ -109,6 +111,7 @@
 <translation id="8120146556401698679">Панорамування нахил масштаб</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8145038249676204903">Перейти в режим фотозйомки</translation>
+<translation id="8167081290930651932">Зберегти як фото</translation>
 <translation id="8239780215768881278">Зробити знімок відео</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8425673304802773841">Нахилити донизу</translation>

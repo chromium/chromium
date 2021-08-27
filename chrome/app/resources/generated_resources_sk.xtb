@@ -1547,6 +1547,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2606454609872547359">Nie, pokračovať bez čítačky ChromeVox</translation>
 <translation id="2606568927909309675">Automatické vytváranie titulkov pre zvuk a video v angličtine. Zvuk a titulky nikdy neopustia zariadenie.</translation>
 <translation id="2607101320794533334">Informácie verejného kľúča subjektu</translation>
+<translation id="2607602101932365444">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu. Prispôsobte si preklad nastavením predvolených jazykov v sekcii <ph name="LINK_BEGIN" />Jazyky internetového obsahu<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Vytvoriť odkazy...</translation>
 <translation id="2609980095400624569">Nepodarilo sa pripojiť</translation>
 <translation id="2610157865375787051">Spánok</translation>
@@ -5664,6 +5665,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7088434364990739311">Kontrolu aktualizácií sa nepodarilo spustiť (kód chyby: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Otvárajte a komprimujte súbory ZIP v aplikácii Súbory.</translation>
 <translation id="7088674813905715446">Toto zariadenie bolo správcom uvedené do stavu odstránenia. Ak chcete povoliť jeho registráciu, požiadajte svojho správcu, aby zariadenie uviedol do stavu čakania.</translation>
+<translation id="7093220653036489319">Rýchle odpovede</translation>
 <translation id="7093416310351037609">Vaša organizácia vyžaduje, aby boli všetky sťahované súbory spĺňajúce podmienky ukladané do jej účtu <ph name="WEB_DRIVE" />, čím sa zaistí ochrana a zabezpečenie údajov.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Vymieňať údaje so zariadeniami s nasledujúcimi názvami: <ph name="HOSTNAMES" /></translation>

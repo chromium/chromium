@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Разрешение камеры</translation>
 <translation id="3260401663013584785">Документ не обнаружен</translation>
 <translation id="3448774564454087943">Видео не сохранено, так как оно слишком короткое.</translation>
+<translation id="346539236881580388">Переснять</translation>
 <translation id="3517926952904427380">Не удалось сделать вертикальное фото.</translation>
 <translation id="3569311554794739032">Удалить файл <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Переключиться в режим сканирования</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканировать штрихкод</translation>
 <translation id="3892148308691398805">Копировать текст</translation>
@@ -109,6 +111,7 @@
 <translation id="8120146556401698679">Панорамирование, изменение ракурса, масштабирование</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8145038249676204903">Переключиться на фотосъемку</translation>
+<translation id="8167081290930651932">Сохранить как фото</translation>
 <translation id="8239780215768881278">Сделать снимок</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8425673304802773841">Наклонить вниз</translation>

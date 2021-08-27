@@ -1563,6 +1563,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2606454609872547359">Ne, nadaljuj brez ChromeVoxa</translation>
 <translation id="2606568927909309675">Samodejno ustvari podnapise za zvok in video v angleščini. Zvok in podnapisi nikoli ne zapustijo naprave.</translation>
 <translation id="2607101320794533334">Informacije o javnem ključu subjekta</translation>
+<translation id="2607602101932365444">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite. Prevod lahko prilagodite tako, da v razdelku <ph name="LINK_BEGIN" />Jeziki za spletno vsebino<ph name="LINK_END" /> nastavite prednostne jezike.</translation>
 <translation id="2609896558069604090">Ustvarjanje bližnjic ...</translation>
 <translation id="2609980095400624569">Ni bilo mogoče vzpostaviti povezave</translation>
 <translation id="2610157865375787051">Stanje pripravljenosti</translation>
@@ -5683,6 +5684,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7088434364990739311">Zagon preverjanja posodobitve ni uspel (koda napake <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – odpiranje in pakiranje datotek ZIP v aplikaciji Datoteke.</translation>
 <translation id="7088674813905715446">Skrbnik je to napravo umaknil iz uporabe. Če jo želite omogočiti za včlanitev, naj jo skrbnik preklopi v stanje čakanja.</translation>
+<translation id="7093220653036489319">Hitri odgovori</translation>
 <translation id="7093416310351037609">Zaradi varnosti in zaščite podatkov organizacija zahteva, da se vsi primerni prenosi shranijo v račun organizacije v storitvi <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Izmenjava podatkov z napravami, imenovanimi: <ph name="HOSTNAMES" /></translation>

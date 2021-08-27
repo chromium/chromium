@@ -44,8 +44,10 @@
 <translation id="3259149966178251584">Résolution de la caméra</translation>
 <translation id="3260401663013584785">Impossible de détecter un document</translation>
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo, car elle est trop courte</translation>
+<translation id="346539236881580388">Reprendre</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" /> ?</translation>
+<translation id="3573890771273113519">Passer au mode de numérisation</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -109,6 +111,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8145038249676204903">Passer à la prise de photo</translation>
+<translation id="8167081290930651932">Enregistrer en tant que photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8425673304802773841">Incliner</translation>

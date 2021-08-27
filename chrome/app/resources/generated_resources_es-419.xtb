@@ -1542,6 +1542,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2606454609872547359">No, continuar sin ChromeVox</translation>
 <translation id="2606568927909309675">Crea subtítulos de forma automática para audio y video en inglés. El audio y los subtítulos permanecen en el dispositivo.</translation>
 <translation id="2607101320794533334">Información sobre la clave pública del sujeto</translation>
+<translation id="2607602101932365444">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto. Para personalizar la traducción, configura tus idiomas preferidos en <ph name="LINK_BEGIN" />Idiomas del contenido web<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Crear accesos directos...</translation>
 <translation id="2609980095400624569">No se pudo establecer la conexión</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -5659,6 +5660,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7088434364990739311">Error al iniciar la verificación de actualizaciones (código de error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver: Abre y crea archivos ZIP en la app de Archivos.</translation>
 <translation id="7088674813905715446">El administrador estableció el estado de desaprovisionamiento para este dispositivo. Para poder utilizarlo en el registro, el administrador debe actualizar el estado del dispositivo a pendiente.</translation>
+<translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093416310351037609">Con el fin de preservar la seguridad de los datos, tu organización requiere que todas las descargas aptas se guarden en la cuenta de <ph name="WEB_DRIVE" /> de tu organización.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Intercambiar datos con los siguientes dispositivos: <ph name="HOSTNAMES" /></translation>
