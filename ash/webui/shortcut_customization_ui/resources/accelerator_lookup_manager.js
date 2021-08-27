@@ -15,11 +15,11 @@ export class AcceleratorLookupManager {
   constructor() {
     /**
      * A map with the key set to a concatenated string of the accelerator's
-     * '{souce} - {action_id}', this concatenation uniquely identifies one
-     * accelerator. The value is a Set of AcceleratorInfo's associated to one
+     * '{source} - {action_id}', this concatenation uniquely identifies one
+     * accelerator. The value is an array of AcceleratorInfo's associated to one
      * accelerator. This map serves as a way to quickly look up all
      * AcceleratorInfos for one accelerator.
-     * @type {!Map<string, !Set<!AcceleratorInfo>>}
+     * @type {!Map<string, !Array<!AcceleratorInfo>>}
      * @private
      */
     this.acceleratorLookup_ = new Map();
@@ -28,24 +28,41 @@ export class AcceleratorLookupManager {
      * A multi-layered map container. The top-most layer is a map with the key
      * as the accelerator's category (e.g. ChromeOS, Browser). The value of the
      * top-most map is another map in which the key is the accelerator's
-     * subcategory (e.g. Window Management, Virtual Desk) and the value is a
-     * Set of LayoutInfo. This map serves as a way to find all LayoutInfo's of
+     * subcategory (e.g. Window Management, Virtual Desk) and the value is an
+     * Array of LayoutInfo. This map serves as a way to find all LayoutInfo's of
      * a given subsection of accelerators, where each LayoutInfo corresponds to
      * one AcceleratorRow.
-     * @type {!Map<number, !Map<number, !Set<!LayoutInfo>>>}
+     * @type {!Map<number, !Map<number, !Array<!LayoutInfo>>>}
      * @private
      */
     this.acceleratorLayoutLookup_ = new Map();
   }
 
-  /** @return {!Map<string, !Set<!AcceleratorInfo>>} */
-  get acceleratorLookup() {
-    return this.acceleratorLookup_;
+  /**
+   * @param {number} source
+   * @param {number} action
+   * @return {!Array<!AcceleratorInfo>}
+   */
+  getAccelerators(source, action) {
+    const uuid = `${source}-${action}`;
+    return this.acceleratorLookup_.get(uuid);
   }
 
-  /** @type {!Map<number, !Map<number, !Set<!LayoutInfo>>>} */
-  get acceleratorLayoutLookup() {
-    return this.acceleratorLayoutLookup_;
+  /**
+   * @param {number} category
+   * @param {number} sub_category
+   * @return {!Array<!LayoutInfo>}
+   */
+  getAcceleratorLayout(category, sub_category) {
+    return this.acceleratorLayoutLookup_.get(category).get(sub_category);
+  }
+
+  /**
+   * @param {number} category
+   * @return {!Map<number, !Array<!LayoutInfo>>}
+   */
+  getSubcategories(category) {
+    return this.acceleratorLayoutLookup_.get(category);
   }
 
   /** @param {!AcceleratorConfig} acceleratorConfig */
@@ -54,10 +71,10 @@ export class AcceleratorLookupManager {
       for (const [actionId, accelInfos] of accelInfoMap.entries()) {
         const id = `${source}-${actionId}`;
         if (!this.acceleratorLookup_.has(id)) {
-          this.acceleratorLookup_.set(id, new Set());
+          this.acceleratorLookup_.set(id, []);
         }
         accelInfos.forEach((info) => {
-          this.acceleratorLookup_.get(id).add(info);
+          this.acceleratorLookup_.get(id).push(info);
         });
       }
     }
@@ -72,12 +89,17 @@ export class AcceleratorLookupManager {
 
       let subcatMap = this.acceleratorLayoutLookup_.get(entry.category);
       if (!subcatMap.has(entry.sub_category)) {
-        subcatMap.set(entry.sub_category, new Set());
+        subcatMap.set(entry.sub_category, []);
       }
       this.acceleratorLayoutLookup_.get(entry.category)
           .get(entry.sub_category)
-          .add(entry);
+          .push(entry);
     }
+  }
+
+  reset() {
+    this.acceleratorLookup_.clear();
+    this.acceleratorLayoutLookup_.clear();
   }
 }
 

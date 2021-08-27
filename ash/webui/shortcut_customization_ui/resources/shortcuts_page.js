@@ -63,14 +63,11 @@ export class ShortcutsPageElement extends PolymerElement {
   }
 
   updateAccelerators() {
-    if (!this.lookupManager_.acceleratorLayoutLookup.has(
-            this.initialData.category)) {
+    const subcatMap =
+        this.lookupManager_.getSubcategories(this.initialData.category);
+    if (subcatMap === undefined) {
       return;
     }
-
-    const subcatMap = this.lookupManager_.acceleratorLayoutLookup.get(
-        this.initialData.category);
-    assert(!!subcatMap);
 
     let subcategories = [];
     for (const key of subcatMap.keys()) {

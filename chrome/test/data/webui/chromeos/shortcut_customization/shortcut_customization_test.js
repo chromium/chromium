@@ -23,8 +23,6 @@ export function shortcutCustomizationAppTest() {
 
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
-    manager.setAcceleratorLookup(fakeAcceleratorConfig);
-    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
 
     page = /** @type {!ShortcutCustomizationAppElement} */ (
         document.createElement('shortcut-customization-app'));
@@ -32,6 +30,7 @@ export function shortcutCustomizationAppTest() {
   });
 
   teardown(() => {
+    manager.reset();
     page.remove();
     page = null;
   });
@@ -51,8 +50,7 @@ export function shortcutCustomizationAppTest() {
     await flushTasks();
 
     const subSections = getSubsections_('chromeos-page-id');
-    const expectedLayouts =
-        manager.acceleratorLayoutLookup.get(/**ChromeOS*/ 0);
+    const expectedLayouts = manager.getSubcategories(/**ChromeOS*/ 0);
     // Two subsections for ChromeOS (Window Management + Virtual Desks).
     assertEquals(expectedLayouts.size, subSections.length);
 
@@ -64,7 +62,7 @@ export function shortcutCustomizationAppTest() {
         fakeSubCategories.get(windowManagementValue), subSections[0].title);
     // Asert 2 accelerators are loaded for Window Management.
     assertEquals(
-        expectedLayouts.get(windowManagementValue).size,
+        expectedLayouts.get(windowManagementValue).length,
         subSections[0].acceleratorContainer.length);
 
     // Assert subsection title (Virtual Desks) matches expected value from
@@ -74,7 +72,7 @@ export function shortcutCustomizationAppTest() {
         fakeSubCategories.get(virtualDesksValue), subSections[1].title);
     // Asert 2 accelerators are loaded for Virtual Desks.
     assertEquals(
-        expectedLayouts.get(virtualDesksValue).size,
+        expectedLayouts.get(virtualDesksValue).length,
         subSections[1].acceleratorContainer.length);
   });
 
@@ -93,7 +91,7 @@ export function shortcutCustomizationAppTest() {
     await flushTasks();
 
     const subSections = getSubsections_('browser-page-id');
-    const expectedLayouts = manager.acceleratorLayoutLookup.get(/**Browser*/ 1);
+    const expectedLayouts = manager.getSubcategories(/**Browser*/ 1);
     // One subsection for the Browser (Tabs).
     assertEquals(expectedLayouts.size, subSections.length);
 
@@ -103,7 +101,7 @@ export function shortcutCustomizationAppTest() {
         fakeSubCategories.get(keyIterator.value), subSections[0].title);
     // Assert only 1 accelerator is within Tabs.
     assertEquals(
-        expectedLayouts.get(keyIterator.value).size,
+        expectedLayouts.get(keyIterator.value).length,
         subSections[0].acceleratorContainer.length);
   });
 

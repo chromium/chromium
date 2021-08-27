@@ -72,9 +72,8 @@ export class AcceleratorSubsectionElement extends PolymerElement {
 
     // Fetch the layout infos based off of the subsection's category and
     // subcategory.
-    const layoutInfos =
-        this.lookupManager_.acceleratorLayoutLookup.get(this.category)
-            .get(this.subcategory);
+    const layoutInfos = this.lookupManager_.getAcceleratorLayout(
+        this.category, this.subcategory);
     assert(!!layoutInfos);
 
     // TODO(jimmyxgong): Fetch real string for title once available.
@@ -89,14 +88,14 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     layoutInfos.forEach((value) => {
       const accelId = `${value.source}-${value.action}`;
       const acceleratorInfos =
-          this.lookupManager_.acceleratorLookup.get(accelId);
+          this.lookupManager_.getAccelerators(value.source, value.action);
 
       // TODO(jimmyxgong): Fetch real string for description once available.
       const accel =
           /**@type {!Object<string, number, Array<!AcceleratorInfo>>}*/ ({
             description: fakeActionNames.get(value.action),
             source: value.source,
-            acceleratorInfos: Array.from(acceleratorInfos),
+            acceleratorInfos: acceleratorInfos,
           });
       tempAccelContainer.push(accel);
     });

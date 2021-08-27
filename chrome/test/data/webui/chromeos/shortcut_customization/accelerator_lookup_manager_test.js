@@ -22,6 +22,7 @@ export function acceleratorLookupManagerTest() {
   });
 
   teardown(() => {
+    manager.reset();
     provider = null;
   });
 
@@ -33,12 +34,12 @@ export function acceleratorLookupManagerTest() {
 
       manager.setAcceleratorLookup(result);
 
-      // Only 5 accelerators.
-      let expected_size = 0;
       for (const [source, accelMap] of fakeAcceleratorConfig) {
-        expected_size += accelMap.size;
+        for (const [action, accelInfos] of accelMap) {
+          const actualAccels = manager.getAccelerators(source, action);
+          assertDeepEquals(accelInfos, actualAccels);
+        }
       }
-      assertEquals(expected_size, manager.acceleratorLookup.size);
     });
   });
 
@@ -50,13 +51,10 @@ export function acceleratorLookupManagerTest() {
 
       manager.setAcceleratorLayoutLookup(result);
 
-      // 2 categories, ChromeOS and Browser.
-      assertEquals(2, manager.acceleratorLayoutLookup.size);
       // 2 layout infos for ChromeOS (Window Management, Virtual Desks).
-      assertEquals(
-          2, manager.acceleratorLayoutLookup.get(/*ChromeOS=*/ 0).size);
+      assertEquals(2, manager.getSubcategories(/*ChromeOS=*/ 0).size);
       // 1 layout infos for Browser (Tabs).
-      assertEquals(1, manager.acceleratorLayoutLookup.get(/*Browser=*/ 1).size);
+      assertEquals(1, manager.getSubcategories(/*Browser=*/ 1).size);
     });
   });
 }
