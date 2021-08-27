@@ -84,6 +84,14 @@
     background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
   }
 
+<if expr="is_macosx">
+  @media (prefers-color-scheme: dark) {
+    #folderIcon {
+      background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+    }
+  }
+</if>
+
   .title {
     grid-area: title;
     overflow: hidden;
