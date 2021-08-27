@@ -516,6 +516,11 @@ class WebController {
       ProcessedActionStatusProto status_if_zero,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void SendKeyEvents(WebControllerErrorInfoProto::WebAction web_action,
+                     const std::vector<KeyEvent>& key_events,
+                     int key_press_delay,
+                     const ElementFinder::Result& element,
+                     base::OnceCallback<void(const ClientStatus&)> callback);
   void OnSendKeyboardInputDone(
       SendKeyboardInputWorker* worker_to_release,
       base::OnceCallback<void(const ClientStatus&)> callback,
