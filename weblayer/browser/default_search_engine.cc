@@ -24,6 +24,10 @@ bool IsPermissionControlledByDse(ContentSettingsType type,
   return type == ContentSettingsType::GEOLOCATION && GetDseOrigin() == origin;
 }
 
+bool IsDseOrigin(const url::Origin& origin) {
+  return GetDseOrigin() == origin;
+}
+
 void ResetDsePermissions(content::BrowserContext* browser_context) {
   // Incognito should still have to prompt for permissions.
   if (browser_context->IsOffTheRecord())

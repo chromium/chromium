@@ -715,6 +715,15 @@ static jboolean JNI_WebsitePreferenceBridge_IsPermissionControlledByDSE(
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
 }
 
+static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& jorigin) {
+  return permissions::PermissionsClient::Get()->IsDseOrigin(
+      unwrap(jbrowser_context_handle),
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
+}
+
 static jboolean JNI_WebsitePreferenceBridge_GetAdBlockingActivated(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,

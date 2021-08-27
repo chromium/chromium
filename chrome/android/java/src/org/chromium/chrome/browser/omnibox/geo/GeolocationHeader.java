@@ -447,11 +447,9 @@ public class GeolocationHeader {
      */
     static boolean isLocationDisabledForUrl(Profile profile, Uri uri) {
         boolean enabled =
-                // TODO(raymes): The call to isPermissionControlledByDSE is only needed if this
-                // could be called for an origin that isn't the default search engine. Otherwise
-                // remove this line.
-                WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        profile, ContentSettingsType.GEOLOCATION, uri.toString())
+                // TODO(raymes): The call to isDSEOrigin is only needed if this could be called for
+                // an origin that isn't the default search engine. Otherwise remove this line.
+                WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString())
                 && locationContentSettingForUrl(profile, uri) == ContentSettingValues.ALLOW;
         return !enabled;
     }
