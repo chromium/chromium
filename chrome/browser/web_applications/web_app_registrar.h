@@ -20,6 +20,11 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace apps {
+struct ShareTarget;
+}  // namespace apps
 
 namespace web_app {
 
