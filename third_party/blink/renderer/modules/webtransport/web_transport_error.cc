@@ -25,14 +25,13 @@ WebTransportError* WebTransportError::Create(
 }
 
 v8::Local<v8::Value> WebTransportError::Create(
-    ScriptState* script_state,
+    v8::Isolate* isolate,
     absl::optional<uint8_t> application_protocol_code,
     String message,
     Source source) {
   auto* dom_exception = MakeGarbageCollected<WebTransportError>(
       PassKey(), application_protocol_code, std::move(message), source);
-  return V8ThrowDOMException::AttachStackProperty(
-      script_state->GetIsolate(), script_state->GetContext(), dom_exception);
+  return V8ThrowDOMException::AttachStackProperty(isolate, dom_exception);
 }
 
 WebTransportError::WebTransportError(

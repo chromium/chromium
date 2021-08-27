@@ -40,9 +40,7 @@ class CORE_EXPORT V8ThrowDOMException {
   // CreateOrEmpty().
   //
   // Returns a V8 Value wrapping the DOMException.
-  static v8::Local<v8::Value> AttachStackProperty(v8::Isolate*,
-                                                  v8::Local<v8::Context>,
-                                                  DOMException*);
+  static v8::Local<v8::Value> AttachStackProperty(v8::Isolate*, DOMException*);
 };
 
 extern const V8PrivateProperty::SymbolKey kPrivatePropertyDOMExceptionError;

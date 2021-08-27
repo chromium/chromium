@@ -17,7 +17,6 @@
 
 namespace blink {
 
-class ScriptState;
 class WebTransportErrorInit;
 
 // https://w3c.github.io/webtransport/#web-transport-error-interface
@@ -35,7 +34,7 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // For creating a WebTransportError from C++. Typically this will be
   // immediately passed to ScriptPromiseResolver::Reject.
   static v8::Local<v8::Value> Create(
-      ScriptState*,
+      v8::Isolate*,
       absl::optional<uint8_t> application_protocol_code,
       String message,
       Source);
@@ -56,8 +55,8 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   String source() const;
 
  private:
-  absl::optional<uint8_t> application_protocol_code_;
-  Source source_;
+  const absl::optional<uint8_t> application_protocol_code_;
+  const Source source_;
 };
 
 }  // namespace blink
