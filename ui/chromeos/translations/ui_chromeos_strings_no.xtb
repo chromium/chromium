@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Ingen forhåndsvisning er tilgjengelig</translation>
 <translation id="1812302367230252929">Amharisk, translitterasjon</translation>
 <translation id="1813278315230285598">Tjenester</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Forsiktig:<ph name="END_BOLD" /> Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass. <ph name="BEGIN_LINK" />Les mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviner</translation>
 <translation id="183183971458492120">Laster inn informasjon …</translation>
 <translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Videoer</translation>
 <translation id="6150853954427645995">For å lagre denne filen for bruk utenfor Internett, går du på nettet, høyreklikker på filen og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="6164412158936057769">Sommerfugler</translation>
+<translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6189412234224385711">Åpne med <ph name="EXTENSION_NAME" /></translation>

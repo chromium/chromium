@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">미리보기 없음</translation>
 <translation id="1812302367230252929">암하라어(음역)</translation>
 <translation id="1813278315230285598">서비스</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />주의:<ph name="END_BOLD" /> 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="183183971458492120">정보 로드 중...</translation>
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">동영상</translation>
 <translation id="6150853954427645995">오프라인에서 사용하기 위해 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="6164412158936057769">나비</translation>
+<translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6187719147498869044">헝가리어</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" />(으)로 열기</translation>

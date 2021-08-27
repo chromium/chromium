@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">පෙරදසුන ලබාගත නොහැකිය</translation>
 <translation id="1812302367230252929">ඇම්හරික් අක්ෂර පරිවර්තනය</translation>
 <translation id="1813278315230285598">සේවා</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />අවවාදයයි:<ph name="END_BOLD" />  මෙම ගොනු තාවකාලික ඒවා වන අතර ඩිස්ක ඉඩ නිදහස් කිරීමට ස්වයංව මැකෙනු ඇත.  <ph name="BEGIN_LINK" />තව දැනගන්න<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">පෙන්ගුයින්</translation>
 <translation id="183183971458492120">තොරතුරු පූරණ කරමින්...</translation>
 <translation id="1834290891154666894">වලංගු නොවන මාතෘකා විකල්ප නම ගැළපීම ඇතුළත් කිරීම</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">වීඩියෝ</translation>
 <translation id="6150853954427645995">මෙම ගොනුව මාර්ගගත නොවී භාවිත කිරීම සඳහා, මාර්ගගත වී, ගොනුව මත දකුණු ක්ලික් කර, <ph name="OFFLINE_CHECKBOX_NAME" /> අභිප්‍රේතය තෝරන්න.</translation>
 <translation id="6164412158936057769">සමනලුන්</translation>
+<translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
 <translation id="6187719147498869044">හංගේරියානු</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> සමඟ විවෘත කරන්න</translation>

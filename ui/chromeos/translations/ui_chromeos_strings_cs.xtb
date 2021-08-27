@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Náhled není k dispozici</translation>
 <translation id="1812302367230252929">amharština (přepis)</translation>
 <translation id="1813278315230285598">Služby</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Upozornění:<ph name="END_BOLD" /> Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučňák</translation>
 <translation id="183183971458492120">Načítání informací...</translation>
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">Videa</translation>
 <translation id="6150853954427645995">Chcete-li tento soubor uložit pro použití offline, přejděte zpět online, klikněte na soubor pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motýli</translation>
+<translation id="6165508094623778733">Další informace</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">maďarština</translation>
 <translation id="6189412234224385711">Otevřít pomocí rozšíření <ph name="EXTENSION_NAME" /></translation>

@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">कुनै पूर्वावलोकन उपलब्ध छैन</translation>
 <translation id="1812302367230252929">अम्हारिक लिपि रूपान्तरण</translation>
 <translation id="1813278315230285598">सेवाहरू</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />होसियार:<ph name="END_BOLD" />  यी फाइलहरू अस्थायी हुन् र डिस्कमा ठाउँ खालि गर्न स्वचालित रूपमा हटाइन सकिन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">भिडियोहरू</translation>
 <translation id="6150853954427645995">यो फाइल अफलाइन प्रयोगको लागि, अनलाइनमा फिर्ता जानुहोस्, फाइल दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
 <translation id="6164412158936057769">पुतलीहरू</translation>
+<translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6187719147498869044">हङ्गेरियाली</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> मार्फत खोल्नुहोस्</translation>

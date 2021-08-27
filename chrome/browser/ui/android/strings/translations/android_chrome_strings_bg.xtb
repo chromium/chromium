@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Спестете до 60% данни – прочетете днешните новини</translation>
 <translation id="1303339473099049190">Тази парола не бе намерена. Проверете дали е написана правилно и опитайте отново.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Изпратено от <ph name="DEVICE_NAME" /></translation>
-<translation id="130581733275749598">Изберете шаблон за открояването</translation>
 <translation id="1310482092992808703">Групиране на раздели</translation>
 <translation id="1311657260431405215">Този QR код не е URL адрес: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -900,6 +899,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_ONE" /> раздел ще бъдат затворени}other{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_MANY" /> раздела ще бъдат затворени}}</translation>
+<translation id="6560066289487134861">Изберете шаблон за открояването. За да се върнете към основния диалогов прозорец, използвайте жеста за прекарване на пръст нагоре и след това надолу и докоснете „Напред“.</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>
@@ -1264,7 +1264,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
-<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8746155870861185046">Споделяне на открояването</translation>

@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Ez dago aurrebistarik</translation>
 <translation id="1812302367230252929">Amhareraren transliterazioa</translation>
 <translation id="1813278315230285598">Zerbitzuak</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Kontuz:<ph name="END_BOLD" />  fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguinoa</translation>
 <translation id="183183971458492120">Informazioa kargatzen…</translation>
 <translation id="1834290891154666894">Gaiaren ordezko izenaren bat-etortzearen sarrera ez da zuzena</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">Bideoak</translation>
 <translation id="6150853954427645995">Fitxategia gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategiaren gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="6164412158936057769">Tximeletak</translation>
+<translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6187719147498869044">Hungariarra</translation>
 <translation id="6189412234224385711">Ireki <ph name="EXTENSION_NAME" /> luzapenarekin</translation>

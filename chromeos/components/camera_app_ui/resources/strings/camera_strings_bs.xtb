@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je isključena iz uređaja.</translation>
 <translation id="1473110567575736769">Tajmer za 3 sekunde</translation>
-<translation id="1478594628797167447">Skener</translation>
 <translation id="1545749641540134597">Skeniraj QR kôd</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> je aktivna</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="2175927920773552910">QR kôd</translation>
-<translation id="2268107369530950373">Prelazak na način rada skenera</translation>
 <translation id="229579744168541441">Izvezi na disk</translation>
 <translation id="2320741269052147773">Pomičite ulijevo</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2501853267655415902">Snimanje je zaustavljeno</translation>
 <translation id="2501953888035679275">Snimajte fotografije i videozapise kamerom.</translation>
+<translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="2599796128805996109">Zadnja kamera</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je priključena.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Rezolucija kamere</translation>
 <translation id="3260401663013584785">Dokument nije pronađen</translation>
 <translation id="3448774564454087943">Videozapis nije sačuvan jer je prekratak</translation>
+<translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3517926952904427380">Snimanje uspravne fotografije nije uspjelo</translation>
 <translation id="3569311554794739032">Želite li zaista ukloniti fajl <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Prebacivanje na način rada skeniranja</translation>
 <translation id="3810838688059735925">Videozapis</translation>
 <translation id="3838931309141338733">Skeniraj bar kôd</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Omogući način rada dokumenta na svim kamerama</translation>
 <translation id="5444515100983837161">Postavite sve ivice dokumenta unutar okvira. Skeniranje najbolje funkcionira ako su boje dokumenta i pozadine različite.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući način rada za stručnjake</translation>
 <translation id="5759254179196327752">Skeniranje dokumenta</translation>
 <translation id="5775960006311140197">Način rada za stručnjake</translation>
@@ -106,6 +108,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8120146556401698679">Pomicanje, naginjanje, zumiranje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8145038249676204903">Prebaci na snimanje fotografija</translation>
+<translation id="8167081290930651932">Sačuvaj kao fotografiju</translation>
 <translation id="8239780215768881278">Snimi pregled videozapisa</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8425673304802773841">Nagni dolje</translation>

@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">پیش‌نمایشی وجود ندارد</translation>
 <translation id="1812302367230252929">نویسه‌گردانی آمهاریک</translation>
 <translation id="1813278315230285598">سرویس‌ها</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />احتیاط:<ph name="END_BOLD" /> این فایل‌ها موقتی هستند و ممکن است به صورت خودکار حذف شوند تا فضای آزاد دیسک بیشتر شود. <ph name="BEGIN_LINK" />بیشتر بیاموزید<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">پنگوئن</translation>
 <translation id="183183971458492120">درحال بارگیری اطلاعات...</translation>
 <translation id="1834290891154666894">ورودی مربوط به «مطابقت نام جایگزین موضوع» نامعتبر است</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">ویدیو</translation>
 <translation id="6150853954427645995">برای ذخیره این فایل جهت استفاده آفلاین، دوباره انلاین شوید، روی فایل کلیک راست کنید و گزینه <ph name="OFFLINE_CHECKBOX_NAME" /> را انتخاب کنید.</translation>
 <translation id="6164412158936057769">پروانه‌ها</translation>
+<translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
 <translation id="6187719147498869044">مجاری</translation>
 <translation id="6189412234224385711">بازکردن با <ph name="EXTENSION_NAME" /></translation>

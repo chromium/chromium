@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Oldindan ko‘rib bo‘lmaydi</translation>
 <translation id="1812302367230252929">Amxara (transliteratsiya)</translation>
 <translation id="1813278315230285598">Xizmatlar</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Diqqat!<ph name="END_BOLD" /> Bu vaqtinchalik fayllar diskda joy bo‘shatish uchun avtomatik o‘chirib yuborilishi mumkin. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Axborot yuklanmoqda...</translation>
 <translation id="1834290891154666894">Subyektning muqobil nomi bilan mos keladigan xato yozuv topildi</translation>
@@ -579,6 +578,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu fayldan internet yo‘qligida foydalanish uchun, internetga ulaning va har bir fayl ustiga sichqonchaning o‘ng tugmasini bosib, “<ph name="OFFLINE_CHECKBOX_NAME" />” bandini tanlang.</translation>
 <translation id="6164412158936057769">Kapalaklar</translation>
+<translation id="6165508094623778733">Batafsil</translation>
 <translation id="6170470584681422115">Sendvich</translation>
 <translation id="6187719147498869044">Venger</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> bilan ochish</translation>

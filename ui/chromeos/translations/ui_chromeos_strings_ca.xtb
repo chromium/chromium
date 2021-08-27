@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">No hi ha cap previsualització disponible</translation>
 <translation id="1812302367230252929">Amhàric (transliteració)</translation>
 <translation id="1813278315230285598">Serveis</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Compte:<ph name="END_BOLD" />  Aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüí</translation>
 <translation id="183183971458492120">S'està carregant la informació...</translation>
 <translation id="1834290891154666894">Entrada no vàlida de nom alternatiu d'assumpte coincident</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Vídeos</translation>
 <translation id="6150853954427645995">Per desar aquest fitxer per utilitzar-lo fora de línia, connecteu-vos a una xarxa, feu clic amb el botó dret al fitxer i seleccioneu l'opció <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Papallones</translation>
+<translation id="6165508094623778733">Més informació</translation>
 <translation id="6170470584681422115">Entrepà</translation>
 <translation id="6187719147498869044">Hongarès</translation>
 <translation id="6189412234224385711">Obre amb <ph name="EXTENSION_NAME" /></translation>

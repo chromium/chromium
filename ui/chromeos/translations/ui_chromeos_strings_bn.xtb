@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">কোনো প্রিভিউ উপলভ্য নেই</translation>
 <translation id="1812302367230252929">আমহারিক লিপ্যন্তর</translation>
 <translation id="1813278315230285598">পরিষেবাসমূহ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />সতর্কতা:<ph name="END_BOLD" /> এই ফাইলগুলি অস্থায়ী এবং ডিস্ক স্থান মুক্ত করতে অটোমেটিক মুছে ফেলা হতে পারে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">পেঙ্গুইন</translation>
 <translation id="183183971458492120">তথ্য লোড করা হচ্ছে…</translation>
 <translation id="1834290891154666894">সাবজেক্টের অন্য নামের সাথে মিল থাকা এন্ট্রি ভুল</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">ভিডিও</translation>
 <translation id="6150853954427645995">অফলাইনে ব্যবহারের জন্য এই ফাইলটি সেভ করুন, অনলাইন ফিরে পেতে, ফাইলের ডানদিকে ক্লিক করুন, এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্প নির্বাচন করুন৷</translation>
 <translation id="6164412158936057769">প্রজাপতি</translation>
+<translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
 <translation id="6187719147498869044">হাঙ্গেরিয়ান</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> এর মাধ্যমে খুলুন</translation>

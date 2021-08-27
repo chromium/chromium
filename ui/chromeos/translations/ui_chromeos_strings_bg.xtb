@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Няма налична визуализация</translation>
 <translation id="1812302367230252929">Амхарски (транслитерация)</translation>
 <translation id="1813278315230285598">Услуги</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информацията се зарежда...</translation>
 <translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Видеоклипове</translation>
 <translation id="6150853954427645995">За да запазите този файл за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху него и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="6164412158936057769">Пеперуди</translation>
+<translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170470584681422115">Сандвич</translation>
 <translation id="6187719147498869044">Унгарски</translation>
 <translation id="6189412234224385711">Отваряне с/ъс <ph name="EXTENSION_NAME" /></translation>

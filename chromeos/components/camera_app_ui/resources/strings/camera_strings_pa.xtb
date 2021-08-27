@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ਅਨਪਲੱਗਡ ਹੈ।</translation>
 <translation id="1473110567575736769">3 ਸਕਿੰਟਾਂ ਦਾ ਟਾਈਮਰ</translation>
-<translation id="1478594628797167447">ਸਕੈਨਰ</translation>
 <translation id="1545749641540134597">QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="2144806332417375165">ਵਿਉਂਤਬੱਧ ਵੀਡੀਓ ਮਾਪਦੰਡ</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
-<translation id="2268107369530950373">ਸਕੈਨਰ ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="229579744168541441">ਡਿਸਕ ਵਿੱਚ ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="2320741269052147773">ਖੱਬੇ ਪਾਸੇ ਪੈਨ ਕਰੋ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="2501853267655415902">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਹੋਈ</translation>
 <translation id="2501953888035679275">ਆਪਣੇ ਕੈਮਰੇ ਨਾਲ ਫ਼ੋਟੋਆਂ ਖਿੱਚੋ ਅਤੇ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ।</translation>
+<translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2549985041256363841">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ</translation>
 <translation id="2599796128805996109">ਪਿਛਲਾ ਕੈਮਰਾ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ਪਲੱਗ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">ਸਾਰੇ ਕੈਮਰਿਆਂ ਵਿੱਚ ਦਸਤਾਵੇਜ਼ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5444515100983837161">ਦਸਤਾਵੇਜ਼ ਦੇ ਸਾਰੇ ਕਿਨਾਰਿਆਂ ਨੂੰ ਫ੍ਰੇਮ ਦੇ ਅੰਦਰ ਹੀ ਰੱਖੋ। ਜੇ ਦਸਤਾਵੇਜ਼ ਅਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵੱਖਰੇ ਰੰਗ ਦੇ ਹੋਣ ਤਾਂ ਸਕੈਨਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਬਿਹਤਰੀਨ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਦੀ ਹੈ।</translation>
 <translation id="5671277269877808209">ਵਰਗ</translation>
+<translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5753488212459587150">ਮਾਹਰ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5759254179196327752">ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5775960006311140197">ਮਾਹਰ ਮੋਡ</translation>

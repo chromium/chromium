@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
-<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2144806332417375165">Benutzerdefinierte Videoparameter</translation>
 <translation id="2175927920773552910">QR-Code</translation>
-<translation id="2268107369530950373">In den Scannermodus wechseln</translation>
 <translation id="229579744168541441">Auf Festplatte exportieren</translation>
 <translation id="2320741269052147773">Nach links schwenken</translation>
 <translation id="2501278716633472235">Zurück</translation>
 <translation id="2501853267655415902">Aufnahme beendet</translation>
 <translation id="2501953888035679275">Sie können Fotos und Videos mit Ihrer Kamera aufnehmen.</translation>
+<translation id="2517472476991765520">Scannen</translation>
 <translation id="2549985041256363841">Aufnahme starten</translation>
 <translation id="2599796128805996109">Kamera auf der Rückseite</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ist angeschlossen.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">Dokumentmodus auf allen Kameras aktivieren</translation>
 <translation id="5444515100983837161">Alle Ränder des Dokuments müssen sich innerhalb des Rahmens befinden. Die besten Ergebnisse erzielen Sie, wenn das Dokument und der Hintergrund unterschiedliche Farben haben.</translation>
 <translation id="5671277269877808209">Quadrat</translation>
+<translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5753488212459587150">Einstellungen für Fortgeschrittene aktivieren</translation>
 <translation id="5759254179196327752">Dokument scannen</translation>
 <translation id="5775960006311140197">Einstellungen für Fortgeschrittene</translation>

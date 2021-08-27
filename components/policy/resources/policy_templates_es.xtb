@@ -416,9 +416,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
-<translation id="1534690481294492142">Si se habilita la política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras anteriores conectadas al ordenador. Los usuarios pueden activar el proxy de impresión en la nube utilizando su cuenta de Google para el proceso de autenticación.
-
-      Si se inhabilita esta opción, los usuarios no podrán activar el proxy y el ordenador no podrá compartir las impresoras conectadas con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="1552418937045050762">Si se habilita esta opción, los usuarios podrán usar Compartir con Nearby, lo que les permitirá enviar y recibir archivos de personas cercanas.
 
       Si se inhabilita esta opción, los usuarios no podrán usar Compartir con Nearby.
@@ -1052,9 +1049,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible para ningún usuario del dispositivo. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="225340736558643885">Habilitar advertencias en formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
-<translation id="2261329877420573811">Si se utiliza <ph name="PRINTERS_WHITELIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
-
-      Esta política está obsoleta. Usa <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
 <translation id="2266422599396179941">Permitir que los usuarios archiven sugerencias</translation>
 <translation id="2269319728625047531">Habilitar Sync Consent durante el inicio de sesión</translation>
@@ -1140,11 +1134,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
 <translation id="2364639863953745682">Modo de la experiencia de incorporación del Asistente</translation>
-<translation id="2365764204944230431">Esta política está obsoleta, pero puedes utilizar BrowserSignin en su lugar.
-
-      Permite a los usuarios iniciar sesión en <ph name="PRODUCT_NAME" />.
-
-      Esta política sirve para establecer si un usuario tiene permiso para iniciar sesión en <ph name="PRODUCT_NAME" />. Si se le asigna el valor "False", impedirá que funcionen las aplicaciones y extensiones que usen la API chrome.identity, así que te recomendamos que uses la política <ph name="SYNC_DISABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2384233438419344179">Si se habilita esta política, los elementos de sitios web que no pertenezcan al dominio que aparece en la barra de direcciones del navegador no podrán establecer cookies. Si se inhabilita esta política, estos elementos podrán establecer cookies y los usuarios no podrán cambiar esta opción.
 
       Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
@@ -5596,9 +5585,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si habilitas o inhabilitas esta opción, los usuarios no podrán cambiar ni anular esta configuración en <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, se habilitará pero el usuario no podrá cambiarla.</translation>
-<translation id="7955263399078148032">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
-
-      Si se inhabilita esta política, el acceso remoto no se desactivará, pero solo se permitirán las conexiones procedentes de la misma red (sin NAT transversal ni retransmisión).</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Es obligatorio introducir la contraseña cada doce horas</translation>
 <translation id="7959035883875301444">Controlar el uso de JavaScript con JIT</translation>
@@ -6603,12 +6589,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
-<translation id="9150385995327221969">"Si se habilita esta política, se desactivará la sincronización de datos en <ph name="PRODUCT_NAME" /> al usar los servicios de sincronización alojados por Google.
-      Para desactivar los servicios de <ph name="CHROME_SYNC_NAME" /> por completo, te recomendamos que desactives el servicio en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Si se inhabilita esta política o no se establece, los usuarios podrán elegir si quieren usar <ph name="CHROME_SYNC_NAME" />.
-
-      Nota: No actives esta política si se ha habilitado <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, ya que ambas comparten la misma funcionalidad del cliente. La sincronización alojada por Google se desactivará por completo en este caso".</translation>
 <translation id="9150416707757015439">Esta política está obsoleta. Te recomendamos que uses IncognitoModeAvailability en su lugar.
       Permite habilitar el modo de incógnito en <ph name="PRODUCT_NAME" />.
 
@@ -6652,9 +6632,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se asigna ningún valor a esta política o se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, se usará el modo predeterminado de la experiencia de incorporación del Asistente.
       Si se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, se usará el modo EDU de la experiencia de incorporación del Asistente.</translation>
 <translation id="9194447412184412480">Determina la configuración de los usuarios autenticados a través de SAML con un proveedor de identidad externo</translation>
-<translation id="9194474490249548275">Esta política solo se aplica a las sesiones de invitado gestionadas.
-      Si se establece esta política, se especificará una lista de IDs de extensiones que quedarán exentas del proceso de borrado de la sesiones de invitado gestionadas y restringidas (consulta <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
-      Si no se establece esta política, ninguna extensión quedará exenta del proceso de borrado.</translation>
 <translation id="9197740283131855199">Porcentaje que permite ajustar el tiempo de espera de inactividad de la pantalla si el usuario vuelve a ser activo después de la inactividad</translation>
 <translation id="9200828125069750521">Parámetros para URL de imagen que utiliza POST</translation>
 <translation id="9204863016826119209">Las aplicaciones Android que estén instaladas y aparezcan en esta política pueden usar claves corporativas.</translation>

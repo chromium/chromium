@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Ukážka nie je k dispozícii</translation>
 <translation id="1812302367230252929">Amharská klávesnica (prepis)</translation>
 <translation id="1813278315230285598">Služby</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Upozornenie: <ph name="END_BOLD" /> Tieto súbory sú dočasné a kvôli uvoľneniu miesta na disku môžu byť automaticky odstránené. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučniak</translation>
 <translation id="183183971458492120">Načítavajú sa informácie…</translation>
 <translation id="1834290891154666894">Neplatný vstup zhody alternatívneho názvu subjektu</translation>
@@ -580,6 +579,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6146563240635539929">Videá</translation>
 <translation id="6150853954427645995">Ak chcete tento súbor uložiť na použitie offline, prejdite online, kliknite na súbor pravým tlačidlom a vyberte možnosť <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motýle</translation>
+<translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">Maďarská klávesnica</translation>
 <translation id="6189412234224385711">Otvoriť pomocou rozšírenia <ph name="EXTENSION_NAME" /></translation>

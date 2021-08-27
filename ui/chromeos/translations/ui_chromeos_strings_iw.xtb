@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
 <translation id="1813278315230285598">שירותים</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />זהירות:<ph name="END_BOLD" /> קבצים אלה הם זמניים והם עלולים להימחק באופן אוטומטי כדי לפנות נפח דיסק. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">פינגווין</translation>
 <translation id="183183971458492120">טעינת מידע…</translation>
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
@@ -581,6 +580,7 @@
 <translation id="6146563240635539929">סרטונים</translation>
 <translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
+<translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170470584681422115">כריך</translation>
 <translation id="6187719147498869044">הונגרית</translation>
 <translation id="6189412234224385711">פתיחה באמצעות <ph name="EXTENSION_NAME" /></translation>

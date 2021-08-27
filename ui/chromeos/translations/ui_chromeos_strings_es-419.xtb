@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Sin vista previa disponible</translation>
 <translation id="1812302367230252929">Amárico (transliteración)</translation>
 <translation id="1813278315230285598">Servicios</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Precaución:<ph name="END_BOLD" /> Estos archivos son temporales y pueden eliminarse automáticamente para liberar espacio en el disco. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="183183971458492120">Cargando información…</translation>
 <translation id="1834290891154666894">La entrada de la coincidencia del nombre alternativo del sujeto no es válida</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Videos</translation>
 <translation id="6150853954427645995">Para guardar este archivo para su uso sin conexión, conéctate nuevamente, haz clic con el botón secundario en el archivo y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Mariposas</translation>
+<translation id="6165508094623778733">Más información</translation>
 <translation id="6170470584681422115">Sándwich</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir con <ph name="EXTENSION_NAME" /></translation>

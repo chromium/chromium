@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attention<ph name="END_BOLD" />. Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />.</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations en cours…</translation>
 <translation id="1834290891154666894">Entrée de correspondance de nom alternatif de sujet incorrect</translation>
@@ -581,6 +580,7 @@
 <translation id="6146563240635539929">Vidéos</translation>
 <translation id="6150853954427645995">Pour enregistrer ce fichier pour une utilisation hors connexion, reconnectez-vous, cliquez avec le bouton droit sur le fichier, et sélectionnez l’option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Papillons</translation>
+<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hongrois</translation>
 <translation id="6189412234224385711">Ouvrir avec <ph name="EXTENSION_NAME" /></translation>

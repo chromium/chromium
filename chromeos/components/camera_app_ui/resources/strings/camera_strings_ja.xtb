@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> が外されました。</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
-<translation id="1478594628797167447">スキャナ</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" />（有効）</translation>
 <translation id="2144806332417375165">カスタム動画パラメータ</translation>
 <translation id="2175927920773552910">QR コード</translation>
-<translation id="2268107369530950373">スキャナモードに切り替え</translation>
 <translation id="229579744168541441">ディスクに書き出し</translation>
 <translation id="2320741269052147773">左にパン</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2501853267655415902">録画を停止しました</translation>
 <translation id="2501953888035679275">カメラを使って写真や動画を撮影できます。</translation>
+<translation id="2517472476991765520">スキャン</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="2599796128805996109">背面カメラ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> が接続されました。</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">すべてのカメラでドキュメント モードを有効にする</translation>
 <translation id="5444515100983837161">ドキュメントのすべての端をフレーム内に収めてください。ドキュメントと背景を異なる色にすると、うまくスキャンできます。</translation>
 <translation id="5671277269877808209">スクエア</translation>
+<translation id="5746169159649715125">PDF に保存</translation>
 <translation id="5753488212459587150">エキスパート モードを有効にする</translation>
 <translation id="5759254179196327752">ドキュメント スキャン</translation>
 <translation id="5775960006311140197">エキスパート モード</translation>

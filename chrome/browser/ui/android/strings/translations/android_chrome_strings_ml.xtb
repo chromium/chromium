@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">60% വരെ ഡാറ്റ ലാഭിക്കൂ, ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ</translation>
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
-<translation id="130581733275749598">നിങ്ങളുടെ ഹെെലെെറ്റിനുള്ള ടെംപ്ലേറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1310482092992808703">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -565,7 +564,7 @@
 <translation id="4572422548854449519">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4576892426230499203">മറ്റൊരു പരിശോധിച്ചുറപ്പിക്കൽ ഓപ്ഷൻ പരീക്ഷിക്കുക</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
-<translation id="4587589328781138893">Sites</translation>
+<translation id="4587589328781138893">സൈറ്റുകള്‍</translation>
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -900,6 +899,7 @@
 <translation id="6545017243486555795">എല്ലാ വിവരങ്ങളും മായ്‌ക്കുക</translation>
 <translation id="6546511553472444032">ഫയൽ ദോഷകരമായേക്കാം</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="TAB_TITLE" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>
+<translation id="6560066289487134861">നിങ്ങളുടെ ഹെെലെെറ്റിനുള്ള ടെംപ്ലേറ്റ് തിരഞ്ഞെടുക്കുക. പ്രധാന ഡയലോഗിലേക്ക് മടങ്ങാൻ, മുകളിലേക്ക് പിന്നീട് താഴേക്ക് ജെസ്ച്ചർ ഉപയോഗിക്കുക, തുടർന്ന് അടുത്തത് ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6560414384669816528">Sogou ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="656065428026159829">കൂടുതൽ കാണുക</translation>
 <translation id="6565959834589222080">ലഭ്യമാകുമ്പോൾ വൈഫൈ ഉപയോഗിക്കും</translation>
@@ -1264,7 +1264,6 @@
 <translation id="8683081248374354009">ഗ്രൂപ്പ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
-<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8746155870861185046">ഹൈലൈറ്റ് പങ്കിടുക</translation>

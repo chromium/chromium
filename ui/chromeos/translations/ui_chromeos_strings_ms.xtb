@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Pratonton tidak tersedia</translation>
 <translation id="1812302367230252929">Alih Huruf Amhara</translation>
 <translation id="1813278315230285598">Perkhidmatan</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Awas:<ph name="END_BOLD" />  Fail ini adalah bersifat sementara dan boleh dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuatkan maklumat...</translation>
 <translation id="1834290891154666894">Entri padanan nama alternatif subjek tidak sah</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Bagi menyimpan fail ini untuk kegunaan luar talian, sila kembali ke dalam talian, klik kanan fail, dan pilih pilihan <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Rama-rama</translation>
+<translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6170470584681422115">Sandwic</translation>
 <translation id="6187719147498869044">Hungary</translation>
 <translation id="6189412234224385711">Buka dengan <ph name="EXTENSION_NAME" /></translation>

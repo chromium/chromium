@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Peržiūra negalima</translation>
 <translation id="1812302367230252929">Amharų k. transliteracija</translation>
 <translation id="1813278315230285598">Paslaugos</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perspėjimas:<ph name="END_BOLD" /> šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="183183971458492120">Įkeliama informacija...</translation>
 <translation id="1834290891154666894">Netinkama alternatyvaus subjekto pavadinimo atitikties įvestis</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Vaizdo įrašai</translation>
 <translation id="6150853954427645995">Jei norite išsaugoti šį failą ir naudoti jį be interneto ryšio, vėl prisijunkite prie interneto, spustelėkite failą dešiniuoju pelės klavišu ir pasirinkite parinktį „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="6164412158936057769">Drugeliai</translation>
+<translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6170470584681422115">Sumuštinis</translation>
 <translation id="6187719147498869044">Vengrų k.</translation>
 <translation id="6189412234224385711">Atidaryti naudojant „<ph name="EXTENSION_NAME" />“</translation>

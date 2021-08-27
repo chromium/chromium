@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Heç bir önizləmə əlçatan deyil</translation>
 <translation id="1812302367230252929">Amhar dilində Transliterasiya</translation>
 <translation id="1813278315230285598">Xidmətlər</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Xəbərdarlıq:<ph name="END_BOLD" />  Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.  <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinqvin</translation>
 <translation id="183183971458492120">İnfo yüklənir...</translation>
 <translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu faylı oflayn istifadəyə saxlamaq üçün onlayn olun, fayla sağ klik edin və <ph name="OFFLINE_CHECKBOX_NAME" /> variantını seçin.</translation>
 <translation id="6164412158936057769">Kəpənəklər</translation>
+<translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Macar</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ilə açın</translation>

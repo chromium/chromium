@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1467231725790366244">ถอดปลั๊ก <ph name="CAMERA" /> แล้ว</translation>
 <translation id="1473110567575736769">ตัวจับเวลา 3 วินาที</translation>
-<translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">ใช้งาน <ph name="CAMERA" /> อยู่</translation>
 <translation id="2144806332417375165">กำหนดพารามิเตอร์วิดีโอเอง</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
-<translation id="2268107369530950373">เปลี่ยนเป็นโหมดสแกนเนอร์</translation>
 <translation id="229579744168541441">ส่งออกไปยังดิสก์</translation>
 <translation id="2320741269052147773">เลื่อนไปทางซ้าย</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2501853267655415902">หยุดบันทึกแล้ว</translation>
 <translation id="2501953888035679275">ถ่ายภาพและบันทึกวิดีโอด้วยกล้อง</translation>
+<translation id="2517472476991765520">สแกน</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
 <translation id="2599796128805996109">กล้องหลัง</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> เสียบอยู่</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">เปิดใช้โหมดเอกสารในทุกกล้อง</translation>
 <translation id="5444515100983837161">จัดขอบเอกสารทุกด้านให้อยู่ภายในกรอบ การสแกนจะทำงานได้ดีที่สุดหากเอกสารและพื้นหลังมีสีต่างกัน</translation>
 <translation id="5671277269877808209">สี่เหลี่ยมจัตุรัส</translation>
+<translation id="5746169159649715125">บันทึกเป็น PDF</translation>
 <translation id="5753488212459587150">เปิดใช้โหมดผู้เชี่ยวชาญ</translation>
 <translation id="5759254179196327752">สแกนเอกสาร</translation>
 <translation id="5775960006311140197">โหมดผู้เชี่ยวชาญ</translation>

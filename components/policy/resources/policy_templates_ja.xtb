@@ -412,9 +412,6 @@
 
       このポリシーを未設定のままにした場合、すべてのサイトでグローバルなデフォルト値（自動アクセスなし）が使用されます。</translation>
 <translation id="1530812829012954197">ホスト ブラウザに次の URL パターンを常に表示する</translation>
-<translation id="1534690481294492142">このポリシーを有効に設定するか未設定のままにした場合、<ph name="CLOUD_PRINT_NAME" /> と、パソコンに接続している従来のプリンタとの間で、<ph name="PRODUCT_NAME" /> がプロキシとして動作できるようになります。ユーザーは、Google アカウントでの認証によってクラウド プリント プロキシを有効にできます。
-
-      このポリシーを無効に設定した場合、ユーザーはプロキシを有効にできず、パソコンでプリンタを <ph name="CLOUD_PRINT_NAME" /> と共有できません。</translation>
 <translation id="1552418937045050762">この設定が有効な場合、ユーザーはニアバイシェアを有効にできます（ニアバイシェアは近くのユーザーとファイルを送受信できる機能です）。
 
       この設定が無効な場合、ユーザーはニアバイシェアを有効にできません。
@@ -1029,9 +1026,6 @@
       このポリシーを false に設定した場合、デバイスのユーザーは誰も <ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="225340736558643885">安全でないフォームの警告を有効にする</translation>
 <translation id="2258126710006312594">リモート アクセスのユーザーにホストとのファイルの転送を許可します</translation>
-<translation id="2261329877420573811"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_WHITELIST" /> が選択されている場合、<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
-
-      このポリシーはサポートが終了しています。代わりに <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> を使用してください。</translation>
 <translation id="2261648512244797294">サポートが終了している Privet 印刷を無効にする</translation>
 <translation id="2266422599396179941">ユーザーにフィードバックの送信を許可する</translation>
 <translation id="2269319728625047531">ログイン時に同期の同意メッセージを表示する</translation>
@@ -1115,11 +1109,6 @@
 <translation id="2358176879566587521">このポリシーは削除されました。このバージョンの <ph name="PRODUCT_NAME" /> には対応していません。詳しくは、https://support.google.com/chrome/a/answer/7643500 をご覧ください。</translation>
 <translation id="2362469626417133796">再起動の時間枠</translation>
 <translation id="2364639863953745682">アシスタントのオンボーディング エクスペリエンスのモード</translation>
-<translation id="2365764204944230431">このポリシーはサポートが終了しています。代わりに BrowserSignin の使用をご検討ください。
-
-      ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可します。
-
-      このポリシーでは、ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可するかどうかを設定できます。このポリシーを「False」に設定すると、chrome.identity API を使用するアプリや拡張機能が機能しなくなるため、代わりに <ph name="SYNC_DISABLED_POLICY_NAME" /> の使用をおすすめします。</translation>
 <translation id="2384233438419344179">このポリシーを有効に設定した場合、ブラウザのアドレスバーに表示されているドメイン以外のウェブページ要素からは、Cookie を設定できなくなります。このポリシーを無効に設定した場合、これらの要素による Cookie の設定が許可され、ユーザーはこの設定を変更できません。
 
       このポリシーを未設定のままにした場合、サードパーティ Cookie は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -5400,9 +5389,6 @@
       この設定が有効または無効の場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更したりオーバーライドしたりできません。
 
       このポリシーが未設定の場合、この設定は有効になりますが、ユーザーが変更できます。</translation>
-<translation id="7955263399078148032"><ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> が有効に設定されている場合に、<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> を有効に設定するか未設定のままにすると、ファイアウォールによる制限などが原因で直接接続を確立できない場合に中継サーバーを使用してこのパソコンに接続するためのリモート クライアントの使用が許可されます。
-
-      このポリシーを無効に設定すると、リモート アクセスは無効にはなりませんが、接続できるのは同一ネットワークからのみとなります（NAT トラバーサルや中継は許可されません）。</translation>
 <translation id="7956210013490975468"><ph name="PRODUCT_OS_NAME" /> のシステム プロキシ サービスを設定します。</translation>
 <translation id="7958537754689366707">12 時間ごとにパスワードの入力を求める</translation>
 <translation id="7959035883875301444">JavaScript JIT の使用を管理する</translation>
@@ -6360,12 +6346,6 @@
 <translation id="913195841488580904">URL のリストへのアクセスをブロックする</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> プロキシを有効にする</translation>
 <translation id="9136399279941091445">指定されたデバイスポリシーが解除されたときの管理外時間の間隔</translation>
-<translation id="9150385995327221969">「このポリシーを有効に設定した場合、Google でホストされる同期サービスを使用した <ph name="PRODUCT_NAME" /> でのデータ同期が無効になります。
-      <ph name="CHROME_SYNC_NAME" /> サービスを完全に無効にするには、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> でこのサービスを無効にすることをおすすめします。
-
-      このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="CHROME_SYNC_NAME" /> を使用するかどうかを選択できます。
-
-      注: <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> が有効に設定されている場合は、同じクライアントサイドの機能が共有されるため、このポリシーを有効にしないでください。この場合、Google でホストされる同期は完全に無効になります。」</translation>
 <translation id="9150416707757015439">このポリシーは今後使用できなくなりますので、IncognitoModeAvailability をご使用ください。<ph name="PRODUCT_NAME" /> でシークレット モードを有効にします。この設定が有効または設定されていない場合、ユーザーはシークレット モードでウェブページを開くことができます。この設定を無効にすると、ユーザーはシークレット モードでウェブページを開くことができません。このポリシーが未設定の場合は有効になり、ユーザーはシークレット モードを使用できます。</translation>
 <translation id="9152473318295429890">現在のウェブページに関連するおすすめのウェブページの表示を有効にする</translation>
 <translation id="9153446010242995516">OS のバージョンが対象バージョンより新しい場合は、対象バージョンに戻してそのバージョンを維持します。ロールバック プロセスでデバイスごとの設定（ネットワーク認証情報など）を引き継げる場合は、引き継ぎを試みますが、データの復元が可能でない（対象バージョンがデータの復元に対応していない、または後方互換性のない変更がある）場合でも、完全な Powerwash によるロールバックを行います。
@@ -6402,9 +6382,6 @@
       このポリシーを未設定のままにするか <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスではデフォルトのモードが使用されます。
       このポリシーを <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスでは EDU モードが使用されます。</translation>
 <translation id="9194447412184412480">外部 IdP を使用して SAML で認証されたユーザーの設定を管理します</translation>
-<translation id="9194474490249548275">このポリシーは、管理対象ゲスト セッションにのみ適用されます。
-      このポリシーでは、制限付きの管理対象ゲスト セッションのクリーンアップ手順から除外する拡張機能 ID のリストを指定します（<ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> を参照）。
-このポリシーを未設定のままにした場合は、再設定の手順から拡張機能を除外しません。</translation>
 <translation id="9197740283131855199">画面が暗くなった後でユーザーが操作を行ったときに画面を暗くするまでの時間に掛ける倍率</translation>
 <translation id="9200828125069750521">POST を使用する画像 URL のパラメータ</translation>
 <translation id="9204863016826119209">このポリシーで指定されているインストール済みの Android アプリは企業キーを使用できます。</translation>

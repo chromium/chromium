@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> deskonektatuta dago.</translation>
 <translation id="1473110567575736769">Hiru segundoko tenporizadorea</translation>
-<translation id="1478594628797167447">Eskanerra</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktibo dago</translation>
 <translation id="2144806332417375165">Pertsonalizatu bideoaren parametroak</translation>
 <translation id="2175927920773552910">QR kodea</translation>
-<translation id="2268107369530950373">Aldatu eskaneatzeko modura</translation>
 <translation id="229579744168541441">Esportatu diskora</translation>
 <translation id="2320741269052147773">Mugitu ezkerrera</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
 <translation id="2501853267655415902">Grabatzeari utzi zaio</translation>
 <translation id="2501953888035679275">Atera argazkiak eta grabatu bideoak kamerarekin.</translation>
+<translation id="2517472476991765520">Bilatu</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
 <translation id="2599796128805996109">Atzeko kamera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> konektatuta dago.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">Gaitu dokumentu modua kamera guztietan</translation>
 <translation id="5444515100983837161">Jarri dokumentuaren ertz guztiak markoaren barruan. Hobeto eskaneatzen da dokumentuaren eta hondoaren koloreak ezberdinak badira.</translation>
 <translation id="5671277269877808209">Karratua</translation>
+<translation id="5746169159649715125">Gorde PDF gisa</translation>
 <translation id="5753488212459587150">Gaitu adituen modua</translation>
 <translation id="5759254179196327752">Eskaneatu dokumentua</translation>
 <translation id="5775960006311140197">Adituen modua</translation>

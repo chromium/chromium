@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
-<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="2175927920773552910">QR Code</translation>
-<translation id="2268107369530950373">Lumipat sa scanner mode</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2501853267655415902">Itinigil ang pag-record</translation>
 <translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
+<translation id="2517472476991765520">I-scan</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="2599796128805996109">Camera sa likod</translation>
 <translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">I-enable ang document mode sa lahat ng camera</translation>
 <translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
 <translation id="5671277269877808209">Parisukat</translation>
+<translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
 <translation id="5759254179196327752">I-scan ang dokumento</translation>
 <translation id="5775960006311140197">Expert mode</translation>

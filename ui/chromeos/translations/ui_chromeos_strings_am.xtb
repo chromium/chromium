@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">ምንም ቅድመ-እይታ አይገኝም</translation>
 <translation id="1812302367230252929">በአማርኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="1813278315230285598">ግልጋሎቶች</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ማስጠንቀቂያ፦<ph name="END_BOLD" />  እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ፔንግዊን</translation>
 <translation id="183183971458492120">መረጃ በመጫን ላይ...</translation>
 <translation id="1834290891154666894">ልክ ያልሆነ የርዕስ አማራጭ ስም ዝምድና ግቤት</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
 <translation id="6150853954427645995">ይህን ፋይል ከመስመር ውጪ ለመጠቀም መስመር ላይ ተመልሰው ይሂዱ፣ ፋይሉን በቀኝ ጠቅ ያድርጉትና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="6164412158936057769">ቢራቢሮዎች</translation>
+<translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6170470584681422115">ሳንድዊች</translation>
 <translation id="6187719147498869044">ሀንጋሪኛ</translation>
 <translation id="6189412234224385711">በ<ph name="EXTENSION_NAME" /> ክፈት</translation>

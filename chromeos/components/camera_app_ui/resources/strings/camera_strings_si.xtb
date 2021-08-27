@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> පේනුගත කිරීම ඉවත් කර ඇත.</translation>
 <translation id="1473110567575736769">තත්පර 3 කාල ගණකය</translation>
-<translation id="1478594628797167447">ස්කෑනරය</translation>
 <translation id="1545749641540134597">QR කේතය ස්කෑන් කරන්න</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ක්‍රියාත්මකයි</translation>
 <translation id="2144806332417375165">අභිරුචි වීඩියෝ පරාමිති</translation>
 <translation id="2175927920773552910">QR කේතය</translation>
-<translation id="2268107369530950373">ස්කෑනර ප්‍රකාරයට මාරු වන්න</translation>
 <translation id="229579744168541441">තැටියට නිර්යාත කරන්න</translation>
 <translation id="2320741269052147773">වමට පෑන් කරන්න</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2501853267655415902">පටිගත කිරීම නැවතුණි</translation>
 <translation id="2501953888035679275">ඔබේ කැමරාව මඟින් ඡායාරූප ගන්න, වීඩියෝ පටිගත කරන්න.</translation>
+<translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
 <translation id="2599796128805996109">පිටුපස කැමරාව</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> පේනුගත කර ඇත.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">සියලු කැමරාවල ලේඛන ප්‍රකාරය සබල කරන්න</translation>
 <translation id="5444515100983837161">ලේඛනයේ සියලු මායිම් රාමුව තුළ තබන්න. ලේඛනය සහ පසුබිම විවිධ වර්ණවලින් යුතු නම් ස්කෑන් කිරීම වඩාත්ම හොඳින් ක්‍රියා කරයි.</translation>
 <translation id="5671277269877808209">සමචතුරස්‍රය</translation>
+<translation id="5746169159649715125">PDF ලෙස සුරකින්න</translation>
 <translation id="5753488212459587150">විශේෂඥ ප්‍රකාරය සබල කරන්න</translation>
 <translation id="5759254179196327752">ලේඛනය ස්කෑන් කරන්න</translation>
 <translation id="5775960006311140197">ප්‍රවීණ ප්‍රකාරය</translation>

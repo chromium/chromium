@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">ไม่มีพรีวิว</translation>
 <translation id="1812302367230252929">อัมฮาริก (การทับศัพท์)</translation>
 <translation id="1813278315230285598">บริการ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ข้อควรระวัง:<ph name="END_BOLD" /> ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">นกเพนกวิน</translation>
 <translation id="183183971458492120">กำลังโหลดข้อมูล...</translation>
 <translation id="1834290891154666894">รายการจับคู่ชื่อสำรองของหัวเรื่องไม่ถูกต้อง</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">วิดีโอ</translation>
 <translation id="6150853954427645995">หากต้องการบันทึกไฟล์นี้เพื่อการใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ แล้วเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
 <translation id="6164412158936057769">ผีเสื้อ</translation>
+<translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
 <translation id="6187719147498869044">ฮังการี</translation>
 <translation id="6189412234224385711">เปิดด้วย <ph name="EXTENSION_NAME" /></translation>

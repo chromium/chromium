@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
-<translation id="1478594628797167447">扫描器</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
 <translation id="2175927920773552910">二维码</translation>
-<translation id="2268107369530950373">切换到扫描仪模式</translation>
 <translation id="229579744168541441">导出到磁盘</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">已停止录制</translation>
 <translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
+<translation id="2517472476991765520">扫描</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2599796128805996109">后置摄像头</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">为所有摄像头启用文档模式</translation>
 <translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
 <translation id="5671277269877808209">方形</translation>
+<translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
 <translation id="5759254179196327752">扫描文件</translation>
 <translation id="5775960006311140197">专家模式</translation>

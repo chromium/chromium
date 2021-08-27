@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Economisește până la 60 % din date, citește știrile de azi</translation>
 <translation id="1303339473099049190">Parola nu a fost găsită. Verifică dacă ai scris-o corect și încearcă din nou.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Trimis de la <ph name="DEVICE_NAME" /></translation>
-<translation id="130581733275749598">Selectează un șablon pentru evidențiere</translation>
 <translation id="1310482092992808703">Grupează file</translation>
 <translation id="1311657260431405215">Acest cod QR nu este o adresă URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">evidențiere_stilizată_chrome</translation>
@@ -1264,7 +1263,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8683081248374354009">Resetează grupul</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
-<translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8746155870861185046">Distribuie selecția</translation>

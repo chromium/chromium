@@ -414,9 +414,6 @@
 
       如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="1530812829012954197">一律在瀏覽器中算繪以下網址模式</translation>
-<translation id="1534690481294492142">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 將成為 <ph name="CLOUD_PRINT_NAME" />和連接到電腦的舊款印表機之間的 Proxy。使用者可透過 Google 帳戶驗證來啟用雲端列印 Proxy。
-
-      如果將這項政策設為停用，則使用者無法啟用 Proxy，電腦也無法與 <ph name="CLOUD_PRINT_NAME" />共用印表機。</translation>
 <translation id="1552418937045050762">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
 
       如果停用這項設定，使用者就無法使用「鄰近分享」功能。
@@ -1034,9 +1031,6 @@
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於此裝置的所有使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這部裝置。</translation>
 <translation id="225340736558643885">啟用不安全表單的警告功能</translation>
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
-<translation id="2261329877420573811">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_WHITELIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
-
-      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
 <translation id="2266422599396179941">允許使用者提出意見回饋</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
@@ -1124,11 +1118,6 @@
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
-<translation id="2365764204944230431">這項政策已遭到淘汰，請考慮改用 BrowserSignin。
-
-      允許使用者登入 <ph name="PRODUCT_NAME" />。
-
-      如果設定這項政策，你可以設定是否允許使用者登入 <ph name="PRODUCT_NAME" />。將這項政策設為「False」後，將會導致使用 chrome.identity API 的應用程式和擴充功能無法運作，因此建議你改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
@@ -5479,9 +5468,6 @@
       無論是否啟用這項政策，使用者都無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫這項政策。
 
       如果不設定這項政策，系統會啟用網路預測功能，但使用者可以自行變更。</translation>
-<translation id="7955263399078148032">在 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 設為啟用的情況下，如果將 <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> 設為啟用或不設定，遠端用戶端可在無法直接連線時 (例如受到防火牆限制)，使用轉送伺服器連線至這部裝置。
-
-      如果將這項政策設為停用，系統不會停用遠端存取權，但只會允許來自相同網路的連線，禁止網路位址轉譯 (NAT) 穿越或轉送而來的連線。</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7959035883875301444">控管 JavaScript JIT 的使用情形</translation>
@@ -6450,12 +6436,6 @@
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
-<translation id="9150385995327221969">「如果將這項政策設為 Enabled，系統會透過 Google 代管的同步服務，關閉 <ph name="PRODUCT_NAME" /> 的資料同步作業。
-      如要完全關閉 <ph name="CHROME_SYNC_NAME" />服務，建議你前往 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />關閉這項服務。
-
-      如果將這項政策設為 Disabled 或不設定，使用者就可以選擇是否要使用 <ph name="CHROME_SYNC_NAME" />。
-
-      注意：在 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 設為 Enabled 的情況下，請不要啟用這項政策，因為該功能會共用同一個用戶端功能。如果發生這種情況，Google 代管的同步功能會完全關閉。」</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>
 <translation id="9152473318295429890">允許根據目前網頁內容建議相關的網頁</translation>
 <translation id="9153446010242995516">如果 OS 版本比目標版本還新，則復原並維持在目標版本。系統會在版本復原過程中儘可能嘗試沿用網路憑證等裝置層級設定，但即使因故無法還原資料 (例如目標版本不支援還原資料，或變更內容與舊版不相容)，系統仍會復原至目標版本，並執行完整的 Powerwash。
@@ -6492,9 +6472,6 @@
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。
       如果將這項政策設為 <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />，系統會使用 Google 助理入門使用體驗的 EDU 模式。</translation>
 <translation id="9194447412184412480">控管使用外部 IdP 透過 SAML 進行驗證的使用者設定</translation>
-<translation id="9194474490249548275">這項政策僅適用於受管理的訪客工作階段。
-      你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
-如果不設定這項政策，系統就不會從重設程序中排除任何擴充功能。</translation>
 <translation id="9197740283131855199">使用者在螢幕調暗後繼續使用裝置時的螢幕調暗時間延長百分比</translation>
 <translation id="9200828125069750521">使用 POST 的圖片網址參數</translation>
 <translation id="9204863016826119209">這項政策中列出的已安裝 Android 應用程式可以使用企業金鑰。</translation>

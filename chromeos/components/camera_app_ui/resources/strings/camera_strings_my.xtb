@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ကို ပလတ်ဖြုတ်ထားသည်။</translation>
 <translation id="1473110567575736769">၃ စက္ကန့် အချိန်တိုင်းစက်</translation>
-<translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1627744224761163218">၄ x ၄</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ကို ရွေးထားသည်</translation>
 <translation id="2144806332417375165">စိတ်ကြိုက် ဗီဒီယို သတ်မှတ်ချက်များ</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
-<translation id="2268107369530950373">စကင်ဖတ်စက်မုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="229579744168541441">ဒစ်ခ်သို့ ထုတ်ယူရန်</translation>
 <translation id="2320741269052147773">ဘယ်ဘက်ရွှေ့ကြည့်ရန်</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2501853267655415902">ရိုက်ကူးခြင်း ရပ်သွားပါပြီ</translation>
 <translation id="2501953888035679275">သင့်ကင်မရာဖြင့် ဓာတ်ပုံနှင့် ဗီဒီယိုများ ရိုက်ကူးပါ။</translation>
+<translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="2599796128805996109">အနောက်ကင်မရာ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ကို ပလတ်တပ်ထားသည်။</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">ကင်မရာအားလုံးတွင် မှတ်တမ်းမုဒ် ဖွင့်ရန်</translation>
 <translation id="5444515100983837161">မှတ်တမ်းဖိုင်၏ အစွန်းအားလုံးကို ဘောင်အတွင်းထားပါ။ မှတ်တမ်းဖိုင်နှင့် နောက်ခံတို့သည် အရောင်မတူလျှင် စကင် အကောင်းဆုံး ဖတ်နိုင်သည်။</translation>
 <translation id="5671277269877808209">စတုရန်း</translation>
+<translation id="5746169159649715125">PDF အဖြစ်သိမ်း</translation>
 <translation id="5753488212459587150">ကျွမ်းကျင်သူမုဒ် ဖွင့်ရန်</translation>
 <translation id="5759254179196327752">မှတ်တမ်းကို စကင်ဖတ်ရန်</translation>
 <translation id="5775960006311140197">ကျွမ်းကျင်မုဒ်</translation>

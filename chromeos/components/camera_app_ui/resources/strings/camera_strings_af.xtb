@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is uitgeprop.</translation>
 <translation id="1473110567575736769">Afteller van 3 sekondes</translation>
-<translation id="1478594628797167447">Skandeerder</translation>
 <translation id="1545749641540134597">Skandeer QR-kode</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> is aktief</translation>
 <translation id="2144806332417375165">Gepasmaakte videoparameters</translation>
 <translation id="2175927920773552910">QR-kode</translation>
-<translation id="2268107369530950373">Skakel oor na skandeerdermodus</translation>
 <translation id="229579744168541441">Voer uit na skyf</translation>
 <translation id="2320741269052147773">Swenk links</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2501853267655415902">Opname is gestop</translation>
 <translation id="2501953888035679275">Neem foto's en neem video's op met jou kamera.</translation>
+<translation id="2517472476991765520">Skandeer</translation>
 <translation id="2549985041256363841">Begin opname</translation>
 <translation id="2599796128805996109">Agterste kamera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is ingeprop.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Kameraresolusie</translation>
 <translation id="3260401663013584785">Kon nie 'n dokument bespeur nie</translation>
 <translation id="3448774564454087943">Video is nie gestoor nie want dis te kort</translation>
+<translation id="346539236881580388">Neem weer</translation>
 <translation id="3517926952904427380">Kan nie portretfoto neem nie</translation>
 <translation id="3569311554794739032">Wil jy regtig <ph name="FILE" /> verwyder?</translation>
+<translation id="3573890771273113519">Skakel oor na skandeermodus</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skandeer strepieskode</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Aktiveer dokumentmodus op alle kameras</translation>
 <translation id="5444515100983837161">Plaas al die kante van die dokument binne die raam. Skandering werk die beste as die dokument en agtergrond verskillende kleure is.</translation>
 <translation id="5671277269877808209">Vierkant</translation>
+<translation id="5746169159649715125">Stoor as PDF</translation>
 <translation id="5753488212459587150">Aktiveer kennermodus</translation>
 <translation id="5759254179196327752">Skandeer dokument</translation>
 <translation id="5775960006311140197">Kennermodus</translation>
@@ -106,6 +108,7 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8120146556401698679">Swenk-draai-zoem</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8145038249676204903">Skakel oor na neem van foto</translation>
+<translation id="8167081290930651932">Stoor as foto</translation>
 <translation id="8239780215768881278">Neem 'n videofoto</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8425673304802773841">Kantel af</translation>

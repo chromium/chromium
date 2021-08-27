@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
-<translation id="1478594628797167447">Skanner</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2144806332417375165">Anpassade videoparametrar</translation>
 <translation id="2175927920773552910">QR-kod</translation>
-<translation id="2268107369530950373">Byt till skannerläge</translation>
 <translation id="229579744168541441">Exportera till disk</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2501278716633472235">Föregående</translation>
 <translation id="2501853267655415902">Inspelningen stoppades</translation>
 <translation id="2501953888035679275">Ta foton och spela in video med kameran.</translation>
+<translation id="2517472476991765520">Sök</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
 <translation id="2599796128805996109">Bakre kamera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> är ansluten.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Kameraupplösning</translation>
 <translation id="3260401663013584785">Inget dokument identifierades</translation>
 <translation id="3448774564454087943">Videon sparas inte eftersom den är för kort</translation>
+<translation id="346539236881580388">Ta om</translation>
 <translation id="3517926952904427380">Det gick inte att ta porträttfoto</translation>
 <translation id="3569311554794739032">Vill du ta bort <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Byt till skanningsläge</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Läs av streckkod</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Aktivera dokumentläge i alla kameror</translation>
 <translation id="5444515100983837161">Placera dokumentets kanter i ramen. Skanning fungerar bäst om dokumentet och bakgrunden har olika färger.</translation>
 <translation id="5671277269877808209">Kvadratiskt</translation>
+<translation id="5746169159649715125">Spara som PDF</translation>
 <translation id="5753488212459587150">Aktivera expertläge</translation>
 <translation id="5759254179196327752">Skanna dokument</translation>
 <translation id="5775960006311140197">Expertläge</translation>
@@ -106,6 +108,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8120146556401698679">Panorera, luta och zooma</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8145038249676204903">Byt till fotoläge</translation>
+<translation id="8167081290930651932">Spara som foto</translation>
 <translation id="8239780215768881278">Spela in en ögonblicksvideo</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8425673304802773841">Vrid nedåt</translation>

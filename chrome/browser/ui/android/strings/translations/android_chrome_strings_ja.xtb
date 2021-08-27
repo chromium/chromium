@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">最大 60% のデータを節約、今日のニュースもチェック</translation>
 <translation id="1303339473099049190">お探しのパスワードが見つかりません。誤字や脱字がないかご確認のうえ、もう一度お試しください。</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> から送信</translation>
-<translation id="130581733275749598">ハイライト表示のテンプレートを選択します</translation>
 <translation id="1310482092992808703">タブをグループ化</translation>
 <translation id="1311657260431405215">この QR コードは URL ではありません: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -1264,7 +1263,6 @@
 <translation id="8683081248374354009">グループをリセット</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
-<translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8746155870861185046">選択箇所を共有</translation>

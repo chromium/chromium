@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
-<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktiv</translation>
 <translation id="2144806332417375165">Tilpassede videoparametre</translation>
 <translation id="2175927920773552910">QR-kode</translation>
-<translation id="2268107369530950373">Skift til scanningstilstand</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2501853267655415902">Optagelsen er stoppet</translation>
 <translation id="2501953888035679275">Tag billeder, og optag videoer med dit kamera.</translation>
+<translation id="2517472476991765520">Scan</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="2599796128805996109">Bagsidekamera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Kameraets opløsning</translation>
 <translation id="3260401663013584785">Der blev ikke registreret et dokument</translation>
 <translation id="3448774564454087943">Videoen blev ikke gemt, fordi den er for kort</translation>
+<translation id="346539236881580388">Tag igen</translation>
 <translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Skift til scanningstilstand</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Aktivér dokumenttilstand på alle kameraer</translation>
 <translation id="5444515100983837161">Sørg for, at alle dokumentets kanter er inden for rammen. Scanning fungerer bedst, når dokumentet har en anden farve end baggrunden.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5746169159649715125">Gem som PDF</translation>
 <translation id="5753488212459587150">Aktivér eksperttilstand</translation>
 <translation id="5759254179196327752">Dokumentscanning</translation>
 <translation id="5775960006311140197">Eksperttilstand</translation>
@@ -107,6 +109,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8120146556401698679">Panorer drej zoom</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
+<translation id="8167081290930651932">Gem som billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8425673304802773841">Drej nedad</translation>

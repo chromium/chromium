@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">无法预览</translation>
 <translation id="1812302367230252929">阿姆哈拉语音译</translation>
 <translation id="1813278315230285598">服务</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告<ph name="END_BOLD" />：这些文件是临时文件，系统可能会自动删除这些文件以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鹅</translation>
 <translation id="183183971458492120">正在加载信息…</translation>
 <translation id="1834290891154666894">主题备用名称的匹配条目无效</translation>
@@ -575,6 +574,7 @@
 <translation id="6146563240635539929">视频</translation>
 <translation id="6150853954427645995">要保存此文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
+<translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6187719147498869044">匈牙利语</translation>
 <translation id="6189412234224385711">使用“<ph name="EXTENSION_NAME" />”打开</translation>

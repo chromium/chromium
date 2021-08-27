@@ -96,7 +96,6 @@
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
 <translation id="1813278315230285598">Υπηρεσίες</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Προσοχή:<ph name="END_BOLD" /> Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
@@ -593,6 +592,7 @@
 <translation id="6146563240635539929">Βίντεο</translation>
 <translation id="6150853954427645995">Για να αποθηκεύσετε αυτό το αρχείο για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στο αρχείο και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Πεταλούδες</translation>
+<translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
 <translation id="6187719147498869044">Ουγγρικά</translation>
 <translation id="6189412234224385711">Άνοιγμα με <ph name="EXTENSION_NAME" /></translation>

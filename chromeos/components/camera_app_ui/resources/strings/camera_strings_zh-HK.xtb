@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1467231725790366244">抆走咗 <ph name="CAMERA" />。</translation>
 <translation id="1473110567575736769">3 秒計時器</translation>
-<translation id="1478594628797167447">掃瞄器</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">開咗「<ph name="CAMERA" />」</translation>
 <translation id="2144806332417375165">自訂影片參數</translation>
 <translation id="2175927920773552910">二維條碼</translation>
-<translation id="2268107369530950373">切換做掃瞄器模式</translation>
 <translation id="229579744168541441">匯出至磁碟</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">停咗錄影</translation>
 <translation id="2501953888035679275">使用您的相機拍照及錄影。</translation>
+<translation id="2517472476991765520">掃瞄</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2599796128805996109">後置鏡頭</translation>
 <translation id="2879583609344924966">插入咗 <ph name="CAMERA" />。</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">相機解像度</translation>
 <translation id="3260401663013584785">無法偵測文件</translation>
 <translation id="3448774564454087943">影片太短，因此系統並未儲存影片</translation>
+<translation id="346539236881580388">重拍</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">您確定要移除「<ph name="FILE" />」嗎？</translation>
+<translation id="3573890771273113519">切換去掃瞄模式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">在所有相機上啟用文件模式</translation>
 <translation id="5444515100983837161">將鏡頭對準文件，確認各邊都在方框內。如要獲得最佳的掃瞄效果，請將文件與背景的顏色區分起來。</translation>
 <translation id="5671277269877808209">正方形</translation>
+<translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5753488212459587150">啟用專業模式</translation>
 <translation id="5759254179196327752">掃瞄文件</translation>
 <translation id="5775960006311140197">專業模式</translation>
@@ -106,6 +108,7 @@
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8145038249676204903">切換至拍照模式</translation>
+<translation id="8167081290930651932">儲存為相片</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8425673304802773841">向下傾斜</translation>

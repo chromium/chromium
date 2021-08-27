@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Ingen tilgængelig forhåndsvisning</translation>
 <translation id="1812302367230252929">Amharisk translitteration</translation>
 <translation id="1813278315230285598">Tjenester</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Advarsel!<ph name="END_BOLD" /> Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Indlæser oplysninger...</translation>
 <translation id="1834290891154666894">Ugyldig indtastning for match af alternativt emnenavn</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Videoer</translation>
 <translation id="6150853954427645995">Hvis du vil gemme denne fil til offlinebrug, skal du gå online igen, højreklikke på filerne og vælge indstillingen <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Sommerfugle</translation>
+<translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6189412234224385711">Åbn med <ph name="EXTENSION_NAME" /></translation>

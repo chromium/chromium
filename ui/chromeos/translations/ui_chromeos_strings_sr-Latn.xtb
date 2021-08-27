@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija amharskog</translation>
 <translation id="1813278315230285598">Usluge</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Oprez:<ph name="END_BOLD" /> Ove datoteke su privremene i mogu da se automatski izbrišu da bi se oslobodio prostor na disku. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Informacije se učitavaju...</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva subjekta</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Video snimci</translation>
 <translation id="6150853954427645995">Da biste sačuvali ovu datoteku za oflajn korišćenje, povežite se ponovo na internet, kliknite desnim tasterom na datoteku i izaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Leptiri</translation>
+<translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">mađarski</translation>
 <translation id="6189412234224385711">Otvori pomoću dodatka <ph name="EXTENSION_NAME" /></translation>

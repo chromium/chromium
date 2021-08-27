@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Алдын ала көрүү мүмкүнчүлүгү жок</translation>
 <translation id="1812302367230252929">Амхарча (транслитерация)</translation>
 <translation id="1813278315230285598">Кызматтар</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Эскертүү:<ph name="END_BOLD" /> Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
 <translation id="1834290891154666894">Cубъекттин кошумча аталышына окшош жараксыз жазуу</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">Видеолор</translation>
 <translation id="6150853954427645995">Бул файлды оффлайнда колдонуу үчүн онлайнга кайтып, файлды оң баскыч менен чыкылдатып, <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
 <translation id="6164412158936057769">Көпөлөктөр</translation>
+<translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Венгерче</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> менен ачуу</translation>

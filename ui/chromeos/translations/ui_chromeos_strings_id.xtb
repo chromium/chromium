@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
 <translation id="1813278315230285598">Layanan</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perhatian:<ph name="END_BOLD" /> File ini bersifat sementara dan dapat dihapus secara otomatis untuk menambah ruang disk. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuat informasi...</translation>
 <translation id="1834290891154666894">Entri kecocokan nama alternatif subjek tidak valid</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Kupu-kupu</translation>
+<translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungaria</translation>
 <translation id="6189412234224385711">Buka dengan <ph name="EXTENSION_NAME" /></translation>

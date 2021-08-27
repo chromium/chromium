@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
-<translation id="130581733275749598">ನಿಮ್ಮ ಹೈಲೈಟ್‌ಗಾಗಿ ಟೆಂಪ್ಲೇಟ್‌‌ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1310482092992808703">ಟ್ಯಾಬ್‌ ಗುಂಪುಗೂಡಿಸಿ</translation>
 <translation id="1311657260431405215">ಈ QR ಕೋಡ್ URL ಅಲ್ಲ: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -310,6 +309,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2932222164150889403">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಬದಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2942036813789421260">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ಮುಚ್ಚಿದೆ</translation>
+<translation id="2946420957526726953">Chrome ಅನ್ನು ಇತರ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2956410042958133412">ಈ ಖಾತೆಯನ್ನು <ph name="PARENT_NAME_1" /> ಮತ್ತು <ph name="PARENT_NAME_2" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ಓದದಿರುವ ಪುಟ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}}</translation>
 <translation id="2961210776189273067">ಶೀರ್ಷಿಕೆ</translation>
@@ -615,6 +615,7 @@
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="488187801263602086">ಫೈಲ್‌ ಮರುಹೆಸರಿಸಿ</translation>
 <translation id="4885273946141277891">ಬೆಂಬಲಿಸದಿರುವ Chrome ನಿದರ್ಶನಗಳ ಸಂಖ್ಯೆ.</translation>
+<translation id="4905823827770127520">ಪುಟಕ್ಕೆ ಲಿಂಕ್ ಸೇರಿಸಿ</translation>
 <translation id="4908869848243824489">Google ನಿಂದ Discover</translation>
 <translation id="4910889077668685004">ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="4912413785358399818">ಟ್ಯಾಬ್ ಸರಿಸಿ</translation>
@@ -1261,7 +1262,6 @@
 <translation id="8683081248374354009">ಗುಂಪನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
-<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>

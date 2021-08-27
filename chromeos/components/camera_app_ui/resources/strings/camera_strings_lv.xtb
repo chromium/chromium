@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> ir atvienota.</translation>
 <translation id="1473110567575736769">3 sekunžu taimeris</translation>
-<translation id="1478594628797167447">Skeneris</translation>
 <translation id="1545749641540134597">Skenējiet QR kodu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktīva</translation>
 <translation id="2144806332417375165">Pielāgoti video parametri</translation>
 <translation id="2175927920773552910">QR kods</translation>
-<translation id="2268107369530950373">Pārslēgties uz skenera režīmu</translation>
 <translation id="229579744168541441">Eksportēt diskā</translation>
 <translation id="2320741269052147773">Bīdīt pa kreisi</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2501853267655415902">Ierakstīšana apturēta</translation>
 <translation id="2501953888035679275">Uzņemiet fotoattēlus un ierakstiet videoklipus, izmantojot savu kameru.</translation>
+<translation id="2517472476991765520">Meklēt</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="2599796128805996109">Aizmugurējā kamera</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> ir pievienota.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">Iespējot dokumentu režīmu visās kamerās</translation>
 <translation id="5444515100983837161">Novietojiet visas dokumenta malas kadrā. Skenēšana darbojas vislabāk, ja dokuments un fons ir atšķirīgā krāsā.</translation>
 <translation id="5671277269877808209">Kvadrāts</translation>
+<translation id="5746169159649715125">Saglabāt kā PDF failu</translation>
 <translation id="5753488212459587150">Iespējot eksperta režīmu</translation>
 <translation id="5759254179196327752">Skenēt dokumentu</translation>
 <translation id="5775960006311140197">Eksperta režīms</translation>

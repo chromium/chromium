@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">데이터 최대 60% 절약 및 오늘의 뉴스 읽기</translation>
 <translation id="1303339473099049190">비밀번호를 찾을 수 없습니다. 철자를 확인하고 다시 시도해 주세요.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />에서 전송</translation>
-<translation id="130581733275749598">강조표시에 사용할 템플릿 선택</translation>
 <translation id="1310482092992808703">탭 그룹화</translation>
 <translation id="1311657260431405215">이 QR 코드(<ph name="QRCODEVALUE" />)는 URL이 아닙니다.</translation>
 <translation id="1316212908214730110">Chrome_스타일_지정된_하이라이트_</translation>
@@ -1264,7 +1263,6 @@
 <translation id="8683081248374354009">그룹 재설정</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
-<translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8746155870861185046">강조표시한 텍스트 공유</translation>

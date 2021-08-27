@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Nenhuma visualização disponível</translation>
 <translation id="1812302367230252929">Amárico (transliteração)</translation>
 <translation id="1813278315230285598">Serviços</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenção:<ph name="END_BOLD" /> Estes arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="183183971458492120">Carregando informações…</translation>
 <translation id="1834290891154666894">Entrada inválida de correspondência do nome alternativo do assunto</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Vídeos</translation>
 <translation id="6150853954427645995">Para salvar este arquivo para uso off-line, fique on-line novamente, clique com o botão direito no arquivo e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Borboletas</translation>
+<translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir com <ph name="EXTENSION_NAME" /></translation>

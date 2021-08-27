@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> અનપ્લગ કરેલું છે.</translation>
 <translation id="1473110567575736769">3 સેકન્ડનું ટાઇમર</translation>
-<translation id="1478594628797167447">સ્કૅનર</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
 <translation id="1620510694547887537">કૅમેરો</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> સક્રિય</translation>
 <translation id="2144806332417375165">કસ્ટમ વીડિયો પેરામીટર</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
-<translation id="2268107369530950373">સ્કૅનર મોડ પર સ્વિચ કરો</translation>
 <translation id="229579744168541441">ડિસ્કમાં નિકાસ કરો</translation>
 <translation id="2320741269052147773">ડાબે બાજુએ ફેરવો</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2501853267655415902">રેકોર્ડિંગ બંધ કર્યું</translation>
 <translation id="2501953888035679275">તમારા કૅમેરા વડે ફોટા લો અને વીડિયો રેકોર્ડ કરો.</translation>
+<translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
 <translation id="2599796128805996109">પાછળનો કૅમેરા</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> પ્લગ-ઇન કરેલું છે.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">બધા કૅમેરામાં 'દસ્તાવેજ મોડ' ચાલુ કરો</translation>
 <translation id="5444515100983837161">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો. જો દસ્તાવેજ અને બૅકગ્રાઉન્ડ અલગ-અલગ રંગોના હોય, તો સ્કૅન શ્રેષ્ઠ રીતે કામ કરે છે.</translation>
 <translation id="5671277269877808209">ચોરસ</translation>
+<translation id="5746169159649715125">PDF તરીકે સાચવો</translation>
 <translation id="5753488212459587150">નિષ્ણાત મોડ ચાલુ કરો</translation>
 <translation id="5759254179196327752">દસ્તાવેજને સ્કૅન કરો</translation>
 <translation id="5775960006311140197">નિષ્ણાત મોડ</translation>

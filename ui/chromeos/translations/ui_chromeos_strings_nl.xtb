@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Geen voorbeeld beschikbaar</translation>
 <translation id="1812302367230252929">Amhaars (transliteratie)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Let op:<ph name="END_BOLD" /> Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguïn</translation>
 <translation id="183183971458492120">Informatie laden…</translation>
 <translation id="1834290891154666894">Ongeldige invoer voor overeenkomst voor alternatieve naam van onderwerp</translation>
@@ -581,6 +580,7 @@
 <translation id="6146563240635539929">Video's</translation>
 <translation id="6150853954427645995">Als je dit bestand wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op het bestand en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Vlinders</translation>
+<translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6189412234224385711">Openen met <ph name="EXTENSION_NAME" /></translation>

@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग किया गया.</translation>
 <translation id="1473110567575736769">तीन सेकंड का टाइमर</translation>
-<translation id="1478594628797167447">स्कैनर</translation>
 <translation id="1545749641540134597">QR कोड स्कैन करें</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> चालू है</translation>
 <translation id="2144806332417375165">कस्टम वीडियो पैरामीटर</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
-<translation id="2268107369530950373">स्कैनर मोड पर जाएं</translation>
 <translation id="229579744168541441">डिस्क में ले जाएं</translation>
 <translation id="2320741269052147773">बाईं ओर पैन करें</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2501853267655415902">रिकॉर्डिंग रुक गई है</translation>
 <translation id="2501953888035679275">अपने कैमरे से फ़ोटो खींचें और वीडियो रिकॉर्ड करें.</translation>
+<translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="2599796128805996109">पीछे वाला कैमरा</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> प्लग किया गया.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">सभी कैमरे के लिए दस्तावेज़ मोड चालू करें</translation>
 <translation id="5444515100983837161">दस्तावेज़ के सभी कोने फ़्रेम के अंदर रखें. दस्तावेज़ और बैकग्राउंड का रंग अलग-अलग होने पर स्कैन बेहतर होता है.</translation>
 <translation id="5671277269877808209">वर्ग</translation>
+<translation id="5746169159649715125">PDF के रूप में सेव करें</translation>
 <translation id="5753488212459587150">एक्सपर्ट मोड चालू करें</translation>
 <translation id="5759254179196327752">दस्तावेज़ स्कैन करें</translation>
 <translation id="5775960006311140197">एक्सपर्ट मोड</translation>

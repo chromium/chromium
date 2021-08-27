@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />चेतावनी:<ph name="END_BOLD" />  ये फ़ाइलें अस्‍थायी हैं और डि‍स्‍क का स्थान खाली करने के लि‍ए अपने आप हटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1834290891154666894">विषय के दूसरे नाम से मिलती-जुलती एंट्री अमान्य है</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">वीडियो</translation>
 <translation id="6150853954427645995">इस फ़ाइल को ऑफ़लाइन देखने को सेव करने के लिए, फिर से ऑनलाइन होकर, फ़ाइल पर राइट-क्‍लिक करें और <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्‍प को चुनें.</translation>
 <translation id="6164412158936057769">तितलियां</translation>
+<translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> से खोलें</translation>

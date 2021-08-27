@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">Desconectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
-<translation id="1478594628797167447">Escáner</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> (dispositivo activado)</translation>
 <translation id="2144806332417375165">Parámetros personalizados de vídeo</translation>
 <translation id="2175927920773552910">Código QR</translation>
-<translation id="2268107369530950373">Cambiar ao modo escáner</translation>
 <translation id="229579744168541441">Exportar ao disco</translation>
 <translation id="2320741269052147773">Desprazar cara á esquerda</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Detívose a gravación</translation>
 <translation id="2501953888035679275">Saca fotos e grava vídeos coa cámara.</translation>
+<translation id="2517472476991765520">Buscar</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2599796128805996109">Cámara traseira</translation>
 <translation id="2879583609344924966">Conectouse a cámara <ph name="CAMERA" />.</translation>
@@ -70,6 +69,7 @@
 <translation id="5268823927180092501">Activar modo de documento en todas as cámaras</translation>
 <translation id="5444515100983837161">Coloca todos os bordos do documento no marco. O escaneado funciona mellor se o documento e o fondo son de cores diferentes.</translation>
 <translation id="5671277269877808209">Cadrado</translation>
+<translation id="5746169159649715125">Gardar como PDF</translation>
 <translation id="5753488212459587150">Activar modo experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>
 <translation id="5775960006311140197">Modo experto</translation>

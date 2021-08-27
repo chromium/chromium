@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Ուշադրություն.<ph name="END_BOLD" /> Այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել սկավառակի վրա տարածք ազատելու համար: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
 <translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">Տեսանյութեր</translation>
 <translation id="6150853954427645995">Այս ֆայլը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="6164412158936057769">Թիթեռներ</translation>
+<translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6170470584681422115">Սենդվիչ</translation>
 <translation id="6187719147498869044">հունգարերեն</translation>
 <translation id="6189412234224385711">Բացել <ph name="EXTENSION_NAME" /> ընդլայնման միջոցով</translation>

@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">No preview available</translation>
 <translation id="1812302367230252929">Amharic transliteration</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Caution:<ph name="END_BOLD" />  These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn More<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Loading information...</translation>
 <translation id="1834290891154666894">Invalid subject alternative name match entry</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Videos</translation>
 <translation id="6150853954427645995">To save this file for offline use, get back online, right-click the file and select the <ph name="OFFLINE_CHECKBOX_NAME" /> option.</translation>
 <translation id="6164412158936057769">Butterflies</translation>
+<translation id="6165508094623778733">Learn more</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungarian</translation>
 <translation id="6189412234224385711">Open with <ph name="EXTENSION_NAME" /></translation>

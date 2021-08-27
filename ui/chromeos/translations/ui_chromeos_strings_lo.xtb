@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">ບໍ່ມີຕົວຢ່າງສະແດງ</translation>
 <translation id="1812302367230252929">ການແປທັບສັບພາສາອາມຮາຣິກ</translation>
 <translation id="1813278315230285598">ການ​ບໍ​ລິ​ການ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ລະວັງ:<ph name="END_BOLD" />  ໄຟລ໌ເຫຼົ່ານີ​ແມ່ນ​ໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ມີບ່ອນ​ວ່າງດິສກ໌.  <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ນົກເພັນກວິນ</translation>
 <translation id="183183971458492120">ກຳລັງໂຫຼດຂໍ້ມູນ...</translation>
 <translation id="1834290891154666894">ຂໍ້ມູນການຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້ບໍ່ຖືກຕ້ອງ</translation>
@@ -579,6 +578,7 @@
 <translation id="6146563240635539929">ວິດີໂອ</translation>
 <translation id="6150853954427645995">ເພື່ອ​ບັນ​ທຶກ​ໄຟ​ລ໌​ນີ້​ໄວ້​ໃຊ້​ອອ​ຟ​ລາຍ​ນ໌, ກັບ​ຄືນ​ໄປ​ອອນ​ລາຍ​ນ໌, ຄ​ລິກ​ເບື້ອງ​ຂວາ​ໃສ່​ໄຟ​ລ໌, ແລະ​ເລືອກ​ທາງ​ເລືອກ <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">ແມງກະເບື້ອ</translation>
+<translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
 <translation id="6187719147498869044">ພາສາຮັງກາຣຽນ</translation>
 <translation id="6189412234224385711">ເປີດດ້ວຍ <ph name="EXTENSION_NAME" /></translation>

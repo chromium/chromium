@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
 <translation id="1813278315230285598">服務</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資料…</translation>
 <translation id="1834290891154666894">無效的主體替代名稱相符項目</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">影片</translation>
 <translation id="6150853954427645995">如要儲存這個檔案以供離線使用，請連上網絡，在該檔案上按一下滑鼠右鍵，然後選取 <ph name="OFFLINE_CHECKBOX_NAME" /> 選項。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
+<translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6170470584681422115">三文治</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
 <translation id="6189412234224385711">使用「<ph name="EXTENSION_NAME" />」開啟</translation>

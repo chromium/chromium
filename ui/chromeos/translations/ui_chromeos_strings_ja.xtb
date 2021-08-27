@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
 <translation id="1812302367230252929">アムハラ語（文字変換）</translation>
 <translation id="1813278315230285598">サービス</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="183183971458492120">情報を読み込んでいます...</translation>
 <translation id="1834290891154666894">無効なサブジェクト代替名マッチのエントリ</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">動画</translation>
 <translation id="6150853954427645995">このファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
 <translation id="6164412158936057769">蝶</translation>
+<translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6187719147498869044">ハンガリー語</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> で開く</translation>

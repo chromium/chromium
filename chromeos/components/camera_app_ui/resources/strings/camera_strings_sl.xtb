@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
-<translation id="1478594628797167447">Optični bralniki</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Fotoaparat <ph name="CAMERA" /> je aktiven</translation>
 <translation id="2144806332417375165">Parametri videoposnetkov po meri</translation>
 <translation id="2175927920773552910">Koda QR</translation>
-<translation id="2268107369530950373">Preklop na način optičnega bralnika</translation>
 <translation id="229579744168541441">Izvoz na disk</translation>
 <translation id="2320741269052147773">Premakni v levo</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2501853267655415902">Snemanje je ustavljeno</translation>
 <translation id="2501953888035679275">Fotografirajte in snemajte videoposnetke s fotoaparatom.</translation>
+<translation id="2517472476991765520">Išči</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
 <translation id="2599796128805996109">Hrbtni fotoaparat</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> je priključena.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Ločljivost fotoaparata</translation>
 <translation id="3260401663013584785">Dokumenta ni bilo mogoče zaznati</translation>
 <translation id="3448774564454087943">Videoposnetek se ni shranil, ker je prekratek</translation>
+<translation id="346539236881580388">Znova posnemi</translation>
 <translation id="3517926952904427380">Portretne fotografije ni bilo mogoče posneti</translation>
 <translation id="3569311554794739032">Ali res želite odstraniti datoteko <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Preklop na način iskanja</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Optično branje črtne kode</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Omogočanje načina dokumentov v vseh fotoaparatih</translation>
 <translation id="5444515100983837161">Postavite vse robe dokumenta znotraj okvira. Optično branje deluje najbolje, če sta dokument in ozadje različnih barv.</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
+<translation id="5746169159649715125">Shrani kot PDF</translation>
 <translation id="5753488212459587150">Omogoči poznavalski način</translation>
 <translation id="5759254179196327752">Optično branje dokumenta</translation>
 <translation id="5775960006311140197">Poznavalski način</translation>
@@ -106,6 +108,7 @@
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>
+<translation id="8167081290930651932">Shrani kot fotografijo</translation>
 <translation id="8239780215768881278">Posnetek videa</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8425673304802773841">Nagni navzdol</translation>
