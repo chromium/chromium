@@ -21,25 +21,16 @@ class PermissionRequestChip : public PermissionChip {
   PermissionRequestChip& operator=(const PermissionRequestChip& chip) = delete;
   ~PermissionRequestChip() override;
 
-  // PermissionChip:
-  void OpenBubble() override;
-  views::BubbleDialogDelegateView* GetPermissionPromptBubbleForTest() override;
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
-
-  // BubbleOwnerDelegate:
-  bool IsBubbleShowing() const override;
-
  private:
+  // PermissionChip:
+  views::View* CreateBubble() override;
+
   void RecordChipButtonPressed();
 
   Browser* browser_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;
-
-  views::BubbleDialogDelegateView* prompt_bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_REQUEST_CHIP_H_
