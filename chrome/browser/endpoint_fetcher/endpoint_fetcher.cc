@@ -282,6 +282,10 @@ void EndpointFetcher::OnSanitizationResult(
   std::move(endpoint_fetcher_callback).Run(std::move(response));
 }
 
+std::string EndpointFetcher::GetUrlForTesting() {
+  return url_.spec();
+}
+
 #if defined(OS_ANDROID)
 namespace {
 static void OnEndpointFetcherComplete(

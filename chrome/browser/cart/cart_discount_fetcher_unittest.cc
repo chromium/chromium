@@ -4,12 +4,15 @@
 
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +42,8 @@ const int kMockMerchantALastTimestamp = 1;
 const int kThirtyMinutesInSeconds = 1800;
 const char kMockMerchantARawOfferIdOne[] = "offerId1";
 const char kMockMerchantARawOfferIdTwo[] = "offerId2";
+const char kConfigurableEndpoint[] = "https://testing_endpoint.com/discounts";
+const char kLocales[] = "en-US";
 
 const char kEndpointResponse[] =
     "{ "
@@ -96,6 +101,16 @@ class CartDiscountFetcherTest {
       double current_timestamp) {
     return CartDiscountFetcher::generatePostData(
         std::move(proto_pairs), base::Time::FromDoubleT(current_timestamp));
+  }
+
+  static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      bool is_oauth_fetch,
+      const std::string fetch_for_locale) {
+    return CartDiscountFetcher::CreateEndpointFetcher(
+        std::move(pending_factory), std::move(proto_pairs), is_oauth_fetch,
+        fetch_for_locale);
   }
 
   static void OnDiscountsAvailable(
@@ -393,4 +408,30 @@ TEST(CartDiscountFetcherTest, TestOverallDiscountTextWithRuleDiscounts) {
   EXPECT_EQ(cart_discount_map.size(), 1u);
   EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).highest_discount_string,
             "20% off");
+}
+
+class CartDiscountFetcherConfigurableEndpointTest : public testing::Test {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartDiscountFetcherConfigurableEndpointTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"CartDiscountFetcherEndpointParam", kConfigurableEndpoint}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(CartDiscountFetcherConfigurableEndpointTest,
+       TestServerConfiguraleEndpoint) {
+  scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
+      CartDiscountFetcherTest::CreateEndpointFetcher(
+          shared_url_loader_factory->Clone(), {}, false /*is_oauth_fetch*/,
+          kLocales);
+  EXPECT_EQ(endpoint_fetcher->GetUrlForTesting(), kConfigurableEndpoint);
 }

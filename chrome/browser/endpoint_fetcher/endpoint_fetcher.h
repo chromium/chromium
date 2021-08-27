@@ -114,6 +114,8 @@ class EndpointFetcher {
   virtual void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
                               const char* key);
 
+  std::string GetUrlForTesting();
+
  protected:
   // Used for Mock only. see MockEndpointFetcher class.
   explicit EndpointFetcher(

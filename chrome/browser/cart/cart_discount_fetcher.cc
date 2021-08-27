@@ -16,6 +16,7 @@
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/search/ntp_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,6 +30,13 @@ const char kAcceptLanguageKey[] = "Accept-Language";
 const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
 const int64_t kTimeoutMs = 30000;
+
+const char kCartDiscountFetcherEndpointParam[] =
+    "CartDiscountFetcherEndpointParam";
+
+constexpr base::FeatureParam<std::string> kDiscountFetcherServerConfigEndpoint{
+    &ntp_features::kNtpChromeCartModule, kCartDiscountFetcherEndpointParam,
+    kFetchDiscountsEndpoint};
 
 struct DiscountInfo {
   std::vector<cart_db::DiscountInfoProto> discount_list;
@@ -321,7 +329,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
   const std::vector<std::string> headers{kAcceptLanguageKey, std::move(fetch_for_locale)};
 
   return std::make_unique<EndpointFetcher>(
-      GURL(kFetchDiscountsEndpoint), kPostMethod, kContentType, kTimeoutMs,
+      GURL(kDiscountFetcherServerConfigEndpoint.Get()), kPostMethod,
+      kContentType, kTimeoutMs,
       generatePostData(proto_pairs, base::Time::Now()), headers,
       traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
