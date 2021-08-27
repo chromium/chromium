@@ -44,7 +44,7 @@ class X11ScreenOzone : public PlatformScreen,
   display::Display GetDisplayNearestPoint(
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
-      const gfx::Rect& match_rect_in_pixels) const override;
+      const gfx::Rect& match_rect) const override;
   void SetScreenSaverSuspended(bool suspend) override;
   bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;

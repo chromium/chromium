@@ -120,6 +120,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event, bool transient) override;
 #endif
   bool IsOverrideRedirect() const override;
+  gfx::Rect GetGuessedFullScreenSizeInPx() const override;
 
   // Enables event listening after closing |dialog|.
   void EnableEventListening();

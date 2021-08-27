@@ -53,7 +53,12 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
     return GetPrimaryDisplay();
 
   X11Window* window = window_manager_->GetWindow(widget);
-  return window ? GetDisplayMatching(window->GetBounds()) : GetPrimaryDisplay();
+  if (window) {
+    gfx::Rect bounds_dip = gfx::ToEnclosingRect(
+        gfx::ConvertRectToDips(window->GetBounds(), GetXDisplayScaleFactor()));
+    return GetDisplayMatching(bounds_dip);
+  }
+  return GetPrimaryDisplay();
 }
 
 gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
@@ -101,9 +106,7 @@ display::Display X11ScreenOzone::GetDisplayNearestPoint(
 }
 
 display::Display X11ScreenOzone::GetDisplayMatching(
-    const gfx::Rect& match_rect_in_pixels) const {
-  gfx::Rect match_rect = gfx::ToEnclosingRect(
-      gfx::ConvertRectToDips(match_rect_in_pixels, GetXDisplayScaleFactor()));
+    const gfx::Rect& match_rect) const {
   const display::Display* matching_display =
       display::FindDisplayWithBiggestIntersection(
           x11_display_manager_->displays(), match_rect);

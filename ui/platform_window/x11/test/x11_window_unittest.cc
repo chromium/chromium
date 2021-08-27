@@ -106,6 +106,10 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
   ShapedX11ExtensionDelegate() = default;
   ~ShapedX11ExtensionDelegate() override = default;
 
+  void set_guessed_bounds(const gfx::Rect& guessed_bounds_px) {
+    guessed_bounds_px_ = guessed_bounds_px;
+  }
+
   void OnLostMouseGrab() override {}
 #if BUILDFLAG(USE_ATK)
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event,
@@ -114,6 +118,12 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
   }
 #endif
   bool IsOverrideRedirect() const override { return false; }
+  gfx::Rect GetGuessedFullScreenSizeInPx() const override {
+    return guessed_bounds_px_;
+  }
+
+ private:
+  gfx::Rect guessed_bounds_px_;
 };
 
 // Blocks till the window state hint, |hint|, is set or unset.
@@ -377,6 +387,7 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   TestPlatformWindowDelegate delegate;
   ShapedX11ExtensionDelegate x11_extension_delegate;
   constexpr gfx::Rect bounds(100, 100, 100, 100);
+  x11_extension_delegate.set_guessed_bounds(bounds);
   auto window = CreateX11Window(&delegate, bounds, &x11_extension_delegate);
   x11::Window x11_window = window->window();
   window->Show(false);

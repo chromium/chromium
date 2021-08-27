@@ -614,13 +614,9 @@ void X11Window::ToggleFullscreen() {
   // See https://crbug.com/361408
   gfx::Rect new_bounds_px = GetBounds();
   if (fullscreen) {
-    display::Screen* screen = display::Screen::GetScreen();
-    const display::Display display = screen->GetDisplayMatching(new_bounds_px);
     SetRestoredBoundsInPixels(new_bounds_px);
-    new_bounds_px =
-        gfx::Rect(gfx::ScaleToFlooredPoint(display.bounds().origin(),
-                                           display.device_scale_factor()),
-                  display.GetSizeInPixel());
+    if (x11_extension_delegate_)
+      new_bounds_px = x11_extension_delegate_->GetGuessedFullScreenSizeInPx();
   } else {
     // Exiting "browser fullscreen mode", but the X11 window is not necessarily
     // in fullscreen state (e.g: a WM keybinding might have been used to toggle

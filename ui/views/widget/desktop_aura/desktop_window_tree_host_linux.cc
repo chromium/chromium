@@ -325,6 +325,15 @@ bool DesktopWindowTreeHostLinux::IsOverrideRedirect() const {
   return false;
 }
 
+gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
+  display::Screen* screen = display::Screen::GetScreen();
+  const display::Display display =
+      screen->GetDisplayMatching(GetWindowBoundsInScreen());
+  return gfx::Rect(gfx::ScaleToFlooredPoint(display.bounds().origin(),
+                                            display.device_scale_factor()),
+                   display.GetSizeInPixel());
+}
+
 void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {
