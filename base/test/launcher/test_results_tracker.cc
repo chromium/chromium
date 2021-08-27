@@ -251,27 +251,60 @@ void TestResultsTracker::AddTestResult(const TestResult& result) {
   std::string test_name_without_disabled_prefix =
       TestNameWithoutDisabledPrefix(result.full_name);
   auto it = results_map.find(test_name_without_disabled_prefix);
-  // If the test name is not present in the results map, then we did not
-  // generate a placeholder for the test. We shouldn't record its result either.
-  // It's a test that the delegate ran, e.g. a PRE_XYZ test.
-  if (it == results_map.end())
-    return;
 
   // Record disabled test names without DISABLED_ prefix so that they are easy
   // to compare with regular test names, e.g. before or after disabling.
   AggregateTestResult& aggregate_test_result = it->second;
 
+  // If the current test_result is a PRE test and it failed, insert its result
+  // in the corresponding non-PRE test's place.
+  std::string test_name_without_pre_prefix(test_name_without_disabled_prefix);
+  ReplaceSubstringsAfterOffset(&test_name_without_pre_prefix, 0, "PRE_", "");
+  if (test_name_without_pre_prefix != test_name_without_disabled_prefix) {
+    if (result.status != TestResult::TEST_SUCCESS) {
+      it = results_map.find(test_name_without_pre_prefix);
+      AggregateTestResult& aggregate_test_result = it->second;
+      if (!aggregate_test_result.test_results.empty() &&
+          aggregate_test_result.test_results.back().status ==
+              TestResult::TEST_NOT_RUN) {
+        // Also need to remove the non-PRE test's placeholder.
+        it->second.test_results.pop_back();
+      }
+      it->second.test_results.push_back(result);
+    }
+    // We quit early here and let the non-PRE test detect this result and
+    // modify its result appropriately.
+    return;
+  }
+
   // If the last test result is a placeholder, then get rid of it now that we
-  // have real results. It's possible for no placeholder to exist if the test is
-  // setup for another test, e.g. PRE_ComponentAppBackgroundPage is a test whose
-  // sole purpose is to prime the test ComponentAppBackgroundPage.
+  // have real results.
   if (!aggregate_test_result.test_results.empty() &&
       aggregate_test_result.test_results.back().status ==
           TestResult::TEST_NOT_RUN) {
     aggregate_test_result.test_results.pop_back();
   }
 
-  aggregate_test_result.test_results.push_back(result);
+  TestResult result_to_add = result;
+  if (!aggregate_test_result.test_results.empty()) {
+    TestResult prev_result = aggregate_test_result.test_results.back();
+    if (prev_result.full_name != test_name_without_disabled_prefix) {
+      // Some other test's result is in our place! It must be our failed PRE
+      // test. Modify our own result if it failed and we succeeded so we don't
+      // end up silently swallowing PRE-only failures.
+      std::string prev_result_name(prev_result.full_name);
+      ReplaceSubstringsAfterOffset(&prev_result_name, 0, "PRE_", "");
+      CHECK_EQ(prev_result_name, test_name_without_disabled_prefix);
+
+      if (result.status == TestResult::TEST_SUCCESS) {
+        TestResult modified_result(prev_result);
+        modified_result.full_name = test_name_without_disabled_prefix;
+        result_to_add = modified_result;
+      }
+      aggregate_test_result.test_results.pop_back();
+    }
+  }
+  aggregate_test_result.test_results.push_back(result_to_add);
 }
 
 void TestResultsTracker::AddLeakedItems(

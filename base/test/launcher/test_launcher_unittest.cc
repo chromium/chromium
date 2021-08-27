@@ -407,6 +407,33 @@ TEST_F(TestLauncherTest, RetryPreTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Test TestLauncher should fail if a PRE test fails but its non-PRE test passes
+TEST_F(TestLauncherTest, PreTestFailure) {
+  AddMockedTests("Test", {"FirstTest", "PRE_FirstTest"});
+  SetUpExpectCalls();
+  std::vector<TestResult> results = {
+      GenerateTestResult("Test.PRE_FirstTest", TestResult::TEST_FAILURE),
+      GenerateTestResult("Test.FirstTest", TestResult::TEST_SUCCESS)};
+  using ::testing::_;
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(
+          ::testing::DoAll(OnTestResult(&test_launcher, "Test.PRE_FirstTest",
+                                        TestResult::TEST_FAILURE),
+                           OnTestResult(&test_launcher, "Test.FirstTest",
+                                        TestResult::TEST_SUCCESS)));
+  EXPECT_CALL(test_launcher,
+              LaunchChildGTestProcess(
+                  _, testing::ElementsAre("Test.PRE_FirstTest"), _, _))
+      .WillOnce(OnTestResult(&test_launcher, "Test.PRE_FirstTest",
+                             TestResult::TEST_FAILURE));
+  EXPECT_CALL(
+      test_launcher,
+      LaunchChildGTestProcess(_, testing::ElementsAre("Test.FirstTest"), _, _))
+      .WillOnce(OnTestResult(&test_launcher, "Test.FirstTest",
+                             TestResult::TEST_SUCCESS));
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
 // Test TestLauncher run disabled unit tests switch.
 TEST_F(TestLauncherTest, RunDisabledTests) {
   AddMockedTests("DISABLED_TestDisabled", {"firstTest"});

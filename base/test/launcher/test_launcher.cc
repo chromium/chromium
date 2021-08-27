@@ -1838,9 +1838,12 @@ std::vector<std::string> TestLauncher::CollectTests() {
     // locations only for those tests that were run as part of this shard.
     results_tracker_.AddTestLocation(test_name, test_info.file(),
                                      test_info.line());
+
     if (!test_info.pre_test()) {
       // Only a subset of tests that are run require placeholders -- namely,
-      // those that will output results.
+      // those that will output results. Note that the results for PRE_XYZ will
+      // be merged into XYZ's results if the former fails, so we don't need a
+      // placeholder for it.
       results_tracker_.AddTestPlaceholder(test_name);
     }
 
