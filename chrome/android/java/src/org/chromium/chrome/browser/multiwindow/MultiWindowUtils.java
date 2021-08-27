@@ -114,15 +114,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         ComponentName comp = new ComponentName(packageName, className);
         try {
             int launchMode = context.getPackageManager().getActivityInfo(comp, 0).launchMode;
-            // ActivityInfo#LAUNCH_SINGLE_INSTANCE_PER_TASK is introduced in S.
-            Field launchSingleInstancePerTask =
-                    ActivityInfo.class.getField("LAUNCH_SINGLE_INSTANCE_PER_TASK");
-            return launchMode == launchSingleInstancePerTask.getInt(null);
+            return launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
         } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        } catch (NoSuchFieldException e) {
-            return false;
-        } catch (IllegalAccessException e) {
             return false;
         }
     }
