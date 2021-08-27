@@ -171,6 +171,9 @@ void WebViewPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 
   canvas->save();
   canvas->translate(SkIntToScalar(rect_.x()), SkIntToScalar(rect_.y()));
+  web_view()->MainFrameWidget()->UpdateLifecycle(
+      blink::WebLifecycleUpdate::kAll,
+      blink::DocumentUpdateReason::kBeginMainFrame);
   web_view()->PaintContent(canvas, paint_rect);
   canvas->restore();
 }
