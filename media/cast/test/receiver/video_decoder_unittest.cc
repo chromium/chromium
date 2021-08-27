@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/sender/vpx_encoder.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
@@ -157,7 +157,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
   FrameId last_frame_id_;
   bool seen_a_decoded_frame_;
 
-  Vp8Encoder vp8_encoder_;
+  VpxEncoder vp8_encoder_;
 
   // Unlike |total_video_frames_decoded_|, this is only read/written on a single
   // thread.

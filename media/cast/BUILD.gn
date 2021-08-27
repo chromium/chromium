@@ -148,10 +148,10 @@ source_set("sender") {
     "sender/video_frame_factory.h",
     "sender/video_sender.cc",
     "sender/video_sender.h",
-    "sender/vp8_encoder.cc",
-    "sender/vp8_encoder.h",
-    "sender/vp8_quantizer_parser.cc",
-    "sender/vp8_quantizer_parser.h",
+    "sender/vpx_encoder.cc",
+    "sender/vpx_encoder.h",
+    "sender/vpx_quantizer_parser.cc",
+    "sender/vpx_quantizer_parser.h",
   ]
 
   deps = [
@@ -318,7 +318,7 @@ test("cast_unittests") {
     "sender/fake_video_encode_accelerator_factory.h",
     "sender/video_encoder_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "sender/vp8_quantizer_parser_unittest.cc",
+    "sender/vpx_quantizer_parser_unittest.cc",
     "test/end2end_unittest.cc",
     "test/receiver/audio_decoder_unittest.cc",
     "test/receiver/cast_message_builder_unittest.cc",

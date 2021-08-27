@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/vp8_encoder.h"
-#include "media/cast/sender/vp8_quantizer_parser.h"
+#include "media/cast/sender/vpx_encoder.h"
+#include "media/cast/sender/vpx_quantizer_parser.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -39,9 +39,9 @@ FrameSenderConfig GetVideoConfigForTest() {
 }
 }  // unnamed namespace
 
-class Vp8QuantizerParserTest : public ::testing::Test {
+class VpxQuantizerParserTest : public ::testing::Test {
  public:
-  Vp8QuantizerParserTest() : video_config_(GetVideoConfigForTest()) {}
+  VpxQuantizerParserTest() : video_config_(GetVideoConfigForTest()) {}
 
   // Call vp8 software encoder to encode one randomly generated frame.
   void EncodeOneFrame(SenderEncodedFrame* encoded_frame) {
@@ -75,34 +75,32 @@ class Vp8QuantizerParserTest : public ::testing::Test {
   // Reconstruct a vp8 encoder with new config since the Vp8Encoder
   // class has no interface to update the config.
   void RecreateVp8Encoder() {
-    vp8_encoder_ = std::make_unique<Vp8Encoder>(video_config_);
+    vp8_encoder_ = std::make_unique<VpxEncoder>(video_config_);
     vp8_encoder_->Initialize();
   }
 
   base::TimeDelta next_frame_timestamp_;
   FrameSenderConfig video_config_;
-  std::unique_ptr<Vp8Encoder> vp8_encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp8QuantizerParserTest);
+  std::unique_ptr<VpxEncoder> vp8_encoder_;
 };
 
 // Encode 3 frames to test the cases with insufficient data input.
-TEST_F(Vp8QuantizerParserTest, InsufficientData) {
+TEST_F(VpxQuantizerParserTest, InsufficientData) {
   for (int i = 0; i < 3; ++i) {
     std::unique_ptr<SenderEncodedFrame> encoded_frame(new SenderEncodedFrame());
     const uint8_t* encoded_data =
         reinterpret_cast<const uint8_t*>(encoded_frame->data.data());
     // Null input.
     int decoded_quantizer =
-        ParseVp8HeaderQuantizer(encoded_data, encoded_frame->data.size());
+        ParseVpxHeaderQuantizer(encoded_data, encoded_frame->data.size());
     EXPECT_EQ(-1, decoded_quantizer);
     EncodeOneFrame(encoded_frame.get());
     encoded_data = reinterpret_cast<const uint8_t*>(encoded_frame->data.data());
     // Zero bytes should not be enough to decode the quantizer value.
-    decoded_quantizer = ParseVp8HeaderQuantizer(encoded_data, 0);
+    decoded_quantizer = ParseVpxHeaderQuantizer(encoded_data, 0);
     EXPECT_EQ(-1, decoded_quantizer);
     // Three bytes should not be enough to decode the quantizer value..
-    decoded_quantizer = ParseVp8HeaderQuantizer(encoded_data, 3);
+    decoded_quantizer = ParseVpxHeaderQuantizer(encoded_data, 3);
     EXPECT_EQ(-1, decoded_quantizer);
     unsigned int first_partition_size =
         (encoded_data[0] | (encoded_data[1] << 8) | (encoded_data[2] << 16)) >>
@@ -110,31 +108,31 @@ TEST_F(Vp8QuantizerParserTest, InsufficientData) {
     if (encoded_frame->dependency == EncodedFrame::KEY) {
       // Ten bytes should not be enough to decode the quanitizer value
       // for a Key frame.
-      decoded_quantizer = ParseVp8HeaderQuantizer(encoded_data, 10);
+      decoded_quantizer = ParseVpxHeaderQuantizer(encoded_data, 10);
       EXPECT_EQ(-1, decoded_quantizer);
       // One byte less than needed to decode the quantizer value.
       decoded_quantizer =
-          ParseVp8HeaderQuantizer(encoded_data, 10 + first_partition_size - 1);
+          ParseVpxHeaderQuantizer(encoded_data, 10 + first_partition_size - 1);
       EXPECT_EQ(-1, decoded_quantizer);
       // Minimum number of bytes to decode the quantizer value.
       decoded_quantizer =
-          ParseVp8HeaderQuantizer(encoded_data, 10 + first_partition_size);
+          ParseVpxHeaderQuantizer(encoded_data, 10 + first_partition_size);
       EXPECT_EQ(kQp, decoded_quantizer);
     } else {
       // One byte less than needed to decode the quantizer value.
       decoded_quantizer =
-          ParseVp8HeaderQuantizer(encoded_data, 3 + first_partition_size - 1);
+          ParseVpxHeaderQuantizer(encoded_data, 3 + first_partition_size - 1);
       EXPECT_EQ(-1, decoded_quantizer);
       // Minimum number of bytes to decode the quantizer value.
       decoded_quantizer =
-          ParseVp8HeaderQuantizer(encoded_data, 3 + first_partition_size);
+          ParseVpxHeaderQuantizer(encoded_data, 3 + first_partition_size);
       EXPECT_EQ(kQp, decoded_quantizer);
     }
   }
 }
 
 // Encode 3 fames for every quantizer value in the range of [4,63].
-TEST_F(Vp8QuantizerParserTest, VariedQuantizer) {
+TEST_F(VpxQuantizerParserTest, VariedQuantizer) {
   int decoded_quantizer = -1;
   for (int qp = 4; qp <= 63; qp += 10) {
     UpdateQuantizer(qp);
@@ -142,7 +140,7 @@ TEST_F(Vp8QuantizerParserTest, VariedQuantizer) {
       std::unique_ptr<SenderEncodedFrame> encoded_frame(
           new SenderEncodedFrame());
       EncodeOneFrame(encoded_frame.get());
-      decoded_quantizer = ParseVp8HeaderQuantizer(
+      decoded_quantizer = ParseVpxHeaderQuantizer(
           reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
           encoded_frame->data.size());
       EXPECT_EQ(qp, decoded_quantizer);

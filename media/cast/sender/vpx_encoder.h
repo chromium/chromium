@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_VP8_ENCODER_H_
-#define MEDIA_CAST_SENDER_VP8_ENCODER_H_
+#ifndef MEDIA_CAST_SENDER_VPX_ENCODER_H_
+#define MEDIA_CAST_SENDER_VPX_ENCODER_H_
 
 #include <stdint.h>
 
@@ -22,16 +22,21 @@ class VideoFrame;
 namespace media {
 namespace cast {
 
-class Vp8Encoder final : public SoftwareVideoEncoder {
+class VpxEncoder final : public SoftwareVideoEncoder {
  public:
-  explicit Vp8Encoder(const FrameSenderConfig& video_config);
+  explicit VpxEncoder(const FrameSenderConfig& video_config);
 
-  ~Vp8Encoder() final;
+  ~VpxEncoder() final;
+
+  VpxEncoder(const VpxEncoder&) = delete;
+  VpxEncoder& operator=(const VpxEncoder&) = delete;
+  VpxEncoder(VpxEncoder&&) = delete;
+  VpxEncoder& operator=(VpxEncoder&&) = delete;
 
   // SoftwareVideoEncoder implementations.
   void Initialize() final;
   void Encode(scoped_refptr<media::VideoFrame> video_frame,
-              const base::TimeTicks& reference_time,
+              base::TimeTicks reference_time,
               SenderEncodedFrame* encoded_frame) final;
   void UpdateRates(uint32_t new_bitrate) final;
   void GenerateKeyFrame() final;
@@ -53,12 +58,12 @@ class Vp8Encoder final : public SoftwareVideoEncoder {
 
   const double target_encoder_utilization_;
 
-  // VP8 internal objects.  These are valid for use only while is_initialized()
+  // VPX internal objects.  These are valid for use only while is_initialized()
   // returns true.
   vpx_codec_enc_cfg_t config_;
   vpx_codec_ctx_t encoder_;
 
-  // Set to true to request the next frame emitted by Vp8Encoder be a key frame.
+  // Set to true to request the next frame emitted by VpxEncoder be a key frame.
   bool key_frame_requested_;
 
   // Saves the current bitrate setting, for when the |encoder_| is reconfigured
@@ -73,18 +78,16 @@ class Vp8Encoder final : public SoftwareVideoEncoder {
   FrameId next_frame_id_;
 
   // This is bound to the thread where Initialize() is called.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // The accumulator (time averaging) of the encoding speed.
   FeedbackSignalAccumulator<base::TimeDelta> encoding_speed_acc_;
 
   // The higher the speed, the less CPU usage, and the lower quality.
   int encoding_speed_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp8Encoder);
 };
 
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_VP8_ENCODER_H_
+#endif  // MEDIA_CAST_SENDER_VPX_ENCODER_H_

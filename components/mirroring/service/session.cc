@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/mirroring/service/captured_audio_input.h"
+#include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/udp_socket_client.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "crypto/random.h"
@@ -884,6 +885,14 @@ void Session::CreateAndSendOffer() {
                         mirror_settings_, &stream_list);
       }
       if (video_configs.empty()) {
+        if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
+          FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
+              RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
+          AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
+                          &video_configs);
+          AddStreamObject(stream_index++, "VP9", video_configs.back(),
+                          mirror_settings_, &stream_list);
+        }
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,

@@ -28,7 +28,7 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/net/cast_transport_config.h"
-#include "media/cast/sender/vp8_quantizer_parser.h"
+#include "media/cast/sender/vpx_quantizer_parser.h"
 #include "media/video/h264_parser.h"
 
 namespace {
@@ -397,7 +397,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         // and all the following delta frames.
         if (metadata.key_frame || key_frame_quantizer_parsable_) {
           if (codec_profile_ == media::VP8PROFILE_ANY) {
-            quantizer = ParseVp8HeaderQuantizer(
+            quantizer = ParseVpxHeaderQuantizer(
                 reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
                 encoded_frame->data.size());
           } else if (codec_profile_ == media::H264PROFILE_MAIN) {

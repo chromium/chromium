@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "media/base/video_frame.h"
 #include "media/cast/sender/fake_software_video_encoder.h"
-#include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/sender/vpx_encoder.h"
 
 namespace media {
 namespace cast {
@@ -55,7 +55,8 @@ bool VideoEncoderImpl::IsSupported(const FrameSenderConfig& video_config) {
     return true;
   }
 #endif
-  return video_config.codec == CODEC_VIDEO_VP8;
+  return video_config.codec == CODEC_VIDEO_VP8 ||
+         video_config.codec == CODEC_VIDEO_VP9;
 }
 
 VideoEncoderImpl::VideoEncoderImpl(
@@ -66,8 +67,9 @@ VideoEncoderImpl::VideoEncoderImpl(
   CHECK(cast_environment_->HasVideoThread());
   DCHECK(status_change_cb);
 
-  if (video_config.codec == CODEC_VIDEO_VP8) {
-    encoder_ = std::make_unique<Vp8Encoder>(video_config);
+  if (video_config.codec == CODEC_VIDEO_VP8 ||
+      video_config.codec == CODEC_VIDEO_VP9) {
+    encoder_ = std::make_unique<VpxEncoder>(video_config);
     cast_environment_->PostTask(
         CastEnvironment::VIDEO, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,

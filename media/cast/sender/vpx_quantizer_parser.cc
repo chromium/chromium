@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/sender/vpx_quantizer_parser.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "media/cast/sender/vp8_quantizer_parser.h"
 
 namespace media {
 namespace cast {
 
 namespace {
-// Vp8BitReader is a re-implementation of a subset of the VP8 entropy decoder.
+// VpxBitReader is a re-implementation of a subset of the VP8 entropy decoder.
 // It is used to decompress the VP8 bitstream for the purposes of quickly
 // parsing the VP8 frame headers.  It is mostly the exact same implementation
 // found in third_party/libvpx/.../vp8/decoder/dboolhuff.h except that only
@@ -18,13 +18,18 @@ namespace {
 // present. As of this writing, the implementation in libvpx could not be
 // re-used because of the way that the code is structured, and lack of the
 // necessary parts being exported.
-class Vp8BitReader {
+class VpxBitReader {
  public:
-  Vp8BitReader(const uint8_t* data, size_t size)
+  VpxBitReader(const uint8_t* data, size_t size)
       : encoded_data_(data), encoded_data_end_(data + size) {
-    Vp8DecoderReadBytes();
+    VpxDecoderReadBytes();
   }
-  ~Vp8BitReader() = default;
+  ~VpxBitReader() = default;
+
+  VpxBitReader(const VpxBitReader&) = delete;
+  VpxBitReader& operator=(const VpxBitReader&) = delete;
+  VpxBitReader(VpxBitReader&&) = delete;
+  VpxBitReader& operator=(VpxBitReader&&) = delete;
 
   // Decode one bit. The output is 0 or 1.
   unsigned int DecodeBit();
@@ -33,7 +38,7 @@ class Vp8BitReader {
 
  private:
   // Read new bytes frome the encoded data buffer until |bit_count_| > 0.
-  void Vp8DecoderReadBytes();
+  void VpxDecoderReadBytes();
 
   const uint8_t* encoded_data_;            // Current byte to decode.
   const uint8_t* const encoded_data_end_;  // The end of the byte to decode.
@@ -47,14 +52,12 @@ class Vp8BitReader {
   // Number of valid bits left to decode. Initializing it to -8 to let the
   // decoder load two bytes at the beginning. The lower byte is used as
   // a buffer byte. During the decoding, decoder needs to call
-  // Vp8DecoderReadBytes() to load new bytes when it becomes negative.
+  // VpxDecoderReadBytes() to load new bytes when it becomes negative.
   int bit_count_ = -8;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp8BitReader);
 };
 
 // The number of bits to be left-shifted to make the variable range_ over 128.
-const uint8_t vp8_shift[128] = {
+const uint8_t vpx_shift[128] = {
     0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
@@ -63,7 +66,7 @@ const uint8_t vp8_shift[128] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 // Mapping from the q_index(0-127) to the quantizer value(0-63).
-const uint8_t vp8_quantizer_lookup[128] = {
+const uint8_t vpx_quantizer_lookup[128] = {
     0,  1,  2,  3,  4,  5,  6,  6,  7,  8,  9,  10, 10, 11, 12, 12, 13, 13, 14,
     15, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 27, 28, 28, 29, 29,
     30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39,
@@ -72,7 +75,7 @@ const uint8_t vp8_quantizer_lookup[128] = {
     53, 53, 53, 54, 54, 54, 55, 55, 55, 56, 56, 56, 57, 57, 57, 58, 58, 58, 59,
     59, 59, 60, 60, 60, 61, 61, 61, 62, 62, 62, 63, 63, 63};
 
-void Vp8BitReader::Vp8DecoderReadBytes() {
+void VpxBitReader::VpxDecoderReadBytes() {
   int shift = -bit_count_;
   while ((shift >= 0) && (encoded_data_ < encoded_data_end_)) {
     bit_count_ += 8;
@@ -82,11 +85,11 @@ void Vp8BitReader::Vp8DecoderReadBytes() {
   }
 }
 
-unsigned int Vp8BitReader::DecodeBit() {
+unsigned int VpxBitReader::DecodeBit() {
   unsigned int decoded_bit = 0;
   unsigned int split = 1 + (((range_ - 1) * 128) >> 8);
   if (bit_count_ < 0) {
-    Vp8DecoderReadBytes();
+    VpxDecoderReadBytes();
   }
   DCHECK_GE(bit_count_, 0);
   unsigned int shifted_split = split << 8;
@@ -98,7 +101,7 @@ unsigned int Vp8BitReader::DecodeBit() {
     range_ = split;
   }
   if (range_ < 128) {
-    int shift = vp8_shift[range_];
+    int shift = vpx_shift[range_];
     range_ <<= shift;
     value_ <<= shift;
     bit_count_ -= shift;
@@ -106,7 +109,7 @@ unsigned int Vp8BitReader::DecodeBit() {
   return decoded_bit;
 }
 
-unsigned int Vp8BitReader::DecodeValue(unsigned int num_bits) {
+unsigned int VpxBitReader::DecodeValue(unsigned int num_bits) {
   unsigned int decoded_value = 0;
   for (int i = static_cast<int>(num_bits) - 1; i >= 0; i--) {
     decoded_value |= (DecodeBit() << i);
@@ -115,7 +118,7 @@ unsigned int Vp8BitReader::DecodeValue(unsigned int num_bits) {
 }
 
 // Parse the Segment Header part in the first partition.
-void ParseSegmentHeader(Vp8BitReader* bit_reader) {
+void ParseSegmentHeader(VpxBitReader* bit_reader) {
   const bool segmentation_enabled = (bit_reader->DecodeBit() != 0);
   DVLOG(2) << "segmentation_enabled:" << segmentation_enabled;
   if (segmentation_enabled) {
@@ -147,7 +150,7 @@ void ParseSegmentHeader(Vp8BitReader* bit_reader) {
 }
 
 // Parse the Filter Header in the first partition.
-void ParseFilterHeader(Vp8BitReader* bit_reader) {
+void ParseFilterHeader(VpxBitReader* bit_reader) {
   // Parse 1 bit filter_type + 6 bits loop_filter_level + 3 bits
   // sharpness_level.
   bit_reader->DecodeValue(1 + 6 + 3);
@@ -168,7 +171,7 @@ void ParseFilterHeader(Vp8BitReader* bit_reader) {
 }
 }  // unnamed namespace
 
-int ParseVp8HeaderQuantizer(const uint8_t* encoded_data, size_t size) {
+int ParseVpxHeaderQuantizer(const uint8_t* encoded_data, size_t size) {
   DCHECK(encoded_data);
   if (size <= 3) {
     return -1;
@@ -190,7 +193,7 @@ int ParseVp8HeaderQuantizer(const uint8_t* encoded_data, size_t size) {
   if (size < partition_size) {
     return -1;
   }
-  Vp8BitReader bit_reader(encoded_data, partition_size);
+  VpxBitReader bit_reader(encoded_data, partition_size);
   if (is_key) {
     bit_reader.DecodeValue(1 + 1);  // Parse two bits: color_space + clamp_type.
   }
@@ -203,7 +206,7 @@ int ParseVp8HeaderQuantizer(const uint8_t* encoded_data, size_t size) {
   if (q_index > 127) {
     return 63;
   }
-  return vp8_quantizer_lookup[q_index];
+  return vpx_quantizer_lookup[q_index];
 }
 
 }  //  namespace cast

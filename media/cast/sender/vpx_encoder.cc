@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/sender/vpx_encoder.h"
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
@@ -59,7 +59,7 @@ bool HasSufficientFeedback(
 
 }  // namespace
 
-Vp8Encoder::Vp8Encoder(const FrameSenderConfig& video_config)
+VpxEncoder::VpxEncoder(const FrameSenderConfig& video_config)
     : cast_config_(video_config),
       target_encoder_utilization_(
           video_config.video_codec_params.number_of_encode_threads > 2
@@ -79,24 +79,25 @@ Vp8Encoder::Vp8Encoder(const FrameSenderConfig& video_config)
   DCHECK_LE(cast_config_.video_codec_params.max_cpu_saver_qp,
             cast_config_.video_codec_params.max_qp);
 
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
-Vp8Encoder::~Vp8Encoder() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+VpxEncoder::~VpxEncoder() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_initialized())
     vpx_codec_destroy(&encoder_);
 }
 
-void Vp8Encoder::Initialize() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+void VpxEncoder::Initialize() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_initialized());
   // The encoder will be created/configured when the first frame encode is
   // requested.
 }
 
-void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
+void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   if (is_initialized()) {
+    // NOTE: Do we need this workaround for VP9?
     // Workaround for VP8 bug: If the new size is strictly less-than-or-equal to
     // the old size, in terms of area, the existing encoder instance can
     // continue.  Otherwise, completely tear-down and re-create a new encoder to
@@ -123,9 +124,17 @@ void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
              << frame_size.ToString();
   }
 
+  // Determine appropriate codec interface.
+  vpx_codec_iface_t* ctx;
+  if (cast_config_.codec == CODEC_VIDEO_VP9) {
+    ctx = vpx_codec_vp9_cx();
+  } else {
+    DCHECK(cast_config_.codec == CODEC_VIDEO_VP8);
+    ctx = vpx_codec_vp8_cx();
+  }
+
   // Populate encoder configuration with default values.
-  CHECK_EQ(vpx_codec_enc_config_default(vpx_codec_vp8_cx(), &config_, 0),
-           VPX_CODEC_OK);
+  CHECK_EQ(vpx_codec_enc_config_default(ctx, &config_, 0), VPX_CODEC_OK);
 
   config_.g_threads = cast_config_.video_codec_params.number_of_encode_threads;
   config_.g_w = frame_size.width();
@@ -135,13 +144,13 @@ void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
   // |g_pass| and |g_lag_in_frames| must be "one pass" and zero, respectively,
-  // in order for VP8 to support changing frame sizes during encoding:
+  // in order for VPX to support changing frame sizes during encoding:
   config_.g_pass = VPX_RC_ONE_PASS;
   config_.g_lag_in_frames = 0;  // Immediate data output for each frame.
 
   // Rate control settings.
   config_.rc_dropframe_thresh = 0;  // The encoder may not drop any frames.
-  config_.rc_resize_allowed = 0;  // TODO(miu): Why not?  Investigate this.
+  config_.rc_resize_allowed = 0;    // TODO(miu): Why not?  Investigate this.
   config_.rc_end_usage = VPX_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
   config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
@@ -160,8 +169,7 @@ void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.kf_mode = VPX_KF_DISABLED;
 
   vpx_codec_flags_t flags = 0;
-  CHECK_EQ(vpx_codec_enc_init(&encoder_, vpx_codec_vp8_cx(), &config_, flags),
-           VPX_CODEC_OK);
+  CHECK_EQ(vpx_codec_enc_init(&encoder_, ctx, &config_, flags), VPX_CODEC_OK);
 
   // Raise the threshold for considering macroblocks as static.  The default is
   // zero, so this setting makes the encoder less sensitive to motion.  This
@@ -183,10 +191,10 @@ void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
            VPX_CODEC_OK);
 }
 
-void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
-                        const base::TimeTicks& reference_time,
+void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
+                        base::TimeTicks reference_time,
                         SenderEncodedFrame* encoded_frame) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(encoded_frame);
 
   // Note: This is used to compute the |encoder_utilization| and so it uses the
@@ -239,16 +247,15 @@ void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
       break;
   }
 
-  // The frame duration given to the VP8 codec affects a number of important
+  // The frame duration given to the VPX codecs affects a number of important
   // behaviors, including: per-frame bandwidth, CPU time spent encoding,
   // temporal quality trade-offs, and key/golden/alt-ref frame generation
   // intervals.  Bound the prediction to account for the fact that the frame
   // rate can be highly variable, including long pauses in the video stream.
   const base::TimeDelta minimum_frame_duration =
       base::TimeDelta::FromSecondsD(1.0 / cast_config_.max_frame_rate);
-  const base::TimeDelta maximum_frame_duration =
-      base::TimeDelta::FromSecondsD(static_cast<double>(kRestartFramePeriods) /
-                                        cast_config_.max_frame_rate);
+  const base::TimeDelta maximum_frame_duration = base::TimeDelta::FromSecondsD(
+      static_cast<double>(kRestartFramePeriods) / cast_config_.max_frame_rate);
   base::TimeDelta predicted_frame_duration =
       video_frame->metadata().frame_duration.value_or(base::TimeDelta());
   if (predicted_frame_duration <= base::TimeDelta()) {
@@ -308,7 +315,7 @@ void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   encoded_frame->encoder_utilization =
       processing_time / predicted_frame_duration;
 
-  // Compute lossy utilization.  The VP8 encoder took an estimated guess at what
+  // Compute lossy utilization.  The VPX encoder took an estimated guess at what
   // quantizer value would produce an encoded frame size as close to the target
   // as possible.  Now that the frame has been encoded and the number of bytes
   // is known, the perfect quantizer value (i.e., the one that should have been
@@ -328,7 +335,7 @@ void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // If it was never possible, the value will be greater than 63.0.
   encoded_frame->lossy_utilization = perfect_quantizer / 63.0;
 
-  DVLOG(2) << "VP8 encoded frame_id " << encoded_frame->frame_id
+  DVLOG(2) << "VPX encoded frame_id " << encoded_frame->frame_id
            << ", sized: " << encoded_frame->data.size()
            << ", encoder_utilization: " << encoded_frame->encoder_utilization
            << ", lossy_utilization: " << encoded_frame->lossy_utilization
@@ -384,8 +391,8 @@ void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   }
 }
 
-void Vp8Encoder::UpdateRates(uint32_t new_bitrate) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+void VpxEncoder::UpdateRates(uint32_t new_bitrate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!is_initialized())
     return;
@@ -401,11 +408,11 @@ void Vp8Encoder::UpdateRates(uint32_t new_bitrate) {
     NOTREACHED() << "Invalid return value";
   }
 
-  VLOG(1) << "VP8 new rc_target_bitrate: " << new_bitrate_kbit << " kbps";
+  VLOG(1) << "VPX new rc_target_bitrate: " << new_bitrate_kbit << " kbps";
 }
 
-void Vp8Encoder::GenerateKeyFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+void VpxEncoder::GenerateKeyFrame() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   key_frame_requested_ = true;
 }
 
