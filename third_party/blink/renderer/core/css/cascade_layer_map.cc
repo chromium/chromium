@@ -8,14 +8,14 @@
 
 namespace blink {
 
+const unsigned CascadeLayerMap::kImplicitOuterLayerOrder = 0;
+
 namespace {
 
 using CanonicalLayerMap =
     HeapHashMap<Member<const CascadeLayer>, Member<const CascadeLayer>>;
 
 using LayerOrderMap = HeapHashMap<Member<const CascadeLayer>, unsigned>;
-
-const unsigned kImplicitOuterLayerOrder = 0;
 
 void AddLayers(CascadeLayer* canonical_layer,
                const CascadeLayer& layer_from_sheet,
