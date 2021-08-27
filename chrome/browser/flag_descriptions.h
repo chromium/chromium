@@ -2381,9 +2381,6 @@ extern const char kDisableExplicitDmaFencesDescription[];
 extern const char kDisplayAlignmentAssistanceName[];
 extern const char kDisplayAlignmentAssistanceDescription[];
 
-extern const char kDisplayIdentificationName[];
-extern const char kDisplayIdentificationDescription[];
-
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 

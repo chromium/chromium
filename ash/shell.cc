@@ -1281,10 +1281,8 @@ void Shell::Init(
 
   // TODO(1091497): Consider combining DisplayHighlightController and
   // DisplayAlignmentController.
-  if (features::IsDisplayIdentificationEnabled()) {
-    display_highlight_controller_ =
-        std::make_unique<DisplayHighlightController>();
-  }
+  display_highlight_controller_ =
+      std::make_unique<DisplayHighlightController>();
 
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =

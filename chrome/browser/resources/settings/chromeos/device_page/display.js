@@ -277,10 +277,6 @@ cr.define('settings.display', function() {
     /** @private {?settings.DevicePageBrowserProxy} */
     browserProxy_: null,
 
-    /** @private {boolean} */
-    allowDisplayIdentificationApi_:
-        loadTimeData.getBoolean('allowDisplayIdentificationApi'),
-
     /** @private {string} */
     invalidDisplayId_: loadTimeData.getString('invalidDisplayId'),
 
@@ -306,15 +302,13 @@ cr.define('settings.display', function() {
 
     /** @override */
     created() {
-      if (this.allowDisplayIdentificationApi_) {
-        this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
-      }
+      this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
     },
 
     /** @override */
     attached() {
       this.displayChangedListener_ =
-          this.displayChangedListener_ || this.getDisplayInfo_.bind(this);
+          this.displayChangedListener_ || (() => this.getDisplayInfo_());
       settings.getDisplayApi().onDisplayChanged.addListener(
           this.displayChangedListener_);
 
@@ -353,10 +347,6 @@ cr.define('settings.display', function() {
      * @param {!settings.Route|undefined} opt_oldRoute
      */
     currentRouteChanged(opt_newRoute, opt_oldRoute) {
-      if (!this.allowDisplayIdentificationApi_) {
-        return;
-      }
-
       this.currentRoute_ = opt_newRoute;
 
       // When navigating away from the page, deselect any selected display.
@@ -408,7 +398,7 @@ cr.define('settings.display', function() {
         singleUnified: true
       };
       settings.getDisplayApi().getInfo(
-          flags, this.displayInfoFetched_.bind(this));
+          flags, displays => this.displayInfoFetched_(displays));
     },
 
     /**
@@ -420,7 +410,7 @@ cr.define('settings.display', function() {
         return;
       }
       settings.getDisplayApi().getDisplayLayout(
-          this.displayLayoutFetched_.bind(this, displays));
+          layouts => this.displayLayoutFetched_(displays, layouts));
       if (this.isMirrored_(displays)) {
         this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
       } else {
@@ -1215,7 +1205,7 @@ cr.define('settings.display', function() {
           {isPrimary: true};
       settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
-          this.setPropertiesCallback_.bind(this));
+          () => this.setPropertiesCallback_());
     },
 
     /**
@@ -1300,7 +1290,7 @@ cr.define('settings.display', function() {
           /** @type {number} */ (this.selectedParentModePref_.value));
       settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
-          this.setPropertiesCallback_.bind(this));
+          () => this.setPropertiesCallback_());
     },
 
     /**
@@ -1322,7 +1312,7 @@ cr.define('settings.display', function() {
 
       settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
-          this.setPropertiesCallback_.bind(this));
+          () => this.setPropertiesCallback_());
     },
 
     /**
@@ -1350,7 +1340,7 @@ cr.define('settings.display', function() {
           {rotation: value};
       settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
-          this.setPropertiesCallback_.bind(this));
+          () => this.setPropertiesCallback_());
     },
 
     /** @private */
@@ -1381,7 +1371,7 @@ cr.define('settings.display', function() {
           };
       settings.getDisplayApi().setDisplayProperties(
           this.primaryDisplayId, properties,
-          this.setPropertiesCallback_.bind(this));
+          () => this.setPropertiesCallback_());
     },
 
     /**

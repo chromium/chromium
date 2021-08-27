@@ -4159,13 +4159,6 @@ const char kDisplayAlignmentAssistanceDescription[] =
     "attempting to move their mouse over to another display. Show preview "
     "indicators when the user is moving a display in display layouts.";
 
-const char kDisplayIdentificationName[] =
-    "Enable display identification highlight";
-const char kDisplayIdentificationDescription[] =
-    "Shows a blue highlight around the edges of the display that is selected "
-    "in the Displays Settings page. Only shown when the Displays Settings page "
-    "is open.";
-
 const char kFastPairName[] = "Enable Fast Pair";
 const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "

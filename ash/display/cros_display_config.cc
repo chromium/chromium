@@ -1004,8 +1004,6 @@ OverscanCalibrator* CrosDisplayConfig::GetOverscanCalibrator(
 }
 
 void CrosDisplayConfig::HighlightDisplay(int64_t display_id) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDisplayIdentification));
-
   Shell::Get()->display_highlight_controller()->SetHighlightedDisplay(
       display_id);
 }

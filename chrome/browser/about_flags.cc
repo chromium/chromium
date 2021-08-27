@@ -5632,10 +5632,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWifiSyncAndroidDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kWifiSyncAndroid)},
 
-    {"display-identification", flag_descriptions::kDisplayIdentificationName,
-     flag_descriptions::kDisplayIdentificationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDisplayIdentification)},
-
     {"display-alignment-assistance",
      flag_descriptions::kDisplayAlignmentAssistanceName,
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,

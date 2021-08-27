@@ -368,10 +368,6 @@ const base::Feature kDisableQuickAnswersV2Translation{
 const base::Feature kDisplayAlignAssist{"DisplayAlignAssist",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables identification overlays on each display.
-const base::Feature kDisplayIdentification{"DisplayIdentification",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the docked (a.k.a. picture-in-picture) magnifier.
 // TODO(afakhry): Remove this after the feature is fully launched.
 // https://crbug.com/709824.
@@ -1314,10 +1310,6 @@ bool IsDiagnosticsAppEnabled() {
 
 bool IsDisplayAlignmentAssistanceEnabled() {
   return base::FeatureList::IsEnabled(kDisplayAlignAssist);
-}
-
-bool IsDisplayIdentificationEnabled() {
-  return base::FeatureList::IsEnabled(kDisplayIdentification);
 }
 
 bool IsDragUnpinnedAppToPinEnabled() {

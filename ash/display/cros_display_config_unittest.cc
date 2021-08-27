@@ -83,8 +83,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   ~CrosDisplayConfigTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDisplayIdentification, features::kDisplayAlignAssist}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kDisplayAlignAssist);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFirstDisplayAsInternal);

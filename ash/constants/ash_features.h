@@ -144,8 +144,6 @@ extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableOfficeEditingComponentApp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDisplayAlignAssist;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kDisplayIdentification;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDockedMagnifier;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDragUnpinnedAppToPin;
@@ -479,7 +477,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayAlignmentAssistanceEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayIdentificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDragUnpinnedAppToPinEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAResizingEnabled();

@@ -670,10 +670,6 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());
 
-  html_source->AddBoolean(
-      "allowDisplayIdentificationApi",
-      base::FeatureList::IsEnabled(ash::features::kDisplayIdentification));
-
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));
 
@@ -859,12 +855,8 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void DeviceSection::AddHandlers(content::WebUI* web_ui) {
-  if (ash::features::IsDisplayIdentificationEnabled() ||
-      ash::features::IsDisplayAlignmentAssistanceEnabled()) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::DisplayHandler>());
-  }
-
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::DisplayHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::KeyboardHandler>());
   web_ui->AddMessageHandler(
