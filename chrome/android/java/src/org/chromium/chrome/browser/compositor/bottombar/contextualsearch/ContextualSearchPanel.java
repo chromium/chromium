@@ -755,6 +755,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(relatedSearchesInContent,
                 showDefaultSearchInContent, defaultQueryInContentTextMaxWidthPx);
         mPanelMetrics.onSearchTermResolved();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
+            if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
+                    != hadInBarSuggestions) {
+                getSearchBarControl().animateInBarRelatedSearches(!hadInBarSuggestions);
+            }
+        }
+
+        // TODO(donnd): Rework the way definitions are displayed so we don't return early here,
+        // which is error prone. See https://crbug.com/1244107.
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {
             getSearchBarControl().updateForDictionaryDefinition(searchTerm, cardTagEnum);
@@ -763,18 +772,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getSearchBarControl().setSearchTerm(searchTerm);
         getSearchBarControl().animateSearchTermResolution();
+        // TODO(donnd): this can probably be removed or changed to an assert.
         if (mActivity == null || mToolbarManager == null) return;
 
         getSearchBarControl().setQuickAction(
                 quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
-            if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
-                    != hadInBarSuggestions) {
-                getSearchBarControl().animateInBarRelatedSearches(!hadInBarSuggestions);
-            }
-        }
     }
 
     /**
