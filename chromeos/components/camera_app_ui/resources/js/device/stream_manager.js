@@ -158,7 +158,7 @@ export class StreamManager {
     })();
 
     navigator.mediaDevices.addEventListener(
-        'devicechange', this.deviceUpdate.bind(this));
+        'devicechange', () => this.deviceUpdate());
   }
 
   /**

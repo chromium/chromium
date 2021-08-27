@@ -127,7 +127,7 @@ export class Preview {
     windowController.addListener(() => this.onWindowStatusChanged_());
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
-      state.addObserver(s, this.updateShowMetadata_.bind(this));
+      state.addObserver(s, () => this.updateShowMetadata_());
     });
   }
 

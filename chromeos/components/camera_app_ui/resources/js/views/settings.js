@@ -401,9 +401,9 @@ export class ResolutionSettings extends BaseSettings {
     });
 
     this.photoPreferrer_.setPreferredResolutionChangeListener(
-        this.updateSelectedPhotoResolution_.bind(this));
+        (...args) => this.updateSelectedPhotoResolution_(...args));
     this.videoPreferrer_.setPreferredResolutionChangeListener(
-        this.updateSelectedVideoResolution_.bind(this));
+        (...args) => this.updateSelectedVideoResolution_(...args));
 
     // Flips 'disabled' of resolution options.
     [state.State.CAMERA_CONFIGURING, state.State.TAKING].forEach((s) => {

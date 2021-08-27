@@ -155,7 +155,7 @@ export class Camera extends View {
      * @private
      */
     this.scanOptions_ = new ScanOptions({
-      doReconfigure: this.start.bind(this),
+      doReconfigure: () => this.start(),
       doSwitchDevice: (deviceId) => this.options_.switchDevice(deviceId),
       infoUpdater: this.infoUpdater_,
     });
@@ -165,14 +165,14 @@ export class Camera extends View {
      * @type {!Preview}
      * @private
      */
-    this.preview_ = new Preview(this.start.bind(this));
+    this.preview_ = new Preview(() => this.start());
 
     /**
      * Options for the camera.
      * @type {!Options}
      * @private
      */
-    this.options_ = new Options(infoUpdater, this.start.bind(this));
+    this.options_ = new Options(infoUpdater, () => this.start());
 
     /**
      * @type {!VideoEncoderOptions}
@@ -217,8 +217,8 @@ export class Camera extends View {
      * @private
      */
     this.modes_ = new Modes(
-        this.defaultMode_, photoPreferrer, videoPreferrer,
-        this.start.bind(this), this, this, this);
+        this.defaultMode_, photoPreferrer, videoPreferrer, () => this.start(),
+        this, this, this);
 
     /**
      * @type {!Facing}
