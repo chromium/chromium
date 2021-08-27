@@ -3703,6 +3703,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.RTCVideoDecoderMaxInFlightDecodes" units="frames"
+    expires_after="2021-12-12">
+  <owner>liberato@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Max number of frames sent for video decode via the DecoderStream adapter,
+    that have not also returned a decoded video frame. The metric is emitted
+    once per RTCVideoDecoderStreamAdapter instance, as the max observed value
+    over that instance's lifetime.
+  </summary>
+</histogram>
+
 <histogram name="Media.RTCVideoDecoderProfile" enum="VideoCodecProfile"
     expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->

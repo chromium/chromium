@@ -384,11 +384,11 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
 
   // Add decodes without calling FinishDecode.
   int limit = -1;
-  for (int i = 0; i < 100 && limit < 0; i++) {
+  for (int i = 0; i < 400 && limit < 0; i++) {
     switch (auto result = Decode(i)) {
       case WEBRTC_VIDEO_CODEC_OK:
       case WEBRTC_VIDEO_CODEC_ERROR:
-        // Keep going -- it's still happy, or not sufficiretrvg.
+        // Keep going -- it's still happy.
         break;
       case WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE:
         // Yay -- it now believes that it's hopelessly behind, and has requested

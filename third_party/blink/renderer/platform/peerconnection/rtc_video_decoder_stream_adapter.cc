@@ -66,14 +66,19 @@ constexpr gfx::Size kDefaultSize(640, 480);
 // normal operation.  It includes all buffers that we have not gotten an output
 // for.  "Normal operation" means that we believe that the decoder is trying to
 // drain the queue.  During init and reset, for example, we don't expect it.
-constexpr int32_t kMaxPendingBuffers = 8;
+// Note: This value is chosen to be Ludicrously High(tm), so that we can see
+// where reasonable limits should be via UMA.
+constexpr int32_t kMaxPendingBuffers = 64;
 
 // Absolute maximum number of pending buffers, whether we think the decoder is
 // draining them or not.  If, at any time, we believe that there are this many
 // decodes in-flight when a new decode request arrives, we will fall back to
 // software decoding.  It indicates that (a) reset never completed, (b) init
 // never completed, or (c) we're hopelessly behind.
-constexpr int32_t kAbsoluteMaxPendingBuffers = 32;
+// Note: This value is chosen to be Ludicrously High(tm), so that we can see
+// where reasonable limits should be via UMA.  Changing this changes UMA, so
+// probably don't.
+constexpr int32_t kAbsoluteMaxPendingBuffers = 256;
 
 // Name we'll report for hardware decoders.
 constexpr const char* kExternalDecoderName = "ExternalDecoder";
@@ -273,6 +278,13 @@ RTCVideoDecoderStreamAdapter::~RTCVideoDecoderStreamAdapter() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
+  {
+    // It doesn't really need to be guarded by a lock since it's only accessed
+    // off-thread here, but this forces memory barriers and such.
+    base::AutoLock auto_lock(lock_);
+    RecordMaxInFlightDecodesLockedOnMedia();
+  }
+
   if (have_started_decoding_)
     --(*GetDecoderCounter());
 }
@@ -392,7 +404,9 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
 
   if (missing_frames) {
     DVLOG(2) << "Missing frames";
-    // We probably can't handle broken frames. Request a key frame.
+    // We probably can't handle broken frames. Request a key frame and wait
+    // until we get it.
+    key_frame_required_ = true;
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
@@ -637,6 +651,10 @@ void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
   if (has_error_)
     return;
 
+  // Update the max recorded pending buffers.  This is kept up-to-date on the
+  // decoder thread when the buffer is queued.
+  RecordMaxInFlightDecodesLockedOnMedia();
+
   // Remember that this timestamp has already been added to the list.
   demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
 
@@ -805,12 +823,17 @@ void RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread() {
   demuxer_stream_.reset();
 
   base::AutoLock auto_lock(lock_);
+
+  RecordMaxInFlightDecodesLockedOnMedia();
+
   pending_reset_ = false;
   pending_read_ = false;
   init_complete_ = false;
   init_decode_complete_ = false;
   logged_init_status_ = false;
   pending_buffer_count_ = 0;
+  max_reported_buffer_count_ = 0;
+  max_buffer_count_metric_ = nullptr;
   // `has_error_` might or might not be set.
 }
 
@@ -829,6 +852,33 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
           ? kExternalDecoderName
           : media::GetDecoderName(decoder->GetDecoderType()) +
                 " (DecoderStream)";
+}
+
+void RTCVideoDecoderStreamAdapter::RecordMaxInFlightDecodesLockedOnMedia() {
+  lock_.AssertAcquired();
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  // If we've reported this maximum before, then don't waste the IPC.  This also
+  // covers the case where `!pending_buffer_count_`, since the reported count
+  // starts at zero.  Also, don't record if this isn't a new maximum.
+  if (pending_buffer_count_ <= max_reported_buffer_count_)
+    return;
+
+  if (!max_buffer_count_metric_) {
+    max_buffer_count_metric_ =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            "Media.RTCVideoDecoderMaxInFlightDecodes", 0,
+            kAbsoluteMaxPendingBuffers + 1, 100);
+  }
+
+  // It's unclear if the factory can fail, so simply don't record if it does.
+  if (max_buffer_count_metric_) {
+    max_buffer_count_metric_->SetSample(
+        static_cast<int>(pending_buffer_count_));
+  }
+
+  // Mark it as recorded either way, so we don't keep trying.
+  max_reported_buffer_count_ = pending_buffer_count_;
 }
 
 }  // namespace blink
