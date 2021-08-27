@@ -396,8 +396,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   // app launch will provide an engagement boost to the origin.
   site_engagement::SiteEngagementService::Get(profile_)
       ->SetLastShortcutLaunchTime(web_contents, launch_url);
-  provider_->registry_controller().SetAppLastLaunchTime(params.app_id,
-                                                        base::Time::Now());
+  provider_->sync_bridge().SetAppLastLaunchTime(params.app_id,
+                                                base::Time::Now());
   // Refresh the app banner added to homescreen event. The user may have
   // cleared their browsing data since installing the app, which removes the
   // event and will potentially permit a banner to be shown for the site.

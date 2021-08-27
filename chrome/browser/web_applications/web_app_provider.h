@@ -104,8 +104,7 @@ class WebAppProvider : public KeyedService {
   // The app registry model.
   WebAppRegistrar& registrar();
   // The app registry controller.
-  // TODO(crbug.com/1225132): Rename this to `sync_bridge()`.
-  WebAppSyncBridge& registry_controller();
+  WebAppSyncBridge& sync_bridge();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.

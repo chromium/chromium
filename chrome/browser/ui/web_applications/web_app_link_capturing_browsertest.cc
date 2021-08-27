@@ -203,7 +203,7 @@ class WebAppTabStripLinkCapturingBrowserTest
   void InstallTestApp() {
     WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html",
                                                    /*await_metric=*/false);
-    provider().registry_controller().SetExperimentalTabbedWindowMode(
+    provider().sync_bridge().SetExperimentalTabbedWindowMode(
         app_id_, true, /*is_user_action=*/false);
   }
 

@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverTabPwa) {
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->registry_controller().SetAppUserDisplayMode(
+  provider->sync_bridge().SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kBrowser, /*is_user_action=*/false);
 
   Browser* const new_browser =
@@ -1404,10 +1404,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   EXPECT_TRUE(new_browser->is_type_app());
   EXPECT_EQ(new_browser->app_controller()->app_id(), app_id);
 
-  WebAppProvider::GetForTest(profile())
-      ->registry_controller()
-      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+  WebAppProvider::GetForTest(profile())->sync_bridge().SetAppUserDisplayMode(
+      app_id, DisplayMode::kBrowser,
+      /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
   EXPECT_EQ(browser_list->GetLastActive(), browser());

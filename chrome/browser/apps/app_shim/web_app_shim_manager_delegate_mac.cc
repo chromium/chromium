@@ -203,8 +203,7 @@ void WebAppShimManagerDelegate::LaunchApp(
               web_app::WebAppProvider* provider =
                   web_app::WebAppProvider::GetForWebApps(profile);
               {
-                web_app::ScopedRegistryUpdate update(
-                    provider->registry_controller().AsWebAppSyncBridge());
+                web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
                 web_app::WebApp* app_to_update =
                     update->UpdateApp(params.app_id);
                 std::vector<std::string> protocol_handlers(

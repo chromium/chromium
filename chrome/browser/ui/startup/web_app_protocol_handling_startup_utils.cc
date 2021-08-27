@@ -89,8 +89,7 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
               web_app::WebAppProvider::GetForWebApps(profile);
           DCHECK(provider);
           {
-            web_app::ScopedRegistryUpdate update(
-                provider->registry_controller().AsWebAppSyncBridge());
+            web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
             web_app::WebApp* app_to_update = update->UpdateApp(app_id);
             std::vector<std::string> protocol_handlers(
                 app_to_update->approved_launch_protocols());

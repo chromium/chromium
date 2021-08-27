@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   AppId app_id = InstallWebApp();
 
-  GetProvider().registry_controller().SetAppIsLocallyInstalled(app_id, false);
+  GetProvider().sync_bridge().SetAppIsLocallyInstalled(app_id, false);
   EXPECT_FALSE(GetProvider().registrar().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
@@ -1122,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  GetProvider().registry_controller().SetAppUserDisplayMode(
+  GetProvider().sync_bridge().SetAppUserDisplayMode(
       app_id, DisplayMode::kStandalone, /*is_user_action=*/false);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
@@ -3179,8 +3179,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   // kWebAppEnableManifestId is turnned off or when the app is sync installed
   // from older versions of Chromium.
   {
-    ScopedRegistryUpdate update(
-        GetProvider().registry_controller().AsWebAppSyncBridge());
+    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);
     app->SetManifestId(absl::nullopt);
   }

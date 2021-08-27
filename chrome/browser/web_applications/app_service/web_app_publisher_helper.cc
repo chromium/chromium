@@ -645,14 +645,14 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       display_mode = blink::mojom::DisplayMode::kStandalone;
       break;
     case apps::mojom::WindowMode::kTabbedWindow:
-      provider_->registry_controller().SetExperimentalTabbedWindowMode(
+      provider_->sync_bridge().SetExperimentalTabbedWindowMode(
           app_id, /*enabled=*/true, /*is_user_action=*/true);
       return;
   }
-  provider_->registry_controller().SetExperimentalTabbedWindowMode(
+  provider_->sync_bridge().SetExperimentalTabbedWindowMode(
       app_id, /*enabled=*/false, /*is_user_action=*/true);
-  provider_->registry_controller().SetAppUserDisplayMode(
-      app_id, display_mode, /*is_user_action=*/true);
+  provider_->sync_bridge().SetAppUserDisplayMode(app_id, display_mode,
+                                                 /*is_user_action=*/true);
 }
 
 apps::mojom::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(

@@ -60,7 +60,7 @@ void UpdateBadgingTime(const base::Clock* clock,
   }
 
   WebAppProvider::GetForLocalAppsUnchecked(profile)
-      ->registry_controller()
+      ->sync_bridge()
       .SetAppLastBadgingTime(app_id, clock->Now());
 }
 

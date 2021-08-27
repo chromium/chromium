@@ -131,7 +131,7 @@ WebAppRegistrar& WebAppProvider::registrar() {
   return *registrar_;
 }
 
-WebAppSyncBridge& WebAppProvider::registry_controller() {
+WebAppSyncBridge& WebAppProvider::sync_bridge() {
   CheckIsConnected();
   return *sync_bridge_;
 }

@@ -88,7 +88,7 @@ class BadgeManagerUnittest : public ::testing::Test {
     auto test_registry_controller =
         std::make_unique<TestBadgingAppRegistryController>(profile,
                                                            updated_apps);
-    provider->SetRegistryController(std::move(test_registry_controller));
+    provider->SetSyncBridge(std::move(test_registry_controller));
     provider->Start();
   }
 

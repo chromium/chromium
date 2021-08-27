@@ -121,7 +121,7 @@ bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
   DCHECK(AppUsesWindowControlsOverlay());
 
-  provider_.registry_controller().SetAppWindowControlsOverlayEnabled(
+  provider_.sync_bridge().SetAppWindowControlsOverlayEnabled(
       app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
 }
 

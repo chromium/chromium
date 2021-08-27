@@ -66,7 +66,7 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
   WebAppSyncBridge& sync_bridge() {
     auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
-    return provider->registry_controller();
+    return provider->sync_bridge();
   }
 };
 

@@ -492,10 +492,9 @@ void WebAppIntegrationBrowserTestBase::SetOpenInTab(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
-  auto& app_registry_controller =
-      WebAppProvider::GetForTest(profile())->registry_controller();
-  app_registry_controller.SetAppUserDisplayMode(
-      app_id, blink::mojom::DisplayMode::kBrowser, true);
+  auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+  sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
+                                    true);
 }
 
 void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
@@ -505,9 +504,8 @@ void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
-  auto& app_registry_controller =
-      WebAppProvider::GetForTest(profile())->registry_controller();
-  app_registry_controller.SetAppUserDisplayMode(
+  auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+  sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
 }
 

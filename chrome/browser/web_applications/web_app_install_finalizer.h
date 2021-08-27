@@ -148,9 +148,7 @@ class WebAppInstallFinalizer {
 
   // FileHandlersPermissionHelper uses these getters.
   WebAppRegistrar& registrar() const { return *registrar_; }
-
-  // TODO(crbug.com/1225132): Rename this to `sync_bridge()`.
-  WebAppSyncBridge& registry_controller() { return *sync_bridge_; }
+  WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
   OsIntegrationManager& os_integration_manager() {
     return *os_integration_manager_;
   }

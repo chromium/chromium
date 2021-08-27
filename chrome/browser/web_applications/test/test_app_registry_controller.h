@@ -46,8 +46,6 @@ class TestAppRegistryController : public WebAppSyncBridge {
   void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
                                           bool enabled) override;
 
-  WebAppSyncBridge* AsWebAppSyncBridge() override;
-
  private:
   std::unique_ptr<TestWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;

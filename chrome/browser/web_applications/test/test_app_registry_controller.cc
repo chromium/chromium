@@ -65,8 +65,4 @@ void TestAppRegistryController::SetAppWindowControlsOverlayEnabled(
     const AppId& app_id,
     bool enabled) {}
 
-WebAppSyncBridge* TestAppRegistryController::AsWebAppSyncBridge() {
-  return nullptr;
-}
-
 }  // namespace web_app

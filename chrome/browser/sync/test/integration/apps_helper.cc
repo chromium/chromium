@@ -52,9 +52,8 @@ std::unique_ptr<web_app::WebAppTestUninstallObserver>
 SetupSyncUninstallObserverForProfile(Profile* profile) {
   std::set<web_app::AppId> apps_in_sync_uninstall =
       web_app::WebAppProvider::GetForTest(profile)
-          ->registry_controller()
-          .AsWebAppSyncBridge()
-          ->GetAppsInSyncUninstallForTest();
+          ->sync_bridge()
+          .GetAppsInSyncUninstallForTest();
 
   if (apps_in_sync_uninstall.empty()) {
     return nullptr;
@@ -222,9 +221,8 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
         web_app::WebAppProvider::GetForTest(profile)
-            ->registry_controller()
-            .AsWebAppSyncBridge()
-            ->GetAppsInSyncUninstallForTest();
+            ->sync_bridge()
+            .GetAppsInSyncUninstallForTest();
     ASSERT_TRUE(apps_in_sync_uninstall.empty());
   }
 }

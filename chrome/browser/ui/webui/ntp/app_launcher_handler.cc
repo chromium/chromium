@@ -877,7 +877,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
         break;
     }
 
-    web_app_provider_->registry_controller().SetAppUserDisplayMode(
+    web_app_provider_->sync_bridge().SetAppUserDisplayMode(
         app_id, display_mode, /*is_user_action=*/true);
     return;
   }
@@ -1019,10 +1019,8 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
 
   InstallOsHooks(app_id);
 
-  web_app_provider_->registry_controller().SetAppIsLocallyInstalled(app_id,
-                                                                    true);
-  web_app_provider_->registry_controller().SetAppInstallTime(app_id,
-                                                             base::Time::Now());
+  web_app_provider_->sync_bridge().SetAppIsLocallyInstalled(app_id, true);
+  web_app_provider_->sync_bridge().SetAppInstallTime(app_id, base::Time::Now());
 
   // Use the appAdded to update the app icon's color to no longer be
   // greyscale.
@@ -1182,7 +1180,7 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
   if (!web_app_provider_->registrar().IsInstalled(app_id))
     return;
 
-  web_app_provider_->registry_controller().SetAppRunOnOsLoginMode(app_id, mode);
+  web_app_provider_->sync_bridge().SetAppRunOnOsLoginMode(app_id, mode);
 
   if (mode == web_app::RunOnOsLoginMode::kNotRun) {
     web_app::OsHooksOptions os_hooks;

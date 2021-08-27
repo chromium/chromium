@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   EXPECT_EQ(install_observer.Wait(), app_id);
 
   WebAppProvider::GetForTest(GetProfile(1))
-      ->registry_controller()
+      ->sync_bridge()
       .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // The app should have synced from profile 0 to profile 1, which enables sync
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::GetForTest(GetProfile(0))
-      ->registry_controller()
+      ->sync_bridge()
       .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
                              /*is_user_action=*/false);
 

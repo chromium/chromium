@@ -273,7 +273,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
     auto test_registry_controller =
         std::make_unique<TestAppRegistryController>(profile());
-    provider->SetRegistryController(std::move(test_registry_controller));
+    provider->SetSyncBridge(std::move(test_registry_controller));
 
     auto test_os_integration_manager =
         std::make_unique<TestOsIntegrationManager>(profile(), nullptr, nullptr,

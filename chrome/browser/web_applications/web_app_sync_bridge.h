@@ -113,9 +113,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   virtual void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
                                                   bool enabled);
 
-  // TODO(crbug.com/1225132): Remove AsWebAppSyncBridge.
-  virtual WebAppSyncBridge* AsWebAppSyncBridge();
-
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
   void SetUserPageOrdinal(const AppId& app_id,

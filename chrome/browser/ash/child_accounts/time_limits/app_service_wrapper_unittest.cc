@@ -221,9 +221,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
-      WebAppProvider::GetForTest(&profile_)
-          ->registry_controller()
-          .SetAppIsDisabled(app_id.app_id(), disabled);
+      WebAppProvider::GetForTest(&profile_)->sync_bridge().SetAppIsDisabled(
+          app_id.app_id(), disabled);
       task_environment_.RunUntilIdle();
       return;
     }

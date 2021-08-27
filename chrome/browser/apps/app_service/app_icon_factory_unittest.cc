@@ -509,17 +509,14 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(web_app_provider_);
 
     base::RunLoop run_loop;
-    web_app_provider_->registry_controller().AsWebAppSyncBridge()->Init(
-        run_loop.QuitClosure());
+    web_app_provider_->sync_bridge().Init(run_loop.QuitClosure());
     run_loop.Run();
 
     icon_manager_ = static_cast<web_app::WebAppIconManager*>(
         &(web_app_provider_->icon_manager()));
     ASSERT_TRUE(icon_manager_);
 
-    sync_bridge_ =
-        web_app_provider_->registry_controller().AsWebAppSyncBridge();
-    ASSERT_TRUE(sync_bridge_);
+    sync_bridge_ = &web_app_provider_->sync_bridge();
   }
 
   std::unique_ptr<web_app::WebApp> CreateWebApp() {

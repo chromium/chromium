@@ -68,7 +68,7 @@ void TestWebAppProvider::SetRegistrar(
   registrar_ = std::move(registrar);
 }
 
-void TestWebAppProvider::SetRegistryController(
+void TestWebAppProvider::SetSyncBridge(
     std::unique_ptr<WebAppSyncBridge> sync_bridge) {
   CheckNotStarted();
   sync_bridge_ = std::move(sync_bridge);

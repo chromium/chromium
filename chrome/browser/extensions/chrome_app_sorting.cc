@@ -201,8 +201,7 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
     return;
 
   web_app_registrar_ = &web_app_provider->registrar();
-  web_app_sync_bridge_ =
-      web_app_provider->registry_controller().AsWebAppSyncBridge();
+  web_app_sync_bridge_ = &web_app_provider->sync_bridge();
   app_registrar_observation_.Observe(&web_app_provider->registrar());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
 }

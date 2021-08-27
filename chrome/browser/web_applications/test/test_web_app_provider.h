@@ -55,7 +55,7 @@ class TestWebAppProvider : public WebAppProvider {
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
   void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
-  void SetRegistryController(std::unique_ptr<WebAppSyncBridge> sync_bridge);
+  void SetSyncBridge(std::unique_ptr<WebAppSyncBridge> sync_bridge);
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);

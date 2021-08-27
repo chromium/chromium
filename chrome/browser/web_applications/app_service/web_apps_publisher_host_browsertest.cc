@@ -244,11 +244,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
     web_app_info->description = description;
     app_id = InstallWebApp(std::move(web_app_info));
 
-    provider()
-        .registry_controller()
-        .AsWebAppSyncBridge()
-        ->SetAppIsLocallyInstalled(app_id,
-                                   /*is_locally_installed=*/false);
+    provider().sync_bridge().SetAppIsLocallyInstalled(
+        app_id,
+        /*is_locally_installed=*/false);
   }
 
   MockAppPublisher mock_app_publisher;
@@ -261,11 +259,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
                                      IconEffects::kBlocked |
                                      IconEffects::kCrOsStandardMask));
 
-  provider()
-      .registry_controller()
-      .AsWebAppSyncBridge()
-      ->SetAppIsLocallyInstalled(app_id,
-                                 /*is_locally_installed=*/true);
+  provider().sync_bridge().SetAppIsLocallyInstalled(
+      app_id,
+      /*is_locally_installed=*/true);
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask);
@@ -576,8 +572,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Notification) {
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, DisabledState) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  WebAppSyncBridge& web_app_sync_bridge =
-      *provider().registry_controller().AsWebAppSyncBridge();
+  WebAppSyncBridge& web_app_sync_bridge = provider().sync_bridge();
   const AppId app_id = InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
