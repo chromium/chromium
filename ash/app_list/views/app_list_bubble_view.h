@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ui/views/view.h"
@@ -12,6 +14,7 @@
 namespace ash {
 
 class ApplicationDragAndDropHost;
+class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
@@ -67,7 +70,14 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   friend class AppListTestHelper;
   friend class AssistantTestApiImpl;
 
+  // Initializes the main contents (search box and pages).
+  void InitContentsView(ApplicationDragAndDropHost* drag_and_drop_host);
+
+  // Initializes the folder view, which appears on top of all other views.
+  void InitFolderView();
+
   AppListViewDelegate* const view_delegate_;
+  std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
   SearchBoxView* search_box_view_ = nullptr;
   views::View* separator_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;

@@ -5,12 +5,12 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -42,14 +42,13 @@ constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
-    ApplicationDragAndDropHost* drag_and_drop_host) {
+    ApplicationDragAndDropHost* drag_and_drop_host,
+    AppListA11yAnnouncer* a11y_announcer) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
+  DCHECK(a11y_announcer);
 
   SetUseDefaultFillLayout(true);
-
-  a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
-      AddChildView(std::make_unique<views::View>()));
 
   // The entire page scrolls.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -92,7 +91,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // All apps section.
   scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
-          a11y_announcer_.get(), view_delegate,
+          a11y_announcer, view_delegate,
           /*folder_delegate=*/nullptr, scroll_view_));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
@@ -106,11 +105,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->UpdateSuggestionTasks();
 }
 
-AppListBubbleAppsPage::~AppListBubbleAppsPage() {
-  // `a11y_announcer_` depends on a child view, so shut it down before view
-  // hierarchy is destroyed.
-  a11y_announcer_->Shutdown();
-}
+AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)
 END_METADATA

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
@@ -77,12 +78,32 @@ AppListBubbleView::AppListBubbleView(
   layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  auto* layout = SetLayoutManager(
+  SetUseDefaultFillLayout(true);
+  a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
+      AddChildView(std::make_unique<views::View>()));
+  InitContentsView(drag_and_drop_host);
+  InitFolderView();
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
+}
+
+AppListBubbleView::~AppListBubbleView() {
+  // `a11y_announcer_` depends on a child view, so shut it down before view
+  // hierarchy is destroyed.
+  a11y_announcer_->Shutdown();
+}
+
+void AppListBubbleView::InitContentsView(
+    ApplicationDragAndDropHost* drag_and_drop_host) {
+  auto* contents = AddChildView(std::make_unique<views::View>());
+
+  auto* layout = contents->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
-  search_box_view_ = AddChildView(std::make_unique<SearchBoxView>(
-      /*delegate=*/this, view_delegate, /*app_list_view=*/nullptr));
+  search_box_view_ = contents->AddChildView(std::make_unique<SearchBoxView>(
+      /*delegate=*/this, view_delegate_, /*app_list_view=*/nullptr));
   SearchBoxViewBase::InitParams params;
   // Show the assistant button until the user types text.
   params.show_close_button_when_active = false;
@@ -91,27 +112,28 @@ AppListBubbleView::AppListBubbleView(
 
   // The main view has a solid color layer, so the separator needs its own
   // layer to visibly paint.
-  separator_ = AddChildView(std::make_unique<SeparatorWithLayer>());
-
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
+  separator_ = contents->AddChildView(std::make_unique<SeparatorWithLayer>());
 
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
-  apps_page_ = AddChildView(std::make_unique<AppListBubbleAppsPage>(
-      view_delegate, drag_and_drop_host));
+  apps_page_ = contents->AddChildView(std::make_unique<AppListBubbleAppsPage>(
+      view_delegate_, drag_and_drop_host, a11y_announcer_.get()));
 
-  search_page_ = AddChildView(std::make_unique<AppListBubbleSearchPage>(
-      view_delegate, search_box_view_));
+  search_page_ =
+      contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(
+          view_delegate_, search_box_view_));
   search_page_->SetVisible(false);
 
-  assistant_page_ = AddChildView(std::make_unique<AppListBubbleAssistantPage>(
-      view_delegate->GetAssistantViewDelegate()));
+  assistant_page_ =
+      contents->AddChildView(std::make_unique<AppListBubbleAssistantPage>(
+          view_delegate_->GetAssistantViewDelegate()));
   assistant_page_->SetVisible(false);
 }
 
-AppListBubbleView::~AppListBubbleView() = default;
+void AppListBubbleView::InitFolderView() {
+  // TODO(crbug.com/1214064): Add AppListFolderView here.
+}
 
 bool AppListBubbleView::Back() {
   if (search_box_view_->HasSearch()) {
