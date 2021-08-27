@@ -67,8 +67,8 @@ class DeviceNamePolicyHandlerImpl
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;
   chromeos::NetworkStateHandler* handler_;
+  DeviceNamePolicy device_name_policy_;
 
-  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
   base::CallbackListSubscription template_policy_subscription_;
   base::CallbackListSubscription configurable_policy_subscription_;
   std::string hostname_;

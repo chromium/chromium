@@ -61,6 +61,13 @@ class DeviceNameStoreImplTest : public ::testing::Test {
     user_manager_->SwitchActiveUser(account_id);
   }
 
+  void InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy initial_policy =
+          policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy) {
+    fake_device_name_policy_handler_ =
+        std::make_unique<policy::FakeDeviceNamePolicyHandler>(initial_policy);
+  }
+
   void InitializeDeviceNameStore(
       bool is_hostname_setting_flag_enabled,
       bool is_current_user_owner,
@@ -93,7 +100,7 @@ class DeviceNameStoreImplTest : public ::testing::Test {
     fake_device_name_applier_ = fake_device_name_applier.get();
 
     device_name_store_ = base::WrapUnique(new DeviceNameStoreImpl(
-        &local_state_, &fake_device_name_policy_handler_,
+        &local_state_, fake_device_name_policy_handler_.get(),
         std::move(fake_device_name_applier)));
     device_name_store_->AddObserver(&fake_observer_);
   }
@@ -106,8 +113,8 @@ class DeviceNameStoreImplTest : public ::testing::Test {
     return device_name_store_.get();
   }
 
-  policy::FakeDeviceNamePolicyHandler* get_fake_device_name_policy_handler() {
-    return &fake_device_name_policy_handler_;
+  policy::FakeDeviceNamePolicyHandler* fake_device_name_policy_handler() {
+    return fake_device_name_policy_handler_.get();
   }
 
   void VerifyDeviceNameMetadata(
@@ -140,7 +147,8 @@ class DeviceNameStoreImplTest : public ::testing::Test {
   AccountId account_id_;
   FakeDeviceNameApplier* fake_device_name_applier_;
   FakeObserver fake_observer_;
-  policy::FakeDeviceNamePolicyHandler fake_device_name_policy_handler_;
+  std::unique_ptr<policy::FakeDeviceNamePolicyHandler>
+      fake_device_name_policy_handler_;
   std::unique_ptr<DeviceNameStoreImpl> device_name_store_;
 };
 
@@ -153,6 +161,8 @@ TEST_F(DeviceNameStoreImplTest, GetInstanceBeforeInitializeError) {
 TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceOwnerFirstTimeUser) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
+
+  InitializeFakeDeviceNamePolicyHandler();
 
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
@@ -173,6 +183,8 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceNotOwnerFirstTimeUser) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
+  InitializeFakeDeviceNamePolicyHandler();
+
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
                             /*is_current_user_owner=*/false);
@@ -191,6 +203,8 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceNotOwnerFirstTimeUser) {
 }
 
 TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceOwnerNotFirstTimeUser) {
+  InitializeFakeDeviceNamePolicyHandler();
+
   // Verify that device name is the previously set name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
                             /*is_current_user_owner=*/true,
@@ -210,6 +224,8 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceOwnerNotFirstTimeUser) {
 TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
+
+  InitializeFakeDeviceNamePolicyHandler();
 
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
@@ -247,19 +263,26 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
   EXPECT_EQ(3u, GetNumObserverCalls());
 }
 
+// For the tests below with managed devices, the user can never be device owner.
+// The initial device name policy in FakeDeviceNamePolicyHandler is
+// kPolicyHostnameNotConfigurable by default for managed devices.
+
 TEST_F(DeviceNameStoreImplTest,
        ManagedDeviceTemplateBeforeSessionFirstTimeUser) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameChosenByAdmin,
       "Template");
 
   // Verify that device name is set to the template upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
+                            /*is_current_user_owner=*/false);
   VerifyDeviceNameMetadata(
       "Template",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -270,7 +293,10 @@ TEST_F(DeviceNameStoreImplTest,
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameChosenByAdmin,
       "Template");
@@ -278,7 +304,7 @@ TEST_F(DeviceNameStoreImplTest,
   // Verify that device name is set to the template upon initialization despite
   // the name set from previous session.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true,
+                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
   VerifyDeviceNameMetadata(
       "Template",
@@ -289,15 +315,20 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceTemplateDuringSession) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
-  VerifyDeviceNameMetadata("ChromeOS",
-                           DeviceNameStore::DeviceNameState::kCanBeModified);
+                            /*is_current_user_owner=*/false);
+  VerifyDeviceNameMetadata(
+      "ChromeOS",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
 
   // Device name should change to template set and notify observers.
   EXPECT_EQ(0u, GetNumObserverCalls());
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameChosenByAdmin,
       "Template");
@@ -318,7 +349,10 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceTemplateDuringSession) {
 
 TEST_F(DeviceNameStoreImplTest,
        ManagedDeviceNotFirstTimeUserNameNotConfigurable) {
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameNotConfigurable,
       absl::nullopt);
@@ -326,7 +360,7 @@ TEST_F(DeviceNameStoreImplTest,
   // Verify that device name is set to the default name because of
   // non-configurable device name policy.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true,
+                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
   VerifyDeviceNameMetadata(
       "ChromeOS",
@@ -337,21 +371,26 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameNotConfigurable) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
-  VerifyDeviceNameMetadata("ChromeOS",
-                           DeviceNameStore::DeviceNameState::kCanBeModified);
+                            /*is_current_user_owner=*/false);
+  VerifyDeviceNameMetadata(
+      "ChromeOS",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
 
   EXPECT_EQ(0u, GetNumObserverCalls());
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameNotConfigurable,
       absl::nullopt);
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(0u, GetNumObserverCalls());
 
   // SetDeviceName() should not update the name for
   // kPolicyHostnameNotConfigurable policy.
@@ -360,19 +399,21 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameNotConfigurable) {
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(0u, GetNumObserverCalls());
 }
 
-TEST_F(DeviceNameStoreImplTest,
-       ManagedDeviceNotFirstTimeUserDeviceNameConfigurable) {
-  get_fake_device_name_policy_handler()->SetPolicyState(
+TEST_F(DeviceNameStoreImplTest, ManagedDeviceNotFirstTimeUserNameConfigurable) {
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameConfigurableByManagedUser,
       absl::nullopt);
 
   // Verify that device name is the previously set name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true,
+                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
   VerifyDeviceNameMetadata("NameFromPreviousSession",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
@@ -382,20 +423,25 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
-  VerifyDeviceNameMetadata("ChromeOS",
-                           DeviceNameStore::DeviceNameState::kCanBeModified);
-
+                            /*is_current_user_owner=*/false);
+  VerifyDeviceNameMetadata(
+      "ChromeOS",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
   EXPECT_EQ(0u, GetNumObserverCalls());
-  get_fake_device_name_policy_handler()->SetPolicyState(
+
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameConfigurableByManagedUser,
       absl::nullopt);
   VerifyDeviceNameMetadata("ChromeOS",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(0u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumObserverCalls());
 
   // SetDeviceName() should update the name for
   // kPolicyHostnameConfigurableByManagedUser policy if name is valid.
@@ -403,7 +449,7 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
             device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata("TestName",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
 
   // New device name set is valid but same as previous one, hence observer
   // should not be notified.
@@ -411,7 +457,7 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
             device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata("TestName",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
 
   // SetDeviceName() should not update the name for
   // kPolicyHostnameConfigurableByManagedUser policy if name is invalid.
@@ -420,23 +466,28 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
             device_name_store()->SetDeviceName("Test Name"));
   VerifyDeviceNameMetadata("TestName",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
 TEST_F(DeviceNameStoreImplTest, ManagedDeviceOwnerPolicyChanges) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
+  InitializeFakeDeviceNamePolicyHandler(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameNotConfigurable);
+
   // Verify that device name is set to the default name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
-  VerifyDeviceNameMetadata("ChromeOS",
-                           DeviceNameStore::DeviceNameState::kCanBeModified);
+                            /*is_current_user_owner=*/false);
+  VerifyDeviceNameMetadata(
+      "ChromeOS",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
 
   // Setting kPolicyHostnameChosenByAdmin should change the device name to the
   // template
   EXPECT_EQ(0u, GetNumObserverCalls());
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameChosenByAdmin,
       "Template");
@@ -448,18 +499,9 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceOwnerPolicyChanges) {
   // Setting kPolicyHostnameConfigurableByManagedUser policy should not change
   // the device name since it is still same as the one previously set. Observer
   // should still be notified since the device name state changes.
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameConfigurableByManagedUser,
-      absl::nullopt);
-  VerifyDeviceNameMetadata("Template",
-                           DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(2u, GetNumObserverCalls());
-
-  // Setting kNoPolicy policy should not change the device name since it is
-  // still same as the one previously set.
-  get_fake_device_name_policy_handler()->SetPolicyState(
-      policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
       absl::nullopt);
   VerifyDeviceNameMetadata("Template",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
@@ -467,70 +509,10 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceOwnerPolicyChanges) {
 
   // Setting kPolicyHostnameNotConfigurable policy should change the device name
   // to the default name "ChromeOS".
-  get_fake_device_name_policy_handler()->SetPolicyState(
+  fake_device_name_policy_handler()->SetPolicyState(
       policy::DeviceNamePolicyHandler::DeviceNamePolicy::
           kPolicyHostnameNotConfigurable,
       absl::nullopt);
-  VerifyDeviceNameMetadata(
-      "ChromeOS",
-      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
-  EXPECT_EQ(3u, GetNumObserverCalls());
-}
-
-TEST_F(DeviceNameStoreImplTest, ManagedDeviceNonOwnerPolicyChanges) {
-  // The device name is not set yet.
-  EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
-
-  // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
-
-  // User is not device owner, hence they cannot modify the device name
-  // regardless of the policy in place. Observer is still notified for changes
-  // in device name state.
-  VerifyDeviceNameMetadata(
-      "ChromeOS",
-      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
-  EXPECT_EQ(0u, GetNumObserverCalls());
-
-  get_fake_device_name_policy_handler()->SetPolicyState(
-      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
-          kPolicyHostnameChosenByAdmin,
-      "Template");
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kProhibitedByPolicy,
-            device_name_store()->SetDeviceName("TestName"));
-  VerifyDeviceNameMetadata(
-      "Template",
-      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
-  EXPECT_EQ(1u, GetNumObserverCalls());
-
-  get_fake_device_name_policy_handler()->SetPolicyState(
-      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
-          kPolicyHostnameConfigurableByManagedUser,
-      absl::nullopt);
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner,
-            device_name_store()->SetDeviceName("TestName"));
-  VerifyDeviceNameMetadata(
-      "Template",
-      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
-  EXPECT_EQ(2u, GetNumObserverCalls());
-
-  get_fake_device_name_policy_handler()->SetPolicyState(
-      policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
-      absl::nullopt);
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner,
-            device_name_store()->SetDeviceName("TestName"));
-  VerifyDeviceNameMetadata(
-      "Template",
-      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
-  EXPECT_EQ(2u, GetNumObserverCalls());
-
-  get_fake_device_name_policy_handler()->SetPolicyState(
-      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
-          kPolicyHostnameNotConfigurable,
-      absl::nullopt);
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kProhibitedByPolicy,
-            device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);

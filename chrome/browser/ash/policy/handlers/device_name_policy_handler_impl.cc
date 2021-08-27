@@ -13,8 +13,25 @@
 #include "chromeos/network/device_state.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/tpm/install_attributes.h"
 
 namespace policy {
+namespace {
+
+// By default, device name policy should be kPolicyHostnameNotConfigurable for
+// managed devices and kNoPolicy for unmanaged devices.
+DeviceNamePolicyHandler::DeviceNamePolicy ComputeInitialPolicy() {
+  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    // We assume that the device name is not configurable unless/until we know
+    // about any policies that are set.
+    return DeviceNamePolicyHandler::DeviceNamePolicy::
+        kPolicyHostnameNotConfigurable;
+  }
+
+  return DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy;
+}
+
+}  // namespace
 
 DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     ash::CrosSettings* cros_settings)
@@ -29,7 +46,8 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     chromeos::NetworkStateHandler* handler)
     : cros_settings_(cros_settings),
       statistics_provider_(statistics_provider),
-      handler_(handler) {
+      handler_(handler),
+      device_name_policy_(ComputeInitialPolicy()) {
   template_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceHostnameTemplate,
       base::BindRepeating(
@@ -119,7 +137,12 @@ DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
                : DeviceNamePolicy::kPolicyHostnameNotConfigurable;
   }
 
-  // No policy set for managed user to choose hostname
+  // If no policies are set, device name policy should be
+  // kPolicyHostnameNotConfigurable for managed devices and kNoPolicy for
+  // unmanaged devices.
+  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged())
+    return DeviceNamePolicy::kPolicyHostnameNotConfigurable;
+
   return DeviceNamePolicy::kNoPolicy;
 }
 

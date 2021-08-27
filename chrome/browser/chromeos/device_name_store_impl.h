@@ -57,6 +57,9 @@ class DeviceNameStoreImpl
   // Returns whether the device name policy in place prohits name update.
   bool IsConfiguringDeviceNameProhibitedByPolicy() const;
 
+  // Returns whether the user cannot modify the name because
+  bool CannotModifyBecauseNotDeviceOwner() const;
+
   // Sets the device name and notify observers of DeviceNameStore class.
   void ChangeDeviceName(const std::string& device_name);
 

@@ -52,20 +52,36 @@ std::string DeviceNameStoreImpl::GetDeviceName() const {
   return prefs_->GetString(prefs::kDeviceName);
 }
 
+DeviceNameStore::DeviceNameMetadata DeviceNameStoreImpl::GetDeviceNameMetadata()
+    const {
+  return {GetDeviceName(), device_name_state_};
+}
+
 DeviceNameStore::DeviceNameState DeviceNameStoreImpl::ComputeDeviceNameState()
     const {
-  if (!IsConfiguringDeviceNameProhibitedByPolicy())
+  if (IsConfiguringDeviceNameProhibitedByPolicy())
     return DeviceNameState::kCannotBeModifiedBecauseOfPolicy;
 
-  if (!user_manager::UserManager::Get()->IsCurrentUserOwner())
+  if (CannotModifyBecauseNotDeviceOwner())
     return DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner;
 
   return DeviceNameState::kCanBeModified;
 }
 
-DeviceNameStore::DeviceNameMetadata DeviceNameStoreImpl::GetDeviceNameMetadata()
-    const {
-  return {GetDeviceName(), device_name_state_};
+bool DeviceNameStoreImpl::CannotModifyBecauseNotDeviceOwner() const {
+  // If kNoPolicy is not in place, then the device is managed and user does not
+  // have to be device owner to be able to change the name.
+  if (handler_->GetDeviceNamePolicy() !=
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy) {
+    return false;
+  }
+
+  // If device is unmanaged, then user has to be the device owner to be able to
+  // change the name.
+  if (user_manager::UserManager::Get()->IsCurrentUserOwner())
+    return false;
+
+  return true;
 }
 
 bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() const {
@@ -75,13 +91,13 @@ bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() const {
       FALLTHROUGH;
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameChosenByAdmin:
-      return false;
+      return true;
 
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameConfigurableByManagedUser:
       FALLTHROUGH;
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
-      return true;
+      return false;
   }
 }
 

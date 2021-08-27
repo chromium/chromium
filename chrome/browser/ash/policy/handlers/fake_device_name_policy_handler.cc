@@ -6,7 +6,9 @@
 
 namespace policy {
 
-FakeDeviceNamePolicyHandler::FakeDeviceNamePolicyHandler() = default;
+FakeDeviceNamePolicyHandler::FakeDeviceNamePolicyHandler(
+    DeviceNamePolicy initial_policy)
+    : device_name_policy_(initial_policy) {}
 
 FakeDeviceNamePolicyHandler::~FakeDeviceNamePolicyHandler() = default;
 
