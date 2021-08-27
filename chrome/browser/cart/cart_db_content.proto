@@ -27,7 +27,7 @@ message MoneyProto {
 }
 
 // Used storing discount for a specific rule.
-message DiscountInfoProto {
+message RuleDiscountInfoProto {
   // This should be a int64_t, use string because base::Value does not support
   // int64_t.
   string rule_id = 1;
@@ -53,7 +53,9 @@ message ChromeCartDiscountProto {
   // int64_t.
   string merchant_id = 3;
 
-  repeated DiscountInfoProto discount_info = 4;
+  reserved 4;
+
+  repeated RuleDiscountInfoProto rule_discount_info = 5;
 }
 
 // Used for storing information of products within the cart.

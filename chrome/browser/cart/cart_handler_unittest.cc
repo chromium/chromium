@@ -533,6 +533,9 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
+  cart_db::RuleDiscountInfoProto* rule_discount_info =
+      merchant_proto.mutable_discount_info()->add_rule_discount_info();
+  rule_discount_info->set_rule_id("123");
   service_->AddCart(kMockMerchantBKey, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
   profile_.GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,

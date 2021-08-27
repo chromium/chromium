@@ -19,13 +19,13 @@ class PendingSharedURLLoaderFactory;
 struct MerchantIdAndDiscounts {
  public:
   std::string merchant_id;
-  std::vector<cart_db::DiscountInfoProto> discount_list;
+  std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list;
   std::string highest_discount_string;
   // TODO(crbug.com/1240341): Include a list of coupon info.
 
   explicit MerchantIdAndDiscounts(
       std::string merchant_id,
-      std::vector<cart_db::DiscountInfoProto> discount_list,
+      std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list,
       std::string discount_string);
   MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other);
   MerchantIdAndDiscounts& operator=(const MerchantIdAndDiscounts& other);

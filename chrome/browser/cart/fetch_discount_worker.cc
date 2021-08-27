@@ -237,7 +237,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
 
     if (!discounts.count(cart_url)) {
       cart_discount_proto->clear_discount_text();
-      cart_discount_proto->clear_discount_info();
+      cart_discount_proto->clear_rule_discount_info();
       updater->update(cart_url, std::move(cart_proto), is_tester);
       continue;
     }
@@ -246,12 +246,12 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     std::string merchant_id = merchant_discounts.merchant_id;
     cart_discount_proto->set_merchant_id(merchant_id);
 
-    const std::vector<cart_db::DiscountInfoProto>& discount_infos =
-        merchant_discounts.discount_list;
+    const std::vector<cart_db::RuleDiscountInfoProto>& discount_infos =
+        merchant_discounts.rule_discount_list;
     cart_discount_proto->set_discount_text(
         merchant_discounts.highest_discount_string);
-    *cart_discount_proto->mutable_discount_info() = {discount_infos.begin(),
-                                                     discount_infos.end()};
+    *cart_discount_proto->mutable_rule_discount_info() = {
+        discount_infos.begin(), discount_infos.end()};
 
     updater->update(cart_url, std::move(cart_proto), is_tester);
   }

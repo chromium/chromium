@@ -56,8 +56,8 @@ cart_db::ChromeCartContentProto AddDiscountToProto(
     const int percent_off,
     const char* offer_id) {
   proto.mutable_discount_info()->set_last_fetched_timestamp(timestamp);
-  cart_db::DiscountInfoProto* added_discount =
-      proto.mutable_discount_info()->add_discount_info();
+  cart_db::RuleDiscountInfoProto* added_discount =
+      proto.mutable_discount_info()->add_rule_discount_info();
   added_discount->set_rule_id(rule_id);
   added_discount->set_percent_off(percent_off);
   added_discount->set_raw_merchant_offer_id(offer_id);
@@ -109,15 +109,15 @@ const char kMockMerchantADiscountsRawMerchantOfferId[] = "merchantAOfferId";
 const bool kNotATester = false;
 const bool kATester = true;
 
-std::vector<cart_db::DiscountInfoProto> BuildMerchantADiscountInfoProtos() {
-  cart_db::DiscountInfoProto proto;
+std::vector<cart_db::RuleDiscountInfoProto> BuildMerchantADiscountInfoProtos() {
+  cart_db::RuleDiscountInfoProto proto;
   proto.set_rule_id(kMockMerchantADiscountRuleId);
   proto.set_percent_off(kMockMerchantADiscountsPercentOff);
   proto.set_raw_merchant_offer_id(kMockMerchantADiscountsRawMerchantOfferId);
 
-  return std::vector<cart_db::DiscountInfoProto>(1, proto);
+  return std::vector<cart_db::RuleDiscountInfoProto>(1, proto);
 }
-const std::vector<cart_db::DiscountInfoProto> kMockMerchantADiscounts =
+const std::vector<cart_db::RuleDiscountInfoProto> kMockMerchantADiscounts =
     BuildMerchantADiscountInfoProtos();
 
 }  // namespace

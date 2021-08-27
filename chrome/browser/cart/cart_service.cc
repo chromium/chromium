@@ -378,7 +378,7 @@ void CartService::OnGetDiscountURL(
   }
   auto& cart_proto = proto_pairs[0].second;
   if (!IsCartDiscountEnabled() ||
-      cart_proto.discount_info().discount_info().empty()) {
+      cart_proto.discount_info().rule_discount_info().empty()) {
     std::move(callback).Run(default_cart_url);
     CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
@@ -826,20 +826,20 @@ void CartService::UpdateDiscounts(const GURL& cart_url,
   }
 
   if (new_proto.has_discount_info() &&
-      !new_proto.discount_info().discount_info().empty()) {
+      !new_proto.discount_info().rule_discount_info().empty()) {
     // Filter used rule_based discounts.
-    std::vector<cart_db::DiscountInfoProto> discount_info_protos;
-    for (const cart_db::DiscountInfoProto& proto :
-         new_proto.discount_info().discount_info()) {
+    std::vector<cart_db::RuleDiscountInfoProto> rule_discount_info_protos;
+    for (const cart_db::RuleDiscountInfoProto& proto :
+         new_proto.discount_info().rule_discount_info()) {
       if (is_tester || !IsDiscountUsed(proto.rule_id())) {
-        discount_info_protos.emplace_back(proto);
+        rule_discount_info_protos.emplace_back(proto);
       }
     }
-    if (discount_info_protos.empty()) {
+    if (rule_discount_info_protos.empty()) {
       new_proto.clear_discount_info();
     } else {
-      *new_proto.mutable_discount_info()->mutable_discount_info() = {
-          discount_info_protos.begin(), discount_info_protos.end()};
+      *new_proto.mutable_discount_info()->mutable_rule_discount_info() = {
+          rule_discount_info_protos.begin(), rule_discount_info_protos.end()};
     }
   }
 
@@ -876,12 +876,12 @@ bool CartService::IsDiscountUsed(const std::string& rule_id) {
 void CartService::CacheUsedDiscounts(
     const cart_db::ChromeCartContentProto& proto) {
   if (!proto.has_discount_info() ||
-      proto.discount_info().discount_info().empty()) {
+      proto.discount_info().rule_discount_info().empty()) {
     VLOG(1) << "Empty rule based discounts, cache nothing";
     return;
   }
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kCartUsedDiscounts);
-  for (auto discount_info : proto.discount_info().discount_info()) {
+  for (auto discount_info : proto.discount_info().rule_discount_info()) {
     update->SetBoolKey(discount_info.rule_id(), true);
   }
 }
@@ -897,7 +897,7 @@ void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   }
 
   // Clean up the rule-based discounts.
-  if (!proto.discount_info().discount_info().empty()) {
+  if (!proto.discount_info().rule_discount_info().empty()) {
     proto.clear_discount_info();
   }
 

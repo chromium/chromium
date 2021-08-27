@@ -236,10 +236,11 @@ TEST(CartDiscountFetcherTest, TestRawMaerchantOffersIsOptional) {
       std::move(fake_responses));
 
   EXPECT_EQ(cart_discount_map.size(), 1u);
-  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).discount_list.size(),
-            1u);
+  EXPECT_EQ(
+      cart_discount_map.at(kMockMerchantCartURLA).rule_discount_list.size(),
+      1u);
   EXPECT_TRUE(cart_discount_map.at(kMockMerchantCartURLA)
-                  .discount_list[0]
+                  .rule_discount_list[0]
                   .raw_merchant_offer_id()
                   .empty());
 }
@@ -284,10 +285,11 @@ TEST(CartDiscountFetcherTest, TestExternalTesterDiscount) {
       std::move(fake_responses));
 
   EXPECT_EQ(cart_discount_map.size(), 1u);
-  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).discount_list.size(),
-            1u);
+  EXPECT_EQ(
+      cart_discount_map.at(kMockMerchantCartURLA).rule_discount_list.size(),
+      1u);
   EXPECT_TRUE(cart_discount_map.at(kMockMerchantCartURLA)
-                  .discount_list[0]
+                  .rule_discount_list[0]
                   .raw_merchant_offer_id()
                   .empty());
 }
@@ -322,8 +324,9 @@ TEST(CartDiscountFetcherTest, TestNoRuleDiscounts) {
       std::move(fake_responses));
 
   EXPECT_EQ(cart_discount_map.size(), 1u);
-  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).discount_list.size(),
-            0u);
+  EXPECT_EQ(
+      cart_discount_map.at(kMockMerchantCartURLA).rule_discount_list.size(),
+      0u);
 }
 
 TEST(CartDiscountFetcherTest, TestOverallDiscountText) {
