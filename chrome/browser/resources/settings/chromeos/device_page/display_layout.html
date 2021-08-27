@@ -24,8 +24,8 @@
          in getDivStyle_ and getMirrorDivStyle_ */
       .display {
         align-items: center;
-        background: var(--google-grey-100);
-        color: var(--google-grey-700);
+        background: var(--cros-textfield-background-color);
+        color: var(--cros-text-color-secondary);
         cursor: default;
         display: flex;
         font-size: 100%;
@@ -43,10 +43,10 @@
         border: var(--google-blue-500) solid 1px;
       }
       .highlight-left {
-        border-left: var(--google-blue-700) solid 1px;
+        border-inline-start: var(--google-blue-700) solid 1px;
       }
       .highlight-right {
-        border-right: var(--google-blue-700) solid 1px;
+        border-inline-end: var(--google-blue-700) solid 1px;
       }
       .highlight-top {
         border-top: var(--google-blue-700) solid 1px;
@@ -70,7 +70,7 @@
       <template is="dom-repeat" items="[[displays]]">
         <div id="_[[item.id]]" class="display elevate"
             draggable="[[dragEnabled]]" on-focus="onFocus_"
-            on-click="onSelectDisplayTap_" 
+            on-click="onSelectDisplayTap_"
             style$="[[getDivStyle_(item.id, item.bounds, visualScale)]]"
             selected$="[[isSelected_(item, selectedDisplay)]]"
             tabindex="0">
