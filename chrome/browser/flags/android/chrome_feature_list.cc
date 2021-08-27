@@ -581,6 +581,9 @@ const base::Feature kDynamicColorAndroid{"DynamicColorAndroid",
 const base::Feature kEnableDangerousDownloadDialog{
     "EnableDangerousDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableDuplicateDownloadDialog{
+    "EnableDuplicateDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnhancedProtectionPromoCard{
     "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 

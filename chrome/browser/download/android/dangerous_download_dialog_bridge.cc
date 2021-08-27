@@ -4,7 +4,6 @@
 
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -13,35 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/download/android/jni_headers/DangerousDownloadDialogBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
-
-namespace {
-// Helper method to find a download from a list of downloads based on its GUID.
-download::DownloadItem* FindAndRemoveDownload(
-    JNIEnv* env,
-    std::vector<download::DownloadItem*>* downloads,
-    const JavaParamRef<jstring>& jdownload_guid) {
-  std::string guid = ConvertJavaStringToUTF8(env, jdownload_guid);
-
-  auto iter = std::find_if(downloads->begin(), downloads->end(),
-                           [&guid](download::DownloadItem* download) {
-                             return download->GetGuid() == guid;
-                           });
-
-  if (iter == downloads->end())
-    return nullptr;
-
-  download::DownloadItem* result = *iter;
-  downloads->erase(iter);
-  return result;
-}
-
-}  // namespace
 
 DangerousDownloadDialogBridge::DangerousDownloadDialogBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -88,8 +66,8 @@ void DangerousDownloadDialogBridge::OnDownloadDestroyed(
 void DangerousDownloadDialogBridge::Accepted(
     JNIEnv* env,
     const JavaParamRef<jstring>& jdownload_guid) {
-  download::DownloadItem* download =
-      FindAndRemoveDownload(env, &download_items_, jdownload_guid);
+  download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
+      &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
   if (download)
     download->ValidateDangerousDownload();
 }
@@ -97,8 +75,8 @@ void DangerousDownloadDialogBridge::Accepted(
 void DangerousDownloadDialogBridge::Cancelled(
     JNIEnv* env,
     const JavaParamRef<jstring>& jdownload_guid) {
-  download::DownloadItem* download =
-      FindAndRemoveDownload(env, &download_items_, jdownload_guid);
+  download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
+      &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
   if (download)
     download->Remove();
 }

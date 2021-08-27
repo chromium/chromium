@@ -98,7 +98,9 @@
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/android/download_utils.h"
+#include "chrome/browser/download/android/duplicate_download_dialog_bridge_delegate.h"
 #include "chrome/browser/download/android/mixed_content_download_infobar_delegate.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "net/http/http_content_disposition.h"
 #else
@@ -1007,10 +1009,16 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 
       bool show_download_later_dialog = ShouldShowDownloadLaterDialog(download);
       if (!show_download_later_dialog &&
-          !download_prefs_->PromptForDownload() && web_contents) {
-        android::ChromeDuplicateDownloadInfoBarDelegate::Create(
-            infobars::ContentInfoBarManager::FromWebContents(web_contents),
-            download, suggested_path, std::move(callback));
+          !download_prefs_->PromptForDownload()) {
+        if (base::FeatureList::IsEnabled(
+                chrome::android::kEnableDuplicateDownloadDialog)) {
+          DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
+              download, suggested_path, web_contents, std::move(callback));
+        } else {
+          android::ChromeDuplicateDownloadInfoBarDelegate::Create(
+              infobars::ContentInfoBarManager::FromWebContents(web_contents),
+              download, suggested_path, std::move(callback));
+        }
         return;
       }
 

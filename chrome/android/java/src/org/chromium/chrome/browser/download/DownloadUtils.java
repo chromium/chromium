@@ -11,9 +11,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -463,7 +468,7 @@ public class DownloadUtils {
     }
 
     @CalledByNative
-    private static void openDownload(String filePath, String mimeType, String downloadGuid,
+    static void openDownload(String filePath, String mimeType, String downloadGuid,
             OTRProfileID otrProfileID, String originalUrl, String referer,
             @DownloadOpenSource int source) {
         boolean canOpen = DownloadUtils.openFile(filePath, mimeType, downloadGuid, otrProfileID,
@@ -549,6 +554,85 @@ public class DownloadUtils {
                 helper.getDownloadSharedPreferenceEntry(item.getContentId());
         return entry != null && item.getDownloadInfo().state() == DownloadState.INTERRUPTED
                 && entry.isAutoResumable;
+    }
+
+    /**
+     * Gets the duplicate infobar or dialog text for regular downloads.
+     * @param context Context to be used.
+     * @param template Template of the text to be displayed.
+     * @param filePath Suggested file path of the download.
+     * @param addSizeStringIfAvailable Whether size string should be added to the dialog text.
+     * @param totalBytes Size of the download.
+     * @param clickableSpan Action to perform when clicking on the file name.
+     * @return message to be displayed on the infobar or dialog.
+     */
+    public static CharSequence getDownloadMessageText(final Context context, final String template,
+            final String filePath, boolean addSizeStringIfAvailable, long totalBytes,
+            final ClickableSpan clickableSpan) {
+        return getMessageText(template, new File(filePath).getName(), addSizeStringIfAvailable,
+                totalBytes, clickableSpan);
+    }
+
+    /**
+     * Gets the infobar or dialog text for offline page downloads.
+     * @param context Context to be used.
+     * @param filePath Path of the file to be displayed.
+     * @param duplicateRequestExists Whether a duplicate request exists.
+     * @param clickableSpan Action to perform when clicking on the page link.
+     * @return message to be displayed on the infobar or dialog.
+     */
+    public static CharSequence getOfflinePageMessageText(final Context context, String filePath,
+            boolean duplicateRequestExists, ClickableSpan clickableSpan) {
+        String template = context.getString(duplicateRequestExists
+                        ? R.string.duplicate_download_request_infobar_text
+                        : R.string.duplicate_download_infobar_text);
+        return getMessageText(template, filePath, false /*addSizeStringIfAvailable*/,
+                0 /*totalBytes*/, clickableSpan);
+    }
+
+    /**
+     * Open a given page URL.
+     * @param context Context to be used.
+     * @param pageUrl URL of the page.
+     */
+    public static void openPageUrl(Context context, String pageUrl) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(pageUrl));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage(context.getPackageName());
+        context.startActivity(intent);
+    }
+
+    /**
+     * Helper method to get the text to be displayed for duplicate download.
+     * @param template Message template.
+     * @param fileName Name of the file.
+     * @param addSizeStringIfAvailable Whether size string should be added to the dialog text.
+     * @param totalBytes Size of the download.
+     * @param clickableSpan Action to perform when clicking on the file name.
+     * @return message to be displayed on the infobar.
+     */
+    private static CharSequence getMessageText(final String template, final String fileName,
+            boolean addSizeStringIfAvailable, long totalBytes, final ClickableSpan clickableSpan) {
+        final SpannableString formattedFilePath = new SpannableString(fileName);
+        formattedFilePath.setSpan(new StyleSpan(Typeface.BOLD), 0, fileName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        formattedFilePath.setSpan(
+                clickableSpan, 0, fileName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        if (!addSizeStringIfAvailable) {
+            return TextUtils.expandTemplate(template, formattedFilePath);
+        } else {
+            String sizeString = "";
+            if (totalBytes > 0) {
+                sizeString = " ("
+                        + org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
+                                ContextUtils.getApplicationContext(), totalBytes)
+                        + ")";
+            }
+
+            return TextUtils.expandTemplate(template, formattedFilePath, sizeString);
+        }
     }
 
     @NativeMethods

@@ -19,6 +19,9 @@
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "chrome/browser/download/android/download_dialog_utils.h"
+#include "chrome/browser/download/android/duplicate_download_dialog_bridge.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
@@ -70,6 +73,11 @@ namespace offline_pages {
 namespace android {
 
 namespace {
+
+void OnDuplicateDialogConfirmed(base::OnceClosure callback, bool accepted) {
+  if (accepted)
+    std::move(callback).Run();
+}
 
 void OnShareInfoRetrieved(std::unique_ptr<OfflinePageShareHelper>,
                           ShareCallback share_callback,
@@ -229,10 +237,18 @@ void DuplicateCheckDone(const GURL& url,
 
   bool duplicate_request_exists =
       result == OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND;
-  OfflinePageInfoBarDelegate::Create(
-      base::BindOnce(&SavePageIfNotNavigatedAway, url, original_url, j_tab_ref,
-                     origin),
-      url, duplicate_request_exists, web_contents);
+  base::OnceClosure callback = base::BindOnce(&SavePageIfNotNavigatedAway, url,
+                                              original_url, j_tab_ref, origin);
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kEnableDuplicateDownloadDialog)) {
+    DuplicateDownloadDialogBridge::GetInstance()->Show(
+        url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
+        -1 /*total_bytes*/, duplicate_request_exists, web_contents,
+        base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
+  } else {
+    OfflinePageInfoBarDelegate::Create(std::move(callback), url,
+                                       duplicate_request_exists, web_contents);
+  }
 }
 
 

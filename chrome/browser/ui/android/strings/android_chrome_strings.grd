@@ -1578,6 +1578,20 @@ Your Google account may have other forms of browsing history like searches and a
         If you change the file extension, the file may open in a different application and potentially be a hazard to your device.
       </message>
 
+       <!-- Duplicate download -->
+       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
+        Download again
+      </message>
+      <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm the download of a duplicate file.">
+        Do you want to download <ph name="FILE_NAME">^1<ex>malware.exe</ex></ph><ph name="FILE_SIZE">^2<ex> (100MB)</ex></ph> again?
+      </message>
+      <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm a download that has been downloaded before.">
+        Download file again?
+      </message>
+      <message name="IDS_DUPLICATE_PAGE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm downloading a page that has been downloaded before.">
+        Download page again?
+      </message>
+
       <!-- About Chrome preferences -->
       <message name="IDS_PREFS_ABOUT_CHROME" desc="Title for the About Chrome page. [CHAR_LIMIT=32]">
         About Chrome
