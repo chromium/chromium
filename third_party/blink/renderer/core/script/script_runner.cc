@@ -70,18 +70,6 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script) {
   }
 }
 
-void ScriptRunner::ScheduleReadyInOrderScripts() {
-  while (!pending_in_order_scripts_.IsEmpty() &&
-         pending_in_order_scripts_.front()
-             ->IsReady()) {
-    PendingScript* pending_script = pending_in_order_scripts_.TakeFirst();
-    task_runner_->PostTask(
-        FROM_HERE,
-        WTF::Bind(&ScriptRunner::ExecutePendingScript, WrapWeakPersistent(this),
-                  WrapPersistent(pending_script)));
-  }
-}
-
 void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
@@ -95,7 +83,14 @@ void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
       break;
 
     case ScriptSchedulingType::kInOrder:
-      ScheduleReadyInOrderScripts();
+      while (!pending_in_order_scripts_.IsEmpty() &&
+             pending_in_order_scripts_.front()->IsReady()) {
+        PendingScript* pending_in_order = pending_in_order_scripts_.TakeFirst();
+        task_runner_->PostTask(FROM_HERE,
+                               WTF::Bind(&ScriptRunner::ExecutePendingScript,
+                                         WrapWeakPersistent(this),
+                                         WrapPersistent(pending_in_order)));
+      }
       break;
 
     default:

@@ -51,10 +51,6 @@ class CORE_EXPORT ScriptRunner final
   ScriptRunner& operator=(const ScriptRunner&) = delete;
 
   void QueueScriptForExecution(PendingScript*);
-  bool HasPendingScripts() const {
-    return !pending_in_order_scripts_.IsEmpty() ||
-           !pending_async_scripts_.IsEmpty();
-  }
   void NotifyScriptReady(PendingScript*);
 
   static void MovePendingScript(Document&, Document&, ScriptLoader*);
@@ -67,11 +63,8 @@ class CORE_EXPORT ScriptRunner final
   const char* NameInHeapSnapshot() const override { return "ScriptRunner"; }
 
  private:
-  class Task;
-
   void MovePendingScript(ScriptRunner*, PendingScript*);
   bool RemovePendingInOrderScript(PendingScript*);
-  void ScheduleReadyInOrderScripts();
 
   // Execute the given pending script.
   void ExecutePendingScript(PendingScript*);
