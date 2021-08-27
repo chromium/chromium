@@ -19,6 +19,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
@@ -263,12 +264,16 @@ void ExpectClean(UpdaterScope scope) {
   // Files must not exist on the file system.
   absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   EXPECT_TRUE(path);
-  if (path)
-    EXPECT_FALSE(base::PathExists(*path));
+  if (path) {
+    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
+        [&]() { return !base::PathExists(*path); })));
+  }
   path = GetDataDirPath(scope);
   EXPECT_TRUE(path);
-  if (path)
-    EXPECT_FALSE(base::PathExists(*path));
+  if (path) {
+    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
+        [&]() { return !base::PathExists(*path); })));
+  }
 
   LOG(ERROR) << "ExpectClean() returned" << std::endl;
 }

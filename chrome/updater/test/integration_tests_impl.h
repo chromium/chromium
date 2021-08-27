@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -48,6 +49,10 @@ void CopyLog(const base::FilePath& src_dir);
 // cases surrounding uninstall it is necessary since the processes can exit
 // prior to completing the actual uninstallation.
 void SleepFor(int seconds);
+
+// Waits for a given predicate to become true, testing it by polling. Returns
+// true if the predicate becomes true before a timeout, otherwise returns false.
+bool WaitFor(base::RepeatingCallback<bool()> predicate);
 
 // Returns the path to the updater data dir.
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope);

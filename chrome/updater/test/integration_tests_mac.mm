@@ -286,18 +286,15 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 void WaitForServerExit(UpdaterScope scope) {
-  base::TimeTicks deadline =
-      base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
-  while (base::TimeTicks::Now() < deadline) {
+  ASSERT_TRUE(WaitFor(base::BindRepeating([]() {
     std::string ps_stdout;
-    ASSERT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
+    EXPECT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
     if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
         std::string::npos) {
-      return;
+      return true;
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
-  }
-  FAIL() << __func__ << " timed out.";
+    return false;
+  })));
 }
 
 }  // namespace test

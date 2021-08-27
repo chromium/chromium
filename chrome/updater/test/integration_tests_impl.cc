@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -26,6 +27,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
@@ -230,6 +232,17 @@ void SleepFor(int seconds) {
       base::TimeDelta::FromSeconds(seconds));
   sleep.Wait();
   VLOG(2) << "Sleep complete.";
+}
+
+bool WaitFor(base::RepeatingCallback<bool()> predicate) {
+  base::TimeTicks deadline =
+      base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
+  while (base::TimeTicks::Now() < deadline) {
+    if (predicate.Run())
+      return true;
+    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  }
+  return false;
 }
 
 }  // namespace test
