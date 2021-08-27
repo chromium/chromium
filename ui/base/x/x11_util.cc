@@ -473,12 +473,11 @@ bool IsWindowVisible(x11::Window window) {
       return false;
   }
 
-  // Some compositing window managers (notably kwin) do not actually unmap
-  // windows on desktop switch, so we also must check the current desktop.
-  int32_t window_desktop, current_desktop;
-  return (!GetWindowDesktop(window, &window_desktop) ||
-          !GetCurrentDesktop(&current_desktop) ||
-          window_desktop == kAllDesktops || window_desktop == current_desktop);
+  // Do not check _NET_CURRENT_DESKTOP/_NET_WM_DESKTOP since some
+  // window managers (eg. i3) have per-monitor workspaces where more
+  // than one workspace can be visible at once, but only one will be
+  // "active".
+  return true;
 }
 
 bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
