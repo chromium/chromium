@@ -1528,10 +1528,7 @@ ci.chromium_builder(
     name = "linux-official",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
-    # TODO(https://crbug.com/1072012) Use the default console view and add
-    # main_console_view = 'main' once the build is green
     console_view_entry = consoles.console_view_entry(
-        console_view = "chromium.fyi",
         category = "linux",
         short_name = "off",
     ),
@@ -1539,7 +1536,7 @@ ci.chromium_builder(
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
-    main_console_view = main_console_if_on_branch(),
+    main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
     tree_closing = False,
 )
@@ -4107,7 +4104,6 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "VR Linux (reclient)",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
