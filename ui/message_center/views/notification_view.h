@@ -34,8 +34,6 @@ namespace message_center {
 class NotificationHeaderView;
 class ProportionalImageView;
 
-// TODO(crbug/1241983): Add metadata and builder support to these views.
-
 // NotificationTextButton extends MdText button to allow for placeholder text
 // as well as capitalizing the given label string.
 class MESSAGE_CENTER_EXPORT NotificationTextButton
@@ -159,13 +157,13 @@ class NotificationInputContainer : public views::View,
 // list) except the custom notification. Future notification types may be
 // handled by other classes, in which case instances of those classes would be
 // returned by the Create() factory method below.
-class MESSAGE_CENTER_EXPORT NotificationViewBase
+class MESSAGE_CENTER_EXPORT NotificationView
     : public MessageView,
       public views::InkDropObserver,
       public NotificationInputDelegate {
  public:
   // This defines an enumeration of IDs that can uniquely identify a view within
-  // the scope of NotificationViewBase.
+  // the scope of NotificationView.
   enum ViewId {
     // We start from 1 because 0 is the default view ID.
     kHeaderRow = 1,
@@ -178,9 +176,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     kInlineReply,
   };
 
-  NotificationViewBase(const NotificationViewBase&) = delete;
-  NotificationViewBase& operator=(const NotificationViewBase&) = delete;
-  ~NotificationViewBase() override;
+  explicit NotificationView(const Notification& notification);
+  NotificationView(const NotificationView&) = delete;
+  NotificationView& operator=(const NotificationView&) = delete;
+  ~NotificationView() override;
 
   void Activate();
 
@@ -220,83 +219,52 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
                                  const std::u16string& text) override;
 
  protected:
-  explicit NotificationViewBase(const Notification& notification);
-
-  // Control buttons view contains settings button, close button, etc.
-  std::unique_ptr<NotificationControlButtonsView> CreateControlButtonsView();
-
-  // Header row contains app_icon, app_name, control buttons, etc.
-  std::unique_ptr<NotificationHeaderView> CreateHeaderRow();
-
-  // Left content view contains most of the contents, including title, message,
-  // compacted title and message, progress bar and status for progress
-  // notification, etc.
-  std::unique_ptr<views::View> CreateLeftContentView();
-
-  // Right content contains notification icon and small image.
-  std::unique_ptr<views::View> CreateRightContentView();
-
-  // Content row contains all the main content in a notification. This view will
-  // be hidden when settings are shown.
-  std::unique_ptr<views::View> CreateContentRow();
-
-  // Image container view contains the expanded notification image.
-  std::unique_ptr<views::View> CreateImageContainerView();
-
-  // Inline settings view contains inline settings.
-  std::unique_ptr<views::View> CreateInlineSettingsView();
-
-  // Actions row contains inline action buttons and inline textfield.
-  std::unique_ptr<views::View> CreateActionsRow();
-
-  void CreateOrUpdateViews(const Notification& notification);
-
   views::View* image_container_view() { return image_container_view_; }
-  bool IsExpandable() const;
+  bool IsExpandable();
 
   virtual void SetExpandButtonEnabled(bool enabled);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameExtension);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameSystemNotification);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameWebNotification);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameWebAppNotification);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, CreateOrUpdateTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ExpandLongMessage);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, InkDropClipRect);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, InlineSettings);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, AppNameExtension);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, AppNameSystemNotification);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, AppNameWebNotification);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, AppNameWebAppNotification);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, CreateOrUpdateTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, ExpandLongMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InkDropClipRect);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InlineSettings);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest,
                            InlineSettingsInkDropAnimation);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, NotificationWithoutIcon);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowProgress);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowTimestamp);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestAccentColor);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestActionButtonClick);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClick);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClickExpanded);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, NotificationWithoutIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, ShowProgress);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, ShowTimestamp);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestAccentColor);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestActionButtonClick);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestClick);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestClickExpanded);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest,
                            TestDeleteOnDisableNotification);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
-                           TestDeleteOnToggleExpanded);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestInlineReply);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
-                           TestInlineReplyActivateWithKeyPress);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
-                           TestInlineReplyRemovedByUpdate);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestLongTitleAndMessage);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateAddingIcon);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateButtonCountTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateButtonsStateTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateInSettings);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateType);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateViewsOrderingTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UseImageAsIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestDeleteOnToggleExpanded);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestIconSizing);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, LeftContentResizeForIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestInlineReply);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest,
+                           TestInlineReplyActivateWithKeyPress);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest,
+                           TestInlineReplyRemovedByUpdate);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestLongTitleAndMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateAddingIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateButtonCountTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateButtonsStateTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateInSettings);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateType);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UpdateViewsOrderingTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, UseImageAsIcon);
 
-  friend class NotificationViewBaseTest;
+  friend class NotificationViewTest;
 
   class NotificationViewPathGenerator;
+
+  void CreateOrUpdateViews(const Notification& notification);
 
   void CreateOrUpdateContextTitleView(const Notification& notification);
   void CreateOrUpdateTitleView(const Notification& notification);
@@ -328,7 +296,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::InkDropContainerView* const ink_drop_container_;
 
   // View containing close and settings buttons
-  NotificationControlButtonsView* control_buttons_view_ = nullptr;
+  NotificationControlButtonsView* control_buttons_view_;
 
   // Whether this notification is expanded or not.
   bool expanded_ = false;
@@ -348,9 +316,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   // Describes if the view should display an expand button in the header view.
   bool has_expand_button_in_header_view_ = true;
-
-  // Describes whether the view can display inline settings or not.
-  bool inline_settings_enabled_ = false;
 
   // Container views directly attached to this view.
   NotificationHeaderView* header_row_ = nullptr;
@@ -392,21 +357,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   base::TimeTicks last_mouse_pressed_timestamp_;
 
-  base::WeakPtrFactory<NotificationViewBase> weak_ptr_factory_{this};
-};
-
-// TODO(crbug/1232197): Move this class to a different file.
-
-// Customized NotificationViewBase for notification on all platforms other
-// than ChromeOS. This view is used to displays all current types of
-// notification (web, basic, image, and list) except custom notification.
-class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
- public:
-  // TODO(crbug/1241983): Add metadata and builder support to this view.
-  explicit NotificationView(const message_center::Notification& notification);
-  NotificationView(const NotificationView&) = delete;
-  NotificationView& operator=(const NotificationView&) = delete;
-  ~NotificationView() override;
+  base::WeakPtrFactory<NotificationView> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

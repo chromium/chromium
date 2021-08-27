@@ -18,10 +18,8 @@ namespace ash {
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
 // and list) except custom notification.
-class ASH_EXPORT AshNotificationView
-    : public message_center::NotificationViewBase {
+class ASH_EXPORT AshNotificationView : public message_center::NotificationView {
  public:
-  // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(
       const message_center::Notification& notification);
   AshNotificationView(const AshNotificationView&) = delete;
