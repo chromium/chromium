@@ -632,11 +632,12 @@ class PDFExtensionLoadTest
       public testing::WithParamInterface<std::tuple<int, bool>> {
  protected:
   int part() const { return std::get<0>(GetParam()); }
+  bool should_enable_unseasoned() const { return std::get<1>(GetParam()); }
 
   std::vector<base::Feature> GetEnabledFeatures() const override {
     auto enabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
-    if (IsUnseasoned())
+    if (should_enable_unseasoned())
       enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
     return enabled;
   }
@@ -644,7 +645,7 @@ class PDFExtensionLoadTest
   std::vector<base::Feature> GetDisabledFeatures() const override {
     auto disabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetDisabledFeatures();
-    if (!IsUnseasoned())
+    if (!should_enable_unseasoned())
       disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
     return disabled;
   }
