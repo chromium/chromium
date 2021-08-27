@@ -128,6 +128,11 @@ function createSentReportRow(info) {
   td[0].textContent = info.reportUrl.url;
   td[1].textContent = info.reportBody;
   td[2].textContent = info.httpResponseCode;
+  td[3].textContent = new Date(info.report.reportTime).toLocaleString();
+
+  if (info.httpResponseCode < 200 || info.httpResponseCode >= 400) {
+    template.content.querySelector('tr').classList.add('http-error');
+  }
   return document.importNode(template.content, true);
 }
 

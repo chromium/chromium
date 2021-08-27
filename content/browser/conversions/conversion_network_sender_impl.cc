@@ -104,7 +104,7 @@ ConversionNetworkSenderImpl::ConversionNetworkSenderImpl(
 
 ConversionNetworkSenderImpl::~ConversionNetworkSenderImpl() = default;
 
-void ConversionNetworkSenderImpl::SendReport(const ConversionReport& report,
+void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
                                              ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -171,18 +171,16 @@ void ConversionNetworkSenderImpl::SendReport(const ConversionReport& report,
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
   simple_url_loader_ptr->SetRetryOptions(/*max_retries=*/1, retry_mode);
 
-  DCHECK(report.conversion_id);
+  LogMetricsOnReportSend(report);
 
   // Unretained is safe because the URLLoader is owned by |this| and will be
   // deleted before |this|.
   simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&ConversionNetworkSenderImpl::OnReportSent,
-                     base::Unretained(this), std::move(it),
+                     base::Unretained(this), std::move(it), std::move(report),
                      std::move(report_url), std::move(report_body),
-                     std::move(sent_callback), *report.conversion_id,
-                     report.original_report_time));
-  LogMetricsOnReportSend(report);
+                     std::move(sent_callback)));
 }
 
 void ConversionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
@@ -192,11 +190,10 @@ void ConversionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
 
 void ConversionNetworkSenderImpl::OnReportSent(
     UrlLoaderList::iterator it,
+    ConversionReport report,
     GURL report_url,
     std::string report_body,
     ReportSentCallback sent_callback,
-    ConversionReport::Id conversion_id,
-    base::Time original_report_time,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
 
@@ -238,10 +235,9 @@ void ConversionNetworkSenderImpl::OnReportSent(
                    net_error == net::ERR_CONNECTION_RESET);
 
   std::move(sent_callback)
-      .Run(SentReportInfo(conversion_id, original_report_time,
-                          std::move(report_url), std::move(report_body),
-                          headers ? headers->response_code() : 0,
-                          should_retry));
+      .Run(SentReportInfo(
+          std::move(report), std::move(report_url), std::move(report_body),
+          headers ? headers->response_code() : 0, should_retry));
 }
 
 }  // namespace content

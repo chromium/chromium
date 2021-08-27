@@ -339,7 +339,7 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 
-SentReportInfo GetBlankSentReportInfo();
+SentReportInfo GetBlankSentReportInfo(ConversionReport report);
 
 }  // namespace content
 

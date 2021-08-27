@@ -256,16 +256,21 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithSentReport_SentReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
+  ConversionReport report(ImpressionBuilder(base::Time()).Build(),
+                          /*conversion_data=*/0,
+                          /*conversion_time=*/base::Time(),
+                          /*report_time=*/base::Time(),
+                          /*priority=*/0,
+                          /*conversion_id=*/absl::nullopt);
+
   TestConversionManager manager;
   manager.SetSentReportsForWebUI(
-      {SentReportInfo(ConversionReport::Id(0),
-                      /*original_report_time=*/base::Time(),
+      {SentReportInfo(report,
                       /*report_url=*/GURL("https://example.com/1"),
                       /*report_body=*/"a",
                       /*http_response_code=*/200,
                       /*should_retry*/ false),
-       SentReportInfo(ConversionReport::Id(0),
-                      /*original_report_time=*/base::Time(),
+       SentReportInfo(report,
                       /*report_url=*/GURL("https://example.com/2"),
                       /*report_body=*/"b",
                       /*http_response_code=*/404,
@@ -281,7 +286,10 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
           table.children[0].children[2].innerText === "200" &&
           table.children[1].children[0].innerText === "https://example.com/2" &&
           table.children[1].children[1].innerText === "b" &&
-          table.children[1].children[2].innerText === "404") {
+          table.children[1].children[2].innerText === "404" &&
+          // It's hard to test locale-specific datetime rendering,
+          // so just check against empty.
+          table.children[1].children[3].innerText !== "") {
         document.title = $1;
       }
     });

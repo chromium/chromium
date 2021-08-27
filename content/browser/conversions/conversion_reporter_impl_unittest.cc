@@ -22,6 +22,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -44,13 +45,11 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
  public:
   MockNetworkSender() = default;
 
-  void SendReport(const ConversionReport& conversion_report,
+  void SendReport(ConversionReport report,
                   ReportSentCallback sent_callback) override {
-    last_sent_report_id_ = *conversion_report.conversion_id;
+    last_sent_report_id_ = *report.conversion_id;
     num_reports_sent_++;
-    SentReportInfo info = GetBlankSentReportInfo();
-    info.conversion_id = *conversion_report.conversion_id;
-    info.original_report_time = conversion_report.original_report_time;
+    SentReportInfo info = GetBlankSentReportInfo(std::move(report));
     info.http_response_code = 200;
     std::move(sent_callback).Run(std::move(info));
   }
@@ -89,7 +88,7 @@ class ConversionReporterImplTest : public testing::Test {
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }
 
-  const SentReportInfo& last_sent_report_info() const {
+  const absl::optional<SentReportInfo>& last_sent_report_info() const {
     return last_sent_report_info_;
   }
 
@@ -102,7 +101,7 @@ class ConversionReporterImplTest : public testing::Test {
   MockNetworkSender* sender_;
 
  private:
-  SentReportInfo last_sent_report_info_ = GetBlankSentReportInfo();
+  absl::optional<SentReportInfo> last_sent_report_info_;
 
   void OnReportSent(SentReportInfo info) {
     last_sent_report_info_ = std::move(info);
@@ -118,8 +117,8 @@ TEST_F(ConversionReporterImplTest,
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(1, *sender_->last_sent_report_id());
-  EXPECT_EQ(1L, *last_sent_report_info().conversion_id);
-  EXPECT_EQ(200, last_sent_report_info().http_response_code);
+  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
+  EXPECT_EQ(200, last_sent_report_info()->http_response_code);
 }
 
 TEST_F(ConversionReporterImplTest,
@@ -132,8 +131,8 @@ TEST_F(ConversionReporterImplTest,
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(1, *sender_->last_sent_report_id());
-  EXPECT_EQ(1L, *last_sent_report_info().conversion_id);
-  EXPECT_EQ(200, last_sent_report_info().http_response_code);
+  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
+  EXPECT_EQ(200, last_sent_report_info()->http_response_code);
 }
 
 TEST_F(ConversionReporterImplTest,
@@ -196,7 +195,8 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i), *last_sent_report_info().conversion_id);
+    EXPECT_EQ(static_cast<int64_t>(i),
+              *last_sent_report_info()->report.conversion_id.value());
   }
 }
 
@@ -214,7 +214,8 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i), *last_sent_report_info().conversion_id);
+    EXPECT_EQ(static_cast<int64_t>(i),
+              *last_sent_report_info()->report.conversion_id.value());
   }
 }
 
@@ -229,9 +230,9 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowsConversions_ReportNotSent) {
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(1L, *last_sent_report_info().conversion_id);
+  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
   // Verify that the report was not sent to the NetworkSender.
-  EXPECT_EQ(0, last_sent_report_info().http_response_code);
+  EXPECT_EQ(0, last_sent_report_info()->http_response_code);
   SetBrowserClientForTesting(old_browser_client);
 }
 
@@ -285,9 +286,9 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
         << "impression_origin; " << test_case.impression_origin
         << ", conversion_origin: " << test_case.conversion_origin
         << ", reporting_origin: " << test_case.reporting_origin;
-    EXPECT_EQ(1L, *last_sent_report_info().conversion_id);
+    EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
     EXPECT_EQ(test_case.report_allowed ? 200 : 0,
-              last_sent_report_info().http_response_code);
+              last_sent_report_info()->http_response_code);
 
     sender_->Reset();
   }

@@ -47,7 +47,7 @@ class CONTENT_EXPORT ConversionReporterImpl
 
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST request with no-credentials.
-    virtual void SendReport(const ConversionReport& report,
+    virtual void SendReport(ConversionReport report,
                             ReportSentCallback sent_callback) = 0;
   };
 

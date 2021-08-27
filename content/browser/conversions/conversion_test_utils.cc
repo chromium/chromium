@@ -369,8 +369,7 @@ bool operator==(const ConversionReport& a, const ConversionReport& b) {
 bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
   const auto tie = [](const SentReportInfo& info) {
     return std::make_tuple(info.report_url, info.report_body,
-                           info.http_response_code, info.original_report_time,
-                           info.conversion_id);
+                           info.http_response_code, info.report);
   };
   return tie(a) == tie(b);
 }
@@ -440,9 +439,8 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
   return conversion_reports;
 }
 
-SentReportInfo GetBlankSentReportInfo() {
-  return SentReportInfo(ConversionReport::Id(0),
-                        /*original_report_time=*/base::Time(),
+SentReportInfo GetBlankSentReportInfo(ConversionReport report) {
+  return SentReportInfo(std::move(report),
                         /*report_url=*/GURL(),
                         /*report_body=*/"",
                         /*http_response_code=*/0,

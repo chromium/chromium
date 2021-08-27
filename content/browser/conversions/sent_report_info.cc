@@ -6,14 +6,12 @@
 
 namespace content {
 
-SentReportInfo::SentReportInfo(ConversionReport::Id conversion_id,
-                               base::Time original_report_time,
+SentReportInfo::SentReportInfo(ConversionReport report,
                                GURL report_url,
                                std::string report_body,
                                int http_response_code,
                                bool should_retry)
-    : conversion_id(conversion_id),
-      original_report_time(original_report_time),
+    : report(std::move(report)),
       report_url(std::move(report_url)),
       report_body(std::move(report_body)),
       http_response_code(http_response_code),

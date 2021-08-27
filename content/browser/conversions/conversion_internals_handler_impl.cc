@@ -57,6 +57,15 @@ void ForwardImpressionsToWebUI(
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));
 }
 
+::mojom::WebUIConversionReportPtr WebUIConversionReport(
+    const ConversionReport& report) {
+  return ::mojom::WebUIConversionReport::New(
+      report.impression.impression_data(), report.conversion_data,
+      report.impression.conversion_origin(),
+      report.impression.reporting_origin(), report.report_time.ToJsTime(),
+      SourceTypeToMojoType(report.impression.source_type()), report.priority);
+}
+
 void ForwardReportsToWebUI(
     ::mojom::ConversionInternalsHandler::GetPendingReportsCallback
         web_ui_callback,
@@ -65,12 +74,7 @@ void ForwardReportsToWebUI(
   web_ui_reports.reserve(stored_reports.size());
 
   for (const ConversionReport& report : stored_reports) {
-    web_ui_reports.push_back(::mojom::WebUIConversionReport::New(
-        report.impression.impression_data(), report.conversion_data,
-        report.impression.conversion_origin(),
-        report.impression.reporting_origin(), report.report_time.ToJsTime(),
-        SourceTypeToMojoType(report.impression.source_type()),
-        report.priority));
+    web_ui_reports.push_back(WebUIConversionReport(report));
   }
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
 }
@@ -137,7 +141,8 @@ void ConversionInternalsHandlerImpl::GetSentReports(
 
     for (const SentReportInfo& info : sent_reports) {
       web_ui_reports.push_back(::mojom::SentReportInfo::New(
-          info.report_url, info.report_body, info.http_response_code));
+          info.report_url, info.report_body, info.http_response_code,
+          WebUIConversionReport(info.report)));
     }
     std::move(callback).Run(std::move(web_ui_reports));
   } else {

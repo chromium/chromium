@@ -17,8 +17,7 @@ namespace content {
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
 struct CONTENT_EXPORT SentReportInfo {
-  SentReportInfo(ConversionReport::Id conversion_id,
-                 base::Time original_report_time,
+  SentReportInfo(ConversionReport report,
                  GURL report_url,
                  std::string report_body,
                  int http_response_code,
@@ -29,9 +28,7 @@ struct CONTENT_EXPORT SentReportInfo {
   SentReportInfo& operator=(SentReportInfo&& other);
   ~SentReportInfo();
 
-  // Information from the `ConversionReport` that was sent.
-  ConversionReport::Id conversion_id;
-  base::Time original_report_time;
+  ConversionReport report;
 
   // Information on the network request that was sent.
   //

@@ -65,8 +65,9 @@ void ConversionReporterImpl::SendNextReport() {
   // Send the next report and remove it from the queue. Bind the conversion id
   // to the sent callback so we know which conversion report has finished
   // sending.
-  const ConversionReport& report = report_queue_.top();
+  ConversionReport report = report_queue_.top();
   DCHECK(report.conversion_id.has_value());
+  report_queue_.pop();
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
@@ -74,21 +75,19 @@ void ConversionReporterImpl::SendNextReport() {
           &report.impression.conversion_origin(),
           &report.impression.reporting_origin())) {
     network_sender_->SendReport(
-        report, base::BindOnce(&ConversionReporterImpl::OnReportSent,
-                               base::Unretained(this)));
+        std::move(report), base::BindOnce(&ConversionReporterImpl::OnReportSent,
+                                          base::Unretained(this)));
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    OnReportSent(SentReportInfo(*report.conversion_id,
-                                report.original_report_time,
+    OnReportSent(SentReportInfo(std::move(report),
                                 /*report_url=*/GURL(),
                                 /*report_body=*/"",
                                 /*http_response_code=*/0,
                                 /*should_retry*/ false));
   }
-  report_queue_.pop();
   MaybeScheduleNextReport();
 }
 
@@ -113,7 +112,8 @@ void ConversionReporterImpl::MaybeScheduleNextReport() {
 }
 
 void ConversionReporterImpl::OnReportSent(SentReportInfo info) {
-  size_t num_removed = pending_reports_.erase(info.conversion_id);
+  DCHECK(info.report.conversion_id.has_value());
+  size_t num_removed = pending_reports_.erase(*info.report.conversion_id);
   DCHECK_GT(num_removed, 0u);
   callback_.Run(std::move(info));
 }

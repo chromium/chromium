@@ -64,7 +64,7 @@ bool ShouldRetryReport(const ConversionPolicy& policy,
                        base::Time now,
                        const SentReportInfo& info) {
   bool past_max_allowed_age =
-      (now - info.original_report_time) > policy.GetMaxReportAge();
+      (now - info.report.original_report_time) > policy.GetMaxReportAge();
   return info.should_retry && !past_max_allowed_age;
 }
 
@@ -295,9 +295,10 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
 
   std::vector<ConversionReport::Id> conversion_ids;
   conversion_ids.reserve(reports.size());
+  base::Time now = clock_->Now();
   // All reports should be sent immediately.
   for (ConversionReport& report : reports) {
-    report.report_time = base::Time::Min();
+    report.report_time = now;
     DCHECK(report.conversion_id.has_value());
     conversion_ids.push_back(*report.conversion_id);
   }
@@ -313,13 +314,15 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
 }
 
 void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
+  DCHECK(info.report.conversion_id.has_value());
+
   // Reports that should be retried are not deleted.
   const bool should_retry =
       ShouldRetryReport(*conversion_policy_, clock_->Now(), info);
   if (!should_retry) {
     RecordDeleteEvent(DeleteEvent::kStarted);
     conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
-        .WithArgs(info.conversion_id)
+        .WithArgs(*info.report.conversion_id)
         .Then(base::BindOnce([](bool succeeded) {
           RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded
                                       : DeleteEvent::kFailed);
@@ -333,7 +336,8 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   // conversion ID, remove the ID from the wait-set; if it was the last such ID,
   // run the callback.
   if (!send_reports_for_web_ui_callback_.is_null() &&
-      pending_conversion_ids_for_internals_ui_.erase(info.conversion_id) > 0 &&
+      pending_conversion_ids_for_internals_ui_.erase(
+          *info.report.conversion_id) > 0 &&
       pending_conversion_ids_for_internals_ui_.empty()) {
     std::move(send_reports_for_web_ui_callback_).Run();
   }
