@@ -84,6 +84,23 @@ Node* NextNonEmptyVisibleTextNode(Node* start_node) {
   if (!start_node)
     return nullptr;
 
+  // Filter out nodes without layout object.
+  if (base::FeatureList::IsEnabled(
+          shared_highlighting::kSharedHighlightingLayoutObjectFix)) {
+    for (Node* node = start_node; node; node = Direction::Next(*node)) {
+      Node* next_node = Direction::GetVisibleTextNode(*node);
+      if (!next_node)
+        return nullptr;
+      if (next_node->GetLayoutObject() &&
+          !PlainText(EphemeralRange::RangeOfContents(*next_node))
+               .StripWhiteSpace()
+               .IsEmpty())
+        return next_node;
+      node = next_node;
+    }
+    return nullptr;
+  }
+
   // Move forward/backward until non empty visible text node is found.
   for (Node* node = start_node; node; node = Direction::Next(*node)) {
     Node* next_node = Direction::GetVisibleTextNode(*node);
