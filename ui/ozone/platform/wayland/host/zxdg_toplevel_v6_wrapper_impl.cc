@@ -10,14 +10,27 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/hit_test.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zxdg_surface_v6_wrapper_impl.h"
 
 namespace ui {
+
+namespace {
+
+absl::optional<wl::Serial> GetSerialForMoveResize(
+    WaylandConnection* connection) {
+  return connection->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                 wl::SerialType::kMousePress,
+                                                 wl::SerialType::kKeyPress});
+}
+
+}  // namespace
 
 ZXDGToplevelV6WrapperImpl::ZXDGToplevelV6WrapperImpl(
     std::unique_ptr<ZXDGSurfaceV6WrapperImpl> surface,
@@ -84,16 +97,20 @@ void ZXDGToplevelV6WrapperImpl::SetMinimized() {
 
 void ZXDGToplevelV6WrapperImpl::SurfaceMove(WaylandConnection* connection) {
   DCHECK(zxdg_toplevel_v6_);
-  zxdg_toplevel_v6_move(zxdg_toplevel_v6_.get(), connection->seat(),
-                        connection->serial());
+  if (auto serial = GetSerialForMoveResize(connection)) {
+    zxdg_toplevel_v6_move(zxdg_toplevel_v6_.get(), connection->seat(),
+                          serial->value);
+  }
 }
 
 void ZXDGToplevelV6WrapperImpl::SurfaceResize(WaylandConnection* connection,
                                               uint32_t hittest) {
   DCHECK(zxdg_toplevel_v6_);
-  zxdg_toplevel_v6_resize(zxdg_toplevel_v6_.get(), connection->seat(),
-                          connection->serial(),
-                          wl::IdentifyDirection(*connection, hittest));
+  if (auto serial = GetSerialForMoveResize(connection)) {
+    zxdg_toplevel_v6_resize(zxdg_toplevel_v6_.get(), connection->seat(),
+                            serial->value,
+                            wl::IdentifyDirection(*connection, hittest));
+  }
 }
 
 void ZXDGToplevelV6WrapperImpl::SetTitle(const std::u16string& title) {

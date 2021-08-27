@@ -1600,6 +1600,18 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
 }
 
 TEST_P(WaylandWindowTest, DispatchWindowMove) {
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
+  Sync();
+  ASSERT_TRUE(connection_->pointer());
+
+  // Focus and press left mouse button, so that serial is sent to client.
+  auto* pointer_resource = server_.seat()->pointer()->resource();
+  wl_pointer_send_enter(pointer_resource, 1, surface_->resource(), 0, 0);
+  wl_pointer_send_button(pointer_resource, 2, 1, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+  Sync();
+
   EXPECT_CALL(*GetXdgToplevel(), Move(_));
   ui::GetWmMoveResizeHandler(*window_)->DispatchHostWindowDragMovement(
       HTCAPTION, gfx::Point());
@@ -1610,8 +1622,19 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   std::vector<int> hit_test_values;
   InitializeWithSupportedHitTestValues(&hit_test_values);
 
-  auto* wm_move_resize_handler = ui::GetWmMoveResizeHandler(*window_);
+  // Focus and press left mouse button, so that serial is sent to client.
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
+  Sync();
+  ASSERT_TRUE(connection_->pointer());
 
+  auto* pointer_resource = server_.seat()->pointer()->resource();
+  wl_pointer_send_enter(pointer_resource, 1, surface_->resource(), 0, 0);
+  wl_pointer_send_button(pointer_resource, 2, 1, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+  Sync();
+
+  auto* wm_move_resize_handler = ui::GetWmMoveResizeHandler(*window_);
   for (const int value : hit_test_values) {
     {
       uint32_t direction = wl::IdentifyDirection(*(connection_.get()), value);

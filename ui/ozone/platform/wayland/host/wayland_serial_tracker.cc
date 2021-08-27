@@ -59,7 +59,6 @@ void SerialTracker::UpdateSerial(SerialType type, uint32_t serial) {
 void SerialTracker::ResetSerial(SerialType type) {
   DCHECK(base::Contains(serials_, type));
   serials_.at(type) = absl::nullopt;
-  UpdateConnectionSerial(connection_, type, 0u);
 }
 
 absl::optional<Serial> SerialTracker::GetSerial(SerialType type) const {
