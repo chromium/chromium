@@ -6981,3 +6981,6 @@ crbug.com/1243128 [ Win ] external/wpt/web-share/disabled-by-permissions-policy.
 
 # Sheriff 2021-08-26
 crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-attach-related-sw.js [ Crash Pass ]
+
+# Sheriff 2021-08-26
+crbug.com/1243933 [ Win7 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure ]
