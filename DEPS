@@ -616,7 +616,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '88ecdb962d9d7069e444a5d4f5d3c499b4a89179',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '29792307f0c81ece2e1ba6d8f00e35b8f11bcb45',
       'condition': 'checkout_ios',
   },
 
@@ -631,7 +631,7 @@ deps = {
   },
 
   'src/ios/third_party/material_roboto_font_loader_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-roboto-font-loader-ios.git' + '@' + '4aa51e906e5671c71d24e991f1f10d782a58409f',
+      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-roboto-font-loader-ios.git' + '@' + '4be05d4676645febc453a6cde7f5adfb1b785dc1',
       'condition': 'checkout_ios',
   },
 
