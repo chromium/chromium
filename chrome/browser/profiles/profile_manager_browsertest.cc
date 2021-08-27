@@ -609,7 +609,13 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
   EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
 }
 
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, AddMultipleProfiles) {
+// TODO(crbug.com/1243925): Fix and re-enable.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AddMultipleProfiles DISABLED_AddMultipleProfiles
+#else
+#define MAYBE_AddMultipleProfiles AddMultipleProfiles
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_AddMultipleProfiles) {
   // Verifies that the browser doesn't crash when it is restarted.
 }
 
