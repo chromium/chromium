@@ -6,6 +6,7 @@
 
 #include <primary-selection-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_offer.h"
@@ -27,9 +28,14 @@ ZwpPrimarySelectionDevice::~ZwpPrimarySelectionDevice() = default;
 
 void ZwpPrimarySelectionDevice::SetSelectionSource(
     ZwpPrimarySelectionSource* source) {
+  auto serial = GetSerialForSelection();
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to set selection. No serial found.";
+    return;
+  }
   auto* data_source = source ? source->data_source() : nullptr;
   zwp_primary_selection_device_v1_set_selection(data_device_.get(), data_source,
-                                                connection()->serial());
+                                                serial->value);
   connection()->ScheduleFlush();
 }
 

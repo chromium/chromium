@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
@@ -100,6 +101,13 @@ void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
   deferred_read_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
+}
+
+absl::optional<wl::Serial> WaylandDataDeviceBase::GetSerialForSelection()
+    const {
+  return connection_->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                  wl::SerialType::kMousePress,
+                                                  wl::SerialType::kKeyPress});
 }
 
 }  // namespace ui
