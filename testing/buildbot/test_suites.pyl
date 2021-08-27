@@ -1799,9 +1799,6 @@
       },
       'zlib_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.zlib_unittests.filter',
-        ],
       },
     },
 

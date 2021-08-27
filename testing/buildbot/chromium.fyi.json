@@ -26786,7 +26786,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.zlib_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -28285,7 +28284,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.zlib_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
