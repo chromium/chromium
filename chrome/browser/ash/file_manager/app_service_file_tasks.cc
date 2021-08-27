@@ -27,6 +27,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/file_system.mojom.h"
@@ -121,18 +123,31 @@ void FindAppServiceTasks(Profile* profile,
           app_type == apps::mojom::AppType::kSystemWeb))
       continue;
 
-    // Media app and other SWAs can handle "non-native" files.
-    if (has_non_native_file &&
-        !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
-      continue;
-    }
+    if (app_type == apps::mojom::AppType::kWeb ||
+        app_type == apps::mojom::AppType::kSystemWeb) {
+      // Media app and other SWAs can handle "non-native" files.
+      if (has_non_native_file &&
+          !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
+        continue;
+      }
 
-    // "Hide" the media app task (i.e. skip the rest of this loop which would
-    // add it as a handler) when the flag to handle PDF is off.
-    if (launch_entry.app_id == web_app::kMediaAppId &&
-        !base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
-        has_pdf_file)
-      continue;
+      // "Hide" the media app task (i.e. skip the rest of this loop which would
+      // add it as a handler) when the flag to handle PDF is off.
+      if (launch_entry.app_id == web_app::kMediaAppId &&
+          !base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
+          has_pdf_file)
+        continue;
+
+      // Check the origin trial and feature flag for file handling in web apps.
+      // TODO(1240018): Remove when this feature is fully launched. This check
+      // will not work for lacros web apps.
+      web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+      web_app::OsIntegrationManager& os_integration_manager =
+          provider->os_integration_manager();
+      if (!os_integration_manager.IsFileHandlingAPIAvailable(
+              launch_entry.app_id))
+        continue;
+    }
 
     constexpr int kIconSize = 32;
     GURL icon_url =

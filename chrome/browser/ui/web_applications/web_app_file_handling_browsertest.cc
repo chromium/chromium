@@ -911,6 +911,10 @@ constexpr char kOriginTrialPublicKeyForTesting[] =
 
 class WebAppFileHandlingOriginTrialTest : public WebAppControllerBrowserTest {
  public:
+  explicit WebAppFileHandlingOriginTrialTest(
+      std::string origin = "https://file-handling-pwa")
+      : origin_(std::move(origin)) {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebAppControllerBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
@@ -928,16 +932,14 @@ class WebAppFileHandlingOriginTrialTest : public WebAppControllerBrowserTest {
   }
 
   AppId InstallFileHandlingWebApp(GURL* start_url_out = nullptr) {
-    std::string origin = "https://file-handling-pwa";
-
     // We need to use URLLoaderInterceptor (rather than a EmbeddedTestServer),
     // because origin trial token is associated with a fixed origin, whereas
     // EmbeddedTestServer serves content on a random port.
     interceptor_ =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, GURL(origin));
+            kBaseDataDir, GURL(origin_));
 
-    GURL start_url = GURL(origin + "/index.html");
+    GURL start_url = GURL(origin_ + "/index.html");
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
@@ -968,6 +970,7 @@ class WebAppFileHandlingOriginTrialTest : public WebAppControllerBrowserTest {
 
  private:
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
+  const std::string origin_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
@@ -1087,6 +1090,34 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
   // default in browser tests.
   EXPECT_EQ(1u, tasks.size());
   EXPECT_EQ(tasks[0].task_descriptor.app_id, app_id);
+}
+
+class WebAppFileHandlingDisabledTest
+    : public WebAppFileHandlingOriginTrialTest {
+ public:
+  // This origin makes sure the installed web app does not match the origin
+  // trial and therefore relies on kFileHandlingAPI being enabled.
+  WebAppFileHandlingDisabledTest()
+      : WebAppFileHandlingOriginTrialTest(
+            "https://file-handling-pwa-no-origin-trial") {
+    feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that the web app is not returned as a file handler task when
+// the flag kFileHandlingAPI is disabled.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingDisabledTest,
+                       NoFileHandlerOnChromeOS) {
+  const AppId app_id = InstallFileHandlingWebApp();
+  GrantFileHandlingPermission();
+  base::FilePath test_file_path = NewTestFilePath("txt");
+  std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
+      file_manager::test::GetTasksForFile(profile(), test_file_path);
+
+  EXPECT_EQ(0u, tasks.size());
 }
 
 // Ensures correct behavior for files on "special volumes", such as file systems
