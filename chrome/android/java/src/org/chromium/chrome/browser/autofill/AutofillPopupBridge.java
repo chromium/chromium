@@ -29,6 +29,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
 * JNI call glue for AutofillExternalDelagate C++ and Java objects.
@@ -177,23 +178,31 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      * @param isLabelMultiline Whether the label should be should over multiple lines.
      * @param isLabelBold true if {@param label} should be displayed in {@code Typeface.BOLD},
      * false if {@param label} should be displayed in {@code Typeface.NORMAL}.
+     * @param customIconUrl Url for the icon to be displayed in the autofill suggestion. If present,
+     *         it'd be preferred over the iconId.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
             String label, String sublabel, String itemTag, int iconId, boolean isIconAtStart,
-            int suggestionId, boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold) {
+            int suggestionId, boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold,
+            GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion.Builder()
-                               .setLabel(label)
-                               .setSubLabel(sublabel)
-                               .setItemTag(itemTag)
-                               .setIconId(drawableId)
-                               .setIsIconAtStart(isIconAtStart)
-                               .setSuggestionId(suggestionId)
-                               .setIsDeletable(isDeletable)
-                               .setIsMultiLineLabel(isLabelMultiline)
-                               .setIsBoldLabel(isLabelBold)
-                               .build();
+        AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder()
+                                                     .setLabel(label)
+                                                     .setSubLabel(sublabel)
+                                                     .setItemTag(itemTag)
+                                                     .setIconId(drawableId)
+                                                     .setIsIconAtStart(isIconAtStart)
+                                                     .setSuggestionId(suggestionId)
+                                                     .setIsDeletable(isDeletable)
+                                                     .setIsMultiLineLabel(isLabelMultiline)
+                                                     .setIsBoldLabel(isLabelBold);
+        if (customIconUrl != null) {
+            builder.setCustomIcon(
+                    PersonalDataManager.getInstance()
+                            .getCustomImageForAutofillSuggestionIfAvailable(customIconUrl));
+        }
+        array[index] = builder.build();
     }
 
     @NativeMethods

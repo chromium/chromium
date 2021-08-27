@@ -4,6 +4,9 @@
 
 package org.chromium.components.autofill;
 
+import android.graphics.Bitmap;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.DropdownItemBase;
@@ -24,6 +27,8 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsBoldLabel;
     private final String mFeatureForIPH;
     private final GURL mCustomIconUrl;
+    @Nullable
+    private final Bitmap mCustomIcon;
 
     /**
      * Constructs a Autofill suggestion container.
@@ -51,13 +56,15 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
             boolean isBoldLabel, String featureForIPH) {
         this(label, sublabel, itemTag, iconId, isIconAtStart, suggestionId, isDeletable,
-                isMultilineLabel, isBoldLabel, featureForIPH, /*customIconUrl=*/null);
+                isMultilineLabel, isBoldLabel, featureForIPH, /*customIconUrl=*/null,
+                /*customIcon=*/null);
     }
 
     @VisibleForTesting
     public AutofillSuggestion(String label, String sublabel, String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
-            boolean isBoldLabel, String featureForIPH, GURL customIconUrl) {
+            boolean isBoldLabel, String featureForIPH, GURL customIconUrl,
+            @Nullable Bitmap customIcon) {
         mLabel = label;
         mSublabel = sublabel;
         mItemTag = itemTag;
@@ -69,6 +76,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsBoldLabel = isBoldLabel;
         mFeatureForIPH = featureForIPH;
         mCustomIconUrl = customIconUrl;
+        mCustomIcon = customIcon;
     }
 
     @Override
@@ -122,6 +130,12 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mCustomIconUrl;
     }
 
+    @Override
+    @Nullable
+    public Bitmap getCustomIcon() {
+        return mCustomIcon;
+    }
+
     public int getSuggestionId() {
         return mSuggestionId;
     }
@@ -157,7 +171,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mIsMultilineLabel == other.mIsMultilineLabel
                 && this.mIsBoldLabel == other.mIsBoldLabel
                 && this.mFeatureForIPH.equals(other.mFeatureForIPH)
-                && this.mCustomIconUrl.equals(other.mCustomIconUrl);
+                && this.mCustomIconUrl.equals(other.mCustomIconUrl)
+                && this.mCustomIcon.sameAs(other.mCustomIcon);
     }
 
     public Builder toBuilder() {
@@ -172,7 +187,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setIsMultiLineLabel(mIsMultilineLabel)
                 .setIsBoldLabel(mIsBoldLabel)
                 .setFeatureForIPH(mFeatureForIPH)
-                .setCustomIconUrl(mCustomIconUrl);
+                .setCustomIconUrl(mCustomIconUrl)
+                .setCustomIcon(mCustomIcon);
     }
 
     /**
@@ -181,6 +197,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     public static final class Builder {
         private int mIconId;
         private GURL mCustomIconUrl;
+        private Bitmap mCustomIcon;
         private boolean mIsBoldLabel;
         private boolean mIsIconAtStart;
         private boolean mIsDeletable;
@@ -198,6 +215,11 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setCustomIconUrl(GURL customIconUrl) {
             this.mCustomIconUrl = customIconUrl;
+            return this;
+        }
+
+        public Builder setCustomIcon(Bitmap customIcon) {
+            this.mCustomIcon = customIcon;
             return this;
         }
 
@@ -250,7 +272,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             assert !mLabel.isEmpty() : "AutofillSuggestion requires the label to be set.";
             return new AutofillSuggestion(mLabel, mSubLabel, mItemTag, mIconId, mIsIconAtStart,
                     mSuggestionId, mIsDeletable, mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH,
-                    mCustomIconUrl);
+                    mCustomIconUrl, mCustomIcon);
         }
     }
 }
