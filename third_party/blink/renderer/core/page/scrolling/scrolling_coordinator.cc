@@ -180,7 +180,8 @@ cc::ScrollbarLayerBase* ScrollingCoordinator::GetScrollbarLayer(
   ScrollbarMap& scrollbars = orientation == kHorizontalScrollbar
                                  ? horizontal_scrollbars_
                                  : vertical_scrollbars_;
-  return scrollbars.DeprecatedAtOrEmptyValue(scrollable_area);
+  const auto it = scrollbars.find(scrollable_area);
+  return it != scrollbars.end() ? it->value.get() : nullptr;
 }
 
 void ScrollingCoordinator::ScrollableAreaScrollbarLayerDidChange(

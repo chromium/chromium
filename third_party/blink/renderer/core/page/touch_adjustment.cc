@@ -254,9 +254,11 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
          visited_node = visited_node->ParentOrShadowHostNode()) {
       // Check if we already have a result for a common ancestor from another
       // candidate.
-      responding_node = responder_map.DeprecatedAtOrEmptyValue(visited_node);
-      if (responding_node)
+      const auto it = responder_map.find(visited_node);
+      if (it != responder_map.end()) {
+        responding_node = it->value;
         break;
+      }
       visited_nodes.push_back(visited_node);
       // Check if the node filter applies, which would mean we have found a
       // responding node.
@@ -274,12 +276,13 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
         break;
       }
     }
-    // Insert the detected responder for all the visited nodes.
-    for (unsigned j = 0; j < visited_nodes.size(); j++)
-      responder_map.insert(visited_nodes[j], responding_node);
+    if (responding_node) {
+      // Insert the detected responder for all the visited nodes.
+      for (unsigned j = 0; j < visited_nodes.size(); j++)
+        responder_map.insert(visited_nodes[j], responding_node);
 
-    if (responding_node)
       candidates.push_back(node);
+    }
   }
 
   // We compile the list of component absolute quads instead of using the
