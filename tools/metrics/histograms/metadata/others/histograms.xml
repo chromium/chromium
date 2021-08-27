@@ -7915,6 +7915,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ImportantFile.FileDeleteNoRetryError" enum="PlatformFileError"
     expires_after="2021-11-14">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -7925,6 +7928,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ImportantFile.FileDeleteRetryExceededError"
     enum="PlatformFileError" expires_after="2021-12-19">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -7934,6 +7940,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ImportantFile.FileDeleteRetrySuccessCount"
     units="attept number" expires_after="2021-12-19">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
