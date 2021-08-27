@@ -1146,7 +1146,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.DataChannelAggregateType"
-    enum="DataChannelAggregateType" expires_after="2021-12-31">
+    enum="DataChannelAggregateType" expires_after="2022-06-30">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1156,7 +1156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1165,8 +1165,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DataChannelMaxPacketLifeTime" units="ms"
+    expires_after="2022-06-30">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Recorded when a data channel is created. The length of the time window
+    during which transmissions and retransmissions may occur in unreliable mode.
+    It is set to the value used in the configuration when a RTCDataChannel is
+    created.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.DataChannelMaxRetransmits" units="units"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1179,18 +1191,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.DataChannelMaxRetransmitTime" units="ms"
     expires_after="2021-12-31">
+  <obsolete>
+    Replaced by WebRTC.DataChannelMaxPacketLifeTime to align better with the
+    specification in M93.
+  </obsolete>
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
     Recorded when a data channel is created. The length of the time window
     during which transmissions and retransmissions may occur in unreliable mode.
     It is set to the value used in the configuration when a RTCDataChannel is
-    created. Expired in M78. Revived in M93.
+    created. Expired in M78.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.DataChannelSctpErrorCode"
-    enum="DataChannelSctpErrorCode" expires_after="2021-12-31">
+    enum="DataChannelSctpErrorCode" expires_after="2022-06-30">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
