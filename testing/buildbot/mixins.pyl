@@ -789,7 +789,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-10.15.7',
+        'os': 'Mac-11.5.2',
         'display_attached': '1',
       },
     },
