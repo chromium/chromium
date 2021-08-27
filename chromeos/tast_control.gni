@@ -18,9 +18,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1171146
   "session.LogoutCleanup",
 
-  # crbug.com/1181243
-  "network.ConfigureServiceForUserProfile.normal",
-
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
 
