@@ -153,7 +153,6 @@ class WaylandConnection {
     serial_ = {serial, event_type};
   }
   uint32_t serial() const { return serial_.serial; }
-  EventSerial event_serial() const { return serial_; }
 
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
 

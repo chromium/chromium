@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -30,10 +31,10 @@ bool ShellPopupWrapper::CanGrabPopup(WaylandConnection* connection) const {
   // According to the definition of the xdg protocol, the grab request must be
   // used in response to some sort of user action like a button press, key
   // press, or touch down event.
-  EventType last_event_type = connection->event_serial().event_type;
-  return last_event_type == ET_TOUCH_PRESSED ||
-         last_event_type == ET_KEY_PRESSED ||
-         last_event_type == ET_MOUSE_PRESSED;
+  auto serial = connection->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+       wl::SerialType::kKeyPress});
+  return serial.has_value();
 }
 
 void ShellPopupWrapper::FillAnchorData(

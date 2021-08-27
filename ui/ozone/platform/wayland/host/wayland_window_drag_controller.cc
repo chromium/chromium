@@ -37,6 +37,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
@@ -107,9 +108,16 @@ bool WaylandWindowDragController::StartDragSession() {
     return false;
   }
 
+  auto serial = connection_->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to retrieve touch/mouse press serial.";
+    return false;
+  }
+
   VLOG(1) << "Starting DND session.";
   state_ = State::kAttached;
-  drag_source_ = connection_->event_serial().event_type == ET_TOUCH_PRESSED
+  drag_source_ = serial->type == wl::SerialType::kTouchPress
                      ? DragSource::kTouch
                      : DragSource::kMouse;
 
