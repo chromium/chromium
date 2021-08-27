@@ -113,6 +113,19 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME,
+       mojom::kDetailedBuildInfoSubpagePath,
+       mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kChangeDeviceName},
+       {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -185,6 +198,11 @@ AboutSection::AboutSection(Profile* profile,
 
   if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
     updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kEnableHostnameSetting)) {
+    updater.AddSearchTags(GetDeviceNameSearchConcepts());
   }
 }
 
@@ -427,7 +445,7 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kChrome, mojom::SearchResultDefaultRank::kMedium,
       mojom::kDetailedBuildInfoSubpagePath);
   static constexpr mojom::Setting kDetailedBuildInfoSettings[] = {
-      mojom::Setting::kChangeChromeChannel,
+      mojom::Setting::kChangeChromeChannel, mojom::Setting::kChangeDeviceName,
       mojom::Setting::kCopyDetailedBuildInfo};
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);

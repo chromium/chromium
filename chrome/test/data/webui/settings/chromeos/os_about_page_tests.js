@@ -705,6 +705,27 @@ cr.define('settings_about_page', function() {
       checkCopyBuildDetailsButton();
     });
 
+    test('Deep link to change device name', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+      page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1708');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.DETAILED_BUILD_INFO, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Change device name button should be focused for settingId=1708.');
+    });
+
     function flushAsync() {
       Polymer.dom.flush();
       // Use setTimeout to wait for the next macrotask.

@@ -62101,6 +62101,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1705" label="Report an Issue"/>
   <int value="1706" label="View Terms of Service"/>
   <int value="1707" label="Open Diagnostics App"/>
+  <int value="1708" label="Change Device Name"/>
   <int value="1800" label="Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>

@@ -90,7 +90,8 @@
     <cr-icon-button id="editHostnameButton"
         class="icon-edit"
         on-click="onEditHostnameTap_"
-        disabled="[[!canEditDeviceName_(deviceNameMetadata_)]]">
+        disabled="[[!canEditDeviceName_(deviceNameMetadata_)]]"
+        deep-link-focus-id$="[[Setting.kChangeDeviceName]]">
     </cr-icon-button>
   </div>
   <template is="dom-if" if="[[showEditHostnameDialog_]]" restamp>

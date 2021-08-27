@@ -77,6 +77,7 @@ Polymer({
       type: Object,
       value: () => new Set([
         chromeos.settings.mojom.Setting.kChangeChromeChannel,
+        chromeos.settings.mojom.Setting.kChangeDeviceName,
         chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
       ]),
     },
@@ -124,7 +125,7 @@ Polymer({
     if (this.isHostnameSettingEnabled_) {
       this.addWebUIListener(
           'settings.updateDeviceNameMetadata',
-          this.updateDeviceNameMetadata_.bind(this));
+          (data) => this.updateDeviceNameMetadata_(data));
       DeviceNameBrowserProxyImpl.getInstance().notifyReadyForDeviceName();
     }
   },

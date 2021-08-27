@@ -1312,6 +1312,12 @@
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link to the Terms of Service.">
     Terms of Service
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change the device name.">
+    Change device name
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change the device name.">
+    Change hostname
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Troubleshooting', 'Battery Health', 'CPU Usage', 'Memory Usage'">
     Diagnostics
   </message>
