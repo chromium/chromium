@@ -187,6 +187,31 @@ TEST_F(ShareRankingStaticTest, PromotedTargetIsVisible) {
   EXPECT_EQ(persisted, expected_persisted);
 }
 
+TEST_F(ShareRankingStaticTest, UsedAppNotPresentInRanking) {
+  std::map<std::string, int> history = {
+      {"bar", 2},
+      {"foo", 3},
+      {"baz", 10},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "quxx"};
+
+  ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
+                               3, true, &displayed, &persisted);
+
+  // Since the fold is 3 and fix_more is true, only 2 actual items show, with
+  // the visible one with the lowest usage (bar) replaced with baz.
+  std::vector<std::string> expected_displayed{"foo", "baz",
+                                              ShareRanking::kMoreTarget};
+  std::vector<std::string> expected_persisted{"foo", "baz", "bar", "quxx"};
+
+  ASSERT_EQ(displayed.size(), expected_displayed.size());
+  ASSERT_EQ(persisted.size(), expected_persisted.size());
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
 // Regression test for https://crbug.com/1233232
 TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
   std::map<std::string, int> history = {
