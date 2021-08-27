@@ -41,7 +41,6 @@ public class ListItemPropertySetter implements ListConsumer {
     /** Sets properties for items in the given list. */
     private void setProperties(List<ListItem> sortedList) {
         setWidthForImageItems(sortedList);
-        setMarginsBetweenDifferentItemTypes(sortedList);
     }
 
     private void setWidthForImageItems(List<ListItem> listItems) {
@@ -62,27 +61,6 @@ public class ListItemPropertySetter implements ListConsumer {
 
             if (!previousItemIsImage && !nextItemIsImage) {
                 ((OfflineItemListItem) currentItem).spanFullWidth = true;
-            }
-        }
-    }
-
-    private void setMarginsBetweenDifferentItemTypes(List<ListItem> listItems) {
-        for (int i = 0; i < listItems.size(); i++) {
-            ListItem currentItem = listItems.get(i);
-
-            // Margins should only be added to OfflineItems
-            if (!(currentItem instanceof OfflineItemListItem)) {
-                continue;
-            }
-
-            ListItem nextItem = i >= listItems.size() - 1 ? null : listItems.get(i + 1);
-            boolean nextItemIsDifferentType = nextItem instanceof OfflineItemListItem
-                    && ((OfflineItemListItem) currentItem).item.filter
-                            != ((OfflineItemListItem) nextItem).item.filter;
-            boolean nextItemIsNotOfflineItem = !(nextItem instanceof OfflineItemListItem);
-
-            if (nextItemIsDifferentType || nextItemIsNotOfflineItem) {
-                ((OfflineItemListItem) currentItem).isLastOfDownloadTypeInSection = true;
             }
         }
     }
