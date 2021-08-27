@@ -9,6 +9,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -41,7 +42,9 @@ void WaylandTouch::Down(void* data,
 
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-  touch->connection_->set_serial(serial, ET_TOUCH_PRESSED);
+
+  touch->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
+                                                    serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
@@ -58,7 +61,7 @@ void WaylandTouch::Up(void* data,
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
-  touch->connection_->set_serial(serial, ET_TOUCH_RELEASED);
+  touch->connection_->serial_tracker().ResetSerial(wl::SerialType::kTouchPress);
 
   base::TimeTicks timestamp =
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);

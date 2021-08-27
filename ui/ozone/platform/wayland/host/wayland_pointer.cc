@@ -113,8 +113,10 @@ void WaylandPointer::Button(void* data,
 
   EventType type = state == WL_POINTER_BUTTON_STATE_PRESSED ? ET_MOUSE_PRESSED
                                                             : ET_MOUSE_RELEASED;
-  if (type == ET_MOUSE_PRESSED)
-    pointer->connection_->set_serial(serial, type);
+  if (type == ET_MOUSE_PRESSED) {
+    pointer->connection_->serial_tracker().UpdateSerial(
+        wl::SerialType::kMousePress, serial);
+  }
   pointer->delegate_->OnPointerButtonEvent(type, changed_button);
 }
 

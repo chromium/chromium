@@ -23,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -243,8 +244,10 @@ void WaylandKeyboard::OnKey(uint32_t serial,
                             uint32_t state,
                             KeyEventKind kind) {
   bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
-  if (down)
-    connection_->set_serial(serial, ET_KEY_PRESSED);
+  if (down) {
+    connection_->serial_tracker().UpdateSerial(wl::SerialType::kKeyPress,
+                                               serial);
+  }
 
   if (kind == KeyEventKind::kKey) {
     auto_repeat_handler_.UpdateKeyRepeat(key, 0 /*scan_code*/, down,
@@ -284,8 +287,11 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
       device_id, kind);
 
   if (extended_keyboard_) {
-    bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
-    extended_keyboard_->AckKey(connection_->serial(), handled);
+    if (auto keypress_serial = connection_->serial_tracker().GetSerial(
+            wl::SerialType::kKeyPress)) {
+      bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
+      extended_keyboard_->AckKey(keypress_serial->value, handled);
+    }
   }
 }
 
