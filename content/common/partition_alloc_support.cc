@@ -87,10 +87,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 // Furthermore, since the function has to allocate a new partition, it must
 // only run once.
 void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
-// Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
-// USE_BACKUP_REF_PTR is true.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
   base::allocator::ConfigurePartitionRefCountSupport(enable_ref_count);
 #endif
 }

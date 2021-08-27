@@ -69,8 +69,6 @@ declare_args() {
   use_backup_ref_ptr_fake = false
 
   # If BRP is enabled, additional options are available:
-  # - enable_runtime_backup_ref_ptr_control: control BRP support at run-time
-  #   (disable in some processes)
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
   #   opposed to the beginning of the slot.
@@ -78,7 +76,6 @@ declare_args() {
   #   BRP-pool block list
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
-  enable_runtime_backup_ref_ptr_control = false
   enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
   never_remove_from_brp_pool_blocklist = false
@@ -119,17 +116,11 @@ if (!is_nacl) {
          "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
 }
 
-# enable_runtime_backup_ref_ptr_control can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
-       "Can't control BackupRefPtr at run-time if it isn't enabled at all")
-
 # enable_backup_ref_ptr_in_renderer_process can only be used if
-# enable_runtime_backup_ref_ptr_control is true.
+# use_backup_ref_ptr is true.
 assert(
-    enable_runtime_backup_ref_ptr_control ||
-        !enable_backup_ref_ptr_in_renderer_process,
-    "Can't enable BackupRefPtr in renderer process if runtime control isn't enabled")
+    use_backup_ref_ptr || !enable_backup_ref_ptr_in_renderer_process,
+    "Can't enable BackupRefPtr in Renderer process if it isn't enabled at all")
 
 # put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
 # is true.

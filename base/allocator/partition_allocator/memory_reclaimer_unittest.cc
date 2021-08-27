@@ -115,11 +115,10 @@ TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
   }
 }
 
-// ThreadCache tests disabled  when ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL is
-// enabled, because the "original" PartitionRoot has ThreadCache disabled.
+// ThreadCache tests disabled when USE_BACKUP_REF_PTR is enabled, because the
+// "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED) &&       \
-    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+    defined(PA_THREAD_CACHE_SUPPORTED) && !BUILDFLAG(USE_BACKUP_REF_PTR)
 
 namespace {
 // malloc() / free() pairs can be removed by the compiler, this is enough (for
@@ -159,7 +158,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
         // defined(PA_THREAD_CACHE_SUPPORTED) && \
-        // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+        // !BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace base
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

@@ -128,44 +128,27 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
 class MainPartitionConstructor {
  public:
   static base::ThreadSafePartitionRoot* New(void* buffer) {
-    auto* new_root = new (buffer) base::ThreadSafePartitionRoot({
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-#else
-      base::PartitionOptions::AlignedAlloc::kAllowed,
-#endif
+    constexpr base::PartitionOptions::ThreadCache thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-          // With ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, this partition is only
-          // temporary until BackupRefPtr is re-configured at run-time. Leave
-          // the ability to have a thread cache to the main partition. (Note
-          // that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
-          // USE_BACKUP_REF_PTR is true.)
-          base::PartitionOptions::ThreadCache::kDisabled,
-#else   // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-          base::PartitionOptions::ThreadCache::kEnabled,
-#endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+        // With USE_BACKUP_REF_PTR, this partition is only temporary until a
+        // BRP-enabled partition is created later. Leave the ability to have
+        // a thread cache to that partition.
+        base::PartitionOptions::ThreadCache::kDisabled;
+#else
+        base::PartitionOptions::ThreadCache::kEnabled;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Other tests, such as the ThreadCache tests create a thread cache,
         // and only one is supported at a time.
-          base::PartitionOptions::ThreadCache::kDisabled,
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-          base::PartitionOptions::Quarantine::kAllowed,
-          base::PartitionOptions::Cookie::kAllowed,
-#if BUILDFLAG(USE_BACKUP_REF_PTR) && \
-    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-#if !(BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT) || \
-      BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT))
-#error \
-    "Can't enable ref-count if aligned allocations aren't moved to a " \
-          "separate partition (unless \"previous slot\" variant is used)"
-#endif
-          base::PartitionOptions::RefCount::kAllowed,
-#else  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
-       // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-          base::PartitionOptions::RefCount::kDisallowed,
-#endif
+        base::PartitionOptions::ThreadCache::kDisabled;
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    auto* new_root = new (buffer) base::ThreadSafePartitionRoot({
+        base::PartitionOptions::AlignedAlloc::kAllowed,
+        thread_cache,
+        base::PartitionOptions::Quarantine::kAllowed,
+        base::PartitionOptions::Cookie::kAllowed,
+        base::PartitionOptions::RefCount::kDisallowed,
     });
 
     return new_root;
@@ -184,27 +167,7 @@ std::atomic<base::ThreadSafePartitionRoot*> g_original_root(nullptr);
 class AlignedPartitionConstructor {
  public:
   static base::ThreadSafePartitionRoot* New(void* buffer) {
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
-    // Since the general-purpose allocator uses the thread cache, this one
-    // cannot.
-    auto* new_root =
-        new (buffer) base::ThreadSafePartitionRoot(base::PartitionOptions {
-          base::PartitionOptions::AlignedAlloc::kAllowed,
-              base::PartitionOptions::ThreadCache::kDisabled,
-              base::PartitionOptions::Quarantine::kAllowed,
-              base::PartitionOptions::Cookie::kAllowed,
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-              // Given the outer #if, this is possible only when DCHECK_IS_ON().
-              base::PartitionOptions::RefCount::kAllowed,
-#else
-            base::PartitionOptions::RefCount::kDisallowed,
-#endif
-        });
-    return new_root;
-#else  // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
     return g_root.Get();
-#endif
   }
 };
 
@@ -469,9 +432,7 @@ void ReconfigurePartitionAllocLazyCommit() {
   AlignedAllocator()->ConfigureLazyCommit();
 }
 
-// Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
-// USE_BACKUP_REF_PTR is true.
-#if BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_ref_count_config[sizeof(
         base::ThreadSafePartitionRoot)];
@@ -492,11 +453,8 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
 
-  bool allow_aligned_alloc_in_main_root =
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
-      // A separate AlignedAlloc partition has been already created.
-      false;
-#elif BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
+  const bool allow_aligned_alloc_in_main_root =
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
       // If ref-count is to be enabled, this partition can't support
       // AlignedAlloc. Instead, a new one is created below. Otherwise,
       // no separate AlignedAlloc partition is created, so this one must
@@ -530,10 +488,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
   g_original_root = current_root;
 
   base::ThreadSafePartitionRoot* new_aligned_root =
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT)
-      // The special AlignedAlloc is already created. Keep it.
-      current_aligned_root;
-#elif BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
       enable_ref_count
           // If BRP is getting enabled, we need to create a new AlignedAlloc
           // partition now.
@@ -551,7 +506,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
           // Otherwise, the new main root can also support AlignedAlloc.
           : g_root.Get();
   PA_CHECK(current_aligned_root == g_original_root);
-#else
+#else   // USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP
       // The new main root can also support AlignedAlloc.
       g_root.Get();
   PA_CHECK(current_aligned_root == g_original_root);
@@ -560,7 +515,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
 }
-#endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if defined(PA_ALLOW_PCSCAN)
 void EnablePCScan(bool dcscan) {
