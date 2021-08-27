@@ -81,26 +81,24 @@ class MultiLogCTVerifierTest : public ::testing::Test {
       return false;
 
     const NetLogEntry& parsed = entries[1];
-    const base::ListValue* scts;
-    if (!GetListValueFromParams(parsed, "scts", &scts) ||
-        scts->GetSize() != 1) {
-      return false;
-    }
-
-    const base::DictionaryValue* the_sct;
-    if (!scts->GetDictionary(0, &the_sct))
+    if (!parsed.params.is_dict())
       return false;
 
-    std::string origin;
-    if (!the_sct->GetString("origin", &origin))
-      return false;
-    if (origin != "Embedded in certificate")
+    const base::Value* scts = parsed.params.FindListPath("scts");
+    if (!scts || scts->GetList().size() != 1)
       return false;
 
-    std::string verification_status;
-    if (!the_sct->GetString("verification_status", &verification_status))
+    const base::Value& the_sct = scts->GetList()[0];
+    if (!the_sct.is_dict())
       return false;
-    if (verification_status != "Verified")
+
+    const std::string* origin = the_sct.FindStringPath("origin");
+    if (!origin || *origin != "Embedded in certificate")
+      return false;
+
+    const std::string* verification_status =
+        the_sct.FindStringPath("verification_status");
+    if (!verification_status || *verification_status != "Verified")
       return false;
 
     return true;

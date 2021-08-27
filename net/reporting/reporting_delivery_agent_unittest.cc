@@ -120,19 +120,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -166,19 +165,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kSubdomainUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kSubdomainUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -246,19 +244,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);

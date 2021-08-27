@@ -130,10 +130,9 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
                                                    base::JSON_PARSE_RFC);
 
     ASSERT_TRUE(trace_value) << json_output_.json_output;
-    base::ListValue* trace_events = nullptr;
-    ASSERT_TRUE(trace_value->GetAsList(&trace_events));
+    ASSERT_TRUE(trace_value->is_list());
 
-    trace_events_ = FilterNetLogTraceEvents(*trace_events);
+    trace_events_ = FilterNetLogTraceEvents(std::move(trace_value));
 
     if (!has_more_events)
       run_loop->Quit();
@@ -152,12 +151,13 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     trace_net_log_observer_.reset(trace_net_log_observer);
   }
 
-  static std::unique_ptr<base::ListValue> FilterNetLogTraceEvents(
-      const base::ListValue& trace_events) {
-    std::unique_ptr<base::ListValue> filtered_trace_events(
-        new base::ListValue());
-    for (size_t i = 0; i < trace_events.GetSize(); i++) {
-      const base::Value* dict = &trace_events.GetList()[i];
+  static std::unique_ptr<base::Value> FilterNetLogTraceEvents(
+      std::unique_ptr<base::Value> trace_events) {
+    std::unique_ptr<base::Value> filtered_trace_events =
+        std::make_unique<base::Value>(base::Value::Type::LIST);
+
+    for (size_t i = 0; i < trace_events->GetList().size(); i++) {
+      const base::Value* dict = &trace_events->GetList()[i];
       if (!dict->is_dict()) {
         ADD_FAILURE() << "Unexpected non-dictionary event in trace_events";
         continue;
@@ -170,12 +170,14 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       }
       if (*category != kNetLogTracingCategory)
         continue;
-      filtered_trace_events->Append(dict->CreateDeepCopy());
+      filtered_trace_events->Append(dict->Clone());
     }
     return filtered_trace_events;
   }
 
-  base::ListValue* trace_events() const { return trace_events_.get(); }
+  base::Value* trace_events() const { return trace_events_.get(); }
+
+  size_t trace_events_size() const { return trace_events_->GetList().size(); }
 
   RecordingTestNetLog* net_log() { return &net_log_; }
 
@@ -184,7 +186,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
   }
 
  private:
-  std::unique_ptr<base::ListValue> trace_events_;
+  std::unique_ptr<base::Value> trace_events_;
   base::trace_event::TraceResultBuffer trace_buffer_;
   base::trace_event::TraceResultBuffer::SimpleOutput json_output_;
   RecordingTestNetLog net_log_;
@@ -198,7 +200,7 @@ TEST_F(TraceNetLogObserverTest, TracingNotEnabled) {
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
 
-  EXPECT_EQ(0u, trace_events()->GetSize());
+  EXPECT_EQ(0u, trace_events_size());
 }
 
 // This test will result in a deadlock if EnabledStateObserver instead
@@ -238,7 +240,7 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EXPECT_EQ(3u, entries.size());
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
-  EXPECT_EQ(3u, trace_events()->GetSize());
+  EXPECT_EQ(3u, trace_events_size());
   const base::Value* item1 = &trace_events()->GetList()[0];
   ASSERT_TRUE(item1->is_dict());
   const base::Value* item2 = &trace_events()->GetList()[1];
@@ -293,7 +295,7 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
-  EXPECT_EQ(2u, trace_events()->GetSize());
+  EXPECT_EQ(2u, trace_events_size());
   const base::Value* item1 = &trace_events()->GetList()[0];
   ASSERT_TRUE(item1->is_dict());
   const base::Value* item2 = &trace_events()->GetList()[1];
@@ -332,7 +334,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileTracing) {
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(2u, entries.size());
-  EXPECT_EQ(1u, trace_events()->GetSize());
+  EXPECT_EQ(1u, trace_events_size());
 
   const base::Value* item1 = &trace_events()->GetList()[0];
   ASSERT_TRUE(item1->is_dict());
@@ -360,7 +362,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileNotTracing) {
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
-  EXPECT_EQ(0u, trace_events()->GetSize());
+  EXPECT_EQ(0u, trace_events_size());
 }
 
 TEST_F(TraceNetLogObserverTest, CreateObserverAfterTracingStarts) {
@@ -377,7 +379,7 @@ TEST_F(TraceNetLogObserverTest, CreateObserverAfterTracingStarts) {
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
-  EXPECT_EQ(1u, trace_events()->GetSize());
+  EXPECT_EQ(1u, trace_events_size());
 }
 
 TEST_F(TraceNetLogObserverTest,
@@ -397,7 +399,7 @@ TEST_F(TraceNetLogObserverTest,
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
-  EXPECT_EQ(0u, trace_events()->GetSize());
+  EXPECT_EQ(0u, trace_events_size());
 }
 
 TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
@@ -413,7 +415,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
 
   auto entries = net_log()->GetEntries();
   EXPECT_EQ(2u, entries.size());
-  EXPECT_EQ(2u, trace_events()->GetSize());
+  EXPECT_EQ(2u, trace_events_size());
   const base::Value* item1 = &trace_events()->GetList()[0];
   ASSERT_TRUE(item1->is_dict());
   const base::Value* item2 = &trace_events()->GetList()[1];

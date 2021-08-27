@@ -277,10 +277,7 @@ void ReportingHeaderParser::ParseReportToHeader(
     const GURL& url,
     std::unique_ptr<base::Value> value) {
   DCHECK(url.SchemeIsCryptographic());
-
-  const base::ListValue* group_list = nullptr;
-  bool is_list = value->GetAsList(&group_list);
-  DCHECK(is_list);
+  DCHECK(value->is_list());
 
   ReportingDelegate* delegate = context->delegate();
   ReportingCache* cache = context->cache();
@@ -289,18 +286,16 @@ void ReportingHeaderParser::ParseReportToHeader(
 
   std::vector<ReportingEndpointGroup> parsed_header;
 
-  for (size_t i = 0; i < group_list->GetSize(); i++) {
-    const base::Value* group_value = nullptr;
-    bool got_group = group_list->Get(i, &group_value);
-    DCHECK(got_group);
+  for (size_t i = 0; i < value->GetList().size(); i++) {
+    const base::Value& group_value = value->GetList()[i];
     ReportingEndpointGroup parsed_endpoint_group;
     if (ProcessEndpointGroup(delegate, cache, network_isolation_key, origin,
-                             *group_value, &parsed_endpoint_group)) {
+                             group_value, &parsed_endpoint_group)) {
       parsed_header.push_back(std::move(parsed_endpoint_group));
     }
   }
 
-  if (parsed_header.empty() && group_list->GetSize() > 0) {
+  if (parsed_header.empty() && value->GetList().size() > 0) {
     RecordReportingHeaderType(ReportingHeaderType::kReportToInvalid);
   }
 
