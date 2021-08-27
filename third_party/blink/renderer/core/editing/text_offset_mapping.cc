@@ -93,6 +93,37 @@ bool ShouldSkipChildren(const Node& node) {
   return root && root->IsUserAgent();
 }
 
+LayoutObject* NextForInlineContents(const LayoutObject& layout_object,
+                                    const LayoutObject& container) {
+  if (layout_object.IsBlockInInline())
+    return layout_object.NextSibling();
+  const Node* const node = layout_object.NonPseudoNode();
+  if (node && ShouldSkipChildren(*node))
+    return layout_object.NextSibling();
+  return layout_object.NextInPreOrder(&container);
+}
+
+const Node* FindFirstNonPseudoNodeIn(const LayoutObject& container) {
+  for (const LayoutObject* layout_object = container.SlowFirstChild();
+       layout_object;
+       layout_object = NextForInlineContents(*layout_object, container)) {
+    if (auto* node = layout_object->NonPseudoNode())
+      return node;
+  }
+  return nullptr;
+}
+
+const Node* FindLastNonPseudoNodeIn(const LayoutObject& container) {
+  const Node* last_node = nullptr;
+  for (const LayoutObject* layout_object = container.SlowFirstChild();
+       layout_object;
+       layout_object = NextForInlineContents(*layout_object, container)) {
+    if (auto* node = layout_object->NonPseudoNode())
+      last_node = node;
+  }
+  return last_node;
+}
+
 // TODO(editing-dev): We should have |ComputeInlineContents()| computing first
 // and last layout objects representing a run of inline layout objects in
 // |LayoutBlockFlow| instead of using |ComputeInlineContentsAsBlockFlow()|.
@@ -146,12 +177,13 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
     const LayoutObject& target) {
   DCHECK(block_flow.ChildrenInline()) << block_flow;
   DCHECK(target.NonPseudoNode()) << target;
-  const LayoutObject* layout_object = block_flow.FirstChild();
+  const LayoutObject* layout_object = nullptr;
+  const LayoutObject* block_in_inline_before = nullptr;
   const LayoutObject* first = nullptr;
   const LayoutObject* last = nullptr;
-  while (layout_object) {
-    const Node* const node = layout_object->NonPseudoNode();
-    if (node) {
+  for (layout_object = block_flow.FirstChild(); layout_object;
+       layout_object = NextForInlineContents(*layout_object, block_flow)) {
+    if (auto* node = layout_object->NonPseudoNode()) {
       last = layout_object;
       if (!first)
         first = layout_object;
@@ -163,32 +195,27 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
       break;
     }
     if (layout_object->IsBlockInInline()) {
-      first = nullptr;
-      layout_object = layout_object->NextSibling();
-      continue;
+      block_in_inline_before = layout_object;
+      first = last = nullptr;
     }
-    if (node && ShouldSkipChildren(*node))
-      layout_object = layout_object->NextSibling();
-    else
-      layout_object = layout_object->NextInPreOrder(&block_flow);
   }
   if (!first) {
     DCHECK(block_flow.NonPseudoNode()) << block_flow;
     return TextOffsetMapping::InlineContents(block_flow);
   }
-  while (layout_object) {
-    if (layout_object->IsBlockInInline())
+  const LayoutObject* block_in_inline_after = nullptr;
+  for (; layout_object;
+       layout_object = NextForInlineContents(*layout_object, block_flow)) {
+    if (layout_object->IsBlockInInline()) {
+      block_in_inline_after = layout_object;
       break;
-    const Node* const node = layout_object->NonPseudoNode();
-    if (node)
+    }
+    if (auto* node = layout_object->NonPseudoNode())
       last = layout_object;
-    if (node && ShouldSkipChildren(*node))
-      layout_object = layout_object->NextSibling();
-    else
-      layout_object = layout_object->NextInPreOrder(&block_flow);
   }
   DCHECK(last);
-  return TextOffsetMapping::InlineContents(block_flow, *first, *last);
+  return TextOffsetMapping::InlineContents(
+      block_flow, block_in_inline_before, *first, *last, block_in_inline_after);
 }
 
 TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
@@ -391,9 +418,19 @@ TextOffsetMapping::InlineContents::InlineContents(
 // collapsible whitespace with anonymous object.
 TextOffsetMapping::InlineContents::InlineContents(
     const LayoutBlockFlow& block_flow,
+    const LayoutObject* block_in_inline_before,
     const LayoutObject& first,
-    const LayoutObject& last)
-    : block_flow_(&block_flow), first_(&first), last_(&last) {
+    const LayoutObject& last,
+    const LayoutObject* block_in_inline_after)
+    : block_flow_(&block_flow),
+      block_in_inline_before_(block_in_inline_before),
+      first_(&first),
+      last_(&last),
+      block_in_inline_after_(block_in_inline_after) {
+  DCHECK(!block_in_inline_before_ || block_in_inline_before_->IsBlockInInline())
+      << block_in_inline_before_;
+  DCHECK(!block_in_inline_after_ || block_in_inline_after_->IsBlockInInline())
+      << block_in_inline_after_;
   DCHECK(first_->NonPseudoNode()) << first_;
   DCHECK(last_->NonPseudoNode()) << last_;
   DCHECK(CanBeInlineContentsContainer(*block_flow_)) << block_flow_;
@@ -446,6 +483,16 @@ EphemeralRangeInFlatTree TextOffsetMapping::InlineContents::GetRange() const {
 PositionInFlatTree
 TextOffsetMapping::InlineContents::LastPositionBeforeBlockFlow() const {
   DCHECK(block_flow_);
+  if (block_in_inline_before_) {
+    for (const LayoutObject* block = block_in_inline_before_->SlowLastChild();
+         block; block = block->PreviousSibling()) {
+      if (auto* block_node = block->NonPseudoNode())
+        return PositionInFlatTree::LastPositionInNode(*block_node);
+      if (auto* last_node = FindLastNonPseudoNodeIn(*block)) {
+        return PositionInFlatTree::AfterNode(*last_node);
+      }
+    }
+  }
   if (const Node* node = block_flow_->NonPseudoNode()) {
     if (!FlatTreeTraversal::Parent(*node)) {
       // Reached start of document.
@@ -462,6 +509,16 @@ TextOffsetMapping::InlineContents::LastPositionBeforeBlockFlow() const {
 PositionInFlatTree
 TextOffsetMapping::InlineContents::FirstPositionAfterBlockFlow() const {
   DCHECK(block_flow_);
+  if (block_in_inline_after_) {
+    for (const LayoutObject* block = block_in_inline_after_->SlowFirstChild();
+         block; block = block->NextSibling()) {
+      if (auto* block_node = block->NonPseudoNode())
+        return PositionInFlatTree::BeforeNode(*block_node);
+      if (auto* first_node = FindFirstNonPseudoNodeIn(*block)) {
+        return PositionInFlatTree::BeforeNode(*first_node);
+      }
+    }
+  }
   if (const Node* node = block_flow_->NonPseudoNode()) {
     if (!FlatTreeTraversal::Parent(*node)) {
       // Reached end of document.
