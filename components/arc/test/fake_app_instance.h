@@ -163,10 +163,6 @@ class FakeAppInstance : public mojom::AppInstance {
       const std::string& query,
       int32_t max_results,
       GetRecentAndSuggestedAppsFromPlayStoreCallback callback) override;
-  void GetIcingGlobalQueryResultsDeprecated(
-      const std::string& query,
-      int32_t max_results,
-      GetIcingGlobalQueryResultsDeprecatedCallback callback) override;
   void GetAppShortcutGlobalQueryItems(
       const std::string& query,
       int32_t max_results,
