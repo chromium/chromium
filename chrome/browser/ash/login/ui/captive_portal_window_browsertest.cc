@@ -217,7 +217,9 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
 };
 
-IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
+// Flaky on multiple builders, see crbug.com/1244162
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
+                       DISABLED_OpenPortalDialog) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   ASSERT_TRUE(host);
   OobeUI* oobe = host->GetOobeUI();
