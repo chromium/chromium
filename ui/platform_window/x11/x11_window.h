@@ -436,6 +436,9 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   // True if a Maximize() call should be done after mapping the window.
   bool should_maximize_after_map_ = false;
 
+  // True if GrabPointer() should be called after mapping the window.
+  bool should_grab_pointer_after_map_ = false;
+
   // Whether we currently are flashing our frame. This feature is implemented
   // by setting the urgency hint with the window manager, which can draw
   // attention to the window or completely ignore the hint. We stop flashing
