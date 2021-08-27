@@ -578,17 +578,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
                                          incognito_tab));
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
 // TODO(https://crbug.com/1243074): Disabled for brokenness.
-#define MAYBE_PRE_AfterRestartHttp DISABLED_PRE_AfterRestartHttp
-#define MAYBE_AfterRestartHttp DISABLED_AfterRestartHttp
-#else
-#define MAYBE_PRE_AfterRestartHttp PRE_AfterRestartHttp
-#define MAYBE_AfterRestartHttp AfterRestartHttp
-#endif
-
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
-                       MAYBE_PRE_AfterRestartHttp) {
+                       DISABLED_PRE_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
@@ -616,8 +608,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
 
 // AfterRestartHttp ensures that any HTTP decisions made in an incognito profile
 // are forgetten after a session restart.
+// TODO(https://crbug.com/1243074): Disabled for brokenness.
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
-                       MAYBE_AfterRestartHttp) {
+                       DISABLED_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
