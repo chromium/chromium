@@ -15,6 +15,25 @@ especially true for user interfaces; for instance, when the search bar has to
 surface games following a user request, the apps list returned by the service
 can contain games from a variety of apps platforms.
 
+The AppsFetcherService class is intended to be used by consumers to fetch apps:
+
+```
+auto* apps_fetcher_service = AppsFetcherServiceFactory::GetForProfile(profile);
+apps_fetcher_service->GetApps(ResultType, ResultCallback);
+
+```
+
+## AppsFetcher
+
+AppsFetcher is an interface to be implemented by each app list provider. When a
+new AppFetcher is added, a corresponding enum value should be added to
+ResultType. The AppFetcherManager distinguishes between AppFetchers with this
+enum value.
+
+## AppsFetcherManager
+The AppsFetcherManager acts as the backend of the apps fetcher framework and is
+responsible for managing requests to AppFetchers.
+
 ---
 
-Updated on 2021-07-20.
+Updated on 2021-08-26.
