@@ -80,11 +80,6 @@ def ci_builder(
         notifies = (notifies or []) + ["chromium-tree-closer", "chromium-tree-closer-email"]
 
     merged_resultdb_bigquery_exports = [
-        # TODO(crbug.com/1230801): Remove when all usages of this table have
-        # been migrated to `chrome-luci-data.chromium.ci_test_results`.
-        resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.ci_test_results",
-        ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
