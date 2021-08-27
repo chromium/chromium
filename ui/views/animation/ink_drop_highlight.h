@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
@@ -133,7 +134,7 @@ class VIEWS_EXPORT InkDropHighlight {
   // The visual highlight layer.
   std::unique_ptr<ui::Layer> layer_;
 
-  InkDropHighlightObserver* observer_ = nullptr;
+  raw_ptr<InkDropHighlightObserver> observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropHighlight);
 };

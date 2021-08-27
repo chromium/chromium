@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/render_view_test.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -42,10 +43,11 @@ class ChromeRenderViewTest : public content::RenderViewTest {
 
   void WaitForAutofillDidAssociateFormControl();
 
-  autofill::TestPasswordAutofillAgent* password_autofill_agent_ = nullptr;
-  autofill::PasswordGenerationAgent* password_generation_ = nullptr;
-  autofill::AutofillAssistantAgent* autofill_assistant_agent_ = nullptr;
-  autofill::AutofillAgent* autofill_agent_ = nullptr;
+  raw_ptr<autofill::TestPasswordAutofillAgent> password_autofill_agent_ =
+      nullptr;
+  raw_ptr<autofill::PasswordGenerationAgent> password_generation_ = nullptr;
+  raw_ptr<autofill::AutofillAssistantAgent> autofill_assistant_agent_ = nullptr;
+  raw_ptr<autofill::AutofillAgent> autofill_agent_ = nullptr;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

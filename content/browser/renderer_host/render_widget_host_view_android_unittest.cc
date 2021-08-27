@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/layers/layer.h"
@@ -61,7 +62,7 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   ui::ViewAndroid parent_view_;
   ui::ViewAndroid native_view_;
   std::unique_ptr<MockRenderWidgetHost> host_;
-  RenderWidgetHostViewAndroid* render_widget_host_view_android_;
+  raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_android_;
 
   BrowserTaskEnvironment task_environment_;
 

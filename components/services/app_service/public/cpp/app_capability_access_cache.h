@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -68,7 +69,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
     void Observe(AppCapabilityAccessCache* cache);
 
    private:
-    AppCapabilityAccessCache* cache_ = nullptr;
+    raw_ptr<AppCapabilityAccessCache> cache_ = nullptr;
   };
 
   AppCapabilityAccessCache();

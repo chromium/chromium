@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_GL_IMAGE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_GL_IMAGE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "gpu/gpu_gles2_export.h"
@@ -41,8 +42,8 @@ class SharedImageRepresentationGLTextureImpl
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  SharedImageRepresentationGLTextureClient* const client_ = nullptr;
-  gles2::Texture* texture_;
+  const raw_ptr<SharedImageRepresentationGLTextureClient> client_ = nullptr;
+  raw_ptr<gles2::Texture> texture_;
   GLenum mode_ = 0;
 };
 
@@ -70,7 +71,7 @@ class SharedImageRepresentationGLTexturePassthroughImpl
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  SharedImageRepresentationGLTextureClient* const client_ = nullptr;
+  const raw_ptr<SharedImageRepresentationGLTextureClient> client_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   GLenum mode_ = 0;
 };
@@ -115,13 +116,13 @@ class SharedImageRepresentationSkiaImpl : public SharedImageRepresentationSkia {
 
   void CheckContext();
 
-  SharedImageRepresentationGLTextureClient* const client_ = nullptr;
+  const raw_ptr<SharedImageRepresentationGLTextureClient> client_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
 
-  SkSurface* write_surface_ = nullptr;
+  raw_ptr<SkSurface> write_surface_ = nullptr;
 #if DCHECK_IS_ON()
-  gl::GLContext* context_ = nullptr;
+  raw_ptr<gl::GLContext> context_ = nullptr;
 #endif
 };
 

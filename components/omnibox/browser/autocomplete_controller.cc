@@ -284,11 +284,11 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(new HistoryQuickProvider(provider_client_.get()));
   if (provider_types & AutocompleteProvider::TYPE_KEYWORD) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
-    providers_.push_back(keyword_provider_);
+    providers_.push_back(keyword_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
     search_provider_ = new SearchProvider(provider_client_.get(), this);
-    providers_.push_back(search_provider_);
+    providers_.push_back(search_provider_.get());
   }
   // It's important that the HistoryURLProvider gets added after SearchProvider:
   // AutocompleteController::Start() calls each providers' Start() function
@@ -309,7 +309,7 @@ AutocompleteController::AutocompleteController(
     history_url_provider_ =
         new HistoryURLProvider(provider_client_.get(), this);
     if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
-      providers_.push_back(history_url_provider_);
+      providers_.push_back(history_url_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
@@ -317,7 +317,7 @@ AutocompleteController::AutocompleteController(
     zero_suggest_provider_ =
         ZeroSuggestProvider::Create(provider_client_.get(), this);
     if (zero_suggest_provider_)
-      providers_.push_back(zero_suggest_provider_);
+      providers_.push_back(zero_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
     providers_.push_back(
@@ -334,13 +334,13 @@ AutocompleteController::AutocompleteController(
   }
   if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
-    providers_.push_back(document_provider_);
+    providers_.push_back(document_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
     on_device_head_provider_ =
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
     if (on_device_head_provider_) {
-      providers_.push_back(on_device_head_provider_);
+      providers_.push_back(on_device_head_provider_.get());
     }
   }
   if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {
@@ -362,7 +362,7 @@ AutocompleteController::AutocompleteController(
       clipboard_provider_ = new ClipboardProvider(
           provider_client_.get(), this, history_url_provider_,
           ClipboardRecentContent::GetInstance());
-      providers_.push_back(clipboard_provider_);
+      providers_.push_back(clipboard_provider_.get());
     }
   }
 
@@ -372,7 +372,7 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
     voice_suggest_provider_ =
         new VoiceSuggestProvider(provider_client_.get(), this);
-    providers_.push_back(voice_suggest_provider_);
+    providers_.push_back(voice_suggest_provider_.get());
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

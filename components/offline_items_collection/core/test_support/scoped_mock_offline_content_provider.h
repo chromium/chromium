@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_SCOPED_MOCK_OFFLINE_CONTENT_PROVIDER_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_SCOPED_MOCK_OFFLINE_CONTENT_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 
 namespace offline_items_collection {
@@ -23,7 +24,7 @@ class ScopedMockOfflineContentProvider : public MockOfflineContentProvider {
     void AddProvider(OfflineContentProvider* provider);
 
    private:
-    OfflineContentProvider* provider_;
+    raw_ptr<OfflineContentProvider> provider_;
   };
 
   ScopedMockOfflineContentProvider(const std::string& name_space,
@@ -35,7 +36,7 @@ class ScopedMockOfflineContentProvider : public MockOfflineContentProvider {
 
  private:
   const std::string name_space_;
-  OfflineContentAggregator* aggregator_;
+  raw_ptr<OfflineContentAggregator> aggregator_;
 };
 
 }  // namespace offline_items_collection

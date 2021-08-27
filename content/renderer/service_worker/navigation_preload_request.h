@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -59,7 +60,7 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
   void ReportErrorToOwner(const std::string& message,
                           blink::WebServiceWorkerError::Mode error_mode);
 
-  ServiceWorkerContextClient* owner_;
+  raw_ptr<ServiceWorkerContextClient> owner_;
 
   const int fetch_event_id_;
   const GURL url_;

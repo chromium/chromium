@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_FRAME_OR_WORKER_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_FRAME_OR_WORKER_SCHEDULER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -49,7 +50,7 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
 
    private:
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
-    Observer* observer_;
+    raw_ptr<Observer> observer_;
   };
 
   // RAII handle which should be kept alive as long as the feature is active

@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
@@ -144,7 +145,7 @@ class ClickActivator : public ui::EventHandler {
     }
   }
 
-  NotificationView* const owner_;
+  const raw_ptr<NotificationView> owner_;
 };
 
 // Creates a view responsible for drawing each list notification item's title
@@ -373,18 +374,18 @@ NotificationInputContainer::NotificationInputContainer(
       },
       this));
 
-  AddChildView(ink_drop_container_);
+  AddChildView(ink_drop_container_.get());
 
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(kInputTextfieldPadding));
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   OnAfterUserAction(textfield_);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }
@@ -607,7 +608,7 @@ NotificationView::NotificationView(const Notification& notification)
             ui::NativeTheme::kColorId_NotificationBackgroundActive);
       },
       this));
-  AddChildView(ink_drop_container_);
+  AddChildView(ink_drop_container_.get());
 
   // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
   // Also, consider using views::Builder<T>.
@@ -628,7 +629,7 @@ NotificationView::NotificationView(const Notification& notification)
   header_row_->SetID(kHeaderRow);
   control_buttons_view_ = header_row_->AddChildView(
       std::make_unique<NotificationControlButtonsView>(this));
-  AddChildView(header_row_);
+  AddChildView(header_row_.get());
 
   // |content_row_| contains title, message, image, progressbar, etc...
   content_row_ = new views::View();
@@ -638,26 +639,26 @@ NotificationView::NotificationView(const Notification& notification)
   content_row_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   content_row_->SetID(kContentRow);
-  AddChildView(content_row_);
+  AddChildView(content_row_.get());
 
   // |left_content_| contains most contents like title, message, etc...
   left_content_ = new views::View();
   left_content_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
   left_content_->SetBorder(views::CreateEmptyBorder(kLeftContentPadding));
-  content_row_->AddChildView(left_content_);
+  content_row_->AddChildView(left_content_.get());
   content_row_layout->SetFlexForView(left_content_, 1);
 
   // |right_content_| contains notification icon and small image.
   right_content_ = new views::View();
   right_content_->SetLayoutManager(std::make_unique<views::FillLayout>());
-  content_row_->AddChildView(right_content_);
+  content_row_->AddChildView(right_content_.get());
 
   // |action_row_| contains inline action buttons and inline textfield.
   actions_row_ = new views::View();
   actions_row_->SetVisible(false);
   actions_row_->SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(actions_row_);
+  AddChildView(actions_row_.get());
 
   // |action_buttons_row_| contains inline action buttons.
   action_buttons_row_ = new views::View();
@@ -666,13 +667,13 @@ NotificationView::NotificationView(const Notification& notification)
       kActionsRowHorizontalSpacing));
   action_buttons_row_->SetVisible(false);
   action_buttons_row_->SetID(kActionButtonsRow);
-  actions_row_->AddChildView(action_buttons_row_);
+  actions_row_->AddChildView(action_buttons_row_.get());
 
   // |inline_reply_| is a container for an inline textfield.
   inline_reply_ = new NotificationInputContainer(this);
   inline_reply_->SetVisible(false);
   inline_reply_->SetID(kInlineReply);
-  actions_row_->AddChildView(inline_reply_);
+  actions_row_->AddChildView(inline_reply_.get());
 
   CreateOrUpdateViews(notification);
   UpdateControlButtonsVisibilityWithNotification(notification);
@@ -917,7 +918,7 @@ void NotificationView::CreateOrUpdateTitleView(
     title_view_->SetMultiLine(true);
     title_view_->SetMaxLines(kMaxLinesForTitleView);
     title_view_->SetAllowCharacterBreak(true);
-    left_content_->AddChildViewAt(title_view_, left_content_count_);
+    left_content_->AddChildViewAt(title_view_.get(), left_content_count_);
   } else {
     title_view_->SetText(title);
   }
@@ -967,7 +968,7 @@ void NotificationView::CreateOrUpdateCompactTitleMessageView(
   }
   if (!compact_title_message_view_) {
     compact_title_message_view_ = new CompactTitleMessageView();
-    left_content_->AddChildViewAt(compact_title_message_view_,
+    left_content_->AddChildViewAt(compact_title_message_view_.get(),
                                   left_content_count_);
   }
 
@@ -993,7 +994,8 @@ void NotificationView::CreateOrUpdateProgressBarView(
                                                 /* allow_round_corner */ false);
     progress_bar_view_->SetBorder(
         views::CreateEmptyBorder(kProgressBarTopPadding, 0, 0, 0));
-    left_content_->AddChildViewAt(progress_bar_view_, left_content_count_);
+    left_content_->AddChildViewAt(progress_bar_view_.get(),
+                                  left_content_count_);
   }
 
   progress_bar_view_->SetValue(notification.progress() / 100.0);
@@ -1070,7 +1072,7 @@ void NotificationView::CreateOrUpdateIconView(
 
   if (!icon_view_) {
     icon_view_ = new ProportionalImageView(kIconViewSize);
-    right_content_->AddChildView(icon_view_);
+    right_content_->AddChildView(icon_view_.get());
   }
 
   icon_view_->SetImage(icon, icon.size());
@@ -1134,7 +1136,7 @@ void NotificationView::CreateOrUpdateImageView(
         gfx::Size(max_width, kLargeImageMaxHeight)));
 
     // Insert the created image container just after the |content_row_|.
-    AddChildViewAt(image_container_view_, GetIndexOf(content_row_) + 1);
+    AddChildViewAt(image_container_view_.get(), GetIndexOf(content_row_) + 1);
   }
 
   static_cast<LargeImageView*>(image_container_view_->children().front())
@@ -1246,13 +1248,13 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
       l10n_util::GetStringUTF16(block_notifications_message_id));
   block_all_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  settings_row_->AddChildView(block_all_button_);
+  settings_row_->AddChildView(block_all_button_.get());
 
   dont_block_button_ = new InlineSettingsRadioButton(
       l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_DONT_BLOCK_NOTIFICATIONS));
   dont_block_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  settings_row_->AddChildView(dont_block_button_);
+  settings_row_->AddChildView(dont_block_button_.get());
   settings_row_->SetVisible(false);
 
   settings_done_button_ = new NotificationTextButton(
@@ -1267,10 +1269,10 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
   settings_button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   settings_button_row->SetLayoutManager(std::move(settings_button_layout));
-  settings_button_row->AddChildView(settings_done_button_);
+  settings_button_row->AddChildView(settings_done_button_.get());
   settings_row_->AddChildView(settings_button_row);
 
-  AddChildViewAt(settings_row_, GetIndexOf(actions_row_));
+  AddChildViewAt(settings_row_.get(), GetIndexOf(actions_row_));
 }
 
 void NotificationView::HeaderRowPressed() {

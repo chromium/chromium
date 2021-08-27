@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1401,7 +1402,7 @@ class GcpGaiaCredentialBaseCloudMappingTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
   bool is_ad_user = GetParam();
 };
 
@@ -1567,7 +1568,7 @@ class GcpGaiaCredentialBaseAdScenariosTest : public GcpGaiaCredentialBaseTest {
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseAdScenariosTest::SetUp() {
@@ -1797,7 +1798,7 @@ class GcpGaiaCredentialBaseAdOfflineScenariosTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseAdOfflineScenariosTest::SetUp() {
@@ -1981,7 +1982,7 @@ class GcpGaiaCredentialBaseCloudLocalAccountTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseCloudLocalAccountTest::SetUp() {

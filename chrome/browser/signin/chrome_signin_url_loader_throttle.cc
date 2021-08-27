@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -50,7 +51,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
   }
 
  private:
-  URLLoaderThrottle* const throttle_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottleRequestAdapter);
 };
@@ -96,8 +97,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
  private:
-  URLLoaderThrottle* const throttle_;
-  net::HttpResponseHeaders* headers_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
+  raw_ptr<net::HttpResponseHeaders> headers_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottleResponseAdapter);
 };

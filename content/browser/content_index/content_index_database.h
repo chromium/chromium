@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CONTENT_INDEX_CONTENT_INDEX_DATABASE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -184,7 +185,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
   void UnblockOrigin(const url::Origin& origin);
 
   // Lives on the UI thread.
-  ContentIndexProvider* provider_;
+  raw_ptr<ContentIndexProvider> provider_;
 
   // A map from origins to how many times it's been blocked.
   // Must be used on the service worker core thread.

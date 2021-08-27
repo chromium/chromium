@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_SURFACES_SCOPED_SURFACE_ID_ALLOCATOR_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -37,7 +38,7 @@ class VIZ_COMMON_EXPORT ScopedSurfaceIdAllocator {
                    ScopedSurfaceIdAllocator& second);
 
  private:
-  ParentLocalSurfaceIdAllocator* allocator_ = nullptr;
+  raw_ptr<ParentLocalSurfaceIdAllocator> allocator_ = nullptr;
   base::OnceCallback<void()> allocation_task_;
 };
 

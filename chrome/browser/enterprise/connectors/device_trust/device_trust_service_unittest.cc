@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -156,9 +157,9 @@ class DeviceTrustServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
-  MockAttestationService* mock_attestation_service_;
-  MockDeviceTrustSignalReporter* mock_reporter_;
-  MockSignalsService* mock_signals_service_;
+  raw_ptr<MockAttestationService> mock_attestation_service_;
+  raw_ptr<MockDeviceTrustSignalReporter> mock_reporter_;
+  raw_ptr<MockSignalsService> mock_signals_service_;
   absl::optional<bool> signal_report_callback_value_;
   ScopedTestingLocalState local_state_;
 };

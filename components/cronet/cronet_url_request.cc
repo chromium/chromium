@@ -123,7 +123,7 @@ void CronetURLRequest::Start() {
       FROM_HERE,
       base::BindOnce(&CronetURLRequest::NetworkTasks::Start,
                      base::Unretained(&network_tasks_),
-                     base::Unretained(context_), initial_method_,
+                     base::Unretained(context_.get()), initial_method_,
                      std::move(initial_request_headers_), std::move(upload_)));
 }
 

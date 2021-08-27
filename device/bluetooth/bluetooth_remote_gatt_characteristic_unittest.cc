@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -159,10 +160,10 @@ class BluetoothRemoteGattCharacteristicTest :
 #endif
   }
 
-  BluetoothDevice* device_ = nullptr;
-  BluetoothRemoteGattService* service_ = nullptr;
-  BluetoothRemoteGattCharacteristic* characteristic1_ = nullptr;
-  BluetoothRemoteGattCharacteristic* characteristic2_ = nullptr;
+  raw_ptr<BluetoothDevice> device_ = nullptr;
+  raw_ptr<BluetoothRemoteGattService> service_ = nullptr;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic1_ = nullptr;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic2_ = nullptr;
 };
 
 #if defined(OS_WIN)
@@ -4002,16 +4003,16 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   // may prevent |observer2| from being notified if |characteristic1_| has been
   // freed.
   base::RunLoop loop;
-  EXPECT_CALL(observer1, GattCharacteristicValueChanged(adapter_.get(),
-                                                        characteristic1_, _))
+  EXPECT_CALL(observer1, GattCharacteristicValueChanged(
+                             adapter_.get(), characteristic1_.get(), _))
       .WillOnce(
           Invoke([&](BluetoothAdapter*, BluetoothRemoteGattCharacteristic*,
                      const std::vector<uint8_t>& value) {
             gatt_connections_[0]->Disconnect();
             loop.Quit();
           }));
-  EXPECT_CALL(observer2, GattCharacteristicValueChanged(adapter_.get(),
-                                                        characteristic1_, _))
+  EXPECT_CALL(observer2, GattCharacteristicValueChanged(
+                             adapter_.get(), characteristic1_.get(), _))
       .Times(testing::AtMost(1))
       .WillRepeatedly(
           Invoke([&](BluetoothAdapter*,

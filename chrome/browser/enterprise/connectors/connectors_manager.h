@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
@@ -115,7 +116,7 @@ class ConnectorsManager {
 
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.
-  ServiceProviderConfig* service_provider_config_;
+  raw_ptr<ServiceProviderConfig> service_provider_config_;
 
   // Cached values of the connector policies. Updated when a connector is first
   // used or when a policy is updated.

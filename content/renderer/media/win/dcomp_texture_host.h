@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_types.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -66,8 +67,9 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   const int32_t route_id_;
-  Listener* const listener_;  // Raw pointer is safe because the `listener_`
-                              // (DCOMPTextureWrapperImpl) owns `this`.
+  const raw_ptr<Listener>
+      listener_;  // Raw pointer is safe because the `listener_`
+                  // (DCOMPTextureWrapperImpl) owns `this`.
 
   // Calls into the DCOMPTexture in the GPU process.
   mojo::AssociatedRemote<gpu::mojom::DCOMPTexture> texture_remote_;

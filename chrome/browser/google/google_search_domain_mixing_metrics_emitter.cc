@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/domain_mixing_metrics.h"
 #include "components/history/core/browser/history_backend.h"
@@ -41,7 +42,7 @@ class EmitMetricsDBTask : public history::HistoryDBTask {
  private:
   const base::Time begin_time_;
   const base::Time end_time_;
-  PrefService* const prefs_;
+  const raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace

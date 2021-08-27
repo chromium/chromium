@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/background_fetch/background_fetch_delegate_base.h"
 #include "components/download/public/background_service/download_params.h"
@@ -110,7 +111,7 @@ class BackgroundFetchDelegateImpl
                                 absl::optional<ukm::SourceId> source_id);
 
   // The profile this service is being created for.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The namespace provided to the |offline_content_aggregator_| and used when
   // creating Content IDs.
@@ -119,7 +120,7 @@ class BackgroundFetchDelegateImpl
   // A map from job id to associated UI state.
   std::map<std::string, UiState> ui_state_map_;
 
-  offline_items_collection::OfflineContentAggregator*
+  raw_ptr<offline_items_collection::OfflineContentAggregator>
       offline_content_aggregator_;
 
   base::WeakPtrFactory<BackgroundFetchDelegateImpl> weak_ptr_factory_{this};

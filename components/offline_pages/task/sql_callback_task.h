@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_SQL_CALLBACK_TASK_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -37,7 +38,7 @@ class SqlCallbackTask : public Task {
 
   void Done(bool result);
 
-  SqlStoreBase* store_;
+  raw_ptr<SqlStoreBase> store_;
   ExecuteCallback exec_callback_;
   DoneCallback done_callback_;
   base::WeakPtrFactory<SqlCallbackTask> weak_ptr_factory_{this};

@@ -6,6 +6,7 @@
 
 #include "content/browser/pointer_lock_browsertest.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -101,7 +102,7 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
 
   bool HasFocus() override { return has_focus_; }
 
-  RenderWidgetHostImpl* host_;
+  raw_ptr<RenderWidgetHostImpl> host_;
   bool has_focus_ = true;
 };
 
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
 
   // This should cancel the pointer lock.
   EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-  EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_);
+  EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
   EXPECT_FALSE(web_contents()->HasMouseLock(
       root->current_frame_host()->GetRenderWidgetHost()));
 }
@@ -526,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
 
     // This should cancel the pointer lock.
     EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_);
+    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
     EXPECT_FALSE(web_contents()->HasMouseLock(
         root->current_frame_host()->GetRenderWidgetHost()));
     if (crash_depth != 0)

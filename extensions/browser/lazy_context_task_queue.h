@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_LAZY_CONTEXT_TASK_QUEUE_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
@@ -31,16 +32,16 @@ class LazyContextTaskQueue {
   // consumers that add tasks to LazyContextTaskQueue.
   struct ContextInfo {
     const ExtensionId extension_id;
-    content::RenderProcessHost* const render_process_host;
+    const raw_ptr<content::RenderProcessHost> render_process_host;
     const int64_t service_worker_version_id;
     const int worker_thread_id;
     const GURL url;
     // TODO(dbertoni): This needs to be initialized for the Service Worker
     // version of the constructor.
-    content::BrowserContext* const browser_context = nullptr;
+    const raw_ptr<content::BrowserContext> browser_context = nullptr;
     // This data member will have a nullptr value for Service Worker-related
     // tasks.
-    content::WebContents* const web_contents = nullptr;
+    const raw_ptr<content::WebContents> web_contents = nullptr;
 
     explicit ContextInfo(ExtensionHost* host);
 

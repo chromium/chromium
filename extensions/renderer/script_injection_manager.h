@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -113,7 +114,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   std::vector<std::unique_ptr<RFOHelper>> rfo_helpers_;
 
   // The set of UserScripts associated with extensions. Owned by the Dispatcher.
-  UserScriptSetManager* user_script_set_manager_;
+  raw_ptr<UserScriptSetManager> user_script_set_manager_;
 
   // Pending injections which are waiting for either the proper run location or
   // user consent.

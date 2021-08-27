@@ -8,6 +8,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate.h"
@@ -78,7 +79,7 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
   // Must be a reference to retain the underlying allocation from the vector
   // passed to the constructor.
   const std::vector<uintptr_t>& fake_stack_;
-  RegisterContext* thread_context_;
+  raw_ptr<RegisterContext> thread_context_;
 };
 
 class TestStackCopierDelegate : public StackCopier::Delegate {

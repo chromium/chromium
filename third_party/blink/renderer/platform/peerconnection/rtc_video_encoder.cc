@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,8 +97,8 @@ class SignaledValue {
   bool IsValid() { return event; }
 
  private:
-  base::WaitableEvent* event;
-  int32_t* val;
+  raw_ptr<base::WaitableEvent> event;
+  raw_ptr<int32_t> val;
 };
 
 class ScopedSignaledValue {
@@ -509,7 +510,7 @@ class RTCVideoEncoder::Impl
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   // webrtc::VideoEncoder expects InitEncode() and Encode() to be synchronous.
   // Do this by waiting on the |async_init_event_| when initialization
@@ -531,7 +532,7 @@ class RTCVideoEncoder::Impl
 
   // Next input frame.  Since there is at most one next frame, a single-element
   // queue is sufficient.
-  const webrtc::VideoFrame* input_next_frame_;
+  raw_ptr<const webrtc::VideoFrame> input_next_frame_;
 
   // Whether to encode a keyframe next.
   bool input_next_frame_keyframe_;
@@ -566,7 +567,7 @@ class RTCVideoEncoder::Impl
   scoped_refptr<media::VideoFrame> black_gmb_frame_;
 
   // webrtc::VideoEncoder encode complete callback.
-  webrtc::EncodedImageCallback* encoded_image_callback_;
+  raw_ptr<webrtc::EncodedImageCallback> encoded_image_callback_;
 
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;

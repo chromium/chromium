@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
 namespace blink {
@@ -49,7 +50,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   bool reliable_;
   webrtc::DataChannelInterface::DataState state_;
   webrtc::DataChannelInit config_;
-  webrtc::DataChannelObserver* observer_;
+  raw_ptr<webrtc::DataChannelObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(MockDataChannel);
 };

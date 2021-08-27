@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 #include <memory>
@@ -107,9 +108,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // short amount of time has passed since initialization happened.
   void OnExecuteDatabaseMaintenanceTasks();
 
-  optimization_guide::OptimizationGuideModelProvider* model_provider_;
+  raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Config.
   std::unique_ptr<Config> config_;

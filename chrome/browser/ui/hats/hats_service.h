@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -156,7 +157,7 @@ class HatsService : public KeyedService {
     }
 
    private:
-    HatsService* hats_service_;
+    raw_ptr<HatsService> hats_service_;
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
@@ -299,7 +300,7 @@ class HatsService : public KeyedService {
   void RemoveTask(const DelayedSurveyTask& task);
 
   // Profile associated with this service.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   std::set<DelayedSurveyTask> pending_tasks_;
 

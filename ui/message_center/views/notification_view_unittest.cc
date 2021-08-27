@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -202,7 +203,7 @@ class NotificationViewTest : public views::InkDropObserver,
   bool delete_on_notification_removed_ = false;
   std::set<std::string> removed_ids_;
   scoped_refptr<NotificationTestDelegate> delegate_;
-  NotificationView* notification_view_ = nullptr;
+  raw_ptr<NotificationView> notification_view_ = nullptr;
 };
 
 NotificationViewTest::NotificationViewTest() = default;
@@ -421,10 +422,10 @@ TEST_F(NotificationViewTest, CreateOrUpdateTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
-  EXPECT_EQ(nullptr, notification_view()->message_view_);
-  EXPECT_EQ(nullptr, notification_view()->image_container_view_);
-  EXPECT_EQ(nullptr, notification_view()->icon_view_);
+  EXPECT_EQ(nullptr, notification_view()->title_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->message_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->image_container_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->icon_view_.get());
 }
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
@@ -440,7 +441,7 @@ TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
+  EXPECT_EQ(nullptr, notification_view()->title_view_.get());
   EXPECT_NE(nullptr, notification_view()->message_view_);
   EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
                    notification_view()->message_view_));

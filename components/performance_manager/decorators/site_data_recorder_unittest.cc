@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -68,7 +69,7 @@ class LenientMockDataWriter : public SiteDataWriter {
   const url::Origin& Origin() const { return origin_; }
 
  private:
-  bool* on_destroy_indicator_ = nullptr;
+  raw_ptr<bool> on_destroy_indicator_ = nullptr;
   url::Origin origin_;
 };
 using MockDataWriter = ::testing::StrictMock<LenientMockDataWriter>;
@@ -172,7 +173,7 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
   const GURL kTestUrl2 = GURL("http://bar.com");
 
  private:
-  SiteDataRecorder* recorder_ = nullptr;
+  raw_ptr<SiteDataRecorder> recorder_ = nullptr;
   base::SequenceBound<SiteDataCacheFactory> cache_factory_;
 };
 

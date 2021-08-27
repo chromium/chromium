@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
@@ -113,10 +114,10 @@ class MediaStreamDevicesController {
   ContentSetting video_setting_;
   blink::mojom::MediaStreamRequestResult denial_reason_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The object which lists available devices.
-  MediaStreamDeviceEnumerator* enumerator_;
+  raw_ptr<MediaStreamDeviceEnumerator> enumerator_;
 
   // This enumerator is used as |enumerator_| when the instance passed into the
   // constructor is null.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 
@@ -132,7 +133,7 @@ class MockCoordinator : public mojom::Coordinator {
 
  private:
   mojo::ReceiverSet<mojom::Coordinator> receivers_;
-  MemoryTracingIntegrationTest* client_;
+  raw_ptr<MemoryTracingIntegrationTest> client_;
 };
 
 class MemoryTracingIntegrationTest : public testing::Test {

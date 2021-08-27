@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -54,7 +55,7 @@ class OfflinePageTestArchivePublisher : public OfflinePageArchivePublisher {
   int64_t download_id_;
   mutable PublishedArchiveId last_removed_id_;
 
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
 };
 
 }  // namespace offline_pages

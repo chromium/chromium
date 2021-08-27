@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -45,9 +46,9 @@ class LensSidePanelController : public content::WebContentsObserver {
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
-  SidePanel* side_panel_;
-  BrowserView* browser_view_;
-  views::WebView* side_panel_webview_;
+  raw_ptr<SidePanel> side_panel_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<views::WebView> side_panel_webview_;
 };
 
 }  // namespace lens

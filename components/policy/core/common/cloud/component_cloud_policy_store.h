@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -153,8 +154,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
                    PolicyMap* policy,
                    std::string* error);
 
-  Delegate* const delegate_;
-  ResourceCache* const cache_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<ResourceCache> cache_;
 
   // The following fields contain credentials used for validating the policy.
   std::string username_;
@@ -173,7 +174,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // exposed component.
   std::map<PolicyNamespace, base::Time> stored_policy_times_;
 
-  const DomainConstants* domain_constants_;
+  raw_ptr<const DomainConstants> domain_constants_;
 
   const PolicySource policy_source_;
 

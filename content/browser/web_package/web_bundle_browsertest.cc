@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -132,7 +133,7 @@ class DownloadObserver : public DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
   base::RunLoop run_loop_;
   GURL url_;
 
@@ -167,7 +168,7 @@ class MockParser final : public web_package::mojom::WebBundleParser {
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
 
-  MockParserFactory* factory_;
+  raw_ptr<MockParserFactory> factory_;
   mojo::Receiver<web_package::mojom::WebBundleParser> receiver_;
   const Index& index_;
   const GURL primary_url_;
@@ -383,7 +384,7 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
   }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::ScopedTempDir temp_dir_;
 
@@ -1585,7 +1586,7 @@ class InvalidTrustableWebBundleFileUrlBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
 
   DISALLOW_COPY_AND_ASSIGN(InvalidTrustableWebBundleFileUrlBrowserTest);

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -165,9 +166,9 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   void SetBadge(blink::mojom::BadgeValuePtr value) override;
   void ClearBadge() override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // All the mojo receivers for the BadgeManager. Keeps track of the
   // render_frame the binding is associated with, so as to not have to rely

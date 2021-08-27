@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -201,7 +202,8 @@ class HidConnectionImplTest : public DeviceServiceTestBase {
   }
 
   mojo::PendingRemote<mojom::HidConnection> hid_connection_;
-  HidConnectionImpl* hid_connection_impl_;  // Owned by |hid_connection_|.
+  raw_ptr<HidConnectionImpl>
+      hid_connection_impl_;  // Owned by |hid_connection_|.
   scoped_refptr<FakeHidConnection> fake_connection_;
   std::unique_ptr<TestHidConnectionClient> connection_client_;
 };

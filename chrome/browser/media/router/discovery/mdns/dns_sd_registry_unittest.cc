@@ -4,9 +4,10 @@
 
 #include <memory>
 
-#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
+#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +63,7 @@ class TestDnsSdRegistry : public DnsSdRegistry {
  private:
   std::map<std::string, MockDnsSdDeviceLister*> listers_;
   // The last delegate used or NULL.
-  DnsSdDelegate* delegate_;
+  raw_ptr<DnsSdDelegate> delegate_;
 };
 
 class MockDnsSdObserver : public DnsSdRegistry::DnsSdObserver {

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_SOCKET_BLUETOOTH_SOCKET_EVENT_DISPATCHER_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_SOCKET_BLUETOOTH_SOCKET_EVENT_DISPATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
@@ -69,7 +70,7 @@ class BluetoothSocketEventDispatcher
     ~SocketParams();
 
     content::BrowserThread::ID thread_id;
-    void* browser_context_id;
+    raw_ptr<void> browser_context_id;
     std::string extension_id;
     scoped_refptr<SocketData> sockets;
     int socket_id;
@@ -112,7 +113,7 @@ class BluetoothSocketEventDispatcher
 
   // Usually FILE thread (except for unit testing).
   content::BrowserThread::ID thread_id_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<SocketData> sockets_;
 };
 

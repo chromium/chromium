@@ -10,6 +10,7 @@
 #include <array>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,7 +109,7 @@ class NTPUserDataLogger {
   GURL ntp_url_;
 
   // The profile in which this New Tab Page was loaded.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(NTPUserDataLogger);
 };

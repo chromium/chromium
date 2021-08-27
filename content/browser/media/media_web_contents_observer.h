@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/media/audio_stream_monitor.h"
@@ -166,7 +167,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 
    private:
     GlobalRenderFrameHostId frame_routing_id_;
-    MediaWebContentsObserver* media_web_contents_observer_;
+    raw_ptr<MediaWebContentsObserver> media_web_contents_observer_;
     mojo::AssociatedReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
 
@@ -209,7 +210,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     void NotifyAudioStreamMonitorIfNeeded();
 
     const MediaPlayerId media_player_id_;
-    MediaWebContentsObserver* const media_web_contents_observer_;
+    const raw_ptr<MediaWebContentsObserver> media_web_contents_observer_;
 
     mojo::AssociatedReceiver<media::mojom::MediaPlayerObserver>
         media_player_observer_receiver_{this};
@@ -279,7 +280,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       RenderFrameHost* render_frame_host);
 
   // Helper class for recording audible metrics.
-  AudibleMetrics* audible_metrics_;
+  raw_ptr<AudibleMetrics> audible_metrics_;
 
   // Tracking variables and associated wake locks for media playback.
   PlayerInfoMap player_info_map_;
@@ -289,7 +290,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   bool has_audio_wake_lock_for_testing_ = false;
 
   std::unique_ptr<MediaSessionControllersManager> session_controllers_manager_;
-  MediaPowerExperimentManager* power_experiment_manager_ = nullptr;
+  raw_ptr<MediaPowerExperimentManager> power_experiment_manager_ = nullptr;
 
   std::map<RenderFrameHost*,
            std::unique_ptr<base::WeakPtrFactory<MediaWebContentsObserver>>>

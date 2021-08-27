@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,7 @@ class CONTENT_EXPORT KeyboardLockServiceImpl final
   // |this| can only be destroyed by DocumentServiceBase.
   ~KeyboardLockServiceImpl() override;
 
-  RenderFrameHostImpl* const render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
 };
 
 }  // namespace content

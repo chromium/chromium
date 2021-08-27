@@ -9,6 +9,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -45,7 +46,7 @@ class ComputePressureHostSync {
       mojo::PendingRemote<blink::mojom::ComputePressureObserver> observer);
 
  private:
-  blink::mojom::ComputePressureHost* const host_;
+  const raw_ptr<blink::mojom::ComputePressureHost> host_;
 };
 
 // Test double for ComputePressureObserver that records all updates.

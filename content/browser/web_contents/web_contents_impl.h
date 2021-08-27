@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
@@ -1433,11 +1434,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     void OnFrameTreeNodeDestroyed(FrameTreeNode* node) final;
 
     // The WebContents that owns this WebContentsTreeNode.
-    WebContentsImpl* const current_web_contents_;
+    const raw_ptr<WebContentsImpl> current_web_contents_;
 
     // The outer WebContents of |current_web_contents_|, or nullptr if
     // |current_web_contents_| is the outermost WebContents.
-    WebContentsImpl* outer_web_contents_;
+    raw_ptr<WebContentsImpl> outer_web_contents_;
 
     // The ID of the FrameTreeNode in the |outer_web_contents_| that hosts
     // |current_web_contents_| as an inner WebContents.
@@ -1450,7 +1451,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // Only the root node should have this set. This indicates the WebContents
     // whose frame tree has the focused frame. The WebContents tree could be
     // arbitrarily deep.
-    WebContentsImpl* focused_web_contents_;
+    raw_ptr<WebContentsImpl> focused_web_contents_;
   };
 
   // Container for WebContentsObservers, which knows when we are iterating over
@@ -1802,7 +1803,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  WebContentsDelegate* delegate_;
+  raw_ptr<WebContentsDelegate> delegate_;
 
   // The corresponding view.
   std::unique_ptr<WebContentsView> view_;
@@ -1950,7 +1951,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Pointer to the JavaScript dialog manager, lazily assigned. Used because the
   // delegate of this WebContentsImpl is nulled before its destructor is called.
-  JavaScriptDialogManager* dialog_manager_;
+  raw_ptr<JavaScriptDialogManager> dialog_manager_;
 
   // Set to true when there is an active JavaScript dialog showing.
   bool is_showing_javascript_dialog_ = false;
@@ -2107,11 +2108,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores the RenderWidgetHost that currently holds a mouse lock or nullptr if
   // there's no RenderWidgetHost holding a lock.
-  RenderWidgetHostImpl* mouse_lock_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl> mouse_lock_widget_ = nullptr;
 
   // Stores the RenderWidgetHost that currently holds a keyboard lock or nullptr
   // if no RenderWidgetHost has the keyboard locked.
-  RenderWidgetHostImpl* keyboard_lock_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl> keyboard_lock_widget_ = nullptr;
 
   // Indicates whether the escape key is one of the requested keys to be locked.
   // This information is used to drive the browser UI so the correct exit
@@ -2138,7 +2139,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool was_ever_audible_ = false;
 
   // Helper variable for resolving races in UpdateTargetURL / ClearTargetURL.
-  RenderFrameHost* frame_that_set_last_target_url_ = nullptr;
+  raw_ptr<RenderFrameHost> frame_that_set_last_target_url_ = nullptr;
 
   // Whether we should override user agent in new tabs.
   bool should_override_user_agent_in_new_tabs_ = false;
@@ -2157,7 +2158,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::set<RenderFrameHostImpl*> fullscreen_frames_;
 
   // Store the frame that is currently fullscreen, nullptr if there is none.
-  RenderFrameHostImpl* current_fullscreen_frame_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> current_fullscreen_frame_ = nullptr;
 
   // Whether location bar should be focused by default. This is computed in
   // DidStartNavigation/DidFinishNavigation and only set for an initial
@@ -2167,7 +2168,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Stores the Portal object associated with this WebContents, if there is one.
   // If non-null then this WebContents is embedded in a portal and its outer
   // WebContents can be found by using GetOuterWebContents().
-  Portal* portal_ = nullptr;
+  raw_ptr<Portal> portal_ = nullptr;
 
   // Stores information from the main frame's renderer that needs to be shared
   // with OOPIF renderers.

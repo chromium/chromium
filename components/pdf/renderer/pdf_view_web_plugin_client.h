@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_VIEW_WEB_PLUGIN_CLIENT_H_
 #define COMPONENTS_PDF_RENDERER_PDF_VIEW_WEB_PLUGIN_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
 namespace content {
@@ -29,7 +30,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   bool IsUseZoomForDSFEnabled() const override;
 
  private:
-  content::RenderFrame* const render_frame_;
+  const raw_ptr<content::RenderFrame> render_frame_;
 };
 
 }  // namespace pdf

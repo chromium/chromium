@@ -4,6 +4,7 @@
 
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -88,12 +89,12 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   std::unique_ptr<LoadingPredictor> loading_predictor_;
   // Owned by |loading_predictor_|.
-  StrictMock<MockLoadingDataCollector>* mock_collector_;
+  raw_ptr<StrictMock<MockLoadingDataCollector>> mock_collector_;
   // Owned elsewhere.
-  NiceMock<MockOptimizationGuideKeyedService>*
+  raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_;
   // Owned by |web_contents()|.
-  LoadingPredictorTabHelper* tab_helper_;
+  raw_ptr<LoadingPredictorTabHelper> tab_helper_;
 };
 
 void LoadingPredictorTabHelperTest::SetUp() {
@@ -819,7 +820,7 @@ class LoadingPredictorTabHelperTestCollectorTest
   void SetUp() override;
 
  protected:
-  TestLoadingDataCollector* test_collector_;
+  raw_ptr<TestLoadingDataCollector> test_collector_;
 };
 
 void LoadingPredictorTabHelperTestCollectorTest::SetUp() {

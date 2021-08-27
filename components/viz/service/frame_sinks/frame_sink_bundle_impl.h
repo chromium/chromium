@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -96,7 +97,7 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle,
 
   FrameSinkManagerImpl& manager_;
   const FrameSinkBundleId id_;
-  BeginFrameSource* begin_frame_source_;
+  raw_ptr<BeginFrameSource> begin_frame_source_;
   mojo::Receiver<mojom::FrameSinkBundle> receiver_;
   mojo::Remote<mojom::FrameSinkBundleClient> client_;
 

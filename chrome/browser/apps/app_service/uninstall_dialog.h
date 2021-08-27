@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -65,7 +66,7 @@ class UninstallDialog {
     UninstallDialog* uninstall_dialog() const { return uninstall_dialog_; }
 
    private:
-    UninstallDialog* uninstall_dialog_;
+    raw_ptr<UninstallDialog> uninstall_dialog_;
   };
 
   // Called when the dialog closes after the user has made a decision about
@@ -101,7 +102,7 @@ class UninstallDialog {
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   const apps::mojom::AppType app_type_;
   const std::string app_id_;
   const std::string app_name_;

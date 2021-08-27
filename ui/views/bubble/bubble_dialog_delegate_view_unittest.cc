@@ -12,6 +12,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
@@ -52,7 +53,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   explicit TestBubbleDialogDelegateView(View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    AddChildView(view_);
+    AddChildView(view_.get());
   }
   ~TestBubbleDialogDelegateView() override = default;
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
@@ -101,7 +102,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   using BubbleDialogDelegateView::SizeToContents;
 
  private:
-  View* view_ = new View;
+  raw_ptr<View> view_ = new View;
   std::unique_ptr<View> title_view_;
   bool should_show_close_button_ = false;
   bool should_show_window_title_ = true;

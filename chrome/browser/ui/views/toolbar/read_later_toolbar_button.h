@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
@@ -26,9 +27,9 @@ class ReadLaterToolbarButton : public ToolbarButton {
  private:
   void ButtonPressed();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  views::View* side_panel_webview_ = nullptr;
+  raw_ptr<views::View> side_panel_webview_ = nullptr;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
 };
 

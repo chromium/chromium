@@ -5,6 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cronet/android/cronet_tests_jni_headers/MockUrlRequestJobFactory_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "components/cronet/android/test/url_request_intercepting_job_factory.h"
@@ -55,7 +56,7 @@ class UrlInterceptorJobFactoryHandle {
         TestUtil::GetURLRequestContext(jcontext_adapter_);
     old_job_factory_ = request_context->job_factory();
     new_job_factory_.reset(new URLRequestInterceptingJobFactory(
-        const_cast<net::URLRequestJobFactory*>(old_job_factory_),
+        const_cast<net::URLRequestJobFactory*>(old_job_factory_.get()),
         net::URLRequestFilter::GetInstance()));
     request_context->set_job_factory(new_job_factory_.get());
   }
@@ -65,7 +66,7 @@ class UrlInterceptorJobFactoryHandle {
   // The URLRequestContextAdapater this object intercepts from.
   const jlong jcontext_adapter_;
   // URLRequestJobFactory previously used in URLRequestContext.
-  const net::URLRequestJobFactory* old_job_factory_;
+  raw_ptr<const net::URLRequestJobFactory> old_job_factory_;
   // URLRequestJobFactory inserted during tests to intercept URLRequests with
   // libcronet's URLRequestFilter.
   std::unique_ptr<URLRequestInterceptingJobFactory> new_job_factory_;

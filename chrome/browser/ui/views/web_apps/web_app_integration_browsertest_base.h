@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -283,15 +284,15 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   absl::optional<AppId> waiting_for_update_id_;
   std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
 
-  TestDelegate* delegate_;
+  raw_ptr<TestDelegate> delegate_;
   // State snapshots, captured before and after "state change" actions are
   // executed, and inspected by "state check" actions to verify behavior.
   std::unique_ptr<StateSnapshot> before_state_change_action_state_;
   std::unique_ptr<StateSnapshot> after_state_change_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
-  Browser* app_browser_ = nullptr;
-  Browser* active_browser_ = nullptr;
-  Profile* active_profile_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<Profile> active_profile_ = nullptr;
   std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
   AppId active_app_id_;

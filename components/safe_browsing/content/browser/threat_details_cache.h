@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -61,10 +62,10 @@ class ThreatDetailsCacheCollector
   ResourceMap::iterator resources_it_;
 
   // Points to the resources_ map in the ThreatDetails.
-  ResourceMap* resources_;
+  raw_ptr<ResourceMap> resources_;
 
   // Points to the cache_result_ in the ThreatDetails.
-  bool* result_;
+  raw_ptr<bool> result_;
 
   // Method we call when we are done. The caller must be alive for the
   // whole time, we are modifying its state (see above).

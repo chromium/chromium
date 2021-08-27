@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
@@ -371,7 +372,7 @@ class WebGPUMailboxTextureTest : public testing::Test {
   }
 
   void TearDown() override { SharedGpuContext::ResetForTesting(); }
-  MockWebGPUInterface* webgpu_;
+  raw_ptr<MockWebGPUInterface> webgpu_;
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   base::test::TaskEnvironment task_environment_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -28,7 +29,7 @@ class UserEducationInternalsPageHandlerImpl
   void StartTutorial(const std::string& tutorial_id) override;
 
  private:
-  FeatureTutorialService* const tutorial_service_;
+  const raw_ptr<FeatureTutorialService> tutorial_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_

@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url.h"
 
 using base::android::JavaParamRef;
@@ -37,7 +38,7 @@ class LocaleTemplateUrlLoader {
   std::vector<int> prepopulate_ids_;
 
   // Pointer to the TemplateUrlService for the main profile.
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   DISALLOW_COPY_AND_ASSIGN(LocaleTemplateUrlLoader);
 };

@@ -10,6 +10,7 @@
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "content/browser/bad_message.h"
@@ -90,7 +91,7 @@ class MediaStreamDispatcherHost::Broker
   void StartObservingWebContents(int render_process_id, int render_frame_id);
 
   base::Lock lock_;
-  MediaStreamDispatcherHost* host_ GUARDED_BY(lock_);
+  raw_ptr<MediaStreamDispatcherHost> host_ GUARDED_BY(lock_);
   std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
 };
 

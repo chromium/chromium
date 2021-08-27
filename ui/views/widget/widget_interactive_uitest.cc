@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -163,7 +164,7 @@ class NestedLoopCaptureView : public View {
 
   base::RunLoop run_loop_;
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(NestedLoopCaptureView);
 };
@@ -416,7 +417,7 @@ class TouchEventHandler : public ui::EventHandler {
       ActivateViaMouse();
   }
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   base::OnceClosure quit_closure_;
   DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
 };
@@ -1334,7 +1335,7 @@ class CaptureLostTrackingWidget : public Widget {
 
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
-  CaptureLostState* capture_lost_state_;
+  raw_ptr<CaptureLostState> capture_lost_state_;
 
   DISALLOW_COPY_AND_ASSIGN(CaptureLostTrackingWidget);
 };
@@ -1930,7 +1931,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   }
 
  private:
-  Widget* deactivate_widget_ = nullptr;
+  raw_ptr<Widget> deactivate_widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetInputMethodInteractiveTest);
 };

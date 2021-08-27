@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -39,7 +40,7 @@ class LensRegionSearchController {
 
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
   gfx::Image ResizeImageIfNecessary(const gfx::Image& image);
-  content::WebContents* source_web_contents_ = nullptr;
+  raw_ptr<content::WebContents> source_web_contents_ = nullptr;
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 
   base::WeakPtr<LensRegionSearchController> weak_this_;

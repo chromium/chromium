@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -103,7 +104,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // This is used for testing.
   const bool force_dcomp_mode_for_testing_;
 
-  RendererClient* renderer_client_;
+  raw_ptr<RendererClient> renderer_client_;
 
   Microsoft::WRL::ComPtr<IMFMediaEngine> mf_media_engine_;
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
@@ -133,7 +134,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HWND virtual_video_window_ = nullptr;
 
   bool waiting_for_mf_cdm_ = false;
-  CdmContext* cdm_context_ = nullptr;
+  raw_ptr<CdmContext> cdm_context_ = nullptr;
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
 
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>

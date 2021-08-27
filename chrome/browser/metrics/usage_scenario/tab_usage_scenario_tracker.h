@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_TAB_USAGE_SCENARIO_TRACKER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/visibility.h"
@@ -73,7 +74,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void InsertContentsInMapOfVisibleTabs(content::WebContents* web_contents);
 
   // Non-owning. Needs to outlive this class.
-  UsageScenarioDataStoreImpl* usage_scenario_data_store_
+  raw_ptr<UsageScenarioDataStoreImpl> usage_scenario_data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keep track of the WebContents currently playing video.
@@ -86,7 +87,8 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   VisibleTabsMap visible_tabs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // WebContents currently playing video fullscreen, nullptr if there's none.
-  content::WebContents* content_with_media_playing_fullscreen_ = nullptr;
+  raw_ptr<content::WebContents> content_with_media_playing_fullscreen_ =
+      nullptr;
 
   display::ScopedDisplayObserver display_observer_{this};
 

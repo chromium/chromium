@@ -40,6 +40,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -212,7 +213,7 @@ class HarfBuzzScopedPtr {
   void Set(T* ptr) { ptr_ = ptr; }
 
  private:
-  T* ptr_;
+  raw_ptr<T> ptr_;
   DestroyFunction destroy_;
 };
 
@@ -220,8 +221,8 @@ struct RangeData {
   STACK_ALLOCATED();
 
  public:
-  hb_buffer_t* buffer;
-  const Font* font;
+  raw_ptr<hb_buffer_t> buffer;
+  raw_ptr<const Font> font;
   TextDirection text_direction;
   unsigned start;
   unsigned end;
@@ -678,7 +679,7 @@ class CapsFeatureSettingsScopedOverlay final {
  private:
   void OverlayCapsFeatures(FontDescription::FontVariantCaps);
   void PrependCounting(const hb_feature_t&);
-  FontFeatures* features_;
+  raw_ptr<FontFeatures> features_;
   wtf_size_t count_features_;
 };
 

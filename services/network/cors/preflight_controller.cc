@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
@@ -362,7 +363,7 @@ class PreflightController::PreflightLoader final {
   void RemoveFromController() { controller_->RemoveLoader(this); }
 
   // PreflightController owns all PreflightLoader instances, and should outlive.
-  PreflightController* const controller_;
+  const raw_ptr<PreflightController> controller_;
 
   // Holds SimpleURLLoader instance for the CORS-preflight request.
   std::unique_ptr<SimpleURLLoader> loader_;

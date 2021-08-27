@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_SERVICE_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,7 +44,7 @@ class PinnedTabService : public BrowserListObserver,
   // window has been added since the last time the method was called.
   void WritePinnedTabsIfNecessary();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // True if we should save the pinned tabs when a browser window closes or the
   // user exits the application. This is set to false after writing pinned tabs,

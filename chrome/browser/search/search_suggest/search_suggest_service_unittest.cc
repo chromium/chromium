@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -134,12 +135,12 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
 
   // Owned by the service.
-  FakeSearchSuggestLoader* loader_;
+  raw_ptr<FakeSearchSuggestLoader> loader_;
 
   std::unique_ptr<SearchSuggestService> service_;
 };

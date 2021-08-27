@@ -21,6 +21,7 @@
 #include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
@@ -606,8 +607,8 @@ class CONTENT_EXPORT RenderThreadImpl
       compositing_mode_watcher_receiver_{this};
 
   // Delegate is expected to live as long as requests may be sent.
-  blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
-      nullptr;
+  raw_ptr<blink::WebResourceRequestSenderDelegate>
+      resource_request_sender_delegate_ = nullptr;
 
   base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 

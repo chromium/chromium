@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,9 +45,9 @@ class DualMediaSinkServiceTest : public testing::Test {
                     const std::vector<MediaSinkInternal>& sinks));
 
  private:
-  MockCastMediaSinkService* cast_media_sink_service_;
-  MockDialMediaSinkService* dial_media_sink_service_;
-  MockCastAppDiscoveryService* cast_app_discovery_service_;
+  raw_ptr<MockCastMediaSinkService> cast_media_sink_service_;
+  raw_ptr<MockDialMediaSinkService> dial_media_sink_service_;
+  raw_ptr<MockCastAppDiscoveryService> cast_app_discovery_service_;
   std::unique_ptr<DualMediaSinkService> dual_media_sink_service_;
 };
 

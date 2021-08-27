@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_bridge.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
@@ -100,7 +101,7 @@ class PaymentCredentialEnrollmentController
 
   ResponseCallback response_callback_;
 
-  ObserverForTest* observer_for_test_ = nullptr;
+  raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
   base::WeakPtr<ScopedToken> token_;
 
   std::unique_ptr<PaymentCredentialEnrollmentBridge> bridge_;

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -239,7 +240,7 @@ class MediaControlsImpl::BatchedControlUpdate {
   }
 
  private:
-  MediaControlsImpl* controls_;
+  raw_ptr<MediaControlsImpl> controls_;
   static int batch_depth_;
 
   DISALLOW_COPY_AND_ASSIGN(BatchedControlUpdate);

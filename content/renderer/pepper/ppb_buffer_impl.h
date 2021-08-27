@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -68,7 +69,7 @@ class BufferAutoMapper {
   size_t size() const { return size_; }
 
  private:
-  ppapi::thunk::PPB_Buffer_API* api_;
+  raw_ptr<ppapi::thunk::PPB_Buffer_API> api_;
 
   bool needs_unmap_;
 

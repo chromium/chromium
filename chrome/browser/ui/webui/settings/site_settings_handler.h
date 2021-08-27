@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -262,7 +263,7 @@ class SiteSettingsHandler
   // provides the updated description label for display.
   void SendCookieSettingDescription();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

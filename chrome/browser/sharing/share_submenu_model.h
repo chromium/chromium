@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_SHARE_SUBMENU_MODEL_H_
 #define CHROME_BROWSER_SHARING_SHARE_SUBMENU_MODEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -57,7 +58,7 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   void GenerateQRCode();
   void SendTabToSelfSingleTarget();
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   Context context_;
   GURL url_;
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WAIT_FOR_DOCUMENT_OPERATION_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -42,7 +43,7 @@ class WaitForDocumentOperation {
                       DocumentReadyState current_state,
                       base::TimeDelta wait_time);
 
-  ScriptExecutorDelegate* script_executor_delegate_;
+  raw_ptr<ScriptExecutorDelegate> script_executor_delegate_;
   base::TimeDelta max_wait_time_;
   DocumentReadyState min_ready_state_;
   const ElementFinder::Result& optional_frame_element_;

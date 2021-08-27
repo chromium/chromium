@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
@@ -132,7 +133,7 @@ class TestTabStatsTracker : public TabStatsTracker {
   TabStatsDataStore* data_store() { return tab_stats_data_store(); }
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTabStatsTracker);
 };
@@ -194,7 +195,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<Browser> browser_;
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerTest);

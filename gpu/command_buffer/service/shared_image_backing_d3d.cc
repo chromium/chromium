@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -107,7 +108,7 @@ class ScopedRestoreTexture {
   ~ScopedRestoreTexture() { api_->glBindTextureFn(target_, prev_binding_); }
 
  private:
-  gl::GLApi* const api_;
+  const raw_ptr<gl::GLApi> api_;
   const GLenum target_;
   GLuint prev_binding_ = 0;
   DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture);

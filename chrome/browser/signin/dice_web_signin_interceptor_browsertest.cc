@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,7 +125,7 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  Browser* customized_browser_ = nullptr;
+  raw_ptr<Browser> customized_browser_ = nullptr;
   DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
@@ -148,7 +149,7 @@ class BrowserCloseObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);

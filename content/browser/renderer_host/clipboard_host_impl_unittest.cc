@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -120,7 +121,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   ui::Clipboard* system_clipboard() { return clipboard_; }
 
  private:
-  ui::Clipboard* clipboard_;
+  raw_ptr<ui::Clipboard> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -289,7 +290,7 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  ui::Clipboard* const clipboard_;
+  const raw_ptr<ui::Clipboard> clipboard_;
   std::unique_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -88,7 +89,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   const bool shared_tab_;
 
   // Creates and removes delegate's infobar; outlives delegate.
-  TabSharingUI* const ui_;
+  const raw_ptr<TabSharingUI> ui_;
 
   // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;

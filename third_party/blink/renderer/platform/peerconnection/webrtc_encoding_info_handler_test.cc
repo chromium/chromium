@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -120,7 +121,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 
  protected:
   std::vector<webrtc::AudioCodecSpec> kSupportedAudioCodecs;
-  MockVideoEncoderFactory* mock_video_encoder_factory_;
+  raw_ptr<MockVideoEncoderFactory> mock_video_encoder_factory_;
   std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory_;
   rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory_;
 };

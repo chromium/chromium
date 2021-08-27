@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_PEPPER_PEPPER_TRY_CATCH_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_var.h"
@@ -47,7 +48,7 @@ class CONTENT_EXPORT PepperTryCatch {
   // shouldn't keep the instance around for too long.
   scoped_refptr<PepperPluginInstanceImpl> instance_;
 
-  V8VarConverter* var_converter_;
+  raw_ptr<V8VarConverter> var_converter_;
 };
 
 // Catches var exceptions and emits a v8 exception.
@@ -98,7 +99,7 @@ class PepperTryCatchVar : public PepperTryCatch {
 
   v8::TryCatch try_catch_;
 
-  PP_Var* exception_;
+  raw_ptr<PP_Var> exception_;
   bool exception_is_set_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperTryCatchVar);

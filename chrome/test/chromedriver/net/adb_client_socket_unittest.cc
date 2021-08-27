@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -16,7 +17,7 @@
 class MockSocket : public net::MockClientSocket {
  public:
   int return_values_length;
-  std::string* return_values_array;
+  raw_ptr<std::string> return_values_array;
   MockSocket(std::string* return_values_array, int return_values_length)
       : MockClientSocket(net::NetLogWithSource()),
         return_values_length(return_values_length),

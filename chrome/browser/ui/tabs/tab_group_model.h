@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TabGroup;
@@ -56,7 +57,7 @@ class TabGroupModel {
  private:
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroup>> groups_;
 
-  TabGroupController* controller_;
+  raw_ptr<TabGroupController> controller_;
 
   // Returns the least-used color in the color set, breaking ties toward the
   // first color in the set. Used to initialize a new group's color, which

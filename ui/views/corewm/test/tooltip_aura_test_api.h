@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 class Rect;
@@ -39,7 +40,7 @@ class TooltipAuraTestApi {
                              const TooltipPosition& position);
 
  private:
-  TooltipAura* tooltip_aura_;
+  raw_ptr<TooltipAura> tooltip_aura_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipAuraTestApi);
 };

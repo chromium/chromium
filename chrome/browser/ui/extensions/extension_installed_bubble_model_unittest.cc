@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -71,7 +72,7 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
   const SkBitmap empty_icon_;
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 };
 
 TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {

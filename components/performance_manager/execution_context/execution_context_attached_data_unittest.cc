@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/public/execution_context/execution_context_attached_data.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -39,7 +40,7 @@ class ExecutionContextAttachedDataTest : public GraphTestHarness {
   }
 
  protected:
-  ExecutionContextRegistryImpl* registry_ = nullptr;
+  raw_ptr<ExecutionContextRegistryImpl> registry_ = nullptr;
 };
 
 }  // namespace

@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -72,13 +73,13 @@ class SharesheetHeaderView : public views::View {
       const GURL& file_system_url);
 
   // Contains the share title and text preview views.
-  views::View* text_view_ = nullptr;
-  SharesheetImagePreview* image_preview_;
+  raw_ptr<views::View> text_view_ = nullptr;
+  raw_ptr<SharesheetImagePreview> image_preview_;
   // |text_icon_| is only used when we have no icons to show in the image
   // preview.
   TextPlaceholderIcon text_icon_ = TextPlaceholderIcon::kGenericText;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   apps::mojom::IntentPtr intent_;
 
   ThumbnailLoader thumbnail_loader_;

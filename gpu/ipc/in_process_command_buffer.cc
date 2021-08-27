@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -115,7 +116,7 @@ class ScopedEvent {
   ~ScopedEvent() { event_->Signal(); }
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
 };
 
 // Has to be called after Initialize.
@@ -215,7 +216,7 @@ base::ScopedClosureRunner InProcessCommandBuffer::GetCacheBackBufferCb() {
   // supposed to guarentee that it outlives the callback.
   return base::ScopedClosureRunner(base::BindOnce(
       &ReleaseGLSurfaceOnClientThread, base::Unretained(surface_.get()),
-      base::Unretained(task_executor_)));
+      base::Unretained(task_executor_.get())));
 }
 
 bool InProcessCommandBuffer::MakeCurrent() {

@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
@@ -145,7 +146,7 @@ class AppMenu : public views::MenuDelegate,
   int ModelIndexFromCommandId(int command_id) const;
 
   // The views menu. Owned by |menu_runner_|.
-  views::MenuItemView* root_ = nullptr;
+  raw_ptr<views::MenuItemView> root_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -154,26 +155,26 @@ class AppMenu : public views::MenuDelegate,
   CommandIDToEntry command_id_to_entry_;
 
   // Browser the menu is being shown for.
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // |CancelAndEvaluate| sets |selected_menu_model_| and |selected_index_|.
   // If |selected_menu_model_| is non-null after the menu completes
   // ActivatedAt is invoked. This is done so that ActivatedAt isn't invoked
   // while the message loop is nested.
-  ui::ButtonMenuItemModel* selected_menu_model_ = nullptr;
+  raw_ptr<ui::ButtonMenuItemModel> selected_menu_model_ = nullptr;
   int selected_index_ = 0;
 
   // Used for managing the bookmark menu items.
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
 
   // Menu corresponding to IDC_BOOKMARKS_MENU.
-  views::MenuItemView* bookmark_menu_ = nullptr;
+  raw_ptr<views::MenuItemView> bookmark_menu_ = nullptr;
 
   // Menu corresponding to IDC_FEEDBACK.
-  views::MenuItemView* feedback_menu_item_ = nullptr;
+  raw_ptr<views::MenuItemView> feedback_menu_item_ = nullptr;
 
   // Menu corresponding to IDC_TAKE_SCREENSHOT.
-  views::MenuItemView* screenshot_menu_item_ = nullptr;
+  raw_ptr<views::MenuItemView> screenshot_menu_item_ = nullptr;
 
   // Used for managing "Recent tabs" menu items.
   std::unique_ptr<RecentTabsMenuModelDelegate> recent_tabs_menu_model_delegate_;

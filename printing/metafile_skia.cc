@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -79,7 +80,7 @@ struct MetafileSkiaData {
   ContentToProxyTokenMap subframe_content_info;
   std::map<uint32_t, sk_sp<SkPicture>> subframe_pics;
   int document_cookie = 0;
-  ContentProxySet* typeface_content_info = nullptr;
+  raw_ptr<ContentProxySet> typeface_content_info = nullptr;
 
   // The scale factor is used because Blink occasionally calls
   // PaintCanvas::getTotalMatrix() even though the total matrix is not as

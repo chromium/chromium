@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"
 #include "base/trace_event/trace_event.h"
@@ -81,7 +82,7 @@ TEST(V8PlatformTest, PostJobSimple) {
       return *num_tasks_to_run;
     }
 
-    std::atomic_size_t* num_tasks_to_run;
+    raw_ptr<std::atomic_size_t> num_tasks_to_run;
   };
   auto handle =
       V8Platform::Get()->PostJob(v8::TaskPriority::kUserVisible,
@@ -126,9 +127,9 @@ TEST(V8PlatformTest, PostJobLifetime) {
       return *num_tasks_to_run_;
     }
 
-    std::atomic_size_t* num_tasks_to_run_;
+    raw_ptr<std::atomic_size_t> num_tasks_to_run_;
     base::RepeatingClosure threads_running_barrier_;
-    base::TestWaitableEvent* threads_continue_;
+    raw_ptr<base::TestWaitableEvent> threads_continue_;
   };
 
   base::test::TaskEnvironment task_environment;

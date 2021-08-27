@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -114,9 +115,9 @@ class TestCastMediaSinkService : public CastMediaSinkService {
   MockCastMediaSinkServiceImpl* mock_impl() { return mock_impl_; }
 
  private:
-  cast_channel::CastSocketService* const cast_socket_service_;
-  DiscoveryNetworkMonitor* const network_monitor_;
-  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
+  const raw_ptr<cast_channel::CastSocketService> cast_socket_service_;
+  const raw_ptr<DiscoveryNetworkMonitor> network_monitor_;
+  raw_ptr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
 };
 
 class CastMediaSinkServiceTest : public ::testing::Test {
@@ -165,7 +166,7 @@ class CastMediaSinkServiceTest : public ::testing::Test {
       mock_cast_socket_service_;
 
   std::unique_ptr<TestCastMediaSinkService> media_sink_service_;
-  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
+  raw_ptr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
   MockDnsSdRegistry test_dns_sd_registry_;
 };
 

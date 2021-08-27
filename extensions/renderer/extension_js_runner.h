@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/js_runner.h"
 
@@ -36,7 +37,7 @@ class ExtensionJSRunner : public JSRunner {
                           const std::vector<v8::Local<v8::Value>>& results);
 
   // The associated ScriptContext. Guaranteed to outlive this object.
-  ScriptContext* const script_context_;
+  const raw_ptr<ScriptContext> script_context_;
 
   base::WeakPtrFactory<ExtensionJSRunner> weak_factory_{this};
 

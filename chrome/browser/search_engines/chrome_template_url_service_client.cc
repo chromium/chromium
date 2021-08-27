@@ -14,7 +14,7 @@ ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
   // backend can handle automatically adding the search terms as the user
   // navigates.
   if (history_service_)
-    history_service_observation_.Observe(history_service_);
+    history_service_observation_.Observe(history_service_.get());
 }
 
 ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() {

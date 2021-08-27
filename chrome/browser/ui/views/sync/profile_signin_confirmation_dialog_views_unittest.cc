@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/test/scoped_feature_list.h"
@@ -23,9 +24,9 @@ class TestDelegate : public ui::ProfileSigninConfirmationDelegate {
   void OnContinueSignin() override { (*continues_)++; }
   void OnSigninWithNewProfile() override { (*signins_)++; }
 
-  int* cancels_;
-  int* continues_;
-  int* signins_;
+  raw_ptr<int> cancels_;
+  raw_ptr<int> continues_;
+  raw_ptr<int> signins_;
 };
 
 }  // namespace
@@ -55,8 +56,8 @@ class ProfileSigninConfirmationDialogTest : public ChromeViewsTestBase {
     destroy_waiter.Wait();
   }
 
-  ProfileSigninConfirmationDialogViews* weak_dialog_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<ProfileSigninConfirmationDialogViews> weak_dialog_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   base::test::ScopedFeatureList features_;
 };
 

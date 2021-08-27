@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "sql/recover_module/btree.h"
 #include "sql/recover_module/pager.h"
@@ -111,7 +112,7 @@ class VirtualCursor {
   // Raw pointer usage is acceptable because SQLite will ensure that the
   // VirtualTable, which is passed around as a sqlite3_vtab*, will outlive this
   // cursor, which is passed around as a sqlite3_cursor*.
-  VirtualTable* const table_;
+  const raw_ptr<VirtualTable> table_;
 
   // Reads database pages for this cursor.
   DatabasePageReader db_reader_;

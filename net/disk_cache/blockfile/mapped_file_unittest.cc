@@ -5,6 +5,7 @@
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -26,8 +27,8 @@ class FileCallbackTest: public disk_cache::FileIOCallback {
 
  private:
   int id_;
-  MessageLoopHelper* helper_;
-  int* max_id_;
+  raw_ptr<MessageLoopHelper> helper_;
+  raw_ptr<int> max_id_;
 };
 
 void FileCallbackTest::OnFileIOComplete(int bytes_copied) {

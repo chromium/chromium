@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -61,7 +62,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   FilePath target_;
 
   // Set to true in the destructor.
-  bool* was_deleted_ptr_ = nullptr;
+  raw_ptr<bool> was_deleted_ptr_ = nullptr;
 
   // Handle for FindFirstChangeNotification.
   HANDLE handle_ = INVALID_HANDLE_VALUE;

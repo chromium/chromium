@@ -29,6 +29,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -130,7 +131,7 @@ class SQLiteDatabase {
 
   int PageSize();
 
-  sqlite3* db_;
+  raw_ptr<sqlite3> db_;
   int page_size_;
 
   bool transaction_in_progress_;
@@ -140,7 +141,7 @@ class SQLiteDatabase {
   // The raw pointer usage is safe because the DatabaseAuthorizer is guaranteed
   // to outlive this instance. The DatabaseAuthorizer is owned by the same
   // Database that owns this instance.
-  DatabaseAuthorizer* authorizer_;
+  raw_ptr<DatabaseAuthorizer> authorizer_;
 
   base::PlatformThreadId opening_thread_;
 

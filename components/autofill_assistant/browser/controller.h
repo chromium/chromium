@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client.h"
@@ -409,8 +410,8 @@ class Controller : public ScriptExecutorDelegate,
   void NotifyDetailsChanged();
 
   ClientSettings settings_;
-  Client* const client_;
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<Client> client_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
 
   // Lazily instantiate in GetWebController().
@@ -498,7 +499,7 @@ class Controller : public ScriptExecutorDelegate,
   // A copy of the most recently set user data options. Can be used to determine
   // which information was requested.
   std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
-  CollectUserDataOptions* collect_user_data_options_ = nullptr;
+  raw_ptr<CollectUserDataOptions> collect_user_data_options_ = nullptr;
   std::unique_ptr<UserData> user_data_;
 
   std::unique_ptr<FormProto> form_;

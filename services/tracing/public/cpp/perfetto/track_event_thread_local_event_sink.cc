@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -147,8 +148,8 @@ class LazyLegacyEventInitializer {
   }
 
  private:
-  TrackEvent* track_event_;
-  TrackEvent::LegacyEvent* legacy_event_ = nullptr;
+  raw_ptr<TrackEvent> track_event_;
+  raw_ptr<TrackEvent::LegacyEvent> legacy_event_ = nullptr;
 };
 
 }  // namespace

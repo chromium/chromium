@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "device/bluetooth/test/bluetooth_gatt_server_test.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,7 @@ class BluetoothLocalGattCharacteristicTest : public BluetoothGattServerTest {
   base::WeakPtr<BluetoothLocalGattCharacteristic> write_characteristic_;
   base::WeakPtr<BluetoothLocalGattCharacteristic> notify_characteristic_;
   base::WeakPtr<BluetoothLocalGattCharacteristic> indicate_characteristic_;
-  BluetoothDevice* device_;
+  raw_ptr<BluetoothDevice> device_;
 };
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)

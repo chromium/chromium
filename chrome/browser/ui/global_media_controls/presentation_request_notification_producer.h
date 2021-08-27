@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
@@ -119,7 +120,7 @@ class PresentationRequestNotificationProducer final
   // Show or hide |item_| if the visibility changed.
   void ShowOrHideItem();
 
-  MediaNotificationService* const notification_service_;
+  const raw_ptr<MediaNotificationService> notification_service_;
 
   // A copy of the WebContentsPresentationManager associated with the web
   // page where the media dialog is opened. The value is nullptr if the media

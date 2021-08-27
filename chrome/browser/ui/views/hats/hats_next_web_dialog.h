@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -102,9 +103,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   base::OneShotTimer loading_timer_;
 
   // The off-the-record profile used for browsing to the Chrome HaTS webpage.
-  Profile* otr_profile_;
+  raw_ptr<Profile> otr_profile_;
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // The HaTS Next survey trigger ID that is provided to the HaTS webpage.
   const std::string trigger_id_;
@@ -120,8 +121,8 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   static constexpr gfx::Size kMinSize = gfx::Size(10, 10);
   static constexpr gfx::Size kMaxSize = gfx::Size(800, 600);
 
-  views::WebView* web_view_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   GURL hats_survey_url_;
 

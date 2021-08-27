@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/interceptor.h"
 #include "gin/wrappable.h"
@@ -79,10 +80,10 @@ class PluginObject : public gin::Wrappable<PluginObject>,
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(v8::Isolate* isolate,
                                                       const std::string& name);
 
-  PepperPluginInstanceImpl* instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 
-  const PPP_Class_Deprecated* ppp_class_;
-  void* ppp_class_data_;
+  raw_ptr<const PPP_Class_Deprecated> ppp_class_;
+  raw_ptr<void> ppp_class_data_;
 
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 #include "base/single_thread_task_runner.h"
@@ -60,7 +61,7 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
   ThreadSchedulerImpl() {}
   ~ThreadSchedulerImpl() override = default;
 
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
 };
 
 }  // namespace scheduler

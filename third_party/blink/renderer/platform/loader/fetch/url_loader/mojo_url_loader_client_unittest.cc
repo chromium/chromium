@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 
 #include <vector>
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -143,7 +144,7 @@ class MockWebResourceRequestSender : public WebResourceRequestSender {
 
     net::LoadTimingInfo last_load_timing;
     network::URLLoaderCompletionStatus completion_status;
-    MojoURLLoaderClient* url_laoder_client;
+    raw_ptr<MojoURLLoaderClient> url_laoder_client;
   };
 
  private:
@@ -265,7 +266,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
   std::unique_ptr<MojoURLLoaderClient> client_;
   std::unique_ptr<MockWebResourceRequestSender> resource_request_sender_;
-  MockWebResourceRequestSender::Context* context_;
+  raw_ptr<MockWebResourceRequestSender::Context> context_;
   int request_id_ = 0;
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
 };

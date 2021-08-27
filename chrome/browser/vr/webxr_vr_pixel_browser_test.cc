@@ -4,6 +4,7 @@
 
 #include "base/environment.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,7 +38,7 @@ class MyXRMock : public MockXRDeviceHookBase {
   unsigned int num_submitted_frames_ = 0;
 
  private:
-  base::RunLoop* wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
 };
 
 void MyXRMock::OnFrameSubmitted(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_RENAME_HANDLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -130,7 +131,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   // Main uploader that manages the entire API call flow of file upload.
   std::unique_ptr<BoxUploader> uploader_;
   base::ObserverList<TestObserver> observers_;
-  SigninExperienceTestObserver* signin_observer_ = nullptr;
+  raw_ptr<SigninExperienceTestObserver> signin_observer_ = nullptr;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
 };
 

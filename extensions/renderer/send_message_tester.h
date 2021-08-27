@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace extensions {
 class ScriptContext;
@@ -61,8 +62,8 @@ class SendMessageTester {
                                 PortStatus expected_port_status,
                                 Method method);
 
-  TestIPCMessageSender* ipc_sender_;
-  ScriptContext* script_context_;
+  raw_ptr<TestIPCMessageSender> ipc_sender_;
+  raw_ptr<ScriptContext> script_context_;
   int next_port_id_;
   std::string api_namespace_;
 

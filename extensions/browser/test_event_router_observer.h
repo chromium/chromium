@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/event_router.h"
 
 namespace extensions {
@@ -33,7 +34,7 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
 
   EventMap events_;
   EventMap dispatched_events_;
-  EventRouter* event_router_;
+  raw_ptr<EventRouter> event_router_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventRouterObserver);
 };

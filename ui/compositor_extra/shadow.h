@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -69,7 +70,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
     std::unique_ptr<Layer> RecreateLayer() override;
 
    private:
-    Shadow* const owner_shadow_;
+    const raw_ptr<Shadow> owner_shadow_;
 
     DISALLOW_COPY_AND_ASSIGN(ShadowLayerOwner);
   };
@@ -96,7 +97,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // will always point to a global ShadowDetails instance that is guaranteed
   // to outlive the Shadow instance. See ui/gfx/shadow_util.h for how these
   // ShadowDetails instances are created.
-  const gfx::ShadowDetails* details_ = nullptr;
+  raw_ptr<const gfx::ShadowDetails> details_ = nullptr;
 
   // The owner of the actual shadow layer corresponding to a cc::NinePatchLayer.
   ShadowLayerOwner shadow_layer_owner_;

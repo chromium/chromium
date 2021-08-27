@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 #include "ui/gfx/transform.h"
@@ -46,7 +47,7 @@ class InkDropHighlightTestApi
 
  private:
   // The InkDropHighlight to provide internal access to.
-  InkDropHighlight* ink_drop_highlight_;
+  raw_ptr<InkDropHighlight> ink_drop_highlight_;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropHighlightTestApi);
 };

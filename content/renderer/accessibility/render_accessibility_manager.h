@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -84,7 +85,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   GetOrCreateRemoteRenderAccessibilityHost();
 
   // The RenderFrameImpl that owns us.
-  RenderFrameImpl* render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // Valid only while an accessibility mode including kWebContents is set.
   std::unique_ptr<RenderAccessibilityImpl> render_accessibility_;

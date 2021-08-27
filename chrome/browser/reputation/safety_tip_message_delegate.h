@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -39,7 +40,7 @@ class SafetyTipMessageDelegate {
   void DismissInternal();
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   security_state::SafetyTipStatus safety_tip_status_;
 

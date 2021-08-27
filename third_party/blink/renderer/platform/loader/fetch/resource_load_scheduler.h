@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -365,7 +366,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   const Member<DetachableConsoleLogger> console_logger_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   ThrottleOptionOverride throttle_option_override_;
 

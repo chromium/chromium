@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -139,9 +140,9 @@ class LocationIconView : public IconLabelBubbleView {
   // location icon was updated.
   bool was_editing_or_empty_ = false;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
-  feature_engagement::Tracker* feature_engagement_tracker_;
+  raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
 
   // Used to scope the lifetime of asynchronous icon fetch callbacks to the
   // lifetime of the object. Weak pointers issued by this factory are

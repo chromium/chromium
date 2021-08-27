@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,7 +57,7 @@ class QueryResultManager::MediaSourceMediaSinksObserver
   const MediaCastMode cast_mode_;
   const MediaSource source_;
   std::vector<MediaSink::Id> latest_sink_ids_;
-  QueryResultManager* const result_manager_;
+  const raw_ptr<QueryResultManager> result_manager_;
 };
 
 // Observes for all the available sinks.
@@ -74,7 +75,7 @@ class QueryResultManager::AnyMediaSinksObserver : public MediaSinksObserver {
   }
 
  private:
-  QueryResultManager* const result_manager_;
+  const raw_ptr<QueryResultManager> result_manager_;
 };
 
 QueryResultManager::QueryResultManager(MediaRouter* router) : router_(router) {

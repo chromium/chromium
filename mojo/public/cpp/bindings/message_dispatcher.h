@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -42,7 +43,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageDispatcher
   std::unique_ptr<MessageReceiver> validator_;
   std::unique_ptr<MessageFilter> filter_;
 
-  MessageReceiver* sink_;
+  raw_ptr<MessageReceiver> sink_;
 
   base::WeakPtrFactory<MessageDispatcher> weak_factory_{this};
 

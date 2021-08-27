@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_TRANSACTION_TEST_UTIL_H_
 #define NET_HTTP_HTTP_TRANSACTION_TEST_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_transaction.h"
 
 #include <stdint.h>
@@ -273,7 +274,7 @@ class MockNetworkTransaction
   void CallbackLater(CompletionOnceCallback callback, int result);
   void RunCallback(CompletionOnceCallback callback, int result);
 
-  const HttpRequestInfo* request_;
+  raw_ptr<const HttpRequestInfo> request_;
   HttpResponseInfo response_;
   std::string data_;
   int64_t data_cursor_;
@@ -281,7 +282,7 @@ class MockNetworkTransaction
   int test_mode_;
   RequestPriority priority_;
   MockTransactionReadHandler read_handler_;
-  CreateHelper* websocket_handshake_stream_create_helper_;
+  raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_;
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   base::WeakPtr<MockNetworkLayer> transaction_factory_;
@@ -360,7 +361,7 @@ class MockNetworkLayer : public HttpTransactionFactory,
 
   // By default clock_ is NULL but it can be set to a custom clock by test
   // frameworks using SetClock.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   base::WeakPtr<MockNetworkTransaction> last_transaction_;
 };

@@ -50,7 +50,7 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
   if (show && !close_button_) {
     close_button_ = AddChildView(std::make_unique<PaddedButton>(
         base::BindRepeating(&MessageView::OnCloseButtonPressed,
-                            base::Unretained(message_view_))));
+                            base::Unretained(message_view_.get()))));
     close_button_->SetImage(views::Button::STATE_NORMAL,
                             gfx::CreateVectorIcon(kNotificationCloseButtonIcon,
                                                   DetermineButtonIconColor()));
@@ -63,7 +63,7 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
     Layout();
   } else if (!show && close_button_) {
     DCHECK(Contains(close_button_));
-    RemoveChildViewT(close_button_);
+    RemoveChildViewT(close_button_.get());
     close_button_ = nullptr;
   }
 }
@@ -75,7 +75,7 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
     settings_button_ =
         AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
                            &MessageView::OnSettingsButtonPressed,
-                           base::Unretained(message_view_))),
+                           base::Unretained(message_view_.get()))),
                        position);
     settings_button_->SetImage(
         views::Button::STATE_NORMAL,
@@ -90,7 +90,7 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
     Layout();
   } else if (!show && settings_button_) {
     DCHECK(Contains(settings_button_));
-    RemoveChildViewT(settings_button_);
+    RemoveChildViewT(settings_button_.get());
     settings_button_ = nullptr;
   }
 }
@@ -101,7 +101,7 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
     snooze_button_ =
         AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
                            &MessageView::OnSnoozeButtonPressed,
-                           base::Unretained(message_view_))),
+                           base::Unretained(message_view_.get()))),
                        0);
     snooze_button_->SetImage(
         views::Button::STATE_NORMAL,
@@ -116,7 +116,7 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
     Layout();
   } else if (!show && snooze_button_) {
     DCHECK(Contains(snooze_button_));
-    RemoveChildViewT(snooze_button_);
+    RemoveChildViewT(snooze_button_.get());
     snooze_button_ = nullptr;
   }
 }

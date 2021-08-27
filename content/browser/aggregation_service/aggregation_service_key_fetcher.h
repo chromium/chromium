@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_FETCHER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
 
   // Using a raw pointer is safe because `manager_` is guaranteed to outlive
   // `this`.
-  AggregatableReportManager* manager_;
+  raw_ptr<AggregatableReportManager> manager_;
   base::WeakPtrFactory<AggregationServiceKeyFetcher> weak_factory_{this};
 };
 

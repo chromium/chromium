@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -98,7 +99,7 @@ class HostService : public WtsTerminalMonitor {
 
     // Points to the observer receiving notifications about the WTS terminal
     // identified by |terminal_id|.
-    WtsTerminalObserver* observer;
+    raw_ptr<WtsTerminalObserver> observer;
   };
 
   // The list of observers receiving session notifications.

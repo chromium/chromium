@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -81,10 +82,10 @@ class ScopedObservation {
   }
 
  private:
-  Observer* const observer_;
+  const raw_ptr<Observer> observer_;
 
   // The observed source, if any.
-  Source* source_ = nullptr;
+  raw_ptr<Source> source_ = nullptr;
 };
 
 }  // namespace base

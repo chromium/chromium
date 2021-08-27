@@ -4,6 +4,7 @@
 
 #include "content/browser/speculation_rules/speculation_host_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/prerender/prerender_host_registry.h"
@@ -200,7 +201,7 @@ class ScopedSpeculationHostImplContentBrowserClient
   }
 
  private:
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
 // Tests that SpeculationHostDelegate can take the process candidates away and

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_handle.h"
 
@@ -83,7 +84,7 @@ class ExperimentStorage {
 
     explicit Lock(ExperimentStorage* storage);
 
-    ExperimentStorage* storage_;
+    raw_ptr<ExperimentStorage> storage_;
 
     DISALLOW_COPY_AND_ASSIGN(Lock);
   };

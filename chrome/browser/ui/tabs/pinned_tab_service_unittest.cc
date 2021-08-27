@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -46,7 +47,7 @@ class PinnedTabServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  PinnedTabService* pinned_tab_service_;
+  raw_ptr<PinnedTabService> pinned_tab_service_;
 };
 
 // Makes sure closing a popup triggers writing pinned tabs.

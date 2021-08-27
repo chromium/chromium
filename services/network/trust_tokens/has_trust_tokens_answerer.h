@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_HAS_TRUST_TOKENS_ANSWERER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
@@ -47,7 +48,7 @@ class HasTrustTokensAnswerer : public mojom::HasTrustTokensAnswerer {
                             TrustTokenStore* trust_token_store);
 
   const SuitableTrustTokenOrigin top_frame_origin_;
-  PendingTrustTokenStore* pending_trust_token_store_;
+  raw_ptr<PendingTrustTokenStore> pending_trust_token_store_;
 
   base::WeakPtrFactory<HasTrustTokensAnswerer> weak_factory_{this};
 };
