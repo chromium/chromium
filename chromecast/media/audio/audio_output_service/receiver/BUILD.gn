@@ -1,0 +1,69 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
+import("//chromecast/chromecast.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer" ]
+}
+
+cast_source_set("receiver") {
+  sources = [
+    "receiver.cc",
+    "receiver.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/mixer_service:proto" ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/audio/mixer_service:audio_socket_service",
+    "//chromecast/media/audio/mixer_service:common",
+    "//net",
+  ]
+}
+
+cast_source_set("audio_output_service") {
+  sources = [
+    "audio_output_service_receiver.cc",
+    "audio_output_service_receiver.h",
+    "cma_backend_shim.cc",
+    "cma_backend_shim.h",
+  ]
+
+  deps = [
+    ":receiver",
+    "//base",
+    "//chromecast/base",
+    "//chromecast/common/mojom",
+    "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/media/api",
+    "//chromecast/media/audio/audio_output_service:constants",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/media/common:media_pipeline_backend_manager",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+cast_source_set("receiver_instance") {
+  sources = [
+    "audio_output_service_receiver_instance.cc",
+    "audio_output_service_receiver_instance.h",
+  ]
+
+  deps = [
+    ":audio_output_service",
+    ":buildflags",
+    "//base",
+    "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/media/audio:audio_io_thread",
+  ]
+}

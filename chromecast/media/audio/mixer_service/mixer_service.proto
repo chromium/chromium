@@ -36,6 +36,40 @@ enum ChannelLayout {
   CHANNEL_LAYOUT_DISCRETE = 5;
 }
 
+enum AudioCodec {
+  AUDIO_CODEC_UNKNOWN = 0;
+  AUDIO_CODEC_AAC = 1;
+  AUDIO_CODEC_MP3 = 2;
+  AUDIO_CODEC_PCM = 3;
+  AUDIO_CODEC_PCM_S16BE = 4;
+  AUDIO_CODEC_VORBIS = 5;
+  AUDIO_CODEC_OPUS = 6;
+  AUDIO_CODEC_EAC3 = 7;
+  AUDIO_CODEC_AC3 = 8;
+  AUDIO_CODEC_DTS = 9;
+  AUDIO_CODEC_FLAC = 10;
+  AUDIO_CODEC_MPEG_H_AUDIO = 11;
+}
+
+message AudioDecoderConfig {
+  optional AudioCodec audio_codec = 1;
+  optional ChannelLayout channel_layout = 2;
+  optional SampleFormat sample_format = 3;
+  optional int32 num_channels = 4;
+  optional int32 sample_rate = 5;
+  optional bytes extra_data = 6;
+}
+
+message ApplicationMediaInfo {
+  optional string application_session_id = 1;
+  optional bool mixer_audio_enabled = 2;
+}
+
+message CmaBackendParams {
+  optional ApplicationMediaInfo application_media_info = 1;
+  optional AudioDecoderConfig audio_decoder_config = 2;
+}
+
 message OutputStreamParams {
   enum StreamType {
     STREAM_TYPE_DEFAULT = 0;
@@ -271,13 +305,34 @@ message MixerUnderrun {
     INPUT_UNDERRUN = 0;
     // An underrun was detected on mixer output.
     OUTPUT_UNDERRUN = 1;
-  };
+  }
   optional Type type = 1;
 }
 
 message TimestampAdjustment {
   optional int64 adjustment = 1;
 }
+
+message CurrentMediaTimestamp {
+  optional int64 media_timestamp_microseconds = 1;
+  optional int64 reference_timestamp_microseconds = 2;
+}
+
+message StopPlayback {}
+
+// Indicates the status of the initialization of the audio pipeline backend.
+message BackendInitializationStatus {
+  enum Status {
+    // Audio pipeline backend is successfully initialized.
+    SUCCESS = 0;
+    // There was an error during the initialization of audio pipeline backend.
+    ERROR = 1;
+  }
+  optional Status status = 1;
+}
+
+// Used to keep the socket connection active.
+message Heartbeat {}
 
 message Generic {
   optional OutputStreamParams output_stream_params = 1;
@@ -307,4 +362,9 @@ message Generic {
   optional ListPostprocessors list_postprocessors = 25;
   optional PostprocessorList postprocessor_list = 26;
   optional TimestampAdjustment timestamp_adjustment = 27;
+  optional CmaBackendParams backend_params = 28;
+  optional CurrentMediaTimestamp current_media_timestamp = 29;
+  optional StopPlayback stop_playback = 30;
+  optional BackendInitializationStatus backend_initialization_status = 31;
+  optional Heartbeat heartbeat = 32;
 }

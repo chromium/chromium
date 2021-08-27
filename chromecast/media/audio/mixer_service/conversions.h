@@ -23,6 +23,9 @@ media::AudioContentType ConvertContentType(ContentType type);
 ChannelLayout ConvertChannelLayout(media::ChannelLayout channel_layout);
 media::ChannelLayout ConvertChannelLayout(ChannelLayout channel_layout);
 
+media::AudioCodec ConvertAudioCodec(AudioCodec codec);
+AudioCodec ConvertAudioCodec(media::AudioCodec codec);
+
 }  // namespace mixer_service
 }  // namespace media
 }  // namespace chromecast

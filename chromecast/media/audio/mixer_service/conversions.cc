@@ -86,6 +86,14 @@ media::ChannelLayout ConvertChannelLayout(ChannelLayout channel_layout) {
   return static_cast<media::ChannelLayout>(channel_layout);
 }
 
+media::AudioCodec ConvertAudioCodec(AudioCodec codec) {
+  return static_cast<media::AudioCodec>(codec);
+}
+
+AudioCodec ConvertAudioCodec(media::AudioCodec codec) {
+  return static_cast<AudioCodec>(codec);
+}
+
 }  // namespace mixer_service
 }  // namespace media
 }  // namespace chromecast
