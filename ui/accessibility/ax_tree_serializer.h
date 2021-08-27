@@ -481,6 +481,11 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
       if (!tree_->IsValid(lca)) {
         // If there's no LCA, just tell the client to destroy the whole
         // tree and then we'll serialize everything from the new root.
+        // Cases where this occurs:
+        // - A new document is loaded (main or iframe)
+        // - document.body.innerHTML is changed
+        // - A modal <dialog> is opened
+        // - Full screen mode is toggled
         out_update->node_id_to_clear = client_root_->id;
         InternalReset();
       } else if (need_delete) {
@@ -546,6 +551,17 @@ void AXTreeSerializer<AXSourceNode>::DeleteClientSubtree(
     ClientTreeNode* client_node) {
   if (client_node == client_root_) {
     Reset();  // Do not try to reuse a bad root later.
+    // A heuristic for this condition rather than an explicit Reset() from a
+    // caller makes it difficult to debug whether extra resets / lost virtual
+    // buffer positions are occurring because of this code. Therefore, a DHECK
+    // has been added in order to debug if or when this condition may occur.
+#if defined(AX_FAIL_FAST_BUILD)
+    CHECK(!crash_on_error_)
+        << "Attempt to delete entire client subtree, including the root.";
+#else
+    DCHECK(!crash_on_error_)
+        << "Attempt to delete entire client subtree, including the root.";
+#endif
   } else {
     DeleteDescendants(client_node);
     tree_->SerializerClearedNode(client_node->id);
@@ -576,13 +592,24 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
 
   // First, find the ClientTreeNode for this id in our data structure where
   // we keep track of what accessibility objects the client already knows
-  // about. If we don't find it, then this must be the new root of the
-  // accessibility tree.
+  // about.
+  // If we don't find it, then the intention may be to use it as the
+  // new root of the accessibility tree. A heuristic for this condition rather
+  // than an explicit Reset() from a caller makes it difficult to debug whether
+  // extra resets / lost virtual buffer positions are occurring because of this
+  // code. Therefore, a DHECK has been added in order to debug if or when this
+  // condition may occur.
   int id = tree_->GetId(node);
   ClientTreeNode* client_node = ClientTreeNodeById(id);
   if (!client_node) {
-    if (client_root_)
+    if (client_root_) {
       Reset();
+#if defined(AX_FAIL_FAST_BUILD)
+      CHECK(!crash_on_error_) << "Missing client node for serialization.";
+#else
+      DCHECK(!crash_on_error_) << "Missing client node for serialization.";
+#endif
+    }
     client_root_ = new ClientTreeNode();
     client_node = client_root_;
     client_node->id = id;
