@@ -4079,6 +4079,15 @@ interface IdleDeadline
     getter didTimeout
     method constructor
     method timeRemaining
+interface IdleDetector : EventTarget
+    static method requestPermission
+    attribute @@toStringTag
+    getter onchange
+    getter screenState
+    getter userState
+    method constructor
+    method start
+    setter onchange
 interface Image
     attribute @@toStringTag
     getter align

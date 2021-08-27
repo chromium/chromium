@@ -723,6 +723,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter newVersion
 [Worker]     getter oldVersion
 [Worker]     method constructor
+[Worker] interface IdleDetector : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter onchange
+[Worker]     getter screenState
+[Worker]     getter userState
+[Worker]     method constructor
+[Worker]     method start
+[Worker]     setter onchange
 [Worker] interface ImageBitmap
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
