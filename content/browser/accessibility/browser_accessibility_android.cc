@@ -522,8 +522,9 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
       return IsLeafConsideringChildren();
     }
 
-    // Nodes with only static text can drop their children.
-    if (HasOnlyTextChildren())
+    // Nodes with only static text can drop their children, with the exception
+    // that list markers have a different role and should not be dropped.
+    if (HasOnlyTextChildren() && !HasListMarkerChild())
       return true;
   }
 
@@ -641,7 +642,7 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
 
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  if (text.empty() && (HasOnlyTextChildren() ||
+  if (text.empty() && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
                        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       text +=
@@ -2337,6 +2338,16 @@ bool BrowserAccessibilityAndroid::HasOnlyTextAndImageChildren() const {
     }
   }
   return true;
+}
+
+bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
+  // This is called from IsLeaf, so don't call PlatformChildCount
+  // from within this!
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    if (it->GetRole() == ax::mojom::Role::kListMarker)
+      return true;
+  }
+  return false;
 }
 
 bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {

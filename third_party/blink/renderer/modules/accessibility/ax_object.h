@@ -1091,6 +1091,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* ContainerWidget() const;
   bool IsContainerWidget() const;
 
+  AXObject* ContainerListMarkerIncludingIgnored() const;
+
   // There are two types of traversal for obtaining children:
   // 1. LayoutTreeBuilderTraversal. Despite the name, this traverses a flattened
   // DOM tree that includes pseudo element children such as ::before, and where

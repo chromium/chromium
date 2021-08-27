@@ -4249,6 +4249,15 @@ AXObject* AXObject::ContainerWidget() const {
   return ancestor;
 }
 
+AXObject* AXObject::ContainerListMarkerIncludingIgnored() const {
+  AXObject* ancestor = ParentObject();
+  while (ancestor && (!ancestor->GetLayoutObject() ||
+                      !ancestor->GetLayoutObject()->IsListMarkerIncludingAll()))
+    ancestor = ancestor->ParentObject();
+
+  return ancestor;
+}
+
 // Determine which traversal approach is used to get children of an object.
 bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
   // There are two types of traversal used to find AXObjects:

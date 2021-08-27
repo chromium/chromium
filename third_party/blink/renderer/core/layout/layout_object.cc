@@ -715,6 +715,12 @@ bool LayoutObject::IsListMarkerForSummary() const {
   return false;
 }
 
+bool LayoutObject::IsInListMarker() const {
+  // List markers are either leaf nodes (legacy LayoutListMarker), or have
+  // exactly one leaf child. So there's no need to traverse ancestors.
+  return Parent() && Parent()->IsListMarkerIncludingAll();
+}
+
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {
   NOT_DESTROYED();
   LayoutObject* o = NextSibling();

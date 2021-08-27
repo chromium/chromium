@@ -2268,6 +2268,69 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithPreservedNewLine) {
   EXPECT_FALSE(text_position14->AtStartOfParagraph());
 }
 
+TEST_F(AXPositionTest, TreePositionAtStartOrEndOfListMarkerAnchor) {
+  // "CreatePositionAtStart/EndOfAnchor" on a tree position anchored to a list
+  // marker should return valid positions and should not DCHECK.
+
+  // ++1 kRootWebArea
+  // ++++2 kList
+  // ++++++3 kListItem
+  // ++++++++4 kListMarker
+  // ++++++++++5 kStaticText ignored "1. "
+
+  AXNodeData root;
+  AXNodeData list;
+  AXNodeData list_item;
+  AXNodeData list_marker;
+  AXNodeData static_text;
+
+  root.id = 1;
+  list.id = 2;
+  list_item.id = 3;
+  list_marker.id = 4;
+  static_text.id = 5;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {list.id};
+
+  list.role = ax::mojom::Role::kList;
+  list.child_ids = {list_item.id};
+
+  list_item.role = ax::mojom::Role::kListItem;
+  list_item.child_ids = {list_marker.id};
+
+  list_marker.role = ax::mojom::Role::kListMarker;
+  list_marker.SetName("1. ");
+  list_marker.SetNameFrom(ax::mojom::NameFrom::kContents);
+  list_marker.child_ids = {static_text.id};
+
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("1. ");
+  static_text.AddState(ax::mojom::State::kIgnored);
+
+  SetTree(CreateAXTree({root, list, list_item, list_marker, static_text}));
+
+  TestPositionType tree_position =
+      AXNodePosition::CreateTreePosition(GetTreeID(), list_marker.id, 0);
+  ASSERT_NE(nullptr, tree_position);
+  EXPECT_EQ(AXPositionKind::TREE_POSITION, tree_position->kind());
+  EXPECT_TRUE(tree_position->IsLeaf());
+  EXPECT_FALSE(tree_position->IsIgnored());
+
+  TestPositionType start_of_anchor =
+      tree_position->CreatePositionAtStartOfAnchor();
+  EXPECT_NE(nullptr, start_of_anchor);
+  EXPECT_EQ(AXPositionKind::TREE_POSITION, start_of_anchor->kind());
+  EXPECT_TRUE(start_of_anchor->IsLeaf());
+  EXPECT_FALSE(start_of_anchor->IsIgnored());
+
+  TestPositionType end_of_anchor = tree_position->CreatePositionAtEndOfAnchor();
+  EXPECT_NE(nullptr, end_of_anchor);
+  EXPECT_EQ(AXPositionKind::TREE_POSITION, end_of_anchor->kind());
+  EXPECT_TRUE(end_of_anchor->IsLeaf());
+  EXPECT_FALSE(end_of_anchor->IsIgnored());
+}
+
 TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   // "AtStartOfParagraph" should return true before a list marker, either a
   // Legacy Layout or an NG Layout one. It should return false on the next
@@ -2282,8 +2345,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   // ++++4 kList
   // ++++++5 kListItem
   // ++++++++6 kListMarker
-  // ++++++++++7 kStaticText "1. "
-  // ++++++++++++8 kInlineTextBox "1. "
+  // ++++++++++7 kStaticText ignored "1. "
   // ++++++++9 kStaticText "First item."
   // ++++++++++10 kInlineTextBox "First item."
   // ++++++11 kListItem
@@ -2305,7 +2367,6 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   AXNodeData static_text4;
   AXNodeData static_text5;
   AXNodeData inline_box1;
-  AXNodeData inline_box2;
   AXNodeData inline_box3;
   AXNodeData inline_box4;
   AXNodeData inline_box5;
@@ -2317,7 +2378,6 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   list_item1.id = 5;
   list_marker_legacy.id = 6;
   static_text2.id = 7;
-  inline_box2.id = 8;
   static_text3.id = 9;
   inline_box3.id = 10;
   list_item2.id = 11;
@@ -2347,16 +2407,15 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
                               true);
 
   list_marker_legacy.role = ax::mojom::Role::kListMarker;
+  list_marker_legacy.SetName("1. ");
+  list_marker_legacy.SetNameFrom(ax::mojom::NameFrom::kContents);
   list_marker_legacy.child_ids = {static_text2.id};
 
   static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.child_ids = {inline_box2.id};
   static_text2.SetName("1. ");
-
-  inline_box2.role = ax::mojom::Role::kInlineTextBox;
-  inline_box2.SetName("1. ");
-  inline_box2.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                              inline_box3.id);
+  static_text2.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                               inline_box3.id);
+  static_text2.AddState(ax::mojom::State::kIgnored);
 
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.child_ids = {inline_box3.id};
@@ -2365,7 +2424,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   inline_box3.role = ax::mojom::Role::kInlineTextBox;
   inline_box3.SetName("First item.");
   inline_box3.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                              inline_box2.id);
+                              static_text2.id);
 
   list_item2.role = ax::mojom::Role::kListItem;
   list_item2.child_ids = {list_marker_ng.id, static_text4.id};
@@ -2395,9 +2454,9 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
   inline_box5.SetName("After list.");
 
   SetTree(CreateAXTree({root, static_text1, inline_box1, list, list_item1,
-                        list_marker_legacy, static_text2, inline_box2,
-                        static_text3, inline_box3, list_item2, list_marker_ng,
-                        static_text4, inline_box4, static_text5, inline_box5}));
+                        list_marker_legacy, static_text2, static_text3,
+                        inline_box3, list_item2, list_marker_ng, static_text4,
+                        inline_box4, static_text5, inline_box5}));
 
   // A text position after the text "Before list.". It should not be equivalent
   // to a position that is before the list itself, or before the first list
@@ -2450,6 +2509,8 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
       GetTreeID(), list_marker_legacy.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
+  EXPECT_FALSE(text_position->IsIgnored());
   EXPECT_TRUE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
@@ -2457,36 +2518,26 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
       GetTreeID(), list_marker_legacy.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
+  EXPECT_FALSE(text_position->IsIgnored());
   EXPECT_FALSE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
-  // A text position before the first list bullet (the Legacy Layout one).
   text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), static_text2.id, 0 /* text_offset */,
+      GetTreeID(), list_marker_legacy.id, 2 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
-  EXPECT_TRUE(text_position->AtStartOfParagraph());
-  EXPECT_FALSE(text_position->AtEndOfParagraph());
-
-  text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), static_text2.id, 2 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
+  EXPECT_FALSE(text_position->IsIgnored());
   EXPECT_FALSE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
-  // A text position before the first list bullet (the Legacy Layout one).
   text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), inline_box2.id, 0 /* text_offset */,
+      GetTreeID(), list_marker_legacy.id, 3 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
-  EXPECT_TRUE(text_position->AtStartOfParagraph());
-  EXPECT_FALSE(text_position->AtEndOfParagraph());
-
-  text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), inline_box2.id, 3 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
+  EXPECT_FALSE(text_position->IsIgnored());
   EXPECT_FALSE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
@@ -2495,6 +2546,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
       GetTreeID(), list_marker_ng.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
   EXPECT_TRUE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 
@@ -2502,6 +2554,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
       GetTreeID(), list_marker_ng.id, 3 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsLeaf());
   EXPECT_FALSE(text_position->AtStartOfParagraph());
   EXPECT_FALSE(text_position->AtEndOfParagraph());
 

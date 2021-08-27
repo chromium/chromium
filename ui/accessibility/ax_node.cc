@@ -573,12 +573,16 @@ AXNode::UnignoredChildrenCrossingTreeBoundaryEnd() const {
 }
 
 bool AXNode::IsText() const {
-  // In Legacy Layout, a list marker has no children and is thus represented on
-  // all platforms as a leaf node that exposes the marker itself, i.e., it forms
-  // part of the AX tree's text representation. In contrast, in Layout NG, a
-  // list marker has a static text child.
-  if (GetRole() == ax::mojom::Role::kListMarker)
-    return !GetChildCount();
+  // Regular list markers only expose their alternative text, but do not expose
+  // their descendants; and the descendants should be ignored. This is because
+  // the alternative text depends on the counter style and can be different from
+  // the actual (visual) marker text, and hence, inconsistent with the
+  // descendants. We treat a list marker as non-text only if it still has
+  // non-ignored descendants, which happens only when:
+  // - The list marker itself is ignored but the descendants are not
+  // - Or the list marker contains images
+  if (data().role == ax::mojom::Role::kListMarker)
+    return !GetUnignoredChildCount();
   return ui::IsText(GetRole());
 }
 

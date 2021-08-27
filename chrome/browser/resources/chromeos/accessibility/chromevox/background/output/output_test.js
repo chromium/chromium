@@ -889,7 +889,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', function() {
             o);
 
         // Now, test the "bullet" which comes before the above.
-        const bullet = root.find({role: RoleType.INLINE_TEXT_BOX});
+        const bullet = root.find({role: RoleType.LIST_MARKER});
         range = cursors.Range.fromNode(bullet);
         o = new Output().withBraille(range, null, 'navigate');
         checkBrailleOutput(

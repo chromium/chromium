@@ -471,9 +471,19 @@ class AXPosition {
 
   bool IsLeafTextPosition() const { return IsTextPosition() && IsLeaf(); }
 
+  bool IsUnignoredTextListMarker() const {
+    return GetAnchorRole() == ax::mojom::Role::kListMarker &&
+           !GetAnchor()->IsIgnored() && !AnchorUnignoredChildCount();
+  }
+
   bool IsLeaf() const {
     if (IsNullPosition())
       return false;
+    // Unignored text list markers expose text on their own, and all their
+    // descendants are ignored. Make sure they are treated as leaves, not empty
+    // containers.
+    if (IsUnignoredTextListMarker())
+      return true;
     return !AnchorChildCount() || IsEmptyObjectReplacedByCharacter();
   }
 
@@ -1942,7 +1952,9 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         return CreateTreePosition(
             tree_id_, anchor_id_,
-            IsEmptyObjectReplacedByCharacter() ? 0 : AnchorChildCount());
+            IsEmptyObjectReplacedByCharacter() || IsUnignoredTextListMarker()
+                ? 0
+                : AnchorChildCount());
       case AXPositionKind::TEXT_POSITION:
         return CreateTextPosition(tree_id_, anchor_id_, MaxTextOffset(),
                                   ax::mojom::TextAffinity::kDownstream);

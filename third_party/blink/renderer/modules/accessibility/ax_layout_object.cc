@@ -522,15 +522,25 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return false;
 
   if (layout_object_->IsText()) {
-    // Ignore TextAlternative of the list marker for SUMMARY because:
-    //  - TextAlternatives for disclosure-* are triangle symbol characters used
-    //    to visually indicate the expansion state.
-    //  - It's redundant. The host DETAILS exposes the expansion state.
-    if (layout_object_->Parent()->IsListMarkerForSummary()) {
-      if (ignored_reasons)
-        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
-      return true;
+    if (layout_object_->IsInListMarker()) {
+      // Ignore TextAlternative of the list marker for SUMMARY because:
+      //  - TextAlternatives for disclosure-* are triangle symbol characters
+      //  used to visually indicate the expansion state.
+      //  - It's redundant. The host DETAILS exposes the expansion state.
+      // Also ignore text descendants of any non-ignored list marker because the
+      // text descendants do not provide any extra information than the
+      // TextAlternative on the list marker. Besides, with 'speak-as', they will
+      // be inconsistent with the list marker.
+      const AXObject* list_marker_object =
+          ContainerListMarkerIncludingIgnored();
+      if (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
+          !list_marker_object->AccessibilityIsIgnored()) {
+        if (ignored_reasons)
+          ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+        return true;
+      }
     }
+
     // Ignore text inside of an ignored <label>.
     // To save processing, only walk up the ignored objects.
     // This means that other interesting objects inside the <label> will
@@ -957,7 +967,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
                                    : nullptr;
   if (previous_sibling && previous_sibling->GetLayoutObject() &&
       previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
-    // A list item should be proceeded by a list marker on the same line.
+    // A list item should be preceded by a list marker on the same line.
     return GetDeepestAXChildInLayoutTree(previous_sibling, false);
   }
 

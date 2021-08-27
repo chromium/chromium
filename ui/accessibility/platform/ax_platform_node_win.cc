@@ -6359,13 +6359,16 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
       return L"listitem";
 
     case ax::mojom::Role::kListMarker:
-      if (!GetDelegate()->GetChildCount()) {
-        // There's only a name attribute when using Legacy layout. With Legacy
-        // layout, list markers have no child and are considered as StaticText.
-        // We consider a list marker as a group in LayoutNG since it has
-        // a text child node.
+      // Regular list markers only expose their alternative text, but do not
+      // expose their descendants; and the descendants should be ignored. This
+      // is because the alternative text depends on the counter style and can be
+      // different from the actual (visual) marker text, and hence, inconsistent
+      // with the descendants. We treat a list marker as non-text only if it
+      // still has non-ignored descendants, which happens only when:
+      // - The list marker itself is ignored but the descendants are not
+      // - Or the list marker contains images
+      if (!GetDelegate()->GetChildCount())
         return L"description";
-      }
       return L"group";
 
     case ax::mojom::Role::kLog:
@@ -7019,13 +7022,16 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_ListItemControlTypeId;
 
     case ax::mojom::Role::kListMarker:
-      if (!GetDelegate()->GetChildCount()) {
-        // There's only a name attribute when using Legacy layout. With Legacy
-        // layout, list markers have no child and are considered as StaticText.
-        // We consider a list marker as a group in LayoutNG since it has
-        // a text child node.
+      // Regular list markers only expose their alternative text, but do not
+      // expose their descendants; and the descendants should be ignored. This
+      // is because the alternative text depends on the counter style and can be
+      // different from the actual (visual) marker text, and hence, inconsistent
+      // with the descendants. We treat a list marker as non-text only if it
+      // still has non-ignored descendants, which happens only when:
+      // - The list marker itself is ignored but the descendants are not
+      // - Or the list marker contains images
+      if (!GetDelegate()->GetChildCount())
         return UIA_TextControlTypeId;
-      }
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kLog:
@@ -7858,7 +7864,8 @@ HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
   for (int i = 0; i < GetChildCount(); ++i) {
     auto* child = static_cast<AXPlatformNodeWin*>(
         FromNativeViewAccessible(ChildAtIndex(i)));
-    if (child->GetDelegate()->IsText())
+    if (child->GetDelegate()->IsText() &&
+        child->GetRole() != ax::mojom::Role::kListMarker)
       str += base::UTF8ToWide(child->GetName());
   }
   *value_bstr = SysAllocString(str.c_str());
