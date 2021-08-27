@@ -11,6 +11,8 @@ source_set("quick_pair") {
   sources = [
     "fast_pair_data_parser.cc",
     "fast_pair_data_parser.h",
+    "fast_pair_decryption.cc",
+    "fast_pair_decryption.h",
     "quick_pair_process_manager.cc",
     "quick_pair_process_manager.h",
     "quick_pair_process_manager_impl.cc",
@@ -23,7 +25,6 @@ source_set("quick_pair") {
 
   deps = [
     "//ash/quick_pair/common",
-    "//ash/quick_pair/pairing",
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
     "//crypto:crypto",
@@ -54,12 +55,14 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair_data_parser_unittest.cc",
+    "fast_pair_decryption_unittest.cc",
     "quick_pair_process_manager_impl_unittest.cc",
   ]
 
   deps = [
     ":quick_pair",
     "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/pairing",
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
     "//base/test:test_support",

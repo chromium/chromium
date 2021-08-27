@@ -8,9 +8,7 @@
 #include <array>
 #include <iterator>
 
-#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "base/base64.h"
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -75,116 +73,6 @@ TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreement_ValidKey) {
           DecodeKey("U2PWc3FHTxah/o0YU9n1VRvtm57SNIRSXOEBXm4fdtMo+06tNoFlt8D0/"
                     "2BsN8auolz5ikwLRvQh+MiQ6oYveg=="))
           .has_value());
-}
-
-TEST_F(FastPairEncryptionTest, ParseDecryptedResponse_Success) {
-  std::vector<uint8_t> response_bytes;
-
-  // Message type.
-  response_bytes.push_back(0x01);
-
-  // Address bytes.
-  std::array<uint8_t, 6> address_bytes = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-  std::copy(address_bytes.begin(), address_bytes.end(),
-            std::back_inserter(response_bytes));
-
-  // Random salt
-  std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
-                                 0x0D, 0x0E, 0x0F, 0x00};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(response_bytes));
-
-  std::array<uint8_t, kBlockByteSize> response_bytes_array;
-  std::copy_n(response_bytes.begin(), kBlockByteSize,
-              response_bytes_array.begin());
-
-  auto encrypted_bytes = EncryptBytes(aes_key_bytes, response_bytes_array);
-  auto response = ParseDecryptedResponse(aes_key_bytes, encrypted_bytes);
-
-  EXPECT_TRUE(response.has_value());
-  EXPECT_EQ(response->message_type,
-            FastPairMessageType::kKeyBasedPairingResponse);
-  EXPECT_EQ(response->address_bytes, address_bytes);
-  EXPECT_EQ(response->salt, salt);
-}
-
-TEST_F(FastPairEncryptionTest, ParseDecryptedResponse_Failure) {
-  std::array<uint8_t, kBlockByteSize> response_bytes = {/*message_type=*/0x02,
-                                                        /*address_bytes=*/0x02,
-                                                        0x03,
-                                                        0x04,
-                                                        0x05,
-                                                        0x06,
-                                                        0x07,
-                                                        /*salt=*/0x08,
-                                                        0x09,
-                                                        0x0A,
-                                                        0x0B,
-                                                        0x0C,
-                                                        0x0D,
-                                                        0x0E,
-                                                        0x0F,
-                                                        0x00};
-
-  auto encrypted_bytes = EncryptBytes(aes_key_bytes, response_bytes);
-  auto response = ParseDecryptedResponse(aes_key_bytes, encrypted_bytes);
-
-  EXPECT_FALSE(response.has_value());
-}
-
-TEST_F(FastPairEncryptionTest, ParseDecryptedPasskey_Success) {
-  std::vector<uint8_t> passkey_bytes;
-
-  // Message type.
-  passkey_bytes.push_back(0x02);
-
-  // Passkey bytes.
-  uint32_t passkey = 5;
-  passkey_bytes.push_back(passkey >> 16);
-  passkey_bytes.push_back(passkey >> 8);
-  passkey_bytes.push_back(passkey);
-
-  // Random salt
-  std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
-                                  0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
-
-  std::array<uint8_t, kBlockByteSize> passkey_bytes_array;
-  std::copy_n(passkey_bytes.begin(), kBlockByteSize,
-              passkey_bytes_array.begin());
-
-  auto encrypted_bytes = EncryptBytes(aes_key_bytes, passkey_bytes_array);
-  auto decrypted_passkey =
-      ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
-
-  EXPECT_TRUE(decrypted_passkey.has_value());
-  EXPECT_EQ(decrypted_passkey->message_type,
-            FastPairMessageType::kSeekersPasskey);
-  EXPECT_EQ(decrypted_passkey->passkey, passkey);
-  EXPECT_EQ(decrypted_passkey->salt, salt);
-}
-
-TEST_F(FastPairEncryptionTest, ParseDecryptedPasskey_Failure) {
-  std::array<uint8_t, kBlockByteSize> passkey_bytes = {/*message_type=*/0x04,
-                                                       /*passkey=*/0x02,
-                                                       0x03,
-                                                       0x04,
-                                                       /*salt=*/0x05,
-                                                       0x06,
-                                                       0x07,
-                                                       0x08,
-                                                       0x09,
-                                                       0x0A,
-                                                       0x0B,
-                                                       0x0C,
-                                                       0x0D,
-                                                       0x0E,
-                                                       0x0F,
-                                                       0x0E};
-
-  auto encrypted_bytes = EncryptBytes(aes_key_bytes, passkey_bytes);
-  auto passkey = ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
-
-  EXPECT_FALSE(passkey.has_value());
 }
 
 }  // namespace fast_pair_encryption

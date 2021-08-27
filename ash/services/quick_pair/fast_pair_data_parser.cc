@@ -8,7 +8,7 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "ash/quick_pair/common/logging.h"
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
+#include "ash/services/quick_pair/fast_pair_decryption.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "crypto/openssl_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -82,7 +82,7 @@ void FastPairDataParser::ParseDecryptedResponse(
   ConvertVectorsToArrays(aes_key_bytes, encrypted_response_bytes, key, bytes);
 
   std::move(callback).Run(
-      fast_pair_encryption::ParseDecryptedResponse(key, bytes));
+      fast_pair_decryption::ParseDecryptedResponse(key, bytes));
 }
 
 void FastPairDataParser::ParseDecryptedPasskey(
@@ -99,7 +99,7 @@ void FastPairDataParser::ParseDecryptedPasskey(
   ConvertVectorsToArrays(aes_key_bytes, encrypted_passkey_bytes, key, bytes);
 
   std::move(callback).Run(
-      fast_pair_encryption::ParseDecryptedPasskey(key, bytes));
+      fast_pair_decryption::ParseDecryptedPasskey(key, bytes));
 }
 
 }  // namespace quick_pair
