@@ -3975,6 +3975,7 @@ public class ContextualSearchManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
@@ -3996,6 +3997,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     public void testRelatedSearchesItemSelected() throws Exception {
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
