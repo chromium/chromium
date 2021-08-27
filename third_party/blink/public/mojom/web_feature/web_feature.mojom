@@ -3300,6 +3300,12 @@ enum WebFeature {
   kFontSelectorCSSFontFamilyWebKitPrefixBody = 3988,
   kFontBuilderCSSFontFamilyWebKitPrefixBody = 3989,
   kCapabilityDelegationOfPaymentRequest = 3990,
+  kCredentialManagerGetFederatedCredential = 3992,
+  kCredentialManagerGetPasswordCredential = 3993,
+  kCredentialManagerStoreFederatedCredential = 3994,
+  kCredentialManagerStorePasswordCredential = 3995,
+  kCredentialManagerCreateFederatedCredential = 3996,
+  kCredentialManagerCreatePasswordCredential = 3997,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

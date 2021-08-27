@@ -819,6 +819,14 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
+  if (options->hasFederated()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerGetFederatedCredential);
+  } else if (options->hasPassword()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerGetPasswordCredential);
+  }
+
   if (options->hasPublicKey()) {
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
     if (!cryptotoken_origin->IsSameOriginWith(
@@ -1041,6 +1049,14 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
     return promise;
   }
 
+  if (credential->IsFederatedCredential()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerStoreFederatedCredential);
+  } else if (credential->IsPasswordCredential()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerStorePasswordCredential);
+  }
+
   const KURL& url =
       credential->IsFederatedCredential()
           ? static_cast<const FederatedCredential*>(credential)->iconURL()
@@ -1087,6 +1103,8 @@ ScriptPromise CredentialsContainer::create(
   }
 
   if (options->hasPassword()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerCreatePasswordCredential);
     resolver->Resolve(
         options->password()->IsPasswordCredentialData()
             ? PasswordCredential::Create(
@@ -1098,6 +1116,8 @@ ScriptPromise CredentialsContainer::create(
     return promise;
   }
   if (options->hasFederated()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerCreateFederatedCredential);
     resolver->Resolve(
         FederatedCredential::Create(options->federated(), exception_state));
     return promise;
