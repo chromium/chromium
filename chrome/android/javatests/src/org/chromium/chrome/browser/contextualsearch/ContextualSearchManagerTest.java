@@ -4076,6 +4076,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "https://crbug.com/1244089")
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
