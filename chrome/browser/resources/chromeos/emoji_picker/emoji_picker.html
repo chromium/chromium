@@ -10,6 +10,7 @@
     --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
+    --emoji-divider-color: var(--google-grey-200);
     --emoji-group-tabs-left: 0;
     --emoji-picker-bottom-padding: 14px;
     --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
@@ -27,6 +28,12 @@
     background-color: var(--cros-bg-color);
   }
 
+  @media (prefers-color-scheme-dark) {
+    :host {
+      --emoji-divider-color: var(--google-grey-900);
+    }
+  }
+
   .side-padding {
     flex-grow: 1;
     flex-shrink: 0;
@@ -42,7 +49,6 @@
     flex-direction: column;
     flex-grow: 1;
     overflow-y: clip;
-    padding-bottom: 4px;
     width: 100%;
   }
 
@@ -87,9 +93,10 @@
   }
 
   .chevron {
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-icon-size: 20px;
     background-color: var(--cros-bg-color);
     border-radius: 0;
-    height: var(--emoji--size);
     margin: 0;
     padding: 0;
     position: absolute;
@@ -111,7 +118,7 @@
   }
 
   .divider {
-    border-top: 1px solid var(--cros-seperator-color);
+    border-top: 1px solid var(--emoji-divider-color);
     width: var(--emoji-picker-width);
   }
 
