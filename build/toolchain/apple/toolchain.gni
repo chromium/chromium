@@ -12,6 +12,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
 assert((target_os == "ios" && host_os == "mac") || host_os != "win")
@@ -73,6 +74,11 @@ template("apple_toolchain") {
     # toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
     # supply for these values are to force-disable them.
+    if (defined(toolchain_args.use_rbe)) {
+      toolchain_uses_rbe = toolchain_args.use_rbe
+    } else {
+      toolchain_uses_rbe = use_rbe
+    }
     if (defined(toolchain_args.use_goma)) {
       toolchain_uses_goma = toolchain_args.use_goma
     } else {
@@ -83,6 +89,13 @@ template("apple_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
+    assert(!(toolchain_uses_rbe && toolchain_uses_goma),
+           "Goma and RBE can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_rbe),
+           "RBE and cc_wrapper can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
+           "Goma and cc_wrapper can't be used together.")
+
     if (defined(toolchain_args.use_lld)) {
       toolchain_uses_lld = toolchain_args.use_lld
     } else {
@@ -108,7 +121,16 @@ template("apple_toolchain") {
     swiftmodule_switch = "-Wl,-add_ast_path,"
 
     # Compute the compiler prefix.
-    if (toolchain_uses_goma) {
+    if (toolchain_uses_rbe) {
+      if (defined(toolchain_args.rbe_cc_cfg_file)) {
+        toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
+      } else {
+        toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
+      }
+
+      # C/C++ (clang) rewrapper prefix to use when use_rbe is true.
+      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+    } else if (toolchain_uses_goma) {
       assert(toolchain_cc_wrapper == "",
              "Goma and cc_wrapper can't be used together.")
       compiler_prefix = "$goma_dir/gomacc "
