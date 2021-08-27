@@ -5,11 +5,10 @@
 #ifndef CONTENT_BROWSER_LOADER_CROSS_ORIGIN_READ_BLOCKING_CHECKER_H_
 #define CONTENT_BROWSER_LOADER_CROSS_ORIGIN_READ_BLOCKING_CHECKER_H_
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
@@ -18,6 +17,9 @@ class IOBufferWithSize;
 
 namespace network {
 struct ResourceRequest;
+namespace corb {
+class ResponseAnalyzer;
+}  // namespace corb
 }  // namespace network
 
 namespace storage {
@@ -57,8 +59,7 @@ class CrossOriginReadBlockingChecker {
                       int net_error);
 
   base::OnceCallback<void(Result)> callback_;
-  std::unique_ptr<network::CrossOriginReadBlocking::ResponseAnalyzer>
-      corb_analyzer_;
+  std::unique_ptr<network::corb::ResponseAnalyzer> corb_analyzer_;
   std::unique_ptr<BlobIOState> blob_io_state_;
   int net_error_ = net::OK;
 

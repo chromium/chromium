@@ -51,7 +51,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_cache.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
@@ -1221,7 +1221,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
       const std::string& mime_type,
       bool has_nosniff,
       const std::string& expected_title,
-      network::CrossOriginReadBlocking::Action expected_action) {
+      network::corb::CrossOriginReadBlocking::Action expected_action) {
     const char* prefetch_path = "/prefetch.html";
     const char* target_sxg_path = "/target.sxg";
     const char* target_path = "/target.html";
@@ -1302,7 +1302,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
       NavigateToURLAndWaitTitle(target_sxg_url, expected_title);
       histograms.ExpectBucketCount(
           "SiteIsolation.XSD.Browser.Action",
-          network::CrossOriginReadBlocking::Action::kResponseStarted, 1);
+          network::corb::CrossOriginReadBlocking::Action::kResponseStarted, 1);
       histograms.ExpectBucketCount("SiteIsolation.XSD.Browser.Action",
                                    expected_action, 1);
     }
@@ -2301,7 +2301,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "document.title=\"done\"", "text/javascript",
       false /* has_nosniff */, "done",
-      network::CrossOriginReadBlocking::Action::kAllowedAfterSniffing);
+      network::corb::CrossOriginReadBlocking::Action::kAllowedAfterSniffing);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
       false /* has_nosniff */, "original title",
-      network::CrossOriginReadBlocking::Action::kBlockedAfterSniffing);
+      network::corb::CrossOriginReadBlocking::Action::kBlockedAfterSniffing);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
@@ -2317,7 +2317,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   RunCrossOriginReadBlockingTest(
       false /* cross_origin */, "document.title=\"done\"", "text/javascript",
       true /* has_nosniff */, "done",
-      network::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
+      network::corb::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
@@ -2325,7 +2325,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   RunCrossOriginReadBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
       true /* has_nosniff */, "original title",
-      network::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
+      network::corb::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,

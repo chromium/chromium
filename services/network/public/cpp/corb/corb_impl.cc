@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_impl.h"
 
 #include <stddef.h>
 
@@ -34,10 +34,12 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::StringPiece;
-using MimeType = network::CrossOriginReadBlocking::MimeType;
-using SniffingResult = network::CrossOriginReadBlocking::SniffingResult;
+using Decision = network::corb::ResponseAnalyzer::Decision;
+using MimeType = network::corb::CrossOriginReadBlocking::MimeType;
+using SniffingResult = network::corb::CrossOriginReadBlocking::SniffingResult;
 
 namespace network {
+namespace corb {
 
 namespace {
 
@@ -180,20 +182,6 @@ SniffingResult MaybeSkipHtmlComment(StringPiece* data) {
   // Found real end of the combined HTML/JS comment.
   data->remove_prefix(end_of_line);
   return CrossOriginReadBlocking::kYes;
-}
-
-void RemoveAllHttpResponseHeaders(
-    const scoped_refptr<net::HttpResponseHeaders>& headers) {
-  DCHECK(headers);
-  std::unordered_set<std::string> names_of_headers_to_remove;
-
-  size_t it = 0;
-  std::string name;
-  std::string value;
-  while (headers->EnumerateHeaderLines(&it, &name, &value))
-    names_of_headers_to_remove.insert(base::ToLowerASCII(name));
-
-  headers->RemoveHeaders(names_of_headers_to_remove);
 }
 
 // The function below returns a set of MIME types below may be blocked by CORB
@@ -534,18 +522,9 @@ SniffingResult CrossOriginReadBlocking::SniffForFetchOnlyResource(
   return SniffForJSON(data);
 }
 
-// static
-void CrossOriginReadBlocking::SanitizeBlockedResponse(
-    mojom::URLResponseHead* response) {
-  DCHECK(response);
-  response->content_length = 0;
-  if (response->headers)
-    RemoveAllHttpResponseHeaders(response->headers);
-}
-
 // An interface to enable incremental content sniffing. These are instantiated
 // for each each request; thus they can be stateful.
-class CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
+class CrossOriginReadBlocking::CorbResponseAnalyzer::ConfirmationSniffer {
  public:
   virtual ~ConfirmationSniffer() = default;
 
@@ -565,8 +544,9 @@ class CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
 
 // A ConfirmationSniffer that wraps one of the sniffing functions from
 // CrossOriginReadBlocking.
-class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
-    : public CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
+class CrossOriginReadBlocking::CorbResponseAnalyzer::SimpleConfirmationSniffer
+    : public CrossOriginReadBlocking::CorbResponseAnalyzer::
+          ConfirmationSniffer {
  public:
   // The function pointer type corresponding to one of the available sniffing
   // functions from CrossOriginReadBlocking.
@@ -575,6 +555,10 @@ class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
   explicit SimpleConfirmationSniffer(SnifferFunction sniffer_function)
       : sniffer_function_(sniffer_function) {}
   ~SimpleConfirmationSniffer() override = default;
+
+  SimpleConfirmationSniffer(const SimpleConfirmationSniffer*) = delete;
+  SimpleConfirmationSniffer& operator=(const SimpleConfirmationSniffer*) =
+      delete;
 
   void OnDataAvailable(base::StringPiece sniffing_buffer) final {
     // The sniffing functions don't support streaming, so with each new chunk of
@@ -605,24 +589,23 @@ class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
 
   // Result of sniffing the data available thus far.
   SniffingResult last_sniff_result_ = SniffingResult::kMaybe;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleConfirmationSniffer);
 };
 
-CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
+Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
-    const mojom::URLResponseHead& response,
-    mojom::RequestMode request_mode)
-    : seems_sensitive_from_cors_heuristic_(
-          SeemsSensitiveFromCORSHeuristic(response)),
-      seems_sensitive_from_cache_heuristic_(
-          SeemsSensitiveFromCacheHeuristic(response)),
-      supports_range_requests_(SupportsRangeRequests(response)),
-      has_nosniff_header_(HasNoSniff(response)),
-      content_length_(response.content_length),
-      http_response_code_(response.headers ? response.headers->response_code()
-                                           : 0) {
+    mojom::RequestMode request_mode,
+    const mojom::URLResponseHead& response) {
+  seems_sensitive_from_cors_heuristic_ =
+      SeemsSensitiveFromCORSHeuristic(response);
+  seems_sensitive_from_cache_heuristic_ =
+      SeemsSensitiveFromCacheHeuristic(response);
+  supports_range_requests_ = SupportsRangeRequests(response);
+  has_nosniff_header_ = HasNoSniff(response);
+  content_length_ = response.content_length;
+  http_response_code_ =
+      response.headers ? response.headers->response_code() : 0;
+
   LogAction(Action::kResponseStarted);
 
   // CORB should look directly at the Content-Type header if one has been
@@ -684,9 +667,13 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
   }
   if (needs_sniffing())
     CreateSniffers();
+
+  return GetCorbDecision();
 }
 
-CrossOriginReadBlocking::ResponseAnalyzer::~ResponseAnalyzer() {
+CrossOriginReadBlocking::CorbResponseAnalyzer::CorbResponseAnalyzer() = default;
+
+CrossOriginReadBlocking::CorbResponseAnalyzer::~CorbResponseAnalyzer() {
   if (ShouldBlock()) {
     LogBlockedResponse();
   } else {
@@ -698,8 +685,8 @@ CrossOriginReadBlocking::ResponseAnalyzer::~ResponseAnalyzer() {
 }
 
 // static
-CrossOriginReadBlocking::ResponseAnalyzer::BlockingDecision
-CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
+CrossOriginReadBlocking::CorbResponseAnalyzer::BlockingDecision
+CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
     mojom::RequestMode request_mode,
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -824,8 +811,8 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
 }
 
 // static
-bool CrossOriginReadBlocking::ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
-    const mojom::URLResponseHead& response) {
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::
+    SeemsSensitiveFromCORSHeuristic(const mojom::URLResponseHead& response) {
   // Check if the response has an Access-Control-Allow-Origin with a value other
   // than "*" or "null" ("null" offers no more protection than "*" because it
   // matches any unique origin).
@@ -842,7 +829,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
 }
 
 // static
-bool CrossOriginReadBlocking::ResponseAnalyzer::
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::
     SeemsSensitiveFromCacheHeuristic(const mojom::URLResponseHead& response) {
   // Check if the response has both Vary: Origin and Cache-Control: Private
   // headers, which we take as a signal that it may be a sensitive resource. We
@@ -858,7 +845,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::
 }
 
 // static
-bool CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::SupportsRangeRequests(
     const mojom::URLResponseHead& response) {
   if (response.headers) {
     std::string value;
@@ -871,8 +858,8 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
 }
 
 // static
-CrossOriginReadBlocking::ResponseAnalyzer::MimeTypeBucket
-CrossOriginReadBlocking::ResponseAnalyzer::GetMimeTypeBucket(
+CrossOriginReadBlocking::CorbResponseAnalyzer::MimeTypeBucket
+CrossOriginReadBlocking::CorbResponseAnalyzer::GetMimeTypeBucket(
     const mojom::URLResponseHead& response) {
   std::string mime_type;
   if (response.headers)
@@ -921,7 +908,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::GetMimeTypeBucket(
   return kOther;
 }
 
-void CrossOriginReadBlocking::ResponseAnalyzer::CreateSniffers() {
+void CrossOriginReadBlocking::CorbResponseAnalyzer::CreateSniffers() {
   // Create one or more |sniffers_| to confirm that the body is actually the
   // MIME type advertised in the Content-Type header.
   DCHECK(needs_sniffing());
@@ -960,7 +947,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::CreateSniffers() {
       &CrossOriginReadBlocking::SniffForFetchOnlyResource));
 }
 
-void CrossOriginReadBlocking::ResponseAnalyzer::SniffResponseBody(
+Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Sniff(
     base::StringPiece data) {
   DCHECK(needs_sniffing());
   DCHECK(!sniffers_.empty());
@@ -986,9 +973,11 @@ void CrossOriginReadBlocking::ResponseAnalyzer::SniffResponseBody(
       sniffers_.erase(sniffers_.begin() + i);
     }
   }
+
+  return GetCorbDecision();
 }
 
-bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldAllow() const {
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldAllow() const {
   // If we're in hypothetical mode then CORB must have decided to kAllow (see
   // comment in ShouldBlock). Thus we just need to wait until the sniffers are
   // all done (i.e. empty).
@@ -1006,7 +995,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldAllow() const {
   }
 }
 
-bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlock() const {
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlock() const {
   // If we're in *hypothetical* sniffing mode then the following must be true:
   // (1) We are only sniffing to find out if CORB would have blocked the request
   // were it made cross origin (CORB itself did *not* need to sniff the file).
@@ -1026,8 +1015,8 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlock() const {
   }
 }
 
-bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldReportBlockedResponse()
-    const {
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::
+    ShouldReportBlockedResponse() const {
   if (!ShouldBlock())
     return false;
 
@@ -1047,7 +1036,16 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldReportBlockedResponse()
   return true;
 }
 
-void CrossOriginReadBlocking::ResponseAnalyzer::LogAllowedResponse() {
+Decision CrossOriginReadBlocking::CorbResponseAnalyzer::GetCorbDecision() {
+  if (ShouldBlock())
+    return Decision::kBlock;
+  else if (ShouldAllow())
+    return Decision::kAllow;
+  else
+    return Decision::kSniffMore;
+}
+
+void CrossOriginReadBlocking::CorbResponseAnalyzer::LogAllowedResponse() {
   DCHECK(!has_logged_final_decision_);
   has_logged_final_decision_ = true;
 
@@ -1071,7 +1069,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogAllowedResponse() {
                              : Action::kAllowedWithoutSniffing);
 }
 
-void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
+void CrossOriginReadBlocking::CorbResponseAnalyzer::LogBlockedResponse() {
   DCHECK(!has_logged_final_decision_);
   has_logged_final_decision_ = true;
 
@@ -1093,7 +1091,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
 }
 
 // static
-bool CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(
+bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
     const mojom::URLResponseHead& response) {
   if (!response.headers)
     return false;
@@ -1104,9 +1102,9 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(
 }
 
 // static
-CrossOriginReadBlocking::ResponseAnalyzer::CrossOriginProtectionDecision
-CrossOriginReadBlocking::ResponseAnalyzer::BlockingDecisionToProtectionDecision(
-    BlockingDecision blocking_decision) {
+CrossOriginReadBlocking::CorbResponseAnalyzer::CrossOriginProtectionDecision
+CrossOriginReadBlocking::CorbResponseAnalyzer::
+    BlockingDecisionToProtectionDecision(BlockingDecision blocking_decision) {
   switch (blocking_decision) {
     case kAllow:
       return CrossOriginProtectionDecision::kAllow;
@@ -1118,16 +1116,17 @@ CrossOriginReadBlocking::ResponseAnalyzer::BlockingDecisionToProtectionDecision(
 }
 
 // static
-CrossOriginReadBlocking::ResponseAnalyzer::CrossOriginProtectionDecision
-CrossOriginReadBlocking::ResponseAnalyzer::SniffingDecisionToProtectionDecision(
-    bool found_blockable_content) {
+CrossOriginReadBlocking::CorbResponseAnalyzer::CrossOriginProtectionDecision
+CrossOriginReadBlocking::CorbResponseAnalyzer::
+    SniffingDecisionToProtectionDecision(bool found_blockable_content) {
   if (found_blockable_content)
     return CrossOriginProtectionDecision::kBlockedAfterSniffing;
   return CrossOriginProtectionDecision::kAllowedAfterSniffing;
 }
 
-void CrossOriginReadBlocking::ResponseAnalyzer::LogSensitiveResponseProtection(
-    CrossOriginProtectionDecision protection_decision) const {
+void CrossOriginReadBlocking::CorbResponseAnalyzer::
+    LogSensitiveResponseProtection(
+        CrossOriginProtectionDecision protection_decision) const {
   DCHECK(seems_sensitive_from_cors_heuristic_ ||
          seems_sensitive_from_cache_heuristic_);
   if (seems_sensitive_from_cors_heuristic_) {
@@ -1208,4 +1207,5 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogSensitiveResponseProtection(
       supports_range_requests_);
 }
 
+}  // namespace corb
 }  // namespace network

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_READ_BLOCKING_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_READ_BLOCKING_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_IMPL_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -11,14 +11,18 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// This header provides an implementation of Cross-Origin Read Blocking (CORB).
+// The implementation should typically be used through the public corb_api.h.
+// See the doc comment in corb_api.h for a more detailed description of CORB.
 
 namespace content {
 FORWARD_DECLARE_TEST(CrossSiteDocumentResourceHandlerTest, ResponseBlocking);
@@ -27,12 +31,7 @@ FORWARD_DECLARE_TEST(CrossSiteDocumentResourceHandlerTest,
 }  // namespace content
 
 namespace network {
-
-// CrossOriginReadBlocking (CORB) implements response blocking
-// policy for Site Isolation.  CORB will monitor network responses to a
-// renderer and block illegal responses so that a compromised renderer cannot
-// steal private information from other sites.  For more details see
-// services/network/cross_origin_read_blocking_explainer.md
+namespace corb {
 
 class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
  public:
@@ -73,7 +72,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
   // An instance for tracking the state of analyzing a single response
   // and deciding whether CORB should block the response.
-  class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
+  class COMPONENT_EXPORT(NETWORK_CPP) CorbResponseAnalyzer
+      : public network::corb::ResponseAnalyzer {
    public:
     // Categorizes the resource MIME type for CORB protection logging.
     enum MimeTypeBucket {
@@ -104,21 +104,19 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
       kMaxValue = kBlockedAfterSniffing,
     };
 
-    // Creates a ResponseAnalyzer for the request (|request_url| and
-    // |request_initiator|), |response| pair.  The ResponseAnalyzer will decide
-    // whether |response| needs to be blocked.
-    //
-    // The constructor here assumes that |request_initiator| is trustworthy
-    // (e.g. can't be spoofed by a compromised renderer). This is generally true
-    // for network::ResourceRequest::request_initiator within NetworkService
-    // (see the enforcement in CorsURLLoaderFactory::IsValidRequest).
-    ResponseAnalyzer(
-        const GURL& request_url,
-        const absl::optional<url::Origin>& request_initiator,
-        const network::mojom::URLResponseHead& response,
-        mojom::RequestMode request_mode);
+    CorbResponseAnalyzer();
 
-    ~ResponseAnalyzer();
+    CorbResponseAnalyzer(const CorbResponseAnalyzer&) = delete;
+    CorbResponseAnalyzer& operator=(const CorbResponseAnalyzer&) = delete;
+
+    // Implementation of the `corb::ResponseAnalyzer` abstract interface.
+    ~CorbResponseAnalyzer() override;
+    Decision Init(const GURL& request_url,
+                  const absl::optional<url::Origin>& request_initiator,
+                  mojom::RequestMode request_mode,
+                  const network::mojom::URLResponseHead& response) override;
+    Decision Sniff(base::StringPiece data) override;
+    bool ShouldReportBlockedResponse() const override;
 
     // true if either 1) ShouldBlockBasedOnHeaders decided to allow the response
     // based on headers alone or 2) ShouldBlockBasedOnHeaders decided to sniff
@@ -135,7 +133,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     // true if the analyzed response should report Cross-Origin Read Blocking in
     // a warning message written to the DevTools console.
-    bool ShouldReportBlockedResponse() const;
 
     // Whether ShouldBlockBasedOnHeaders asked to sniff the body or the CORB
     // protection logging needs extra sniffing.
@@ -149,9 +146,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         const {
       return canonical_mime_type_;
     }
-
-    // Allows ResponseAnalyzer to sniff the response body.
-    void SniffResponseBody(base::StringPiece data);
 
     class ConfirmationSniffer;
     class SimpleConfirmationSniffer;
@@ -172,6 +166,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
                              CORBProtectionLogging);
     FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
 
+    // Helper for translating ShouldAllow(), ShouldBlock() and needs_sniffing()
+    // into corb::Decision.
+    Decision GetCorbDecision();
+
     void LogAllowedResponse();
     void LogBlockedResponse();
 
@@ -185,6 +183,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
       kBlock,
       kNeedToSniffMore,
     };
+
     // Static because this method is called both during the actual decision, and
     // for the CORB protection logging decision.
     static BlockingDecision ShouldBlockBasedOnHeaders(
@@ -237,7 +236,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         CrossOriginProtectionDecision protection_decision) const;
 
     // Outcome of ShouldBlockBasedOnHeaders recorded inside the Create method.
-    BlockingDecision should_block_based_on_headers_;
+    BlockingDecision should_block_based_on_headers_ = BlockingDecision::kBlock;
 
     // The following values store information about the response and are used by
     // the CORB protection logging in LogSensitiveResponseProtection.
@@ -245,10 +244,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // |mime_type_bucket_| is either kProtected (if it's a type we expect to
     // protect such as HTML), kPublic (for javascript etc.) or kOther.
     MimeTypeBucket mime_type_bucket_ = kOther;
-    const bool seems_sensitive_from_cors_heuristic_;
-    const bool seems_sensitive_from_cache_heuristic_;
-    const bool supports_range_requests_;
-    const bool has_nosniff_header_;
+
+    // A few booleans that are computed based on the response headers.
+    bool seems_sensitive_from_cors_heuristic_ = false;
+    bool seems_sensitive_from_cache_heuristic_ = false;
+    bool supports_range_requests_ = false;
+    bool has_nosniff_header_ = false;
+
     // |hypothetical_sniffing_mode_| is true if we need to sniff only because of
     // the CORB protection logging (and otherwise, CORB would not sniff).
     bool hypothetical_sniffing_mode_ = false;
@@ -259,11 +261,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     MimeType canonical_mime_type_ = MimeType::kInvalidMimeType;
 
     // Content length if available. -1 if not available.
-    const int64_t content_length_;
+    int64_t content_length_ = -1;
 
     // The HTTP response code (e.g. 200 or 404) received in response to this
     // resource request.
-    const int http_response_code_;
+    int http_response_code_ = 0;
 
     // The sniffers to be used.
     std::vector<std::unique_ptr<ConfirmationSniffer>> sniffers_;
@@ -275,13 +277,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // (This is only used in DCHECKs that verify that such UMA is only logged
     // once.)
     bool has_logged_final_decision_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ResponseAnalyzer);
   };
-
-  // Used to strip response headers if a decision to block has been made.
-  static void SanitizeBlockedResponse(
-      network::mojom::URLResponseHead* response);
 
   // This enum backs a histogram, so do not change the order of entries or
   // remove entries. When adding new entries update |kMaxValue| and enums.xml
@@ -347,8 +343,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
   // infinite-loop patterns, which are used conventionally as a defense against
   // JSON data exfiltration by means of a <script> tag.
   static SniffingResult SniffForFetchOnlyResource(base::StringPiece data);
-
-  DISALLOW_COPY_AND_ASSIGN(CrossOriginReadBlocking);
 };
 
 inline std::ostream& operator<<(
@@ -358,6 +352,7 @@ inline std::ostream& operator<<(
   return out;
 }
 
+}  // namespace corb
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_READ_BLOCKING_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_IMPL_H_

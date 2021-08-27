@@ -20,22 +20,23 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using base::StringPiece;
-using CrossOriginProtectionDecision = network::CrossOriginReadBlocking::
-    ResponseAnalyzer::CrossOriginProtectionDecision;
-using MimeType = network::CrossOriginReadBlocking::MimeType;
-using MimeTypeBucket =
-    network::CrossOriginReadBlocking::ResponseAnalyzer::MimeTypeBucket;
-using ResponseAnalyzer = network::CrossOriginReadBlocking::ResponseAnalyzer;
-using SniffingResult = network::CrossOriginReadBlocking::SniffingResult;
+using CorbResponseAnalyzer =
+    network::corb::CrossOriginReadBlocking::CorbResponseAnalyzer;
+using CrossOriginProtectionDecision =
+    CorbResponseAnalyzer::CrossOriginProtectionDecision;
+using MimeType = network::corb::CrossOriginReadBlocking::MimeType;
+using MimeTypeBucket = CorbResponseAnalyzer::MimeTypeBucket;
+using SniffingResult = network::corb::CrossOriginReadBlocking::SniffingResult;
 
 namespace network {
+namespace corb {
 
 namespace {
 
@@ -1849,7 +1850,10 @@ const TestScenario kScenarios[] = {
 class ResponseAnalyzerTest : public testing::Test,
                              public testing::WithParamInterface<TestScenario> {
  public:
-  ResponseAnalyzerTest() {}
+  ResponseAnalyzerTest() = default;
+
+  ResponseAnalyzerTest(const ResponseAnalyzerTest&) = delete;
+  ResponseAnalyzerTest& operator=(const ResponseAnalyzerTest&) = delete;
 
   // Returns a ResourceResponse that matches the TestScenario's parameters.
   mojom::URLResponseHeadPtr CreateResponse(
@@ -1899,8 +1903,9 @@ class ResponseAnalyzerTest : public testing::Test,
     // The ResponseAnalyzer will be destructed when `analyzer` goes out of scope
     // (the destructor triggers logging of UMAs that some callers of
     // RunAnalyzerOnScenario attempt to verify).
-    auto analyzer = std::make_unique<ResponseAnalyzer>(
-        request->url(), request->initiator(), response, request_mode);
+    auto analyzer = std::make_unique<CorbResponseAnalyzer>();
+    analyzer->Init(request->url(), request->initiator(), request_mode,
+                   response);
 
     // Verify MIME type was classified correctly.
     EXPECT_EQ(scenario.canonical_mime_type,
@@ -1933,6 +1938,7 @@ class ResponseAnalyzerTest : public testing::Test,
       }
       return;
     }
+
     // Simulate the behaviour of the URLLoader by appending the packets into
     // |data_buffer| and feeding this to |analyzer|.
     std::string data_buffer;
@@ -1959,7 +1965,7 @@ class ResponseAnalyzerTest : public testing::Test,
       data_buffer.append(packets_vector[packet_index], bytes_to_append);
 
       // Hand |analyzer_| the data to sniff.
-      analyzer->SniffResponseBody(data_buffer);
+      analyzer->Sniff(data_buffer);
       data_offset += bytes_to_append;
 
       // If the latest packet was empty, or we reached net::kMaxBytesToSniff
@@ -2005,8 +2011,6 @@ class ResponseAnalyzerTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
   net::TestURLRequestContext context_;
   net::TestDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseAnalyzerTest);
 };  // namespace network
 
 // Runs a particular TestScenario (passed as the test's parameter) through the
@@ -2107,14 +2111,12 @@ TEST_P(ResponseAnalyzerTest, CORBProtectionLogging) {
       CreateResponse(scenario.response_content_type, scenario.response_headers,
                      scenario.initiator_origin);
   const bool seems_sensitive_from_cors_heuristic = CrossOriginReadBlocking::
-      ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*response);
+      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*response);
   const bool seems_sensitive_from_cache_heuristic = CrossOriginReadBlocking::
-      ResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*response);
+      CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*response);
   const bool supports_range_requests =
-      CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
-          *response);
-  const bool expect_nosniff =
-      CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(*response);
+      CorbResponseAnalyzer::SupportsRangeRequests(*response);
+  const bool expect_nosniff = CorbResponseAnalyzer::HasNoSniff(*response);
 
   // Run the analyzer and confirm it allows/blocks correctly.
   RunAnalyzerOnScenario(*response);
@@ -2513,50 +2515,50 @@ mojom::URLResponseHeadPtr CreateResponse(std::string raw_headers) {
 TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCORSHeuristic) {
   // Response with no CORS header.
   auto no_cors_response = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCORSHeuristic(*no_cors_response));
+  EXPECT_FALSE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*no_cors_response));
 
   // Response with CORS value = "*", so not sensitive.
   auto cors_any_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Access-Control-Allow-Origin: *");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCORSHeuristic(*cors_any_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
+      *cors_any_response));
 
   // Response with CORS value = "null", so not sensitive.
   auto cors_null_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Access-Control-Allow-Origin: null");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCORSHeuristic(*cors_null_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
+      *cors_null_response));
 
   // Response with CORS header restricting access to a particular origin.
   auto cors_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::
-                  SeemsSensitiveFromCORSHeuristic(*cors_response));
+  EXPECT_TRUE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*cors_response));
 }
 
 TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCacheHeuristic) {
   // Response with no cache-control or vary header.
   auto no_cache_response = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCacheHeuristic(*no_cache_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *no_cache_response));
 
   // Response with cache-control but no vary header.
   auto cache_only_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Cache-Control: private");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCacheHeuristic(*cache_only_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *cache_only_response));
 
   // Response with vary: origin but no cache-control header.
   auto vary_only_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Vary: origin");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCacheHeuristic(*vary_only_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *vary_only_response));
 
   // Response with vary: user-agent and cache-control: no-cache (should still
   // not seem sensitive).
@@ -2564,16 +2566,16 @@ TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCacheHeuristic) {
       "HTTP/1.1 200 OK\n"
       "Vary: user-agent\n"
       "Cache-Control: no-cache");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCacheHeuristic(*wrong_values_response));
+  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *wrong_values_response));
 
   // Response with vary: origin and cache-control: private.
   auto vary_and_cache_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Vary: origin\n"
       "Cache-Control: private");
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::
-                  SeemsSensitiveFromCacheHeuristic(*vary_and_cache_response));
+  EXPECT_TRUE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *vary_and_cache_response));
 
   // Response with vary: origin, user-agent and cache-control: private, no-store
   // (we should still find the relevant values).
@@ -2581,8 +2583,8 @@ TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCacheHeuristic) {
       "HTTP/1.1 200 OK\n"
       "Vary: origin, user-agent\n"
       "Cache-Control: no-cache, private");
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::
-                  SeemsSensitiveFromCacheHeuristic(*extra_values_response));
+  EXPECT_TRUE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
+      *extra_values_response));
 }
 
 TEST(CrossOriginReadBlockingTest, SeemsSensitiveWithBothHeuristics) {
@@ -2591,8 +2593,8 @@ TEST(CrossOriginReadBlockingTest, SeemsSensitiveWithBothHeuristics) {
   auto cors_response = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCacheHeuristic(*cors_response));
+  EXPECT_FALSE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*cors_response));
 
   // Response with cache heuristic should not appear sensitive to CORS
   // heuristic.
@@ -2600,8 +2602,8 @@ TEST(CrossOriginReadBlockingTest, SeemsSensitiveWithBothHeuristics) {
       "HTTP/1.1 200 OK\n"
       "Vary: origin\n"
       "Cache-Control: private");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::
-                   SeemsSensitiveFromCORSHeuristic(*cache_response));
+  EXPECT_FALSE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*cache_response));
 
   // Response with both cache and CORS heuristic signals (e.g. vary: origin +
   // cache-control: private as well as the access-control-allow-origin header).
@@ -2610,31 +2612,31 @@ TEST(CrossOriginReadBlockingTest, SeemsSensitiveWithBothHeuristics) {
       "Vary: origin\n"
       "Cache-Control: private\n"
       "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::
-                  SeemsSensitiveFromCORSHeuristic(*both_response));
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::
-                  SeemsSensitiveFromCacheHeuristic(*both_response));
+  EXPECT_TRUE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*both_response));
+  EXPECT_TRUE(
+      CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*both_response));
 }
 
 TEST(CrossOriginReadBlockingTest, SupportsRangeRequests) {
   // Response with no Accept-Ranges header. Should return false.
   auto no_accept_ranges = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
-      *no_accept_ranges));
+  EXPECT_FALSE(CorbResponseAnalyzer::SupportsRangeRequests(*no_accept_ranges));
 
   // Response with an Accept-Ranges header. Should return true.
   auto bytes_accept_ranges = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Accept-Ranges: bytes");
-  EXPECT_TRUE(CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
-      *bytes_accept_ranges));
+  EXPECT_TRUE(
+      CorbResponseAnalyzer::SupportsRangeRequests(*bytes_accept_ranges));
 
   // Response with an Accept-Ranges header value of |none|. Should return false.
   auto none_accept_ranges = CreateResponse(
       "HTTP/1.1 200 OK\n"
       "Accept-Ranges: none");
-  EXPECT_FALSE(CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
-      *none_accept_ranges));
+  EXPECT_FALSE(
+      CorbResponseAnalyzer::SupportsRangeRequests(*none_accept_ranges));
 }
 
+}  // namespace corb
 }  // namespace network

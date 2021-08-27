@@ -58,6 +58,7 @@
 #include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/corb/orb_impl.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
@@ -67,7 +68,6 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/opaque_response_blocking.h"
 #include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -1360,21 +1360,26 @@ void URLLoader::ContinueOnResponseStarted() {
 
   // Figure out if we need to sniff (for MIME type detection or for Cross-Origin
   // Read Blocking / CORB).
-  LogUmaForOpaqueResponseBlocking(url_request_->url(),
-                                  url_request_->initiator(), request_mode_,
-                                  request_destination_, *response_);
+  corb::LogUmaForOpaqueResponseBlocking(
+      url_request_->url(), url_request_->initiator(), request_mode_,
+      request_destination_, *response_);
   if (factory_params_->is_corb_enabled) {
-    corb_analyzer_ =
-        std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
-            url_request_->url(), url_request_->initiator(), *response_,
-            request_mode_);
-    is_more_corb_sniffing_needed_ = corb_analyzer_->needs_sniffing();
-    if (corb_analyzer_->ShouldBlock()) {
-      DCHECK(!is_more_corb_sniffing_needed_);
-      if (BlockResponseForCorb() == kWillCancelRequest)
-        return;
-    } else if (corb_analyzer_->ShouldAllow()) {
-      DCHECK(!is_more_corb_sniffing_needed_);
+    corb_analyzer_ = corb::ResponseAnalyzer::Create();
+    auto decision =
+        corb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
+                             request_mode_, *response_);
+    switch (decision) {
+      case network::corb::ResponseAnalyzer::Decision::kBlock:
+        if (BlockResponseForCorb() == kWillCancelRequest)
+          return;
+        break;
+
+      case network::corb::ResponseAnalyzer::Decision::kAllow:
+        break;
+
+      case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+        is_more_corb_sniffing_needed_ = true;
+        break;
     }
   }
   if ((options_ & mojom::kURLLoadOptionSniffMimeType)) {
@@ -1529,13 +1534,17 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
       // `has_new_data_to_sniff` can be false at the end-of-stream.
       bool has_new_data_to_sniff = new_data_offset < data.length();
       if (is_more_corb_sniffing_needed_ && has_new_data_to_sniff) {
-        corb_analyzer_->SniffResponseBody(data);
-        if (corb_analyzer_->ShouldBlock()) {
-          is_more_corb_sniffing_needed_ = false;
-          if (BlockResponseForCorb() == kWillCancelRequest)
-            return;
-        } else if (corb_analyzer_->ShouldAllow()) {
-          is_more_corb_sniffing_needed_ = false;
+        switch (corb_analyzer_->Sniff(data)) {
+          case network::corb::ResponseAnalyzer::Decision::kBlock:
+            is_more_corb_sniffing_needed_ = false;
+            if (BlockResponseForCorb() == kWillCancelRequest)
+              return;
+            break;
+          case network::corb::ResponseAnalyzer::Decision::kAllow:
+            is_more_corb_sniffing_needed_ = false;
+            break;
+          case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+            break;
         }
       }
     }
@@ -2047,7 +2056,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
   DCHECK(consumer_handle_.is_valid());
 
   // Send stripped headers to the real URLLoaderClient.
-  CrossOriginReadBlocking::SanitizeBlockedResponse(response_.get());
+  corb::SanitizeBlockedResponseHeaders(*response_);
   url_loader_client_->OnReceiveResponse(response_->Clone());
 
   // Send empty body to the real URLLoaderClient.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_OPAQUE_RESPONSE_BLOCKING_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_OPAQUE_RESPONSE_BLOCKING_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -12,7 +12,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+// This header provides an implementation of Opaque Response Blocking (ORB).
+// The implementation should typically be used through the public corb_api.h.
+// See the doc comment in corb_api.h for a more detailed description of ORB.
+
 namespace network {
+namespace corb {
 
 // Result of applying heuristics based on partial ORB algorithm (suitable only
 // for UMA).
@@ -53,6 +58,7 @@ void LogUmaForOpaqueResponseBlocking(
     mojom::RequestDestination request_destination,
     const mojom::URLResponseHead& response);
 
+}  // namespace corb
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_OPAQUE_RESPONSE_BLOCKING_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_

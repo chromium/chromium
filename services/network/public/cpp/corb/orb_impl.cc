@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/opaque_response_blocking.h"
+#include "services/network/public/cpp/corb/orb_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
+namespace corb {
 
 namespace {
 
@@ -136,7 +137,7 @@ ResponseHeadersHeuristicForUma CalculateResponseHeadersHeuristicForUma(
   //     step 8. If nosniff is true, then return false.
   //     ...
   //     step 12. If response's body parses as JavaScript ...
-  if (CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(response))
+  if (CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(response))
     return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
 
   // If a mime type is missing then ORB will reach a final decision in step 10,
@@ -217,4 +218,5 @@ void LogUmaForOpaqueResponseBlocking(
   }
 }
 
+}  // namespace corb
 }  // namespace network

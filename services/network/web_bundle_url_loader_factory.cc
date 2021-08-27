@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
@@ -234,7 +234,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // network::URLLoader::BlockResponseForCorb(), instead of copying
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
-    CrossOriginReadBlocking::SanitizeBlockedResponse(response_head.get());
+    corb::SanitizeBlockedResponseHeaders(*response_head);
     client_->OnReceiveResponse(std::move(response_head));
 
     // Send empty body to the URLLoaderClient.
@@ -756,14 +756,17 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   response_head->load_timing = loader->load_timing();
   loader->SetBodyLength(payload_length);
 
-  auto corb_analyzer =
-      std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
-          loader->url(), loader->request_initiator(), *response_head,
-          loader->request_mode());
-
-  if (corb_analyzer->ShouldBlock()) {
-    loader->BlockResponseForCorb(std::move(response_head));
-    return;
+  auto corb_analyzer = corb::ResponseAnalyzer::Create();
+  auto decision =
+      corb_analyzer->Init(loader->url(), loader->request_initiator(),
+                          loader->request_mode(), *response_head);
+  switch (decision) {
+    case network::corb::ResponseAnalyzer::Decision::kBlock:
+      loader->BlockResponseForCorb(std::move(response_head));
+      return;
+    case network::corb::ResponseAnalyzer::Decision::kAllow:
+    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+      break;
   }
 
   loader->OnResponse(std::move(response_head));

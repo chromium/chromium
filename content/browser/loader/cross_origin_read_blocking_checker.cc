@@ -9,7 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -101,26 +101,30 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     : callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 
-  corb_analyzer_ =
-      std::make_unique<network::CrossOriginReadBlocking::ResponseAnalyzer>(
-          request.url, request.request_initiator, response, request.mode);
-  if (corb_analyzer_->ShouldBlock()) {
-    OnBlocked();
-    return;
+  corb_analyzer_ = network::corb::ResponseAnalyzer::Create();
+  auto decision = corb_analyzer_->Init(request.url, request.request_initiator,
+                                       request.mode, response);
+  switch (decision) {
+    case network::corb::ResponseAnalyzer::Decision::kBlock:
+      OnBlocked();
+      return;
+
+    case network::corb::ResponseAnalyzer::Decision::kAllow:
+      OnAllowed();
+      return;
+
+    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+      blob_io_state_ = std::make_unique<BlobIOState>(
+          weak_factory_.GetWeakPtr(),
+          std::make_unique<storage::BlobDataHandle>(blob_data_handle));
+      // base::Unretained is safe because |blob_io_state_| will be deleted on
+      // the IO thread.
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&BlobIOState::StartSniffing,
+                                    base::Unretained(blob_io_state_.get())));
+      return;
   }
-  if (corb_analyzer_->needs_sniffing()) {
-    blob_io_state_ = std::make_unique<BlobIOState>(
-        weak_factory_.GetWeakPtr(),
-        std::make_unique<storage::BlobDataHandle>(blob_data_handle));
-    // base::Unretained is safe because |blob_io_state_| will be deleted on
-    // the IO thread.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&BlobIOState::StartSniffing,
-                                  base::Unretained(blob_io_state_.get())));
-    return;
-  }
-  DCHECK(corb_analyzer_->ShouldAllow());
-  OnAllowed();
+  NOTREACHED();  // Unrecognized `decision` value?
 }
 
 CrossOriginReadBlockingChecker::~CrossOriginReadBlockingChecker() {
@@ -155,12 +159,20 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     return;
   }
   base::StringPiece data(buffer->data(), bytes_read);
-  corb_analyzer_->SniffResponseBody(data);
-  if (corb_analyzer_->ShouldBlock()) {
-    OnBlocked();
-    return;
+  switch (corb_analyzer_->Sniff(data)) {
+    case network::corb::ResponseAnalyzer::Decision::kBlock:
+      OnBlocked();
+      return;
+
+    // When there is no more data to sniff (this is the case here), CORB treats
+    // kSniffMore as kAllow (for CORB kSniffMore at this point means that the
+    // response body didn't sniff as sensitive html/json/xml).
+    case network::corb::ResponseAnalyzer::Decision::kAllow:
+    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+      OnAllowed();
+      return;
   }
-  OnAllowed();
+  NOTREACHED();  // Unrecognized `decision` value?
 }
 
 }  // namespace content

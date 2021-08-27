@@ -28,6 +28,7 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -266,7 +267,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     }
 
     // Send sanitized response.
-    network::CrossOriginReadBlocking::SanitizeBlockedResponse(response_.get());
+    network::corb::SanitizeBlockedResponseHeaders(*response_);
     client_->OnReceiveResponse(std::move(response_));
 
     // Send an empty response's body.

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/opaque_response_blocking.h"
+#include "services/network/public/cpp/corb/orb_impl.h"
+
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "url/gurl.h"
 
 namespace network {
+namespace corb {
 namespace {
 
 // ResourceType::kImage from resource_load_info.mojom
@@ -97,7 +99,7 @@ class TestInputBuilder {
 };
 
 void LogUmaForOpaqueResponseBlocking(const TestInput& test_input) {
-  network::LogUmaForOpaqueResponseBlocking(
+  network::corb::LogUmaForOpaqueResponseBlocking(
       test_input.request_url, test_input.request_initiator,
       test_input.request_mode, test_input.request_destination,
       *test_input.response);
@@ -258,4 +260,5 @@ TEST(OpaqueResponseBlocking, HttpStatusCodes) {
 }
 
 }  // namespace
+}  // namespace corb
 }  // namespace network

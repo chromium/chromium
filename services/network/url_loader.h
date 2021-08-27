@@ -29,8 +29,8 @@
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -459,7 +459,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
   // Sniffing state.
-  std::unique_ptr<CrossOriginReadBlocking::ResponseAnalyzer> corb_analyzer_;
+  std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
   bool is_more_corb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
 
