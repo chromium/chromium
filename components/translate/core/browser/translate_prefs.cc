@@ -941,24 +941,25 @@ void TranslatePrefs::RegisterProfilePrefs(
 }
 
 void TranslatePrefs::MigrateNeverPromptSites() {
-  // Migration should only be necessary once but there could still be old
-  // Chrome instances that sync the old preference, so do it once per
-  // startup.
-  static bool migrated = false;
-  if (migrated)
-    return;
+  // Migration copies any sites on the deprecated never prompt pref to
+  // the new version and clears all references to the old one. This will
+  // make subsequent calls to migrate no-ops.
   DictionaryPrefUpdate never_prompt_list_update(prefs_,
                                                 kPrefNeverPromptSitesWithTime);
   base::Value* never_prompt_list = never_prompt_list_update.Get();
   if (never_prompt_list) {
-    const base::Value* list = prefs_->GetList(kPrefNeverPromptSitesDeprecated);
-    for (auto& site : list->GetList()) {
-      if (!never_prompt_list->FindKey(site.GetString())) {
-        never_prompt_list->SetKey(site.GetString(), base::Value(0));
+    ListPrefUpdate deprecated_prompt_list_update(
+        prefs_, kPrefNeverPromptSitesDeprecated);
+    base::Value* deprecated_list = deprecated_prompt_list_update.Get();
+    for (auto& site : deprecated_list->GetList()) {
+      if (!never_prompt_list->FindKey(site.GetString()) ||
+          !base::ValueToTime(never_prompt_list->FindKey(site.GetString()))) {
+        never_prompt_list->SetKey(site.GetString(),
+                                  base::TimeToValue(base::Time::Now()));
       }
     }
+    deprecated_list->ClearList();
   }
-  migrated = true;
 }
 
 bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
