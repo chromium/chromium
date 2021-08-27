@@ -121,27 +121,6 @@ void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
   NOTREACHED();
 }
 
-void DummyModulator::RegisterImportMap(
-    const ImportMap*,
-    absl::optional<ImportMapError> error_to_rethrow) {
-  NOTREACHED();
-}
-
-Modulator::AcquiringImportMapsState
-DummyModulator::GetAcquiringImportMapsState() const {
-  NOTREACHED();
-  return AcquiringImportMapsState::kAcquiring;
-}
-
-void DummyModulator::SetAcquiringImportMapsState(AcquiringImportMapsState) {
-  NOTREACHED();
-}
-
-const ImportMap* DummyModulator::GetImportMapForTest() const {
-  NOTREACHED();
-  return nullptr;
-}
-
 ModuleImportMeta DummyModulator::HostGetImportMetaProperties(
     v8::Local<v8::Module>) const {
   NOTREACHED();

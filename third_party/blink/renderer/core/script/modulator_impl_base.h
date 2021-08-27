@@ -80,16 +80,7 @@ class ModulatorImplBase : public Modulator {
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  const ImportMap* GetImportMapForTest() const final { return import_map_; }
 
-  void RegisterImportMap(const ImportMap*,
-                         absl::optional<ImportMapError> error_to_rethrow) final;
-  AcquiringImportMapsState GetAcquiringImportMapsState() const final {
-    return acquiring_import_maps_;
-  }
-  void SetAcquiringImportMapsState(AcquiringImportMapsState value) final {
-    acquiring_import_maps_ = value;
-  }
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   ModuleType ModuleTypeFromRequest(
@@ -112,14 +103,6 @@ class ModulatorImplBase : public Modulator {
   Member<ModuleTreeLinkerRegistry> tree_linker_registry_;
   Member<ModuleRecordResolver> module_record_resolver_;
   Member<DynamicModuleResolver> dynamic_module_resolver_;
-
-  Member<const ImportMap> import_map_;
-
-  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
-  // Each Document has an acquiring import maps boolean. It is initially true.
-  // [spec text]
-  AcquiringImportMapsState acquiring_import_maps_ =
-      AcquiringImportMapsState::kAcquiring;
 };
 
 }  // namespace blink

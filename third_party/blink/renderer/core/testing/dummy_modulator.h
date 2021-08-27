@@ -63,14 +63,8 @@ class DummyModulator : public Modulator {
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  void RegisterImportMap(
-      const ImportMap*,
-      absl::optional<ImportMapError> error_to_rethrow) override;
-  AcquiringImportMapsState GetAcquiringImportMapsState() const override;
-  void SetAcquiringImportMapsState(AcquiringImportMapsState) override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
-  const ImportMap* GetImportMapForTest() const override;
   ModuleType ModuleTypeFromRequest(
       const ModuleRequest& module_request) const override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(

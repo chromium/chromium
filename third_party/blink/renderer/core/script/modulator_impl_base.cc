@@ -124,10 +124,10 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // cases.
 
   absl::optional<KURL> mapped_url;
-  if (import_map_) {
+  if (GetImportMap()) {
     String import_map_debug_message;
-    mapped_url = import_map_->Resolve(parsed_specifier, base_url,
-                                      &import_map_debug_message);
+    mapped_url = GetImportMap()->Resolve(parsed_specifier, base_url,
+                                         &import_map_debug_message);
 
     // Output the resolution log. This is too verbose to be always shown, but
     // will be helpful for Web developers (and also Chromium developers) for
@@ -166,39 +166,6 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
     case ParsedSpecifier::Type::kURL:
       return parsed_specifier.GetUrl();
   }
-}
-
-// <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
-void ModulatorImplBase::RegisterImportMap(
-    const ImportMap* import_map,
-    absl::optional<ImportMapError> error_to_rethrow) {
-  DCHECK(import_map);
-
-  // <spec step="7">If import map parse result’s error to rethrow is not null,
-  // then:</spec>
-  if (error_to_rethrow.has_value()) {
-    // <spec step="7.1">Report the exception given import map parse result’s
-    // error to rethrow. ...</spec>
-    if (!IsScriptingDisabled()) {
-      ScriptState::Scope scope(script_state_);
-      ModuleRecord::ReportException(script_state_,
-                                    error_to_rethrow->ToV8(script_state_));
-    }
-
-    // <spec step="7.2">Return.</spec>
-    return;
-  }
-
-  // <spec step="8">Update element’s node document's import map with import map
-  // parse result’s import map.</spec>
-  //
-  // TODO(crbug.com/927119): Implement merging. Currently only one import map is
-  // allowed.
-
-  // Because the second and subsequent import maps are already rejected in
-  // ScriptLoader::PrepareScript(), this is called only once.
-  DCHECK(!import_map_);
-  import_map_ = import_map;
 }
 
 bool ModulatorImplBase::HasValidContext() {
@@ -320,7 +287,6 @@ void ModulatorImplBase::Trace(Visitor* visitor) const {
   visitor->Trace(tree_linker_registry_);
   visitor->Trace(module_record_resolver_);
   visitor->Trace(dynamic_module_resolver_);
-  visitor->Trace(import_map_);
 
   Modulator::Trace(visitor);
 }

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -75,7 +76,28 @@ void PendingImportMap::RegisterImportMap() {
 
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
-  modulator->RegisterImportMap(import_map_, std::move(error_to_rethrow_));
+
+  // <spec step="7">If import map parse result’s error to rethrow is not null,
+  // then:</spec>
+  if (error_to_rethrow_.has_value()) {
+    // <spec step="7.1">Report the exception given import map parse result’s
+    // error to rethrow. ...</spec>
+    if (ExecutionContext::From(script_state)
+            ->CanExecuteScripts(kAboutToExecuteScript)) {
+      ModuleRecord::ReportException(script_state,
+                                    error_to_rethrow_->ToV8(script_state));
+    }
+
+    // <spec step="7.2">Return.</spec>
+    return;
+  }
+
+  // <spec step="8">Update element’s node document's import map with import map
+  // parse result’s import map.</spec>
+  //
+  // TODO(crbug.com/927119): Implement merging. Currently only one import map
+  // is allowed.
+  modulator->SetImportMap(import_map_);
 
   // <spec step="9">If element is from an external file, then fire an event
   // named load at element.</spec>
