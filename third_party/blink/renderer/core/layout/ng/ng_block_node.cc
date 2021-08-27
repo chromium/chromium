@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -731,8 +732,12 @@ void NGBlockNode::FinishLayout(
       box_->LayoutIfNeeded();
     else
       box_->ForceLayout();
-    DCHECK_EQ(box_->Size(), physical_fragment.Size().ToLayoutSize())
-        << "Legacy layout was supposed to use the size that NG computed";
+
+    // Round to Int in this DCHECK because legacy sends LayoutUnit to float and
+    // back, which can change the LayoutUnit's raw value.
+    DCHECK_EQ(RoundedIntSize(PhysicalSize(box_->Size())),
+              RoundedIntSize(physical_fragment.Size()))
+        << "Legacy was supposed to use the size that NG computed.";
   }
 
   if (physical_fragment.IsOnlyForNode()) {
