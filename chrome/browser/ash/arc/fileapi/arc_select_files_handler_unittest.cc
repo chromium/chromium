@@ -212,6 +212,34 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo) {
   arc_select_files_handler_->SelectFiles(request, callback.Get());
 }
 
+TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_UnknownExtension) {
+  SelectFilesRequestPtr request = SelectFilesRequest::New();
+  request->action_type = SelectFilesActionType::OPEN_DOCUMENT;
+  request->mime_types.push_back("text/plain");
+  request->mime_types.push_back("unknown/mime_type");
+  request->task_id = 1234;
+
+  SelectFileDialog::FileTypeInfo expected_file_type_info;
+  expected_file_type_info.allowed_paths =
+      SelectFileDialog::FileTypeInfo::ANY_PATH;
+  std::vector<base::FilePath::StringType> extensions;
+  extensions.push_back("text");
+  extensions.push_back("txt");
+  expected_file_type_info.extensions.push_back(extensions);
+  // include_all_files should be enabled when there is unknown MIME type.
+  expected_file_type_info.include_all_files = true;
+
+  EXPECT_CALL(
+      *mock_dialog_holder_,
+      SelectFile(_, _,
+                 testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
+                 1234, _, _))
+      .Times(1);
+
+  base::MockCallback<SelectFilesCallback> callback;
+  arc_select_files_handler_->SelectFiles(request, callback.Get());
+}
+
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_Asterisk) {
   SelectFilesRequestPtr request = SelectFilesRequest::New();
   request->action_type = SelectFilesActionType::OPEN_DOCUMENT;
