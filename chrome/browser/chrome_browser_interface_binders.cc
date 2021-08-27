@@ -250,6 +250,8 @@
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/telemetry_extension_ui.h"
+#include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"
+#include "chromeos/components/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -937,6 +939,12 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+  if (chromeos::features::IsDemoModeSWAEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::mojom::demo_mode::PageHandlerFactory,
+        chromeos::DemoModeAppUI>(map);
+  }
+
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::health::mojom::DiagnosticsService, chromeos::TelemetryExtensionUI>(

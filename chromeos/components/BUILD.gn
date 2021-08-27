@@ -73,4 +73,13 @@ group("closure_compile") {
     "//chromeos/components/print_management:closure_compile",
     "//chromeos/components/system_apps:closure_compile",
   ]
+
+  if (!is_official_build) {
+    deps += [
+      # TODO (https://crbug.com/1164001): move
+      # //chromeos/components/demo_mode_app_ui/ WebUI directory to
+      # //ash/webui/demo_mode_app_ui
+      "//chromeos/components/demo_mode_app_ui:closure_compile",
+    ]
+  }
 }

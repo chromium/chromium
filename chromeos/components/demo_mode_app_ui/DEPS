@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/grit/chromeos_demo_mode_app_resources.h",
   "+content/public/browser",
+  "+ui/views",
   "+ui/webui",
 ]
