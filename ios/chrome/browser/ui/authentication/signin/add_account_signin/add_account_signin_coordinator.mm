@@ -5,18 +5,23 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,6 +47,8 @@ using signin_metrics::PromoAction;
 @property(nonatomic, assign) PromoAction promoAction;
 // Add account sign-in intent.
 @property(nonatomic, assign, readonly) AddAccountSigninIntent signinIntent;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -97,6 +104,10 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
+  self.accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   ChromeIdentityInteractionManager* identityInteractionManager =
       ios::GetChromeBrowserProvider()
           .GetChromeIdentityService()
@@ -129,6 +140,8 @@ using signin_metrics::PromoAction;
   DCHECK(error);
   __weak AddAccountSigninCoordinator* weakSelf = self;
   ProceduralBlock dismissAction = ^{
+    [weakSelf.alertCoordinator stop];
+    weakSelf.alertCoordinator = nil;
     [weakSelf addAccountSigninManagerFinishedWithSigninResult:
                   SigninCoordinatorResultCanceledByUser
                                                      identity:nil];
@@ -157,6 +170,22 @@ using signin_metrics::PromoAction;
     [self addAccountDoneWithSigninResult:signinResult identity:nil];
     return;
   }
+
+  if (signinResult == SigninCoordinatorResultSuccess &&
+      !self.accountManagerService->IsValidIdentity(identity)) {
+    [self presentSignInWithRestrictedAccountAlert];
+    return;
+  }
+
+  [self continueAddAccountFlowWithSigninResult:signinResult identity:identity];
+}
+
+#pragma mark - Private
+
+// Continues the sign-in workflow according to the sign-in intent
+- (void)continueAddAccountFlowWithSigninResult:
+            (SigninCoordinatorResult)signinResult
+                                      identity:(ChromeIdentity*)identity {
   switch (self.signinIntent) {
     case AddAccountSigninIntentReauthPrimaryAccount: {
       [self presentUserConsentWithIdentity:identity];
@@ -169,7 +198,31 @@ using signin_metrics::PromoAction;
   }
 }
 
-#pragma mark - Private
+// Presents an alert when sign in with a restricted account and then continue
+// the sign-in workflow.
+- (void)presentSignInWithRestrictedAccountAlert {
+  self.alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:l10n_util::GetNSString(
+                                     IDS_IOS_SIGN_IN_INVALID_ACCOUNT_TITLE)
+                         message:l10n_util::GetNSString(
+                                     IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE)];
+
+  __weak __typeof(self) weakSelf = self;
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                action:^{
+                  [weakSelf.alertCoordinator stop];
+                  weakSelf.alertCoordinator = nil;
+                  [weakSelf continueAddAccountFlowWithSigninResult:
+                                SigninCoordinatorResultCanceledByUser
+                                                          identity:nil];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self.alertCoordinator start];
+}
 
 // Runs callback completion on finishing the add account flow.
 - (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult

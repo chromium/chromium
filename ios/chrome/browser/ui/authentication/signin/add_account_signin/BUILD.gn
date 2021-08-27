@@ -16,6 +16,8 @@ source_set("add_account_signin") {
   deps = [
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/signin",
@@ -24,6 +26,7 @@ source_set("add_account_signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ui/base",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/authentication/signin:constants",

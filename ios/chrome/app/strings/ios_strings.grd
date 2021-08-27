@@ -2299,6 +2299,12 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGN_IN_FAILURE_TITLE" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
         Can't Sign In
       </message>
+      <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
+        Your device is managed. You can only sign in with your organization's account.
+      </message>
+      <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_TITLE" desc="Title of the alert displayed when the user sign in with a restricted account.">
+        Sign in with a Valid Account
+      </message>
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE" desc="The subtitle for the setting item to Sign in to Chrome [iOS only]">
         Get your bookmarks, history, passwords, and other settings on all your devices.
       </message>
