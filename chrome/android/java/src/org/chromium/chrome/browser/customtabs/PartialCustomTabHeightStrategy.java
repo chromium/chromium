@@ -211,7 +211,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
         mFullyExpandedAdjustmentHeight =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZEABLE_90_MAXIMUM_HEIGHT)
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT)
                 ? (int) ((mMaxHeight - getFullyExpandedYCoordinate()) * EXTRA_HEIGHT_RATIO)
                 : 0;
 
