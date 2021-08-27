@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -20,21 +21,21 @@ ShellPopupParams& ShellPopupParams::operator=(const ShellPopupParams&) =
     default;
 ShellPopupParams::~ShellPopupParams() = default;
 
-bool ShellPopupWrapper::CanGrabPopup(WaylandConnection* connection) const {
+absl::optional<wl::Serial> ShellPopupWrapper::GetSerialForGrab(
+    WaylandConnection* connection) const {
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
   // we try to create a popup and grab it, it will be immediately dismissed.
   // Thus, do not take explicit grab during drag process.
   if (connection->IsDragInProgress() || !connection->seat())
-    return false;
+    return absl::nullopt;
 
   // According to the definition of the xdg protocol, the grab request must be
   // used in response to some sort of user action like a button press, key
   // press, or touch down event.
-  auto serial = connection->serial_tracker().GetSerial(
-      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
-       wl::SerialType::kKeyPress});
-  return serial.has_value();
+  return connection->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                 wl::SerialType::kMousePress,
+                                                 wl::SerialType::kKeyPress});
 }
 
 void ShellPopupWrapper::FillAnchorData(

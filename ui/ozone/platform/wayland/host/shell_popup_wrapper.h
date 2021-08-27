@@ -5,10 +5,15 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_POPUP_WRAPPER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_POPUP_WRAPPER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+
+namespace wl {
+struct Serial;
+}
 
 namespace ui {
 
@@ -50,7 +55,9 @@ class ShellPopupWrapper {
   // Sets and gets the window geometry.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 
-  bool CanGrabPopup(WaylandConnection* connection) const;
+  // Returns the serial value for a popup grab, if there is one available.
+  absl::optional<wl::Serial> GetSerialForGrab(
+      WaylandConnection* connection) const;
 
   // Fills anchor data either from params.anchor or with default anchor
   // parameters if params.anchor is empty.

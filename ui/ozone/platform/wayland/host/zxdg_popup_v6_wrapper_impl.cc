@@ -171,9 +171,9 @@ bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
 
   zxdg_positioner_v6_destroy(positioner);
 
-  if (CanGrabPopup(connection_)) {
+  if (auto serial = GetSerialForGrab(connection_)) {
     zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat(),
-                       connection_->serial());
+                       serial->value);
   }
   zxdg_popup_v6_add_listener(zxdg_popup_v6_.get(), &zxdg_popup_v6_listener,
                              this);

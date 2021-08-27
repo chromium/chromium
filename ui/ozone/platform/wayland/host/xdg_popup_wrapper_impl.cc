@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
@@ -171,10 +172,9 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
 
   xdg_positioner_destroy(positioner);
 
-  if (CanGrabPopup(connection_)) {
-    xdg_popup_grab(xdg_popup_.get(), connection_->seat(),
-                   connection_->serial());
-  }
+  if (auto serial = GetSerialForGrab(connection_))
+    xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial->value);
+
   xdg_popup_add_listener(xdg_popup_.get(), &xdg_popup_listener, this);
 
   wayland_window_->root_surface()->Commit();
