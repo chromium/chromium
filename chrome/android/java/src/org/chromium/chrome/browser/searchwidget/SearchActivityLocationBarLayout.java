@@ -67,7 +67,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             boolean isVoiceSearchIntent, @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
         getAutocompleteCoordinator().prefetchZeroSuggestResults();
 
-        SearchActivityPreferencesManager.updateCachedValues(
+        SearchActivityPreferencesManager.setVoiceSearchAvailable(
                 voiceRecognitionHandler.isVoiceSearchEnabled());
 
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();

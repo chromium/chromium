@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARC
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_URL;
 
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +34,7 @@ import java.util.Arrays;
 /**
  * Facilitates access to and updates of the cached SearchActivityPreferences.
  */
-public class SearchActivityPreferencesManager {
+public class SearchActivityPreferencesManager implements LoadListener, TemplateUrlServiceObserver {
     /** Data-only class representiing current SearchActivity preferences. */
     public static final class SearchActivityPreferences {
         /** Name of the Default Search Engine. */
@@ -76,21 +75,6 @@ public class SearchActivityPreferencesManager {
         }
     }
 
-    /** Monitors the TemplateUrlService for changes, updating the widget when necessary. */
-    private final class SearchActivityTemplateUrlServiceObserver
-            implements LoadListener, TemplateUrlServiceObserver {
-        @Override
-        public void onTemplateUrlServiceLoaded() {
-            TemplateUrlServiceFactory.get().unregisterLoadListener(this);
-            updateCachedValues();
-        }
-
-        @Override
-        public void onTemplateURLServiceChanged() {
-            updateCachedValues();
-        }
-    }
-
     /**
      * The default/fallback value describing Voice Search availability.
      * This value will be used unless voice search is detected as unavailable.
@@ -105,8 +89,6 @@ public class SearchActivityPreferencesManager {
     private static @Nullable SearchActivityPreferencesManager sInstance;
     private final @NonNull ObserverList<Consumer<SearchActivityPreferences>> mObservers =
             new ObserverList<>();
-    private final @NonNull SearchActivityTemplateUrlServiceObserver mTemplateUrlServiceObserver =
-            new SearchActivityTemplateUrlServiceObserver();
     private @NonNull SearchActivityPreferences mCurrentlyLoadedPreferences;
 
     /**
@@ -155,41 +137,20 @@ public class SearchActivityPreferencesManager {
     }
 
     /**
-     * Update availability of Search Activity features.
+     * Update availability of Voice Search features.
      * The updated information will be retained to disk for possible use at a later time.
      * If new values are different than current values, the update will be propagated to registered
      * listeners.
      *
      * @param voiceSearchAvailable Whether VoiceSearch is available.
      */
-    public static void updateCachedValues(boolean voiceSearchAvailable) {
-        assert LibraryLoader.getInstance().isInitialized();
-        Pair<String, String> defaultSearchEngine = getDefaultSearchEngine();
-        String searchEngineName = null;
-        String searchEngineUrl = null;
-        if (defaultSearchEngine != null) {
-            searchEngineName = defaultSearchEngine.first;
-            searchEngineUrl = defaultSearchEngine.second;
-        }
-
-        // TODO(crbug/1213541): Update the googleLensAvailable parameter with appropriate call to
-        // LensSdkUtils. Until we can get the detection completed fall back to safe defaults.
-        SearchActivityPreferences prefs = new SearchActivityPreferences(searchEngineName,
-                searchEngineUrl, voiceSearchAvailable,
-                /* googleLensAvailable=*/false);
-        setCurrentlyLoadedPreferences(prefs, true);
-    }
-
-    /**
-     * Update availability of Search Activity features.
-     * Assumes the VoiceSearch availability remains unchanged.
-     * The updated information will be retained to disk for possible use at a later time.
-     * If new values are different than current values, the update will be propagated to registered
-     * listeners.
-     */
-    public static void updateCachedValues() {
+    public static void setVoiceSearchAvailable(boolean voiceSearchAvailable) {
         SearchActivityPreferencesManager self = get();
-        updateCachedValues(self.mCurrentlyLoadedPreferences.voiceSearchAvailable);
+        setCurrentlyLoadedPreferences(
+                new SearchActivityPreferences(self.mCurrentlyLoadedPreferences.searchEngineName,
+                        self.mCurrentlyLoadedPreferences.searchEngineUrl, voiceSearchAvailable,
+                        self.mCurrentlyLoadedPreferences.googleLensAvailable),
+                true);
     }
 
     /**
@@ -266,21 +227,18 @@ public class SearchActivityPreferencesManager {
         assert LibraryLoader.getInstance().isInitialized();
         SearchActivityPreferencesManager self = get();
         TemplateUrlService service = TemplateUrlServiceFactory.get();
-        service.registerLoadListener(self.mTemplateUrlServiceObserver);
-        service.addObserver(self.mTemplateUrlServiceObserver);
+        service.registerLoadListener(self);
+        service.addObserver(self);
         if (!service.isLoaded()) {
             service.load();
         }
     }
 
     /**
-     * Retrieve the current search engine name and URL, or null if not possible at this time.
+     * Retrieve the current search engine name and URL and update cached preferences.
      * Requires that the Native libraries are initialized.
-     *
-     * @return The currently selected search engine name and URL, if available, otherwise null is
-     *         returned.
      */
-    private static @Nullable Pair<String, String> getDefaultSearchEngine() {
+    private void updateDefaultSearchEngineInfo() {
         assert LibraryLoader.getInstance().isInitialized();
         // Getting an instance of the TemplateUrlService requires that the native library be
         // loaded, but the TemplateUrlService also itself needs to be initialized.
@@ -289,11 +247,26 @@ public class SearchActivityPreferencesManager {
 
         // Update the URL that we show for zero-suggest.
         TemplateUrl dseTemplateUrl = service.getDefaultSearchEngineTemplateUrl();
-        if (dseTemplateUrl == null) return null;
+        if (dseTemplateUrl == null) return;
 
         GURL url = new GURL(service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword()));
 
-        return new Pair<>(dseTemplateUrl.getShortName(), url.getOrigin().getSpec());
+        setCurrentlyLoadedPreferences(
+                new SearchActivityPreferences(dseTemplateUrl.getShortName(),
+                        url.getOrigin().getSpec(), mCurrentlyLoadedPreferences.voiceSearchAvailable,
+                        mCurrentlyLoadedPreferences.googleLensAvailable),
+                true);
+    }
+
+    @Override
+    public void onTemplateUrlServiceLoaded() {
+        TemplateUrlServiceFactory.get().unregisterLoadListener(this);
+        updateDefaultSearchEngineInfo();
+    }
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        updateDefaultSearchEngineInfo();
     }
 
     /**
