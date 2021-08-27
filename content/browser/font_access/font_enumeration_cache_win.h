@@ -54,18 +54,7 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   void SchedulePrepareFontEnumerationCache() override;
 
  private:
-  void InitializeDirectWrite();
   void PrepareFontEnumerationCache();
-  void AppendFontDataAndFinalizeIfNeeded(
-      std::unique_ptr<FamilyDataResult> family_data_result);
-  void FinalizeEnumerationCache();
-
-  bool direct_write_initialized_ = false;
-  Microsoft::WRL::ComPtr<IDWriteFontCollection> collection_;
-  uint32_t outstanding_family_results_ = 0;
-
-  // Protobuf structure temporarily used during cache construction and shared.
-  std::unique_ptr<blink::FontEnumerationTable> font_enumeration_table_;
 };
 
 }  // namespace content

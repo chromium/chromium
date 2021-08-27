@@ -214,68 +214,6 @@ float DWriteStretchToWebStretch(DWRITE_FONT_STRETCH stretch) {
   return 1.0f;
 }
 
-std::unique_ptr<content::FontEnumerationCacheWin::FamilyDataResult>
-ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
-                       uint32_t family_index,
-                       const std::string& locale) {
-  auto family_result =
-      std::make_unique<content::FontEnumerationCacheWin::FamilyDataResult>();
-  family_result->fonts =
-      std::vector<blink::FontEnumerationTable_FontMetadata>();
-
-  Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
-  HRESULT hr = collection->GetFontFamily(family_index, &family);
-  if (FAILED(hr))
-    return family_result;
-
-  absl::optional<std::string> native_family_name = GetFamilyName(family.Get());
-
-  uint32_t font_count = family->GetFontCount();
-  for (uint32_t font_index = 0; font_index < font_count; ++font_index) {
-    Microsoft::WRL::ComPtr<IDWriteFont> font;
-    {
-      base::ScopedBlockingCall scoped_blocking_call(
-          FROM_HERE, base::BlockingType::MAY_BLOCK);
-      hr = family->GetFont(font_index, &font);
-    }
-
-    if (FAILED(hr))
-      return family_result;
-
-    // Skip this font if it's a simulation.
-    if (font->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE)
-      continue;
-
-    absl::optional<std::string> native_postscript_name =
-        GetFontPostScriptName(font.Get());
-    if (!native_postscript_name)
-      return family_result;
-
-    absl::optional<std::string> localized_full_name =
-        GetFontFullName(font.Get(), locale);
-    if (!localized_full_name)
-      localized_full_name = native_postscript_name;
-
-    absl::optional<std::string> native_style_name =
-        GetFontStyleName(font.Get());
-    if (!native_style_name)
-      return family_result;
-
-    blink::FontEnumerationTable_FontMetadata metadata;
-    metadata.set_postscript_name(native_postscript_name.value());
-    metadata.set_full_name(localized_full_name.value());
-    metadata.set_family(native_family_name.value());
-    metadata.set_style(native_style_name ? native_style_name.value() : "");
-    metadata.set_italic(DWriteStyleToWebItalic(font->GetStyle()));
-    metadata.set_weight(DWriteWeightToWebWeight(font->GetWeight()));
-    metadata.set_stretch(DWriteStretchToWebStretch(font->GetStretch()));
-
-    family_result->fonts.push_back(std::move(metadata));
-  }
-
-  return family_result;
-}
-
 }  // namespace
 
 // static
@@ -298,22 +236,8 @@ FontEnumerationCacheWin::~FontEnumerationCacheWin() = default;
 FontEnumerationCacheWin::FamilyDataResult::~FamilyDataResult() = default;
 FontEnumerationCacheWin::FamilyDataResult::FamilyDataResult() = default;
 
-void FontEnumerationCacheWin::InitializeDirectWrite() {
-  if (direct_write_initialized_)
-    return;
-
-  direct_write_initialized_ = true;
-  collection_ = GetSystemFonts();
-}
-
 void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
-
-  {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    InitializeDirectWrite();
-  }
 
   scoped_refptr<base::SequencedTaskRunner> results_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -329,74 +253,81 @@ void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
 void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
   DCHECK(!enumeration_cache_built_->IsSet());
 
-  font_enumeration_table_ = std::make_unique<blink::FontEnumerationTable>();
+  auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
 
+  Microsoft::WRL::ComPtr<IDWriteFontCollection> collection = GetSystemFonts();
+  uint32_t family_count;
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    outstanding_family_results_ = collection_->GetFontFamilyCount();
+    family_count = collection->GetFontFamilyCount();
   }
 
   std::string locale =
       locale_override_.value_or(base::i18n::GetConfiguredLocale());
 
-  for (uint32_t family_index = 0; family_index < outstanding_family_results_;
-       ++family_index) {
-    // Specify base::ThreadPolicy::MUST_USE_FOREGROUND because a priority
-    // inversion was observed https://crbug.com/960263 for the enumeration
-    // of font names for @font-face src local matching.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::ThreadPolicy::MUST_USE_FOREGROUND},
-        base::BindOnce(&ExtractNamesFromFamily, collection_, family_index,
-                       locale),
-        base::BindOnce(
-            &FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded,
-            // Safe because this is an initialized singleton.
-            base::Unretained(this)));
-  }
-}
-
-void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
-    std::unique_ptr<FamilyDataResult> family_data_result) {
-  outstanding_family_results_--;
-
-  // If this task's response came late for some reason, we do not need the
-  // results anymore and the table was already finalized.
-  if (enumeration_cache_built_->IsSet())
-    return;
-
   // Used to filter duplicates.
   std::set<std::string> fonts_seen;
-  for (const auto& font_meta : family_data_result->fonts) {
-    const std::string& postscript_name = font_meta.postscript_name();
 
-    auto it_and_success = fonts_seen.emplace(postscript_name);
-    if (!it_and_success.second) {
-      // Skip duplicates.
+  for (uint32_t family_index = 0; family_index < family_count; ++family_index) {
+    Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
+    HRESULT hr = collection->GetFontFamily(family_index, &family);
+    if (FAILED(hr))
       continue;
+
+    absl::optional<std::string> family_name = GetFamilyName(family.Get());
+
+    uint32_t font_count = family->GetFontCount();
+    for (uint32_t font_index = 0; font_index < font_count; ++font_index) {
+      Microsoft::WRL::ComPtr<IDWriteFont> font;
+      {
+        base::ScopedBlockingCall scoped_blocking_call(
+            FROM_HERE, base::BlockingType::MAY_BLOCK);
+        hr = family->GetFont(font_index, &font);
+      }
+
+      if (FAILED(hr))
+        continue;
+
+      // Skip this font if it's a simulation.
+      if (font->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE)
+        continue;
+
+      absl::optional<std::string> postscript_name =
+          GetFontPostScriptName(font.Get());
+      if (!postscript_name)
+        continue;
+
+      auto it_and_success = fonts_seen.emplace(postscript_name.value());
+      if (!it_and_success.second) {
+        // Skip duplicates.
+        continue;
+      }
+
+      absl::optional<std::string> localized_full_name =
+          GetFontFullName(font.Get(), locale);
+      if (!localized_full_name)
+        localized_full_name = postscript_name;
+
+      absl::optional<std::string> style_name = GetFontStyleName(font.Get());
+      if (!style_name)
+        continue;
+
+      blink::FontEnumerationTable_FontMetadata* metadata =
+          font_enumeration_table->add_fonts();
+      metadata->set_postscript_name(std::move(postscript_name).value());
+      metadata->set_full_name(std::move(localized_full_name).value());
+      metadata->set_family(std::move(family_name).value());
+      metadata->set_style(style_name ? std::move(style_name.value())
+                                     : std::string());
+      metadata->set_italic(DWriteStyleToWebItalic(font->GetStyle()));
+      metadata->set_weight(DWriteWeightToWebWeight(font->GetWeight()));
+      metadata->set_stretch(DWriteStretchToWebStretch(font->GetStretch()));
     }
-
-    blink::FontEnumerationTable_FontMetadata* added_font_meta =
-        font_enumeration_table_->add_fonts();
-    *added_font_meta = font_meta;
   }
 
-  if (!outstanding_family_results_) {
-    FinalizeEnumerationCache();
-  }
-}
-
-void FontEnumerationCacheWin::FinalizeEnumerationCache() {
-  DCHECK(!enumeration_cache_built_->IsSet());
-
-  // Ensures that the FontEnumerationTable gets released when this function goes
-  // out of scope.
-  std::unique_ptr<blink::FontEnumerationTable> enumeration_table(
-      std::move(font_enumeration_table_));
-  BuildEnumerationCache(std::move(enumeration_table));
+  BuildEnumerationCache(std::move(font_enumeration_table));
 
   // Respond to pending and future requests.
   StartCallbacksTaskQueue();
