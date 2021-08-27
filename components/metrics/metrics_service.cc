@@ -498,9 +498,17 @@ void MetricsService::InitializeMetricsState() {
   if (!state_manager_->clean_exit_beacon()->exited_cleanly()) {
     provider.LogCrash(
         state_manager_->clean_exit_beacon()->browser_last_live_timestamp());
-    // Reset flag, and wait until we call LogNeedForCleanShutdown() before
-    // monitoring.
+#if defined(OS_ANDROID)
+    // Android can have background sessions in which Chrome may not come to the
+    // foreground, so signal that Chrome should stop watching for crashes. If
+    // and when the app enters the foreground, Chrome starts watching for
+    // crashes via MetricsService::OnAppEnterForeground().
+    //
+    // TODO(crbug/1243895): Watch for crashes here by skipping the call to
+    // WriteBeaconValue() in sessions in which Chrome will come to the
+    // foreground.
     state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
+#endif  // defined(OS_ANDROID)
   }
 
   // HasPreviousSessionData is called first to ensure it is never bypassed.
