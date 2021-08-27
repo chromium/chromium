@@ -115,11 +115,6 @@ def try_builder(
     experiments = experiments or {}
 
     merged_resultdb_bigquery_exports = [
-        # TODO(crbug.com/1230801): Remove when all usages of this table have
-        # been migrated to `chrome-luci-data.chromium.try_test_results`.
-        resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.try_test_results",
-        ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.try_test_results",
         ),
