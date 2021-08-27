@@ -152,13 +152,18 @@ class BinaryUploadServiceTest : public testing::Test {
             Invoke([id](BinaryFCMService::GetInstanceIDCallback callback) {
               std::move(callback).Run(id);
             }));
-    EXPECT_CALL(*fcm_service_, UnregisterInstanceID(id, _))
-        .Times(times)
-        .WillRepeatedly(
-            Invoke([](const std::string& token,
-                      BinaryFCMService::UnregisterInstanceIDCallback callback) {
-              std::move(callback).Run(true);
-            }));
+
+    if (id == BinaryFCMService::kInvalidId) {
+      EXPECT_CALL(*fcm_service_, UnregisterInstanceID(id, _)).Times(0);
+    } else {
+      EXPECT_CALL(*fcm_service_, UnregisterInstanceID(id, _))
+          .Times(times)
+          .WillRepeatedly(Invoke(
+              [](const std::string& token,
+                 BinaryFCMService::UnregisterInstanceIDCallback callback) {
+                std::move(callback).Run(true);
+              }));
+    }
   }
 
   void UploadForDeepScanning(
@@ -269,6 +274,23 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
+TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
+  BinaryUploadService::Result scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+
+  std::unique_ptr<MockRequest> request =
+      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
+
+  ExpectInstanceID(BinaryFCMService::kInvalidId);
+
+  service_->MaybeUploadForDeepScanning(std::move(request));
+  content::RunAllTasksUntilIdle();
+
+  // The auth request not getting an instance ID means that the result for the
+  // real request is UNAUTHORIZED.
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
+}
+
 TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -283,6 +305,24 @@ TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UPLOAD_FAILURE);
+}
+
+TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
+  BinaryUploadService::Result scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request =
+      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
+
+  ExpectInstanceID("valid id");
+  ExpectNetworkResponse(false,
+                        enterprise_connectors::ContentAnalysisResponse());
+
+  service_->MaybeUploadForDeepScanning(std::move(request));
+  content::RunAllTasksUntilIdle();
+
+  // The auth request failing to upload means that the result for the real
+  // request is UNAUTHORIZED.
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
 TEST_F(BinaryUploadServiceTest, HoldsScanResponsesUntilAllReady) {
@@ -370,6 +410,37 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   // Expect nothing to change if the InstanceID returns after the timeout.
   std::move(instance_id_callback).Run("valid id");
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
+}
+
+TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout_Authentication) {
+  BinaryUploadService::Result scanning_result =
+      BinaryUploadService::Result::UNKNOWN;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request =
+      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
+  request->add_tag("dlp");
+  request->add_tag("malware");
+
+  BinaryFCMService::GetInstanceIDCallback instance_id_callback;
+  ON_CALL(*fcm_service_, GetInstanceID(_))
+      .WillByDefault(
+          Invoke([&instance_id_callback](
+                     BinaryFCMService::GetInstanceIDCallback callback) {
+            instance_id_callback = std::move(callback);
+          }));
+
+  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
+  service_->MaybeUploadForDeepScanning(std::move(request));
+  content::RunAllTasksUntilIdle();
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(300));
+
+  // The auth request timing out means that the result for the real request is
+  // UNAUTHORIZED.
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
+
+  // Expect nothing to change if the InstanceID returns after the timeout.
+  std::move(instance_id_callback).Run("valid id");
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
 TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {

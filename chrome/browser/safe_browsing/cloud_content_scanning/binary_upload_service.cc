@@ -509,9 +509,10 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
 
   auto token_it = active_tokens_.find(request);
   DCHECK(token_it != active_tokens_.end());
-  if (binary_fcm_service_) {
+  if (binary_fcm_service_)
     binary_fcm_service_->ClearCallbackForToken(token_it->second);
 
+  if (binary_fcm_service_ && instance_id != BinaryFCMService::kInvalidId) {
     // The BinaryFCMService will handle all recoverable errors. In case of
     // unrecoverable error, there's nothing we can do here.
     binary_fcm_service_->UnregisterInstanceID(
@@ -519,7 +520,8 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
         base::BindOnce(&BinaryUploadService::InstanceIDUnregisteredCallback,
                        weakptr_factory_.GetWeakPtr(), dm_token, connector));
   } else {
-    // |binary_fcm_service_| can be null in tests, but
+    // `binary_fcm_service_` can be null in tests and `instance_id` can be
+    // invalid if getting an FCM token failed or timed out, but
     // InstanceIDUnregisteredCallback should be called anyway so the requests
     // waiting on authentication can complete.
     InstanceIDUnregisteredCallback(dm_token, connector, true);

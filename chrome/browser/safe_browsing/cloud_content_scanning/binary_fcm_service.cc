@@ -122,8 +122,14 @@ void BinaryFCMService::UnregisterInstanceID(
     if (instance_id_caller_counts_[instance_id] == 0) {
       UnregisterInstanceIDImpl(instance_id, std::move(callback));
       instance_id_caller_counts_.erase(instance_id);
+      return;
     }
   }
+
+  // `callback` should always run so that the final steps of a request always
+  // run. This is especially important if this is called for an auth request
+  // that shared `instance_id` with another request.
+  std::move(callback).Run(false);
 }
 
 void BinaryFCMService::SetQueuedOperationDelayForTesting(
