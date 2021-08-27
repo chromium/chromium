@@ -29,14 +29,20 @@ class TestObserver final : public ui::CompositorAnimationObserver {
 
 }  // namespace
 
-using OcclusionTrackerPauserTest = AshTestBase;
+class OcclusionTrackerPauserTest : public AshTestBase {
+ public:
+  OcclusionTrackerPauserTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~OcclusionTrackerPauserTest() override = default;
+};
 
 TEST_F(OcclusionTrackerPauserTest, Basic) {
   aura::WindowOcclusionTracker* tracker =
       aura::Env::GetInstance()->GetWindowOcclusionTracker();
 
   ASSERT_FALSE(tracker->IsPaused());
-  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta());
   EXPECT_TRUE(tracker->IsPaused());
 
   auto* compositor = Shell::GetPrimaryRootWindow()->GetHost()->compositor();
@@ -50,7 +56,8 @@ TEST_F(OcclusionTrackerPauserTest, Basic) {
 
   compositor->AddAnimationObserver(&observer1);
   EXPECT_FALSE(tracker->IsPaused());
-  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta());
   EXPECT_TRUE(tracker->IsPaused());
   compositor->AddAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
@@ -70,7 +77,8 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
 
   TestObserver observer1, observer2;
 
-  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta());
   EXPECT_TRUE(tracker->IsPaused());
   compositor1->AddAnimationObserver(&observer1);
   compositor2->AddAnimationObserver(&observer2);
@@ -81,7 +89,8 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
   EXPECT_FALSE(tracker->IsPaused());
 
   // Disconnect display.
-  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta());
   EXPECT_TRUE(tracker->IsPaused());
   compositor1->AddAnimationObserver(&observer1);
   compositor2->AddAnimationObserver(&observer2);
@@ -91,6 +100,33 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
   UpdateDisplay("800x1000");
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tracker->IsPaused());
+}
+
+TEST_F(OcclusionTrackerPauserTest, Timeout) {
+  aura::WindowOcclusionTracker* tracker =
+      aura::Env::GetInstance()->GetWindowOcclusionTracker();
+  UpdateDisplay("800x1000, 800x1000");
+
+  auto* compositor1 = Shell::GetAllRootWindows()[0]->GetHost()->compositor();
+  auto* compositor2 = Shell::GetAllRootWindows()[1]->GetHost()->compositor();
+
+  // Add observer to emulate animations start/end.
+  TestObserver observer1, observer2;
+
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta::FromSeconds(2));
+  EXPECT_TRUE(tracker->IsPaused());
+  compositor1->AddAnimationObserver(&observer1);
+  compositor2->AddAnimationObserver(&observer2);
+  EXPECT_TRUE(tracker->IsPaused());
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_TRUE(tracker->IsPaused());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  EXPECT_FALSE(tracker->IsPaused());
+  compositor1->RemoveAnimationObserver(&observer1);
+  compositor2->RemoveAnimationObserver(&observer2);
 }
 
 }  //  namespace ash

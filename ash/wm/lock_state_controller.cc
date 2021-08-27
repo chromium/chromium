@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/shutdown_reason.h"
+#include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/session_state_animator.h"
@@ -235,6 +236,9 @@ void LockStateController::OnChromeTerminating() {
 }
 
 void LockStateController::OnLockStateChanged(bool locked) {
+  // Unpause if lock animations didn't start and ends in 3 seconds.
+  constexpr base::TimeDelta kPauseTimeout = base::TimeDelta::FromSeconds(3);
+
   DCHECK((lock_fail_timer_.IsRunning() && lock_duration_timer_ != nullptr) ||
          (!lock_fail_timer_.IsRunning() && lock_duration_timer_ == nullptr));
   VLOG(1) << "OnLockStateChanged called with locked: " << locked
@@ -246,6 +250,9 @@ void LockStateController::OnLockStateChanged(bool locked) {
     return;
 
   system_is_locked_ = locked;
+
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      kPauseTimeout);
 
   if (locked) {
     StartPostLockAnimation();
