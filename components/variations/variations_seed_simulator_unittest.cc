@@ -97,9 +97,10 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
   // group changes, 2 is the number of "kill best effort" group changes and 3
   // is the number of "kill critical" group changes.
   std::string SimulateStudyDifferences(const Study* study) {
-    std::vector<ProcessedStudy> studies;
-    if (!ProcessedStudy::ValidateAndAppendStudy(study, false, &studies))
+    ProcessedStudy processed_study;
+    if (!processed_study.Init(study, false))
       return "invalid study";
+    std::vector<ProcessedStudy> studies = {processed_study};
     return ConvertSimulationResultToString(SimulateDifferences(studies));
   }
 
@@ -108,11 +109,12 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
   // regular group changes, 2 is the number of "kill best effort" group changes
   // and 3 is the number of "kill critical" group changes.
   std::string SimulateStudyDifferencesExpired(const Study* study) {
-    std::vector<ProcessedStudy> studies;
-    if (!ProcessedStudy::ValidateAndAppendStudy(study, true, &studies))
+    ProcessedStudy processed_study;
+    if (!processed_study.Init(study, true))
       return "invalid study";
-    if (!studies[0].is_expired())
+    if (!processed_study.is_expired())
       return "not expired";
+    std::vector<ProcessedStudy> studies = {processed_study};
     return ConvertSimulationResultToString(SimulateDifferences(studies));
   }
 

@@ -386,25 +386,33 @@ void FilterAndValidateStudies(const VariationsSeed& seed,
   // non-expired study got added). This way, if there's both an expired and a
   // non-expired study that applies, the non-expired study takes priority.
   std::set<std::string> created_studies;
-  std::vector<const Study*> expired_studies;
+  std::vector<ProcessedStudy> expired_studies;
 
   for (int i = 0; i < seed.study_size(); ++i) {
     const Study& study = seed.study(i);
-    if (!internal::ShouldAddStudy(study, client_state, layers))
+    ProcessedStudy processed_study;
+    bool is_expired =
+        internal::IsStudyExpired(study, client_state.reference_date);
+    if (!processed_study.Init(&study, is_expired))
       continue;
 
-    if (internal::IsStudyExpired(study, client_state.reference_date)) {
-      expired_studies.push_back(&study);
-    } else if (!base::Contains(created_studies, study.name())) {
-      ProcessedStudy::ValidateAndAppendStudy(&study, false, filtered_studies);
-      created_studies.insert(study.name());
+    if (!internal::ShouldAddStudy(*processed_study.study(), client_state,
+                                  layers)) {
+      continue;
+    }
+
+    if (processed_study.is_expired()) {
+      expired_studies.push_back(processed_study);
+    } else if (!base::Contains(created_studies,
+                               processed_study.study()->name())) {
+      filtered_studies->push_back(processed_study);
+      created_studies.insert(processed_study.study()->name());
     }
   }
 
-  for (size_t i = 0; i < expired_studies.size(); ++i) {
-    if (!base::Contains(created_studies, expired_studies[i]->name())) {
-      ProcessedStudy::ValidateAndAppendStudy(expired_studies[i], true,
-                                             filtered_studies);
+  for (auto& expired_study : expired_studies) {
+    if (!base::Contains(created_studies, expired_study.study()->name())) {
+      filtered_studies->push_back(expired_study);
     }
   }
 }

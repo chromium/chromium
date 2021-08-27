@@ -8,12 +8,31 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
 
 namespace variations {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InvalidStudyReason {
+  kInvalidMinVersion = 0,
+  kInvalidMaxVersion = 1,
+  kInvalidMinOsVersion = 2,
+  kInvalidMaxOsVersion = 3,
+  kMissingExperimentName = 4,
+  kRepeatedExperimentName = 5,
+  kTotalProbabilityOverflow = 6,
+  kMissingDefaultExperimentInList = 7,
+  kMaxValue = kMissingDefaultExperimentInList,
+};
+
+void LogInvalidReason(InvalidStudyReason reason) {
+  base::UmaHistogramEnumeration("Variations.InvalidStudyReason", reason);
+}
 
 // Validates the sanity of |study| and computes the total probability and
 // whether all assignments are to a single group.
@@ -24,14 +43,30 @@ bool ValidateStudyAndComputeTotalProbability(
     std::vector<std::string>* associated_features) {
   if (study.filter().has_min_version() &&
       !base::Version::IsValidWildcardString(study.filter().min_version())) {
+    LogInvalidReason(InvalidStudyReason::kInvalidMinVersion);
     DVLOG(1) << study.name() << " has invalid min version: "
              << study.filter().min_version();
     return false;
   }
   if (study.filter().has_max_version() &&
       !base::Version::IsValidWildcardString(study.filter().max_version())) {
+    LogInvalidReason(InvalidStudyReason::kInvalidMaxVersion);
     DVLOG(1) << study.name() << " has invalid max version: "
              << study.filter().max_version();
+    return false;
+  }
+  if (study.filter().has_min_os_version() &&
+      !base::Version::IsValidWildcardString(study.filter().min_os_version())) {
+    LogInvalidReason(InvalidStudyReason::kInvalidMinOsVersion);
+    DVLOG(1) << study.name() << " has invalid min os version: "
+             << study.filter().min_os_version();
+    return false;
+  }
+  if (study.filter().has_max_os_version() &&
+      !base::Version::IsValidWildcardString(study.filter().max_os_version())) {
+    LogInvalidReason(InvalidStudyReason::kInvalidMaxOsVersion);
+    DVLOG(1) << study.name() << " has invalid max os version: "
+             << study.filter().max_os_version();
     return false;
   }
 
@@ -47,10 +82,12 @@ bool ValidateStudyAndComputeTotalProbability(
   for (int i = 0; i < study.experiment_size(); ++i) {
     const Study_Experiment& experiment = study.experiment(i);
     if (experiment.name().empty()) {
+      LogInvalidReason(InvalidStudyReason::kMissingExperimentName);
       DVLOG(1) << study.name() << " is missing experiment " << i << " name";
       return false;
     }
     if (!experiment_names.insert(experiment.name()).second) {
+      LogInvalidReason(InvalidStudyReason::kRepeatedExperimentName);
       DVLOG(1) << study.name() << " has a repeated experiment name "
                << study.experiment(i).name();
       return false;
@@ -77,6 +114,7 @@ bool ValidateStudyAndComputeTotalProbability(
 
       if (divisor + experiment.probability_weight() >
           std::numeric_limits<base::FieldTrial::Probability>::max()) {
+        LogInvalidReason(InvalidStudyReason::kTotalProbabilityOverflow);
         DVLOG(1) << study.name() << "'s total probability weight exceeds the "
                  << "maximum supported value";
         return false;
@@ -90,6 +128,7 @@ bool ValidateStudyAndComputeTotalProbability(
   // Specifying a default experiment is optional, so finding it in the
   // experiment list is only required when it is specified.
   if (!study.default_experiment_name().empty() && !found_default_group) {
+    LogInvalidReason(InvalidStudyReason::kMissingDefaultExperimentInList);
     DVLOG(1) << study.name() << " is missing default experiment ("
              << study.default_experiment_name() << ") in its experiment list";
     // The default group was not found in the list of groups. This study is not
@@ -157,19 +196,6 @@ const char* ProcessedStudy::GetDefaultExperimentName() const {
     return kGenericDefaultExperimentName;
 
   return study_->default_experiment_name().c_str();
-}
-
-// static
-bool ProcessedStudy::ValidateAndAppendStudy(
-    const Study* study,
-    bool is_expired,
-    std::vector<ProcessedStudy>* processed_studies) {
-  ProcessedStudy processed_study;
-  if (processed_study.Init(study, is_expired)) {
-    processed_studies->push_back(processed_study);
-    return true;
-  }
-  return false;
 }
 
 }  // namespace variations

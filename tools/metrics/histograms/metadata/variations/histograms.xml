@@ -208,6 +208,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Variations.InvalidStudyReason"
+    enum="VariationsInvalidStudyReason" expires_after="2022-02-26">
+  <owner>jwd@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the reason for rejecting an invalid study. Recorded when processing
+    the variations seed at startup and when simulating a new seed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.LoadPermanentConsistencyCountryResult"
     enum="VariationsPermanentConsistencyCountryResult"
     expires_after="2022-04-22">
