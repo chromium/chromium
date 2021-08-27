@@ -6704,8 +6704,6 @@ static_library("browser") {
       "supervised_user/supervised_user_denylist.h",
       "supervised_user/supervised_user_features.cc",
       "supervised_user/supervised_user_features.h",
-      "supervised_user/supervised_user_filtering_switches.cc",
-      "supervised_user/supervised_user_filtering_switches.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
       "supervised_user/supervised_user_google_auth_navigation_throttle.h",
       "supervised_user/supervised_user_interstitial.cc",

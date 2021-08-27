@@ -34,7 +34,6 @@
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
-#include "chrome/browser/supervised_user/supervised_user_filtering_switches.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
@@ -629,8 +628,13 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool SupervisedUserService::IsSafeSitesEnabled() const {
+  return profile_->IsChild() &&
+         profile_->GetPrefs()->GetBoolean(prefs::kSupervisedUserSafeSites);
+}
+
 void SupervisedUserService::OnSafeSitesSettingChanged() {
-  bool use_denylist = supervised_users::IsSafeSitesDenylistEnabled(profile_);
+  bool use_denylist = IsSafeSitesEnabled();
   if (use_denylist != url_filter_.HasDenylist()) {
     if (use_denylist && denylist_state_ == DenylistLoadState::NOT_LOADED) {
       LoadDenylist(GetDenylistPath(kDenylistPrefix), GURL(kDenylistURL));
@@ -663,7 +667,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
-      supervised_users::IsSafeSitesOnlineCheckEnabled(profile_) ||
+      IsSafeSitesEnabled() ||
       behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
@@ -794,8 +798,7 @@ void SupervisedUserService::OnDenylistLoaded() {
 }
 
 void SupervisedUserService::UpdateDenylist() {
-  bool use_denylist = supervised_users::IsSafeSitesDenylistEnabled(profile_);
-  url_filter_.SetDenylist(use_denylist ? &denylist_ : nullptr);
+  url_filter_.SetDenylist(IsSafeSitesEnabled() ? &denylist_ : nullptr);
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 }
