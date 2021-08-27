@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -220,6 +221,7 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
+  TestTimeouts::Initialize();
 
 #if defined(OS_WIN)
   auto scoped_com_initializer =
