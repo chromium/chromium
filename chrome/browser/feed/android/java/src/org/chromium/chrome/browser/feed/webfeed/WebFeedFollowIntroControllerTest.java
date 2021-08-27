@@ -67,6 +67,7 @@ import java.util.concurrent.TimeUnit;
 public final class WebFeedFollowIntroControllerTest {
     private static final long SAFE_INTRO_WAIT_TIME_MILLIS = 3 * 1000 + 100;
     private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL sFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
     private static final SharedPreferencesManager sSharedPreferencesManager =
             SharedPreferencesManager.getInstance();
@@ -449,7 +450,7 @@ public final class WebFeedFollowIntroControllerTest {
             @WebFeedSubscriptionStatus int subscriptionStatus, boolean isRecommended) {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
-                        WebFeedAvailabilityStatus.ACTIVE, isRecommended);
+                        WebFeedAvailabilityStatus.ACTIVE, isRecommended, sFaviconUrl);
         doAnswer(invocation -> {
             invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
                     webFeedMetadata);

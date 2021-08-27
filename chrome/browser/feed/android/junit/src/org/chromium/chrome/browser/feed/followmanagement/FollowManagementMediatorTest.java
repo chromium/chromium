@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,12 +19,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.webfeed.TestWebFeedFaviconFetcher;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,7 +43,6 @@ public class FollowManagementMediatorTest {
     private Activity mActivity;
     private ModelList mModelList;
     private FollowManagementMediator mFollowManagementMediator;
-    private LargeIconBridge mLargeIconBridge;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -56,36 +53,17 @@ public class FollowManagementMediatorTest {
     @Mock
     SimpleRecyclerViewAdapter mAdapter;
 
-    // Stub LargeIconBridge that always returns false.
-    private class TestLargeIconBridge extends LargeIconBridge {
-        @Override
-        public boolean getLargeIconForStringUrl(
-                final String pageUrl, int desiredSizePx, final LargeIconCallback callback) {
-            Bitmap bitmap = Bitmap.createBitmap(1 /* width */, 1 /* height */, Config.ARGB_8888);
-            callback.onLargeIconAvailable(bitmap, 0 /* fallback color */,
-                    true /* isFallbackColorDefault */, 0 /* icon type */);
-            return false;
-        }
-        @Override
-        public boolean getLargeIconForUrl(
-                final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
-            Bitmap bitmap = Bitmap.createBitmap(1 /* width */, 1 /* height */, Config.ARGB_8888);
-            callback.onLargeIconAvailable(bitmap, 0 /* fallback color */,
-                    true /* isFallbackColorDefault */, 0 /* icon type */);
-            return true;
-        }
-    }
+    TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mModelList = new ModelList();
         MockitoAnnotations.initMocks(this);
-        mLargeIconBridge = new TestLargeIconBridge();
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
 
         mFollowManagementMediator =
-                new FollowManagementMediator(mActivity, mModelList, mAdapter, mLargeIconBridge);
+                new FollowManagementMediator(mActivity, mModelList, mAdapter, mFaviconFetcher);
 
         // WebFeedBridge.refreshFollowedWebFeeds() gets called once with non-null pointer to a
         // callback.
@@ -119,12 +97,15 @@ public class FollowManagementMediatorTest {
         byte[] id1 = new byte[] {(byte) 0x11, (byte) 0x11};
         byte[] id2 = new byte[] {(byte) 0x22, (byte) 0x22};
         GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+        GURL favicon1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
         GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+        GURL favicon2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
         metadataList.add(new WebFeedMetadata(id1, "Programmers at work", url1,
-                WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE, false));
+                WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE, false,
+                favicon1));
         metadataList.add(new WebFeedMetadata(id1, "Programmers at play", url2,
-                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, WebFeedAvailabilityStatus.INACTIVE,
-                false));
+                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, WebFeedAvailabilityStatus.INACTIVE, false,
+                favicon2));
 
         mFollowManagementMediator.fillRecyclerView(metadataList);
 

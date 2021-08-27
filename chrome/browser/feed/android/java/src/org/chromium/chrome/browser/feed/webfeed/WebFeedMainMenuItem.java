@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -14,18 +13,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.favicon.IconType;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
@@ -46,7 +40,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private AppMenuHandler mAppMenuHandler;
     private ChipView mChipView;
     private ImageView mIcon;
-    private LargeIconBridge mLargeIconBridge;
+    private WebFeedFaviconFetcher mFaviconFetcher;
     private WebFeedSnackbarController mWebFeedSnackbarController;
 
     /**
@@ -73,18 +67,18 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      */
-    public void initialize(Tab tab, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
-            FeedLauncher feedLauncher, ModalDialogManager dialogManager,
-            SnackbarManager snackbarManager) {
+    public void initialize(Tab tab, AppMenuHandler appMenuHandler,
+            WebFeedFaviconFetcher faviconFetcher, FeedLauncher feedLauncher,
+            ModalDialogManager dialogManager, SnackbarManager snackbarManager) {
         mUrl = tab.getOriginalUrl();
         mTab = tab;
         mAppMenuHandler = appMenuHandler;
-        mLargeIconBridge = largeIconBridge;
+        mFaviconFetcher = faviconFetcher;
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 mContext, feedLauncher, dialogManager, snackbarManager);
 
-        initializeFavicon();
         WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl, result -> {
+            initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
             if (mTab.isShowingErrorPage()) {
@@ -93,11 +87,13 @@ public class WebFeedMainMenuItem extends FrameLayout {
         });
     }
 
-    private void initializeFavicon() {
-        mIcon = findViewById(R.id.icon);
-        mLargeIconBridge.getLargeIconForUrl(mUrl,
+    private void initializeFavicon(WebFeedMetadata webFeedMetadata) {
+        mFaviconFetcher.beginFetch(
                 mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size),
-                this::onFaviconAvailable);
+                mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_monogram_text_size),
+                mUrl, webFeedMetadata != null ? webFeedMetadata.faviconUrl : null,
+                this::onFaviconFetched);
+        mIcon = findViewById(R.id.icon);
     }
 
     private void initializeText(WebFeedMetadata webFeedMetadata) {
@@ -212,33 +208,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
         chipView.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Passed as the callback to {@link LargeIconBridge#getLargeIconForUrl}.
-     */
-    private void onFaviconAvailable(@Nullable Bitmap icon, @ColorInt int fallbackColor,
-            boolean isColorDefault, @IconType int iconType) {
-        // If we didn't get a favicon, generate a monogram instead
+    private void onFaviconFetched(Bitmap icon) {
+        mIcon.setImageBitmap(icon);
         if (icon == null) {
-            // TODO(crbug/1152592): Update monogram according to specs.
-            RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
-            icon = iconGenerator.generateIconForUrl(mUrl);
-            mIcon.setImageBitmap(icon);
-            // generateIconForUrl() might return null if the URL is empty or the domain cannot be
-            // resolved. See https://crbug.com/987101
-            if (icon == null) {
-                mIcon.setVisibility(View.GONE);
-            }
-        } else {
-            mIcon.setImageBitmap(icon);
+            mIcon.setVisibility(View.GONE);
         }
-    }
-
-    private RoundedIconGenerator createRoundedIconGenerator(@ColorInt int iconColor) {
-        Resources resources = mContext.getResources();
-        int iconSize = resources.getDimensionPixelSize(R.dimen.web_feed_icon_size);
-        int cornerRadius = iconSize / 2;
-        int textSize = resources.getDimensionPixelSize(R.dimen.web_feed_monogram_text_size);
-
-        return new RoundedIconGenerator(iconSize, iconSize, cornerRadius, iconColor, textSize);
     }
 }

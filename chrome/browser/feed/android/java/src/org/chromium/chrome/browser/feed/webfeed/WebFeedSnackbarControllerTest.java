@@ -68,6 +68,7 @@ public final class WebFeedSnackbarControllerTest {
     public JniMocker mJniMocker = new JniMocker();
 
     private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL sFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
     private static final String sTitle = "Example Title";
     private static final byte[] sFollowId = new byte[] {1, 2, 3};
 
@@ -206,11 +207,11 @@ public final class WebFeedSnackbarControllerTest {
     public void showPromoDialogForFollow_successful_notActive() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(true);
-        WebFeedBridge.FollowResults followResults =
-                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
-                        new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                                WebFeedSubscriptionRequestStatus.SUCCESS,
-                                WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false));
+        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
+                WebFeedSubscriptionRequestStatus.SUCCESS,
+                new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
+                        WebFeedSubscriptionRequestStatus.SUCCESS,
+                        WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false, sFaviconUrl));
 
         mWebFeedSnackbarController.showPostFollowHelp(
                 mTab, followResults, sFollowId, sTestUrl, sTitle);
@@ -405,7 +406,7 @@ public final class WebFeedSnackbarControllerTest {
         return new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
                 new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
                         WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE,
-                        /*isRecommended=*/true));
+                        /*isRecommended=*/true, sFaviconUrl));
     }
 
     private WebFeedBridge.FollowResults failureFollowResults() {

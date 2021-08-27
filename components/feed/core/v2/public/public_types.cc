@@ -10,6 +10,7 @@ namespace feed {
 WebFeedMetadata::WebFeedMetadata() = default;
 WebFeedMetadata::WebFeedMetadata(const WebFeedMetadata&) = default;
 WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
+WebFeedMetadata::~WebFeedMetadata() = default;
 WebFeedMetadata& WebFeedMetadata::operator=(const WebFeedMetadata&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(WebFeedMetadata&&) = default;
 
