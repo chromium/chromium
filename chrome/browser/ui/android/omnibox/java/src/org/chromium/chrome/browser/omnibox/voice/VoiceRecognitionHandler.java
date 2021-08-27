@@ -398,10 +398,6 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    public void setActiveProfile(Profile profile) {
-        notifyVoiceAvailabilityImpacted();
-    }
-
     /**
      * Instantiated when a voice search is performed to monitor the web contents for a navigation
      * to be started so we can notify the render frame that a user gesture has been performed. This
