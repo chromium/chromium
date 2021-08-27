@@ -15,7 +15,7 @@
 #import "ios/net/url_scheme_util.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
-#import "ios/web/js_messaging/web_frames_manager_impl.h"
+#import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
@@ -732,7 +732,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           provisionalLoad:YES];
   }
 
-  self.webStateImpl->GetWebFramesManagerImpl().RemoveAllWebFrames();
+  self.webStateImpl->RemoveAllWebFrames();
   // This must be reset at the end, since code above may need information about
   // the pending load.
   self.pendingNavigationInfo = nil;
@@ -841,7 +841,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   [self commitPendingNavigationInfoInWebView:webView];
 
-  self.webStateImpl->GetWebFramesManagerImpl().RemoveAllWebFrames();
+  self.webStateImpl->RemoveAllWebFrames();
 
   // This point should closely approximate the document object change, so reset
   // the list of injected scripts to those that are automatically injected.  For
@@ -854,7 +854,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // not notify web view delegate about received response, so web controller
     // does not get a chance to properly update MIME type.
     [self.webStateImpl->GetWebController() injectWindowID];
-    self.webStateImpl->GetWebFramesManagerImpl().RegisterExistingFrames();
+
+    web::BrowserState* browserState = self.webStateImpl->GetBrowserState();
+    web::WebFramesManagerJavaScriptFeature::FromBrowserState(browserState)
+        ->RegisterExistingFrames(self.webStateImpl);
   }
 
   if (committedNavigation) {
@@ -1014,7 +1017,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           forNavigation:navigation
                 webView:webView
         provisionalLoad:NO];
-  self.webStateImpl->GetWebFramesManagerImpl().RemoveAllWebFrames();
+  self.webStateImpl->RemoveAllWebFrames();
   _certVerificationErrors->Clear();
   [self forgetNullWKNavigation:navigation];
 }
@@ -1099,7 +1102,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   _certVerificationErrors->Clear();
   _webProcessCrashed = YES;
-  self.webStateImpl->GetWebFramesManagerImpl().RemoveAllWebFrames();
+  self.webStateImpl->RemoveAllWebFrames();
 
   [self.delegate navigationHandlerWebProcessDidCrash:self];
 }

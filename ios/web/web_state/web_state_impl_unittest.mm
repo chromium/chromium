@@ -306,19 +306,19 @@ TEST_F(WebStateImplTest, ObserverTest) {
   // Test that WebFrameDidBecomeAvailable() is called.
   ASSERT_FALSE(observer->web_frame_available_info());
   auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
-  web_state_->OnWebFrameAvailable(main_frame.get());
+  WebFrame* main_frame_ptr = main_frame.get();
+  web_state_->WebFrameBecameAvailable(std::move(main_frame));
   ASSERT_TRUE(observer->web_frame_available_info());
   EXPECT_EQ(web_state_.get(), observer->web_frame_available_info()->web_state);
-  EXPECT_EQ(main_frame.get(), observer->web_frame_available_info()->web_frame);
+  EXPECT_EQ(main_frame_ptr, observer->web_frame_available_info()->web_frame);
 
   // Test that WebFrameWillBecomeUnavailable() is called.
   ASSERT_FALSE(observer->web_frame_unavailable_info());
-  web_state_->OnWebFrameUnavailable(main_frame.get());
+  web_state_->WebFrameBecameUnavailable(main_frame_ptr->GetFrameId());
   ASSERT_TRUE(observer->web_frame_unavailable_info());
   EXPECT_EQ(web_state_.get(),
             observer->web_frame_unavailable_info()->web_state);
-  EXPECT_EQ(main_frame.get(),
-            observer->web_frame_unavailable_info()->web_frame);
+  EXPECT_EQ(main_frame_ptr, observer->web_frame_unavailable_info()->web_frame);
 
   // Test that RenderProcessGone() is called.
   SetIgnoreRenderProcessCrashesDuringTesting(true);

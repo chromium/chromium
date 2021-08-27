@@ -37,10 +37,6 @@ NSString* GetDocumentStartScriptForMainFrame(BrowserState* browser_state);
 // all frames of the web view as early as possible.
 NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state);
 
-// Returns an autoreleased string containing the JavaScript to be injected into
-// all frames of the web view at the end of the document load.
-NSString* GetDocumentEndScriptForAllFrames(BrowserState* browser_state);
-
 }  // namespace web
 
 #endif  // IOS_WEB_JS_MESSAGING_PAGE_SCRIPT_UTIL_H_

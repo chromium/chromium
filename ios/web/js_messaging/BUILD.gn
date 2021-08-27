@@ -3,11 +3,15 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":frame_listeners_js",
     ":java_script_content_world_header",
+    ":scoped_wk_script_message_handler",
+    ":setup_frame_js",
     ":web_frames_manager_impl_header",
     "//base",
     "//crypto",
@@ -33,6 +37,8 @@ source_set("js_messaging") {
     "web_frame_internal.h",
     "web_frame_util.mm",
     "web_frames_manager_impl.mm",
+    "web_frames_manager_java_script_feature.h",
+    "web_frames_manager_java_script_feature.mm",
     "web_view_js_utils.h",
     "web_view_js_utils.mm",
     "web_view_web_state_map.h",
@@ -88,6 +94,7 @@ source_set("java_script_feature_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":js_messaging",
     "//base",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
@@ -116,6 +123,20 @@ source_set("scoped_wk_script_message_handler") {
   ]
 }
 
+js_compile_bundle("setup_frame_js") {
+  visibility = [ ":js_messaging" ]
+  closure_entry_point = "__crWeb.setupFrame"
+
+  sources = [ "resources/setup_frame.js" ]
+}
+
+js_compile_bundle("frame_listeners_js") {
+  visibility = [ ":js_messaging" ]
+  closure_entry_point = "__crWeb.frameListeners"
+
+  sources = [ "resources/frame_listeners.js" ]
+}
+
 source_set("unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -133,6 +154,7 @@ source_set("unittests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -149,6 +171,7 @@ source_set("unittests") {
     "web_frame_impl_unittest.mm",
     "web_frame_util_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
+    "web_frames_manager_java_script_feature_unittest.mm",
     "web_view_js_utils_unittest.mm",
     "web_view_web_state_map_unittest.mm",
   ]

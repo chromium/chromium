@@ -59,9 +59,7 @@ class WebUIIOS;
 //  - SessionWindows are transient owners, passing ownership into WebControllers
 //    during session restore, and discarding owned copies of WebStateImpls after
 //    writing them out for session saves.
-class WebStateImpl : public WebState,
-                     public NavigationManagerDelegate,
-                     public WebFramesManagerDelegate {
+class WebStateImpl : public WebState, public NavigationManagerDelegate {
  public:
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
@@ -185,9 +183,13 @@ class WebStateImpl : public WebState,
   // nil.
   UIView* GetWebViewContainer();
 
-  // WebFramesManagerDelegate.
-  void OnWebFrameAvailable(web::WebFrame* frame) override;
-  void OnWebFrameUnavailable(web::WebFrame* frame) override;
+  // Registers |frame| as a new web frame and notifies any observers.
+  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
+  // Removes the web frame with |frame_id|, if one exists and notifies any
+  // observers.
+  void WebFrameBecameUnavailable(const std::string& frame_id);
+  // Removes all current web frames.
+  void RemoveAllWebFrames();
 
   // WebState:
   Getter CreateDefaultGetter() override;
@@ -342,6 +344,9 @@ class WebStateImpl : public WebState,
 
   // Returns true if |web_controller_| has been set.
   bool Configured() const;
+
+  // Notifies observers that |frame| will be removed and then removes it.
+  void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
 
   // Restores session history into the navigation manager.
   void RestoreSessionStorage(CRWSessionStorage* session_storage);

@@ -84,7 +84,6 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
       is_loading_(false),
       is_being_destroyed_(false),
       web_controller_(nil),
-      web_frames_manager_(*this),
       created_with_opener_(params.created_with_opener),
       user_agent_type_(features::UseWebClientDefaultUserAgent()
                            ? UserAgentType::AUTOMATIC
@@ -560,14 +559,34 @@ WebState::InterfaceBinder* WebStateImpl::GetInterfaceBinderForMainFrame() {
 
 #pragma mark - WebFrame management
 
-void WebStateImpl::OnWebFrameAvailable(web::WebFrame* frame) {
-  for (auto& observer : observers_)
-    observer.WebFrameDidBecomeAvailable(this, frame);
+void WebStateImpl::RemoveAllWebFrames() {
+  for (WebFrame* frame : GetWebFramesManager()->GetAllWebFrames()) {
+    NotifyObserversAndRemoveWebFrame(frame);
+  }
 }
 
-void WebStateImpl::OnWebFrameUnavailable(web::WebFrame* frame) {
+void WebStateImpl::WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame) {
+  WebFrame* frame_ptr = frame.get();
+  GetWebFramesManagerImpl().AddFrame(std::move(frame));
+
+  for (auto& observer : observers_)
+    observer.WebFrameDidBecomeAvailable(this, frame_ptr);
+}
+
+void WebStateImpl::WebFrameBecameUnavailable(const std::string& frame_id) {
+  WebFrame* frame = GetWebFramesManager()->GetFrameWithId(frame_id);
+  if (!frame) {
+    return;
+  }
+
+  NotifyObserversAndRemoveWebFrame(frame);
+}
+
+void WebStateImpl::NotifyObserversAndRemoveWebFrame(WebFrame* frame) {
   for (auto& observer : observers_)
     observer.WebFrameWillBecomeUnavailable(this, frame);
+
+  GetWebFramesManagerImpl().RemoveFrameWithId(frame->GetFrameId());
 }
 
 #pragma mark - WebState implementation

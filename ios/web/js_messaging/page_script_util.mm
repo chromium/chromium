@@ -87,9 +87,4 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
   return MakeScriptInjectableOnce(@"start_all_frames", script);
 }
 
-NSString* GetDocumentEndScriptForAllFrames(BrowserState* browser_state) {
-  return MakeScriptInjectableOnce(
-      @"end_all_frames", GetPageScript(@"all_frames_document_end_web_bundle"));
-}
-
 }  // namespace web

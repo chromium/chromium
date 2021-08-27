@@ -19,6 +19,7 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
@@ -53,16 +54,6 @@ WKUserScript* InternalGetDocumentStartScriptForAllFrames(
   return [[WKUserScript alloc]
         initWithSource:GetDocumentStartScriptForAllFrames(browser_state)
          injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-      forMainFrameOnly:NO];
-}
-
-// Returns a WKUserScript for JavsScript injected into all frames at the
-// end of the document load.
-WKUserScript* InternalGetDocumentEndScriptForAllFrames(
-    BrowserState* browser_state) {
-  return [[WKUserScript alloc]
-        initWithSource:GetDocumentEndScriptForAllFrames(browser_state)
-         injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
       forMainFrameOnly:NO];
 }
 
@@ -216,14 +207,15 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   }
   java_script_feature_manager->ConfigureFeatures(features);
 
+  WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state_)
+      ->ConfigureHandlers(GetWebViewConfiguration().userContentController);
+
   // Main frame script depends upon scripts injected into all frames, so the
   // "AllFrames" scripts must be injected first.
   [configuration_.userContentController
       addUserScript:InternalGetDocumentStartScriptForAllFrames(browser_state_)];
   [configuration_.userContentController
       addUserScript:InternalGetDocumentStartScriptForMainFrame(browser_state_)];
-  [configuration_.userContentController
-      addUserScript:InternalGetDocumentEndScriptForAllFrames(browser_state_)];
 }
 
 void WKWebViewConfigurationProvider::Purge() {
