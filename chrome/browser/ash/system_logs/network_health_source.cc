@@ -38,11 +38,27 @@ std::string FormatNetworkHealth(
     output << "Type: " << net->type << "\n";
     output << "State: " << net->state << "\n";
     output << "Portal State: " << net->portal_state << "\n";
-    output << "Signal Strength: "
-           << (net->signal_strength
-                   ? base::NumberToString(net->signal_strength->value)
-                   : "N/A")
-           << "\n";
+    if (net->signal_strength) {
+      output << "Signal Strength: "
+             << base::NumberToString(net->signal_strength->value) << "\n";
+    }
+    if (net->signal_strength_stats) {
+      output << "Signal Strength (Average): "
+             << base::NumberToString(net->signal_strength_stats->average)
+             << "\n";
+      output << "Signal Strength (Deviation): "
+             << base::NumberToString(net->signal_strength_stats->deviation)
+             << "\n";
+      output << "Signal Strength (Samples): [";
+      auto& samples = net->signal_strength_stats->samples;
+      for (int i = 0; i < samples.size(); i++) {
+        output << base::NumberToString(samples[i]);
+        if (i < samples.size() - 1)
+          output << ",";
+      }
+
+      output << "]\n";
+    }
     output << "MAC Address: " << net->mac_address.value_or("N/A") << "\n";
 
     // Automatic PII scrubbing does not work for IP addresses so manually scrub
@@ -52,7 +68,8 @@ std::string FormatNetworkHealth(
       output << "IPV6 Addresses: "
              << (net->ipv6_addresses.size()
                      ? base::JoinString(net->ipv6_addresses, ", ")
-                     : "N/A");
+                     : "N/A")
+             << "\n";
     }
 
     output << "\n";

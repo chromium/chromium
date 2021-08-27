@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 // API intended for retrieving a snapshot of the network health state. Returns
 // properties of any available network technologies and any connected or
 // connecting network when available.
@@ -10,6 +12,7 @@ module chromeos.network_health.mojom;
 
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
 
+[Stable, Extensible]
 enum NetworkState {
   // The network type is available but not yet initialized.
   kUninitialized,
@@ -31,15 +34,33 @@ enum NetworkState {
   kOnline,
 };
 
-// Wrapper for optional uint32. // TODO(https://crbug.com/657632): Remove this
-// once Mojo properly supports this.
+// Wrapper for optional uint32. Any backwards compatible struct including this
+// as a field will not be able to be upgraded when https://crbug.com/657632 is
+// resolved.
+[Stable]
 struct UInt32Value {
-  // The value of the uint64.
+  // The value of the uint32.
   uint32 value;
+};
+
+// Statistics of the signal strength of the network over 15 minutes. The signal
+// strength is polled every five seconds.
+[Stable]
+struct SignalStrengthStats {
+  // A value representing the average recent signal strength.
+  float average;
+  // A value representing the recent deviation of the signal strength.
+  float deviation;
+  // The samples of the signal strength over the polled period. This value is
+  // only for debugging and diagnostics purposes. The other indicators in this
+  // struct are the canonical stats for the signal strength.
+  // Max Size: (12 * 15) = 180 samples.
+  array<uint8> samples;
 };
 
 // Contains information for a single network connection and underlying
 // network technology e.g WiFi.
+[Stable]
 struct Network {
   chromeos.network_config.mojom.NetworkType type;
   NetworkState state;
@@ -64,9 +85,13 @@ struct Network {
   // An enum of the network's captive portal state. This information is
   // supplementary to the NetworkState.
   chromeos.network_config.mojom.PortalState portal_state = kUnknown;
+  // The statistics of the signal strength for wireless networks over a 15
+  // minute period. See SignalStrengthStats for more details.
+  [MinVersion=1] SignalStrengthStats? signal_strength_stats;
 };
 
 // Aggregate structure for all of the network health state.
+[Stable]
 struct NetworkHealthState {
   // This is a list of networking devices and any associated connections. Only
   // networking technologies that are present on the device are included.
@@ -79,29 +104,33 @@ struct NetworkHealthState {
 // out to its clients. A network guid uniquely identifies a network. For more
 // information, see the definition of "NetworkStateProperties" at
 // //chromeos/services/network_config/public/mojom/cros_network_config.mojom.
+// Next Method ID: 2
+[Stable]
 interface NetworkEventsObserver {
   // Fired when a network’s connection state changes.
-  OnConnectionStateChanged(string guid, NetworkState state);
+  OnConnectionStateChanged@0(string guid, NetworkState state);
   // Fired when a wireless network’s signal strength changes by ten or more
   // percent. See the definition of |signal_strength| under the "Network"
   // struct.
-  OnSignalStrengthChanged(string guid, UInt32Value signal_strength);
+  OnSignalStrengthChanged@1(string guid, UInt32Value signal_strength);
 };
 
 // Interface for retrieving aggregated information about the current network
 // state and health from the browser process.
+// Next Method ID: 3
+[Stable]
 interface NetworkHealthService {
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message
   // pipe.
-  AddObserver(pending_remote<NetworkEventsObserver> observer);
+  AddObserver@0(pending_remote<NetworkEventsObserver> observer);
 
   // Returns a list of networks. See NetworkHealthState.networks for more
   // details.
-  GetNetworkList() => (array<Network> networks);
+  GetNetworkList@1() => (array<Network> networks);
 
   // Returns the current network health state.
   // This is currently the same information provided by GetNetworkList. More
   // information will be added over time.
-  GetHealthSnapshot() => (NetworkHealthState state);
+  GetHealthSnapshot@2() => (NetworkHealthState state);
 };

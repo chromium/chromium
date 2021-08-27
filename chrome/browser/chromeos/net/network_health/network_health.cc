@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/net/network_health/network_health_constants.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -97,6 +99,13 @@ NetworkHealth::NetworkHealth() {
   remote_cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   RefreshNetworkHealthState();
+  SetTimer(std::make_unique<base::RepeatingTimer>());
+}
+
+void NetworkHealth::SetTimer(std::unique_ptr<base::RepeatingTimer> timer) {
+  timer_ = std::move(timer);
+  timer_->Start(FROM_HERE, kSignalStrengthSampleRate, this,
+                &NetworkHealth::AnalyzeSignalStrength);
 }
 
 NetworkHealth::~NetworkHealth() = default;
@@ -329,6 +338,35 @@ bool NetworkHealth::SignalStrengthChanged(
     return false;
   }
   return true;
+}
+
+void NetworkHealth::AnalyzeSignalStrength() {
+  std::set<std::string> analyzed_networks;
+  for (auto& network : network_health_state_.networks) {
+    if (!network->guid.has_value() || network->signal_strength.is_null())
+      continue;
+
+    auto guid = network->guid.value();
+    auto& tracker = signal_strength_trackers_[guid];
+    tracker.AddSample(static_cast<uint8_t>(network->signal_strength->value));
+
+    auto stats = mojom::SignalStrengthStats::New();
+    stats->average = tracker.Average();
+    stats->deviation = tracker.StdDev();
+    stats->samples = tracker.Samples();
+    network->signal_strength_stats = std::move(stats);
+    analyzed_networks.insert(guid);
+  }
+
+  // Remove all entries that are not actively being analyzed.
+  for (auto it = signal_strength_trackers_.begin();
+       it != signal_strength_trackers_.end();) {
+    if (!analyzed_networks.count(it->first)) {
+      it = signal_strength_trackers_.erase(it);
+    } else {
+      it++;
+    }
+  }
 }
 
 }  // namespace network_health

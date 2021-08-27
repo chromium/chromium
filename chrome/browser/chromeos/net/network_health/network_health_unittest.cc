@@ -4,7 +4,11 @@
 
 #include "chrome/browser/chromeos/net/network_health/network_health.h"
 
+#include <utility>
+
 #include "base/strings/string_number_conversions.h"
+#include "base/timer/mock_timer.h"
+#include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -27,6 +31,9 @@ constexpr char kEthName[] = "eth-name";
 constexpr char kWifiServicePath[] = "service/wifi/0";
 constexpr char kWifiServiceName[] = "wifi_service_name";
 constexpr char kWifiGuid[] = "wifi_guid";
+constexpr char kOtherWifiServicePath[] = "service/wifi/1";
+constexpr char kOtherWifiServiceName[] = "other_wifi_service_name";
+constexpr char kOtherWifiGuid[] = "wifi_guid_other";
 constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kWifiName[] = "wifi_device1";
 
@@ -77,6 +84,22 @@ class FakeNetworkEventsObserver
 
 namespace chromeos {
 namespace network_health {
+
+class NetworkHealthTestImpl : public NetworkHealth {
+ public:
+  NetworkHealthTestImpl() {
+    auto timer = std::make_unique<base::MockRepeatingTimer>();
+    mock_timer_ = timer.get();
+    SetTimer(std::move(timer));
+  }
+
+  ~NetworkHealthTestImpl() override = default;
+
+  void FireTimer() { mock_timer_->Fire(); }
+
+ private:
+  base::MockRepeatingTimer* mock_timer_;
+};
 
 class NetworkHealthTest : public ::testing::Test {
  public:
@@ -136,7 +159,7 @@ class NetworkHealthTest : public ::testing::Test {
   }
 
   void ValidateNetworkName(network_config::mojom::NetworkType type,
-                           std::string expected_name) {
+                           const std::string& expected_name) {
     task_environment_.RunUntilIdle();
 
     const auto network_health_state = GetNetworkHealthStateByType(type);
@@ -144,9 +167,17 @@ class NetworkHealthTest : public ::testing::Test {
     ASSERT_EQ(expected_name, network_health_state->name);
   }
 
+  void SetSignalStrengthAndRecordSample(const std::string& service_path,
+                                        uint8_t signal) {
+    cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+        service_path, shill::kSignalStrengthProperty, base::Value(signal));
+    task_environment_.RunUntilIdle();
+    network_health_.FireTimer();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
-  NetworkHealth network_health_;
+  NetworkHealthTestImpl network_health_;
 };
 
 // Test that all Network states can be represented by NetworkHealth.
@@ -463,6 +494,70 @@ TEST_F(NetworkHealthTest, NoSignalStrengthChangeEventAfterInitialSetup) {
   EXPECT_EQ(
       fake_network_events_observer.signal_strength_changed_event_received(),
       false);
+}
+
+// Checks that the AnalyzeSignalStrength function correctly calculates the
+// signal strength statistics for the current network.
+TEST_F(NetworkHealthTest, AnalyzeSignalStrength) {
+  // Create default WiFi device and wait until the network and service have been
+  // created and configured.
+  CreateDefaultWifiDevice();
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+
+  auto signal_strengths = {70, 75, 80};
+  for (auto s : signal_strengths) {
+    SetSignalStrengthAndRecordSample(kWifiServicePath, s);
+  }
+
+  auto& network_health = network_health_.GetNetworkHealthState();
+  auto& networks = network_health->networks;
+  ASSERT_EQ(1, networks.size());
+  auto& stats = networks[0]->signal_strength_stats;
+  ASSERT_TRUE(stats);
+  EXPECT_FLOAT_EQ(75.0, stats->average);
+  EXPECT_FLOAT_EQ(5.0, stats->deviation);
+}
+
+// Check to see that the signal strength information is kept only for the active
+// network.
+TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
+  // Create default WiFi device and two WiFi services.
+  CreateDefaultWifiDevice();
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kOtherWifiServicePath, kOtherWifiGuid, kOtherWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOffline, true);
+
+  // Set five signal strength samples for the original network.
+  for (int i = 0; i < 5; i++) {
+    SetSignalStrengthAndRecordSample(kWifiServicePath, 70);
+  }
+
+  // Swap the active WiFi networks.
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOffline));
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kOtherWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOnline));
+
+  // Set a single signal strength sample for the new network.
+  SetSignalStrengthAndRecordSample(kOtherWifiServicePath, 75);
+
+  auto& network_health = network_health_.GetNetworkHealthState();
+  auto& networks = network_health->networks;
+  ASSERT_EQ(1, networks.size());
+  auto& stats = networks[0]->signal_strength_stats;
+  ASSERT_TRUE(stats);
+  ASSERT_EQ(1, stats->samples.size());
+  ASSERT_EQ(75, stats->samples[0]);
 }
 
 }  // namespace network_health
