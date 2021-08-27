@@ -907,7 +907,7 @@ void BrowserManager::RecordLacrosLaunchMode() {
     lacros_mode = LacrosLaunchMode::kLacrosDisabled;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Ash.Lacros.Launch.Mode", lacros_mode);
+  UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.Mode", lacros_mode);
 }
 
 }  // namespace crosapi
