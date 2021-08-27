@@ -329,12 +329,28 @@ def _FindLacrosMajorVersion():
   return _FindLacrosMajorVersionFromMetadata()
 
 
+def _ParseSummaryOutput(forward_args):
+  """Find the summary output file path.
+
+  Args:
+    forward_args (list): Args to be forwarded to the test command.
+
+  Returns:
+    None if not found, or str representing the output file path.
+  """
+  logging.warning(forward_args)
+  for arg in forward_args:
+    if arg.startswith('--test-launcher-summary-output='):
+      return arg[len('--test-launcher-summary-output='):]
+  return None
+
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
   Args:
     args (dict): Args for this script.
-    forward_args (dict): Args to be forwarded to the test command.
+    forward_args (list): Args to be forwarded to the test command.
   """
   if args.ash_chrome_path_override:
     ash_chrome_file = args.ash_chrome_path_override
@@ -344,6 +360,14 @@ def _RunTestWithAshChrome(args, forward_args):
       logging.warning('''Not running any tests, because we do not \
 support version skew testing for Lacros M%s against ash M%s''' %
                       (lacros_major_version, ash_major_version))
+      # Create an empty output.json file so result adapter can read
+      # the file. Or else result adapter will report no file found
+      # and result infra failure.
+      output_json = _ParseSummaryOutput(forward_args)
+      if output_json:
+        with open(output_json, 'w') as f:
+          f.write("""{"all_tests":[],"disabled_tests":[],"global_tags":[],
+"per_iteration_data":[],"test_locations":{}}""")
       # Although we don't run any tests, this is considered as success.
       return 0
     if not os.path.exists(ash_chrome_file):
@@ -449,7 +473,7 @@ def _RunTestDirectly(args, forward_args):
   """Runs tests by invoking the test command directly.
 
   args (dict): Args for this script.
-  forward_args (dict): Args to be forwarded to the test command.
+  forward_args (list): Args to be forwarded to the test command.
   """
   try:
     p = None
@@ -482,7 +506,7 @@ def _RunTest(args, forward_args):
   """Runs tests with given args.
 
   args (dict): Args for this script.
-  forward_args (dict): Args to be forwarded to the test command.
+  forward_args (list): Args to be forwarded to the test command.
 
   Raises:
       RuntimeError: If the given test binary doesn't exist or the test runner
