@@ -5,9 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OUTLINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OUTLINE_PAINTER_H_
 
+#include "base/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkPoint.h"
+
+class SkPath;
 
 namespace blink {
 
@@ -35,6 +39,14 @@ class CORE_EXPORT OutlinePainter {
 
   // For pre-CompositeAfterPaint only.
   static int FocusRingWidthInsideBorderBox(const ComputedStyle&);
+
+  struct Line {
+    SkPoint start;
+    SkPoint end;
+  };
+  static void IterateRightAnglePathForTesting(
+      const SkPath&,
+      const base::RepeatingCallback<void(const Vector<Line>&)>& contour_action);
 };
 
 }  // namespace blink

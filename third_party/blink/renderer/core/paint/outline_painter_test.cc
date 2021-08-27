@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/skia/include/core/SkPath.h"
 
 namespace blink {
 
@@ -44,6 +45,22 @@ TEST_F(OutlinePainterTest, OutlineWidthLessThanOne) {
   EXPECT_TRUE(style.HasOutline());
   EXPECT_EQ(LayoutUnit(1), style.OutlineWidth());
   EXPECT_EQ(1, OutlinePainter::OutlineOutsetExtent(style));
+}
+
+TEST_F(OutlinePainterTest, IterateCollapsedPath) {
+  SkPath path;
+  path.moveTo(8, 12);
+  path.lineTo(8, 4);
+  path.lineTo(9, 4);
+  path.lineTo(9, 0);
+  path.lineTo(9, 0);
+  path.lineTo(9, 4);
+  path.lineTo(8, 4);
+  path.close();
+  // Collapsed contour should not cause crash and should be ignored.
+  OutlinePainter::IterateRightAnglePathForTesting(
+      path, base::BindRepeating(
+                [](const Vector<OutlinePainter::Line>&) { NOTREACHED(); }));
 }
 
 }  // namespace blink

@@ -94,10 +94,7 @@ bool ComputeRightAnglePath(SkPath& path,
   return region.getBoundaryPath(&path);
 }
 
-struct Line {
-  SkPoint start;
-  SkPoint end;
-};
+using Line = OutlinePainter::Line;
 
 // Merge line2 into line1 if they are in the same straight line.
 bool MergeLineIfPossible(Line& line1, const Line& line2) {
@@ -142,8 +139,10 @@ void IterateRightAnglePath(const SkPath& path, const Action& contour_action) {
             lines.pop_back();
           }
           DCHECK(lines.front().start == lines.back().end);
-          DCHECK_GE(lines.size(), 4u);
-          contour_action(lines);
+          // lines.size() < 4 means that the contour is collapsed (i.e. the area
+          // in the contour is empty). Ignore it.
+          if (lines.size() >= 4u)
+            contour_action(lines);
         }
         lines.clear();
         break;
@@ -906,6 +905,14 @@ int OutlinePainter::FocusRingWidthInsideBorderBox(const ComputedStyle& style) {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   // Not sure why '+1'.
   return std::ceil(blink::FocusRingInnerStrokeWidth(style)) + 1;
+}
+
+void OutlinePainter::IterateRightAnglePathForTesting(
+    const SkPath& path,
+    const base::RepeatingCallback<void(const Vector<Line>&)>& contour_action) {
+  IterateRightAnglePath(path, [contour_action](const Vector<Line>& lines) {
+    contour_action.Run(lines);
+  });
 }
 
 }  // namespace blink
