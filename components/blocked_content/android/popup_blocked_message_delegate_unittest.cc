@@ -130,7 +130,7 @@ TEST_F(PopupBlockedMessageDelegateTest, MessagePropertyValues) {
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_POPUPS_BLOCKED_INFOBAR_TEXT,
                                              num_popups),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SHOW_CONTENT),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_POPUPS_BLOCKED_INFOBAR_BUTTON_SHOW),
             GetMessageWrapper()->GetPrimaryButtonText());
 
   // Should update title; #EnqueueMessage ensure message is enqueued only once.
