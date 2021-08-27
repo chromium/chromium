@@ -37,7 +37,7 @@ declare_args() {
 
   # Platforms where the cert verifier comparison trial is supported.
   # See https://crbug.com/649026.
-  trial_comparison_cert_verifier_supported = is_mac
+  trial_comparison_cert_verifier_supported = is_mac || is_win
 
   # Platforms where both the builtin cert verifier and a platform verifier are
   # supported and may be switched between using the CertVerifierBuiltin feature
@@ -47,5 +47,5 @@ declare_args() {
 
   # Platforms for which the builtin cert verifier can use the Chrome Root Store.
   # See https://crbug.com/1216547 for status.
-  chrome_root_store_supported = false
+  chrome_root_store_supported = is_win
 }
