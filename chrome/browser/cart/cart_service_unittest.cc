@@ -422,15 +422,21 @@ TEST_F(CartServiceTest, TestAddCartWithNoProductImages) {
   run_loop[2].Run();
 }
 
-// Test adding a cart with the same key and some product images would overwrite
-// existing proto.
+// Test adding a cart with the same key and some product images would
+// overwrite the product_image_url in the existing proto.
 TEST_F(CartServiceTest, TestAddCartWithProductImages) {
+  std::string merchant_A_discount_text = "10% off";
+  double new_timestamp = 1.0;
+  std::string new_product_image_url = "https://image2.com";
+
   CartDB* cart_db_ = service_->GetDB();
   base::RunLoop run_loop[3];
   cart_db::ChromeCartContentProto merchant_A_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
   merchant_A_proto.set_timestamp(0);
   merchant_A_proto.add_product_image_urls("https://image1.com");
+  merchant_A_proto.mutable_discount_info()->set_discount_text(
+      merchant_A_discount_text);
   merchant_A_proto.set_is_hidden(true);
   service_->AddCart(kMockMerchantA, absl::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
@@ -438,8 +444,8 @@ TEST_F(CartServiceTest, TestAddCartWithProductImages) {
   // Add a new proto with the same key and some product images.
   cart_db::ChromeCartContentProto new_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
-  new_proto.set_timestamp(1);
-  new_proto.add_product_image_urls("https://image2.com");
+  new_proto.set_timestamp(new_timestamp);
+  new_proto.add_product_image_urls(new_product_image_url);
   service_->AddCart(kMockMerchantA, absl::nullopt, new_proto);
   task_environment_.RunUntilIdle();
 
@@ -451,9 +457,13 @@ TEST_F(CartServiceTest, TestAddCartWithProductImages) {
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
-                     base::Unretained(this), run_loop[1].QuitClosure(), 1));
+                     base::Unretained(this), run_loop[1].QuitClosure(),
+                     new_timestamp));
   run_loop[1].Run();
-  const ShoppingCarts result = {{kMockMerchantA, new_proto}};
+  merchant_A_proto.set_timestamp(new_timestamp);
+  merchant_A_proto.set_product_image_urls(0, new_product_image_url);
+  merchant_A_proto.set_is_hidden(false);
+  const ShoppingCarts result = {{kMockMerchantA, merchant_A_proto}};
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -1013,7 +1023,7 @@ TEST_F(CartServiceTest, TestCacheUsedDiscounts) {
   EXPECT_TRUE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
 }
 
-TEST_F(CartServiceTest, TestCleanUpDiscounts) {
+TEST_F(CartServiceTest, TestCleanUpDiscounts_RuleBasedDiscount) {
   cart_db::ChromeCartContentProto cart_with_discount_proto = AddDiscountToProto(
       BuildProto(kMockMerchantA, kMockMerchantURLA), 1,
       kMockMerchantADiscountRuleId, kMockMerchantADiscountsPercentOff,
@@ -1042,6 +1052,40 @@ TEST_F(CartServiceTest, TestCleanUpDiscounts) {
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
                      base::Unretained(this), run_loop[2].QuitClosure()));
+  run_loop[2].Run();
+}
+
+TEST_F(CartServiceTest, TestNotCleanUpDiscounts_OtherDiscount) {
+  cart_db::ChromeCartContentProto cart_with_discount_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  cart_with_discount_proto.mutable_discount_info()->set_discount_text(
+      "10% off");
+
+  const ShoppingCarts has_discount_cart = {
+      {kMockMerchantA, cart_with_discount_proto}};
+  CartDB* cart_db = service_->GetDB();
+
+  base::RunLoop run_loop[3];
+  cart_db->AddCart(
+      kMockMerchantA, cart_with_discount_proto,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationDiscount,
+                     base::Unretained(this), run_loop[1].QuitClosure(),
+                     has_discount_cart));
+  run_loop[1].Run();
+
+  CleanUpDiscounts(cart_with_discount_proto);
+
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationDiscount,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     has_discount_cart));
   run_loop[2].Run();
 }
 
