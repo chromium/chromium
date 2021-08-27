@@ -37,6 +37,7 @@
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -177,6 +179,18 @@ WebString WebDocument::ContentAsTextForTesting() const {
 WebElementCollection WebDocument::All() const {
   return WebElementCollection(
       const_cast<Document*>(ConstUnwrap<Document>())->all());
+}
+
+WebVector<WebFormControlElement> WebDocument::UnassociatedFormControls() const {
+  Vector<WebFormControlElement> unassociated_form_controls;
+  for (const auto& element :
+       ConstUnwrap<Document>()->UnassociatedListedElements()) {
+    if (auto* form_control =
+            blink::DynamicTo<HTMLFormControlElement>(element.Get())) {
+      unassociated_form_controls.push_back(form_control);
+    }
+  }
+  return unassociated_form_controls;
 }
 
 WebVector<WebFormElement> WebDocument::Forms() const {

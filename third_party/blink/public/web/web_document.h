@@ -48,6 +48,7 @@ namespace blink {
 class Document;
 class WebElement;
 class WebFormElement;
+class WebFormControlElement;
 class WebElementCollection;
 class WebString;
 class WebURL;
@@ -113,6 +114,11 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebURL CompleteURL(const WebString&) const;
   BLINK_EXPORT WebElement GetElementById(const WebString&) const;
   BLINK_EXPORT WebElement FocusedElement() const;
+
+  // The unassociated form controls are form control elements that are not
+  // associated to a <form> element.
+  BLINK_EXPORT WebVector<WebFormControlElement> UnassociatedFormControls()
+      const;
 
   // Inserts the given CSS source code as a style sheet in the document.
   BLINK_EXPORT WebStyleSheetKey

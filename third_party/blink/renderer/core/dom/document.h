@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/frame/fragment_directive.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/loader/font_preload_manager.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
@@ -165,6 +166,7 @@ class IntersectionObserverController;
 class LayoutView;
 class LazyLoadImageObserver;
 class LiveNodeListBase;
+class ListedElement;
 class LocalDOMWindow;
 class LocalFrame;
 class LocalFrameView;
@@ -482,6 +484,11 @@ class CORE_EXPORT Document : public ContainerNode,
   HTMLCollection* WindowNamedItems(const AtomicString& name);
   DocumentNameCollection* DocumentNamedItems(const AtomicString& name);
   HTMLCollection* DocumentAllNamedItems(const AtomicString& name);
+
+  // The unassociated listed elements are listed elements that are not
+  // associated to a <form> element.
+  const ListedElement::List& UnassociatedListedElements() const;
+  void MarkUnassociatedListedElementsDirty();
 
   // "defaultView" attribute defined in HTML spec.
   DOMWindow* defaultView() const;
@@ -2082,6 +2089,13 @@ class CORE_EXPORT Document : public ContainerNode,
   bool annotated_regions_dirty_;
 
   std::unique_ptr<SelectorQueryCache> selector_query_cache_;
+
+  // Do not access |unassociated_listed_elements_| directly as they might have
+  // changed. Use UnassociatedListedElements() instead that re-extracts them
+  // when needed.
+  ListedElement::List unassociated_listed_elements_;
+  // Set this flag if the stored unassociated listed elements were changed.
+  bool unassociated_listed_elements_dirty_ = false;
 
   // It is safe to keep a raw, untraced pointer to this stack-allocated
   // cache object: it is set upon the cache object being allocated on

@@ -6521,6 +6521,29 @@ HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
       kDocumentAllNamedItems, name);
 }
 
+const ListedElement::List& Document::UnassociatedListedElements() const {
+  if (unassociated_listed_elements_dirty_) {
+    Document* mutable_this = const_cast<Document*>(this);
+    const Node& root = GetTreeScope().RootNode();
+    DCHECK(unassociated_listed_elements_.IsEmpty());
+
+    // TODO(crbug.com/1243730): We do not consider shadow trees for now.
+    for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
+      ListedElement* listed_element = ListedElement::From(element);
+      if (listed_element && !listed_element->Form()) {
+        mutable_this->unassociated_listed_elements_.push_back(listed_element);
+      }
+    }
+    mutable_this->unassociated_listed_elements_dirty_ = false;
+  }
+  return unassociated_listed_elements_;
+}
+
+void Document::MarkUnassociatedListedElementsDirty() {
+  unassociated_listed_elements_dirty_ = true;
+  unassociated_listed_elements_.clear();
+}
+
 DOMWindow* Document::defaultView() const {
   return dom_window_;
 }
@@ -7878,6 +7901,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(find_in_page_active_match_node_);
   visitor->Trace(data_);
   visitor->Trace(meta_theme_color_elements_);
+  visitor->Trace(unassociated_listed_elements_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);

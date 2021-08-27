@@ -152,6 +152,8 @@ extern const base::Feature kAutofillUseNewFormExtraction;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature
     kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillUseUnassociatedListedElements;
 
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAblationStudy;

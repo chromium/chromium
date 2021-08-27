@@ -2111,9 +2111,31 @@ bool WebFormElementToFormData(
       extract_mask, form, field);
 }
 
+std::vector<WebFormControlElement>
+GetUnownedFormFieldElementsWithListedElements(
+    const WebDocument& document,
+    std::vector<WebElement>* fieldsets) {
+  std::vector<WebFormControlElement> unowned_form_field_elements =
+      document.UnassociatedFormControls().ReleaseVector();
+  if (fieldsets) {
+    for (const auto& element : unowned_form_field_elements) {
+      if (element.HasHTMLTagName("fieldset") &&
+          !IsElementInsideFormOrFieldSet(element,
+                                         /*consider_fieldset_tags=*/true)) {
+        fieldsets->push_back(element);
+      }
+    }
+  }
+  return unowned_form_field_elements;
+}
+
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
     const WebDocument& document,
     std::vector<WebElement>* fieldsets) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseUnassociatedListedElements)) {
+    return GetUnownedFormFieldElementsWithListedElements(document, fieldsets);
+  }
   std::vector<WebFormControlElement> unowned_fieldset_children;
   const WebElementCollection& elements = document.All();
   for (WebElement element = elements.FirstItem(); !element.IsNull();

@@ -401,6 +401,13 @@ const base::Feature kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval{
     "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, to get the unowned control elements we call
+// Document::UnassociatedListedElements(). This way we can reduce the number of
+// DOM traversals.
+// TODO(crbug/1201875): Remove once experiment is finished.
+const base::Feature kAutofillUseUnassociatedListedElements{
+    "AutofillUseUnassociatedListedElements", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 const base::Feature kAutofillEnableAblationStudy{
