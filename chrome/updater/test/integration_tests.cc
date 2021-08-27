@@ -221,7 +221,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
-TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
+TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
@@ -251,7 +251,7 @@ TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
       R"("run":"updater_qualification_app_dmg.dmg","packages":{"package":)"
       R"([{"name":"updater_qualification_app_dmg.crx",)"
       R"("hash_sha256":)"
-      R"("aba5c3f0eb5f76ea2d6ca54e3825b0665d9cfe03cb7281f18172f651da27ebbe"})"
+      R"("c9eeadf63732f3259e2ad1cead6298f90a3ef4b601b1ba1cbb0f37b6112a632c"})"
       R"(]}}}}]}})";
 
   test_server.ExpectOnce(request, response_body);
@@ -327,22 +327,7 @@ TEST_F(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
-#if defined(OS_MAC)
-// TODO(https://crbug.com/1243080): These are flaky.
-#define MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded \
-DISABLED_UninstallIfMaxServerWakesBeforeRegistrationExceeded
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-DISABLED_UninstallUpdaterWhenAllAppsUninstalled
-#define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
-#else  // OS_MAC
-#define MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded \
-UninstallIfMaxServerWakesBeforeRegistrationExceeded
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-UninstallUpdaterWhenAllAppsUninstalled
-#define MAYBE_UnregisterUninstalledApp UnregisterUninstalledApp
-#endif  // !OS_MAC
-
-TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
+TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Install();
   ExpectInstalled();
   RegisterApp("test1");
@@ -362,8 +347,7 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest,
-MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
+TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
   WaitForServerExit();
   ExpectInstalled();
@@ -374,8 +358,7 @@ MAYBE_UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   ExpectClean();
 }
 
-TEST_F(IntegrationTest,
-MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
+TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   RegisterApp("test1");
   ExpectInstalled();
@@ -395,9 +378,8 @@ MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
 
 // Windows does not currently have a concept of app ownership, so this
 // test need not run on Windows.
-// TODO(https://crbug.com/1243080): This is flaky.
 #if defined(OS_MAC)
-TEST_F(IntegrationTest, DISABLED_UnregisterUnownedApp) {
+TEST_F(IntegrationTest, UnregisterUnownedApp) {
   Install();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);

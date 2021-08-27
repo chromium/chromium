@@ -97,11 +97,12 @@ void AppServerMac::TaskStarted() {
 void AppServerMac::MarkTaskStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++tasks_running_;
+  VLOG(2) << "Starting task, " << tasks_running_ << " tasks running";
 }
 
 base::TimeDelta AppServerMac::ServerKeepAlive() {
   int seconds = external_constants()->ServerKeepAliveSeconds();
-  DVLOG(2) << "ServerKeepAliveSeconds: " << seconds;
+  VLOG(2) << "ServerKeepAliveSeconds: " << seconds;
   return base::TimeDelta::FromSeconds(seconds);
 }
 
@@ -117,6 +118,7 @@ void AppServerMac::AcknowledgeTaskCompletion() {
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AppServerMac::Shutdown, this, 0));
   }
+  VLOG(2) << "Completing task, " << tasks_running_ << " tasks running";
 }
 
 scoped_refptr<App> MakeAppServer() {
