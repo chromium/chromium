@@ -154,8 +154,18 @@
         </network-config-select>
         <network-config-input label="[[i18n('OncEAP-SubjectMatch')]]"
             value="{{eapProperties_.subjectMatch}}"
-            hidden="[[!showEap_.SubjectMatch]]"
+            hidden="[[!showEap_.EapServerCertMatch]]"
             property="[[managedEapProperties_.subjectMatch]]">
+        </network-config-input>
+        <network-config-input label="[[i18n('OncEAP-SubjectAltNameMatch')]]"
+            value="{{serializedSubjectAltNameMatch_}}"
+            hidden="[[!showEap_.EapServerCertMatch]]"
+            property="[[managedEapProperties_.subjectAltNameMatch]]">
+        </network-config-input>
+        <network-config-input label="[[i18n('OncEAP-DomainSuffixMatch')]]"
+            value="{{serializedDomainSuffixMatch_}}"
+            hidden="[[!showEap_.EapServerCertMatch]]"
+            property="[[managedEapProperties_.domainSuffixMatch]]">
         </network-config-input>
         <network-config-select id="userCert" label="[[i18n('OncEAP-UserCert')]]"
             value="{{selectedUserCertHash_}}" items="[[userCerts_]]"

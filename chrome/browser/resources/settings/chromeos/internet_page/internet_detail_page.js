@@ -2187,7 +2187,8 @@ Polymer({
       case chromeos.networkConfig.mojom.NetworkType.kWiFi:
         fields.push(
             'wifi.ssid', 'wifi.bssid', 'wifi.signalStrength', 'wifi.security',
-            'wifi.eap.outer', 'wifi.eap.inner', 'wifi.eap.subjectMatch',
+            'wifi.eap.outer', 'wifi.eap.inner', 'wifi.eap.domainSuffixMatch',
+            'wifi.eap.subjectAltNameMatch', 'wifi.eap.subjectMatch',
             'wifi.eap.identity', 'wifi.eap.anonymousIdentity',
             'wifi.frequency');
         break;

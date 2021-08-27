@@ -341,6 +341,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/input_method_options_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/input_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/internet_config_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/onc_mojo_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/internet_detail_menu_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/internet_detail_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/internet_known_networks_page_tests.m.js",

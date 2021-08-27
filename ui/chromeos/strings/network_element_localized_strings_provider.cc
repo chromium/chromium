@@ -27,6 +27,8 @@ namespace network_element {
 namespace {
 
 constexpr webui::LocalizedString kElementLocalizedStrings[] = {
+    {"invalidDomainSuffixMatchEntry", IDS_NETWORK_INVALID_DSM_VALUE},
+    {"invalidSubjectAlternativeNameMatchEntry", IDS_NETWORK_INVALID_SAN_ENTRY},
     {"OncType", IDS_NETWORK_TYPE},
     {"OncTypeCellular", IDS_NETWORK_TYPE_CELLULAR},
     {"OncTypeEthernet", IDS_NETWORK_TYPE_ETHERNET},
@@ -179,6 +181,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncConnected", IDS_ONC_CONNECTED},
       {"OncConnecting", IDS_ONC_CONNECTING},
       {"OncEAP-AnonymousIdentity", IDS_ONC_EAP_ANONYMOUS_IDENTITY},
+      {"OncEAP-DomainSuffixMatch", IDS_ONC_EAP_DOMAIN_SUFFIX_MATCH},
       {"OncEAP-Identity", IDS_ONC_EAP_IDENTITY},
       {"OncEAP-Inner", IDS_ONC_EAP_INNER},
       {"OncEAP-Inner_Automatic", IDS_ONC_EAP_INNER_AUTOMATIC},
@@ -195,6 +198,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncEAP-Outer_EAP-TTLS", IDS_ONC_EAP_OUTER_TTLS},
       {"OncEAP-Password", IDS_ONC_WIFI_PASSWORD},
       {"OncEAP-ServerCA", IDS_ONC_EAP_SERVER_CA},
+      {"OncEAP-SubjectAltNameMatch", IDS_ONC_EAP_SUBJECT_ALT_NAME_MATCH},
       {"OncEAP-SubjectMatch", IDS_ONC_EAP_SUBJECT_MATCH},
       {"OncEAP-UserCert", IDS_ONC_EAP_USER_CERT},
       {"OncMacAddress", IDS_ONC_MAC_ADDRESS},

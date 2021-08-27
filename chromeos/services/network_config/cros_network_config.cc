@@ -651,6 +651,33 @@ void SetStringList(const char* key,
   dict->SetKey(key, std::move(list));
 }
 
+void SetSubjectAltNameMatch(
+    const char* key,
+    const std::vector<mojom::SubjectAltNamePtr>* property,
+    base::Value* dict) {
+  base::Value subject_alt_name_list(base::Value::Type::LIST);
+  for (const auto& ptr : *property) {
+    std::string type;
+    switch (ptr->type) {
+      case mojom::SubjectAltName::Type::kEmail:
+        type = ::onc::eap_subject_alternative_name_match::kEMAIL;
+        break;
+      case mojom::SubjectAltName::Type::kDns:
+        type = ::onc::eap_subject_alternative_name_match::kDNS;
+        break;
+      case mojom::SubjectAltName::Type::kUri:
+        type = ::onc::eap_subject_alternative_name_match::kURI;
+        break;
+    }
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kType, type);
+    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kValue,
+                       ptr->value);
+    subject_alt_name_list.Append(std::move(entry));
+  }
+  dict->SetKey(key, std::move(subject_alt_name_list));
+}
+
 // GetManagedDictionary() returns a ManagedDictionary representing the active
 // and policy values for a managed property. The types of |active_value| and
 // |policy_value| are expected to match the ONC signature for the property type.
@@ -854,6 +881,60 @@ mojom::ManagedInt32Ptr GetManagedInt32(const base::Value* dict,
   }
   NET_LOG(ERROR) << "Expected int or dictionary, found: " << *v;
   return nullptr;
+}
+
+mojom::SubjectAltNamePtr GetSubjectAltName(const base::Value* dict) {
+  auto san = mojom::SubjectAltName::New();
+  san->value = GetRequiredString(
+      dict, ::onc::eap_subject_alternative_name_match::kValue);
+  std::string type =
+      GetRequiredString(dict, ::onc::eap_subject_alternative_name_match::kType);
+  if (type == ::onc::eap_subject_alternative_name_match::kEMAIL) {
+    san->type = mojom::SubjectAltName::Type::kEmail;
+  } else if (type == ::onc::eap_subject_alternative_name_match::kDNS) {
+    san->type = mojom::SubjectAltName::Type::kDns;
+  } else if (type == ::onc::eap_subject_alternative_name_match::kURI) {
+    san->type = mojom::SubjectAltName::Type::kUri;
+  } else {
+    NET_LOG(ERROR) << "Unknown subject alternative name type " << type;
+    return nullptr;
+  }
+  return san;
+}
+
+mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
+    const base::Value* dict,
+    const char* key) {
+  auto result = mojom::ManagedSubjectAltNameMatchList::New();
+  const base::Value* value = dict->FindKey(key);
+  if (!value)
+    return result;
+
+  if (value->is_list()) {
+    std::vector<mojom::SubjectAltNamePtr> active;
+    for (const base::Value& value : value->GetList())
+      active.push_back(GetSubjectAltName(&value));
+    result->active_value = std::move(active);
+    return result;
+  }
+  if (value->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    if (!managed_dict.active_value.is_list()) {
+      NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
+      return result;
+    }
+    for (const base::Value& e : managed_dict.active_value.GetList())
+      result->active_value.push_back(GetSubjectAltName(&e));
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = std::vector<mojom::SubjectAltNamePtr>();
+      for (const base::Value& e : managed_dict.policy_value.GetList())
+        result->policy_value.push_back(GetSubjectAltName(&e));
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
+  return result;
 }
 
 mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value* dict) {
@@ -1122,6 +1203,8 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertRef);
   eap->client_cert_type =
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertType);
+  eap->domain_suffix_match =
+      GetManagedStringList(eap_dict, ::onc::eap::kDomainSuffixMatch);
   eap->identity = GetManagedString(eap_dict, ::onc::eap::kIdentity);
   eap->inner = GetManagedString(eap_dict, ::onc::eap::kInner);
   eap->outer = GetManagedString(eap_dict, ::onc::eap::kOuter);
@@ -1132,6 +1215,8 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
       GetManagedStringList(eap_dict, ::onc::eap::kServerCAPEMs);
   eap->server_ca_refs =
       GetManagedStringList(eap_dict, ::onc::eap::kServerCARefs);
+  eap->subject_alt_name_match = GetManagedSubjectAltNameMatchList(
+      eap_dict, ::onc::eap::kSubjectAlternativeNameMatch);
   eap->subject_match = GetManagedString(eap_dict, ::onc::eap::kSubjectMatch);
   eap->tls_version_max = GetManagedString(eap_dict, ::onc::eap::kTLSVersionMax);
   eap->use_proactive_key_caching =
@@ -1616,12 +1701,16 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
             &eap_dict);
   SetString(::onc::client_cert::kClientCertType, eap.client_cert_type,
             &eap_dict);
+  SetStringList(::onc::eap::kDomainSuffixMatch, eap.domain_suffix_match,
+                &eap_dict);
   SetString(::onc::eap::kIdentity, eap.identity, &eap_dict);
   SetString(::onc::eap::kInner, eap.inner, &eap_dict);
   SetString(::onc::eap::kOuter, eap.outer, &eap_dict);
   SetString(::onc::eap::kPassword, eap.password, &eap_dict);
   eap_dict.SetBoolKey(::onc::eap::kSaveCredentials, eap.save_credentials);
   SetStringList(::onc::eap::kServerCAPEMs, eap.server_ca_pems, &eap_dict);
+  SetSubjectAltNameMatch(::onc::eap::kSubjectAlternativeNameMatch,
+                         &eap.subject_alt_name_match, &eap_dict);
   SetString(::onc::eap::kSubjectMatch, eap.subject_match, &eap_dict);
   eap_dict.SetBoolKey(::onc::eap::kUseSystemCAs, eap.use_system_cas);
 

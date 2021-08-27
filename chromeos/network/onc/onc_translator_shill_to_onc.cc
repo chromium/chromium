@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -754,6 +755,30 @@ void ShillToONCTranslator::TranslateEap() {
     onc_object_->SetKey(
         ::onc::eap::kPassword,
         base::Value(::onc::substitutes::kPasswordPlaceholderVerbatim));
+  }
+
+  // Set shill::kEapSubjectAlternativeNameMatchProperty to the serialized form
+  // of the subject alternative name match list of dictionaries.
+  const base::Value* subject_alternative_name_match =
+      shill_dictionary_->FindListKey(
+          shill::kEapSubjectAlternativeNameMatchProperty);
+
+  if (subject_alternative_name_match) {
+    base::Value deserialized_dicts(base::Value::Type::LIST);
+    std::string error_msg;
+    for (const base::Value& san : subject_alternative_name_match->GetList()) {
+      JSONStringValueDeserializer deserializer(san.GetString());
+      auto deserialized_dict =
+          deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
+      if (!deserialized_dict) {
+        LOG(ERROR) << "failed to deserialize " << san << " with error "
+                   << error_msg;
+        continue;
+      }
+      deserialized_dicts.Append(std::move(*deserialized_dict));
+    }
+    onc_object_->SetKey(::onc::eap::kSubjectAlternativeNameMatch,
+                        std::move(deserialized_dicts));
   }
 }
 
