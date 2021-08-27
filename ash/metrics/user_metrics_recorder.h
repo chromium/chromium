@@ -20,6 +20,7 @@ class DemoSessionMetricsRecorder;
 class DesktopTaskSwitchMetricRecorder;
 enum class DictationToggleSource;
 class PointerMetricsRecorder;
+class StylusMetricsRecorder;
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
 // on a timer to allow recording of state data over time to the UMA records.
@@ -98,6 +99,9 @@ class ASH_EXPORT UserMetricsRecorder {
 
   // Metric recorder to track pointer down events.
   std::unique_ptr<PointerMetricsRecorder> pointer_metrics_recorder_;
+
+  // Metric recorder to track stylus events.
+  std::unique_ptr<StylusMetricsRecorder> stylus_metrics_recorder_;
 
   // Metric recorder to track login authentication activity.
   std::unique_ptr<LoginMetricsRecorder> login_metrics_recorder_;
