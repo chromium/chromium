@@ -88,7 +88,7 @@ class GrammarManager {
   std::u16string current_text_;
   base::OneShotTimer delay_timer_;
   ui::GrammarFragment current_fragment_;
-  const ui::ime::AssistiveWindowButton suggestion_button_;
+  ui::ime::AssistiveWindowButton suggestion_button_;
   const ui::ime::AssistiveWindowButton ignore_button_;
   bool suggestion_shown_ = false;
   ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
