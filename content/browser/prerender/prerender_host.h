@@ -193,9 +193,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   base::ObserverList<Observer> observers_;
 
   // Navigation parameters for the navigation which loaded the main document of
-  // the prerendered page, copied immediately after BeginNavigation. They will
-  // be compared with the navigation parameters of the potential activation when
-  // attempting to reserve the prerender host for a navigation.
+  // the prerendered page, copied immediately after BeginNavigation when
+  // throttles are created. They will be compared with the navigation parameters
+  // of the potential activation when attempting to reserve the prerender host
+  // for a navigation.
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommonNavigationParamsPtr common_params_;
 

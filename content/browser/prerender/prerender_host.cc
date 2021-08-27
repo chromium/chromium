@@ -372,11 +372,16 @@ bool PrerenderHost::StartPrerendering() {
     // PrerenderNavigationThrottle during `LoadURLWithParams` above.
     DCHECK_EQ(*initial_navigation_id_,
               created_navigation_handle->GetNavigationId());
+    DCHECK(begin_params_);
+    DCHECK(common_params_);
   } else {
     // In some exceptional code path, such as the navigation failed due to CSP
     // violations, PrerenderNavigationThrottle didn't run at this point. So,
     // set the ID here.
     initial_navigation_id_ = created_navigation_handle->GetNavigationId();
+    // |begin_params_| and |common_params_| is null here, but it doesn't matter
+    // as this branch is reached only when the initial navigation fails,
+    // so this PrerenderHost can't be activated.
   }
 
   NavigationRequest* navigation_request =
