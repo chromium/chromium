@@ -18,9 +18,9 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
-#include "base/containers/queue.h"
 #include "base/debug/debugger.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
@@ -1212,10 +1213,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       DCHECK(client_->CanUseInsecureDnsTransactions());
 
     if (query_type != DnsQueryType::UNSPECIFIED) {
-      transactions_needed_.push(query_type);
+      transactions_needed_.push_back(query_type);
     } else {
-      transactions_needed_.push(DnsQueryType::A);
-      transactions_needed_.push(DnsQueryType::AAAA);
+      transactions_needed_.push_back(DnsQueryType::A);
+      transactions_needed_.push_back(DnsQueryType::AAAA);
       MaybeQueueHttpsTransaction();
     }
     num_needed_transactions_ = transactions_needed_.size();
@@ -1241,7 +1242,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK);
 
     DnsQueryType type = transactions_needed_.front();
-    transactions_needed_.pop();
+    transactions_needed_.pop_front();
 
     DCHECK(IsAddressType(type) || secure_ ||
            client_->CanQueryAdditionalTypesViaInsecureDns());
@@ -1254,7 +1255,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     std::unique_ptr<DnsTransaction> transaction = CreateTransaction(type);
     transaction->Start();
-    transactions_started_.insert(std::move(transaction));
+    transactions_started_.emplace(std::move(transaction), type);
   }
 
  private:
@@ -1272,7 +1273,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                        !client_->CanQueryAdditionalTypesViaInsecureDns()))
         return;
 
-      transactions_needed_.push(DnsQueryType::HTTPS);
+      transactions_needed_.push_back(DnsQueryType::HTTPS);
       return;
     }
 
@@ -1291,9 +1292,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
             is_httpssvc_experiment_domain /* expect_intact */);
 
         if (features::kDnsHttpssvcUseIntegrity.Get())
-          transactions_needed_.push(DnsQueryType::INTEGRITY);
+          transactions_needed_.push_back(DnsQueryType::INTEGRITY);
         if (features::kDnsHttpssvcUseHttpssvc.Get())
-          transactions_needed_.push(DnsQueryType::HTTPS_EXPERIMENTAL);
+          transactions_needed_.push_back(DnsQueryType::HTTPS_EXPERIMENTAL);
       }
     }
   }
@@ -1355,30 +1356,48 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     return trans;
   }
 
-  void OnExperimentalQueryTimeout(absl::optional<std::string> doh_provider_id) {
-    for (std::unique_ptr<DnsTransaction>& transaction : transactions_started_) {
-      DCHECK(httpssvc_metrics_);
+  void OnTimeout() {
+    for (auto& transaction : transactions_started_) {
       base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
 
-      switch (transaction->GetType()) {
-        case dns_protocol::kExperimentalTypeIntegrity:
+      switch (transaction.second) {
+        case DnsQueryType::INTEGRITY:
+          DCHECK(httpssvc_metrics_);
+          // Don't record provider ID for timeouts. It is not precisely known
+          // at this level which provider is actually to blame for the
+          // timeout, and breaking metrics out by provider is no longer
+          // important for current experimentation goals.
           httpssvc_metrics_->SaveForIntegrity(
-              doh_provider_id, HttpssvcDnsRcode::kTimedOut, {}, elapsed_time);
+              /*doh_provider_id=*/absl::nullopt, HttpssvcDnsRcode::kTimedOut,
+              {}, elapsed_time);
           break;
-        case dns_protocol::kTypeHttps:
-          httpssvc_metrics_->SaveForHttps(
-              doh_provider_id, HttpssvcDnsRcode::kTimedOut, {}, elapsed_time);
+        case DnsQueryType::HTTPS:
+          DCHECK(!secure_ ||
+                 !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get());
+          FALLTHROUGH;
+        case DnsQueryType::HTTPS_EXPERIMENTAL:
+          if (httpssvc_metrics_) {
+            // Don't record provider ID for timeouts. It is not precisely known
+            // at this level which provider is actually to blame for the
+            // timeout, and breaking metrics out by provider is no longer
+            // important for current experimentation goals.
+            httpssvc_metrics_->SaveForHttps(
+                /*doh_provider_id=*/absl::nullopt, HttpssvcDnsRcode::kTimedOut,
+                /*condensed_records=*/{}, elapsed_time);
+          }
           break;
         default:
-          // The experimental query timer is only started when all other
-          // transactions have completed.
+          // The timeout timer is only started when all other transactions have
+          // completed.
           NOTREACHED();
       }
     }
 
+    num_completed_transactions_ += transactions_needed_.size();
+    transactions_needed_.clear();
     num_completed_transactions_ += transactions_started_.size();
-    DCHECK(num_completed_transactions_ == num_needed_transactions());
     transactions_started_.clear();
+    DCHECK(num_completed_transactions_ == num_needed_transactions());
 
     ProcessResultsOnCompletion();
   }
@@ -1400,7 +1419,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       auto it = transactions_started_.find(transaction);
       DCHECK(it != transactions_started_.end());
 
-      destroy_transaction_on_return = std::move(*it);
+      destroy_transaction_on_return = std::move(it->first);
       transactions_started_.erase(it);
     }
 
@@ -1534,16 +1553,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     ++num_completed_transactions_;
     if (num_completed_transactions_ < num_needed_transactions()) {
       delegate_->OnIntermediateTransactionComplete();
-      // If the experimental query times out, blame the provider that gave the
-      // last A/AAAA result. If we were being 100% correct, we would blame the
-      // provider associated with the experimental query.
-      MaybeStartExperimentalQueryTimer(doh_provider_id);
+      MaybeStartTimeoutTimer();
       return;
     }
 
-    // Since all transactions are complete, in particular, all experimental
-    // transactions are complete (if any were started).
-    experimental_query_cancellation_timer_.Stop();
+    // Since all transactions are complete, in particular, all experimental or
+    // supplemental transactions are complete (if any were started).
+    timeout_timer_.Stop();
 
     ProcessResultsOnCompletion();
   }
@@ -1655,65 +1671,85 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
   }
 
-  // Returns whether all transactions left to execute are of transaction type
-  // |qtype|. (In particular, this is the case if all transactions are
-  // complete.) Used for logging and starting the experimental query timer (see
-  // MaybeStartExperimentalQueryTimer).
-  bool TaskIsCompleteOrOnlyQtypeTransactionsRemain(
-      std::initializer_list<uint16_t> qtypes) const {
-    // Since DoH runs all transactions concurrently and experimental types are
-    // only queried over DoH, this method only needs to check the transactions
-    // in transactions_started_ because transactions_needed_ is empty from the
-    // time the first transaction is started.
-    DCHECK(transactions_needed_.empty());
+  // Returns whether any transactions left to finish are of a transaction type
+  // in `types`. Used for logging and starting the timeout timer (see
+  // MaybeStartTimeoutTimer()).
+  bool AnyOfTypeTransactionsRemain(
+      std::initializer_list<DnsQueryType> types) const {
+    // Should only be called if some transactions are still running or waiting
+    // to run.
+    DCHECK(!transactions_needed_.empty() || !transactions_started_.empty());
 
-    return std::all_of(
-        transactions_started_.begin(), transactions_started_.end(),
-        [&](const std::unique_ptr<DnsTransaction>& transaction) {
-          DCHECK(transaction);
-          return std::any_of(qtypes.begin(), qtypes.end(), [&](uint16_t qtype) {
-            return transaction->GetType() == qtype;
-          });
-        });
-  }
-
-  void MaybeStartExperimentalQueryTimer(
-      absl::optional<std::string> doh_provider_id) {
-    DCHECK(!transactions_started_.empty());
-
-    // Abort if neither HTTPSSVC nor INTEGRITY experimental querying is enabled.
-    if (!base::FeatureList::IsEnabled(features::kDnsHttpssvc) ||
-        (!features::kDnsHttpssvcUseIntegrity.Get() &&
-         !features::kDnsHttpssvcUseHttpssvc.Get())) {
-      return;
+    // Check running transactions.
+    if (base::ranges::find_first_of(transactions_started_, types, /*pred=*/{},
+                                    /*proj1=*/[](const auto& transaction) {
+                                      return transaction.second;
+                                    }) != transactions_started_.end()) {
+      return true;
     }
 
-    // TODO(crbug.com/1225776): Control based on DnsQueryTypes instead of
-    // transaction qtypes to allow differentiating HTTPS and HTTPS_EXPERIMENTAL.
-    if (!experimental_query_cancellation_timer_.IsRunning() &&
-        TaskIsCompleteOrOnlyQtypeTransactionsRemain(
-            {dns_protocol::kExperimentalTypeIntegrity,
-             dns_protocol::kTypeHttps})) {
-      const base::TimeDelta kExtraTimeAbsolute =
-          features::dns_httpssvc_experiment::GetExtraTimeAbsolute();
-      const int kExtraTimePercent =
-          features::kDnsHttpssvcExtraTimePercent.Get();
+    // Check queued transactions, in case it ever becomes possible to get here
+    // without the transactions being started first.
+    return base::ranges::find_first_of(transactions_needed_, types) !=
+           transactions_needed_.end();
+  }
 
+  void MaybeStartTimeoutTimer() {
+    // Should only be called if some transactions are still running or waiting
+    // to run.
+    DCHECK(!transactions_started_.empty() || !transactions_needed_.empty());
+
+    // Timer already running.
+    if (timeout_timer_.IsRunning())
+      return;
+
+    // Always wait for address transactions.
+    if (AnyOfTypeTransactionsRemain({DnsQueryType::A, DnsQueryType::AAAA}))
+      return;
+
+    base::TimeDelta timeout;
+    int extra_time_percent = 0;
+
+    if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
+      DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
+
+      // Skip timeout for secure requests if the timeout would be a fatal
+      // failure.
+      if (!secure_ || !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
+        timeout = features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
+        extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
+      }
+    } else if (AnyOfTypeTransactionsRemain(
+                   {DnsQueryType::INTEGRITY,
+                    DnsQueryType::HTTPS_EXPERIMENTAL})) {
+      DCHECK(base::FeatureList::IsEnabled(features::kDnsHttpssvc));
+      timeout = features::dns_httpssvc_experiment::GetExtraTimeAbsolute();
+      extra_time_percent = features::kDnsHttpssvcExtraTimePercent.Get();
+    } else {
+      // Unhandled supplemental type.
+      NOTREACHED();
+    }
+
+    if (extra_time_percent > 0) {
       base::TimeDelta total_time_for_other_transactions =
           tick_clock_->NowTicks() - task_start_time_;
       base::TimeDelta relative_timeout =
-          total_time_for_other_transactions * kExtraTimePercent / 100;
+          total_time_for_other_transactions * extra_time_percent / 100;
       // Use at least 1ms to ensure timeout doesn't occur immediately in tests.
       relative_timeout =
           std::max(relative_timeout, base::TimeDelta::FromMilliseconds(1));
 
-      base::TimeDelta timeout = std::min(kExtraTimeAbsolute, relative_timeout);
-
-      experimental_query_cancellation_timer_.Start(
-          FROM_HERE, timeout,
-          base::BindOnce(&DnsTask::OnExperimentalQueryTimeout,
-                         base::Unretained(this), doh_provider_id));
+      if (timeout.is_zero()) {
+        timeout = relative_timeout;
+      } else {
+        timeout = std::min(timeout, relative_timeout);
+      }
     }
+
+    if (!timeout.is_zero())
+      timeout_timer_.Start(
+          FROM_HERE, timeout,
+          base::BindOnce(&DnsTask::OnTimeout, base::Unretained(this)));
   }
 
   DnsClient* client_;
@@ -1731,8 +1767,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   Delegate* delegate_;
   const NetLogWithSource net_log_;
 
-  base::queue<DnsQueryType> transactions_needed_;
-  base::flat_set<std::unique_ptr<DnsTransaction>, base::UniquePtrComparator>
+  base::circular_deque<DnsQueryType> transactions_needed_;
+  base::flat_map<std::unique_ptr<DnsTransaction>,
+                 DnsQueryType,
+                 base::UniquePtrComparator>
       transactions_started_;
   int num_needed_transactions_;
   int num_completed_transactions_;
@@ -1747,9 +1785,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   HttpssvcExperimentDomainCache httpssvc_domain_cache_;
   absl::optional<HttpssvcMetrics> httpssvc_metrics_;
 
-  // Timer for early abort of experimental queries. See comments describing the
-  // timeout parameters in net/base/features.h.
-  base::OneShotTimer experimental_query_cancellation_timer_;
+  // Timer for task timeout. Generally started after completion of address
+  // transactions to allow aborting experimental or supplemental transactions.
+  base::OneShotTimer timeout_timer_;
 
   // If true, there are still significant fallback options available if this
   // task completes unsuccessfully. Used as a signal that underlying
@@ -2525,8 +2563,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       job_running_ = false;
 
       if (dispatcher_) {
-        // Signal dispatcher that a slot has opened.
+        // Job should only ever occupy one slot after any tasks that may have
+        // required additional slots, e.g. DnsTask, have been killed, and
+        // additional slots are expected to be vacated as part of killing the
+        // task.
         DCHECK_EQ(1, num_occupied_job_slots_);
+        // Signal dispatcher that a slot has opened.
         dispatcher_->OnJobFinished();
       }
     } else if (is_queued()) {

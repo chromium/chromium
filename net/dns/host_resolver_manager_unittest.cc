@@ -11070,6 +11070,418 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
+// Test that when additional HTTPS timeout Feature params are disabled, the task
+// does not timeout until the transactions themselves timeout.
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryWaitsWithoutAdditionalTimeout) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+                                   {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeHttps, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kTimeout),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Wait an absurd amount of time (1 hour) and expect the request to not
+  // complete because it is waiting on the transaction, where the mock is
+  // delaying completion.
+  FastForwardBy(base::TimeDelta::FromHours(1));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::IsEmpty()));
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAbsoluteTimeout) {
+  const char kName[] = "name.test";
+
+  // Set an absolute timeout of 10 minutes.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbExtraTimeAbsolute", "10m"},
+                                   {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Wait until 1 second before expected timeout.
+  FastForwardBy(base::TimeDelta::FromMinutes(10) -
+                base::TimeDelta::FromSeconds(1));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Exceed expected timeout.
+  FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // No experimental results if transaction did not complete.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithRelativeTimeout) {
+  const char kName[] = "name.test";
+
+  // Set a relative timeout of 10%.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+                                   {"UseDnsHttpsSvcbExtraTimePercent", "10"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Complete final address transaction after 100 seconds total.
+  FastForwardBy(base::TimeDelta::FromSeconds(50));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  FastForwardBy(base::TimeDelta::FromSeconds(50));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect timeout at additional 10 seconds.
+  FastForwardBy(base::TimeDelta::FromSeconds(9));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  FastForwardBy(base::TimeDelta::FromSeconds(2));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // No experimental results if transaction did not complete.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryWithAbsoluteTimeoutFirst) {
+  const char kName[] = "name.test";
+
+  // Set an absolute timeout of 30s and a relative timeout of 100%.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbExtraTimeAbsolute", "30s"},
+                                   {"UseDnsHttpsSvcbExtraTimePercent", "100"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Complete final address transaction after 4 minutes total.
+  FastForwardBy(base::TimeDelta::FromMinutes(2));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  FastForwardBy(base::TimeDelta::FromMinutes(2));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Wait until 1 second before expected timeout (from the absolute timeout).
+  FastForwardBy(base::TimeDelta::FromSeconds(29));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Exceed expected timeout.
+  FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // No experimental results if transaction did not complete.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryWithRelativeTimeoutFirst) {
+  const char kName[] = "name.test";
+
+  // Set an absolute timeout of 20 minutes and a relative timeout of 10%.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbExtraTimeAbsolute", "20m"},
+                                   {"UseDnsHttpsSvcbExtraTimePercent", "10"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Complete final address transaction after 100 seconds total.
+  FastForwardBy(base::TimeDelta::FromSeconds(50));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  FastForwardBy(base::TimeDelta::FromSeconds(50));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect timeout at additional 10 seconds (from the relative timeout).
+  FastForwardBy(base::TimeDelta::FromSeconds(9));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  FastForwardBy(base::TimeDelta::FromSeconds(2));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // No experimental results if transaction did not complete.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+// Test that HTTPS timeouts are not used when fatal for the request.
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryWaitsWithoutTimeoutIfFatal) {
+  const char kName[] = "name.test";
+
+  // Set timeouts but also enforce secure responses.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbExtraTimeAbsolute", "20m"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Wait an absurd amount of time (1 hour) and expect the request to not
+  // complete because it is waiting on the transaction, where the mock is
+  // delaying completion.
+  FastForwardBy(base::TimeDelta::FromHours(1));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
+}
+
+// Test that HTTPS timeouts are always respected for insecure requests.
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryAlwaysRespectsTimeoutsForInsecure) {
+  const char kName[] = "name.test";
+
+  // Set timeouts but also enforce secure responses.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbExtraTimeAbsolute", "20m"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       {"UseDnsHttpsSvcbEnableInsecure", "true"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Wait until 1s before expected timeout.
+  FastForwardBy(base::TimeDelta::FromMinutes(20) -
+                base::TimeDelta::FromSeconds(1));
+  RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  FastForwardBy(base::TimeDelta::FromSeconds(2));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // No experimental results if transaction did not complete.
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery) {
   const char kName[] = "combined.test";
 
