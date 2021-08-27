@@ -144,12 +144,6 @@ bool AppInventoryManager::UploadAppInventoryFromEsaFeatureEnabled() const {
 // |resource_id| for identifying the device entry in GEM database.
 HRESULT AppInventoryManager::UploadAppInventory(
     const extension::UserDeviceContext& context) {
-  if (!credential_provider::IsEnrolledWithGoogleMdm()) {
-    LOGFN(INFO)
-        << "Not uploading app data as device is not enrolled with Google MDM";
-    return S_OK;
-  }
-
   std::wstring obfuscated_user_id;
   HRESULT status = GetIdFromSid(context.user_sid.c_str(), &obfuscated_user_id);
   if (FAILED(status)) {
