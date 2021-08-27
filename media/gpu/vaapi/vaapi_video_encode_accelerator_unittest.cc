@@ -222,7 +222,7 @@ class VaapiVideoEncodeAcceleratorTest
     ResetEncoder();
   }
 
-  void ResetEncoder() {
+  void ResetEncoder() NO_THREAD_SAFETY_ANALYSIS {
     encoder_.reset(new VaapiVideoEncodeAccelerator);
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
@@ -275,7 +275,8 @@ class VaapiVideoEncodeAcceleratorTest
     return encoder_->Initialize(config, &client_);
   }
 
-  void InitializeSequenceForVP9(const VideoEncodeAccelerator::Config& config) {
+  void InitializeSequenceForVP9(const VideoEncodeAccelerator::Config& config)
+      NO_THREAD_SAFETY_ANALYSIS {
     base::RunLoop run_loop;
     ::testing::InSequence s;
     constexpr auto kBitrateControl = VaapiVideoEncoderDelegate::BitrateControl::

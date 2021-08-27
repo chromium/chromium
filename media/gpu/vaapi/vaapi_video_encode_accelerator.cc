@@ -156,6 +156,14 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   DCHECK_EQ(state_, kUninitialized);
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
 
+  if (AttemptedInitialization()) {
+    VLOGF(1) << "Initialize() cannot be called more than once.";
+    return false;
+  }
+
+  client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
+  client_ = client_ptr_factory_->GetWeakPtr();
+
   if (config.HasSpatialLayer()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
@@ -199,9 +207,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
       }
     }
   }
-
-  client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
-  client_ = client_ptr_factory_->GetWeakPtr();
 
   const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
   if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP8 &&
@@ -260,27 +265,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
-  if (!IsConfiguredForTesting()) {
-    if (vaapi_wrapper_) {
-      VLOGF(1) << "Initialize() is called twice";
-      return false;
-    }
-    VaapiWrapper::CodecMode mode =
-        codec == VideoCodec::kVP9
-            ? VaapiWrapper::kEncodeConstantQuantizationParameter
-            : VaapiWrapper::kEncodeConstantBitrate;
-    vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
-        mode, config.output_profile, EncryptionScheme::kUnencrypted,
-        base::BindRepeating(&ReportVaapiErrorToUMA,
-                            "Media.VaapiVideoEncodeAccelerator.VAAPIError"));
-    if (!vaapi_wrapper_) {
-      VLOGF(1) << "Failed initializing VAAPI for profile "
-               << GetProfileName(config.output_profile);
-      return false;
-    }
-  }
-
   // Finish remaining initialization on the encoder thread.
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VaapiVideoEncodeAccelerator::InitializeTask,
@@ -294,7 +278,24 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   VLOGF(2);
 
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
-  VaapiVideoEncoderDelegate::Config ave_config{};
+  DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
+  if (!IsConfiguredForTesting()) {
+    const auto mode = output_codec_ == VideoCodec::kVP9
+                          ? VaapiWrapper::kEncodeConstantQuantizationParameter
+                          : VaapiWrapper::kEncodeConstantBitrate;
+    vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
+        mode, config.output_profile, EncryptionScheme::kUnencrypted,
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiVideoEncodeAccelerator.VAAPIError"));
+
+    if (!vaapi_wrapper_) {
+      NOTIFY_ERROR(kPlatformFailureError,
+                   "Failed initializing VAAPI for profile " +
+                       GetProfileName(config.output_profile));
+      return;
+    }
+  }
+
   DCHECK_EQ(IsConfiguredForTesting(), !!encoder_);
   // Base::Unretained(this) is safe because |error_cb| is called by
   // |encoder_| and |this| outlives |encoder_|.
@@ -304,6 +305,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
         vea->NotifyError(kPlatformFailureError);
       },
       base::Unretained(this));
+
+  VaapiVideoEncoderDelegate::Config ave_config{};
   switch (output_codec_) {
     case VideoCodec::kH264:
       if (!IsConfiguredForTesting()) {
@@ -687,6 +690,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesIfNeeded(
 
 scoped_refptr<VaapiWrapper>
 VaapiVideoEncodeAccelerator::CreateVppVaapiWrapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!vpp_vaapi_wrapper_);
   auto vpp_vaapi_wrapper = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
@@ -710,6 +714,7 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::ExecuteBlitSurface(
     const VASurface& source_surface,
     const gfx::Rect source_visible_rect,
     const gfx::Size& encode_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (!vpp_vaapi_wrapper_) {
     vpp_vaapi_wrapper_ = CreateVppVaapiWrapper();
     if (!vpp_vaapi_wrapper_) {
@@ -987,7 +992,8 @@ void VaapiVideoEncodeAccelerator::Destroy() {
   child_weak_this_factory_.InvalidateWeakPtrs();
 
   // We're destroying; cancel all callbacks.
-  client_ptr_factory_.reset();
+  if (client_ptr_factory_)
+    client_ptr_factory_->InvalidateWeakPtrs();
 
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VaapiVideoEncodeAccelerator::DestroyTask,
@@ -1060,7 +1066,7 @@ void VaapiVideoEncodeAccelerator::NotifyError(Error error) {
 
   if (client_) {
     client_->NotifyError(error);
-    client_ptr_factory_.reset();
+    client_ptr_factory_->InvalidateWeakPtrs();
   }
 }
 

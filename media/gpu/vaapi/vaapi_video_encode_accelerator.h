@@ -87,6 +87,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   //
   void InitializeTask(const Config& config);
 
+  bool AttemptedInitialization() const { return !!client_ptr_factory_; }
+
   // Enqueues |frame| onto the queue of pending inputs and attempts to continue
   // encoding.
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
@@ -204,7 +206,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VaapiWrapper is the owner of all HW resources (surfaces and buffers)
   // and will free them on destruction.
-  scoped_refptr<VaapiWrapper> vaapi_wrapper_;
+  scoped_refptr<VaapiWrapper> vaapi_wrapper_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The expected coded size of incoming video frames when |native_input_mode_|
   // is false.
@@ -273,7 +276,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VaapiWrapper for VPP (Video Pre Processing). This is used for scale down
   // for the picture send to vaapi encoder.
-  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_;
+  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The completion callback of the Flush() function.
   FlushCallback flush_callback_;
