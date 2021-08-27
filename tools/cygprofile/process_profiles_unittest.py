@@ -104,7 +104,7 @@ class ProcessProfilesTestCase(unittest.TestCase):
                SimpleTestSymbol('Y', 60, 5),
                SimpleTestSymbol('X', 100, 10)]
     processor = TestSymbolOffsetProcessor(symbols)
-    self.assertListEqual(symbols[1:3],
+    self.assertListEqual(sorted(symbols[1:3]),
                          processor.MatchSymbolNames(['Y', 'X']))
 
   def testSymbolsSize(self):
@@ -143,7 +143,7 @@ class ProcessProfilesTestCase(unittest.TestCase):
   def testRunGroupSanity(self):
     files = []
     # Generate 20 sets of files in groups separated by 60s.
-    for ts_base in xrange(0, 20):
+    for ts_base in range(0, 20):
       ts = ts_base * 60
       files.extend([ProfileFile(ts, 0, 'browser'),
                     ProfileFile(ts + 1, 0, 'renderer'),
@@ -154,11 +154,11 @@ class ProcessProfilesTestCase(unittest.TestCase):
     # The following call should not assert.
     process_profiles.ProfileManager(files)._ComputeRunGroups()
 
-    files.extend([ProfileFile(20 * 60, 0, 'browser'),
-                  ProfileFile(20 * 60 + 2, 1, 'renderer'),
-                  ProfileFile(21 * 60, 0, 'browser')] +
-                 [ProfileFile(22 * 60, 0, 'renderer')
-                  for _ in xrange(0, 10)])
+    files.extend([
+        ProfileFile(20 * 60, 0, 'browser'),
+        ProfileFile(20 * 60 + 2, 1, 'renderer'),
+        ProfileFile(21 * 60, 0, 'browser')
+    ] + [ProfileFile(22 * 60, 0, 'renderer') for _ in range(0, 10)])
 
     self.assertRaises(AssertionError,
                       process_profiles.ProfileManager(files)._ComputeRunGroups)
@@ -219,7 +219,7 @@ class ProcessProfilesTestCase(unittest.TestCase):
         ProfileFile(51, 1, 'gpu-process'): [6, 7],
         ProfileFile(70, 0, ''): [2, 8, 9],
         ProfileFile(70, 1, ''): [9]})
-    offsets = mgr.GetAnnotatedOffsets()
+    offsets = list(mgr.GetAnnotatedOffsets())
     self.assertListEqual([
         self.MakeAnnotatedOffset(1, {(0, 'browser'): 1}),
         self.MakeAnnotatedOffset(2, {(0, 'browser'): 2,

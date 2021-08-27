@@ -63,7 +63,7 @@ class TestCyglogToOrderfile(unittest.TestCase):
       else:
         try:
           self.assertListEqual(sorted(expected[i]), sorted(observed[i]))
-        except self.failureException, e:
+        except self.failureException as e:
           raise self.failureException('For key {}: {}'.format(i, e))
     for i in observed:
       # All i that are in expected have already been tested.

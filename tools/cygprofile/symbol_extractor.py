@@ -174,9 +174,10 @@ def _SymbolInfosFromStream(objdump_lines):
 
   # Outlined functions are known to be repeated often, so ignore them in the
   # repeated symbol count.
-  repeated_symbols = filter(lambda s: len(name_to_offsets[s]) > 1,
-                            (k for k in name_to_offsets.keys()
-                             if not k.startswith('OUTLINED_FUNCTION_')))
+  repeated_symbols = list(
+      filter(lambda s: len(name_to_offsets[s]) > 1,
+             (k for k in name_to_offsets.keys()
+              if not k.startswith('OUTLINED_FUNCTION_'))))
   if repeated_symbols:
     # Log the first 5 repeated offsets of the first 10 repeated symbols.
     logging.warning('%d symbols repeated with multiple offsets:\n %s',
@@ -316,7 +317,7 @@ def CreateNameToSymbolInfo(symbol_infos):
   # check_orderfile.
   symbol_infos_by_name = {}
   warnings = cygprofile_utils.WarningCollector(_MAX_WARNINGS_TO_PRINT)
-  for infos in GroupSymbolInfosByName(symbol_infos).itervalues():
+  for infos in GroupSymbolInfosByName(symbol_infos).values():
     first_symbol_info = min(infos, key=lambda x: x.offset)
     symbol_infos_by_name[first_symbol_info.name] = first_symbol_info
     if len(infos) > 1:
@@ -332,5 +333,6 @@ def DemangleSymbol(mangled_symbol):
   """Return the demangled form of mangled_symbol."""
   cmd = [host_paths.ToolPath('c++filt', _arch)]
   process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  demangled_symbol, _ = process.communicate(mangled_symbol + '\n')
+  demangled_symbol, _ = process.communicate(
+      (mangled_symbol + '\n').encode('utf-8'))
   return demangled_symbol
