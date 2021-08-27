@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
@@ -79,7 +79,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // Observers for changes to any preference.
   PrefObserverList all_prefs_pref_observers_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(PrefNotifierImpl);
 };

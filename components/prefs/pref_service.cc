@@ -18,10 +18,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/default_pref_store.h"
@@ -134,7 +134,7 @@ void PrefService::InitFromStorage(bool async) {
     read_error_callback_.Run(user_pref_store_->ReadPrefs());
   } else {
     // Guarantee that initialization happens after this function returned.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&PersistentPrefStore::ReadPrefsAsync, user_pref_store_,
                        new ReadErrorHandler(read_error_callback_)));
