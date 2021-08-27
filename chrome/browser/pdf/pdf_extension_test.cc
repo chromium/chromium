@@ -1137,8 +1137,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 
 #if BUILDFLAG(ENABLE_INK)
 // TODO(https://crbug.com/920684): Test times out under sanitizers.
+// crbug.com/1151041
 #if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(_DEBUG)
+    defined(ADDRESS_SANITIZER) || defined(_DEBUG) || defined(OS_CHROMEOS)
 #define MAYBE_AnnotationsFeatureEnabled DISABLED_AnnotationsFeatureEnabled
 #else
 #define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
@@ -1447,8 +1448,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
       "data:text/html,"
       "<html><head><title>TabTitleWithEmbeddedPdf</title></head><body>"
       "<embed type=\"application/pdf\" src=\"" +
-      url +
-      "\"></body></html>";
+      url + "\"></body></html>";
   ASSERT_TRUE(LoadPdf(GURL(data_url)));
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
