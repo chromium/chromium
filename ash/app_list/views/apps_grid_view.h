@@ -279,6 +279,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // view hierarchy.
   const AppListConfig& GetAppListConfig() const override;
 
+  // Passes scroll information from AppListView, so that subclasses may scroll
+  // or switch pages.
+  virtual void HandleScrollFromAppListView(const gfx::Vector2d& offset,
+                                           ui::EventType type) = 0;
+
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
   const views::ViewModelT<AppListItemView>* view_model() const {

@@ -50,6 +50,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void CalculateIdealBounds() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override;
+  void HandleScrollFromAppListView(const gfx::Vector2d& offset,
+                                   ui::EventType type) override;
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int TilesPerPage(int page) const override;

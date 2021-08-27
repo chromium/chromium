@@ -51,11 +51,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
-  // Passes scroll information from AppListView to the PaginationController,
-  // which may switch pages.
-  void HandleScrollFromAppListView(const gfx::Vector2d& offset,
-                                   ui::EventType type);
-
   // Updates the opacity of all the items in the grid when the grid itself is
   // being dragged. The app icons fade out as the launcher slides off the bottom
   // of the screen.
@@ -87,6 +82,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeStopPageFlip() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override {}
+  void HandleScrollFromAppListView(const gfx::Vector2d& offset,
+                                   ui::EventType type) override;
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int TilesPerPage(int page) const override;

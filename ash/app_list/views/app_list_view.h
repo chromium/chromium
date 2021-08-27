@@ -483,7 +483,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   PagedAppsGridView* GetRootAppsGridView();
 
   // Gets the apps grid view within the folder view owned by this view.
-  PagedAppsGridView* GetFolderAppsGridView();
+  AppsGridView* GetFolderAppsGridView();
 
   // Gets the AppListStateTransitionSource for |app_list_state_| to
   // |target_state|. If we are not interested in recording a state transition

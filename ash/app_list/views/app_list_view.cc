@@ -1347,7 +1347,7 @@ PagedAppsGridView* AppListView::GetRootAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
 }
 
-PagedAppsGridView* AppListView::GetFolderAppsGridView() {
+AppsGridView* AppListView::GetFolderAppsGridView() {
   return GetAppsContainerView()->app_list_folder_view()->items_grid_view();
 }
 
@@ -1659,9 +1659,9 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   if ((offset.y() == 0 && offset.x() == 0) || ShouldIgnoreScrollEvents())
     return false;
 
-  PagedAppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
-                                          ? GetFolderAppsGridView()
-                                          : GetRootAppsGridView();
+  AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
+                                     ? GetFolderAppsGridView()
+                                     : GetRootAppsGridView();
   gfx::Point apps_grid_location(location);
   views::View::ConvertPointToTarget(this, apps_grid_view, &apps_grid_location);
 

@@ -22,13 +22,13 @@
 namespace ash {
 
 class AppListA11yAnnouncer;
-class AppsContainerView;
 class AppListFolderItem;
 class AppListItemView;
 class AppListModel;
 class AppListViewDelegate;
+class AppsContainerView;
+class AppsGridView;
 class FolderHeaderView;
-class PagedAppsGridView;
 class PageSwitcher;
 
 // Displays folder contents via an AppsGridView. App items can be dragged out
@@ -114,7 +114,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // to be in the parent view's coordinate system.
   void SetBoundingBox(const gfx::Rect& bounding_box);
 
-  PagedAppsGridView* items_grid_view() { return items_grid_view_; }
+  AppsGridView* items_grid_view() { return items_grid_view_; }
 
   FolderHeaderView* folder_header_view() { return folder_header_view_; }
 
@@ -181,7 +181,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   views::View* contents_container_;  // Owned by views hierarchy.
 
   FolderHeaderView* folder_header_view_;  // Owned by views hierarchy.
-  PagedAppsGridView* items_grid_view_;    // Owned by views hierarchy.
+  AppsGridView* items_grid_view_;         // Owned by views hierarchy.
   PageSwitcher* page_switcher_;           // Owned by views hierarchy.
 
   AppListModel* const model_;

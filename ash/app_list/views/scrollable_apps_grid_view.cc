@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -235,6 +236,17 @@ bool ScrollableAppsGridView::CanAutoScrollView(
   }
   // Can scroll down if the visible rect is not at the bottom of the contents.
   return visible_rect.bottom() < scroll_view_->contents()->height();
+}
+
+void ScrollableAppsGridView::HandleScrollFromAppListView(
+    const gfx::Vector2d& offset,
+    ui::EventType type) {
+  // AppListView uses a paged apps grid view, so this must be a folder opened
+  // in the fullscreen launcher.
+  DCHECK(IsInFolder());
+
+  // TODO(crbug.com/1214064): Handle scroll events once folders are working.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void ScrollableAppsGridView::SetFocusAfterEndDrag() {

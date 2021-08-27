@@ -31,6 +31,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -280,15 +281,19 @@ class AppsGridViewTest : public views::ViewsTestBase {
 
  protected:
   void AnimateFolderViewPageFlip(int target_page) {
-    DCHECK(folder_apps_grid_view()->pagination_model()->total_pages() >
+    // Folders are only paged without feature AppListBubble enabled.
+    DCHECK(!features::IsAppListBubbleEnabled());
+    PagedAppsGridView* paged_folder_apps_grid_view =
+        static_cast<PagedAppsGridView*>(folder_apps_grid_view());
+    DCHECK(paged_folder_apps_grid_view->pagination_model()->total_pages() >
            target_page);
-    AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
-    SetPageFlipDurationForTest(folder_apps_grid_view());
+    AppsGridViewTestApi folder_grid_test_api(paged_folder_apps_grid_view);
+    SetPageFlipDurationForTest(paged_folder_apps_grid_view);
     PageFlipWaiter page_flip_waiter(
-        folder_apps_grid_view()->pagination_model());
-    folder_apps_grid_view()->pagination_model()->SelectPage(target_page,
-                                                            true /*animate*/);
-    while (HasPendingPageFlip(folder_apps_grid_view())) {
+        paged_folder_apps_grid_view->pagination_model());
+    paged_folder_apps_grid_view->pagination_model()->SelectPage(
+        target_page, true /*animate*/);
+    while (HasPendingPageFlip(paged_folder_apps_grid_view)) {
       page_flip_waiter.Wait();
     }
     folder_grid_test_api.LayoutToIdealBounds();
@@ -357,7 +362,7 @@ class AppsGridViewTest : public views::ViewsTestBase {
     return contents_view_->apps_container_view()->app_list_folder_view();
   }
 
-  PagedAppsGridView* folder_apps_grid_view() const {
+  AppsGridView* folder_apps_grid_view() const {
     return app_list_folder_view()->items_grid_view();
   }
 
