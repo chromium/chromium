@@ -177,6 +177,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/render_frame_audio_output_stream_factory.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -8998,8 +8999,24 @@ void RenderFrameHostImpl::CreateAudioOutputStreamFactory(
       BrowserMainLoop::GetInstance()->audio_system();
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
-  audio_service_audio_output_stream_factory_.emplace(
-      this, audio_system, media_stream_manager, std::move(receiver));
+
+  // This message can be received before navigation commit, because the renderer
+  // requests this when initializing the main frame of RenderView which happens
+  // before commit. Use FrameTree::is_prerendering() rather than
+  // lifecycle_state() because prerendering lifecycle state only is set after
+  // navigation commit.
+  bool restricted_mode = frame_tree()->is_prerendering();
+  if (restricted_mode) {
+    audio_service_audio_output_stream_factory_.emplace(
+        this, audio_system, media_stream_manager, std::move(receiver),
+        base::BindOnce(
+            &RenderFrameHostImpl::CancelPrerendering, base::Unretained(this),
+            PrerenderHost::FinalStatus::kAudioOutputDeviceRequested));
+  } else {
+    audio_service_audio_output_stream_factory_.emplace(
+        this, audio_system, media_stream_manager, std::move(receiver),
+        /*restricted_callback=*/absl::nullopt);
+  }
 }
 
 void RenderFrameHostImpl::GetFeatureObserver(
@@ -9056,6 +9073,9 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
 void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   DCHECK(blink::features::IsPrerender2Enabled());
 
+  if (audio_service_audio_output_stream_factory_) {
+    audio_service_audio_output_stream_factory_->ReleaseRestriction();
+  }
   // Loosen the policies of the Mojo capability control during dispatching the
   // prerenderingchange event in Blink, because the page may start legitimately
   // using controlled interfaces once prerenderingchange is dispatched. We

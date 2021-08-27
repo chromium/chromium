@@ -2810,6 +2810,62 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
       PrerenderHost::FinalStatus::kDownload, 1);
 }
 
+// Tests that requesting audio output devices from prerendering documents result
+// in cancellation of prerendering. Prerender2 decides to cancel prerendering
+// here, because browser cannot defer this request as the renderer's main thread
+// blocks while it waits for the response.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RequestAudioOutputDevice) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // Create a output audio context which request audio output devices.
+  // Prerendering should be cancelled in this case.
+  // Whether using the EXECUTE_SCRIPT_NO_USER_GESTURE flag or not does not
+  // affect the test result. The purpose of using it is to simulate real
+  // scenarios since prerendering pages cannot have user gestures.
+  ignore_result(ExecJs(prerender_rfh, "const context = new AudioContext();",
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kAudioOutputDeviceRequested, 1);
+}
+
+// Tests that an activated page is allowed to request output devices.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       RequestAudioOutputDeviceAfterActivation) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  int host_id = AddPrerender(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // After being activated, the document can play audio and it should work as a
+  // normal document.
+  prerender_helper()->NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_TRUE(host_observer.was_activated());
+  std::string audio_script = R"(
+      const context = new AudioContext();
+      const osc = new OscillatorNode(context);
+      osc.connect(context.destination);
+      osc.start();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), audio_script));
+}
+
 // End: Tests for feature restrictions in prerendered pages ====================
 
 // Tests prerendering for low-end devices.
