@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -16,6 +17,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 using StandardOnboardingTabsParams =
     StartupTabProviderImpl::StandardOnboardingTabsParams;
@@ -348,3 +354,86 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     EXPECT_EQ(GURL("about:blank"), output[0].url);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(StartupTabProviderTest, GetCrosapiTabs) {
+  base::test::TaskEnvironment task_environment;
+
+  chromeos::LacrosService lacros_service;
+
+  // Non kOpenWindowWithUrls case.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kUseStartupPreference;
+    // The given URLs should be ignored.
+    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    EXPECT_TRUE(output.empty());
+  }
+
+  // Simple use. Pass google.com URL.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
+    // The given URLs should be ignored.
+    params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("https://google.com"), output[0].url);
+  }
+
+  // Two URL case.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
+    params->startup_urls = std::vector<GURL>{GURL("https://google.com"),
+                                             GURL("https://gmail.com")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    ASSERT_EQ(2u, output.size());
+    EXPECT_EQ(GURL("https://google.com"), output[0].url);
+    EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
+  }
+
+  // Unsafe scheme should be filtered out.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
+    params->startup_urls = std::vector<GURL>{GURL("chrome://flags")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    EXPECT_TRUE(output.empty());
+  }
+
+  // Exceptional settings page.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
+    params->startup_urls =
+        std::vector<GURL>{GURL("chrome://settings/resetProfileSettings")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
+  }
+
+  // about:blank URL.
+  {
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->initial_browser_action =
+        crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
+    params->startup_urls = std::vector<GURL>{GURL("about:blank")};
+    lacros_service.SetInitParamsForTests(std::move(params));
+    StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("about:blank"), output[0].url);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

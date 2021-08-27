@@ -460,6 +460,15 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool promotional_tabs_enabled,
     bool welcome_enabled,
     bool whats_new_enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  {
+    // If URLs are passed via crosapi, forcibly opens those tabs.
+    StartupTabs crosapi_tabs = provider.GetCrosapiTabs();
+    if (!crosapi_tabs.empty())
+      return {std::move(crosapi_tabs), LaunchResult::kWithGivenUrls};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   StartupTabs tabs =
       provider.GetCommandLineTabs(command_line_, cur_dir_, profile_);
   LaunchResult launch_result =
@@ -470,12 +479,12 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   // user stuck in a crash loop.
   if (is_incognito_or_guest || is_post_crash_launch) {
     if (!tabs.empty())
-      return {tabs, launch_result};
+      return {std::move(tabs), launch_result};
 
     if (is_post_crash_launch) {
       tabs = provider.GetPostCrashTabs(has_incompatible_applications);
       if (!tabs.empty())
-        return {tabs, launch_result};
+        return {std::move(tabs), launch_result};
     }
 
     return {StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL), false)}),
@@ -497,7 +506,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     StartupTabs distribution_tabs =
         provider.GetDistributionFirstRunTabs(browser_creator_);
     if (!distribution_tabs.empty())
-      return {distribution_tabs, launch_result};
+      return {std::move(distribution_tabs), launch_result};
 
     StartupTabs onboarding_tabs;
     if (promotional_tabs_enabled) {
@@ -551,7 +560,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   // Maybe add any tabs which the user has previously pinned.
   AppendTabs(provider.GetPinnedTabs(command_line_, profile_), &tabs);
 
-  return {tabs, launch_result};
+  return {std::move(tabs), launch_result};
 }
 
 bool StartupBrowserCreatorImpl::MaybeAsyncRestore(const StartupTabs& tabs,

@@ -39,6 +39,10 @@ constexpr uint32_t kWelcomeBackTab = 1 << 8;
 constexpr uint32_t kNewFeaturesTabs = 1 << 9;
 #endif  // !defined(OS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+constexpr uint32_t kCrosapiTabs = 1 << 10;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class FakeStartupTabProvider : public StartupTabProvider {
  public:
   // For each option passed, the corresponding adder below will add a sentinel
@@ -119,6 +123,15 @@ class FakeStartupTabProvider : public StartupTabProvider {
     return tabs;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  StartupTabs GetCrosapiTabs() const override {
+    StartupTabs tabs;
+    if (options_ & kCrosapiTabs)
+      tabs.emplace_back(GURL("https://crosapi"), false);
+    return tabs;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !defined(OS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override {
     StartupTabs tabs;
@@ -126,7 +139,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
       tabs.emplace_back(GURL("https://whats-new/"), false);
     return tabs;
   }
-#endif
+#endif  // !defined(OS_ANDROID)
 
  private:
   const uint32_t options_;
@@ -294,6 +307,28 @@ TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   ASSERT_EQ(1U, output.tabs.size());
   EXPECT_EQ("cmd-line", output.tabs[0].url.host());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// If URLs are given via Crosapi, just return it.
+TEST(StartupBrowserCreatorImplTest, DetermineStartupTabs_Crosapi) {
+  using LaunchResult = Creator::LaunchResult;
+
+  FakeStartupTabProvider provider(kOnboardingTabs | kDistributionFirstRunTabs |
+                                  kResetTriggerTabs | kPinnedTabs |
+                                  kPreferencesTabs | kNewTabPageTabs |
+                                  kNewFeaturesTabs | kCrosapiTabs);
+  Creator impl(base::FilePath(),
+               base::CommandLine(base::CommandLine::NO_PROGRAM),
+               chrome::startup::IS_FIRST_RUN);
+
+  auto output = impl.DetermineStartupTabs(provider, true, false, false, false,
+                                          true, true, true);
+  EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
+
+  ASSERT_EQ(1U, output.tabs.size());
+  EXPECT_EQ("crosapi", output.tabs[0].url.host());
+}
+#endif
 
 // New Tab Page should appear alongside pinned tabs and the reset trigger, but
 // should be superseded by onboarding tabs and by tabs specified in preferences.

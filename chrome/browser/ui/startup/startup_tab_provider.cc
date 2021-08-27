@@ -48,6 +48,11 @@
 #include "chrome/browser/shell_integration.h"
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
@@ -245,12 +250,30 @@ StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
   return result;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+StartupTabs StartupTabProviderImpl::GetCrosapiTabs() const {
+  auto* init_params = chromeos::LacrosService::Get()->init_params();
+  if (init_params->initial_browser_action !=
+          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls ||
+      !init_params->startup_urls.has_value()) {
+    return {};
+  }
+
+  StartupTabs result;
+  for (const GURL& url : *init_params->startup_urls) {
+    if (ValidateUrl(url))
+      result.emplace_back(url, /*is_pinned=*/false);
+  }
+  return result;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !defined(OS_ANDROID)
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(
     bool whats_new_enabled) const {
   return GetNewFeaturesTabsForState(whats_new_enabled);
 }
-#endif
+#endif  // !defined(OS_ANDROID)
 
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,

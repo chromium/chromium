@@ -769,7 +769,9 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* init_params = chromeos::LacrosService::Get()->init_params();
   if (init_params->initial_browser_action ==
-      crosapi::mojom::InitialBrowserAction::kOpenNewTabPageWindow) {
+          crosapi::mojom::InitialBrowserAction::kOpenNewTabPageWindow ||
+      init_params->initial_browser_action ==
+          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
     pref.type = SessionStartupPref::DEFAULT;
     return pref;
   }

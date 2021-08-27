@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "url/gurl.h"
 
@@ -73,11 +74,16 @@ class StartupTabProvider {
   virtual StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
                                          const base::FilePath& cur_dir,
                                          Profile* profile) const = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns the URLs given via the crosapi BrowserInitParams with
+  // kOpenWindowWithUrls action.
+  virtual StartupTabs GetCrosapiTabs() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !defined(OS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
-#endif
+#endif  // !defined(OS_ANDROID)
 };
 
 class StartupTabProviderImpl : public StartupTabProvider {
@@ -193,9 +199,13 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                  const base::FilePath& cur_dir,
                                  Profile* profile) const override;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  StartupTabs GetCrosapiTabs() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !defined(OS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
-#endif
+#endif  // !defined(OS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_TAB_PROVIDER_H_

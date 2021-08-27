@@ -426,6 +426,11 @@ enum InitialBrowserAction {
 
   // Opens a new window with a new tab, regardless of users' preference.
   [MinVersion=2] kOpenNewTabPageWindow = 4,
+
+  // Opens a new window with specified URLs with the primary profile.
+  // The URLs should be set with BrowserInitParams::startup_urls.
+  // Added in M96.
+  [MinVersion=3] kOpenWindowWithUrls = 5,
 };
 
 // Whether / how mlservice on-device handwriting is supported.
@@ -571,6 +576,12 @@ struct BrowserInitParams {
   // Defines which windows or tabs to restore on launch.
   [MinVersion=15]
   InitialBrowserAction initial_browser_action@15;
+
+  // URLs to be opened at the beginning. This works only when
+  // initial_browser_action == OpenWindowWithUrls.
+  // Added in M96.
+  [MinVersion=24]
+  array<url.mojom.Url>? startup_urls@24;
 
   // The account used to sign into Chrome OS. This may be a Gaia account or a
   // Microsoft Active Directory account. This field will be null for
