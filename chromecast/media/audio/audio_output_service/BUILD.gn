@@ -10,3 +10,22 @@ cast_source_set("constants") {
     "constants.h",
   ]
 }
+
+cast_source_set("output_connection") {
+  sources = [
+    "output_connection.cc",
+    "output_connection.h",
+    "output_stream_connection.cc",
+    "output_stream_connection.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/mixer_service:proto" ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//chromecast/media/audio/mixer_service:audio_socket_service",
+    "//chromecast/media/audio/mixer_service:common",
+    "//net",
+  ]
+}
