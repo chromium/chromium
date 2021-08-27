@@ -1,6 +1,7 @@
 <style>
   :host {
     --emoji-picker-search-margins: 14px;
+    --emoji-picker-search-height: 40px;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -9,6 +10,7 @@
     --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
     --cr-search-field-clear-icon-size: 20px;
     --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-min-height: var(--emoji-picker-search-height);
     --cr-search-field-input-padding-bottom: 0;
     --cr-search-field-input-padding-start: 8px;
     --cr-search-field-input-padding-top: 0;
@@ -25,8 +27,7 @@
     background-color: var(--cros-textfield-background-color);
     border: 2px solid transparent;
     border-radius: 40px;
-    height: 40px;
-    line-height: 40px;
+    height: var(--emoji-picker-search-height);
     margin-bottom: 8px;
   }
 
