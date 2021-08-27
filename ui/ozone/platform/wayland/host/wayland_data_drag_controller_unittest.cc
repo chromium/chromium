@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +21,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/common/data_util.h"
@@ -68,6 +70,16 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
       begin + (data_string.size() * sizeof(typename StringType::value_type)));
   return scoped_refptr<base::RefCountedBytes>(
       base::RefCountedBytes::TakeVector(&result));
+}
+
+void WriteCustomDataToPickle(
+    const std::unordered_map<std::u16string, std::u16string>& data,
+    base::Pickle* pickle) {
+  pickle->WriteUInt32(data.size());
+  for (const auto& it : data) {
+    pickle->WriteString16(it.first);
+    pickle->WriteString16(it.second);
+  }
 }
 
 }  // namespace
@@ -291,6 +303,31 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   data_device_manager_->data_source()->ReadData(kMimeTypeText,
                                                 std::move(callback));
   run_loop.Run();
+  window_->SetPointerFocus(restored_focus);
+}
+
+// Regression test for https://crbug.com/1236708.
+TEST_P(WaylandDataDragControllerTest, StartDragWithCustomDataDontCrash) {
+  bool restored_focus = window_->has_pointer_focus();
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // The client starts dragging offering data with |kMimeTypeHTML|
+  std::unordered_map<std::u16string, std::u16string> custom_data;
+  custom_data.emplace(u"application/vnd.chromium.tab",
+                      u"any data that comes with it");
+
+  std::unique_ptr<ui::OSExchangeDataProvider> provider =
+      ui::OSExchangeDataProviderFactory::CreateProvider();
+  base::Pickle pickle;
+  WriteCustomDataToPickle(custom_data, &pickle);
+  provider->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
+                           pickle);
+  OSExchangeData os_exchange_data(std::move(provider));
+
+  int operation = DragDropTypes::DRAG_MOVE;
+  drag_controller()->StartSession(os_exchange_data, operation);
+  Sync();
+
   window_->SetPointerFocus(restored_focus);
 }
 

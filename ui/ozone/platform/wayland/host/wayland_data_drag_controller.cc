@@ -11,8 +11,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -335,6 +337,32 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
     const std::string mime_type =
         base::StrCat({kMimeTypeOctetStream, ";name=\"", filename, "\""});
     mime_types.push_back(mime_type);
+  }
+  if (data.HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
+    base::Pickle pickle;
+    data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
+    base::PickleIterator iter(pickle);
+    uint32_t entry_count = 0;
+    if (iter.ReadUInt32(&entry_count)) {
+      for (uint32_t i = 0; i < entry_count; ++i) {
+        base::StringPiece16 type;
+        base::StringPiece16 data;
+        if (!iter.ReadStringPiece16(&type) || !iter.ReadStringPiece16(&data))
+          break;
+
+        // TODO(https://crbug.com/1236708): This logic duplicates the logic in
+        // tab_strip_ui::IsDraggedTab(). Factor it out to a common place.
+        const std::u16string kWebUITabIdDataType =
+            u"application/vnd.chromium.tab";
+        const std::u16string kWebUITabGroupIdDataType =
+            u"application/vnd.chromium.tabgroup";
+        if (type == kWebUITabIdDataType) {
+          mime_types.push_back(base::UTF16ToASCII(kWebUITabIdDataType));
+        } else if (type == kWebUITabGroupIdDataType) {
+          mime_types.push_back(base::UTF16ToASCII(kWebUITabIdDataType));
+        }
+      }
+    }
   }
 
   DCHECK(!mime_types.empty());
