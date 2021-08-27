@@ -220,6 +220,9 @@ class OmniboxViewViews : public OmniboxView,
   void AnnounceFriendlySuggestionText();
 #endif
 
+  // Get the preferred text input type, this checks the IME locale on Windows.
+  ui::TextInputType GetPreferredTextInputType() const;
+
   // OmniboxView:
   void SetCaretPos(size_t caret_pos) override;
   void UpdatePopup() override;
