@@ -7,7 +7,7 @@
   Exposed=Window,
   RuntimeEnabled=AppHistory
 ] interface AppHistory : EventTarget {
-  readonly attribute AppHistoryEntry current;
+  readonly attribute AppHistoryEntry? current;
   sequence<AppHistoryEntry> entries();
   [RaisesException] void updateCurrent(AppHistoryUpdateCurrentOptions options);
 
