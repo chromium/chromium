@@ -24,6 +24,7 @@ import org.chromium.blink.mojom.AuthenticatorSelectionCriteria;
 import org.chromium.blink.mojom.CableAuthentication;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.PaymentCredentialInstrument;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PrfValues;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -39,7 +40,6 @@ import org.chromium.components.payments.PaymentFeatureListJni;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
-import org.chromium.payments.mojom.PaymentCredentialInstrument;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.url.mojom.Url;
 

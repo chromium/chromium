@@ -280,8 +280,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableRestrictGamepadAccess, features::kRestrictGamepadAccess},
     {wf::EnableScrollUnification, features::kScrollUnification},
     {wf::EnableSecurePaymentConfirmation, features::kSecurePaymentConfirmation},
-    {wf::EnableSecurePaymentConfirmationAPIV3,
-     features::kSecurePaymentConfirmationAPIV3},
     {wf::EnableSecurePaymentConfirmationDebug,
      features::kSecurePaymentConfirmationDebug},
     {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,

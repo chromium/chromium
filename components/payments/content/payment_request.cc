@@ -640,9 +640,7 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
 
   if (web_contents() && spec_->IsSecurePaymentConfirmationRequested() &&
       state()->available_apps().empty() &&
-      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
-      base::FeatureList::IsEnabled(
-          ::features::kSecurePaymentConfirmationAPIV3)) {
+      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
     delegate_->ShowNoMatchingPaymentCredentialDialog(
         url_formatter::FormatUrlForSecurityDisplay(
             state_->GetTopOrigin(),

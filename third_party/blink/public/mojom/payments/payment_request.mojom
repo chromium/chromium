@@ -149,7 +149,7 @@ struct GooglePaymentMethodData {
 };
 
 // Parameters for the "secure-payment-confirmation" payment method identifier.
-// https://github.com/rsolomakhin/secure-payment-confirmation
+// https://w3c.github.io/secure-payment-confirmation
 struct SecurePaymentConfirmationRequest {
   // A list of WebAuthn credential identifiers. These values will be looked up
   // in "secure_payment_confirmation_instrument" table. Upon user gesture, one
@@ -163,7 +163,7 @@ struct SecurePaymentConfirmationRequest {
 
   // The name and icon to display to the user and to be sent to the authenticator
   // device for signing.
-  PaymentCredentialInstrument instrument;
+  blink.mojom.PaymentCredentialInstrument instrument;
 
   // Time to wait for an authenticator to complete an operation provided by the
   // relying party.

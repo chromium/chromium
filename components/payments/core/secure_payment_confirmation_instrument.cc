@@ -15,13 +15,9 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument() =
 
 SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
     std::vector<uint8_t> credential_id,
-    const std::string& relying_party_id,
-    const std::u16string& label,
-    std::vector<uint8_t> icon)
+    const std::string& relying_party_id)
     : credential_id(std::move(credential_id)),
-      relying_party_id(relying_party_id),
-      label(label),
-      icon(std::move(icon)) {
+      relying_party_id(relying_party_id) {
   // Record the size of credential_id to see whether or not hashing is needed
   // before storing in DB. crbug.com/1122764
   base::UmaHistogramCounts10000(
@@ -32,9 +28,8 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
 SecurePaymentConfirmationInstrument::~SecurePaymentConfirmationInstrument() =
     default;
 
-bool SecurePaymentConfirmationInstrument::IsValid(bool is_spcv3_enabled) const {
-  return !credential_id.empty() && !relying_party_id.empty() &&
-         (is_spcv3_enabled || (!label.empty() && !icon.empty()));
+bool SecurePaymentConfirmationInstrument::IsValid() const {
+  return !credential_id.empty() && !relying_party_id.empty();
 }
 
 }  // namespace payments

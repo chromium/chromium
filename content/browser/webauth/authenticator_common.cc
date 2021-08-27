@@ -1011,16 +1011,11 @@ void AuthenticatorCommon::MakeCredential(
       FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
       base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
 
-  // Cryptotoken requests, making payment credentials, and Touch-to-Autofill
-  // should be proxied without UI.
+  // Cryptotoken requests and Touch-to-Autofill should be proxied without UI.
   const bool origin_is_crypto_token_extension =
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin);
-  if (origin_is_crypto_token_extension ||
-      (!base::FeatureList::IsEnabled(
-           features::kSecurePaymentConfirmationAPIV3) &&
-       options->is_payment_credential_creation) ||
-      disable_ui_) {
+  if (origin_is_crypto_token_extension || disable_ui_) {
     request_delegate_->DisableUI();
   }
 

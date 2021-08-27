@@ -1969,12 +1969,6 @@
       status: "test",
     },
     {
-      name: "SecurePaymentConfirmationAPIV3",
-    },
-    {
-      name: "SecurePaymentConfirmationCredential",
-    },
-    {
       name: "SecurePaymentConfirmationDebug",
     },
     {

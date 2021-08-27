@@ -45,7 +45,7 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   if (input->hasTimeout())
     output->timeout = base::TimeDelta::FromMilliseconds(input->timeout());
 
-  output->instrument = payments::mojom::blink::PaymentCredentialInstrument::New(
+  output->instrument = blink::mojom::blink::PaymentCredentialInstrument::New(
       input->instrument()->displayName(),
       blink::KURL(input->instrument()->icon()));
 

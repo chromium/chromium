@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-
 namespace payments {
 
 // Secure payment information instrument information that can be stored in
@@ -21,12 +20,9 @@ struct SecurePaymentConfirmationInstrument {
   SecurePaymentConfirmationInstrument();
 
   // Constructs an instrument with the given fields. Please use `std::move()`
-  // when passing the `credential_id` and the `icon` byte arrays to avoid
-  // excessive copying.
+  // when passing the `credential_id` byte array to avoid excessive copying.
   SecurePaymentConfirmationInstrument(std::vector<uint8_t> credential_id,
-                                      const std::string& relying_party_id,
-                                      const std::u16string& label,
-                                      std::vector<uint8_t> icon);
+                                      const std::string& relying_party_id);
 
   ~SecurePaymentConfirmationInstrument();
 
@@ -37,12 +33,10 @@ struct SecurePaymentConfirmationInstrument {
       const SecurePaymentConfirmationInstrument& other) = delete;
 
   // Checks instrument validity.
-  bool IsValid(bool is_spcv3_enabled) const;
+  bool IsValid() const;
 
   std::vector<uint8_t> credential_id;
   std::string relying_party_id;
-  std::u16string label;
-  std::vector<uint8_t> icon;
 };
 
 }  // namespace payments

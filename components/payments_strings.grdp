@@ -628,32 +628,15 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
         Verify your purchase
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" desc="Description on a dialog that asks for the user's permission to set up device authentication on a website to verify card payments." formatter_data="android_java">
-        You can use your device to quickly verify it's you the next time you make a purchase with this payment method.
-    </message>
   </if> <!-- not is_win and not is_macosx -->
   <if expr="is_macosx">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
         Use Touch ID to verify and complete your purchase?
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" desc="Description on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
-        You can use Touch ID to quickly verify it's you the next time you use this device to make a purchase with this payment method.
-    </message>
   </if> <!-- is_macosx -->
-  <if expr="not is_win">
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept button label on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
-        Use Touch ID
-    </message>
-  </if>  <!-- not is_win -->
   <if expr="is_win">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
         Use Windows Hello to verify and complete your purchase?
-    </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" desc="Description on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
-        You can use Windows Hello to quickly verify it's you the next time you use this device to make a purchase with this payment method.
-    </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept button label on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
-        Use Windows Hello
     </message>
   </if>  <!-- is_win -->
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the store name, e.g. merchant.com." formatter_data="android_java">
@@ -664,15 +647,6 @@
   </message>
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
     Verify
-  </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE" desc="Title of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) on a website to verify card payments." formatter_data="android_java">
-    Check out faster next time
-  </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION" desc="Extra description at the bottom of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments. This is shown only in Incognito mode and explains that the sign-in data will be stored to the device." formatter_data="android_java">
-    Sign-in data will be stored on this device after you exit Incognito mode.
-  </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL" desc="Cancel button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments.">
-    No thanks
   </message>
   <if expr="is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
@@ -687,15 +661,6 @@
 
   <!-- Accessibility strings -->
   <if expr="is_android">
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_ENROLLMENT_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential enrollment bottom sheet is opened. It describes where the users can set up device authentication to verify card payments." formatter_data="android_java">
-      Secure payment credential enrollment sheet
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_ENROLLMENT_SHEET_OPENED" desc="Accessibility string read when the payment credential enrollment bottom sheet is opened." formatter_data="android_java">
-      Secure payment credential enrollment sheet is opened
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_ENROLLMENT_SHEET_CLOSED" desc="Accessibility string read when the payment credential enrollment bottom sheet is closed." formatter_data="android_java">
-      Secure payment credential enrollment sheet is closed
-    </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential authentication bottom sheet is opened. It describes where the users can verify their purchase." formatter_data="android_java">
       Secure payment credential authentication sheet
     </message>

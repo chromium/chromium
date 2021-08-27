@@ -7,12 +7,10 @@
 #include <time.h>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
-#include "content/public/common/content_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -163,8 +161,7 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
 
 bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
     const SecurePaymentConfirmationInstrument& instrument) {
-  if (!instrument.IsValid(base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationAPIV3)))
+  if (!instrument.IsValid())
     return false;
 
   sql::Transaction transaction(db_);
@@ -203,8 +200,8 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
     int index = 0;
     s2.BindBlob(index++, instrument.credential_id);
     s2.BindString(index++, instrument.relying_party_id);
-    s2.BindString16(index++, instrument.label);
-    s2.BindBlob(index++, instrument.icon);
+    s2.BindString(index++, std::string());
+    s2.BindBlob(index++, std::vector<uint8_t>());
     s2.BindInt64(index++,
                  base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -223,7 +220,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
     std::vector<std::vector<uint8_t>> credential_ids) {
   std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>> instruments;
   sql::Statement s(
-      db_->GetUniqueStatement("SELECT relying_party_id, label, icon "
+      db_->GetUniqueStatement("SELECT relying_party_id "
                               "FROM secure_payment_confirmation_instrument "
                               "WHERE credential_id=?"));
   // The `credential_id` temporary variable is not `const` because of the
@@ -243,12 +240,8 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
 
     int index = 0;
     instrument->relying_party_id = s.ColumnString(index++);
-    instrument->label = s.ColumnString16(index++);
-    if (!s.ColumnBlobAsVector(index++, &instrument->icon))
-      continue;
 
-    if (!instrument->IsValid(base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationAPIV3)))
+    if (!instrument->IsValid())
       continue;
 
     instruments.push_back(std::move(instrument));

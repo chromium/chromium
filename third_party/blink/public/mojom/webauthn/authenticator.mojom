@@ -297,7 +297,18 @@ struct PRFValues {
 // is not used in any mojo interfaces.
 struct PaymentOptions {
   payments.mojom.PaymentCurrencyAmount total;
-  payments.mojom.PaymentCredentialInstrument instrument;
+  PaymentCredentialInstrument instrument;
+};
+
+// TODO(https://crbug.com/1239249): Move to payment_request.mojom after this
+// struct is no longer used in here.
+struct PaymentCredentialInstrument {
+  // Friendly name for displaying this instrument to the user.
+  string display_name;
+
+  // URL for an icon to display alongside the display_name. The URL is secure,
+  // not required to share the same origin with the current page.
+  url.mojom.Url icon;
 };
 
 // Parameters passed into calls to GetAssertion.

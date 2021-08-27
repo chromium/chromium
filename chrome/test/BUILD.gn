@@ -2784,7 +2784,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/payments/error_message_view_controller_browsertest.cc",
         "../browser/ui/views/payments/modifiers_browsertest.cc",
         "../browser/ui/views/payments/order_summary_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/payment_credential_enrollment_dialog_view_browsertest.cc",
         "../browser/ui/views/payments/payment_handler_change_payment_method_browsertest.cc",
         "../browser/ui/views/payments/payment_handler_icon_refetch_browsertest.cc",
         "../browser/ui/views/payments/payment_handler_window_size_browsertest.cc",

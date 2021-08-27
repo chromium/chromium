@@ -840,12 +840,10 @@ public class PaymentRequestService
         assert mIsFinishedQueryingPaymentApps;
         assert mBrowserPaymentRequest != null;
 
-        if (PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_API_V3)
+        if (mSpec != null && !mSpec.isDestroyed() && mSpec.isSecurePaymentConfirmationRequested()
+                && !mBrowserPaymentRequest.hasAvailableApps()
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                && mSpec != null && !mSpec.isDestroyed()
-                && mSpec.isSecurePaymentConfirmationRequested()
-                && !mBrowserPaymentRequest.hasAvailableApps()) {
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             mNoMatchingController.show(() -> {

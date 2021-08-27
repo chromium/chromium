@@ -25,16 +25,6 @@
 namespace payments {
 namespace {
 
-// Creates an icon for testing.
-std::vector<uint8_t> CreateIcon(uint8_t first_byte = 0) {
-  std::vector<uint8_t> icon;
-  icon.push_back(first_byte++);
-  icon.push_back(first_byte++);
-  icon.push_back(first_byte++);
-  icon.push_back(first_byte);
-  return icon;
-}
-
 // Creates one credential identifier for testing.
 std::vector<uint8_t> CreateCredentialId(uint8_t first_byte = 0) {
   std::vector<uint8_t> credential_id;
@@ -56,17 +46,13 @@ std::vector<std::vector<uint8_t>> CreateCredentialIdList(
 void ExpectOneValidInstrument(
     const std::vector<uint8_t>& credential_id,
     const std::string& relying_party_id,
-    const std::string& label,
-    const std::vector<uint8_t>& icon,
     std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>
         instruments) {
   ASSERT_EQ(1U, instruments.size());
   ASSERT_NE(nullptr, instruments.back());
-  ASSERT_TRUE(instruments.back()->IsValid(/*is_spcv3_enabled=*/false));
+  ASSERT_TRUE(instruments.back()->IsValid());
   EXPECT_EQ(credential_id, instruments.back()->credential_id);
   EXPECT_EQ(relying_party_id, instruments.back()->relying_party_id);
-  EXPECT_EQ(base::ASCIIToUTF16(label), instruments.back()->label);
-  EXPECT_EQ(icon, instruments.back()->icon);
 }
 
 class PaymentMethodManifestTableTest : public testing::Test {
@@ -96,52 +82,7 @@ class PaymentMethodManifestTableTest : public testing::Test {
   std::unique_ptr<WebDatabase> db_;
 };
 
-enum class APIVersion {
-  kApiV2,
-  kApiV3,
-};
-
-std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
-  return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
-}
-
-class PaymentMethodManifestTableTestWithParam
-    : public PaymentMethodManifestTableTest,
-      public testing::WithParamInterface<APIVersion> {
- public:
-  PaymentMethodManifestTableTestWithParam() {
-    std::vector<base::Feature> enabled_features = {
-        features::kSecurePaymentConfirmation};
-    std::vector<base::Feature> disabled_features;
-    switch (GetParam()) {
-      case APIVersion::kApiV2:
-        disabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
-        break;
-      case APIVersion::kApiV3:
-        enabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
-        break;
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  ~PaymentMethodManifestTableTestWithParam() override = default;
-
-  PaymentMethodManifestTableTestWithParam(
-      const PaymentMethodManifestTableTestWithParam& other) = delete;
-  PaymentMethodManifestTableTestWithParam& operator=(
-      const PaymentMethodManifestTableTestWithParam& other) = delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(APIVersion,
-                         PaymentMethodManifestTableTestWithParam,
-                         testing::Values(APIVersion::kApiV2,
-                                         APIVersion::kApiV3),
-                         APIVersionToString);
-
-TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistManifest) {
+TEST_F(PaymentMethodManifestTableTest, GetNonExistManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   std::vector<std::string> web_app_ids =
@@ -149,7 +90,7 @@ TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistManifest) {
   ASSERT_TRUE(web_app_ids.empty());
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetSingleManifest) {
+TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -174,7 +115,7 @@ TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetSingleManifest) {
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetMultipleManifest) {
+TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -215,7 +156,7 @@ TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetMultipleManifest) {
   ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[1]));
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistingInstrument) {
+TEST_F(PaymentMethodManifestTableTest, GetNonExistingInstrument) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(
@@ -229,20 +170,18 @@ TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistingInstrument) {
           .empty());
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetOneValidInstrument) {
+TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidInstrument) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(CreateCredentialId(),
-                                          "relying-party.example",
-                                          u"Instrument label", CreateIcon())));
+                                          "relying-party.example")));
 
   auto instruments =
       table->GetSecurePaymentConfirmationInstruments(CreateCredentialIdList());
 
   ExpectOneValidInstrument({0, 1, 2, 3}, "relying-party.example",
-                           "Instrument label", {0, 1, 2, 3},
                            std::move(instruments));
 
   EXPECT_TRUE(table->GetSecurePaymentConfirmationInstruments({}).empty());
@@ -251,116 +190,78 @@ TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetOneValidInstrument) {
           .empty());
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam,
-       AddingInvalidInstrumentReturnsFalse) {
+TEST_F(PaymentMethodManifestTableTest, AddingInvalidInstrumentReturnsFalse) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
   // An empty credential.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
-          /*credential_id=*/{}, "relying-party.example", u"Instrument label",
-          CreateIcon())));
+          /*credential_id=*/{}, "relying-party.example")));
 
   // Empty relying party identifier.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(CreateCredentialId(),
-                                          /*relying_party_id=*/"",
-                                          u"Instrument label", CreateIcon())));
-
-  // Empty label.
-  bool add_empty_label_successful =
-      table->AddSecurePaymentConfirmationInstrument(
-          SecurePaymentConfirmationInstrument(
-              CreateCredentialId(), "relying-party.example",
-              /*label=*/std::u16string(), CreateIcon()));
-  if (GetParam() == APIVersion::kApiV3) {
-    EXPECT_TRUE(add_empty_label_successful);
-  } else {
-    EXPECT_FALSE(add_empty_label_successful);
-  }
-
-  // Empty icon.
-  bool add_empty_icon_successful =
-      table->AddSecurePaymentConfirmationInstrument(
-          SecurePaymentConfirmationInstrument(CreateCredentialId(),
-                                              "relying-party.example",
-                                              u"Instrument label", {}));
-  if (GetParam() == APIVersion::kApiV3) {
-    EXPECT_TRUE(add_empty_icon_successful);
-  } else {
-    EXPECT_FALSE(add_empty_icon_successful);
-  }
+                                          /*relying_party_id=*/"")));
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, UpdatingInstrumentReturnsTrue) {
+TEST_F(PaymentMethodManifestTableTest, UpdatingInstrumentReturnsTrue) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party.example")));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party.example")));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
   ExpectOneValidInstrument({0, 1, 2, 3}, "relying-party.example",
-                           "Instrument label 2", {4, 5, 6, 7},
                            std::move(instruments));
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam,
+TEST_F(PaymentMethodManifestTableTest,
        DifferentRelyingPartiesCannotUseSameCredentialIdentifier) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party-1.example",
-          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party-1.example")));
 
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party-2.example",
-          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party-2.example")));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
   ExpectOneValidInstrument({0, 1, 2, 3}, "relying-party-1.example",
-                           "Instrument label 1", {0, 1, 2, 3},
                            std::move(instruments));
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam,
-       RelyingPartyCanHaveMultipleCredentials) {
+TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party.example")));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/4), "relying-party.example",
-          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/4),
+                                          "relying-party.example")));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
 
   ExpectOneValidInstrument({0, 1, 2, 3}, "relying-party.example",
-                           "Instrument label 1", {0, 1, 2, 3},
                            std::move(instruments));
 
   instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/4));
 
   ExpectOneValidInstrument({4, 5, 6, 7}, "relying-party.example",
-                           "Instrument label 2", {4, 5, 6, 7},
                            std::move(instruments));
 
   std::vector<std::vector<uint8_t>> credential_ids;
@@ -373,36 +274,28 @@ TEST_P(PaymentMethodManifestTableTestWithParam,
   ASSERT_EQ(2U, instruments.size());
 
   ASSERT_NE(nullptr, instruments.front());
-  ASSERT_TRUE(instruments.front()->IsValid(/*is_spcv3_enabled=*/false));
+  ASSERT_TRUE(instruments.front()->IsValid());
   std::vector<uint8_t> expected_credential_id = {0, 1, 2, 3};
   EXPECT_EQ(expected_credential_id, instruments.front()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.front()->relying_party_id);
-  EXPECT_EQ(u"Instrument label 1", instruments.front()->label);
-  std::vector<uint8_t> expected_icon = {0, 1, 2, 3};
-  EXPECT_EQ(expected_icon, instruments.front()->icon);
 
   ASSERT_NE(nullptr, instruments.back());
-  ASSERT_TRUE(instruments.back()->IsValid(/*is_spcv3_enabled=*/false));
+  ASSERT_TRUE(instruments.back()->IsValid());
   expected_credential_id = {4, 5, 6, 7};
   EXPECT_EQ(expected_credential_id, instruments.back()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.back()->relying_party_id);
-  EXPECT_EQ(u"Instrument label 2", instruments.back()->label);
-  expected_icon = {4, 5, 6, 7};
-  EXPECT_EQ(expected_icon, instruments.back()->icon);
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam, ClearInstruments) {
+TEST_F(PaymentMethodManifestTableTest, ClearInstruments) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party.example")));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/1), "relying-party.example",
-          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/1),
+                                          "relying-party.example")));
 
   table->ClearSecurePaymentConfirmationInstruments(
       base::Time::Now() - base::TimeDelta::FromMinutes(1),
@@ -416,19 +309,17 @@ TEST_P(PaymentMethodManifestTableTestWithParam, ClearInstruments) {
           .empty());
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam,
+TEST_F(PaymentMethodManifestTableTest,
        ClearInstruments_NotDeleteOutOfTimeRange) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party.example")));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(/*first_byte=*/1), "relying-party.example",
-          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(/*first_byte=*/1),
+                                          "relying-party.example")));
 
   table->ClearSecurePaymentConfirmationInstruments(
       base::Time(), base::Time::Now() - base::TimeDelta::FromMinutes(1));
@@ -442,8 +333,7 @@ TEST_P(PaymentMethodManifestTableTestWithParam,
           .size());
 }
 
-TEST_P(PaymentMethodManifestTableTestWithParam,
-       InstrumentTableAddDateCreatedColumn) {
+TEST_F(PaymentMethodManifestTableTest, InstrumentTableAddDateCreatedColumn) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(payment_method_manifest_table->RazeForTest());

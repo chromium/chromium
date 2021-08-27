@@ -22,8 +22,6 @@ static_library("android") {
     "origin_security_checker_android.cc",
     "payment_app_service_bridge.cc",
     "payment_app_service_bridge.h",
-    "payment_credential_enrollment_bridge_android.cc",
-    "payment_credential_enrollment_bridge_android.h",
     "payment_feature_list.cc",
     "payment_feature_list.h",
     "payment_handler_host.cc",
@@ -73,7 +71,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
     "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
-    "java/src/org/chromium/components/payments/PaymentCredentialEnrollmentBridgeAndroid.java",
     "java/src/org/chromium/components/payments/PaymentFeatureList.java",
     "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
@@ -163,7 +160,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/MojoPaymentRequestGateKeeper.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
     "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
-    "java/src/org/chromium/components/payments/PaymentCredentialEnrollmentBridgeAndroid.java",
     "java/src/org/chromium/components/payments/PaymentDetailsConverter.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
@@ -185,10 +181,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentProperties.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentView.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentViewBinder.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
@@ -336,7 +328,6 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
-    "junit/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
   ]
   deps = [

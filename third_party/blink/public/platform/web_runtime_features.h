@@ -152,7 +152,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void
   EnableRestrictAutomaticLazyImageLoadingToDataSaver(bool);
   BLINK_PLATFORM_EXPORT static void EnableSecurePaymentConfirmation(bool);
-  BLINK_PLATFORM_EXPORT static void EnableSecurePaymentConfirmationAPIV3(bool);
   BLINK_PLATFORM_EXPORT static void EnableSecurePaymentConfirmationDebug(bool);
   BLINK_PLATFORM_EXPORT static void EnableScriptedSpeechRecognition(bool);
   BLINK_PLATFORM_EXPORT static void EnableScriptedSpeechSynthesis(bool);
