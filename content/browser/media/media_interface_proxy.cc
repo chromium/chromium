@@ -332,6 +332,7 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
 
 #if defined(OS_WIN)
 void MediaInterfaceProxy::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
@@ -343,7 +344,8 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
     factory->CreateMediaFoundationRenderer(
-        std::move(receiver), std::move(renderer_extension_receiver));
+        std::move(media_log_remote), std::move(receiver),
+        std::move(renderer_extension_receiver));
   }
 }
 #endif  // defined(OS_WIN)

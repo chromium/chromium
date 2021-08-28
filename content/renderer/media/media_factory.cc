@@ -746,7 +746,7 @@ MediaFactory::CreateRendererFactorySelector(
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
-            std::move(dcomp_texture_creation_cb),
+            media_log, std::move(dcomp_texture_creation_cb),
             CreateMojoRendererFactory()));
   }
 #endif  // BUILDFLAG(IS_WIN)

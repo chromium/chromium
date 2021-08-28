@@ -24,6 +24,7 @@ class MediaFoundationMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) override;
   std::unique_ptr<CdmFactory> CreateCdmFactory(

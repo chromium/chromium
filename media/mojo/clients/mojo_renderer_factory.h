@@ -46,6 +46,7 @@ class MojoRendererFactory final : public RendererFactory {
 
 #if defined(OS_WIN)
   std::unique_ptr<MojoRenderer> CreateMediaFoundationRenderer(
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver,
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,

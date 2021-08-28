@@ -15,6 +15,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/test_utils.h"
@@ -103,7 +104,8 @@ class MediaFoundationRendererTest : public testing::Test {
         &pmp_server_);
 
     mf_renderer_ = std::make_unique<MediaFoundationRenderer>(
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(),
+        std::make_unique<NullMediaLog>());
 
     // Some default actions.
     ON_CALL(cdm_context_, GetMediaFoundationCdmProxy(_))

@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -16,11 +17,13 @@ namespace media {
 
 MediaFoundationRendererClient::MediaFoundationRendererClient(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    std::unique_ptr<MediaLog> media_log,
     std::unique_ptr<MojoRenderer> mojo_renderer,
     mojo::PendingRemote<RendererExtension> pending_renderer_extension,
     std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
     VideoRendererSink* sink)
     : media_task_runner_(std::move(media_task_runner)),
+      media_log_(std::move(media_log)),
       mojo_renderer_(std::move(mojo_renderer)),
       pending_renderer_extension_(std::move(pending_renderer_extension)),
       dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
@@ -75,7 +78,7 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
 void MediaFoundationRendererClient::OnConnectionError() {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-
+  MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
   OnError(PIPELINE_ERROR_DECODE);
 }
 
@@ -121,7 +124,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
   DCHECK(has_video_);
 
   if (!success) {
-    DLOG(ERROR) << __func__ << " Failed to set DCOMP surface handle";
+    MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
   }
 }
@@ -133,8 +136,9 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   if (!token) {
-    DLOG(ERROR) << "Failed to initialize DCOMP mode or failed to get or "
-                   "register DCOMP surface handle on remote renderer";
+    MEDIA_LOG(ERROR, media_log_)
+        << "Failed to initialize DCOMP mode or failed to get or "
+           "register DCOMP surface handle on remote renderer";
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
@@ -317,6 +321,7 @@ void MediaFoundationRendererClient::OnSetOutputParamsDone(const gfx::Size& size,
 
   if (!success) {
     DLOG(ERROR) << "Failed to SetOutputParams";
+    MEDIA_LOG(WARNING, media_log_) << "Failed to SetOutputParams";
     // Ignore this error as video can possibly be seen but displayed incorrectly
     // against the video output area.
     return;

@@ -21,6 +21,8 @@
 
 namespace media {
 
+class MojoMediaLog;
+
 // Wrap media::MediaFoundationRenderer to remove its dependence on
 // media::mojom::MediaFoundationRendererExtension interface.
 class MediaFoundationRendererWrapper final
@@ -33,6 +35,7 @@ class MediaFoundationRendererWrapper final
   MediaFoundationRendererWrapper(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<RendererExtension> renderer_extension_receiver);
   MediaFoundationRendererWrapper(const MediaFoundationRendererWrapper&) =
       delete;

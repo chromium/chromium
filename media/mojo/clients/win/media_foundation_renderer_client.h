@@ -22,6 +22,8 @@
 
 namespace media {
 
+class MediaLog;
+
 // MediaFoundationRendererClient lives in Renderer process talks to the
 // MediaFoundationRenderer living in the MediaFoundationService (utility)
 // process, using `mojo_renderer_` and `renderer_extension_`.
@@ -35,6 +37,7 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
 
   MediaFoundationRendererClient(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      std::unique_ptr<MediaLog> media_log,
       std::unique_ptr<MojoRenderer> mojo_renderer,
       mojo::PendingRemote<RendererExtension> pending_renderer_extension,
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
@@ -87,10 +90,11 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   // media thread. Hence we store PendingRemotes so we can bind the Remotes
   // on the media task runner during/after Initialize().
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<MojoRenderer> mojo_renderer_;
   mojo::PendingRemote<RendererExtension> pending_renderer_extension_;
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
-  VideoRendererSink* sink_;
+  VideoRendererSink* sink_ = nullptr;
 
   mojo::Remote<RendererExtension> renderer_extension_;
 

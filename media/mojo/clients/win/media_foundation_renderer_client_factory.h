@@ -15,6 +15,8 @@
 
 namespace media {
 
+class MediaLog;
+
 // The default class for creating a MediaFoundationRendererClient
 // and its associated MediaFoundationRenderer.
 class MediaFoundationRendererClientFactory : public media::RendererFactory {
@@ -23,6 +25,7 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
       base::RepeatingCallback<std::unique_ptr<DCOMPTextureWrapper>()>;
 
   MediaFoundationRendererClientFactory(
+      MediaLog* media_log,
       GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
   ~MediaFoundationRendererClientFactory() override;
@@ -39,6 +42,10 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   media::MediaResource::Type GetRequiredMediaResourceType() override;
 
  private:
+  // Raw pointer is safe since both `this` and the `media_log` are owned by
+  // WebMediaPlayerImpl with the correct declaration order.
+  MediaLog* media_log_ = nullptr;
+
   GetDCOMPTextureWrapperCB get_dcomp_texture_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
 };

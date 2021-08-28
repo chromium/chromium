@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -31,11 +32,13 @@ bool HasAudio(MediaResource* media_resource) {
 MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver)
     : frame_interfaces_(frame_interfaces),
       renderer_(std::make_unique<MediaFoundationRenderer>(
-          std::move(task_runner),
-          /*force_dcomp_mode_for_testing=*/false)),
+          task_runner,
+          std::make_unique<MojoMediaLog>(std::move(media_log_remote),
+                                         task_runner))),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
       site_mute_observer_(this) {

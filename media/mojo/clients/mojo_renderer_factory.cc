@@ -47,6 +47,7 @@ std::unique_ptr<Renderer> MojoRendererFactory::CreateRenderer(
 #if defined(OS_WIN)
 std::unique_ptr<MojoRenderer>
 MojoRendererFactory::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
@@ -54,6 +55,7 @@ MojoRendererFactory::CreateMediaFoundationRenderer(
   DCHECK(interface_factory_);
   mojo::PendingRemote<mojom::Renderer> renderer_remote;
   interface_factory_->CreateMediaFoundationRenderer(
+      std::move(media_log_remote),
       renderer_remote.InitWithNewPipeAndPassReceiver(),
       std::move(renderer_extension_receiver));
 

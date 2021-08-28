@@ -25,11 +25,12 @@ std::unique_ptr<Renderer>
 MediaFoundationMojoMediaClient::CreateMediaFoundationRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
   DVLOG_FUNC(1);
   return std::make_unique<MediaFoundationRendererWrapper>(
-      std::move(task_runner), frame_interfaces,
+      std::move(task_runner), frame_interfaces, std::move(media_log_remote),
       std::move(renderer_extension_receiver));
 }
 

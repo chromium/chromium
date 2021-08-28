@@ -132,7 +132,7 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
       MF_MEDIA_ENGINE_ERR error = static_cast<MF_MEDIA_ENGINE_ERR>(param1);
       HRESULT hr = param2;
       LOG(ERROR) << __func__ << ": error=" << error << ", hr=" << PrintHr(hr);
-      error_cb_.Run(MediaEngineErrorToPipelineStatus(error, hr));
+      error_cb_.Run(MediaEngineErrorToPipelineStatus(error, hr), hr);
       break;
     }
     case MF_MEDIA_ENGINE_EVENT_ENDED:

@@ -22,6 +22,7 @@
 #include "base/win/wrapped_window_proc.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
+#include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
@@ -72,8 +73,10 @@ bool MediaFoundationRenderer::IsSupported() {
 
 MediaFoundationRenderer::MediaFoundationRenderer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log,
     bool force_dcomp_mode_for_testing)
     : task_runner_(std::move(task_runner)),
+      media_log_(std::move(media_log)),
       force_dcomp_mode_for_testing_(force_dcomp_mode_for_testing) {
   DVLOG_FUNC(1);
 }
@@ -523,7 +526,8 @@ void MediaFoundationRenderer::SendStatistics() {
   PipelineStatistics new_stats = {};
   HRESULT hr = PopulateStatistics(new_stats);
   if (FAILED(hr)) {
-    DVLOG_FUNC(3) << "Unable to populate pipeline stats: " << PrintHr(hr);
+    LIMITED_MEDIA_LOG(INFO, media_log_, populate_statistics_failure_count_, 3)
+        << "MediaFoundationRenderer failed to populate stats: " + PrintHr(hr);
     return;
   }
 
@@ -567,12 +571,17 @@ base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
   return media_time;
 }
 
-void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status) {
-  DVLOG_FUNC(1) << "status=" << status;
+void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
+                                              HRESULT hr) {
+  DVLOG_FUNC(1) << "status=" << status << ", hr=" << hr;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && cdm_proxy_)
     cdm_proxy_->OnHardwareContextReset();
+
+  MEDIA_LOG(ERROR, media_log_)
+      << "MediaFoundationRenderer OnPlaybackError: " << status << ", "
+      << PrintHr(hr);
 
   renderer_client_->OnError(status);
   StopSendingStatistics();

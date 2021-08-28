@@ -9,6 +9,7 @@
 #include <mfapi.h>
 
 #include "base/win/windows_version.h"
+#include "media/base/media_util.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
 
@@ -65,6 +66,7 @@ class MediaFoundationRendererIntegrationTest
       absl::optional<RendererType> /*renderer_type*/) {
     auto renderer = std::make_unique<MediaFoundationRenderer>(
         task_environment_.GetMainThreadTaskRunner(),
+        std::make_unique<NullMediaLog>(),
         /*force_dcomp_mode_for_testing=*/true);
     return renderer;
   }
