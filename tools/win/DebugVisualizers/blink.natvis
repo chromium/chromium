@@ -259,13 +259,11 @@
     </Expand>
   </Type>
   <Type Name="blink::NGPhysicalFragment">
-    <DisplayString>{(blink::NGPhysicalFragment::NGFragmentType)type_} {size_} {*layout_object_}</DisplayString>
-    <Expand>
-      <!-- Resolve subclasses because VS can't resolve without virtual functions -->
-      <ExpandedItem Condition="type_ == 0">(blink::NGPhysicalBoxFragment*)this</ExpandedItem>
-      <ExpandedItem Condition="type_ == 1">(blink::NGPhysicalTextFragment*)this</ExpandedItem>
-      <ExpandedItem Condition="type_ == 2">(blink::NGPhysicalLineBoxFragment*)this</ExpandedItem>
-    </Expand>
+    <Intrinsic Name="Type" Expression="(NGFragmentType)type_" />
+    <!-- Resolve subclasses because VS can't resolve automatically when without virtual functions -->
+    <MostDerivedType Condition="Type() == kFragmentBox">(NGPhysicalBoxFragment*)this</MostDerivedType>
+    <MostDerivedType Condition="Type() == kFragmentLineBox">(NGPhysicalLineBoxFragment*)this</MostDerivedType>
+    <DisplayString>{Type()} {size_} {*layout_object_}</DisplayString>
   </Type>
   <Type Name="blink::NGPhysicalBoxFragment">
     <Expand>
