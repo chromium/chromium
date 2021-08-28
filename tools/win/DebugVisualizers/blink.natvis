@@ -282,17 +282,8 @@
     </Expand>
   </Type>
   <Type Name="blink::NGPhysicalLineBoxFragment">
-    <Expand>
-      <Synthetic Name="Children">
-        <DisplayString>{num_children_}</DisplayString>
-        <Expand>
-          <ArrayItems>
-            <Size>num_children_</Size>
-            <ValuePointer>children_</ValuePointer>
-          </ArrayItems>
-        </Expand>
-      </Synthetic>
-    </Expand>
+    <Intrinsic Name="LineBoxType" Expression="(NGLineBoxType)sub_type_" />
+    <DisplayString>{LineBoxType()} {size_} {*layout_object_}</DisplayString>
   </Type>
   <Type Name="blink::NGFragmentItem">
     <Expand>
