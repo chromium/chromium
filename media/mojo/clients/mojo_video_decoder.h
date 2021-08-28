@@ -13,7 +13,6 @@
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
-#include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -120,6 +119,10 @@ class MojoVideoDecoder final : public VideoDecoder,
 
   GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
 
+  // Raw pointer is safe since both `this` and the `media_log` are owned by
+  // WebMediaPlayerImpl with the correct declaration order.
+  MediaLog* media_log_ = nullptr;
+
   InitCB init_cb_;
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
@@ -139,8 +142,6 @@ class MojoVideoDecoder final : public VideoDecoder,
   bool remote_decoder_bound_ = false;
   bool has_connection_error_ = false;
   mojo::AssociatedReceiver<mojom::VideoDecoderClient> client_receiver_{this};
-  MojoMediaLogService media_log_service_;
-  mojo::AssociatedReceiver<mojom::MediaLog> media_log_receiver_;
   RequestOverlayInfoCB request_overlay_info_cb_;
   bool overlay_info_requested_ = false;
   gfx::ColorSpace target_color_space_;

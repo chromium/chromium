@@ -25,6 +25,7 @@
 #include "media/base/overlay_info.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -32,6 +33,7 @@
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace media {
@@ -107,11 +109,10 @@ MojoVideoDecoder::MojoVideoDecoder(
     : task_runner_(task_runner),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
       gpu_factories_(gpu_factories),
+      media_log_(media_log),
       timestamps_(128),
       writer_capacity_(
           GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO)),
-      media_log_service_(media_log),
-      media_log_receiver_(&media_log_service_),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
       target_color_space_(target_color_space) {
   DVLOG(1) << __func__;
@@ -403,8 +404,17 @@ void MojoVideoDecoder::BindRemoteDecoder() {
     }
   }
 
+  // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
+  // after `MojoVideoDecoder` is destructed.
+  mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
+  auto media_log_pending_remote =
+      media_log_pending_receiver.InitWithNewPipeAndPassRemote();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MojoMediaLogService>(media_log_->Clone()),
+      std::move(media_log_pending_receiver));
+
   remote_decoder_->Construct(client_receiver_.BindNewEndpointAndPassRemote(),
-                             media_log_receiver_.BindNewEndpointAndPassRemote(),
+                             std::move(media_log_pending_remote),
                              std::move(video_frame_handle_releaser_receiver),
                              std::move(remote_consumer_handle),
                              std::move(command_buffer_id), target_color_space_);

@@ -4,15 +4,14 @@
 
 #include "media/mojo/clients/mojo_media_log_service.h"
 
-#include <memory>
-
 #include "base/logging.h"
 #include "media/base/media_log_record.h"
 
 namespace media {
 
-MojoMediaLogService::MojoMediaLogService(media::MediaLog* media_log)
-    : media_log_(media_log) {
+MojoMediaLogService::MojoMediaLogService(
+    std::unique_ptr<media::MediaLog> media_log)
+    : media_log_(std::move(media_log)) {
   DVLOG(1) << __func__;
   DCHECK(media_log_);
 }
@@ -21,7 +20,7 @@ MojoMediaLogService::~MojoMediaLogService() {
   DVLOG(1) << __func__;
 }
 
-void MojoMediaLogService::AddLogRecord(const media::MediaLogRecord& event) {
+void MojoMediaLogService::AddLogRecord(const MediaLogRecord& event) {
   DVLOG(1) << __func__;
 
   // Make a copy so that we can transfer ownership to |media_log_|.

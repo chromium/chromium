@@ -95,7 +95,7 @@ interface VideoDecoder {
   // media::VideoDecoder::Initialize() is renamed to Configure().
   Construct(
       pending_associated_remote<VideoDecoderClient> client,
-      pending_associated_remote<MediaLog> media_log,
+      pending_remote<MediaLog> media_log,
       pending_receiver<VideoFrameHandleReleaser> video_frame_handle_releaser,
       handle<data_pipe_consumer> decoder_buffer_pipe,
       CommandBufferId? command_buffer_id,

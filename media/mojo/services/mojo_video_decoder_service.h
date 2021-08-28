@@ -47,7 +47,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
   void Construct(
       mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
-      mojo::PendingAssociatedRemote<mojom::MediaLog> media_log,
+      mojo::PendingRemote<mojom::MediaLog> media_log,
       mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
           video_frame_handle_receiver,
       mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,

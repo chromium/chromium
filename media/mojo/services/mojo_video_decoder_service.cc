@@ -156,7 +156,7 @@ void MojoVideoDecoderService::GetSupportedConfigs(
 
 void MojoVideoDecoderService::Construct(
     mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
-    mojo::PendingAssociatedRemote<mojom::MediaLog> media_log,
+    mojo::PendingRemote<mojom::MediaLog> media_log,
     mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
         video_frame_handle_releaser_receiver,
     mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
