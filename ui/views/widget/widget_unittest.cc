@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -1561,7 +1562,8 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
         CreateParamsForTestWidget(type));
     paint_widget_ = widget.get();
 
-    View* contents_view = widget->SetContentsView(std::make_unique<View>());
+    View* contents_view =
+        widget->SetContentsView(std::make_unique<ContentsView>());
     contents_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
     widget->Show();
@@ -1573,6 +1575,12 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
   DesktopAuraTestValidPaintWidget* paint_widget() { return paint_widget_; }
 
  private:
+  class ContentsView : public View {
+    void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+      node_data->SetNameExplicitlyEmpty();
+    }
+  };
+
   DesktopAuraTestValidPaintWidget* paint_widget_ = nullptr;
 };
 

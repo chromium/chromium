@@ -50,6 +50,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/transform.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -1080,6 +1081,13 @@ void View::Paint(const PaintInfo& parent_paint_info) {
 
   if (!ShouldPaint())
     return;
+
+#if DCHECK_IS_ON()
+  if (!has_run_accessibility_paint_checks_) {
+    RunAccessibilityPaintChecks(this);
+    has_run_accessibility_paint_checks_ = true;
+  }
+#endif  // DCHECK_IS_ON()
 
   const gfx::Rect& parent_bounds =
       !parent() ? GetMirroredBounds() : parent()->GetMirroredBounds();

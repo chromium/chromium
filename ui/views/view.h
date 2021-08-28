@@ -2141,6 +2141,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Manages the accessibility interface for this View.
   mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1218186): Change this to `false` to make sure checks run
+  // once. This is to be done separately from adding functionality in case it
+  // needs to be reverted due to pre-existing failures.
+  bool has_run_accessibility_paint_checks_ = true;
+#endif
+
   // Observers -----------------------------------------------------------------
 
   base::ObserverList<ViewObserver>::Unchecked observers_;

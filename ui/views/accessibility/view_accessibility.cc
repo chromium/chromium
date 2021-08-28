@@ -171,8 +171,12 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     // been closed. Returning the wrong result might cause a crash, because the
     // focus manager might be expecting the result to be the same regardless of
     // the state of the view's widget.
-    if (ViewAccessibility::IsAccessibilityFocusable())
+    if (ViewAccessibility::IsAccessibilityFocusable()) {
       data->AddState(ax::mojom::State::kFocusable);
+      // Set this node as intentionally nameless to avoid DCHECKs for a missing
+      // name of a focusable.
+      data->SetNameExplicitlyEmpty();
+    }
     return;
   }
 

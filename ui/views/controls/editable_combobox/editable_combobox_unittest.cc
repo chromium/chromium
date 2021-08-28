@@ -191,6 +191,7 @@ void EditableComboboxTest::InitEditableCombobox(
   combobox_->SetCallback(base::BindRepeating(
       &EditableComboboxTest::OnContentChanged, base::Unretained(this)));
   combobox_->SetID(2);
+  combobox_->SetAccessibleName(u"abc");
   dummy_focusable_view_ = new View();
   dummy_focusable_view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   dummy_focusable_view_->SetID(3);
