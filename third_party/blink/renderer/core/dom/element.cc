@@ -4150,16 +4150,28 @@ void Element::focus(const FocusParams& params) {
     // not lead to a cursor triggered tooltip update. The only tooltip update
     // that there should be in that case is the one triggered from the spatial
     // navigation keypress. This issue is tracked in https://crbug.com/1206446.
+    bool is_focused_from_keypress = false;
     switch (params.type) {
+      case mojom::blink::FocusType::kNone:
+        if (GetDocument()
+                .GetFrame()
+                ->LocalFrameRoot()
+                .GetEventHandler()
+                .IsHandlingKeyEvent()) {
+          is_focused_from_keypress = true;
+        }
+        break;
       case mojom::blink::FocusType::kForward:
       case mojom::blink::FocusType::kBackward:
       case mojom::blink::FocusType::kAccessKey:
-        chrome_client.ElementFocusedFromKeypress(*GetDocument().GetFrame(),
-                                                 this);
+        is_focused_from_keypress = true;
         break;
       default:
         break;
     }
+
+    if (is_focused_from_keypress)
+      chrome_client.ElementFocusedFromKeypress(*GetDocument().GetFrame(), this);
   }
 }
 

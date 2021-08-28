@@ -1154,100 +1154,197 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
 
 // macOS doesn't have keyboard-triggered tooltips.
 #if defined(OS_MAC)
-#define MAYBE_FocusSetFromKeyboardUpdatesTooltip \
-  DISABLED_FocusSetFromKeyboardUpdatesTooltip
+#define MAYBE_FocusSetFromTabUpdatesTooltip \
+  DISABLED_FocusSetFromTabUpdatesTooltip
 #else
-#define MAYBE_FocusSetFromKeyboardUpdatesTooltip \
-  FocusSetFromKeyboardUpdatesTooltip
+#define MAYBE_FocusSetFromTabUpdatesTooltip FocusSetFromTabUpdatesTooltip
 #endif
-TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromKeyboardUpdatesTooltip) {
+// Moving the focus with the tab key should trigger a tooltip update.
+TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   SetHtmlInnerHTML(
       R"HTML(
         <button id='b1' title='my tooltip 1'>button 1</button>
         <button id='b2'>button 2</button>
-        <button id='b3' title='my tooltip 3' accessKey='a'>button 3</button>
       )HTML");
 
   EXPECT_EQ(WTF::String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  // 1. Moving the focus with the tab key should trigger a tooltip update.
-  {
-    WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
-                       WebInputEvent::kNoModifiers,
-                       WebInputEvent::GetStaticTimeStampForTests()};
-    e.dom_code = static_cast<int>(ui::DomCode::TAB);
-    e.dom_key = ui::DomKey::TAB;
-    GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+  WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
+                     WebInputEvent::kNoModifiers,
+                     WebInputEvent::GetStaticTimeStampForTests()};
+  e.dom_code = static_cast<int>(ui::DomCode::TAB);
+  e.dom_key = ui::DomKey::TAB;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-    Element* element = GetDocument().getElementById("b1");
-    EXPECT_EQ("my tooltip 1", LastToolTipText());
-    EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  Element* element = GetDocument().getElementById("b1");
+  EXPECT_EQ("my tooltip 1", LastToolTipText());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 
-    // Doing the same but for a button that doesn't have a tooltip text should
-    // still trigger a tooltip update. The browser-side TooltipController will
-    // handle this case.
-    GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
-    element = GetDocument().getElementById("b2");
-    EXPECT_TRUE(LastToolTipText().IsNull());
-    EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
-  }
+  // Doing the same but for a button that doesn't have a tooltip text should
+  // still trigger a tooltip update. The browser-side TooltipController will
+  // handle this case.
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+  element = GetDocument().getElementById("b2");
+  EXPECT_TRUE(LastToolTipText().IsNull());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+}
 
-  ResetTooltip();
+// macOS doesn't have keyboard-triggered tooltips.
+#if defined(OS_MAC)
+#define MAYBE_FocusSetFromAccessKeyUpdatesTooltip \
+  DISABLED_FocusSetFromAccessKeyUpdatesTooltip
+#else
+#define MAYBE_FocusSetFromAccessKeyUpdatesTooltip \
+  FocusSetFromAccessKeyUpdatesTooltip
+#endif
+// Moving the focus by pressing the access key on button should trigger a
+// tooltip update.
+TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <button id='b' title='my tooltip' accessKey='a'>button</button>
+      )HTML");
 
-  // 2. Moving the focus by pressing the access key on button should trigger a
-  // tooltip update.
-  {
-    WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown, WebInputEvent::kAltKey,
-                       WebInputEvent::GetStaticTimeStampForTests()};
-    e.unmodified_text[0] = 'a';
-    GetDocument().GetFrame()->GetEventHandler().HandleAccessKey(e);
+  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-    Element* element = GetDocument().getElementById("b3");
-    EXPECT_EQ("my tooltip 3", LastToolTipText());
-    EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
-  }
+  WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown, WebInputEvent::kAltKey,
+                     WebInputEvent::GetStaticTimeStampForTests()};
+  e.unmodified_text[0] = 'a';
+  GetDocument().GetFrame()->GetEventHandler().HandleAccessKey(e);
 
-  ResetTooltip();
+  Element* element = GetDocument().getElementById("b");
+  EXPECT_EQ("my tooltip", LastToolTipText());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+}
 
-  // 3. Moving the focus by pressing a directional arrow while spatial
-  // navigation is enabled should trigger a tooltip update.
-  {
-    // TODO(bebeaudr): Implement this once we support updating a tooltip with
-    // spatial navigation.
-  }
+// macOS doesn't have keyboard-triggered tooltips.
+#if defined(OS_MAC)
+#define MAYBE_FocusSetFromMouseDoesntUpdateTooltip \
+  DISABLED_FocusSetFromMouseDoesntUpdateTooltip
+#else
+#define MAYBE_FocusSetFromMouseDoesntUpdateTooltip \
+  FocusSetFromMouseDoesntUpdateTooltip
+#endif
+// Moving the focus to an element with a mouse action shouldn't update the
+// tooltip.
+TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <button id='b' title='my tooltip'>button</button>
+      )HTML");
 
-  ResetTooltip();
+  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  // 4. Moving the focus to an element with a mouse action shouldn't update the
-  // tooltip.
-  {
-    Element* element = GetDocument().getElementById("b1");
-    gfx::PointF mouse_press_point =
-        gfx::PointF(element->BoundsInViewport().Center());
-    WebMouseEvent mouse_press_event(
-        WebInputEvent::Type::kMouseDown, mouse_press_point, mouse_press_point,
-        WebPointerProperties::Button::kLeft, 1,
-        WebInputEvent::Modifiers::kLeftButtonDown, base::TimeTicks::Now());
-    mouse_press_event.SetFrameScale(1);
-    GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
-        mouse_press_event);
+  Element* element = GetDocument().getElementById("b");
+  gfx::PointF mouse_press_point =
+      gfx::PointF(element->BoundsInViewport().Center());
+  WebMouseEvent mouse_press_event(
+      WebInputEvent::Type::kMouseDown, mouse_press_point, mouse_press_point,
+      WebPointerProperties::Button::kLeft, 1,
+      WebInputEvent::Modifiers::kLeftButtonDown, base::TimeTicks::Now());
+  mouse_press_event.SetFrameScale(1);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      mouse_press_event);
 
-    EXPECT_EQ("", LastToolTipText());
-    EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
-  }
+  EXPECT_TRUE(LastToolTipText().IsNull());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
+}
 
-  ResetTooltip();
+// macOS doesn't have keyboard-triggered tooltips.
+#if defined(OS_MAC)
+#define MAYBE_FocusSetFromScriptDoesntUpdateTooltip \
+  DISABLED_FocusSetFromScriptDoesntUpdateTooltip
+#else
+#define MAYBE_FocusSetFromScriptDoesntUpdateTooltip \
+  FocusSetFromScriptDoesntUpdateTooltip
+#endif
+// Moving the focus to an element with a script action (FocusType::kNone means
+// that the focus was set from a script) shouldn't update the tooltip.
+TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <button id='b' title='my tooltip'>button</button>
+      )HTML");
 
-  // 5. Moving the focus to an element with a script action (FocusType::kNone
-  // means that the focus was set from a script) shouldn't update the tooltip.
-  {
-    Element* element = GetDocument().getElementById("b3");
-    element->focus();
+  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-    EXPECT_EQ("", LastToolTipText());
-    EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
-  }
+  Element* element = GetDocument().getElementById("b");
+  element->focus();
+
+  EXPECT_TRUE(LastToolTipText().IsNull());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
+}
+
+// macOS doesn't have keyboard-triggered tooltips.
+#if defined(OS_MAC)
+#define MAYBE_FocusSetScriptInitiatedFromKeypressUpdatesTooltip \
+  DISABLED_FocusSetScriptInitiatedFromKeypressUpdatesTooltip
+#else
+#define MAYBE_FocusSetScriptInitiatedFromKeypressUpdatesTooltip \
+  FocusSetScriptInitiatedFromKeypressUpdatesTooltip
+#endif
+// Moving the focus with a keypress that leads to a script being called
+// should trigger a tooltip update.
+TEST_F(EventHandlerTooltipTest,
+       MAYBE_FocusSetScriptInitiatedFromKeypressUpdatesTooltip) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetHtmlInnerHTML(
+      R"HTML(
+        <button id='b1' title='my tooltip 1'>button 1</button>
+        <button id='b2'>button 2</button>
+      )HTML");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      R"HTML(
+        document.addEventListener('keydown', (e) => {
+          if (e.keyCode == 37) {
+            document.getElementById('b1').focus();
+          } else if (e.keyCode == 39) {
+            document.getElementById('b2').focus();
+          }
+        });
+      )HTML");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
+
+  WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
+                     WebInputEvent::kNoModifiers,
+                     WebInputEvent::GetStaticTimeStampForTests()};
+  e.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
+  e.dom_key = ui::DomKey::ARROW_LEFT;
+  e.native_key_code = e.windows_key_code = blink::VKEY_LEFT;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+
+  Element* element = GetDocument().getElementById("b1");
+  EXPECT_EQ("my tooltip 1", LastToolTipText());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+
+  // Doing the same but for a button that doesn't have a tooltip text should
+  // still trigger a tooltip update. The browser-side TooltipController will
+  // handle this case.
+  WebKeyboardEvent e2{WebInputEvent::Type::kRawKeyDown,
+                      WebInputEvent::kNoModifiers,
+                      WebInputEvent::GetStaticTimeStampForTests()};
+  e2.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
+  e2.dom_key = ui::DomKey::ARROW_RIGHT;
+  e2.native_key_code = e2.windows_key_code = blink::VKEY_RIGHT;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e2);
+
+  element = GetDocument().getElementById("b2");
+  EXPECT_TRUE(LastToolTipText().IsNull());
+
+  // But when the Element::Focus() is called outside of a keypress context,
+  // no tooltip is shown.
+  element = GetDocument().getElementById("b1");
+  element->focus(FocusOptions::Create());
+  EXPECT_TRUE(LastToolTipText().IsNull());
 }
 
 class UnbufferedInputEventsTrackingChromeClient : public EmptyChromeClient {

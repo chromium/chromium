@@ -123,6 +123,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // testing.
   bool CursorUpdatePending();
 
+  bool IsHandlingKeyEvent() const;
+
   void SetResizingFrameSet(HTMLFrameSetElement*);
 
   void ResizeScrollableAreaDestroyed();

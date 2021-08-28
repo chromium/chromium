@@ -2260,6 +2260,10 @@ bool EventHandler::CursorUpdatePending() {
   return cursor_update_timer_.IsActive();
 }
 
+bool EventHandler::IsHandlingKeyEvent() const {
+  return keyboard_event_manager_->is_handling_key_event();
+}
+
 void EventHandler::SetResizingFrameSet(HTMLFrameSetElement* frame_set) {
   CaptureMouseEventsToWidget(true);
   frame_set_being_resized_ = frame_set;
