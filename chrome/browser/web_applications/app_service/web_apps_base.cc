@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -28,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -82,6 +84,27 @@ WebAppsBase::WebAppsBase(
 }
 
 WebAppsBase::~WebAppsBase() = default;
+
+// static
+void WebAppsBase::UninstallImpl(WebAppProvider* provider,
+                                const std::string& app_id,
+                                apps::mojom::UninstallSource uninstall_source,
+                                gfx::NativeWindow parent_window) {
+  WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(provider);
+  if (!web_app_ui_manager) {
+    return;
+  }
+
+  WebAppDialogManager& web_app_dialog_manager =
+      web_app_ui_manager->dialog_manager();
+  if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
+    webapps::WebappUninstallSource webapp_uninstall_source =
+        WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
+            uninstall_source);
+    web_app_dialog_manager.UninstallWebApp(app_id, webapp_uninstall_source,
+                                           parent_window, base::DoNothing());
+  }
+}
 
 void WebAppsBase::Shutdown() {
   if (provider_) {

@@ -30,7 +30,7 @@
 class Profile;
 
 namespace web_app {
-class WebApps;
+class WebAppsBase;
 class WebAppsPublisherHost;
 }  // namespace web_app
 
@@ -353,7 +353,7 @@ class AppServiceProxyLacros : public KeyedService,
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
 
-  std::unique_ptr<web_app::WebApps> web_apps_;
+  std::unique_ptr<web_app::WebAppsBase> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
 
   std::unique_ptr<FakeLacrosWebAppsHost> fake_lacros_web_apps_host_;

@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
@@ -42,6 +43,12 @@ class WebAppsBase : public apps::PublisherBase,
   WebAppsBase(const WebAppsBase&) = delete;
   WebAppsBase& operator=(const WebAppsBase&) = delete;
   ~WebAppsBase() override;
+
+  // Uninstall for web apps on Chrome.
+  static void UninstallImpl(WebAppProvider* provider,
+                            const std::string& app_id,
+                            apps::mojom::UninstallSource uninstall_source,
+                            gfx::NativeWindow parent_window);
 
   virtual void Shutdown();
 

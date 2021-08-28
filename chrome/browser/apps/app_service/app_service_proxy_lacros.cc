@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/app_service/web_apps.h"
+#include "chrome/browser/web_applications/app_service/web_apps_base.h"
 #include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -120,7 +120,7 @@ void AppServiceProxyLacros::Initialize() {
     return;
   }
 
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
+  web_apps_ = std::make_unique<web_app::WebAppsBase>(app_service_, profile_);
   extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 
   if (kUseFakeWebAppsHost) {
@@ -349,7 +349,7 @@ void AppServiceProxyLacros::Uninstall(
   // On non-ChromeOS, publishers run the remove dialog.
   apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kWeb) {
-    web_app::WebApps::UninstallImpl(
+    web_app::WebAppsBase::UninstallImpl(
         web_app::WebAppProvider::GetForWebApps(profile_), app_id,
         uninstall_source, parent_window);
   }

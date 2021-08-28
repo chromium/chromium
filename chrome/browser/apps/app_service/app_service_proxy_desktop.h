@@ -16,7 +16,7 @@
 class Profile;
 
 namespace web_app {
-class WebApps;
+class WebAppsBase;
 }  // namespace web_app
 
 namespace apps {
@@ -45,7 +45,7 @@ class AppServiceProxy : public AppServiceProxyBase {
   void Initialize() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
 
-  std::unique_ptr<web_app::WebApps> web_apps_;
+  std::unique_ptr<web_app::WebAppsBase> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
 
   base::WeakPtrFactory<AppServiceProxy> weak_ptr_factory_{this};
