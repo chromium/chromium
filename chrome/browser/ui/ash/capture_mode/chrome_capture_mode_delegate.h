@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_
-#define CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
+#define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
 
-#include "ash/public/cpp/capture_mode_delegate.h"
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
 
 // Implements the interface needed for the delegate of the Capture Mode feature
@@ -70,4 +70,4 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   bool is_session_active_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_

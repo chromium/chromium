@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_DELEGATE_H_
-#define ASH_PUBLIC_CPP_CAPTURE_MODE_DELEGATE_H_
+#ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
+#define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom-forward.h"
@@ -96,4 +96,4 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_DELEGATE_H_
+#endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_

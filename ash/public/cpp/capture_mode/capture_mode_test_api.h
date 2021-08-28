@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_TEST_API_H_
-#define ASH_PUBLIC_CPP_CAPTURE_MODE_TEST_API_H_
+#ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_TEST_API_H_
+#define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_TEST_API_H_
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
@@ -77,4 +77,4 @@ class ASH_EXPORT CaptureModeTestApi {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_TEST_API_H_
+#endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_TEST_API_H_

@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/capture_mode_api.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/files/file_enumerator.h"
 #include "base/run_loop.h"
 #include "chrome/browser/download/download_prefs.h"

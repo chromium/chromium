@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/capture_mode_delegate.h"
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
