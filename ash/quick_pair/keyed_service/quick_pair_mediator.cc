@@ -15,6 +15,7 @@
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/ui_broker_impl.h"
+#include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 
 namespace ash {
@@ -63,6 +64,7 @@ Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
   ui_broker_observation_.Observe(ui_broker_.get());
 
   SetFastPairState(feature_status_tracker_->IsFastPairEnabled());
+  quick_pair_process::SetProcessManager(process_manager_.get());
 }
 
 Mediator::~Mediator() = default;
