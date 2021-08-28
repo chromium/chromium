@@ -202,7 +202,7 @@ class WebTestFinder(object):
 
     @staticmethod
     def _strip_comments(line):
-        commentIndex = line.find('//')
+        commentIndex = line.find('#')
         if commentIndex == -1:
             commentIndex = len(line)
 
