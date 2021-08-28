@@ -48105,8 +48105,6 @@ from previous Chrome versions.
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
   <int value="-1250965985" label="MediaFeeds:enabled"/>
   <int value="-1250611337" label="ChromeVoxArcSupport:disabled"/>
-  <int value="-1250326683"
-      label="MagnifierCaretFollowingFromJavascript:enabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
@@ -50304,8 +50302,6 @@ from previous Chrome versions.
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
-  <int value="523885852"
-      label="MagnifierCaretFollowingFromJavascript:disabled"/>
   <int value="529235584" label="PhoneHub:enabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>

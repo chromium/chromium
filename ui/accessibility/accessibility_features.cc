@@ -125,14 +125,6 @@ bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
       ::features::kMagnifierContinuousMouseFollowingModeSetting);
 }
 
-const base::Feature kMagnifierCaretFollowingFromJavascript{
-    "MagnifierCaretFollowingFromJavascript", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsMagnifierCaretFollowingFromJavascriptEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kMagnifierCaretFollowingFromJavascript);
-}
-
 const base::Feature kEnableSwitchAccessPointScanning{
     "EnableSwitchAccessPointScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 

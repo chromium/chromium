@@ -101,14 +101,6 @@ AX_BASE_EXPORT extern const base::Feature
 // following mode in Magnifier settings is enabled.
 AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 
-// Enables new caret following behavior from Javascript.
-AX_BASE_EXPORT extern const base::Feature
-    kMagnifierCaretFollowingFromJavascript;
-
-// Returns true if the feature to allow new caret following from Javascript is
-// enabled.
-AX_BASE_EXPORT bool IsMagnifierCaretFollowingFromJavascriptEnabled();
-
 // Enables ability to choose point scanning mode in switch access.
 AX_BASE_EXPORT extern const base::Feature kEnableSwitchAccessPointScanning;
 
