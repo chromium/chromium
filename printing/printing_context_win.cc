@@ -42,7 +42,8 @@ void AssignResult(PrintingContext::Result* out, PrintingContext::Result in) {
 }  // namespace
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
 #if BUILDFLAG(ENABLE_PRINTING)
   return std::make_unique<PrintingContextSystemDialogWin>(delegate);
 #else

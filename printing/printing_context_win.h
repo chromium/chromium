@@ -27,9 +27,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
   void PrintDocument(const std::wstring& device_name,
                      const MetafileSkia& metafile);
 
-  // Initializes with predefined settings.
-  Result InitWithSettingsForTest(std::unique_ptr<PrintSettings> settings);
-
   // PrintingContext implementation.
   void AskUserForSettings(int max_pages,
                           bool has_selection,
@@ -47,6 +44,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
   void Cancel() override;
   void ReleaseContext() override;
   printing::NativeDrawingContext context() const override;
+  Result InitWithSettingsForTest(
+      std::unique_ptr<PrintSettings> settings) override;
 
  protected:
   static HWND GetRootWindow(gfx::NativeView view);

@@ -113,6 +113,7 @@ component("printing") {
     "printed_document.h",
     "printing_context.cc",
     "printing_context.h",
+    "printing_context_factory_for_test.h",
     "pwg_raster_settings.h",
   ]
 
@@ -231,6 +232,8 @@ static_library("test_support") {
   sources = [
     "image.cc",
     "image.h",
+    "test_printing_context.cc",
+    "test_printing_context.h",
   ]
 
   configs += [ "//build/config/compiler:noshadowing" ]

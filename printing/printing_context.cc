@@ -13,11 +13,15 @@
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion.h"
+#include "printing/printing_context_factory_for_test.h"
 #include "printing/units.h"
 
 namespace printing {
 
 namespace {
+
+PrintingContextFactoryForTest* g_printing_context_factory_for_test = nullptr;
+
 const float kCloudPrintMarginInch = 0.25;
 }
 
@@ -30,6 +34,20 @@ PrintingContext::PrintingContext(Delegate* delegate)
 }
 
 PrintingContext::~PrintingContext() = default;
+
+// static
+std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+  return g_printing_context_factory_for_test
+             ? g_printing_context_factory_for_test->CreatePrintingContext(
+                   delegate)
+             : PrintingContext::CreateImpl(delegate);
+}
+
+// static
+void PrintingContext::SetPrintingContextFactoryForTest(
+    PrintingContextFactoryForTest* factory) {
+  g_printing_context_factory_for_test = factory;
+}
 
 void PrintingContext::set_margin_type(mojom::MarginType type) {
   DCHECK(type != mojom::MarginType::kCustomMargins);

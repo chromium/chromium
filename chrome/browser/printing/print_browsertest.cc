@@ -4,14 +4,18 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -48,7 +52,12 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "printing/backend/test_print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/print_settings.h"
+#include "printing/printing_context.h"
+#include "printing/printing_context_factory_for_test.h"
+#include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -58,6 +67,9 @@
 namespace printing {
 
 namespace {
+
+constexpr int kPrinterCapabilitiesMaxCopies = 99;
+constexpr int kPrintSettingsCopies = 42;
 
 constexpr int kDefaultDocumentCookie = 1234;
 
@@ -75,6 +87,7 @@ mojom::PrintParamsPtr GetPrintParams() {
 }
 
 void UpdatePrintSettingsReplyOnIO(
+    std::unique_ptr<PrintSettings>& snooped_settings,
     scoped_refptr<PrintQueriesQueue> queue,
     std::unique_ptr<PrinterQuery> printer_query,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback) {
@@ -87,6 +100,8 @@ void UpdatePrintSettingsReplyOnIO(
                                   params->params.get());
     params->params->document_cookie = printer_query->cookie();
     params->pages = PageRange::GetPages(printer_query->settings().ranges());
+    snooped_settings =
+        std::make_unique<PrintSettings>(printer_query->settings());
   }
   bool canceled = printer_query->last_status() == PrintingContext::CANCEL;
 
@@ -110,6 +125,7 @@ void UpdatePrintSettingsReplyOnIO(
 }
 
 void UpdatePrintSettingsOnIO(
+    std::unique_ptr<PrintSettings>& snooped_settings,
     int32_t cookie,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
     scoped_refptr<PrintQueriesQueue> queue,
@@ -123,8 +139,8 @@ void UpdatePrintSettingsOnIO(
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->SetSettings(
       std::move(job_settings),
-      base::BindOnce(&UpdatePrintSettingsReplyOnIO, queue,
-                     std::move(printer_query), std::move(callback)));
+      base::BindOnce(&UpdatePrintSettingsReplyOnIO, std::ref(snooped_settings),
+                     queue, std::move(printer_query), std::move(callback)));
 }
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
@@ -327,6 +343,8 @@ class TestPrintViewManager : public PrintViewManager {
   TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
   ~TestPrintViewManager() override = default;
 
+  PrintSettings* snooped_settings() { return snooped_settings_.get(); }
+
  private:
   // printing::mojom::PrintManagerHost:
   void UpdatePrintSettings(int32_t cookie,
@@ -334,9 +352,12 @@ class TestPrintViewManager : public PrintViewManager {
                            UpdatePrintSettingsCallback callback) override {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&UpdatePrintSettingsOnIO, cookie, std::move(callback),
-                       queue_, std::move(job_settings)));
+        base::BindOnce(&UpdatePrintSettingsOnIO, std::ref(snooped_settings_),
+                       cookie, std::move(callback), queue_,
+                       std::move(job_settings)));
   }
+
+  std::unique_ptr<PrintSettings> snooped_settings_;
 };
 
 class PrintBrowserTest : public InProcessBrowserTest {
@@ -1229,5 +1250,100 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   EXPECT_EQ(false, content::EvalJs(prerender_host, "firedAfterPrint"));
   EXPECT_EQ(1u, console_observer.messages().size());
 }
+
+class PrintBackendPrintBrowserTest : public PrintBrowserTest {
+ public:
+  PrintBackendPrintBrowserTest() = default;
+  ~PrintBackendPrintBrowserTest() override = default;
+
+  void SetUp() override {
+    test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+    PrintBackend::SetPrintBackendForTesting(test_backend_.get());
+    PrintingContext::SetPrintingContextFactoryForTest(
+        &test_printing_context_factory_);
+    PrintBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    PrintBrowserTest::TearDown();
+    PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+  }
+
+  void AddPrinter(const std::string& printer_name) {
+    const PrinterBasicInfo kPrinterInfo(
+        printer_name,
+        /*display_name=*/"test printer",
+        /*printer_description=*/"A printer for testing.",
+        /*printer_status=*/0,
+        /*is_default=*/true,
+        /*options=*/{});
+
+    auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
+    default_caps->copies_max = kPrinterCapabilitiesMaxCopies;
+    test_backend_->AddValidPrinter(
+        printer_name, std::move(default_caps),
+        std::make_unique<PrinterBasicInfo>(kPrinterInfo));
+  }
+
+  void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
+    test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+        printer_name);
+  }
+
+ private:
+  class PrintBackendPrintingContextFactoryForTest
+      : public PrintingContextFactoryForTest {
+   public:
+    std::unique_ptr<PrintingContext> CreatePrintingContext(
+        PrintingContext::Delegate* delegate) override {
+      auto context = std::make_unique<TestPrintingContext>(delegate);
+
+      auto settings = std::make_unique<PrintSettings>();
+      settings->set_copies(kPrintSettingsCopies);
+      settings->set_device_name(
+          base::ASCIIToUTF16(base::StringPiece(printer_name_)));
+      context->SetDeviceSettings(printer_name_, std::move(settings));
+
+      return std::move(context);
+    }
+
+    void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
+      printer_name_ = printer_name;
+    }
+
+   private:
+    std::string printer_name_;
+  };
+
+  scoped_refptr<TestPrintBackend> test_backend_;
+  TestPrintingContextDelegate test_printing_context_delegate_;
+  PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
+};
+
+// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
+// hooked up to make use of `TestPrintingContext` yet.
+#if !defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  TestPrintViewManager print_view_manager(web_contents);
+  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+
+  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+
+  ASSERT_TRUE(print_view_manager.snooped_settings());
+  EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
+            kPrintSettingsCopies);
+}
+#endif  // !defined(OS_CHROMEOS)
 
 }  // namespace printing

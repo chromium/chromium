@@ -20,7 +20,8 @@ namespace printing {
 
 #if !defined(USE_CUPS)
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextNoSystemDialog>(delegate);
 }
 #endif  // !defined(USE_CUPS)

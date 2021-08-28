@@ -244,7 +244,8 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
 }
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextChromeos>(delegate);
 }
 

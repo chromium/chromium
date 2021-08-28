@@ -30,7 +30,8 @@ gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
 }  // namespace
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextLinux>(delegate);
 }
 
