@@ -83,6 +83,7 @@ intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,
   BrokerProcess* broker_process = static_cast<BrokerProcess*>(aux);
   switch (args.nr) {
     case __NR_faccessat:  // access is a wrapper of faccessat in android
+    case __NR_faccessat2:
       BPF_ASSERT(static_cast<int>(args.args[0]) == AT_FDCWD);
       return broker_process->GetBrokerClientSignalBased()->Access(
           reinterpret_cast<const char*>(args.args[1]),
@@ -122,6 +123,7 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
 
     switch (sysno) {
       case __NR_faccessat:
+      case __NR_faccessat2:
 #if defined(__NR_access)
       case __NR_access:
 #endif

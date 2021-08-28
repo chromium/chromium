@@ -1596,6 +1596,7 @@ TEST(BrokerProcess, IsSyscallAllowed) {
   const base::flat_map<BrokerCommand, base::flat_set<int>> kSysnosForCommand = {
       {COMMAND_ACCESS,
        {__NR_faccessat,
+        __NR_faccessat2,
 #if defined(__NR_access) && !defined(OS_ANDROID)
         __NR_access
 #endif

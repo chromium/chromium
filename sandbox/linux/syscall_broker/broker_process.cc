@@ -123,6 +123,7 @@ bool BrokerProcess::IsSyscallBrokerable(int sysno, bool fast_check) const {
     case __NR_access:
 #endif
     case __NR_faccessat:
+    case __NR_faccessat2:
       return !fast_check || allowed_command_set_.test(COMMAND_ACCESS);
 
 #if !defined(__aarch64__) && !defined(OS_ANDROID)

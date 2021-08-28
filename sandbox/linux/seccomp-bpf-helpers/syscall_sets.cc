@@ -133,6 +133,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
 
     case __NR_execve:
     case __NR_faccessat:  // EPERM not a valid errno.
+    case __NR_faccessat2:
     case __NR_fchmodat:
     case __NR_fchownat:  // Should be called chownat ?
 #if defined(__x86_64__) || defined(__aarch64__)
