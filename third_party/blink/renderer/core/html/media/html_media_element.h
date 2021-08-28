@@ -154,8 +154,6 @@ class CORE_EXPORT HTMLMediaElement
   };
   void ScheduleTextTrackResourceLoad();
 
-  bool HasRemoteRoutes() const;
-
   // error state
   MediaError* error() const;
 

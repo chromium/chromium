@@ -3584,12 +3584,6 @@ void HTMLMediaElement::DurationChanged(double duration, bool request_seek) {
     Seek(duration);
 }
 
-bool HTMLMediaElement::HasRemoteRoutes() const {
-  // TODO(mlamouri): used by MediaControlsPainter; should be refactored out.
-  return RemotePlaybackClient() &&
-         RemotePlaybackClient()->RemotePlaybackAvailable();
-}
-
 void HTMLMediaElement::RemotePlaybackCompatibilityChanged(const WebURL& url,
                                                           bool is_compatible) {
   if (RemotePlaybackClient())
