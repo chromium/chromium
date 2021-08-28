@@ -32,14 +32,33 @@ AnimationSequenceBlock::AnimationSequenceBlock(
     base::TimeDelta start)
     : builder_key_(builder_key), owner_(owner), start_(start) {}
 
-AnimationSequenceBlock::AnimationSequenceBlock(AnimationSequenceBlock&&) =
-    default;
+AnimationSequenceBlock::AnimationSequenceBlock(AnimationSequenceBlock&& other)
+    : builder_key_(std::move(other.builder_key_)),
+      owner_(other.owner_),
+      start_(std::move(other.start_)),
+      duration_(std::move(other.duration_)),
+      elements_(std::move(other.elements_)) {
+  DCHECK(!other.finalized_)
+      << "Do not access old blocks after creating new ones.";
+  other.finalized_ = true;
+}
 
 AnimationSequenceBlock& AnimationSequenceBlock::operator=(
-    AnimationSequenceBlock&&) = default;
+    AnimationSequenceBlock&& other) {
+  DCHECK(!other.finalized_)
+      << "Do not access old blocks after creating new ones.";
+  builder_key_ = std::move(other.builder_key_);
+  owner_ = other.owner_;
+  start_ = std::move(other.start_);
+  duration_ = std::move(other.duration_);
+  elements_ = std::move(other.elements_);
+  finalized_ = false;
+  other.finalized_ = true;
+  return *this;
+}
 
 AnimationSequenceBlock::~AnimationSequenceBlock() {
-  if (is_terminal_block_) {
+  if (!finalized_) {
     TerminateBlock();
     owner_->TerminateSequence(PassKey());
   }
@@ -47,6 +66,7 @@ AnimationSequenceBlock::~AnimationSequenceBlock() {
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetDuration(
     base::TimeDelta duration) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   DCHECK(!duration_.has_value()) << "Duration may be set at most once.";
   duration_ = duration;
   return *this;
@@ -126,8 +146,9 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
 
 AnimationSequenceBlock AnimationSequenceBlock::At(
     base::TimeDelta since_sequence_start) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   TerminateBlock();
-  is_terminal_block_ = false;
+  finalized_ = true;
   return AnimationSequenceBlock(builder_key_, owner_, since_sequence_start);
 }
 
@@ -142,30 +163,35 @@ AnimationSequenceBlock AnimationSequenceBlock::Then() {
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnStarted(
     base::OnceClosure callback) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   owner_->SetOnStarted(std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnEnded(
     base::OnceClosure callback) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   owner_->SetOnEnded(std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnWillRepeat(
     base::RepeatingClosure callback) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   owner_->SetOnWillRepeat(std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnAborted(
     base::OnceClosure callback) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   owner_->SetOnAborted(std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnScheduled(
     base::OnceClosure callback) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   owner_->SetOnScheduled(std::move(callback));
   return *this;
 }
@@ -180,6 +206,7 @@ AnimationSequenceBlock::Element& AnimationSequenceBlock::Element::operator=(
 
 AnimationSequenceBlock& AnimationSequenceBlock::AddAnimation(AnimationKey key,
                                                              Element element) {
+  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
   const auto result =
       elements_.insert(std::make_pair(std::move(key), std::move(element)));
   DCHECK(result.second) << "Animate (target, property) at most once per block.";

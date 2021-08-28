@@ -649,6 +649,28 @@ TEST_F(AnimationBuilderTest, RepeatedlyImplicitlyAppendsTrailingPause) {
   EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 4.0);
 }
 
+// Opacity -->|-->|--> with a loop for setting these blocks.
+TEST_F(AnimationBuilderTest, RepeatedBlocks) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+  constexpr float kOpacity[] = {0.4f, 0.9f, 0.6f};
+
+  {
+    AnimationBuilder builder;
+    auto block = builder.Repeatedly();
+    for (const auto& opacity : kOpacity) {
+      block = block.SetDuration(kDuration).SetOpacity(view, opacity).Then();
+    }
+  }
+
+  for (const auto& opacity : kOpacity) {
+    Step(kDuration);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), opacity);
+  }
+}
+
 TEST_F(AnimationBuilderTest, PreemptionStrategyTest) {
   using ps = ui::LayerAnimator::PreemptionStrategy;
   TestAnimatibleLayerOwner* view = CreateTestLayerOwner();

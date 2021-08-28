@@ -45,8 +45,8 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
                          AnimationBuilder* owner,
                          base::TimeDelta start);
-  AnimationSequenceBlock(AnimationSequenceBlock&&);
-  AnimationSequenceBlock& operator=(AnimationSequenceBlock&&);
+  AnimationSequenceBlock(AnimationSequenceBlock&& other);
+  AnimationSequenceBlock& operator=(AnimationSequenceBlock&& other);
   ~AnimationSequenceBlock();
 
   // Sets the duration of this block.  The duration may be set at most once and
@@ -149,8 +149,9 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   // done in TerminateBlock().
   std::map<AnimationKey, Element> elements_;
 
-  // Whether this is the last block in the sequence.
-  bool is_terminal_block_ = true;
+  // True when this block has been terminated or used to create another block.
+  // At this point, it's an error to use the block further.
+  bool finalized_ = false;
 };
 
 }  // namespace views
