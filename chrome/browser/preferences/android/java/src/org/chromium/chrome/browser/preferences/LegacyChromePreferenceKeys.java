@@ -132,6 +132,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION,
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP,
                 ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
+                ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                 ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
                 ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES,
                 ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME,

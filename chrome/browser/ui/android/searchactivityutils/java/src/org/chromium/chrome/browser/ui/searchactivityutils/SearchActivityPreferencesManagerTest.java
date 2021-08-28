@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_URL;
@@ -101,24 +102,24 @@ public class SearchActivityPreferencesManagerTest {
     @UiThreadTest
     public void preferenceTest_equalWithSameContent() {
         SearchActivityPreferences p1 =
-                new SearchActivityPreferences("test", "test.url", true, true);
+                new SearchActivityPreferences("test", "test.url", true, true, true);
         SearchActivityPreferences p2 =
-                new SearchActivityPreferences("test", "test.url", true, true);
+                new SearchActivityPreferences("test", "test.url", true, true, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences(null, "test.url", true, false);
-        p2 = new SearchActivityPreferences(null, "test.url", true, false);
+        p1 = new SearchActivityPreferences(null, "test.url", true, false, true);
+        p2 = new SearchActivityPreferences(null, "test.url", true, false, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences("test", null, false, true);
-        p2 = new SearchActivityPreferences("test", null, false, true);
+        p1 = new SearchActivityPreferences("test", null, false, true, true);
+        p2 = new SearchActivityPreferences("test", null, false, true, true);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 
-        p1 = new SearchActivityPreferences(null, null, false, false);
-        p2 = new SearchActivityPreferences(null, null, false, false);
+        p1 = new SearchActivityPreferences(null, null, false, false, false);
+        p2 = new SearchActivityPreferences(null, null, false, false, false);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
     }
@@ -128,9 +129,9 @@ public class SearchActivityPreferencesManagerTest {
     @UiThreadTest
     public void preferenceTest_notEqualWithDifferentVoiceAvailability() {
         SearchActivityPreferences p1 =
-                new SearchActivityPreferences("test", "test.url", true, false);
+                new SearchActivityPreferences("test", "test.url", true, false, false);
         SearchActivityPreferences p2 =
-                new SearchActivityPreferences("test", "test.url", false, false);
+                new SearchActivityPreferences("test", "test.url", false, false, false);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -140,9 +141,21 @@ public class SearchActivityPreferencesManagerTest {
     @UiThreadTest
     public void preferenceTest_notEqualWithDifferentLensAvailability() {
         SearchActivityPreferences p1 =
-                new SearchActivityPreferences("test", "test.url", true, true);
+                new SearchActivityPreferences("test", "test.url", true, true, false);
         SearchActivityPreferences p2 =
-                new SearchActivityPreferences("test", "test.url", true, false);
+                new SearchActivityPreferences("test", "test.url", true, false, false);
+        Assert.assertNotEquals(p1, p2);
+        Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void preferenceTest_notEqualWithDifferentIncognitoAvailability() {
+        SearchActivityPreferences p1 =
+                new SearchActivityPreferences("test", "test.url", true, true, true);
+        SearchActivityPreferences p2 =
+                new SearchActivityPreferences("test", "test.url", true, true, false);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -152,9 +165,9 @@ public class SearchActivityPreferencesManagerTest {
     @UiThreadTest
     public void preferenceTest_notEqualWithDifferentSearchEngineName() {
         SearchActivityPreferences p1 =
-                new SearchActivityPreferences("Search Engine 1", "test.url", true, true);
+                new SearchActivityPreferences("Search Engine 1", "test.url", true, true, true);
         SearchActivityPreferences p2 =
-                new SearchActivityPreferences("Search Engine 2", "test.url", true, true);
+                new SearchActivityPreferences("Search Engine 2", "test.url", true, true, true);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -164,9 +177,9 @@ public class SearchActivityPreferencesManagerTest {
     @UiThreadTest
     public void preferenceTest_notEqualWithDifferentSearchEngineUrl() {
         SearchActivityPreferences p1 =
-                new SearchActivityPreferences("Google", "www.google.com", true, true);
+                new SearchActivityPreferences("Google", "www.google.com", true, true, true);
         SearchActivityPreferences p2 =
-                new SearchActivityPreferences("Google", "www.google.pl", true, true);
+                new SearchActivityPreferences("Google", "www.google.pl", true, true, true);
         Assert.assertNotEquals(p1, p2);
         Assert.assertNotEquals(p1.hashCode(), p2.hashCode());
     }
@@ -186,7 +199,7 @@ public class SearchActivityPreferencesManagerTest {
         // Perform an update and check the number of calls.
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences("Search Engine", "URL", false, true), false);
+                new SearchActivityPreferences("Search Engine", "URL", false, true, true), false);
         CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
 
         // Add a new listener.
@@ -197,7 +210,7 @@ public class SearchActivityPreferencesManagerTest {
         // Perform an update and check the number of calls.
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences("Search Engine", "URL", true, true), false);
+                new SearchActivityPreferences("Search Engine", "URL", true, true, true), false);
         CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 3);
 
         // Finally, reset settings to safe defaults. All listeners should be notified.
@@ -228,7 +241,7 @@ public class SearchActivityPreferencesManagerTest {
         // Verify that we don't get excessive update notifications.
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences("ABC", "abc.xyz", false, true), false);
+                new SearchActivityPreferences("ABC", "abc.xyz", false, true, true), false);
         CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
 
         // Finally, confirm reset.
@@ -248,10 +261,19 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_SEARCH_ENGINE_URL));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
+
+        // Install receiver of the async pref update notification.
+        // We expect the on-disk prefs to be already updated when this call is made.
+        final AtomicInteger numCalls = new AtomicInteger(0);
+        final Consumer<SearchActivityPreferences> listener = prefs -> numCalls.incrementAndGet();
+        SearchActivityPreferencesManager.addObserver(listener);
+        numCalls.set(0);
 
         // Save settings to disk.
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences("Search Engine", "URL", false, true), true);
+                new SearchActivityPreferences("Search Engine", "URL", false, true, true), true);
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 1);
 
         // Note: we provide different default values than stored ones to make sure everything works.
         Assert.assertEquals("Search Engine",
@@ -263,6 +285,7 @@ public class SearchActivityPreferencesManagerTest {
                 false, manager.readBoolean(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE, true));
         Assert.assertEquals(
                 true, manager.readBoolean(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, false));
+        Assert.assertEquals(true, manager.readBoolean(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, false));
 
         // Reset values to defaults / "clear application data". Make sure we don't have anything on
         // disk.
@@ -271,6 +294,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_SEARCH_ENGINE_URL));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
     }
 
     @Test
@@ -280,6 +304,7 @@ public class SearchActivityPreferencesManagerTest {
         // Install event listener.
         final AtomicInteger numCalls = new AtomicInteger(0);
         final Consumer<SearchActivityPreferences> listener = prefs -> numCalls.incrementAndGet();
+        SearchActivityPreferencesManager.addObserver(listener);
         numCalls.set(0);
         verifyNoMoreInteractions(mTemplateUrlServiceMock);
 

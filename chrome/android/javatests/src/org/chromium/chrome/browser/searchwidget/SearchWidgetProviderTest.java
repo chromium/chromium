@@ -129,7 +129,7 @@ public class SearchWidgetProviderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SearchWidgetProvider.performUpdate(null,
                     new SearchActivityPreferences(searchEngineName, null, voiceSearchAvailable,
-                            /* lensAvailable=*/false));
+                            /* lensAvailable=*/false, /* incognitoAvailable=*/true));
         });
     }
 

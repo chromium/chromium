@@ -319,7 +319,8 @@ public class SearchActivity extends AsyncInitializationActivity
         CustomTabsConnection.getInstance().warmup(0);
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
-        mSearchBox.onDeferredStartup(isVoiceSearchIntent(), voiceRecognitionHandler);
+        mSearchBox.onDeferredStartup(
+                isVoiceSearchIntent(), voiceRecognitionHandler, getWindowAndroid());
         RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();

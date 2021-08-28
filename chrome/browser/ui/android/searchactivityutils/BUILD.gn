@@ -8,6 +8,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManager.java" ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/incognito:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/search_engines/android:java",

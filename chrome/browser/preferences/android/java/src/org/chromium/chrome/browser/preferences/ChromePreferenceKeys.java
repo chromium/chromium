@@ -823,6 +823,8 @@ public final class ChromePreferenceKeys {
             "org.chromium.chrome.browser.searchwidget.SEARCH_ENGINE_URL";
     public static final String SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE =
             "org.chromium.chrome.browser.searchwidget.IS_GOOGLE_LENS_AVAILABLE";
+    public static final String SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE =
+            "org.chromium.chrome.browser.searchwidget.IS_INCOGNITO_AVAILABLE";
 
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
@@ -63,13 +64,13 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Called when the SearchActivity has finished initialization. */
-    void onDeferredStartup(
-            boolean isVoiceSearchIntent, @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+    void onDeferredStartup(boolean isVoiceSearchIntent,
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
+            AndroidPermissionDelegate permissionsDelegate) {
         getAutocompleteCoordinator().prefetchZeroSuggestResults();
 
-        SearchActivityPreferencesManager.setVoiceSearchAvailable(
-                voiceRecognitionHandler.isVoiceSearchEnabled());
-
+        SearchActivityPreferencesManager.updateFeatureAvailability(
+                getContext(), permissionsDelegate);
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
