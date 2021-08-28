@@ -84,6 +84,14 @@ OrientationLockType GetDisplayNaturalOrientation(
 OrientationLockType RotationToOrientation(OrientationLockType natural,
                                           display::Display::Rotation rotation);
 
+// Test if the orientation lock type is primary/landscape/portrait.
+bool IsPrimaryOrientation(OrientationLockType type);
+bool IsLandscapeOrientation(OrientationLockType type);
+bool IsPortraitOrientation(OrientationLockType type);
+
+// Returns true if the current layout of |display| is horizontal.
+bool IsDisplayLayoutHorizontal(const display::Display& display);
+
 }  // namespace ash
 
 #endif  // ASH_DISPLAY_DISPLAY_UTIL_H_

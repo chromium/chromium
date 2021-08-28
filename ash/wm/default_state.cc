@@ -520,11 +520,11 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
           GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
-          SplitViewController::IsLayoutHorizontal(window)
+          IsDisplayLayoutHorizontal(
+              display::Screen::GetScreen()->GetDisplayNearestWindow(window))
               ? SplitViewMetricsController::DeviceOrientation::kLandscape
               : SplitViewMetricsController::DeviceOrientation::kPortrait);
       break;
-
     case WindowStateType::kDefault:
     case WindowStateType::kNormal: {
       gfx::Rect work_area_in_parent =

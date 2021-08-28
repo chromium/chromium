@@ -47,6 +47,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/test_session_state_animator.h"
@@ -816,6 +817,51 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   right_tablet = 4;
   test("Unsnap right, tablet, overview", WINDOW_CYCLE_SNAP_RIGHT,
        WindowStateType::kMaximized);
+}
+
+TEST_F(AcceleratorControllerTestWithClamshellSplitView,
+       WindowSnapOrientationUma) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+  WindowState* window_state = WindowState::Get(window.get());
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+  WindowState* window_state2 = WindowState::Get(window2.get());
+  base::HistogramTester histogram_tester;
+  constexpr char kSnapWindowDeviceOrientationHistogram[] =
+      "Ash.Window.Snap.DeviceOrientation";
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 0);
+
+  window_state->Activate();
+  controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+  gfx::Rect expected_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kPrimary);
+  EXPECT_EQ(expected_bounds.ToString(), window->bounds().ToString());
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 0);
+
+  controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_RIGHT, {});
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 2);
+
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 0);
+
+  window_state2->Activate();
+  UpdateDisplay("800x600/l");
+  controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+  histogram_tester.ExpectBucketCount(
+      kSnapWindowDeviceOrientationHistogram,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
 }
 
 TEST_F(AcceleratorControllerTest, RotateScreen) {

@@ -41,6 +41,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
+#include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -2926,6 +2927,132 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
+}
+
+TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
+  UpdateDisplay("800x600");
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager,
+                                                         display_id);
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  ASSERT_EQ(test_api.GetCurrentOrientation(),
+            OrientationLockType::kLandscapePrimary);
+
+  constexpr char kDeviceOrientationTablet[] =
+      "Ash.SplitView.DeviceOrientation.TabletMode";
+  constexpr char kDeviceOrientationEntryPoint[] =
+      "Ash.SplitView.EntryPoint.DeviceOrientation";
+  constexpr char kDeviceOrientationInSplitView[] =
+      "Ash.SplitView.OrientationInSplitView";
+  base::HistogramTester histogram_tester;
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+
+  // 1. Test landscape orientation.
+  // Snap |window1| to the left to enter split view overview in tablet mode.
+  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationTablet,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationEntryPoint,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+
+  // 2. Test portrait orientation.
+  // Rotate the screen by 270 degrees to portrait primary orientation.
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  ASSERT_EQ(test_api.GetCurrentOrientation(),
+            OrientationLockType::kPortraitPrimary);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationTablet,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationInSplitView,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
+}
+
+TEST_F(SplitViewControllerTest,
+       WMSnapEventDeviceOrientationMetricsInClamshell) {
+  UpdateDisplay("800x600/l");
+  base::HistogramTester histogram_tester;
+  constexpr char kDeviceOrientationClamshell[] =
+      "Ash.SplitView.DeviceOrientation.ClamshellMode";
+  constexpr char kDeviceOrientationEntryPoint[] =
+      "Ash.SplitView.EntryPoint.DeviceOrientation";
+  constexpr char kDeviceOrientationInSplitView[] =
+      "Ash.SplitView.OrientationInSplitView";
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  wm::ActivateWindow(window1.get());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+
+  const WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+
+  // 1. Test portrait orientation.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  // Snap |window1| to the left.
+  WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationClamshell,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 0);
+
+  // Snap |window2| to the right. With windows snapped to both side, split view
+  // metric controller should start recording metrics.
+  wm::ActivateWindow(window2.get());
+  WindowState::Get(window2.get())->OnWMEvent(&wm_right_snap_event);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationClamshell,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationEntryPoint,
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
+
+  // 2. Test landscape orientation.
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationClamshell,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 0);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationInSplitView,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 0);
+  // Update display to landscape and check that the counts for orientation
+  // metrics increase except the count for orientation entry point.
+  UpdateDisplay("800x600");
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationClamshell,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationInSplitView,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationEntryPoint,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 0);
+
+  // Unsnap |window1| by making it fullscreen and snap back to the left to
+  // trigger recording split view metrics.
+  WindowState::Get(window1.get())->OnWMEvent(&fullscreen_event);
+  WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationClamshell,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 2);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationInSplitView,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
+  histogram_tester.ExpectBucketCount(
+      kDeviceOrientationEntryPoint,
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
 }
 
 // Test the tab-dragging related functionalities in tablet mode. Tab(s) can be
