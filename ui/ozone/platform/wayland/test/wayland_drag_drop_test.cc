@@ -27,6 +27,8 @@ namespace ui {
 
 WaylandDragDropTest::WaylandDragDropTest() = default;
 
+WaylandDragDropTest::~WaylandDragDropTest() = default;
+
 void WaylandDragDropTest::SendDndEnter(WaylandWindow* window,
                                        const gfx::Point& location) {
   auto* surface = server_.GetObject<wl::MockSurface>(
@@ -80,9 +82,12 @@ void WaylandDragDropTest::SendPointerButton(
     MockPlatformWindowDelegate* delegate,
     int button,
     bool pressed) {
+  const uint32_t serial = NextSerial();
+  if (pressed)
+    latest_pointer_press_serial_ = serial;
   uint32_t state = pressed ? WL_POINTER_BUTTON_STATE_PRESSED
                            : WL_POINTER_BUTTON_STATE_RELEASED;
-  wl_pointer_send_button(pointer_->resource(), NextSerial(), NextTime(), button,
+  wl_pointer_send_button(pointer_->resource(), serial, NextTime(), button,
                          state);
 }
 
@@ -92,8 +97,10 @@ void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,
                                         const gfx::Point& location) {
   auto* surface = server_.GetObject<wl::MockSurface>(
       window->root_surface()->GetSurfaceId());
+  const uint32_t serial = NextSerial();
+  latest_pointer_press_serial_ = serial;
   wl_touch_send_down(
-      touch_->resource(), NextSerial(), NextTime(), surface->resource(), id,
+      touch_->resource(), serial, NextTime(), surface->resource(), id,
       wl_fixed_from_double(location.x()), wl_fixed_from_double(location.y()));
 }
 
@@ -109,9 +116,10 @@ void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,
 void WaylandDragDropTest::SetUp() {
   WaylandTest::SetUp();
 
-  wl_seat_send_capabilities(
-      server_.seat()->resource(),
-      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER |
+                                WL_SEAT_CAPABILITY_TOUCH |
+                                WL_SEAT_CAPABILITY_KEYBOARD);
 
   Sync();
   pointer_ = server_.seat()->pointer();
@@ -137,6 +145,9 @@ void WaylandDragDropTest::StartDrag(wl::TestDataSource* source,
                                     wl::MockSurface* origin,
                                     uint32_t serial) {
   EXPECT_FALSE(data_source_);
+  ASSERT_TRUE(latest_pointer_press_serial_.has_value());
+  EXPECT_EQ(latest_pointer_press_serial_.value(), serial);
+
   data_source_ = source;
   OfferAndEnter(origin, {});
 }

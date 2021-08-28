@@ -134,7 +134,7 @@ bool WaylandWindowDragController::StartDragSession() {
                << "Window/Tab dragging won't be fully functional.";
   }
 
-  data_device_->StartDrag(*data_source_, *origin_window_,
+  data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
   should_process_drag_event_ = false;

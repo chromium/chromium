@@ -36,6 +36,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
+#include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -874,6 +875,36 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
       os_exchange_data, DragDropTypes::DRAG_COPY, /*cursor=*/{},
       /*can_grab_pointer=*/true, drag_handler_delegate_.get());
   EXPECT_FALSE(result);
+
+  window_->SetPointerFocus(restored_focus);
+}
+
+// Regression test for https://crbug.com/1175083.
+TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
+  const bool restored_focus = window_->has_pointer_focus();
+
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Emulate a wl_keyboard.key press event being processed by the compositor
+  // before the drag starts. In this case, the client is expected to send the
+  // correct serial value when starting the drag session (ie: the one received
+  // with wl_pointer.button).
+  auto* keyboard = server_.seat()->keyboard();
+  ASSERT_TRUE(keyboard);
+  struct wl_array empty;
+  wl_array_init(&empty);
+  wl_keyboard_send_enter(keyboard->resource(), 1, surface_->resource(), &empty);
+  wl_array_release(&empty);
+  wl_keyboard_send_key(keyboard->resource(), NextSerial(), 0, 30 /* a */,
+                       WL_KEYBOARD_KEY_STATE_PRESSED);
+  Sync();
+
+  // Post a wl_data_source::cancelled notifying the client to tear down the drag
+  // session.
+  ScheduleDragCancel();
+
+  // Request to start the drag session, which spins a nested run loop.
+  RunDragLoopWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
 
   window_->SetPointerFocus(restored_focus);
 }

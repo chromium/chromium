@@ -5,7 +5,10 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_DRAG_DROP_TEST_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_DRAG_DROP_TEST_H_
 
+#include <cstdint>
+
 #include "base/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -32,6 +35,7 @@ class WaylandDragDropTest : public WaylandTest,
   WaylandDragDropTest();
   WaylandDragDropTest(const WaylandDragDropTest&) = delete;
   WaylandDragDropTest& operator=(const WaylandDragDropTest&) = delete;
+  ~WaylandDragDropTest() override;
 
   // These are public for convenience, as they must be callable from lambda
   // functions, usually posted to task queue while the drag loop runs.
@@ -85,6 +89,9 @@ class WaylandDragDropTest : public WaylandTest,
   wl::TestDataSource* data_source_;
   wl::MockPointer* pointer_;
   wl::TestTouch* touch_;
+
+  // Latest serial generated for pointer/touch press events.
+  absl::optional<uint32_t> latest_pointer_press_serial_;
 };
 
 }  // namespace ui

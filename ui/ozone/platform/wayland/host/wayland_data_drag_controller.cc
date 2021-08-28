@@ -29,6 +29,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -115,11 +116,11 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // pointer event (touch or mouse) has already been released. In this case,
   // make sure the flow bails earlier, otherwise the drag loop keeps running,
   // causing hangs as observerd in crbug.com/1209269.
-  //
-  // TODO(crbug.com/1211874): Improve serial tracking so that it can be used for
-  // this validatation, covering both mouse and touch-triggered drags.
-  if (!pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON) &&
-      !touch_delegate_->GetActiveTouchPointIds().size()) {
+  auto serial = connection_->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
+  if (!serial.has_value() ||
+      (!pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON) &&
+       touch_delegate_->GetActiveTouchPointIds().empty())) {
     return false;
   }
 
@@ -144,7 +145,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
-  data_device_->StartDrag(*data_source_, *origin_window_,
+  data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           icon_surface_ ? icon_surface_->surface() : nullptr,
                           this);
 
