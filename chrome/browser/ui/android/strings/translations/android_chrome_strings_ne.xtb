@@ -899,6 +899,7 @@
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6546511553472444032">यो फाइल हानिकारक हुन सक्छ</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="TAB_TITLE" /> र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
+<translation id="6560066289487134861">आफूले हाइलाइट गरेको पाठका लागि टेम्प्लेट चयन गर्नुहोस्। मुख्य डायलगमा फर्कन माथि अनि तल जनाउने इसारा प्रयोग गर्नुहोस्, त्यसपछि "अर्को" बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
