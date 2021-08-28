@@ -318,7 +318,7 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
           font_enumeration_table->add_fonts();
       metadata->set_postscript_name(std::move(postscript_name).value());
       metadata->set_full_name(std::move(localized_full_name).value());
-      metadata->set_family(std::move(family_name).value());
+      metadata->set_family(family_name.value());
       metadata->set_style(style_name ? std::move(style_name.value())
                                      : std::string());
       metadata->set_italic(DWriteStyleToWebItalic(font->GetStyle()));
