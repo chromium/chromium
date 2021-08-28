@@ -131,4 +131,12 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public int getChromeChannel() {
         return VersionConstants.CHANNEL;
     }
+
+    @Override
+    public int getImageMemoryCacheSizePercentage() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
+                "image_memory_cache_size_percentage",
+                /*default=*/100);
+    }
 }
