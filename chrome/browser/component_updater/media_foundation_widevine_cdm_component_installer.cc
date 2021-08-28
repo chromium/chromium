@@ -23,6 +23,7 @@
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/media_switches.h"
+#include "media/cdm/win/media_foundation_cdm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -145,7 +146,8 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::GetInstallerAttributes()
 
 void RegisterMediaFoundationWidevineCdmComponent(
     component_updater::ComponentUpdateService* cus) {
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
+      media::MediaFoundationCdm::IsAvailable()) {
     VLOG(1) << "Registering Media Foundation Widevine CDM component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<MediaFoundationWidevineCdmComponentInstallerPolicy>());
