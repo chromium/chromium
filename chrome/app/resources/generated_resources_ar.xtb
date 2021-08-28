@@ -429,7 +429,6 @@
 <translation id="145432137617179457">لغات التدقيق الإملائي</translation>
 <translation id="1455119378540982311">أحجام النوافذ المُعَدّة مسبقًا</translation>
 <translation id="1459693405370120464">الطقس</translation>
-<translation id="1459967076783105826">محركات البحث المضافة بواسطة الإضافات</translation>
 <translation id="146000042969587795">تمّ حجب هذا الإطار لتضمّنه بعض المحتوى غير الآمن.</translation>
 <translation id="146219525117638703">‏حالة ONC</translation>
 <translation id="146220085323579959">تم قطع الاتصال بالإنترنت. يُرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.</translation>
@@ -890,7 +889,6 @@
 <translation id="1906828677882361942">عدم السماح لأي موقع إلكتروني بالوصول إلى المنافذ التسلسلية</translation>
 <translation id="1908591798274282246">إعادة فتح مجموعة تم إغلاقها</translation>
 <translation id="1909880997794698664">هل تريد فعلًا تشغيل هذا الجهاز في وضع الكشك بشكل دائم؟</translation>
-<translation id="1910721550319506122">مرحبًا!</translation>
 <translation id="1915073950770830761">الكاناري</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1916502483199172559">الصورة الرمزية التلقائية الحمراء</translation>
@@ -1254,7 +1252,6 @@
 <translation id="2299941608784654630">‏إدراج جميع ملفات السجلّ التي تمّ جمعها عبر خدمة debugd كأرشيف منفصل</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">تخصيص <ph name="APP_NAME" /> والتحكّم فيه</translation>
-<translation id="2300578660547687840">اختصارات لوحة المفاتيح للبحث عن كلمات رئيسية</translation>
 <translation id="2301382460326681002">دليل الجذر للإضافة غير صالح.</translation>
 <translation id="2301402091755573488">علامة تبويب تمت مشاركتها</translation>
 <translation id="23030561267973084">تتطلب الإضافة "<ph name="EXTENSION_NAME" />" أذونات إضافية.</translation>
@@ -7097,7 +7094,6 @@
 <translation id="8655972064210167941">فشل تسجيل الدخول، نظرًا لعدم القدرة على التحقق من كلمة مرورك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
 <translation id="8657393004602556571">هل تريد تجاهل الملاحظات؟</translation>
 <translation id="8658645149275195032">يشارك <ph name="APP_NAME" /> الشاشة والصوت من خلال <ph name="TAB_NAME" />.</translation>
-<translation id="8660073998956001352">محرّكات البحث</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">الأشخاص</translation>

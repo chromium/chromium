@@ -425,7 +425,6 @@
 <translation id="145432137617179457">拼字檢查支援的語言</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
 <translation id="1459693405370120464">天氣</translation>
-<translation id="1459967076783105826">由擴充功能新增的搜尋引擎</translation>
 <translation id="146000042969587795">此框架由於包含不安全的內容，已被封鎖。</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">網際網路連線已中斷。請檢查你的網際網路連線，然後再試一次。</translation>
@@ -886,7 +885,6 @@
 <translation id="1906828677882361942">不允許任何網站存取序列埠</translation>
 <translation id="1908591798274282246">重新開啟先前關閉的群組</translation>
 <translation id="1909880997794698664">你確定要讓這個裝置永久使用 Kiosk 模式嗎？</translation>
-<translation id="1910721550319506122">歡迎使用！</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1916502483199172559">預設的紅色顯示圖片</translation>
@@ -1250,7 +1248,6 @@
 <translation id="2299941608784654630">單獨封存 debugd 收集的所有記錄檔。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">自訂及控制 <ph name="APP_NAME" /></translation>
-<translation id="2300578660547687840">搜尋關鍵字的鍵盤快速鍵</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="2301402091755573488">已分享的分頁</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
@@ -4502,7 +4499,7 @@
 <translation id="5849212445710944278">已加入過了</translation>
 <translation id="5851868085455377790">發行者</translation>
 <translation id="5852112051279473187">糟糕！註冊這個裝置時發生嚴重錯誤。請再試一次，或與你的支援代表聯絡。</translation>
-<translation id="5852137567692933493">重新啟動並恢復原廠設定</translation>
+<translation id="5852137567692933493">重新啟動並執行 Powerwash</translation>
 <translation id="5854912040170951372">披薩</translation>
 <translation id="5855267860608268405">已知的 Wi-Fi 網路</translation>
 <translation id="5855643921295613558">0.6 秒</translation>
@@ -7093,7 +7090,6 @@
 <translation id="8655972064210167941">無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="8657393004602556571">你要捨棄這則意見嗎？</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用您的畫面和音訊。</translation>
-<translation id="8660073998956001352">你的搜尋引擎</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
 <translation id="8662795692588422978">人員</translation>

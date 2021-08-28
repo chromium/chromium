@@ -537,7 +537,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
-<translation id="2778854133681684171">A próxima vez que fagas unha compra con este método de pago, podes utilizar o dispositivo para verificar rapidamente a túa identidade.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Restableceuse a conexión.</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraron certificados de seguranza que poden permitirlles ver o contido dos sitios web que visitas.</translation>
@@ -699,7 +698,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3371076217486966826"><ph name="URL" /> quere facer o seguinte:
       • Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara
       • Usar a túa cámara</translation>
-<translation id="3372389303668969359">A próxima vez que utilices este dispositivo para realizar unha compra con este método de pago, podes verificar rapidamente a túa identidade a través de Windows Hello.</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
 <translation id="3377144306166885718">O servidor utilizou unha versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
@@ -769,7 +767,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3584299510153766161">Dúas perforacións na parte inferior</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587738293690942763">Medio</translation>
-<translation id="3590643883886679995">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}=1{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}other{Podes restablecer o teu grupo cando queiras. Tardarás {NUM_DAYS} días en unirte a un grupo novo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1255,7 +1252,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
 <translation id="5138014172396933048">A tarxeta virtual non está dispoñible neste intres. Ponte en contacto co teu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
-<translation id="514010763713772514">Procesa a compra máis rápido a próxima vez</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificacións de <ph name="ORIGIN" /> están bloqueadas</translation>
 <translation id="5148809049217731050">Cara arriba</translation>
@@ -1416,7 +1412,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="569000877158168851">O valor de DnsOverHttpsTemplates non é relevante e non se utilizará, a non ser que a política DnsOverHttpsMode se defina como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="5694206146481922091">A folla de inscrición da credencial de pagos seguros está aberta</translation>
 <translation id="5695542892312572833">Queres utilizar Windows Hello para verificar e completar a compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Xestiona o contido...</translation>
@@ -1551,7 +1546,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="619448280891863779">Pode pedirche permiso para abrir e colocar ventás nas túas pantallas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
-<translation id="6211666000885129820">Folla de inscrición da credencial de pagos seguros</translation>
 <translation id="6218753634732582820">Queres eliminar o enderezo de Chromium?</translation>
 <translation id="622039917539443112">Dobrez en paralelo</translation>
 <translation id="6221345481584921695">A navegación segura de Google <ph name="BEGIN_LINK" />detectou software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recentemente. Ás veces, os sitios web que adoitan ser seguros inféctanse con software malicioso. O contido malicioso procede de <ph name="SUBRESOURCE_HOST" />, un coñecido distribuidor de software malicioso.</translation>
@@ -2096,7 +2090,6 @@ Detalles adicionais:
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8088680233425245692">Non se puido ver o artigo.</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
-<translation id="8090329638663751802">A próxima vez que utilices este dispositivo para realizar unha compra con este método de pago, podes verificar rapidamente a túa identidade a través de Touch ID.</translation>
 <translation id="8090403583893450254">Tamaño 20</translation>
 <translation id="8091372947890762290">A activación está pendente no servidor</translation>
 <translation id="8092774999298748321">Púrpura intenso</translation>
@@ -2408,7 +2401,6 @@ Detalles adicionais:
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
-<translation id="9211470216863457665">A folla de inscrición da credencial de pagos seguros está pechada</translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>
 <translation id="9215416866750762878">Unha aplicación está evitando que Chrome se conecte de forma segura a este sitio</translation>
 <translation id="9219103736887031265">Imaxes</translation>

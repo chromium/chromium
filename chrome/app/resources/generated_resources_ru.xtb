@@ -428,7 +428,6 @@
 <translation id="145432137617179457">Языки с поддержкой проверки правописания</translation>
 <translation id="1455119378540982311">Стандартные размеры окон</translation>
 <translation id="1459693405370120464">Погода</translation>
-<translation id="1459967076783105826">Поисковые системы, добавленные расширениями</translation>
 <translation id="146000042969587795">Этот фрейм заблокирован, поскольку он содержит небезопасные элементы.</translation>
 <translation id="146219525117638703">Статус ONC</translation>
 <translation id="146220085323579959">Проверьте подключение к Интернету и повторите попытку.</translation>
@@ -888,7 +887,6 @@
 <translation id="1906828677882361942">Запретить сайтам доступ к последовательным портам</translation>
 <translation id="1908591798274282246">Восстановить закрытую группу</translation>
 <translation id="1909880997794698664">Всегда запускать устройство в режиме киоска?</translation>
-<translation id="1910721550319506122">Добро пожаловать!</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
@@ -1252,7 +1250,6 @@
 <translation id="2299941608784654630">Включать все файлы журналов, собранные сервисом debugd, в виде отдельного архива</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Настройка приложения "<ph name="APP_NAME" />" и управление им</translation>
-<translation id="2300578660547687840">Сочетания клавиш для ключевых слов в поиске</translation>
 <translation id="2301382460326681002">Недействительный корневой каталог расширения.</translation>
 <translation id="2301402091755573488">Полученная вкладка</translation>
 <translation id="23030561267973084">Приложение "<ph name="EXTENSION_NAME" />" запросило дополнительные разрешения.</translation>
@@ -7094,7 +7091,6 @@
 <translation id="8655972064210167941">Ошибка входа: не удалось подтвердить пароль. Обратитесь к администратору или повторите попытку.</translation>
 <translation id="8657393004602556571">Не отправлять отзыв?</translation>
 <translation id="8658645149275195032">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к экрану и аудио.</translation>
-<translation id="8660073998956001352">Ваши поисковые системы</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
 <translation id="8662671328352114214">Новая сеть <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">Пользователи</translation>

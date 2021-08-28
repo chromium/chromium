@@ -425,7 +425,6 @@
 <translation id="145432137617179457">მართლწერის შემოწმების ენები</translation>
 <translation id="1455119378540982311">წინასწარ დაყენებული ფანჯრების ზომებით სარგებლობა</translation>
 <translation id="1459693405370120464">ამინდი</translation>
-<translation id="1459967076783105826">გაფართოებების მიერ დამატებული საძიებო სისტემები</translation>
 <translation id="146000042969587795">ეს კადრი დაიბლოკა, რადგან იგი შეიცავს არაუსაფრთხო შიგთავსს.</translation>
 <translation id="146219525117638703">ONC-ის მდგომარეობა</translation>
 <translation id="146220085323579959">ინტერნეტი გათიშულია. გთხოვთ შეამოწმოთ თქვენი ინტერნეტ კავშირი და სცადოთ ხელახლა.</translation>
@@ -886,7 +885,6 @@
 <translation id="1906828677882361942">საიტებისთვის თანმიმდევრულ პორტებზე წვდომის აკრძალვა</translation>
 <translation id="1908591798274282246">დახურული ჯგუფის ხელახლა გახსნა</translation>
 <translation id="1909880997794698664">დარწმუნებული ხართ, რომ გსურთ ამ მოწყობილობის მუდამ kiosk-რეჟიმში დატოვება?</translation>
-<translation id="1910721550319506122">მოგესალმებით!</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1916502483199172559">ნაგულისხმევი წითელი ავატარი</translation>
@@ -1250,7 +1248,6 @@
 <translation id="2299941608784654630">debugd-ის მიერ შეგროვებული ჟურნალების ყველა ფაილის დართვა ცალკე არქივის სახით.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">მოირგეთ და გააკონტროლეთ <ph name="APP_NAME" /></translation>
-<translation id="2300578660547687840">კლავიატურის მალსახმობები საძიებო საკვანძო სიტყვებისთვის</translation>
 <translation id="2301382460326681002">გაფართოების ძირეული დირექტორია არასწორია.</translation>
 <translation id="2301402091755573488">გაზიარებული ჩანართი</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“-მა მოითხოვა დამატებითი ნებართვები.</translation>
@@ -7092,7 +7089,6 @@
 <translation id="8655972064210167941">შესვლა ვერ მოხერხდა, რადგან თქვენი პაროლის დადასტურება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
 <translation id="8657393004602556571">გსურთ გამოხმაურების გაუქმება?</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> თქვენს ეკრანსა და აუდიოს <ph name="TAB_NAME" />-ს უზიარებს.</translation>
-<translation id="8660073998956001352">თქვენი საძიებო სისტემები</translation>
 <translation id="8661290697478713397">ბმულის გახსნა ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
 <translation id="8662795692588422978">ხალხი</translation>

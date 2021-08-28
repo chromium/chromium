@@ -537,7 +537,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="277133753123645258">Delivery method</translation>
 <translation id="277499241957683684">Missing device record</translation>
 <translation id="2775884851269838147">First print page</translation>
-<translation id="2778854133681684171">You can use your device to quickly verify that it's you the next time that you make a purchase with this payment method.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
@@ -699,7 +698,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3371076217486966826"><ph name="URL" /> wants to:
       • Create a 3D map of your surroundings and track camera position
       • Use your camera</translation>
-<translation id="3372389303668969359">You can use Windows Hello to quickly verify that it's you the next time that you use this device to make a purchase with this payment method.</translation>
 <translation id="337363190475750230">Deprovisioned</translation>
 <translation id="3377144306166885718">The server used an obsolete version of TLS.</translation>
 <translation id="3377188786107721145">Policy parse error</translation>
@@ -769,7 +767,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3584299510153766161">Dual punch bottom</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587738293690942763">Middle</translation>
-<translation id="3590643883886679995">Sign-in data will be stored on this device after you exit Incognito mode.</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{You can reset your group at any time. It takes about a day to join a new group.}other{You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1255,7 +1252,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5135404736266831032">Manage addresses...</translation>
 <translation id="5138014172396933048">Virtual card is not available at the moment; please contact your bank</translation>
 <translation id="5138227688689900538">Show less</translation>
-<translation id="514010763713772514">Check out faster next time</translation>
 <translation id="5145883236150621069">Error code present in the policy response</translation>
 <translation id="5146995429444047494">Notifications for <ph name="ORIGIN" /> are blocked</translation>
 <translation id="5148809049217731050">Face up</translation>
@@ -1416,7 +1412,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5689199277474810259">Export to JSON</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="569000877158168851">The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC" /> or <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="5694206146481922091">Secure payment credential enrolment sheet is opened</translation>
 <translation id="5695542892312572833">Use Windows Hello to verify and complete your purchase?</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="570530837424789914">Manage...</translation>
@@ -1551,7 +1546,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="619448280891863779">Can ask to open and place windows on your screens</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6203231073485539293">Check your Internet connection</translation>
-<translation id="6211666000885129820">Secure payment credential enrolment sheet</translation>
 <translation id="6218753634732582820">Remove address from Chromium?</translation>
 <translation id="622039917539443112">Parallel fold</translation>
 <translation id="6221345481584921695">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware. The malicious content comes from <ph name="SUBRESOURCE_HOST" />, a known malware distributor.</translation>
@@ -2096,7 +2090,6 @@ Additional details:
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8088680233425245692">Failed to view article.</translation>
 <translation id="808894953321890993">Change password</translation>
-<translation id="8090329638663751802">You can use Touch ID to quickly verify that it's you the next time that you use this device to make a purchase with this payment method.</translation>
 <translation id="8090403583893450254">Size 20</translation>
 <translation id="8091372947890762290">Activation is pending on the server</translation>
 <translation id="8092774999298748321">Deep purple</translation>
@@ -2408,7 +2401,6 @@ Additional details:
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="9207861905230894330">Failed to add article.</translation>
-<translation id="9211470216863457665">Secure payment credential enrolment sheet is closed</translation>
 <translation id="9213433120051936369">Customise appearance</translation>
 <translation id="9215416866750762878">An application is stopping Chrome from safely connecting to this site</translation>
 <translation id="9219103736887031265">Images</translation>

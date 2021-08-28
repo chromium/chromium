@@ -428,7 +428,6 @@
 <translation id="145432137617179457">Орфографиялык текшерүү колдоого алынган тилдер</translation>
 <translation id="1455119378540982311">Терезелердин алын ала жөндөлгөн өлчөмдөрү</translation>
 <translation id="1459693405370120464">Аба ырайы</translation>
-<translation id="1459967076783105826">Кеңейтүүлөр кошкон издөө каражаттары</translation>
 <translation id="146000042969587795">Алкакта кооптуу мазмун бар болгондуктан, ал бөгөттөлдү.</translation>
 <translation id="146219525117638703">ONC абалы</translation>
 <translation id="146220085323579959">Интернет ажыратылды. Интернет туташууңузду текшерип, дагы аракет кылып көрүңүз.</translation>
@@ -898,7 +897,6 @@
 <translation id="1906828677882361942">Бир да сайтка сериялык портторду колдонууга уруксат берилбесин</translation>
 <translation id="1908591798274282246">Жабылган топту кайра ачуу</translation>
 <translation id="1909880997794698664">Бул тузмөктү чын эле биротоло киоск режиминде калтырасызбы?</translation>
-<translation id="1910721550319506122">Кош келиңиз!</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1916502483199172559">Демейки кызыл аватар</translation>
@@ -1265,7 +1263,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2299941608784654630">Debugd топтогон таржымалдагы файлдарды өзүнчө архивде камтуу.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> колдонмосун ыңгайлаштыруу жана көзөмөлдөө</translation>
-<translation id="2300578660547687840">Издөө ачкыч сөздөрү үчүн ыкчам баскычтар</translation>
 <translation id="2301382460326681002">Кеңейтүүнүн түпкү каталогу жараксыз.</translation>
 <translation id="2301402091755573488">Жалпы өтмөк</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" кошумча уруксат сурады.</translation>
@@ -7109,7 +7106,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8655972064210167941">Сырсөзүңүз тастыкталбай койгондуктан, аккаунтка кире албай калдыңыз. Администраторуңузга кайрылыңыз же кайталап көрүңүз.</translation>
 <translation id="8657393004602556571">Пикирди өчүрөсүзбү?</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> колдонмосу экраныңызды жана аудио файлын <ph name="TAB_NAME" /> менен бөлүшүп жатат.</translation>
-<translation id="8660073998956001352">Издөө каражаттарыңыз</translation>
 <translation id="8661290697478713397">Шилтемени жашыр&amp;уун терезеде ачуу</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>
 <translation id="8662795692588422978">Адамдар</translation>

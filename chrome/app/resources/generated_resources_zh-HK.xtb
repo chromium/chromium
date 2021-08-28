@@ -428,7 +428,6 @@
 <translation id="145432137617179457">拼字檢查支援以下語言</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
 <translation id="1459693405370120464">天氣</translation>
-<translation id="1459967076783105826">由擴充功能新增的搜尋引擎</translation>
 <translation id="146000042969587795">此頁框由於包含不安全的內容，已被封鎖。</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">互聯網已中斷連線。請檢查互聯網連線，然後再試一次。</translation>
@@ -897,7 +896,6 @@
 <translation id="1906828677882361942">不允許任何網站存取序列連接埠</translation>
 <translation id="1908591798274282246">重新開啟先前關閉的群組</translation>
 <translation id="1909880997794698664">您確定要讓這部裝置永久使用 Kiosk 模式嗎？</translation>
-<translation id="1910721550319506122">歡迎！</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1916502483199172559">預設紅色圖示</translation>
@@ -1264,7 +1262,6 @@
 <translation id="2299941608784654630">包括 debugd 收集為獨立封存的所有記錄檔案。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">自訂和控制 <ph name="APP_NAME" /></translation>
-<translation id="2300578660547687840">搜尋關鍵字的鍵盤快速鍵</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="2301402091755573488">分享咗嘅分頁</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
@@ -7109,7 +7106,6 @@
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> 正與 <ph name="TAB_NAME" /> 共用您的螢幕和音效。</translation>
-<translation id="8660073998956001352">您的搜尋引擎</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網絡</translation>
 <translation id="8662795692588422978">人員</translation>

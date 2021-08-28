@@ -431,7 +431,6 @@
 <translation id="145432137617179457">Мови перевірки орфографії</translation>
 <translation id="1455119378540982311">Стандартні розміри вікон</translation>
 <translation id="1459693405370120464">Погода</translation>
-<translation id="1459967076783105826">Пошукові системи, додані розширеннями</translation>
 <translation id="146000042969587795">Цей фрейм було заблоковано, тому що він містить незахищений вмест.</translation>
 <translation id="146219525117638703">Стан ONC</translation>
 <translation id="146220085323579959">З’єднання з Інтернетом розірвано. Перевірте з’єднання з Інтернетом і повторіть спробу.</translation>
@@ -901,7 +900,6 @@
 <translation id="1906828677882361942">Заборонити всім сайтам доступ до послідовних портів</translation>
 <translation id="1908591798274282246">Знову відкрити закриту групу</translation>
 <translation id="1909880997794698664">Справді назавжди перевести цей пристрій у режим термінала?</translation>
-<translation id="1910721550319506122">Вітаємо!</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1916502483199172559">Стандартний червоний аватар</translation>
@@ -1268,7 +1266,6 @@
 <translation id="2299941608784654630">Включити всі файли журналу, зібрані під час налагодження, як окремий архів.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Налаштування та керування <ph name="APP_NAME" /></translation>
-<translation id="2300578660547687840">Комбінації клавіш для ключових слів для пошукової мережі</translation>
 <translation id="2301382460326681002">Кореневий каталог розширення недійсний.</translation>
 <translation id="2301402091755573488">Спільна вкладка</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" запитує додаткові дозволи.</translation>
@@ -7113,7 +7110,6 @@
 <translation id="8655972064210167941">Помилка входу. Не вдалося підтвердити ваш пароль. Зв’яжіться з адміністратором або повторіть спробу.</translation>
 <translation id="8657393004602556571">Не надсилати відгук?</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> транслює ваш екран і аудіо на вкладку <ph name="TAB_NAME" />.</translation>
-<translation id="8660073998956001352">Ваші пошукові системи</translation>
 <translation id="8661290697478713397">Відкрити посилання в аноні&amp;мному вікні</translation>
 <translation id="8662671328352114214">Під’єднатися до мережі <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">Користувачі</translation>

@@ -427,7 +427,6 @@
 <translation id="145432137617179457">Լեզուների ուղղագրության ստուգում</translation>
 <translation id="1455119378540982311">Պատուհանների ստանդարտ չափեր</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
-<translation id="1459967076783105826">Ընդլայնումների ավելացրած որոնիչներ</translation>
 <translation id="146000042969587795">Այս շրջանակն արգելափակված է, քանի որ այն անապահով բովանդակություն է պարունակում:</translation>
 <translation id="146219525117638703">ONC կարգավիճակ</translation>
 <translation id="146220085323579959">Համացանցի կապակցում չկա: Ստուգեք համացանցի կապակցումը և նորից փորձեք:</translation>
@@ -888,7 +887,6 @@
 <translation id="1906828677882361942">Արգելափակել հաջորդական միացքների հասանելիությունը բոլոր կայքերի համար</translation>
 <translation id="1908591798274282246">Վերականգնել փակված խումբը</translation>
 <translation id="1909880997794698664">Իսկապե՞ս այս սարքը մշտապես պահել kiosk ռեժիմում:</translation>
-<translation id="1910721550319506122">Ողջո՛ւյն:</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1916502483199172559">Կանխադրված կարմիր ավատար</translation>
@@ -1252,7 +1250,6 @@
 <translation id="2299941608784654630">Ներառել debugd-ի կողմից հավաքված բոլոր մատյանների ֆայլերը առանձին արխիվի տեսքով։</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">«<ph name="APP_NAME" />» հավելվածի կարգավորում և կառավարում</translation>
-<translation id="2300578660547687840">Որոնման հիմնաբառերի ստեղնային դյուրանցումներ</translation>
 <translation id="2301382460326681002">Ընդլայնման արմատային գրացուցակը սխալ է:</translation>
 <translation id="2301402091755573488">Ստացած ներդիր</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />»-ը լրացուցիչ թույլտվություններ է խնդրել:</translation>
@@ -7095,7 +7092,6 @@
 <translation id="8655972064210167941">Մուտքը չհաջողվեց, քանի որ ձեր գաղտնաբառը չհաջողվեց հաստատել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
 <translation id="8657393004602556571">Չուղարկե՞լ կարծիքը։</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> հավելվածը կիսվում է ձեր էկրանով և ձայնով <ph name="TAB_NAME" />-ի հետ:</translation>
-<translation id="8660073998956001352">Ձեր որոնողական համակարգերը</translation>
 <translation id="8661290697478713397">Բացել հղումը ինկոգ&amp;նիտո պատուհանով</translation>
 <translation id="8662671328352114214">Նոր <ph name="TYPE" /> ցանց</translation>
 <translation id="8662795692588422978">Մարդիկ</translation>
