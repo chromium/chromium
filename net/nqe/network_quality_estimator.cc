@@ -55,8 +55,6 @@
 
 namespace net {
 
-class HostResolver;
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
