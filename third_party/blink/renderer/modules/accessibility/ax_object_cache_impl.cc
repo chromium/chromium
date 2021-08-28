@@ -30,6 +30,7 @@
 
 #include <algorithm>
 
+#include "ax_object.h"
 #include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -1632,15 +1634,22 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!tree_update_document.GetPage()->Animator().IsServicingAnimations() ||
-         (tree_update_document.Lifecycle().GetState() <
-              DocumentLifecycle::kInAccessibility ||
-          tree_update_document.Lifecycle().StateAllowsDetach()))
-      << "DeferTreeUpdateInternal should only be outside of the lifecycle or "
-         "before the accessibility state:"
-      << "\n* IsServicingAnimations: "
-      << tree_update_document.GetPage()->Animator().IsServicingAnimations()
-      << "\n* Lifecycle: " << tree_update_document.Lifecycle().ToString();
+  // TODO(accessibility) Consider re-adding. However, it conflicts with some
+  // calls from HandleTextMarkerDataAdded(), which need to defer even when
+  // already in clean layout. Removing this is not dangerous -- it helped ensure
+  // that we weren't bothering to defer when layout is already clean. It's
+  // actually ok if that's wrong here or there.
+  // DCHECK(!tree_update_document.GetPage()->Animator().IsServicingAnimations()
+  // ||
+  //        (tree_update_document.Lifecycle().GetState() <
+  //             DocumentLifecycle::kInAccessibility ||
+  //         tree_update_document.Lifecycle().StateAllowsDetach()))
+  //     << "DeferTreeUpdateInternal should only be outside of the lifecycle or
+  //     "
+  //        "before the accessibility state:"
+  //     << "\n* IsServicingAnimations: "
+  //     << tree_update_document.GetPage()->Animator().IsServicingAnimations()
+  //     << "\n* Lifecycle: " << tree_update_document.Lifecycle().ToString();
 #endif
 
   queue.push_back(MakeGarbageCollected<TreeUpdateParams>(
@@ -3477,13 +3486,54 @@ void AXObjectCacheImpl::HandleTextFormControlChanged(Node* node) {
 }
 
 void AXObjectCacheImpl::HandleTextMarkerDataAdded(Node* start, Node* end) {
-  if (!start || !end)
-    return;
+  DCHECK(start);
+  DCHECK(end);
+  DCHECK(IsA<Text>(start));
+  DCHECK(IsA<Text>(end));
 
   // Notify the client of new text marker data.
-  ChildrenChanged(start);
+  // Ensure there is a delay so that the final marker state can be evaluated.
+  DeferTreeUpdate(&AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout,
+                  start);
   if (start != end) {
-    ChildrenChanged(end);
+    DeferTreeUpdate(
+        &AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout, end);
+  }
+}
+
+void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
+  Text* text_node = To<Text>(node);
+  // If non-spelling/grammar markers are present, assume that children changed
+  // should be called.
+  DocumentMarkerController& marker_controller = GetDocument().Markers();
+  const DocumentMarker::MarkerTypes non_spelling_or_grammar_markers(
+      DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
+      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment);
+  if (!marker_controller.MarkersFor(*text_node, non_spelling_or_grammar_markers)
+           .IsEmpty()) {
+    ChildrenChangedWithCleanLayout(node);
+    return;
+  }
+
+  // Spelling and grammar markers are removed and then readded in quick
+  // succession. By checking these here (on a slight delay), we can determine
+  // whether the presence of one of these markers actually changed, and only
+  // fire ChildrenChangedWithCleanLayout() if they did.
+  const DocumentMarker::MarkerTypes spelling_and_grammar_markers(
+      DocumentMarker::DocumentMarker::kSpelling |
+      DocumentMarker::DocumentMarker::kGrammar);
+  bool has_spelling_or_grammar_markers =
+      !marker_controller.MarkersFor(*text_node, spelling_and_grammar_markers)
+           .IsEmpty();
+  if (has_spelling_or_grammar_markers) {
+    if (nodes_with_spelling_or_grammar_markers_.insert(node).is_new_entry)
+      ChildrenChangedWithCleanLayout(node);
+  } else {
+    const auto& iter = nodes_with_spelling_or_grammar_markers_.find(node);
+    if (iter != nodes_with_spelling_or_grammar_markers_.end()) {
+      nodes_with_spelling_or_grammar_markers_.erase(iter);
+      ChildrenChangedWithCleanLayout(node);
+    }
   }
 }
 
@@ -3760,6 +3810,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(nodes_with_pending_children_changed_);
+  visitor->Trace(nodes_with_spelling_or_grammar_markers_);
   AXObjectCache::Trace(visitor);
 }
 
