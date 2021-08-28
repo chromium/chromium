@@ -323,7 +323,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
   int GetFrameTreeNodeId() override;
-  base::UnguessableToken GetDevToolsFrameToken() override;
+  const base::UnguessableToken& GetDevToolsFrameToken() override;
   absl::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
   bool IsFrameDisplayNone() override;

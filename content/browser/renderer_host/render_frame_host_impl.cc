@@ -2070,7 +2070,7 @@ int RenderFrameHostImpl::GetFrameTreeNodeId() {
   return frame_tree_node_->frame_tree_node_id();
 }
 
-base::UnguessableToken RenderFrameHostImpl::GetDevToolsFrameToken() {
+const base::UnguessableToken& RenderFrameHostImpl::GetDevToolsFrameToken() {
   return frame_tree_node_->devtools_frame_token();
 }
 
