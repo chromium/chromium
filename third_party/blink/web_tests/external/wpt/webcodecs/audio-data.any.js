@@ -68,6 +68,21 @@ test(t => {
         TypeError, () => {let data = new AudioData(incomplete_init)},
         'AudioData requires \'' + member + '\'');
   }
+
+  let invalid_init = {...audio_data_init};
+  invalid_init.numberOfFrames = 0
+
+  assert_throws_js(
+      TypeError, () => {let data = new AudioData(invalid_init)},
+      'AudioData requires numberOfFrames > 0');
+
+  invalid_init = {...audio_data_init};
+  invalid_init.numberOfChannels = 0
+
+  assert_throws_js(
+      TypeError, () => {let data = new AudioData(invalid_init)},
+      'AudioData requires numberOfChannels > 0');
+
 }, 'Verify AudioData constructors');
 
 test(t => {
@@ -258,8 +273,8 @@ test(t => {
 }, 'Test conversion of int32 data to float32');
 
 test(t => {
-   const testVectorFloat32 =
-       [-1.0, 0.0, 1.0, -1.0, 0.5, -0.5, 0.0, 1.0, 0.0, 0.0];
+  const testVectorFloat32 =
+      [-1.0, 0.0, 1.0, -1.0, 0.5, -0.5, 0.0, 1.0, 0.0, 0.0];
 
   let data = new AudioData({
     timestamp: defaultInit.timestamp,
@@ -296,3 +311,47 @@ test(t => {
   assert_array_approx_equals(
       dest, testVectorPlanarResult[1], epsilon, 'planar channel 1');
 }, 'Test conversion of float32 data to float32');
+
+test(t => {
+  const testVectorFloat32 =
+      [-1.0, 0.0, 1.0, -1.0, 0.5, -0.5, 0.0, 1.0, 0.0, 0.0];
+
+  let data = new AudioData({
+    timestamp: defaultInit.timestamp,
+    data: new Float32Array(testVectorFloat32),
+    numberOfFrames: testVectorFrames,
+    numberOfChannels: testVectorChannels,
+    sampleRate: defaultInit.sampleRate,
+    format: 'f32'
+  });
+
+  const epsilon = 0;
+
+  // Call copyTo() without specifying a format, for interleaved data.
+  let dest = new Float32Array(data.numberOfFrames * testVectorChannels);
+  data.copyTo(dest, {planeIndex: 0});
+  assert_array_approx_equals(
+      dest, testVectorFloat32, epsilon, 'interleaved data');
+
+  assert_throws_js(RangeError, () => {
+    data.copyTo(dest, {planeIndex: 1});
+  }, 'Interleaved AudioData cannot copy out planeIndex > 0');
+
+  data = new AudioData({
+    timestamp: defaultInit.timestamp,
+    data: new Float32Array(testVectorFloat32),
+    numberOfFrames: testVectorFrames,
+    numberOfChannels: testVectorChannels,
+    sampleRate: defaultInit.sampleRate,
+    format: 'f32-planar'
+  });
+
+  // Call copyTo() without specifying a format, for planar data.
+  dest = new Float32Array(data.numberOfFrames);
+  data.copyTo(dest, {planeIndex: 0});
+  assert_array_approx_equals(
+      dest, testVectorPlanarResult[0], epsilon, 'planar channel 0');
+  data.copyTo(dest, {planeIndex: 1});
+  assert_array_approx_equals(
+      dest, testVectorPlanarResult[1], epsilon, 'planar channel 1');
+}, 'Test copying out planar and interleaved data');

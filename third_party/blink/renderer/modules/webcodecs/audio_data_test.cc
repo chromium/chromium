@@ -335,10 +335,23 @@ TEST_F(AudioDataTest, Interleaved) {
 
   EXPECT_EQ("s16", frame->format());
 
-  // Verify we get the expected allocation size.
-  auto* options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
+  // Verify that plane indexes > 1 throw, for interleaved formats.
+  auto* options = CreateCopyToOptions(/*index=*/1, kOffset, kPartialFrameCount);
   int allocations_size =
       frame->allocationSize(options, scope.GetExceptionState());
+
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  scope.GetExceptionState().ClearException();
+
+  // Verify that copy conversion to a planar format supports indexes > 1,
+  // even if the source is interleaved.
+  options->setFormat(V8AudioSampleFormat::Enum::kF32Planar);
+  allocations_size = frame->allocationSize(options, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // Verify we get the expected allocation size, for valid formats.
+  options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
+  allocations_size = frame->allocationSize(options, scope.GetExceptionState());
 
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
