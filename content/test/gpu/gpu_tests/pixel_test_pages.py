@@ -905,6 +905,7 @@ class PixelTestPages(object):
                       base_name + '_DirectComposition_Video_MP4_Rounded_Corner',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args,
+                      other_args={'zero_copy': False},
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage('pixel_video_backdrop_filter.html',
                       base_name + '_DirectComposition_Video_BackdropFilter',
