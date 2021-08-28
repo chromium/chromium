@@ -266,17 +266,22 @@
     <DisplayString>{Type()} {size_} {*layout_object_}</DisplayString>
   </Type>
   <Type Name="blink::NGPhysicalBoxFragment">
+    <Intrinsic Name="BoxType" Expression="(NGBoxType)sub_type_" />
+    <DisplayString>{BoxType()} {size_} {*layout_object_}</DisplayString>
     <Expand>
-      <Item Name="SubType">(blink::NGPhysicalFragment::NGBoxType)sub_type_</Item>
+      <Item Name="FragmentItems" Condition="const_has_fragment_items_">
+        *(NGFragmentItems*)(&amp;children_[const_num_children_])
+      </Item>
       <Synthetic Name="Children">
-        <DisplayString>{num_children_}</DisplayString>
+        <DisplayString>{const_num_children_}</DisplayString>
         <Expand>
           <ArrayItems>
-            <Size>num_children_</Size>
+            <Size>const_num_children_</Size>
             <ValuePointer>children_</ValuePointer>
           </ArrayItems>
         </Expand>
       </Synthetic>
+      <ExpandedItem>this,!</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="blink::NGPhysicalLineBoxFragment">
