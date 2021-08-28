@@ -224,6 +224,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
                         .getId());
         setupPersistence(tab);
+        mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
     }
 
     private void prefetchOnNewNavigation(Tab tab, NavigationHandle navigationHandle) {
@@ -245,7 +246,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
                 .canApplyOptimizationAsync(navigationHandle,
                         HintsProto.OptimizationType.PRICE_TRACKING, (decision, metadata) -> {
-                            mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
                             if (!tab.isInitialized()
                                     || !tab.getUrl().equals(navigationHandle.getUrl())
                                     || decision != OptimizationGuideDecision.TRUE) {
@@ -304,6 +304,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         super(tab, storage, persistedTabDataId);
         deserializeAndLog(data);
         setupPersistence(tab);
+        mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
     }
 
     private void setupPersistence(Tab tab) {
@@ -355,7 +356,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private void resetPriceData() {
         delete();
         mPriceDropData = new PriceDropData();
-        mPriceDropMetricsLogger = null;
     }
 
     @VisibleForTesting
@@ -898,7 +898,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mPriceDropData.currencyCode = shoppingPersistedTabDataProto.getPriceCurrencyCode();
             mPriceDropData.gurl =
                     GURL.deserialize(shoppingPersistedTabDataProto.getSerializedGurl());
-            mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
@@ -951,6 +950,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             currencyFormatter.destroy();
         }
         mCurrencyFormatterMap.clear();
+        mPriceDropMetricsLogger.destroy();
+        mPriceDropMetricsLogger = null;
         super.destroy();
     }
 

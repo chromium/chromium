@@ -109,4 +109,8 @@ public class PriceDropMetricsLogger {
             this.containsPriceDrop = containsPriceDrop;
         }
     }
+
+    public void destroy() {
+        mShoppingPersistedTabData = null;
+    }
 }
