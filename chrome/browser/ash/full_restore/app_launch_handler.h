@@ -37,6 +37,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  Profile* profile() { return profile_; }
+  const Profile* profile() const { return profile_; }
+
  protected:
   // Note: LaunchApps does not launch browser windows, this is handled
   // separately.
@@ -53,8 +56,11 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
-  Profile* profile_;
-  std::unique_ptr<::full_restore::RestoreData> restore_data_;
+  void set_restore_data(
+      std::unique_ptr<::full_restore::RestoreData> restore_data) {
+    restore_data_ = std::move(restore_data);
+  }
+  ::full_restore::RestoreData* restore_data() { return restore_data_.get(); }
 
  private:
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
@@ -65,6 +71,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const ::full_restore::RestoreData::LaunchList& launch_list);
 
   virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
+
+  Profile* const profile_;
+  std::unique_ptr<::full_restore::RestoreData> restore_data_;
 };
 
 }  // namespace ash

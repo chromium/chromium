@@ -43,8 +43,6 @@ class DeskTemplateAppLaunchHandler
   int32_t FetchRestoreWindowId(const std::string& app_id) override;
   bool IsFullRestoreRunning() const override;
 
-  Profile* profile() { return profile_; }
-
  protected:
   // chromeos::AppLaunchHandler:
   bool ShouldLaunchSystemWebAppOrChromeApp(const std::string& app_id) override;

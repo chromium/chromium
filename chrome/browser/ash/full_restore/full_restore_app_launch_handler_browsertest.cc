@@ -1349,7 +1349,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
                         uint32_t primary_color,
                         uint32_t status_bar_color) {
     const auto& app_id_to_launch_list =
-        app_launch_handler()->restore_data_->app_id_to_launch_list();
+        app_launch_handler()->restore_data()->app_id_to_launch_list();
 
     auto it = app_id_to_launch_list.find(app_id);
     EXPECT_TRUE(it != app_id_to_launch_list.end());
@@ -1368,7 +1368,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     DCHECK(app_launch_handler());
 
     const auto& app_id_to_launch_list =
-        app_launch_handler()->restore_data_->app_id_to_launch_list();
+        app_launch_handler()->restore_data()->app_id_to_launch_list();
 
     auto it = app_id_to_launch_list.find(app_id);
     EXPECT_TRUE(it != app_id_to_launch_list.end());
@@ -1381,7 +1381,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     DCHECK(app_launch_handler());
 
     const auto& app_id_to_launch_list =
-        app_launch_handler()->restore_data_->app_id_to_launch_list();
+        app_launch_handler()->restore_data()->app_id_to_launch_list();
 
     auto it = app_id_to_launch_list.find(app_id);
     EXPECT_FALSE(it != app_id_to_launch_list.end());

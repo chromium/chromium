@@ -44,7 +44,7 @@ DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() {
 }
 
 void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
-    std::unique_ptr<full_restore::RestoreData> restore_data) {
+    std::unique_ptr<full_restore::RestoreData> new_restore_data) {
   // Another desk template is underway.
   // TODO(sammiequon): Checking for `restore_data_clone_` is temporary. We will
   // want to use a better check of whether a desk template is underway. Perhaps
@@ -53,12 +53,12 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
   if (restore_data_clone_)
     return;
 
-  restore_data_ = std::move(restore_data);
+  set_restore_data(std::move(new_restore_data));
 
   if (!HasRestoreData())
     return;
 
-  restore_data_clone_ = restore_data_->Clone();
+  restore_data_clone_ = restore_data()->Clone();
 
   LaunchApps();
   LaunchBrowsers();
@@ -97,7 +97,8 @@ int32_t DeskTemplateAppLaunchHandler::FetchRestoreWindowId(
 
 bool DeskTemplateAppLaunchHandler::IsFullRestoreRunning() const {
   ash::full_restore::FullRestoreService* full_restore_service =
-      ash::full_restore::FullRestoreService::GetForProfile(profile_);
+      ash::full_restore::FullRestoreService::GetForProfile(
+          const_cast<Profile*>(profile()));
   if (!full_restore_service)
     return false;
   ash::full_restore::FullRestoreAppLaunchHandler*
@@ -130,7 +131,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // Check the app registry cache to see if the app is a system web app.
   bool is_system_web_app = false;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
+  apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
         if (update.AppType() == apps::mojom::AppType::kWeb ||
@@ -142,9 +143,9 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   // A SWA can handle multiple instances if it can open multiple windows.
   if (is_system_web_app) {
     absl::optional<web_app::SystemAppType> swa_type =
-        web_app::GetSystemWebAppTypeForAppId(profile_, app_id);
+        web_app::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
-      auto* system_app = web_app::WebAppProvider::GetForSystemWebApps(profile_)
+      auto* system_app = web_app::WebAppProvider::GetForSystemWebApps(profile())
                              ->system_web_app_manager()
                              .GetSystemApp(*swa_type);
       DCHECK(system_app);
@@ -155,7 +156,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     // need to do this check if the app is a system web app.
     DCHECK(!is_multi_instance_window);
     const extensions::Extension* extension =
-        GetExtensionForAppID(app_id, profile_);
+        GetExtensionForAppID(app_id, profile());
     is_multi_instance_window = extension && !extension->is_platform_app();
   }
 
@@ -180,9 +181,9 @@ DeskTemplateAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
 }
 
 void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
-  DCHECK(restore_data_);
+  DCHECK(restore_data());
 
-  const auto& launch_list = restore_data_->app_id_to_launch_list();
+  const auto& launch_list = restore_data()->app_id_to_launch_list();
   for (const auto& iter : launch_list) {
     const std::string& app_id = iter.first;
     if (app_id != extension_misc::kChromeAppId)
@@ -204,10 +205,11 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
 
       Browser::CreateParams create_params =
           app_type_browser
-              ? Browser::CreateParams::CreateForApp(
-                    app_name, /*trusted_source=*/true, current_bounds, profile_,
-                    /*user_gesture=*/false)
-              : Browser::CreateParams(Browser::TYPE_NORMAL, profile_,
+              ? Browser::CreateParams::CreateForApp(app_name,
+                                                    /*trusted_source=*/true,
+                                                    current_bounds, profile(),
+                                                    /*user_gesture=*/false)
+              : Browser::CreateParams(Browser::TYPE_NORMAL, profile(),
                                       /*user_gesture=*/false);
 
       create_params.restore_id = window_iter.first;
@@ -243,7 +245,7 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
       browser->window()->ShowInactive();
     }
   }
-  restore_data_->RemoveApp(extension_misc::kChromeAppId);
+  restore_data()->RemoveApp(extension_misc::kChromeAppId);
 }
 
 void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
