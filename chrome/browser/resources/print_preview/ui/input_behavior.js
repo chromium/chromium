@@ -28,8 +28,9 @@ export const InputBehavior = {
 
   /** @override */
   ready() {
-    this.getInput().addEventListener('input', this.resetTimeout_.bind(this));
-    this.getInput().addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.getInput().addEventListener('input', () => this.resetTimeout_());
+    this.getInput().addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
   },
 
   /**
@@ -77,7 +78,7 @@ export const InputBehavior = {
       clearTimeout(this.timeout_);
     }
     this.timeout_ =
-        setTimeout(this.onTimeout_.bind(this), this.getTimeoutDelayMs_());
+        setTimeout(() => this.onTimeout_(), this.getTimeoutDelayMs_());
   },
 
   /**
@@ -106,3 +107,19 @@ export const InputBehavior = {
     this.onTimeout_();
   },
 };
+
+/** @interface */
+export class InputBehaviorInterface {
+  /**
+   * @return {(!CrInputElement|!HTMLInputElement)} The cr-input or input
+   *     element the behavior should use. Should be overridden by elements
+   *     using this behavior.
+   */
+  getInput() {}
+
+  // Resets the lastValue_ so that future inputs trigger a change event.
+  resetString() {}
+
+  // Called to clear the timeout and update the value.
+  resetAndUpdate() {}
+}

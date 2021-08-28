@@ -60,6 +60,9 @@ export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';
 // <if expr="not chromeos and not lacros">
 export {PrintPreviewLinkContainerElement} from './ui/link_container.js';
 // </if>
+export {PrintPreviewMarginControlElement} from './ui/margin_control.js';
+export {PrintPreviewMarginControlContainerElement} from './ui/margin_control_container.js';
+export {PrintPreviewMarginsSettingsElement} from './ui/margins_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
 export {SelectBehavior} from './ui/select_behavior.js';

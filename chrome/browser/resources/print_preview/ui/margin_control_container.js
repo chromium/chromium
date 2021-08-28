@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './margin_control.js';
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
@@ -14,7 +12,8 @@ import {MeasurementSystem} from '../data/measurement_system.js';
 import {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {PrintPreviewMarginControlElement} from './margin_control.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * @const {!Map<!CustomMarginsOrientation, string>}
@@ -29,118 +28,143 @@ export const MARGIN_KEY_MAP = new Map([
 /** @const {number} */
 const MINIMUM_DISTANCE = 72;  // 1 inch
 
-Polymer({
-  is: 'print-preview-margin-control-container',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewMarginControlContainerElementBase =
+    mixinBehaviors([SettingsBehavior], PolymerElement);
 
-  behaviors: [SettingsBehavior],
+/** @polymer */
+export class PrintPreviewMarginControlContainerElement extends
+    PrintPreviewMarginControlContainerElementBase {
+  static get is() {
+    return 'print-preview-margin-control-container';
+  }
 
-  properties: {
-    /** @type {!Size} */
-    pageSize: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Margins} */
-    documentMargins: {
-      type: Object,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /** @type {!Size} */
+      pageSize: {
+        type: Object,
+        notify: true,
+      },
 
-    previewLoaded: Boolean,
+      /** @type {!Margins} */
+      documentMargins: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @type {?MeasurementSystem} */
-    measurementSystem: Object,
+      previewLoaded: Boolean,
 
-    /** @type {!State} */
-    state: {
-      type: Number,
-      observer: 'onStateChanged_',
-    },
+      /** @type {?MeasurementSystem} */
+      measurementSystem: Object,
 
-    /** @private {number} */
-    scaleTransform_: {
-      type: Number,
-      notify: true,
-      value: 0,
-    },
+      /** @type {!State} */
+      state: {
+        type: Number,
+        observer: 'onStateChanged_',
+      },
+
+      /** @private {number} */
+      scaleTransform_: {
+        type: Number,
+        notify: true,
+        value: 0,
+      },
+
+      /** @private {!Coordinate2d} */
+      translateTransform_: {
+        type: Object,
+        notify: true,
+        value: new Coordinate2d(0, 0),
+      },
+
+      /** @private {?Size} */
+      clipSize_: {
+        type: Object,
+        notify: true,
+        value: null,
+      },
+
+      /** @private {boolean} */
+      available_: {
+        type: Boolean,
+        notify: true,
+        computed: 'computeAvailable_(previewLoaded, settings.margins.value)',
+        observer: 'onAvailableChange_',
+      },
+
+      /** @private {boolean} */
+      invisible_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: true,
+      },
+
+      /**
+       * @private {!Array<!CustomMarginsOrientation>}
+       */
+      marginSides_: {
+        type: Array,
+        notify: true,
+        value: [
+          CustomMarginsOrientation.TOP,
+          CustomMarginsOrientation.RIGHT,
+          CustomMarginsOrientation.BOTTOM,
+          CustomMarginsOrientation.LEFT,
+        ],
+      },
+
+      /**
+       * String attribute used to set cursor appearance. Possible values:
+       * empty (''): No margin control is currently being dragged.
+       * 'dragging-horizontal': The left or right control is being dragged.
+       * 'dragging-vertical': The top or bottom control is being dragged.
+       * @private {string}
+       */
+      dragging_: {
+        type: String,
+        reflectToAttribute: true,
+        value: '',
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onMarginSettingsChange_(settings.customMargins.value)',
+      'onMediaSizeOrLayoutChange_(' +
+          'settings.mediaSize.value, settings.layout.value)',
+
+    ];
+  }
+
+  constructor() {
+    super();
 
     /** @private {!Coordinate2d} */
-    translateTransform_: {
-      type: Object,
-      notify: true,
-      value: new Coordinate2d(0, 0),
-    },
+    this.pointerStartPositionInPixels_ = new Coordinate2d(0, 0);
 
-    /** @private {?Size} */
-    clipSize_: {
-      type: Object,
-      notify: true,
-      value: null,
-    },
+    /** @private {?Coordinate2d} */
+    this.marginStartPositionInPixels_ = null;
+
+    /** @private {?boolean} */
+    this.resetMargins_ = null;
+
+    /** @private {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
 
     /** @private {boolean} */
-    available_: {
-      type: Boolean,
-      notify: true,
-      computed: 'computeAvailable_(previewLoaded, settings.margins.value)',
-      observer: 'onAvailableChange_',
-    },
-
-    /** @private {boolean} */
-    invisible_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: true,
-    },
-
-    /**
-     * @private {!Array<!CustomMarginsOrientation>}
-     */
-    marginSides_: {
-      type: Array,
-      notify: true,
-      value: [
-        CustomMarginsOrientation.TOP,
-        CustomMarginsOrientation.RIGHT,
-        CustomMarginsOrientation.BOTTOM,
-        CustomMarginsOrientation.LEFT,
-      ],
-    },
-
-    /**
-     * String attribute used to set cursor appearance. Possible values:
-     * empty (''): No margin control is currently being dragged.
-     * 'dragging-horizontal': The left or right control is being dragged.
-     * 'dragging-vertical': The top or bottom control is being dragged.
-     * @private {string}
-     */
-    dragging_: {
-      type: String,
-      reflectToAttribute: true,
-      value: '',
-    },
-  },
-
-  /** @private {boolean} */
-  textboxFocused_: false,
-
-  observers: [
-    'onMarginSettingsChange_(settings.customMargins.value)',
-    'onMediaSizeOrLayoutChange_(' +
-        'settings.mediaSize.value, settings.layout.value)',
-  ],
-
-  /** @private {!Coordinate2d} */
-  pointerStartPositionInPixels_: new Coordinate2d(0, 0),
-
-  /** @private {?Coordinate2d} */
-  marginStartPositionInPixels_: null,
-
-  /** @private {?boolean} */
-  resetMargins_: null,
+    this.textboxFocused_ = false;
+  }
 
   /**
    * @return {boolean}
@@ -150,7 +174,7 @@ Polymer({
     return this.previewLoaded && !!this.clipSize_ &&
         this.getSettingValue('margins') === MarginsType.CUSTOM &&
         !!this.pageSize;
-  },
+  }
 
   /** @private */
   onAvailableChange_() {
@@ -166,7 +190,7 @@ Polymer({
       this.resetMargins_ = false;
     }
     this.invisible_ = !this.available_;
-  },
+  }
 
   /** @private */
   onMarginSettingsChange_() {
@@ -183,7 +207,7 @@ Polymer({
           control.setPositionInPts(newValue);
           control.setTextboxValue(newValue);
         });
-  },
+  }
 
   /** @private */
   onMediaSizeOrLayoutChange_() {
@@ -197,7 +221,7 @@ Polymer({
     // Reset custom margins so that the sticky value is not restored for the new
     // paper size.
     this.setSetting('customMargins', {});
-  },
+  }
 
   /** @private */
   onStateChanged_() {
@@ -207,7 +231,7 @@ Polymer({
       const margins = this.getSettingValue('customMargins');
       this.resetMargins_ = !margins || margins.marginTop === undefined;
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether the controls should be disabled.
@@ -215,7 +239,7 @@ Polymer({
    */
   controlsDisabled_() {
     return this.state !== State.READY || this.invisible_;
-  },
+  }
 
   /**
    * @param {!CustomMarginsOrientation} orientation
@@ -226,7 +250,7 @@ Polymer({
   isTopOrBottom_(orientation) {
     return orientation === CustomMarginsOrientation.TOP ||
         orientation === CustomMarginsOrientation.BOTTOM;
-  },
+  }
 
   /**
    * @param {!HTMLElement} control Control being repositioned.
@@ -244,7 +268,7 @@ Polymer({
         side,
         control.convertPixelsToPts(
             this.isTopOrBottom_(side) ? posInPixels.y : posInPixels.x));
-  },
+  }
 
   /**
    * Moves the position of the given control to the desired position in pts
@@ -258,7 +282,7 @@ Polymer({
   moveControlWithConstraints_(control, posInPts) {
     control.setPositionInPts(posInPts);
     control.setTextboxValue(posInPts);
-  },
+  }
 
   /**
    * Translates the position of the margin control relative to the pointer
@@ -273,7 +297,7 @@ Polymer({
             this.marginStartPositionInPixels_.x,
         pointerPosition.y - this.pointerStartPositionInPixels_.y +
             this.marginStartPositionInPixels_.y);
-  },
+  }
 
   /**
    * Called when the pointer moves in the custom margins component. Moves the
@@ -289,7 +313,7 @@ Polymer({
         this.translatePointerToPositionInPixels(
             new Coordinate2d(event.x, event.y)));
     this.moveControlWithConstraints_(control, posInPts);
-  },
+  }
 
   /**
    * Called when the pointer is released in the custom margins component.
@@ -307,12 +331,12 @@ Polymer({
     this.moveControlWithConstraints_(control, posInPts);
     this.setMargin_(control.side, posInPts);
     this.updateClippingMask(this.clipSize_);
-    this.unlisten(control, 'pointercancel', 'onPointerUp_');
-    this.unlisten(control, 'pointerup', 'onPointerUp_');
-    this.unlisten(control, 'pointermove', 'onPointerMove_');
+    this.eventTracker_.remove(control, 'pointercancel');
+    this.eventTracker_.remove(control, 'pointerup');
+    this.eventTracker_.remove(control, 'pointermove');
 
-    this.fire('margin-drag-changed', false);
-  },
+    this.fireDragChanged_(false);
+  }
 
   /**
    * @param {boolean} invisible Whether the margin controls should be
@@ -331,7 +355,7 @@ Polymer({
     }
 
     this.invisible_ = invisible;
-  },
+  }
 
   /**
    * @param {!Event} e Contains information about what control fired the
@@ -381,8 +405,10 @@ Polymer({
           position.y);
     }
 
-    this.fire('text-focus-position', position);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'text-focus-position',
+        {bubbles: true, composed: true, detail: position}));
+  }
 
   /**
    * @param {string} side The margin side. Must be a CustomMarginsOrientation.
@@ -401,7 +427,7 @@ Polymer({
     const newMargins = Object.assign({}, oldMargins);
     newMargins[key] = marginValue;
     this.setSetting('customMargins', newMargins);
-  },
+  }
 
   /**
    * @param {string} side The margin side. Must be a CustomMarginsOrientation.
@@ -429,7 +455,7 @@ Polymer({
       limit = this.pageSize.width - margins.marginRight - MINIMUM_DISTANCE;
     }
     return Math.round(Math.min(value, limit));
-  },
+  }
 
   /**
    * @param {!CustomEvent<number>} e Event containing the new textbox value.
@@ -442,7 +468,7 @@ Polymer({
     const clippedValue = this.clipAndRoundValue_(control.side, e.detail);
     control.setPositionInPts(clippedValue);
     this.setMargin_(control.side, clippedValue);
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e Event fired when a control's text field
@@ -458,7 +484,7 @@ Polymer({
       control.invalid = false;
     }
     this.textboxFocused_ = false;
-  },
+  }
 
   /**
    * @param {!PointerEvent} e Fired when pointerdown occurs on a margin
@@ -480,13 +506,29 @@ Polymer({
                          (control.side)) ?
         'dragging-vertical' :
         'dragging-horizontal';
-    this.listen(control, 'pointercancel', 'onPointerUp_');
-    this.listen(control, 'pointerup', 'onPointerUp_');
-    this.listen(control, 'pointermove', 'onPointerMove_');
+    this.eventTracker_.add(
+        control, 'pointercancel',
+        e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+    this.eventTracker_.add(
+        control, 'pointerup',
+        e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+    this.eventTracker_.add(
+        control, 'pointermove',
+        e => this.onPointerMove_(/** @type {!PointerEvent} */ (e)));
     control.setPointerCapture(e.pointerId);
 
-    this.fire('margin-drag-changed', true);
-  },
+    this.fireDragChanged_(true);
+  }
+
+  /**
+   * @param {boolean} dragChanged
+   * @private
+   */
+  fireDragChanged_(dragChanged) {
+    this.dispatchEvent(new CustomEvent(
+        'margin-drag-changed',
+        {bubbles: true, composed: true, detail: dragChanged}));
+  }
 
   /**
    * Set display:none after the opacity transition for the controls is done.
@@ -496,7 +538,7 @@ Polymer({
     if (this.invisible_) {
       this.style.display = 'none';
     }
-  },
+  }
 
   /**
    * Updates the translation transformation that translates pixel values in
@@ -508,7 +550,7 @@ Polymer({
     if (!translateTransform.equals(this.translateTransform_)) {
       this.translateTransform_ = translateTransform;
     }
-  },
+  }
 
   /**
    * Updates the scaling transform that scales pixels values to point values.
@@ -518,7 +560,7 @@ Polymer({
     if (scaleTransform !== this.scaleTransform_) {
       this.scaleTransform_ = scaleTransform;
     }
-  },
+  }
 
   /**
    * Clips margin controls to the given clip size in pixels.
@@ -530,5 +572,9 @@ Polymer({
     }
     this.clipSize_ = clipSize;
     this.notifyPath('clipSize_');
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewMarginControlContainerElement.is,
+    PrintPreviewMarginControlContainerElement);

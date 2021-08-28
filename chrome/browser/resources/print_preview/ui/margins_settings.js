@@ -6,61 +6,85 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MarginsType} from '../data/margins.js';
 import {State} from '../data/state.js';
 
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-margins-settings',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SelectBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewMarginsSettingsElementBase =
+    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewMarginsSettingsElement extends
+    PrintPreviewMarginsSettingsElementBase {
+  static get is() {
+    return 'print-preview-margins-settings';
+  }
 
-  behaviors: [SettingsBehavior, SelectBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      observer: 'updateMarginsDisabled_',
-    },
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        observer: 'updateMarginsDisabled_',
+      },
 
-    /** @type {!State} */
-    state: {
-      type: Number,
-      observer: 'onStateChange_',
-    },
+      /** @type {!State} */
+      state: {
+        type: Number,
+        observer: 'onStateChange_',
+      },
 
-    /** @private */
-    marginsDisabled_: Boolean,
+      /** @private */
+      marginsDisabled_: Boolean,
 
-    /** Mirroring the enum so that it can be used from HTML bindings. */
-    MarginsTypeEnum: Object,
-  },
+      /** Mirroring the enum so that it can be used from HTML bindings. */
+      MarginsTypeEnum: Object,
+    };
+  }
 
-  observers: [
-    'onMarginsSettingChange_(settings.margins.value)',
-    'onMediaSizeOrLayoutChange_(' +
-        'settings.mediaSize.value, settings.layout.value)',
-    'onPagesPerSheetSettingChange_(settings.pagesPerSheet.value)'
-  ],
+  static get observers() {
+    return [
+      'onMarginsSettingChange_(settings.margins.value)',
+      'onMediaSizeOrLayoutChange_(' +
+          'settings.mediaSize.value, settings.layout.value)',
+      'onPagesPerSheetSettingChange_(settings.pagesPerSheet.value)'
 
-  /** @private {boolean} */
-  loaded_: false,
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.loaded_ = false;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.MarginsTypeEnum = MarginsType;
-  },
+  }
 
   /** @private */
   onStateChange_() {
     if (this.state === State.READY) {
       this.loaded_ = true;
     }
-  },
+  }
 
   /** @private */
   onMediaSizeOrLayoutChange_() {
@@ -68,7 +92,7 @@ Polymer({
         this.getSetting('margins').value === MarginsType.CUSTOM) {
       this.setSetting('margins', MarginsType.DEFAULT);
     }
-  },
+  }
 
   /**
    * @param {number} newValue The new value of the pages per sheet setting.
@@ -79,23 +103,26 @@ Polymer({
       this.setSetting('margins', MarginsType.DEFAULT);
     }
     this.updateMarginsDisabled_();
-  },
+  }
 
   /** @param {*} newValue The new value of the margins setting. */
   onMarginsSettingChange_(newValue) {
     this.selectedValue =
         /** @type {!MarginsType} */ (newValue).toString();
-  },
+  }
 
   /** @param {string} value The new select value. */
   onProcessSelectChange(value) {
     this.setSetting('margins', parseInt(value, 10));
-  },
+  }
 
   /** @private */
   updateMarginsDisabled_() {
     this.marginsDisabled_ =
         /** @type {number} */ (this.getSettingValue('pagesPerSheet')) > 1 ||
         this.disabled;
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewMarginsSettingsElement.is, PrintPreviewMarginsSettingsElement);

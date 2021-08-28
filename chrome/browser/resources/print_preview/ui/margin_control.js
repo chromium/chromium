@@ -7,8 +7,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input_style_css.m.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation} from '../data/margins.js';
@@ -16,7 +17,7 @@ import {MeasurementSystem} from '../data/measurement_system.js';
 import {Size} from '../data/size.js';
 import {observerDepsDefined} from '../print_preview_utils.js';
 
-import {InputBehavior} from './input_behavior.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 
 /**
  * Radius of the margin control in pixels. Padding of control + 1 for border.
@@ -24,91 +25,115 @@ import {InputBehavior} from './input_behavior.js';
  */
 const RADIUS_PX = 9;
 
-Polymer({
-  is: 'print-preview-margin-control',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {InputBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewMarginControlElementBase = mixinBehaviors(
+    [InputBehavior, I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewMarginControlElement extends
+    PrintPreviewMarginControlElementBase {
+  static get is() {
+    return 'print-preview-margin-control';
+  }
 
-  behaviors: [InputBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-      observer: 'onDisabledChange_',
-    },
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        observer: 'onDisabledChange_',
+      },
 
-    side: {
-      type: String,
-      reflectToAttribute: true,
-    },
+      side: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
-    invalid: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      invalid: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    invisible: {
-      type: Boolean,
-      reflectToAttribute: true,
-      observer: 'onClipSizeChange_',
-    },
+      invisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+        observer: 'onClipSizeChange_',
+      },
 
-    /** @type {?MeasurementSystem} */
-    measurementSystem: Object,
+      /** @type {?MeasurementSystem} */
+      measurementSystem: Object,
 
-    /** @private {boolean} */
-    focused_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
+      /** @private {boolean} */
+      focused_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
 
-    /** @private {number} */
-    positionInPts_: {
-      type: Number,
-      notify: true,
-      value: 0,
-    },
+      /** @private {number} */
+      positionInPts_: {
+        type: Number,
+        notify: true,
+        value: 0,
+      },
 
-    /** @type {number} */
-    scaleTransform: {
-      type: Number,
-      notify: true,
-    },
+      /** @type {number} */
+      scaleTransform: {
+        type: Number,
+        notify: true,
+      },
 
-    /** @type {!Coordinate2d} */
-    translateTransform: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {!Coordinate2d} */
+      translateTransform: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @type {!Size} */
-    pageSize: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {!Size} */
+      pageSize: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @type {?Size} */
-    clipSize: {
-      type: Object,
-      notify: true,
-      observer: 'onClipSizeChange_',
-    },
-  },
+      /** @type {?Size} */
+      clipSize: {
+        type: Object,
+        notify: true,
+        observer: 'onClipSizeChange_',
+      },
+    };
+  }
 
-  observers:
-      ['updatePosition_(positionInPts_, scaleTransform, translateTransform, ' +
-       'pageSize, side)'],
+  static get observers() {
+    return [
+      'updatePosition_(positionInPts_, scaleTransform, translateTransform, ' +
+          'pageSize, side)',
+    ];
+  }
 
-  listeners: {
-    'input-change': 'onInputChange_',
-  },
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'input-change',
+        e => this.onInputChange_(
+            /** @type {!CustomEvent<string|undefined>} */ (e)));
+  }
 
   /** @return {!HTMLInputElement} The input element for InputBehavior. */
   getInput() {
     return /** @type {!HTMLInputElement} */ (this.$.input);
-  },
+  }
 
   /**
    * @param {number} valueInPts New value of the margin control's textbox in
@@ -126,17 +151,17 @@ Polymer({
 
     textbox.value = this.serializeValueFromPts_(valueInPts);
     this.resetString();
-  },
+  }
 
   /** @return {number} The current position of the margin control. */
   getPositionInPts() {
     return this.positionInPts_;
-  },
+  }
 
   /** @param {number} position The new position for the margin control. */
   setPositionInPts(position) {
     this.positionInPts_ = position;
-  },
+  }
 
   /**
    * @return {string} 'true' or 'false', indicating whether the input should be
@@ -145,7 +170,7 @@ Polymer({
    */
   getAriaHidden_() {
     return this.invisible.toString();
-  },
+  }
 
   /**
    * Converts a value in pixels to points.
@@ -172,7 +197,7 @@ Polymer({
       pts /= this.scaleTransform;
     }
     return pts;
-  },
+  }
 
   /**
    * @param {!PointerEvent} event A pointerdown event triggered by this element.
@@ -182,14 +207,14 @@ Polymer({
     return !this.disabled && event.button === 0 &&
         (event.path[0] === this.$.lineContainer ||
          event.path[0] === this.$.line);
-  },
+  }
 
   /** @private */
   onDisabledChange_() {
     if (this.disabled) {
       this.focused_ = false;
     }
-  },
+  }
 
   /**
    * @param {string} value Value to parse to points. E.g. '3.40' or '200'.
@@ -217,7 +242,7 @@ Polymer({
       return this.measurementSystem.convertToPoints(parseFloat(value));
     }
     return null;
-  },
+  }
 
   /**
    * @param {number} value Value in points to serialize.
@@ -232,7 +257,17 @@ Polymer({
     // Convert the dot symbol to the decimal delimiter for the locale.
     return value.toString().replace(
         '.', this.measurementSystem.decimalDelimiter);
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * @param {!CustomEvent<string|undefined>} e Contains the new value of the
@@ -250,21 +285,21 @@ Polymer({
       return;
     }
 
-    this.fire('text-change', value);
-  },
+    this.fire_('text-change', value);
+  }
 
   /** @private */
   onBlur_() {
     this.focused_ = false;
     this.resetAndUpdate();
-    this.fire('text-blur', this.invalid || !this.$.input.value);
-  },
+    this.fire_('text-blur', this.invalid || !this.$.input.value);
+  }
 
   /** @private */
   onFocus_() {
     this.focused_ = true;
-    this.fire('text-focus');
-  },
+    this.fire_('text-focus');
+  }
 
   /** @private */
   updatePosition_() {
@@ -305,7 +340,7 @@ Polymer({
       }
     });
     this.onClipSizeChange_();
-  },
+  }
 
   /** @private */
   onClipSizeChange_() {
@@ -319,5 +354,8 @@ Polymer({
           (this.clipSize.width - offsetLeft) + 'px, ' +
           (this.clipSize.height - offsetTop) + 'px, ' + (-offsetLeft) + 'px)';
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewMarginControlElement.is, PrintPreviewMarginControlElement);
