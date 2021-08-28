@@ -65,7 +65,8 @@ enum class WindowState {
 
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
-  NotificationsApiTest() = default;
+  explicit NotificationsApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~NotificationsApiTest() override = default;
   NotificationsApiTest(const NotificationsApiTest&) = delete;
   NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
@@ -179,19 +180,12 @@ class NotificationsApiTestWithBackgroundType
     : public NotificationsApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  NotificationsApiTestWithBackgroundType() = default;
+  NotificationsApiTestWithBackgroundType() : NotificationsApiTest(GetParam()) {}
   ~NotificationsApiTestWithBackgroundType() override = default;
   NotificationsApiTestWithBackgroundType(
       const NotificationsApiTestWithBackgroundType&) = delete;
   NotificationsApiTestWithBackgroundType& operator=(
       const NotificationsApiTestWithBackgroundType&) = delete;
-
- protected:
-  bool RunTest(const char* name) {
-    return RunExtensionTest(
-        name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 }  // namespace
@@ -204,15 +198,15 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
-  ASSERT_TRUE(RunTest("notifications/api/basic_usage")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestEvents) {
-  ASSERT_TRUE(RunTest("notifications/api/events")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
-  ASSERT_TRUE(RunTest("notifications/api/csp")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
 }
 
 // Native notifications don't support (or use) observers.
@@ -259,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
                        TestPartialUpdate) {
-  ASSERT_TRUE(RunTest("notifications/api/partial_update")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
   const extensions::Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 

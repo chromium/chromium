@@ -103,7 +103,9 @@ constexpr char kPersistentExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 class ExtensionContextMenuBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionContextMenuBrowserTest() = default;
+  explicit ExtensionContextMenuBrowserTest(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionBrowserTest(context_type) {}
   ~ExtensionContextMenuBrowserTest() override = default;
   ExtensionContextMenuBrowserTest(const ExtensionContextMenuBrowserTest&) =
       delete;
@@ -267,7 +269,8 @@ class ExtensionContextMenuLazyTest
     : public ExtensionContextMenuBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionContextMenuLazyTest() = default;
+  ExtensionContextMenuLazyTest()
+      : ExtensionContextMenuBrowserTest(GetParam()) {}
   ~ExtensionContextMenuLazyTest() override = default;
   ExtensionContextMenuLazyTest(const ExtensionContextMenuLazyTest&) = delete;
   ExtensionContextMenuLazyTest& operator=(const ExtensionContextMenuLazyTest&) =
@@ -281,19 +284,10 @@ class ExtensionContextMenuLazyTest
   }
 
  protected:
-  const extensions::Extension* LoadExtensionWithParamOptions(
-      const base::FilePath& path,
-      LoadOptions options) {
-    if (GetParam() == ContextType::kServiceWorker)
-      options.load_as_service_worker = true;
-
-    return LoadExtension(path, options);
-  }
-
   const extensions::Extension* LoadContextMenuExtension(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamOptions(extension_dir, {});
+    return LoadExtension(extension_dir);
   }
 
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
@@ -302,14 +296,13 @@ class ExtensionContextMenuLazyTest
       base::StringPiece subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
-    return LoadExtensionWithParamOptions(extension_dir, {});
+    return LoadExtension(extension_dir, {});
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamOptions(extension_dir,
-                                         {.allow_in_incognito = true});
+    return LoadExtension(extension_dir, {.allow_in_incognito = true});
   }
 
   // This creates an extension that starts |enabled| and then switches to

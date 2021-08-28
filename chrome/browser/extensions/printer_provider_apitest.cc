@@ -101,7 +101,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     PRINT_REQUEST_DATA_TYPE_BYTES
   };
 
-  PrinterProviderApiTest() = default;
+  PrinterProviderApiTest() : ExtensionApiTest(GetParam()) {}
   ~PrinterProviderApiTest() override = default;
   PrinterProviderApiTest(const PrinterProviderApiTest&) = delete;
   PrinterProviderApiTest& operator=(const PrinterProviderApiTest&) = delete;
@@ -167,9 +167,8 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     ExtensionTestMessageListener loaded_listener("loaded", true);
     ExtensionTestMessageListener ready_listener("ready", false);
 
-    const Extension* extension = LoadExtension(
-        test_data_dir_.AppendASCII(extension_path),
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    const Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII(extension_path));
     ASSERT_TRUE(extension);
     ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
 

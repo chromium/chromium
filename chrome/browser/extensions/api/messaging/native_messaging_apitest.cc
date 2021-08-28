@@ -35,7 +35,9 @@ using ContextType = ExtensionApiTest::ContextType;
 
 class NativeMessagingApiTestBase : public ExtensionApiTest {
  public:
-  NativeMessagingApiTestBase() = default;
+  explicit NativeMessagingApiTestBase(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~NativeMessagingApiTestBase() override = default;
   NativeMessagingApiTestBase(const NativeMessagingApiTestBase&) = delete;
   NativeMessagingApiTestBase& operator=(const NativeMessagingApiTestBase&) =
@@ -48,7 +50,7 @@ class NativeMessagingApiTestBase : public ExtensionApiTest {
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
  public:
-  NativeMessagingApiTest() = default;
+  NativeMessagingApiTest() : NativeMessagingApiTestBase(GetParam()) {}
   ~NativeMessagingApiTest() override = default;
   NativeMessagingApiTest(const NativeMessagingApiTest&) = delete;
   NativeMessagingApiTest& operator=(const NativeMessagingApiTest&) = delete;
@@ -58,9 +60,7 @@ class NativeMessagingApiTest : public NativeMessagingApiTestBase,
     if (GetParam() == ContextType::kPersistentBackground)
       return RunExtensionTest(extension_name);
     std::string lazy_exension_name = base::StrCat({extension_name, "/lazy"});
-    return RunExtensionTest(
-        lazy_exension_name.c_str(), {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    return RunExtensionTest(lazy_exension_name.c_str());
   }
 };
 

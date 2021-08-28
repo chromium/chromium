@@ -27,9 +27,12 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
-  ExtensionApiTabTest() = default;
+  explicit ExtensionApiTabTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~ExtensionApiTabTest() override = default;
   ExtensionApiTabTest(const ExtensionApiTabTest&) = delete;
   ExtensionApiTabTest& operator=(const ExtensionApiTabTest&) = delete;
@@ -198,13 +201,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabReload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
-
 class ExtensionApiCaptureTest
     : public ExtensionApiTabTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionApiCaptureTest() = default;
+  ExtensionApiCaptureTest() : ExtensionApiTabTest(GetParam()) {}
   ~ExtensionApiCaptureTest() override = default;
   ExtensionApiCaptureTest(const ExtensionApiCaptureTest&) = delete;
   ExtensionApiCaptureTest& operator=(const ExtensionApiCaptureTest&) = delete;
@@ -214,14 +215,6 @@ class ExtensionApiCaptureTest
         true);
     EnablePixelOutput();
     ExtensionApiTabTest::SetUp();
-  }
-
- protected:
-  bool RunTest(const char* name,
-               LoadOptions load_options = {}) WARN_UNUSED_RESULT {
-    load_options.load_as_service_worker =
-        GetParam() == ContextType::kServiceWorker;
-    return RunExtensionTest(name, {}, load_options);
   }
 };
 
@@ -233,17 +226,20 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabJpeg) {
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab/test_jpeg")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_jpeg"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabPng) {
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab/test_png")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_png"))
+      << message_;
 }
 
 // TODO(crbug.com/1177118) Re-enable test
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab/test_race")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_race"))
+      << message_;
 }
 
 // https://crbug.com/1107934 Flaky on Windows, Linux, ChromeOS.
@@ -253,19 +249,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab/test_file",
-                      {.allow_file_access = true}))
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_file", {},
+                               {.allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleDisabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
                                                true);
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab/test_disabled")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureNullWindow) {
-  ASSERT_TRUE(RunTest("tabs/capture_visible_tab_null_window")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsOnCreated) {

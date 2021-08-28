@@ -56,7 +56,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     bool use_extensions_root_dir = false;
   };
 
-  ExtensionApiTest();
+  explicit ExtensionApiTest(ContextType context_type = ContextType::kNone);
   ~ExtensionApiTest() override;
 
  protected:

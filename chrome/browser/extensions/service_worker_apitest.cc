@@ -2390,7 +2390,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
   ASSERT_TRUE(RunExtensionTest("tabs/lazy_background_on_created", {},
-                               {.load_as_service_worker = true}))
+                               {.context_type = ContextType::kServiceWorker}))
       << message_;
 }
 

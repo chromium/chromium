@@ -36,7 +36,7 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class PageActionApiTest : public ExtensionApiTest,
                           public testing::WithParamInterface<ContextType> {
  public:
-  PageActionApiTest() = default;
+  PageActionApiTest() : ExtensionApiTest(GetParam()) {}
   ~PageActionApiTest() override = default;
   PageActionApiTest(const PageActionApiTest&) = delete;
   PageActionApiTest& operator=(const PageActionApiTest&) = delete;
@@ -50,12 +50,6 @@ class PageActionApiTest : public ExtensionApiTest,
                ? extension_action
                : nullptr;
   }
-
-  bool RunTest(const char* name) {
-    return RunExtensionTest(
-        name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -67,7 +61,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunTest("page_action/basics")) << message_;
+  ASSERT_TRUE(RunExtensionTest("page_action/basics")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
   {
@@ -119,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
 // Test that calling chrome.pageAction.setPopup() can enable a popup.
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
   // Load the extension, which has no default popup.
-  ASSERT_TRUE(RunTest("page_action/add_popup")) << message_;
+  ASSERT_TRUE(RunExtensionTest("page_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -166,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
 // Test that calling chrome.pageAction.setPopup() can remove a popup.
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
   // Load the extension, which has a page action with a default popup.
-  ASSERT_TRUE(RunTest("page_action/remove_popup")) << message_;
+  ASSERT_TRUE(RunExtensionTest("page_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -196,23 +190,18 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
 // Test http://crbug.com/57333: that two page action extensions using the same
 // icon for the page action icon and the extension icon do not crash.
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestCrash57333) {
-  const bool load_as_service_worker = GetParam() == ContextType::kServiceWorker;
   // Load extension A.
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("page_action")
-                        .AppendASCII("crash_57333")
-                        .AppendASCII("Extension1"),
-                    {.load_as_service_worker = load_as_service_worker}));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
+                                .AppendASCII("crash_57333")
+                                .AppendASCII("Extension1")));
   // Load extension B.
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("page_action")
-                        .AppendASCII("crash_57333")
-                        .AppendASCII("Extension2"),
-                    {.load_as_service_worker = load_as_service_worker}));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
+                                .AppendASCII("crash_57333")
+                                .AppendASCII("Extension2")));
 }
 
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
-  ASSERT_TRUE(RunTest("page_action/getters")) << message_;
+  ASSERT_TRUE(RunExtensionTest("page_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -226,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(RunTest("trigger_actions/page_action")) << message_;
+  ASSERT_TRUE(RunExtensionTest("trigger_actions/page_action")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 

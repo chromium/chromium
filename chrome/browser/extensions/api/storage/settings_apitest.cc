@@ -86,6 +86,14 @@ class TestSchemaRegistryObserver : public policy::SchemaRegistry::Observer {
 }  // namespace
 
 class ExtensionSettingsApiTest : public ExtensionApiTest {
+ public:
+  explicit ExtensionSettingsApiTest(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~ExtensionSettingsApiTest() override = default;
+  ExtensionSettingsApiTest(const ExtensionSettingsApiTest&) = delete;
+  ExtensionSettingsApiTest& operator=(const ExtensionSettingsApiTest&) = delete;
+
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -622,28 +630,13 @@ class ExtensionSettingsManagedStorageApiTest
     : public ExtensionSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionSettingsManagedStorageApiTest() = default;
+  ExtensionSettingsManagedStorageApiTest()
+      : ExtensionSettingsApiTest(GetParam()) {}
   ~ExtensionSettingsManagedStorageApiTest() override = default;
   ExtensionSettingsManagedStorageApiTest(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
   ExtensionSettingsManagedStorageApiTest& operator=(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
-
- protected:
-  bool RunTest(const char* test) WARN_UNUSED_RESULT {
-    return RunExtensionTest(
-        test, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
-
-  const extensions::Extension* LoadExtensionWithParamOptions(
-      const base::FilePath& path,
-      LoadOptions options = {}) WARN_UNUSED_RESULT {
-    if (GetParam() == ContextType::kServiceWorker)
-      options.load_as_service_worker = true;
-
-    return LoadExtension(path, options);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -682,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
   // Install a managed extension.
   ExtensionTestMessageListener listener("ready", false);
-  const Extension* extension = LoadExtensionWithParamOptions(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("settings/managed_storage_schemas"));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension);
@@ -774,7 +767,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
           .Build();
   SetPolicies(*policy);
   // Now run the extension.
-  ASSERT_TRUE(RunTest("settings/managed_storage")) << message_;
+  ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
 // TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
@@ -801,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   // extension's registration to be stored since it must persist after
   // this PRE_ step exits. Otherwise, the test will be flaky, since the
   // extension's service worker registration might not get stored.
-  const Extension* extension = LoadExtensionWithParamOptions(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("settings/managed_storage_events"),
       {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
@@ -846,7 +839,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   frontend->DisableStorageForTesting(settings_namespace::MANAGED);
   EXPECT_FALSE(frontend->IsStorageEnabled(settings_namespace::MANAGED));
   // Now run the extension.
-  ASSERT_TRUE(RunTest("settings/managed_storage_disabled")) << message_;
+  ASSERT_TRUE(RunExtensionTest("settings/managed_storage_disabled"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, StorageAreaOnChanged) {

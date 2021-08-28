@@ -50,7 +50,7 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class SettingsPrivateApiTest : public ExtensionApiTest,
                                public testing::WithParamInterface<ContextType> {
  public:
-  SettingsPrivateApiTest() = default;
+  SettingsPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   ~SettingsPrivateApiTest() override = default;
   SettingsPrivateApiTest(const SettingsPrivateApiTest&) = delete;
   SettingsPrivateApiTest& operator=(const SettingsPrivateApiTest&) = delete;
@@ -65,10 +65,8 @@ class SettingsPrivateApiTest : public ExtensionApiTest,
 
  protected:
   bool RunSettingsSubtest(const std::string& subtest) {
-    return RunExtensionTest(
-        "settings_private", {.custom_arg = subtest.c_str()},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker,
-         .load_as_component = true});
+    return RunExtensionTest("settings_private", {.custom_arg = subtest.c_str()},
+                            {.load_as_component = true});
   }
 
   void SetPrefPolicy(const std::string& key, policy::PolicyLevel level) {

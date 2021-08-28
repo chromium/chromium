@@ -102,9 +102,12 @@ void VerifyIconsMatch(const gfx::Image& bar_rendering,
           .GetBitmap()));
 }
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class BrowserActionApiTest : public ExtensionApiTest {
  public:
-  BrowserActionApiTest() = default;
+  explicit BrowserActionApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~BrowserActionApiTest() override = default;
   BrowserActionApiTest(const BrowserActionApiTest&) = delete;
   BrowserActionApiTest& operator=(const BrowserActionApiTest&) = delete;
@@ -149,13 +152,11 @@ class BrowserActionApiCanvasTest : public BrowserActionApiTest {
   }
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
-
 class BrowserActionApiTestWithContextType
     : public BrowserActionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  BrowserActionApiTestWithContextType() = default;
+  BrowserActionApiTestWithContextType() : BrowserActionApiTest(GetParam()) {}
   ~BrowserActionApiTestWithContextType() override = default;
   BrowserActionApiTestWithContextType(
       const BrowserActionApiTestWithContextType&) = delete;
@@ -163,17 +164,11 @@ class BrowserActionApiTestWithContextType
       const BrowserActionApiTestWithContextType&) = delete;
 
  protected:
-  const extensions::Extension* LoadExtensionWithParamOptions(
-      const base::FilePath& path) {
-    return LoadExtension(path, {.load_as_service_worker =
-                                    GetParam() == ContextType::kServiceWorker});
-  }
-
   void RunUpdateTest(base::StringPiece path, bool expect_failure) {
     ExtensionTestMessageListener ready_listener("ready", true);
     ASSERT_TRUE(embedded_test_server()->Start());
     const Extension* extension =
-        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
+        LoadExtension(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -210,7 +205,7 @@ class BrowserActionApiTestWithContextType
   void RunEnableTest(base::StringPiece path, bool start_enabled) {
     ExtensionTestMessageListener ready_listener("ready", true);
     const Extension* extension =
-        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
+        LoadExtension(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -235,12 +230,6 @@ class BrowserActionApiTestWithContextType
               action->GetIsVisible(ExtensionAction::kDefaultTabId));
   }
 
-  bool RunTest(const char* name) WARN_UNUSED_RESULT {
-    return RunExtensionTest(
-        name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -248,8 +237,8 @@ class BrowserActionApiTestWithContextType
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension = LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("browser_action/basics"));
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
@@ -541,7 +530,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                        TabSpecificBrowserActionState) {
-  ASSERT_TRUE(RunTest("browser_action/tab_specific_state")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/tab_specific_state"))
+      << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -574,7 +564,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 // Test that calling chrome.browserAction.setIcon() can set the icon for
 // extension.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, SetIcon) {
-  ASSERT_TRUE(RunTest("browser_action/set_icon")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/set_icon")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -608,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, SetIcon) {
 // Test that calling chrome.browserAction.setPopup() can enable and change
 // a popup.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
-  ASSERT_TRUE(RunTest("browser_action/add_popup")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -664,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
 // Test that calling chrome.browserAction.setPopup() can remove a popup.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
   // Load the extension, which has a browser action with a default popup.
-  ASSERT_TRUE(RunTest("browser_action/remove_popup")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -699,8 +689,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("browser_action/basics"));
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
   // Test that there is a browser action in the toolbar.
@@ -748,8 +738,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
       "incognito not allowed", false);
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("browser_action/update"));
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
   ASSERT_TRUE(incognito_not_allowed_listener.WaitUntilSatisfied());
   // Test that there is a browser action in the toolbar.
@@ -817,10 +807,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
   ResultCatcher catcher;
-  const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/split_mode"),
-      {.allow_in_incognito = true,
-       .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension) << message_;
 
   ASSERT_EQ(1, ExtensionActionTestHelper::Create(incognito_browser)
@@ -904,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                        BadgeBackgroundColor) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunTest("browser_action/color")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/color")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -952,7 +941,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Getters) {
-  ASSERT_TRUE(RunTest("browser_action/getters")) << message_;
+  ASSERT_TRUE(RunExtensionTest("browser_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -976,7 +965,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                        TestTriggerBrowserAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(RunTest("trigger_actions/browser_action")) << message_;
+  ASSERT_TRUE(RunExtensionTest("trigger_actions/browser_action")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -1013,7 +1002,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                        WithRectangularIcon) {
   ExtensionTestMessageListener ready_listener("ready", true);
 
-  const Extension* extension = LoadExtensionWithParamOptions(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("browser_action").AppendASCII("rect_icon"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());

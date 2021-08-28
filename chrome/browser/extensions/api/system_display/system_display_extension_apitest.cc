@@ -32,7 +32,7 @@ class SystemDisplayExtensionApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  SystemDisplayExtensionApiTest() = default;
+  SystemDisplayExtensionApiTest() : ExtensionApiTest(GetParam()) {}
   ~SystemDisplayExtensionApiTest() override = default;
   SystemDisplayExtensionApiTest(const SystemDisplayExtensionApiTest&) = delete;
   SystemDisplayExtensionApiTest& operator=(
@@ -71,10 +71,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
-  ASSERT_TRUE(RunExtensionTest(
-      "system_display/info", {},
-      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("system_display/info")) << message_;
 }
 
 #endif  // defined(OS_WIN)

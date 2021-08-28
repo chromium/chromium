@@ -29,7 +29,7 @@ class AccessibilityPrivateApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  AccessibilityPrivateApiTest() = default;
+  AccessibilityPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   ~AccessibilityPrivateApiTest() override = default;
   AccessibilityPrivateApiTest& operator=(const AccessibilityPrivateApiTest&) =
       delete;
@@ -37,9 +37,7 @@ class AccessibilityPrivateApiTest
 
  protected:
   bool RunSubtest(const char* subtest) WARN_UNUSED_RESULT {
-    return RunExtensionTest(
-        "accessibility_private", {.custom_arg = subtest},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    return RunExtensionTest("accessibility_private", {.custom_arg = subtest});
   }
 };
 

@@ -58,7 +58,8 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 
 }  // namespace
 
-ExtensionApiTest::ExtensionApiTest() {
+ExtensionApiTest::ExtensionApiTest(ContextType context_type)
+    : ExtensionBrowserTest(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 

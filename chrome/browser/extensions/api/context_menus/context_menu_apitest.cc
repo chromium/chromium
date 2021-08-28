@@ -32,7 +32,9 @@ using ContextType = ExtensionBrowserTest::ContextType;
 
 class ExtensionContextMenuApiTest : public ExtensionApiTest {
  public:
-  ExtensionContextMenuApiTest() = default;
+  explicit ExtensionContextMenuApiTest(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~ExtensionContextMenuApiTest() override = default;
   ExtensionContextMenuApiTest(const ExtensionContextMenuApiTest&) = delete;
   ExtensionContextMenuApiTest& operator=(const ExtensionContextMenuApiTest&) =
@@ -43,19 +45,13 @@ class ExtensionContextMenuApiTestWithContextType
     : public ExtensionContextMenuApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionContextMenuApiTestWithContextType() = default;
+  ExtensionContextMenuApiTestWithContextType()
+      : ExtensionContextMenuApiTest(GetParam()) {}
   ~ExtensionContextMenuApiTestWithContextType() override = default;
   ExtensionContextMenuApiTestWithContextType(
       const ExtensionContextMenuApiTestWithContextType&) = delete;
   ExtensionContextMenuApiTestWithContextType& operator=(
       const ExtensionContextMenuApiTestWithContextType&) = delete;
-
- protected:
-  bool RunTest(const char* path) {
-    return RunExtensionTest(
-        path, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -78,7 +74,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
-  ASSERT_TRUE(RunTest("context_menus/event_page")) << message_;
+  ASSERT_TRUE(RunExtensionTest("context_menus/event_page")) << message_;
 }
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
@@ -86,7 +82,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
                        ContextMenusFromMultipleContexts) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunTest("context_menus/add_from_multiple_contexts")) << message_;
+  ASSERT_TRUE(RunExtensionTest("context_menus/add_from_multiple_contexts"))
+      << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -109,17 +106,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
                        ContextMenusBasics) {
-  ASSERT_TRUE(RunTest("context_menus/basics")) << message_;
+  ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
                        ContextMenusNoPerms) {
-  ASSERT_TRUE(RunTest("context_menus/no_perms")) << message_;
+  ASSERT_TRUE(RunExtensionTest("context_menus/no_perms")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
                        ContextMenusMultipleIds) {
-  ASSERT_TRUE(RunTest("context_menus/item_ids")) << message_;
+  ASSERT_TRUE(RunExtensionTest("context_menus/item_ids")) << message_;
 }
 
 class ExtensionContextMenuVisibilityApiTest

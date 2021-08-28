@@ -44,7 +44,9 @@ namespace extensions {
 
 class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
  public:
-  ExtensionManagementApiBrowserTest() = default;
+  explicit ExtensionManagementApiBrowserTest(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionBrowserTest(context_type) {}
   ~ExtensionManagementApiBrowserTest() override = default;
   ExtensionManagementApiBrowserTest(const ExtensionManagementApiBrowserTest&) =
       delete;
@@ -72,18 +74,13 @@ class ExtensionManagementApiTestWithBackgroundType
     : public ExtensionManagementApiBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionManagementApiTestWithBackgroundType() = default;
+  ExtensionManagementApiTestWithBackgroundType()
+      : ExtensionManagementApiBrowserTest(GetParam()) {}
   ~ExtensionManagementApiTestWithBackgroundType() override = default;
   ExtensionManagementApiTestWithBackgroundType(
       const ExtensionManagementApiTestWithBackgroundType&) = delete;
   ExtensionManagementApiTestWithBackgroundType& operator=(
       const ExtensionManagementApiTestWithBackgroundType&) = delete;
-
- protected:
-  const Extension* LoadExtensionWithParamOptions(const base::FilePath& path) {
-    return LoadExtension(path, {.load_as_service_worker =
-                                    GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -99,13 +96,14 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        InstallEvent) {
   ExtensionTestMessageListener listener1("ready", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/install_event")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/install_event")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 
   ExtensionTestMessageListener listener2("got_event", false);
   ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/management/enabled_extension")));
+      test_data_dir_.AppendASCII("api_test/management/enabled_extension"),
+      {.context_type = ContextType::kFromManifest}));
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
@@ -113,12 +111,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchApp) {
   ExtensionTestMessageListener listener1("app_launched", false);
   ExtensionTestMessageListener listener2("got_expected_error", false);
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/simple_extension")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/packaged_app")));
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/launch_app")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/simple_extension"),
+                    {.context_type = ContextType::kFromManifest}));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest}));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
@@ -135,9 +135,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
   ExtensionTestMessageListener app_launched_listener("app_launched", false);
   ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app")));
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/launch_app")));
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest}));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
   ASSERT_TRUE(app_launched_listener.WaitUntilSatisfied());
 
   // Should still see 0 apps launched from the API in the histogram.
@@ -156,9 +157,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
   ExtensionTestMessageListener app_launched_listener("app_launched", false);
   ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app")));
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/launch_app")));
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest}));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
   ASSERT_TRUE(app_launched_listener.WaitUntilSatisfied());
 
   // Should see 1 app launched from the highlights app  in the histogram.
@@ -172,9 +174,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchAppFromBackground) {
   ExtensionTestMessageListener listener1("success", false);
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest}));
   ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/packaged_app")));
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("management/launch_app_from_background")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
@@ -185,12 +188,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // extension. This ensures that the onUninstall event listener is
   // added before we proceed to the uninstall step.
   ExtensionTestMessageListener listener1("ready", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ExtensionTestMessageListener listener2("success", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/self_uninstall")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/self_uninstall")));
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
@@ -200,11 +203,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // extension. This ensures that the onUninstall event listener is
   // added before we proceed to the uninstall step.
   ExtensionTestMessageListener listener1("ready", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ExtensionTestMessageListener listener2("success", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
@@ -212,17 +215,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType, Get) {
   ExtensionTestMessageListener listener("success", false);
   ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/simple_extension")));
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/get")));
+      LoadExtension(test_data_dir_.AppendASCII("management/simple_extension"),
+                    {.context_type = ContextType::kFromManifest}));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("management/get")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        GetSelfNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("management/get_self")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("management/get_self")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 

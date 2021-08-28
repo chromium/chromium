@@ -49,12 +49,22 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
  public:
   // Different types of extension's lazy background contexts used in some tests.
   enum class ContextType {
+    // TODO(crbug.com:/1241220): Get rid of this value when we can use
+    // absl::optional in the LoadOptions struct.
+    // No specific context type.
+    kNone,
     // A non-persistent background page/JS based extension.
     kEventPage,
     // A Service Worker based extension.
     kServiceWorker,
     // An extension with a persistent background page.
     kPersistentBackground,
+    // Use the value from the manifest. This is used when the test
+    // has been parameterized but the particular extension should
+    // be loaded without using the parameterized type. Typically,
+    // this is used when a test loads another extension that is
+    // not parameterized.
+    kFromManifest,
   };
 
  protected:
@@ -68,9 +78,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // Doesn't fail when the loaded manifest has warnings (should only be used
     // when testing deprecated features).
     bool ignore_manifest_warnings = false;
-
-    // Loads the provided extension as Service Worker based extension.
-    bool load_as_service_worker = false;
 
     // Waits for extension renderers to fully load.
     bool wait_for_renderers = true;
@@ -89,9 +96,14 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // doesn't make any other changes to convert the extension to MV3 other than
     // changing the integer value in the manifest.
     bool load_as_manifest_version_3 = false;
+
+    // Used to force loading the extension with a particular background type.
+    // Currently this only support loading an extension as using a service
+    // worker.
+    ContextType context_type = ContextType::kNone;
   };
 
-  ExtensionBrowserTest();
+  explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 
   // Useful accessors.
@@ -343,6 +355,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   base::FilePath test_data_dir_;
 
   std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
+
+  const ContextType context_type_;
 
  private:
   // Modifies extension at `input_path` as dictated by `options`. On success,

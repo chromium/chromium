@@ -295,11 +295,12 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
 
 }  // namespace
 
-ExtensionBrowserTest::ExtensionBrowserTest()
+ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       set_chromeos_user_(true),
 #endif
+      context_type_(context_type),
       // Default channel is STABLE but override with UNKNOWN so that unlaunched
       // or incomplete APIs can write tests.
       current_channel_(version_info::Channel::UNKNOWN),
@@ -844,8 +845,15 @@ bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
     base::FilePath* out_path) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
+  // Use context_type_ if LoadOptions.context_type is unspecified.
+  // Otherwise, use LoadOptions.context_type.
+  const bool load_as_service_worker =
+      (context_type_ == ContextType::kServiceWorker &&
+       options.context_type == ContextType::kNone) ||
+      options.context_type == ContextType::kServiceWorker;
+
   // Early return if no modification is needed.
-  if (!options.load_as_service_worker && !options.load_as_manifest_version_3) {
+  if (!load_as_service_worker && !options.load_as_manifest_version_3) {
     *out_path = input_path;
     return true;
   }
@@ -875,7 +883,7 @@ bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
     return false;
   }
 
-  if (options.load_as_service_worker &&
+  if (load_as_service_worker &&
       !ModifyExtensionForServiceWorker(extension_root, *manifest_dict)) {
     return false;
   }
