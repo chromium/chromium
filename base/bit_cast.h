@@ -5,7 +5,9 @@
 #ifndef BASE_BIT_CAST_H_
 #define BASE_BIT_CAST_H_
 
-#if !__has_builtin(__builtin_bit_cast)
+#include "base/compiler_specific.h"
+
+#if !HAS_BUILTIN(__builtin_bit_cast)
 #include <string.h>
 #include "base/template_util.h"
 #endif
@@ -14,13 +16,14 @@
 // It morally does what `*reinterpret_cast<Dest*>(&source)` does, but the cast/deref pair
 // is undefined behavior, while bit_cast<>() isn't.
 template <class Dest, class Source>
-#if __has_builtin(__builtin_bit_cast)
+#if HAS_BUILTIN(__builtin_bit_cast)
 constexpr
 #else
 inline
 #endif
-Dest bit_cast(const Source& source) {
-#if __has_builtin(__builtin_bit_cast)
+    Dest
+    bit_cast(const Source& source) {
+#if HAS_BUILTIN(__builtin_bit_cast)
   // TODO(thakis): Keep only this codepath once nacl is gone or updated.
   return __builtin_bit_cast(Dest, source);
 #else
