@@ -41,7 +41,13 @@ bool IsOpenAppend(PlatformFile file) {
 }
 
 int CallFtruncate(PlatformFile file, int64_t length) {
+#if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_FUCHSIA)
+  static_assert(sizeof(off_t) >= sizeof(int64_t),
+                "off_t is not a 64-bit integer");
   return HANDLE_EINTR(ftruncate(file, length));
+#else
+  return HANDLE_EINTR(ftruncate64(file, length));
+#endif
 }
 
 int CallFutimes(PlatformFile file, const struct timeval times[2]) {

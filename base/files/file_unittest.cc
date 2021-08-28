@@ -365,6 +365,15 @@ TEST(FileTest, Length) {
   for (int i = 0; i < file_size; i++)
     EXPECT_EQ(data_to_write[i], data_read[i]);
 
+#if !defined(OS_FUCHSIA)  // Fuchsia doesn't seem to support big files.
+  // Expand the file past the 4 GB limit.
+  const int64_t kBigFileLength = 5'000'000'000;
+  EXPECT_TRUE(file.SetLength(kBigFileLength));
+  EXPECT_EQ(kBigFileLength, file.GetLength());
+  EXPECT_TRUE(GetFileSize(file_path, &file_size));
+  EXPECT_EQ(kBigFileLength, file_size);
+#endif
+
   // Close the file and reopen with base::File::FLAG_CREATE_ALWAYS, and make
   // sure the file is empty (old file was overridden).
   file.Close();
