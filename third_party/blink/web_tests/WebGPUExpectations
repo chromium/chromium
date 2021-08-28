@@ -27,6 +27,7 @@ crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.html [ Skip ]
 ###
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format:* [ Slow ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,basic:large_draw:* [ Slow ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,compute,basic:large_dispatch:* [ Slow ]
 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,compute,basic:large_dispatch:* [ Slow ]
 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:* [ Slow ]
@@ -342,6 +343,12 @@ crbug.com/dawn/1064 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operatio
 
 # Null-deref on Intel; failure on NVIDIA.
 crbug.com/1237592 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Failure Crash ]
+
+# Flaky "Check failed: bytes_in_use_ == 0u"
+crbug.com/1005284 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,texture,destroy:twice:* [ Crash ]
+
+# Fails once then passes once, on ~every build, on Linux/NVIDIA.
+crbug.com/dawn/1095 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:* [ Failure ]
 
 ###
 ### Windows (D3D12) specific
