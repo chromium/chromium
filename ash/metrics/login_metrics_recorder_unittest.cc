@@ -334,6 +334,12 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventInOobe) {
   histogram_tester_->ExpectTotalCount(kUserClicksInOobeHistogramName, 5);
   ExpectBucketCount(kUserClicksInOobeHistogramName,
                     LoginMetricsRecorder::OobeUserClickTarget::kImeTray, 1);
+
+  metrics_recorder()->RecordUserShelfButtonClick(
+      LoginMetricsRecorder::ShelfButtonClickTarget::kSignIn);
+  histogram_tester_->ExpectTotalCount(kUserClicksInOobeHistogramName, 6);
+  ExpectBucketCount(kUserClicksInOobeHistogramName,
+                    LoginMetricsRecorder::OobeUserClickTarget::kSignIn, 1);
 }
 
 }  // namespace ash

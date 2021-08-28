@@ -153,6 +153,8 @@ LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
     case LoginShelfView::kEnterpriseEnrollment:
       return LoginMetricsRecorder::ShelfButtonClickTarget::
           kEnterpriseEnrollmentButton;
+    case LoginShelfView::kSignIn:
+      return LoginMetricsRecorder::ShelfButtonClickTarget::kSignIn;
     case LoginShelfView::kOsInstall:
       return LoginMetricsRecorder::ShelfButtonClickTarget::kOsInstallButton;
   }
