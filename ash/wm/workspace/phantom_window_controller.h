@@ -36,6 +36,10 @@ class ASH_EXPORT PhantomWindowController {
 
   aura::Window* window() { return window_; }
 
+  const gfx::Rect& GetTargetBoundsForTesting() const {
+    return target_bounds_in_screen_;
+  }
+
  private:
   // Creates, shows and returns a phantom widget at |bounds|
   // with kShellWindowId_ShelfContainer in |root_window| as a parent.

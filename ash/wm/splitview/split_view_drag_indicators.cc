@@ -345,7 +345,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   void Layout(bool animate) {
     // TODO(xdai|afakhry): Attempt to simplify this logic.
     const bool horizontal =
-        SplitViewController::IsLayoutHorizontal(dragged_window_);
+        SplitViewController::IsLayoutHorizontal(GetWidget()->GetNativeWindow());
     const int display_width = horizontal ? width() : height();
     const int display_height = horizontal ? height() : width();
     // Calculate the bounds of the two highlight regions.

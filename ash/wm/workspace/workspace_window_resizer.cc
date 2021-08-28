@@ -1361,14 +1361,14 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
   gfx::Rect phantom_bounds;
   switch (snap_type_) {
     case SnapType::kPrimary:
-      phantom_bounds = GetSnappedWindowBounds(display.work_area(), GetTarget(),
-                                              ash::SnapViewType::kPrimary,
-                                              kDefaultSnapRatio);
+      phantom_bounds = GetSnappedWindowBounds(
+          display.work_area(), display, GetTarget(),
+          ash::SnapViewType::kPrimary, kDefaultSnapRatio);
       break;
     case SnapType::kSecondary:
-      phantom_bounds = GetSnappedWindowBounds(display.work_area(), GetTarget(),
-                                              ash::SnapViewType::kSecondary,
-                                              kDefaultSnapRatio);
+      phantom_bounds = GetSnappedWindowBounds(
+          display.work_area(), display, GetTarget(),
+          ash::SnapViewType::kSecondary, kDefaultSnapRatio);
       break;
     case SnapType::kMaximize:
       phantom_bounds = display.work_area();

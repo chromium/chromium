@@ -109,18 +109,17 @@ void AdjustBoundsToEnsureMinimumWindowVisibility(const gfx::Rect& visible_area,
 gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
                                                 SnapViewType type) {
   return GetSnappedWindowBounds(
-      screen_util::GetDisplayWorkAreaBoundsInParent(window), window, type,
-      kDefaultSnapRatio);
+      screen_util::GetDisplayWorkAreaBoundsInParent(window),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
+      type, kDefaultSnapRatio);
 }
 
 gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
+                                 const display::Display display,
                                  aura::Window* window,
                                  SnapViewType type,
                                  float snap_ratio) {
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  ash::OrientationLockType orientation = GetSnapDisplayOrientation(display);
-
+  OrientationLockType orientation = GetSnapDisplayOrientation(display);
   enum class SnapPosition { kLeft, kRight, kBottom, kTop, kInvalid };
   SnapPosition position = SnapPosition::kInvalid;
   const bool is_primary_snap = type == SnapViewType::kPrimary;

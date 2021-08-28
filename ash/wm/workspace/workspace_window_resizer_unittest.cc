@@ -4,6 +4,7 @@
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -2258,4 +2260,80 @@ TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
   window_state = WindowState::Get(window_.get());
   EXPECT_FALSE(window_state->IsMaximized());
 }
+
+class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
+ public:
+  PortraitWorkspaceWindowResizerTest() = default;
+  PortraitWorkspaceWindowResizerTest(
+      const PortraitWorkspaceWindowResizerTest&) = delete;
+  PortraitWorkspaceWindowResizerTest& operator=(
+      const PortraitWorkspaceWindowResizerTest&) = delete;
+  ~PortraitWorkspaceWindowResizerTest() override = default;
+
+  // WorkspaceWindowResizerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kVerticalSnapState);
+    WorkspaceWindowResizerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that dragging to an external portrait display updates phantom snap to
+// top/bottom phantom windows instead of left/right.
+TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
+  UpdateDisplay("800x600,600x800");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2U, root_windows.size());
+
+  window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
+                             display::Screen::GetScreen()->GetPrimaryDisplay());
+
+  // Make the window snappable.
+  AllowSnap(window_.get());
+  gfx::Rect work_area(
+      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
+  EXPECT_EQ(root_windows[0], window_->GetRootWindow());
+  EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
+  std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
+  ASSERT_TRUE(resizer.get());
+  EXPECT_FALSE(snap_phantom_window_controller());
+
+  // Drag to snap left in landscape display should show left phantom window.
+  resizer->Drag(CalculateDragPoint(*resizer, 10, 0), 0);
+  EXPECT_TRUE(snap_phantom_window_controller());
+  EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
+            snap_phantom_window_controller()->GetTargetBoundsForTesting());
+
+  // Drag to snap right in landscape display should show right phantom window.
+  resizer->Drag(CalculateDragPoint(*resizer, 799, 0), 0);
+  EXPECT_TRUE(snap_phantom_window_controller());
+  EXPECT_EQ(gfx::Rect(work_area.width() / 2, 0, work_area.width() / 2,
+                      work_area.height()),
+            snap_phantom_window_controller()->GetTargetBoundsForTesting());
+
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point(810, 0));
+  Shell::Get()->cursor_manager()->SetDisplay(display);
+  work_area = display.work_area();
+
+  // TODO(crbug/1236166): Update the test to dragging to top/bottom area
+  // instead of left/right to trigger snap in portrait mode.
+  // Move the window to the portrait display. Now the snap left should show
+  // top phantom window.
+  resizer->Drag(CalculateDragPoint(*resizer, 810, 0), 0);
+  EXPECT_TRUE(snap_phantom_window_controller());
+  EXPECT_EQ(gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
+            snap_phantom_window_controller()->GetTargetBoundsForTesting());
+
+  // Move the window to the portrait display. Now the snap right should show
+  // bottom phantom window.
+  resizer->Drag(CalculateDragPoint(*resizer, 1399, 0), 0);
+  EXPECT_TRUE(snap_phantom_window_controller());
+  EXPECT_EQ(gfx::Rect(800, work_area.height() / 2, work_area.width(),
+                      work_area.height() / 2),
+            snap_phantom_window_controller()->GetTargetBoundsForTesting());
+}
+
 }  // namespace ash

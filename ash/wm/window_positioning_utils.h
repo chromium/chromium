@@ -60,9 +60,12 @@ ASH_EXPORT void AdjustBoundsToEnsureMinimumWindowVisibility(
 ASH_EXPORT gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
                                                            SnapViewType type);
 
-// Returns the bounds of a snapped window with |type| and |snap_ratio| in
-// clamshell mode in whatever coordinates are used for |work_area|.
+// Returns the bounds of a snapped window for |display| with |type| and
+// |snap_ratio| in clamshell mode whatever coordinates are used for
+// |work_area|. Typically, |display| should be the target display window is
+// being dragged into.
 ASH_EXPORT gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
+                                            const display::Display display,
                                             aura::Window* window,
                                             SnapViewType type,
                                             float snap_ratio);

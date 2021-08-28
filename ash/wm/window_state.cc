@@ -698,7 +698,7 @@ void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
   // from snap type and size from |snap_ratio|.
   gfx::Rect snapped_bounds =
       snap_ratio_ ? GetSnappedWindowBounds(
-                        maximized_bounds, window_,
+                        maximized_bounds, display, window_,
                         GetStateType() == WindowStateType::kPrimarySnapped
                             ? ash::SnapViewType::kPrimary
                             : ash::SnapViewType::kSecondary,
