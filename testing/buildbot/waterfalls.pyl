@@ -122,7 +122,6 @@
           'has_native_resultdb_integration',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
           'skylab_tests': 'lacros_skylab_tests_amd64_generic',
         },
         'os_type': 'chromeos',
