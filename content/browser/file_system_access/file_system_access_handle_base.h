@@ -77,8 +77,8 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
 
-  // Invokes |callback|, possibly after first requesting write permission. If
-  // permission isn't granted, |permission_denied| is invoked instead. The
+  // Invokes `callback`, possibly after first requesting write permission. If
+  // permission isn't granted, `no_permission_callback` is invoked instead. The
   // callbacks can be invoked synchronously.
   template <typename CallbackArgType>
   void RunWithWritePermission(
@@ -95,14 +95,14 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
-  // Invokes |method| on the correct sequence on this handle's
-  // FileSystemOperationRunner, passing |args| and a callback to the method. The
-  // passed in |callback| is wrapped to make sure it is called on the correct
-  // sequence before passing it off to the |method|.
+  // Invokes `method` on the correct sequence on this handle's
+  // FileSystemOperationRunner, passing `args` and a callback to the method. The
+  // passed in `callback` is wrapped to make sure it is called on the correct
+  // sequence before passing it off to the `method`.
   //
-  // Note that |callback| is passed to this method before other arguments, while
+  // Note that `callback` is passed to this method before other arguments, while
   // the wrapped callback will be passed as last argument to the underlying
-  // FileSystemOperation |method|.
+  // FileSystemOperation `method`.
   template <typename... MethodArgs,
             typename... ArgsMinusCallback,
             typename... CallbackArgs>

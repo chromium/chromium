@@ -728,9 +728,9 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
     file_data->set_root_path(SerializePath(root_path));
 
     base::FilePath relative_path;
-    // We want |relative_path| to be the path of the file or directory
-    // relative to |root_path|. FilePath::AppendRelativePath gets us that,
-    // but fails if the path we're looking for is equal to the |root_path|.
+    // We want `relative_path` to be the path of the file or directory
+    // relative to `root_path`. FilePath::AppendRelativePath gets us that,
+    // but fails if the path we're looking for is equal to the `root_path`.
     // So special case that case (in which case relative path would be empty
     // anyway).
     if (root_path != url_path) {
@@ -764,7 +764,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
   std::string bits_as_string(bits.begin(), bits.end());
   FileSystemAccessHandleData data;
   if (!data.ParseFromString(bits_as_string)) {
-    // Drop |token|, and directly return.
+    // Drop `token`, and directly return.
     return;
   }
 
@@ -814,8 +814,8 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       const bool is_directory =
           data.handle_type() == FileSystemAccessHandleData::kDirectory;
 
-      // Permissions are scoped to |root_path|, rather than the individual
-      // handle. So if |relative_path| is not empty, this creates a
+      // Permissions are scoped to `root_path`, rather than the individual
+      // handle. So if `relative_path` is not empty, this creates a
       // SharedHandleState for a directory even if the handle represents a
       // file.
       SharedHandleState handle_state = GetSharedHandleStateForPath(

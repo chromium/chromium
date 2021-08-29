@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
       {"ext_match.txt", ListValueOf(), true, "ext_match.txt", false});
 
   // No suggested extension. Don't try to infer one, and behave as if
-  // |excludeAcceptAllOption| is false.
+  // `excludeAcceptAllOption` is false.
   name_infos.push_back(
       {"no_extension", ListValueOf(".txt"), true, "no_extension", false});
   name_infos.push_back(
@@ -1552,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
       {"no_extension", ListValueOf(), true, "no_extension", false});
 
   // Suggested extension not listed as an accepted extension. Allow extension,
-  // but behave as if |excludeAcceptAllOption| is false.
+  // but behave as if `excludeAcceptAllOption` is false.
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), true,
                         "not_matching.jpg", false});
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), false,

@@ -25,9 +25,9 @@ message LocalFileData {
   // handle are based on this path.
   required bytes root_path = 1;
 
-  // If |relative_path| is empty, |root_path| is the full path to the file or
+  // If `relative_path` is empty, `root_path` is the full path to the file or
   // directory this object represents. If non-empty this path should be appended
-  // to |root_path| to get the full path. This can happen for example if a
+  // to `root_path` to get the full path. This can happen for example if a
   // website has access to a directory, but stores references to files or
   // directories inside that picked directory to IndexedDB. In that case we
   // still want permissions to be based on the originally picked path, but also

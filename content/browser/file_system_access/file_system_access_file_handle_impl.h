@@ -74,9 +74,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                       bool keep_existing_data,
                       bool auto_close,
                       CreateFileWriterCallback callback);
-  // |swap_file_system| is set to the isolated file system the swap url was
-  // created in (if any) as that file system might be different than the file
-  // system |this| was created from.
   void DidCreateSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,

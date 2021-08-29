@@ -36,7 +36,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // materializes the changes in the target file URL only after `Close`
   // is invoked and successfully completes. Assumes that swap_url represents a
   // file, and is valid.
-  // If no |quarantine_connection_callback| is passed in no quarantine is done,
+  // If no `quarantine_connection_callback` is passed in no quarantine is done,
   // other than setting source information directly if on windows.
   // FileWriters should only be created via the FileSystemAccessManagerImpl.
   FileSystemAccessFileWriterImpl(

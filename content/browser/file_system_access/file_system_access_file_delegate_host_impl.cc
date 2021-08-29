@@ -44,9 +44,9 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> context,
       context->CreateFileStreamReader(
           url, offset, /*max_bytes_to_read=*/buffer->size(), base::Time());
 
-  // Create two copies of |wrapped_callback| though it can still only be
+  // Create two copies of `wrapped_callback` though it can still only be
   // called at most once. This is safe because Read() is guaranteed not to
-  // call |wrapped_callback| if it returns synchronously.
+  // call `wrapped_callback` if it returns synchronously.
   auto split_callback = base::SplitOnceCallback(std::move(wrapped_callback));
   // Keep the reader alive by binding it to its callback.
   storage::FileStreamReader* reader_ptr = reader.get();

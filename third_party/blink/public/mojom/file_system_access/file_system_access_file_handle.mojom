@@ -75,7 +75,7 @@ interface FileSystemAccessFileHandle {
   // an exclusive write lock while the mojo pipe remains open.
   OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
 
-  // Returns true if |other| represents the same file on disk as this handle.
+  // Returns true if `other` represents the same file on disk as this handle.
   IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>
       (FileSystemAccessError result, bool is_same);
 

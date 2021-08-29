@@ -76,7 +76,7 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
   }
 
   if (create) {
-    // If |create| is true, write permission is required unconditionally, i.e.
+    // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
     RunWithWritePermission(
@@ -121,7 +121,7 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectory(
   }
 
   if (create) {
-    // If |create| is true, write permission is required unconditionally, i.e.
+    // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
     RunWithWritePermission(

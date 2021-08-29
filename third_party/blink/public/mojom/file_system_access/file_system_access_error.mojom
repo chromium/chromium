@@ -31,7 +31,7 @@ enum FileSystemAccessStatus {
 // Errors reported by File System Access API methods.
 struct FileSystemAccessError {
   FileSystemAccessStatus status;
-  // Only meaningful when |status| is kFileError.
+  // Only meaningful when `status` is kFileError.
   // Conceptually, this should be an optional member, but mojo does not
   // currently support optionals.
   mojo_base.mojom.FileError file_error;
