@@ -195,10 +195,10 @@ Polymer({
       this.setUIStep(VoiceMatchUIState.COMPLETED);
     }
 
-    window.setTimeout(function() {
+    window.setTimeout(() => {
       this.$['voice-match-lottie'].setPlay(false);
       this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['voice-match-done']);
-    }.bind(this), this.doneActionDelayMs_);
+    }, this.doneActionDelayMs_);
   },
 
   /**
@@ -209,9 +209,7 @@ Polymer({
       // If voice match is the first screen, slightly delay showing the content
       // for the lottie animations to load.
       this.fire('loading');
-      window.setTimeout(function() {
-        this.fire('loaded');
-      }.bind(this), 100);
+      window.setTimeout(() => this.fire('loaded'), 100);
     }
 
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
@@ -246,7 +244,9 @@ Polymer({
                              'assistantVoiceMatchMessageForChild',
                              {substitutions: [childName]}) :
                          this.i18nAdvanced('assistantVoiceMatchMessage');
-    } else if (uiStep === VoiceMatchUIState.RECORDING) {
+    } else if (
+        uiStep === VoiceMatchUIState.RECORDING ||
+        uiStep === VoiceMatchUIState.COMPLETED) {
       return this.i18nAdvanced(
           'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
     }
