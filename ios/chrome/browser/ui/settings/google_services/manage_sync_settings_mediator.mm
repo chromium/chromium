@@ -248,8 +248,10 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   dataFromChromeSyncItem.accessibilityIdentifier =
       kDataFromChromeSyncAccessibilityIdentifier;
   dataFromChromeSyncItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  [model addItem:dataFromChromeSyncItem
-      toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  if (self.syncConsentGiven) {
+    [model addItem:dataFromChromeSyncItem
+        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  }
 }
 
 // Updates encryption item, and notifies the consumer if |notifyConsumer| is set
@@ -281,8 +283,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
 
-  // The user must be signed-in and syncing.
-  if (!self.shouldDisplaySignoutSection) {
+  if (!self.syncConsentGiven) {
     return;
   }
   [model addItem:self.signOutAndTurnOffSyncItem
@@ -293,12 +294,12 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
-  if (!hasSignOutItem && self.shouldDisplaySignoutSection) {
+  if (!hasSignOutItem && self.syncConsentGiven) {
     DCHECK(self.signOutAndTurnOffSyncItem);
     [model addItem:self.signOutAndTurnOffSyncItem
         toSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
-  } else if (hasSignOutItem && !self.shouldDisplaySignoutSection) {
+  } else if (hasSignOutItem && !self.syncConsentGiven) {
     [model removeItemWithType:SignOutItemType
         fromSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
@@ -393,7 +394,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
 }
 
-- (BOOL)shouldDisplaySignoutSection {
+- (BOOL)syncConsentGiven {
   return self.syncSetupService->IsFirstSetupComplete();
 }
 
