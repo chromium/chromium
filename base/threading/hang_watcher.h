@@ -111,9 +111,15 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     kMax = kThreadPoolThread
   };
 
-  // The first invocation of the constructor will set the global instance
-  // accessible through GetInstance(). This means that only one instance can
-  // exist at a time.
+  // Notes on lifetime:
+  //   1) The first invocation of the constructor will set the global instance
+  //      accessible through GetInstance().
+  //   2) In production HangWatcher is always purposefuly leaked.
+  //   3) If not leaked HangWatcher is always constructed and destructed from
+  //      the same thread.
+  //   4) There can never be more than one instance of HangWatcher at a time.
+  //      The class is not base::Singleton derived because it needs to destroyed
+  //      in tests.
   HangWatcher();
 
   // Clears the global instance for the class.
@@ -207,7 +213,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Call to make sure no more monitoring takes place. The
   // function is thread-safe and can be called at anytime but won't stop
   // monitoring that is currently taking place. Use only for testing.
-  void StopMonitoringForTesting();
+  static void StopMonitoringForTesting();
 
   // Replace the clock used when calculating time spent
   // sleeping. Use only for testing.
@@ -317,9 +323,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   void Run() override;
 
   base::TimeDelta monitor_period_;
-
-  // Indicates whether Run() should return after the next monitoring.
-  std::atomic<bool> keep_monitoring_{true};
 
   // Use to make the HangWatcher thread wake or sleep to schedule the
   // appropriate monitoring frequency.

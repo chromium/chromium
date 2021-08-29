@@ -780,9 +780,9 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   // Setup the HangWatcher to unblock run_loop when the Monitor() has been
   // invoked enough times.
   hang_watcher_.SetAfterMonitorClosureForTesting(BarrierClosure(
-      kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop, this]() {
+      kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop]() {
         // Test condition are confirmed, stop monitoring.
-        hang_watcher_.StopMonitoringForTesting();
+        HangWatcher::StopMonitoringForTesting();
 
         // Unblock the test main thread.
         run_loop.Quit();

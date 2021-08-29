@@ -46,6 +46,9 @@ std::atomic<LoggingLevel> g_threadpool_log_level{LoggingLevel::kNone};
 std::atomic<LoggingLevel> g_io_thread_log_level{LoggingLevel::kNone};
 std::atomic<LoggingLevel> g_ui_thread_log_level{LoggingLevel::kNone};
 
+// Indicates whether HangWatcher::Run() should return after the next monitoring.
+std::atomic<bool> g_keep_monitoring{true};
+
 // Emits the hung thread count histogram. |count| is the number of threads
 // of type |thread_type| that were hung or became hung during the last
 // monitoring window. This function should be invoked for each thread type
@@ -363,6 +366,7 @@ void HangWatcher::OnMemoryPressure(
 }
 
 HangWatcher::~HangWatcher() {
+  DCHECK_CALLED_ON_VALID_THREAD(constructing_thread_checker_);
   DCHECK_EQ(g_instance, this);
   DCHECK(watch_states_.empty());
   g_instance = nullptr;
@@ -374,9 +378,14 @@ void HangWatcher::Start() {
 }
 
 void HangWatcher::Stop() {
-  keep_monitoring_.store(false, std::memory_order_relaxed);
+  g_keep_monitoring.store(false, std::memory_order_relaxed);
   should_monitor_.Signal();
   thread_.Join();
+
+  // In production HangWatcher is always leaked but during testing it's possibly
+  // stopped and restarted using a new instance. This makes sure the next call
+  // to Start() will actually monitor in that case.
+  g_keep_monitoring.store(true, std::memory_order_relaxed);
 }
 
 bool HangWatcher::IsWatchListEmpty() {
@@ -443,11 +452,11 @@ void HangWatcher::Run() {
   // sure of that.
   DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
 
-  while (keep_monitoring_.load(std::memory_order_relaxed)) {
+  while (g_keep_monitoring.load(std::memory_order_relaxed)) {
     Wait();
 
     if (!IsWatchListEmpty() &&
-        keep_monitoring_.load(std::memory_order_relaxed)) {
+        g_keep_monitoring.load(std::memory_order_relaxed)) {
       Monitor();
       if (after_monitor_closure_for_testing_) {
         after_monitor_closure_for_testing_.Run();
@@ -746,8 +755,9 @@ void HangWatcher::SignalMonitorEventForTesting() {
   should_monitor_.Signal();
 }
 
+// static
 void HangWatcher::StopMonitoringForTesting() {
-  keep_monitoring_.store(false, std::memory_order_relaxed);
+  g_keep_monitoring.store(false, std::memory_order_relaxed);
 }
 
 void HangWatcher::SetTickClockForTesting(const base::TickClock* tick_clock) {
