@@ -546,19 +546,6 @@ class FileManagerPrivateInternalGetRecentFilesFunction
           entry_definition_list);
 };
 
-// Implements the chrome.fileManagerPrivate.detectCharacterEncoding method.
-class FileManagerPrivateDetectCharacterEncodingFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.detectCharacterEncoding",
-                             FILEMANAGERPRIVATE_DETECTCHARACTERENCODING)
-
- protected:
-  ~FileManagerPrivateDetectCharacterEncodingFunction() override = default;
-
-  ResponseAction Run() override;
-};
-
 // Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.
 class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
  public:

@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -1238,22 +1237,6 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
   Respond(OneArgument(base::Value::FromUniquePtrValue(
       file_manager::util::ConvertEntryDefinitionListToListValue(
           *entry_definition_list))));
-}
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateDetectCharacterEncodingFunction::Run() {
-  using extensions::api::file_manager_private::DetectCharacterEncoding::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string input;
-  if (!base::HexStringToString(params->bytes, &input))
-    input.clear();
-
-  std::string encoding;
-  bool success = base::DetectEncoding(input, &encoding);
-  return RespondNow(
-      OneArgument(base::Value(success ? std::move(encoding) : std::string())));
 }
 
 ExtensionFunction::ResponseAction

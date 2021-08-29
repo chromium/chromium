@@ -1171,18 +1171,6 @@ chrome.fileManagerPrivate.installLinuxPackage = function(entry, callback) {};
 chrome.fileManagerPrivate.importCrostiniImage = function(entry) {};
 
 /**
- * Detect character encoding.
- *
- * @param {!string} bytes a hex-encoded string. Every 2 characters represent
- *     one byte by 2-digit hexadecimal number.
- * @param {function((string|undefined))} callback |mime_name| Preferred MIME
- *     name of the detected character encoding system. Slightly different from
- *     IANA name. See third_party/ced/src/util/encodings/encodings.cc
- */
-chrome.fileManagerPrivate.detectCharacterEncoding = function(bytes, callback) {
-};
-
-/**
  * For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
  * returns a thumbnail appropriate for file list or grid views; otherwise,
  * returns a thumbnail appropriate for quickview.

@@ -1032,9 +1032,6 @@ callback GetLinuxPackageInfoCallback =
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
 
-// |result| String representing the detected coding system.
-callback DetectCharacterEncodingCallback = void(DOMString result);
-
 // |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
 // if no thumbnail was available.
 callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
@@ -1469,15 +1466,6 @@ interface Functions {
                                                long widthHint,
                                                long heightHint,
                                                GetThumbnailCallback callback);
-
-  // Returns a guessed character encoding of a hex-encoded string. Every 2
-  // characters of |bytes| represent one byte by 2-digit hexadecimal number.
-  // The result is preferred MIME name of the detected character encoding
-  // system. It is slightly different from IANA name.
-  // See third_party/ced/src/util/encodings/encodings.cc
-  // Returns an empty string if failed.
-  static DOMString detectCharacterEncoding(DOMString bytes,
-    DetectCharacterEncodingCallback callback);
 
   // Returns a list of Android picker apps to be shown in file selector.
   static void getAndroidPickerApps(DOMString[] extensions,
