@@ -168,11 +168,9 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   base::OnceCallback<void(MediaStream*)> on_success_follow_up;
 #if !defined(OS_ANDROID)
-  if (RuntimeEnabledFeatures::ConditionalFocusEnabled(GetExecutionContext())) {
-    on_success_follow_up = WTF::Bind(
-        &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
-        weak_factory_.GetWeakPtr());
-  }
+  on_success_follow_up =
+      WTF::Bind(&MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
+                weak_factory_.GetWeakPtr());
 #endif
 
   auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(
