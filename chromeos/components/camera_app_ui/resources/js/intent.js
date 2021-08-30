@@ -4,6 +4,7 @@
 
 import * as metrics from './metrics.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+// eslint-disable-next-line no-unused-vars
 import {Mode} from './type.js';
 
 /**
@@ -53,8 +54,9 @@ export class Intent {
     /**
      * Capture mode of intent.
      * @const {!Mode}
+     * @private
      */
-    this.mode = mode;
+    this.mode_ = mode;
 
     /**
      * Whether the intent should return with the captured result.
@@ -141,7 +143,7 @@ export class Intent {
    */
   logResult(result) {
     metrics.sendIntentEvent({
-      mode: this.mode,
+      mode: this.mode_,
       result,
       shouldHandleResult: this.shouldHandleResult,
       shouldDownScale: this.shouldDownScale,
@@ -151,24 +153,19 @@ export class Intent {
 
   /**
    * @param {!URL} url Url passed along with app launch event.
+   * @param {!Mode} mode Mode for the intent
    * @return {!Intent} Created intent object. Returns null if input is not a
    *     valid intent url.
    * @throws {!ParseError}
    */
-  static create(url) {
+  static create(url, mode) {
     const params = url.searchParams;
     const getBool = (key) => params.get(key) === '1';
-    let param = params.get('intentId');
+    const param = params.get('intentId');
     if (param === null) {
       throw new ParseError(url);
     }
     const intentId = parseInt(param, 10);
-
-    param = params.get('mode');
-    if (param === null || !Object.values(Mode).includes(param)) {
-      throw new ParseError(url);
-    }
-    const mode = /** @type {!Mode} */ (param);
 
     return new Intent(
         url, intentId, mode, getBool('shouldHandleResult'),

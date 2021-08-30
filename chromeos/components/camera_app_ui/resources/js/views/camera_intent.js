@@ -24,6 +24,8 @@ import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
 import {scaleImage} from '../thumbnailer.js';
 import * as toast from '../toast.js';
+// eslint-disable-next-line no-unused-vars
+import {Mode} from '../type.js';
 import * as util from '../util.js';
 
 import {Camera} from './camera.js';
@@ -48,9 +50,11 @@ export class CameraIntent extends Camera {
    * @param {!DeviceInfoUpdater} infoUpdater
    * @param {!PhotoConstraintsPreferrer} photoPreferrer
    * @param {!VideoConstraintsPreferrer} videoPreferrer
+   * @param {!Mode} mode
    * @param {!PerfLogger} perfLogger
    */
-  constructor(intent, infoUpdater, photoPreferrer, videoPreferrer, perfLogger) {
+  constructor(
+      intent, infoUpdater, photoPreferrer, videoPreferrer, mode, perfLogger) {
     const resultSaver = /** @type {!ResultSaver} */ ({
       savePhoto: async (blob) => {
         if (intent.shouldDownScale) {
@@ -72,7 +76,7 @@ export class CameraIntent extends Camera {
       },
     });
     super(
-        resultSaver, infoUpdater, photoPreferrer, videoPreferrer, intent.mode,
+        resultSaver, infoUpdater, photoPreferrer, videoPreferrer, mode,
         perfLogger, /* facing= */ null);
 
     /**

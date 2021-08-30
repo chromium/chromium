@@ -61,10 +61,11 @@ export class App {
    *     perfLogger: !PerfLogger,
    *     intent: ?Intent,
    *     facing: ?Facing,
+   *     mode: ?Mode,
    * }} params
    * @public
    */
-  constructor({perfLogger, intent, facing}) {
+  constructor({perfLogger, intent, facing, mode: defaultMode}) {
     /**
      * @type {!PerfLogger}
      * @private
@@ -109,13 +110,13 @@ export class App {
      * @private
      */
     this.cameraView_ = (() => {
+      const mode = defaultMode ?? Mode.PHOTO;
       if (this.intent_ !== null && this.intent_.shouldHandleResult) {
         state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
         return new CameraIntent(
             this.intent_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, this.perfLogger_);
+            this.videoPreferrer_, mode, this.perfLogger_);
       } else {
-        const mode = this.intent_ !== null ? this.intent_.mode : Mode.PHOTO;
         return new Camera(
             this.galleryButton_, this.infoUpdater_, this.photoPreferrer_,
             this.videoPreferrer_, mode, this.perfLogger_, facing);
@@ -248,7 +249,7 @@ export class App {
       // There are three possible cases:
       // 1. Regular instance
       //      (intent === null)
-      // 2. STILL_CAPTURE_CAMREA and VIDEO_CAMERA intents
+      // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
       //      (intent !== null && shouldHandleResult === false)
       // 3. Other intents
       //      (intent !== null && shouldHandleResult === true)
@@ -369,13 +370,11 @@ export class App {
 
 /**
  * Parse search params in URL.
- * @return {{intent: ?Intent, facing: ?Facing}}
+ * @return {{intent: ?Intent, facing: ?Facing, mode: ?Mode}}
  */
 function parseSearchParams() {
   const url = new URL(window.location.href);
   const params = url.searchParams;
-
-  const intent = params.get('intentId') !== null ? Intent.create(url) : null;
 
   // TODO(pihsun): Intent.create has almost same code for checking a string is
   // an enum variant, extract them to a util function when we change TypeScript
@@ -390,7 +389,25 @@ function parseSearchParams() {
     return /** @type {!Facing} */ (facing);
   })();
 
-  return {intent, facing};
+  /** @type {?Mode} */
+  const mode = (() => {
+    const mode = params.get('mode');
+    if (mode === null || !Object.values(Mode).includes(mode)) {
+      return null;
+    }
+    return /** @type {!Mode} */ (mode);
+  })();
+
+  /** @type {?Intent} */
+  const intent = (() => {
+    if (params.get('intentId') === null) {
+      return null;
+    }
+    assert(mode !== null);
+    return Intent.create(url, mode);
+  })();
+
+  return {intent, facing, mode};
 }
 
 /**
@@ -409,7 +426,7 @@ let instance = null;
 
   const perfLogger = new PerfLogger();
 
-  const {intent, facing} = parseSearchParams();
+  const {intent, facing, mode} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
 
@@ -469,6 +486,6 @@ let instance = null;
     });
   });
 
-  instance = new App({perfLogger, intent, facing});
+  instance = new App({perfLogger, intent, facing, mode});
   await instance.start();
 })();
