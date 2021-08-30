@@ -3306,6 +3306,7 @@ enum WebFeature {
   kCredentialManagerStorePasswordCredential = 3995,
   kCredentialManagerCreateFederatedCredential = 3996,
   kCredentialManagerCreatePasswordCredential = 3997,
+  kCanvasRenderingContext2DRoundRect = 3998,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

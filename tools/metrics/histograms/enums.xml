@@ -34363,6 +34363,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3995" label="CredentialManagerStorePasswordCredential"/>
   <int value="3996" label="CredentialManagerCreateFederatedCredential"/>
   <int value="3997" label="CredentialManagerCreatePasswordCredential"/>
+  <int value="3998" label="CanvasRenderingContext2DRoundRect"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

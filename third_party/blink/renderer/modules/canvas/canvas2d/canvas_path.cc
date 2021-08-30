@@ -38,6 +38,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
@@ -500,6 +501,8 @@ void CanvasPath::roundRect(
     double double_height,
     const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
     ExceptionState& exception_state) {
+  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DContextLostEvent);
   const int num_radii = radii.size();
   if (UNLIKELY(num_radii < 1 || num_radii > 4)) {
     exception_state.ThrowRangeError(

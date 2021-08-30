@@ -297,7 +297,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
   virtual void SnapshotStateForFilter() = 0;
 
-  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() {
+  CanvasRenderingContextHost* GetCanvasRenderingContextHost() override {
     return nullptr;
   }
 

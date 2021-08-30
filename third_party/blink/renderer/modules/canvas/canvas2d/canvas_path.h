@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
@@ -106,6 +107,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   IdentifiableToken GetIdentifiableToken() const {
     return identifiability_study_helper_.GetToken();
+  }
+
+  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() {
+    return nullptr;
   }
 
   void Trace(Visitor*) const override;
