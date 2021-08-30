@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.banners;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
@@ -1030,5 +1032,39 @@ public class AppBannerManagerTest {
         return onView(isRoot())
                 .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
                 .check(waitForView(matcher));
+    }
+
+    private void assertNoHelpBubble(Matcher<View> matcher) {
+        View mainDecorView = mTabbedActivityTestRule.getActivity().getWindow().getDecorView();
+        onView(isRoot())
+                .inRoot(RootMatchers.withDecorView(isDisplayed()))
+                .check(waitForView(matcher, VIEW_NULL));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
+    public void testInProductHelpSkipsHiddenWebContents() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
+                WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
+
+        resetEngagementForUrl(url, 10);
+        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // Create an extra tab so that there is a background tab.
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
+                mTabbedActivityTestRule.getActivity(),
+                /* isIncognito= */ false, /* waitForNtpLoad= */ true);
+
+        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Assert.assertTrue(backgroundTab != null);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
+
+        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 8);
+
+        assertNoHelpBubble(withText(R.string.iph_pwa_install_available_text));
     }
 }

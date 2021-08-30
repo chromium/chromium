@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -57,6 +58,7 @@ public class AppBannerInProductHelpControllerProvider {
                     + tracker.getTriggerState(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE);
         }
 
+        if (webContents.getVisibility() != Visibility.VISIBLE) return "Not visible";
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return "No window";
         AppBannerInProductHelpController controller = from(window);
