@@ -176,7 +176,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(2UL, advanced_settings_items.count);
+  ASSERT_EQ(3UL, advanced_settings_items.count);
 
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
@@ -201,7 +201,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(2UL, advanced_settings_items.count);
+  ASSERT_EQ(3UL, advanced_settings_items.count);
 
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);

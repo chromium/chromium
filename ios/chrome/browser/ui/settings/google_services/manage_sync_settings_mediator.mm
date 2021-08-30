@@ -248,10 +248,8 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   dataFromChromeSyncItem.accessibilityIdentifier =
       kDataFromChromeSyncAccessibilityIdentifier;
   dataFromChromeSyncItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  if (self.syncConsentGiven) {
-    [model addItem:dataFromChromeSyncItem
-        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
-  }
+  [model addItem:dataFromChromeSyncItem
+      toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 }
 
 // Updates encryption item, and notifies the consumer if |notifyConsumer| is set
@@ -283,7 +281,8 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
 
-  if (!self.syncConsentGiven) {
+  // The user must be signed-in and syncing.
+  if (!self.shouldDisplaySignoutSection) {
     return;
   }
   [model addItem:self.signOutAndTurnOffSyncItem
@@ -294,12 +293,12 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
-  if (!hasSignOutItem && self.syncConsentGiven) {
+  if (!hasSignOutItem && self.shouldDisplaySignoutSection) {
     DCHECK(self.signOutAndTurnOffSyncItem);
     [model addItem:self.signOutAndTurnOffSyncItem
         toSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
-  } else if (hasSignOutItem && !self.syncConsentGiven) {
+  } else if (hasSignOutItem && !self.shouldDisplaySignoutSection) {
     [model removeItemWithType:SignOutItemType
         fromSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
@@ -394,7 +393,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
 }
 
-- (BOOL)syncConsentGiven {
+- (BOOL)shouldDisplaySignoutSection {
   return self.syncSetupService->IsFirstSetupComplete();
 }
 
