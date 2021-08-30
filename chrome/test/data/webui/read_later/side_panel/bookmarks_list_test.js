@@ -194,6 +194,30 @@ suite('SidePanelBookmarksListTest', () => {
     assertEquals(0, childFolderBookmarks.length);
   });
 
+  test('MovesBookmarksIntoNewFolder', () => {
+    // Create a new folder without a children array.
+    bookmarksApi.callbackRouter.onCreated.dispatchEvent('1000', {
+      id: '1000',
+      title: 'New folder',
+      index: 0,
+      parentId: '0',
+    });
+    flush();
+
+    const movedBookmark = folders[0].children[1].children[0];
+    bookmarksApi.callbackRouter.onMoved.dispatchEvent(movedBookmark.id, {
+      index: 0,
+      parentId: '1000',
+      oldParentId: folders[0].children[1].id,
+      oldIndex: 0,
+    });
+    flush();
+
+    const bookmarksBarFolder = getFolderElements(bookmarksList)[0];
+    const newFolder = getFolderElements(bookmarksBarFolder)[0];
+    assertEquals(1, newFolder.folder.children.length);
+  });
+
   test('DefaultsToFirstFolderBeingOpen', () => {
     assertEquals(
         JSON.stringify([folders[0].id]),

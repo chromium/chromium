@@ -246,6 +246,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
     // Get new parent's path and add the node to the new parent at index.
     const newParentPath = this.findPathToId_(movedInfo.parentId);
     const newParentPathString = this.getPathString_(newParentPath);
+    const newParent = newParentPath[newParentPath.length - 1];
+    if (newParent && !newParent.children) {
+      newParent.children = [];
+    }
     this.splice(
         `${newParentPathString}.children`, movedInfo.index, 0, movedNode);
   }
