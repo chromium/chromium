@@ -18,6 +18,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -118,18 +119,21 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Specification of an encoding profile supported by an encoder.
   struct MEDIA_EXPORT SupportedProfile {
     SupportedProfile();
-    SupportedProfile(VideoCodecProfile profile,
-                     const gfx::Size& max_resolution,
-                     uint32_t max_framerate_numerator = 0u,
-                     uint32_t max_framerate_denominator = 1u);
-    SupportedProfile(const SupportedProfile& other) = default;
+    SupportedProfile(
+        VideoCodecProfile profile,
+        const gfx::Size& max_resolution,
+        uint32_t max_framerate_numerator = 0u,
+        uint32_t max_framerate_denominator = 1u,
+        const std::vector<SVCScalabilityMode>& scalability_modes = {});
+    SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
     VideoCodecProfile profile;
     gfx::Size min_resolution;
     gfx::Size max_resolution;
-    uint32_t max_framerate_numerator;
-    uint32_t max_framerate_denominator;
+    uint32_t max_framerate_numerator{0};
+    uint32_t max_framerate_denominator{0};
+    std::vector<SVCScalabilityMode> scalability_modes;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
@@ -394,6 +398,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual ~VideoEncodeAccelerator();
 };
 
+MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
+                             const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,

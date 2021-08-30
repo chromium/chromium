@@ -43,6 +43,11 @@ struct StructTraits<
     return profile.max_framerate_denominator;
   }
 
+  static const std::vector<media::SVCScalabilityMode>& scalability_modes(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.scalability_modes;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);

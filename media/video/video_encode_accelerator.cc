@@ -141,19 +141,22 @@ void VideoEncodeAccelerator::Client::NotifyEncoderInfoChange(
 VideoEncodeAccelerator::~VideoEncodeAccelerator() = default;
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile()
-    : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN),
-      max_framerate_numerator(0),
-      max_framerate_denominator(0) {}
+    : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     VideoCodecProfile profile,
     const gfx::Size& max_resolution,
     uint32_t max_framerate_numerator,
-    uint32_t max_framerate_denominator)
+    uint32_t max_framerate_denominator,
+    const std::vector<SVCScalabilityMode>& scalability_modes)
     : profile(profile),
       max_resolution(max_resolution),
       max_framerate_numerator(max_framerate_numerator),
-      max_framerate_denominator(max_framerate_denominator) {}
+      max_framerate_denominator(max_framerate_denominator),
+      scalability_modes(scalability_modes) {}
+
+VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
+    const SupportedProfile& other) = default;
 
 VideoEncodeAccelerator::SupportedProfile::~SupportedProfile() = default;
 
@@ -182,6 +185,15 @@ void VideoEncodeAccelerator::RequestEncodingParametersChange(
     uint32_t framerate) {
   RequestEncodingParametersChange(
       Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate);
+}
+
+bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
+                const VideoEncodeAccelerator::SupportedProfile& r) {
+  return l.profile == r.profile && l.min_resolution == r.min_resolution &&
+         l.max_resolution == r.max_resolution &&
+         l.max_framerate_numerator == r.max_framerate_numerator &&
+         l.max_framerate_denominator == r.max_framerate_denominator &&
+         l.scalability_modes == r.scalability_modes;
 }
 
 bool operator==(const H264Metadata& l, const H264Metadata& r) {

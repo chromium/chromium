@@ -40,6 +40,7 @@ struct VideoEncodeAcceleratorSupportedProfile {
   gfx.mojom.Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
+  array<SVCScalabilityMode> scalability_modes;
 };
 
 // A renderer process calls this interface's functions. GPU process implements

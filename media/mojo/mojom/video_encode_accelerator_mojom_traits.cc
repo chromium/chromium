@@ -25,6 +25,12 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 
   out->max_framerate_numerator = data.max_framerate_numerator();
   out->max_framerate_denominator = data.max_framerate_denominator();
+
+  std::vector<media::SVCScalabilityMode> scalability_modes;
+  if (!data.ReadScalabilityModes(&scalability_modes))
+    return false;
+  out->scalability_modes = std::move(scalability_modes);
+
   return true;
 }
 
