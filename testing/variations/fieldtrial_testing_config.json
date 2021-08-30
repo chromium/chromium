@@ -9825,27 +9825,6 @@
             ]
         }
     ],
-    "WheelEventRegions": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20201211",
-                    "enable_features": [
-                        "WheelEventRegions"
-                    ]
-                }
-            ]
-        }
-    ],
     "WifiSyncAndroid": [
         {
             "platforms": [
