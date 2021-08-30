@@ -19,12 +19,6 @@ public interface IncognitoDescriptionView {
     void setLearnMoreOnclickListener(View.OnClickListener listener);
 
     /**
-     * Adjust the Cookie Controls Card.
-     * @param showCard A boolean indicating if the card should be visible or not.
-     */
-    void showCookieControlsCard(boolean showCard);
-
-    /**
      * Set cookie controls toggle's checked value.
      * @param enabled The value to set the toggle to.
      */

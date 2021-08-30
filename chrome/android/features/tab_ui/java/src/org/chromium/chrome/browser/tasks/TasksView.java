@@ -54,7 +54,6 @@ class TasksView extends CoordinatorLayoutForPointer {
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
-    private boolean mIncognitoCookieControlsCardIsVisible;
     private boolean mIncognitoCookieControlsToggleIsChecked;
     private OnCheckedChangeListener mIncognitoCookieControlsToggleCheckedListener;
     private @CookieControlsEnforcement int mIncognitoCookieControlsToggleEnforcement =
@@ -222,7 +221,6 @@ class TasksView extends CoordinatorLayoutForPointer {
         if (mIncognitoDescriptionLearnMoreListener != null) {
             setIncognitoDescriptionLearnMoreClickListener(mIncognitoDescriptionLearnMoreListener);
         }
-        setIncognitoCookieControlsCardVisibility(mIncognitoCookieControlsCardIsVisible);
         setIncognitoCookieControlsToggleChecked(mIncognitoCookieControlsToggleIsChecked);
         if (mIncognitoCookieControlsToggleCheckedListener != null) {
             setIncognitoCookieControlsToggleCheckedListener(
@@ -251,17 +249,6 @@ class TasksView extends CoordinatorLayoutForPointer {
         if (mIncognitoDescriptionView != null) {
             mIncognitoDescriptionView.setLearnMoreOnclickListener(listener);
             mIncognitoDescriptionLearnMoreListener = null;
-        }
-    }
-
-    /**
-     * Set the visibility of the cookie controls card on the incognito description.
-     * @param isVisible Whether it's visible or not.
-     */
-    void setIncognitoCookieControlsCardVisibility(boolean isVisible) {
-        mIncognitoCookieControlsCardIsVisible = isVisible;
-        if (mIncognitoDescriptionView != null) {
-            mIncognitoDescriptionView.showCookieControlsCard(isVisible);
         }
     }
 

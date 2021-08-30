@@ -273,11 +273,6 @@ public class RevampedIncognitoDescriptionView
     }
 
     @Override
-    public void showCookieControlsCard(boolean showCard) {
-        mCookieControlsCard.setVisibility(showCard ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
     public void setCookieControlsEnforcement(@CookieControlsEnforcement int enforcement) {
         boolean enforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
         mCookieControlsToggle.setEnabled(!enforced);

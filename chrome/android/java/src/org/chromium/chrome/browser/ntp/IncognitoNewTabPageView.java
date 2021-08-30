@@ -146,14 +146,6 @@ public class IncognitoNewTabPageView extends FrameLayout {
     }
 
     /**
-     * Set the visibility of the cookie controls card on the incognito description.
-     * @param isVisible Whether it's visible or not.
-     */
-    void setIncognitoCookieControlsCardVisibility(boolean isVisible) {
-        mDescriptionView.showCookieControlsCard(isVisible);
-    }
-
-    /**
      * Set the toggle on the cookie controls card.
      * @param isChecked Whether it's checked or not.
      */

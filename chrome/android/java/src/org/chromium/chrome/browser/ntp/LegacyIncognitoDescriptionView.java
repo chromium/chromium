@@ -41,7 +41,6 @@ public class LegacyIncognitoDescriptionView
         extends LinearLayout implements IncognitoDescriptionView {
     private int mWidthDp;
     private int mHeightDp;
-    private boolean mShowCard;
 
     private LinearLayout mContainer;
     private TextView mHeader;
@@ -320,24 +319,13 @@ public class LegacyIncognitoDescriptionView
 
     /** Adjust the Cookie Controls Card. */
     private void adjustCookieControlsCard() {
-        if (mShowCard) {
-            if (mWidthDp <= WIDE_LAYOUT_THRESHOLD_DP) {
-                // Portrait
-                mCookieControlsCard.getLayoutParams().width =
-                        LinearLayout.LayoutParams.MATCH_PARENT;
-            } else {
-                // Landscape
-                mCookieControlsCard.getLayoutParams().width =
-                        dpToPx(getContext(), CONTENT_WIDTH_DP);
-            }
+        if (mWidthDp <= WIDE_LAYOUT_THRESHOLD_DP) {
+            // Portrait
+            mCookieControlsCard.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+        } else {
+            // Landscape
+            mCookieControlsCard.getLayoutParams().width = dpToPx(getContext(), CONTENT_WIDTH_DP);
         }
-    }
-
-    @Override
-    public void showCookieControlsCard(boolean showCard) {
-        mShowCard = showCard;
-        mCookieControlsCard.setVisibility(showCard ? View.VISIBLE : View.GONE);
-        adjustCookieControlsCard();
     }
 
     @Override

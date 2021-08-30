@@ -79,8 +79,6 @@ public class IncognitoNewTabPage
             public void initCookieControlsManager() {
                 mCookieControlsManager = new IncognitoCookieControlsManager();
                 mCookieControlsManager.initialize();
-                mIncognitoNewTabPageView.setIncognitoCookieControlsCardVisibility(
-                        mCookieControlsManager.shouldShowCookieControlsCard());
                 mCookieControlsObserver = new IncognitoCookieControlsManager.Observer() {
                     @Override
                     public void onUpdate(
