@@ -33,7 +33,23 @@ const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 ResolvedQuadData::ResolvedQuadData(const DrawQuad& quad)
     : remapped_resources(quad.resources) {}
 
-ResolvedPassData::ResolvedPassData() = default;
+FixedPassData::FixedPassData() = default;
+FixedPassData::FixedPassData(FixedPassData&& other) = default;
+FixedPassData& FixedPassData::operator=(FixedPassData&& other) = default;
+FixedPassData::~FixedPassData() = default;
+
+AggregationPassData::AggregationPassData() = default;
+AggregationPassData::AggregationPassData(AggregationPassData&& other) = default;
+AggregationPassData& AggregationPassData::operator=(
+    AggregationPassData&& other) = default;
+AggregationPassData::~AggregationPassData() = default;
+
+void AggregationPassData::Reset() {
+  *this = AggregationPassData();
+}
+
+ResolvedPassData::ResolvedPassData(FixedPassData fixed_data)
+    : fixed_(std::move(fixed_data)) {}
 ResolvedPassData::~ResolvedPassData() = default;
 ResolvedPassData::ResolvedPassData(ResolvedPassData&& other) = default;
 ResolvedPassData& ResolvedPassData::operator=(ResolvedPassData&& other) =
@@ -66,7 +82,7 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
   render_pass_id_map_.clear();
   resolved_passes_.clear();
   render_pass_id_map_.reserve(num_render_pass);
-  resolved_passes_.resize(num_render_pass);
+  resolved_passes_.reserve(num_render_pass);
 
   root_damage_rect_ = render_passes.back()->damage_rect;
 
@@ -74,22 +90,23 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
   // remapped display resource ids.
   for (size_t i = 0; i < num_render_pass; ++i) {
     auto& render_pass = render_passes[i];
-    auto& resolved_pass = resolved_passes_[i];
 
-    resolved_pass.render_pass = render_pass.get();
+    FixedPassData fixed;
+
+    fixed.render_pass = render_pass.get();
 
     AggregatedRenderPassId& remapped_id = aggregated_id_map_[render_pass->id];
     if (remapped_id.is_null()) {
       remapped_id = render_pass_id_generator.GenerateNextId();
     }
-    resolved_pass.remapped_id = remapped_id;
-    resolved_pass.is_root = i == num_render_pass - 1;
+    fixed.remapped_id = remapped_id;
+    fixed.is_root = i == num_render_pass - 1;
 
     bool add_quad_damage_to_root_damage_rect =
-        resolved_pass.is_root && render_pass->has_per_quad_damage;
+        fixed.is_root && render_pass->has_per_quad_damage;
 
     // Loop through the quads, remapping resource ids and storing them.
-    auto& draw_quads = resolved_passes_[i].draw_quads;
+    auto& draw_quads = fixed.draw_quads;
     draw_quads.reserve(render_pass->quad_list.size());
     for (auto* quad : render_pass->quad_list) {
       if (add_quad_damage_to_root_damage_rect) {
@@ -127,9 +144,11 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
       }
     }
 
+    resolved_passes_.emplace_back(std::move(fixed));
+
     // Build render pass id map and check for duplicate ids at the same time.
     if (!render_pass_id_map_
-             .insert(std::make_pair(render_pass->id, &resolved_pass))
+             .insert(std::make_pair(render_pass->id, &resolved_passes_.back()))
              .second) {
       DLOG(ERROR) << "Duplicate render pass ids";
       SetInvalid();
@@ -162,29 +181,32 @@ bool ResolvedFrameData::MarkAsUsed() {
 }
 
 bool ResolvedFrameData::CheckIfUsedAndReset() {
+  // Reset aggregation scoped data.
+  for (auto& resolved_pass : resolved_passes_)
+    resolved_pass.aggregation().Reset();
+
   return std::exchange(used_, false);
 }
 
-size_t ResolvedFrameData::RenderPassCount() const {
-  DCHECK(valid_);
-  return resolved_passes_.size();
+ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
+    CompositorRenderPassId render_pass_id) {
+  return const_cast<ResolvedPassData&>(
+      const_cast<const ResolvedFrameData*>(this)->GetRenderPassDataById(
+          render_pass_id));
 }
 
 const ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
     CompositorRenderPassId render_pass_id) const {
   DCHECK(valid_);
 
-  // TODO(kylechar): We need to validate that RenderPassDrawQuads only refer to
-  // CompositorRenderPassIds that exist.
   auto iter = render_pass_id_map_.find(render_pass_id);
   DCHECK(iter != render_pass_id_map_.end());
   return *iter->second;
 }
 
-const ResolvedPassData& ResolvedFrameData::GetRenderPassDataByIndex(
-    size_t index) const {
+ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() {
   DCHECK(valid_);
-  return resolved_passes_[index];
+  return resolved_passes_.back();
 }
 
 const ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() const {
@@ -199,12 +221,12 @@ const gfx::Rect& ResolvedFrameData::GetDamageRect(
   if (include_per_quad_damage)
     return root_damage_rect_;
 
-  return resolved_passes_.back().render_pass->damage_rect;
+  return resolved_passes_.back().render_pass().damage_rect;
 }
 
 const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
   DCHECK(valid_);
-  return resolved_passes_.back().render_pass->output_rect;
+  return resolved_passes_.back().render_pass().output_rect;
 }
 
 }  // namespace viz

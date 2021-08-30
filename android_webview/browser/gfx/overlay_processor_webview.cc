@@ -863,8 +863,8 @@ void OverlayProcessorWebView::ProcessForFrameSinkId(
   auto& overlay = it->second;
 
   auto& pass = frame_data->GetRootRenderPassData();
-  if (!pass.draw_quads.empty()) {
-    DCHECK_EQ(pass.draw_quads.size(), 1u);
+  if (!pass.draw_quads().empty()) {
+    DCHECK_EQ(pass.draw_quads().size(), 1u);
     auto* surface = frame_sink_manager_->surface_manager()->GetSurfaceForId(
         overlay.surface_id);
 
@@ -878,7 +878,7 @@ void OverlayProcessorWebView::ProcessForFrameSinkId(
     auto uv_rect = gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 
     UpdateOverlayResource(frame_sink_id,
-                          pass.draw_quads.front().remapped_resources.ids[0],
+                          pass.draw_quads().front().remapped_resources.ids[0],
                           uv_rect);
     // If resource lock count reached kMaxBuffersInFlight it means we can't
     // schedule any more frames right away, in this case we delay sending ack to
