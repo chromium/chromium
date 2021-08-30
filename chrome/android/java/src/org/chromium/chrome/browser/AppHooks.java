@@ -57,6 +57,9 @@ import java.util.List;
  * Base class for defining methods where different behavior is required by downstream targets.
  * The correct version of {@link AppHooksImpl} will be determined at compile time via build rules.
  * See http://crbug/560466.
+ *
+ * Note that new functionality should not be added to AppHooks. Instead the delegate pattern in
+ * go/apphooks-migration should be followed to solve this class of problems.
  */
 public abstract class AppHooks {
     private static AppHooksImpl sInstance;
@@ -330,4 +333,6 @@ public abstract class AppHooks {
     public String getDefaultQueryTilesServerUrl() {
         return "";
     }
+
+    // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }
