@@ -1591,7 +1591,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R96-14161.0.0",
+        "cros_img": "atlas-release/R96-14184.0.0",
         "name": "lacros_all_tast_tests_ATLAS_TOT",
         "resultdb": {
           "enable": true,
@@ -1606,7 +1606,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R94-14150.7.0",
+        "cros_img": "atlas-release/R94-14150.12.0",
         "name": "lacros_all_tast_tests_ATLAS_TOT-1",
         "resultdb": {
           "enable": true,
@@ -1636,7 +1636,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R96-14161.0.0",
+        "cros_img": "eve-release/R96-14184.0.0",
         "name": "lacros_all_tast_tests_EVE_TOT",
         "resultdb": {
           "enable": true,
@@ -1651,7 +1651,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R94-14150.7.0",
+        "cros_img": "eve-release/R94-14150.12.0",
         "name": "lacros_all_tast_tests_EVE_TOT-1",
         "resultdb": {
           "enable": true,
@@ -1666,7 +1666,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14092.35.0",
+        "cros_img": "eve-release/R93-14092.42.0",
         "name": "lacros_all_tast_tests_EVE_TOT-2",
         "resultdb": {
           "enable": true,
