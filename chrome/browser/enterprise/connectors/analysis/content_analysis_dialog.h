@@ -36,7 +36,6 @@ namespace enterprise_connectors {
 class DeepScanningTopImageView;
 class DeepScanningSideIconImageView;
 class DeepScanningSideIconSpinnerView;
-class DeepScanningMessageView;
 
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
@@ -236,7 +235,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   DeepScanningTopImageView* image_ = nullptr;
   DeepScanningSideIconImageView* side_icon_image_ = nullptr;
   DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
-  DeepScanningMessageView* message_ = nullptr;
+  views::Label* message_ = nullptr;
   views::Link* learn_more_link_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
