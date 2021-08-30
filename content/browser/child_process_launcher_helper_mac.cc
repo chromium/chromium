@@ -65,6 +65,8 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   options->environment = delegate_->GetEnvironment();
 
   options->disclaim_responsibility = delegate_->DisclaimResponsibility();
+  options->enable_cpu_security_mitigations =
+      delegate_->EnableCpuSecurityMitigations();
 
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
