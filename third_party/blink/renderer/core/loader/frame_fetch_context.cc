@@ -868,24 +868,8 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     return false;
   }
 
-  // Only allow conversion registration on secure pages with a secure conversion
-  // redirect.
-  const Frame& main_frame = GetFrame()->Tree().Top();
-  if (!main_frame.GetSecurityContext()
-           ->GetSecurityOrigin()
-           ->IsPotentiallyTrustworthy()) {
-    AuditsIssue::ReportAttributionIssue(
-        document_->domWindow(),
-        AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
-        main_frame.GetDevToolsFrameToken(), nullptr, devtools_request_id,
-        main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
-    return false;
-  }
-
-  if (!GetFrame()->IsMainFrame() && !GetFrame()
-                                         ->GetSecurityContext()
-                                         ->GetSecurityOrigin()
-                                         ->IsPotentiallyTrustworthy()) {
+  // Only allow conversion registration in secure context.
+  if (!document_->GetExecutionContext()->IsSecureContext()) {
     AuditsIssue::ReportAttributionIssue(
         document_->domWindow(),
         AttributionReportingIssueType::kAttributionUntrustworthyOrigin,

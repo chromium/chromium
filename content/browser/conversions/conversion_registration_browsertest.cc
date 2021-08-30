@@ -440,4 +440,49 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ConversionRegistrationBrowserTest,
+    ConversionRegisteredFromChildFrameInInsecureContext_NotReceived) {
+  // Start with localhost(secure) iframing a.test (insecure) iframing
+  // localhost(secure). This context is insecure since the middle iframe in the
+  // ancestor chain is insecure.
+
+  GURL main_frame_url =
+      embedded_test_server()->GetURL("/page_with_iframe.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), main_frame_url));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        let frame = document.getElementById('test_iframe');
+        frame.setAttribute('allow', 'attribution-reporting');)"));
+
+  GURL middle_iframe_url = embedded_test_server()->GetURL(
+      "insecure.example", "/page_with_iframe.html");
+  NavigateIframeToURL(web_contents(), "test_iframe", middle_iframe_url);
+
+  RenderFrameHost* middle_iframe =
+      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  GURL innermost_iframe_url(
+      embedded_test_server()->GetURL("/page_with_conversion_redirect.html"));
+  EXPECT_TRUE(ExecJs(middle_iframe, JsReplace(R"(
+      let frame = document.getElementById('test_iframe');
+      frame.setAttribute('allow', 'attribution-reporting');
+      frame.src = $1;)",
+                                              innermost_iframe_url)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  TestConversionHost host(web_contents());
+
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
+
+  ResourceLoadObserver load_observer(shell());
+  EXPECT_TRUE(ExecJs(ChildFrameAt(middle_iframe, 0),
+                     JsReplace("createTrackingPixel($1);", redirect_url)));
+  load_observer.WaitForResourceCompletion(redirect_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host.num_conversions());
+}
+
 }  // namespace content
