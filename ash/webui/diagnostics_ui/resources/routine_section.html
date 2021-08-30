@@ -87,14 +87,14 @@
       <cr-button id="runTestsButton"
           hidden$="[[isRunTestsButtonHidden_(testSuiteStatus,
               executionStatus_)]]"
-          on-click="runTests_"
+          on-click="runTests"
           disabled="[[isRunTestsButtonDisabled_(testSuiteStatus,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>
       <cr-button id="stopTestsButton"
           hidden$="[[isStopTestsButtonHidden_(executionStatus_)]]"
-          on-click="stopTests_">
+          on-click="stopTests">
         [[i18n('stopTestButtonText')]]
       </cr-button>
     </div>

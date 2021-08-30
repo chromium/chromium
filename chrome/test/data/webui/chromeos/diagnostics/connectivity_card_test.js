@@ -119,6 +119,24 @@ export function connectivityCardTestSuite() {
     routineSection.runTestsAutomatically = true;
   }
 
+  /**
+   * @param {string} guid
+   * @return {!Promise}
+   */
+  function changeActiveGuid(guid) {
+    connectivityCardElement.activeGuid = guid;
+    return flushTasks();
+  }
+
+  /**
+   * @suppress {visibility} // access private method for testing.
+   * @return {!Promise}
+   */
+  function stopTests() {
+    connectivityCardElement.getRoutineSectionElem_().stopTests();
+    return flushTasks();
+  }
+
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
@@ -185,5 +203,24 @@ export function connectivityCardTestSuite() {
       assertFalse(routines.includes(RoutineType.kSignalStrength));
       assertFalse(routines.includes(RoutineType.kHasSecureWiFiConnection));
     });
+  });
+
+  test('TestsRestartWhenGuidChanges', () => {
+    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    return initializeConnectivityCard('ethernetGuid', true)
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kRunning,
+                connectivityCardElement.testSuiteStatus))
+        .then(() => stopTests())
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kNotRunning,
+                connectivityCardElement.testSuiteStatus))
+        .then(() => changeActiveGuid('wifiGuid'))
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kRunning,
+                connectivityCardElement.testSuiteStatus));
   });
 }

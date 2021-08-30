@@ -179,12 +179,6 @@ Polymer({
     },
 
     /** @type {boolean} */
-    runTestsAutomatically: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @type {boolean} */
     hideRoutineStatus: {
       type: Boolean,
       value: false,
@@ -206,7 +200,7 @@ Polymer({
   observers: [
     'routineStatusChanged_(executionStatus_, currentTestName_,' +
         'additionalMessage)',
-    'onActivePageChanged_(isActive, routines.length)',
+    'onActivePageChanged_(isActive)'
   ],
 
   /**
@@ -224,8 +218,7 @@ Polymer({
         this.$$('routine-result-list'));
   },
 
-  /** @private */
-  runTests_() {
+  runTests() {
     // Do not attempt to run tests when no routines available to run.
     if (this.routines.length === 0) {
       return;
@@ -286,7 +279,9 @@ Polymer({
               })
           .then((/** @type {!ExecutionProgress} */ status) => {
             this.executionStatus_ = status;
-            this.testSuiteStatus = TestSuiteStatus.kCompleted;
+            this.testSuiteStatus = status === ExecutionProgress.kCancelled ?
+                TestSuiteStatus.kNotRunning :
+                TestSuiteStatus.kCompleted;
             this.routineStartTimeMs_ = -1;
             this.runTestsButtonText =
                 loadTimeData.getString('runAgainButtonText');
@@ -319,8 +314,7 @@ Polymer({
     this.systemRoutineController_ = null;
   },
 
-  /** @protected */
-  stopTests_() {
+  stopTests() {
     if (this.executor_) {
       this.executor_.cancel();
     }
@@ -542,13 +536,9 @@ Polymer({
    */
   onActivePageChanged_() {
     if (!this.isActive) {
-      this.stopTests_();
+      this.stopTests();
       this.resetRoutineState_();
       return;
-    }
-
-    if (this.runTestsAutomatically && !this.isTestRunning_()) {
-      this.runTests_();
     }
   },
 

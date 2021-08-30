@@ -953,19 +953,4 @@ export function routineSectionTestSuite() {
               routineSectionElement.$$('.button-container'))));
         });
   });
-
-  test('IsTestRunningShouldBeTrueWhenListOfRoutinesUpdate', () => {
-    return initializeRoutineSection([])
-        .then(() => setRunTestsAutomatically(true))
-        .then(() => setIsActive(true))
-        .then(
-            () => assertEquals(
-                TestSuiteStatus.kNotRunning,
-                routineSectionElement.testSuiteStatus))
-        .then(() => setRoutines([RoutineType.kCpuStress]))
-        .then(
-            () => assertEquals(
-                TestSuiteStatus.kRunning,
-                routineSectionElement.testSuiteStatus));
-  });
 }

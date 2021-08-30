@@ -51,19 +51,20 @@ Polymer({
     /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
-      value: [],
-      computed: 'computeRoutines_(activeGuid, network.type)',
+      value: () => [],
     },
 
     /** @type {string} */
     activeGuid: {
       type: String,
       value: '',
+      observer: 'activeGuidChanged_',
     },
 
     /** @type {boolean} */
     isActive: {
       type: Boolean,
+      observer: 'isActiveChanged_',
     },
 
     /** @type {!Network} */
@@ -84,19 +85,19 @@ Polymer({
     },
   },
 
-  observers: ['observeNetwork_(activeGuid)'],
-
   /** @override */
   created() {
     this.networkHealthProvider_ = getNetworkHealthProvider();
   },
 
-  computeRoutines_() {
-    if (!this.network) {
-      return [];
-    }
+  /** @private */
+  getRoutineSectionElem_() {
+    return /** @type {!RoutineSectionElement} */ (this.$$('routine-section'));
+  },
 
-    return getRoutinesByNetworkType(this.network.type);
+  /** @override */
+  detached() {
+    this.getRoutineSectionElem_().stopTests();
   },
 
   displayRoutines_() {
@@ -105,10 +106,6 @@ Polymer({
 
   /** @private */
   observeNetwork_() {
-    if (!this.activeGuid) {
-      return;
-    }
-
     if (this.networkStateObserverReceiver_) {
       this.networkStateObserverReceiver_.$.close();
       this.networkStateObserverReceiver_ = null;
@@ -132,6 +129,12 @@ Polymer({
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
     this.networkState_ = getNetworkState(network.state);
+
+    if (this.testSuiteStatus === TestSuiteStatus.kNotRunning) {
+      this.routines_ = getRoutinesByNetworkType(network.type);
+      this.getRoutineSectionElem_().runTests();
+    }
+
     this.set('network', network);
   },
 
@@ -149,5 +152,35 @@ Polymer({
     }
 
     return title;
+  },
+
+  /**
+   * @protected
+   * @param {string} activeGuid
+   */
+  activeGuidChanged_(activeGuid) {
+    if (this.testSuiteStatus === TestSuiteStatus.kCompleted) {
+      this.testSuiteStatus = TestSuiteStatus.kNotRunning;
+    }
+
+    if (!activeGuid) {
+      return;
+    }
+    this.getRoutineSectionElem_().stopTests();
+    this.observeNetwork_();
+  },
+
+  /**
+   * @protected
+   * @param {boolean} active
+   */
+  isActiveChanged_(active) {
+    if (!active) {
+      return;
+    }
+
+    if (this.routines_.length > 0) {
+      this.getRoutineSectionElem_().runTests();
+    }
   },
 });

@@ -205,6 +205,6 @@ export function networkListTestSuite() {
   test('ConnectivityCardHiddenWithNoActiveGuid', () => {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(() => changeActiveGuid(''))
-        .then(() => assertFalse(isVisible(getConnectivityCard())));
+        .then(() => assertFalse(!!networkListElement.$$('connectivity-card')));
   });
 }
