@@ -176,6 +176,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver);
 
   // This may be called on any thread.
+  void BindGeolocationService(
+      mojo::PendingReceiver<crosapi::mojom::GeolocationService>
+          pending_receiver);
+
+  // This may be called on any thread.
   void BindMachineLearningService(
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver);

@@ -26,6 +26,7 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -219,6 +220,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::FileManager,
                   &crosapi::mojom::Crosapi::BindFileManager,
                   Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::GeolocationService,
+      &crosapi::mojom::Crosapi::BindGeolocationService,
+      Crosapi::MethodMinVersions::kBindGeolocationServiceMinVersion>();
   ConstructRemote<device::mojom::HidManager,
                   &crosapi::mojom::Crosapi::BindHidManager,
                   Crosapi::MethodMinVersions::kBindHidManagerMinVersion>();
@@ -431,6 +436,17 @@ void LacrosService::BindBrowserCdmFactory(
   BindPendingReceiverOrRemote<mojo::GenericPendingReceiver,
                               &crosapi::mojom::Crosapi::BindBrowserCdmFactory>(
       std::move(receiver));
+}
+
+void LacrosService::BindGeolocationService(
+    mojo::PendingReceiver<crosapi::mojom::GeolocationService>
+        pending_receiver) {
+  DCHECK(IsAvailable<crosapi::mojom::GeolocationService>());
+
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::GeolocationService>,
+      &crosapi::mojom::Crosapi::BindGeolocationService>(
+      std::move(pending_receiver));
 }
 
 void LacrosService::BindMachineLearningService(

@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
+#include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
@@ -111,6 +112,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<DriveIntegrationServiceAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
+      geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -209,6 +211,11 @@ void CrosapiAsh::BindChromeAppPublisher(
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindGeolocationService(
+    mojo::PendingReceiver<crosapi::mojom::GeolocationService> receiver) {
+  geolocation_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindHoldingSpaceService(

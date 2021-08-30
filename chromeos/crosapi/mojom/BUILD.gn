@@ -21,6 +21,7 @@ mojom("mojom") {
     "drive_integration_service.mojom",
     "feedback.mojom",
     "file_manager.mojom",
+    "geolocation.mojom",
     "holding_space_service.mojom",
     "idle_service.mojom",
     "image_writer.mojom",
