@@ -5,7 +5,13 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
+import("//build/config/devtools.gni")
 import("//build/config/ui.gni")
+
+shared_intermediate_dir = rebase_path(root_gen_dir, root_build_dir)
+devtools_grd_path = "$shared_intermediate_dir/$devtools_grd_location"
+devtools_grd_path_no_ext = get_path_info(devtools_grd_path, "dir") + "/" +
+                           get_path_info(devtools_grd_path, "name")
 
 grit_defines = [
   "-E",
@@ -13,7 +19,9 @@ grit_defines = [
   "-E",
   "root_src_dir=" + rebase_path("//", root_build_dir),
   "-D",
-  "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir),
+  "SHARED_INTERMEDIATE_DIR=" + shared_intermediate_dir,
+  "-D",
+  "DEVTOOLS_GRD_PATH=" + devtools_grd_path_no_ext,
 ]
 
 if (is_mac || is_win || is_linux || is_chromeos || is_ios) {

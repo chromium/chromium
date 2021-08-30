@@ -56,6 +56,8 @@ default_args = {
   angle_vulkan_tools_dir = "//third_party/vulkan-deps/vulkan-tools/src"
   angle_vulkan_validation_layers_dir =
       "//third_party/vulkan-deps/vulkan-validation-layers/src"
+
+  devtools_visibility = [ "*" ]
 }
 
 # These are the targets to skip header checking by default. The files in targets
