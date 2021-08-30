@@ -73,7 +73,7 @@ public class ChromeColors {
      * @return The medium text secondary style.
      */
     public static int getTextMediumThickSecondaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Light
+        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
                                    : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 

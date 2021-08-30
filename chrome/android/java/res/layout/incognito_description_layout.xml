@@ -33,7 +33,7 @@
         android:id="@+id/new_tab_incognito_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
         android:lineSpacingExtra="@dimen/md_incognito_ntp_line_spacing" />
 
     <LinearLayout
@@ -48,14 +48,14 @@
             android:id="@+id/new_tab_incognito_features"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
             app:leading="@dimen/text_size_medium_leading" />
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/new_tab_incognito_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
             app:leading="@dimen/text_size_medium_leading" />
 
     </LinearLayout>
@@ -111,7 +111,7 @@
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/cookie_controls_card_subtitle"
             android:text="@string/new_tab_otr_third_party_cookie_sublabel"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
             android:layout_toStartOf="@id/cookie_controls_card_toggle"
             android:layout_toEndOf="@id/cookie_controls_card_managed_icon"
             android:layout_below="@id/cookie_controls_card_title"

@@ -153,47 +153,16 @@
       display on a dark background).
     -->
 
-    <style name="TextAppearance.TextLarge.Secondary">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-    </style>
-
     <style name="TextAppearance.TextLarge.Disabled">
         <item name="android:textColor">@color/default_text_color_disabled</item>
-    </style>
-
-    <style name="TextAppearance.TextMediumThick.Secondary">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-    </style>
-
-    <style name="TextAppearance.TextAccentMediumThick.Secondary" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-    </style>
-
-    <style name="TextAppearance.TextMedium.Secondary">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
     </style>
 
     <style name="TextAppearance.TextMedium.Disabled">
         <item name="android:textColor">@color/default_text_color_disabled</item>
     </style>
 
-    <style name="TextAppearance.TextSmall.Secondary">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-    </style>
-
     <style name="TextAppearance.TextSmall.Disabled">
         <item name="android:textColor">@color/default_text_color_disabled</item>
-    </style>
-
-    <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-    <style name="TextAppearance.BlackToolbarTitle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Non Adaptive Text Styles -->
@@ -216,14 +185,16 @@
     <style name="TextAppearance.TextSmall.Primary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Secondary.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.Secondary.Baseline.Light"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Secondary.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.Secondary.Baseline.Light"
+        parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
-    <style name="TextAppearance.TextMedium.Secondary.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Secondary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
@@ -240,7 +211,8 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.TextSmallThick.Secondary.Light" parent="TextAppearance.TextSmall.Secondary">
+    <style name="TextAppearance.TextSmallThick.Secondary.Baseline.Light"
+        parent="TextAppearance.TextSmall">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -259,16 +231,18 @@
         <item name="android:textColor">@color/default_text_color_dark</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Secondary.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.Secondary.Baseline.Dark"
+        parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
-    <style name="TextAppearance.TextMedium.Secondary.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Secondary.Baseline.Dark" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
-    <style name="TextAppearance.TextSmall.Secondary.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextSmall.Secondary.Baseline.Dark" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Secondary.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.Secondary.Baseline.Dark"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
 
@@ -382,6 +356,15 @@
 
     <style name="TextAppearance.TextSmall.Primary.Baseline" parent="TextAppearance.TextSmall">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <!-- Secondary text styles -->
+    <style name="TextAppearance.TextMedium.Secondary.Baseline" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Secondary.Baseline" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
     </style>
 
     <!-- Error Text Styles -->

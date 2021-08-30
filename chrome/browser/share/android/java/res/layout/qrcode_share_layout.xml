@@ -48,7 +48,7 @@
             android:padding="16dp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Dark"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Dark"
             android:visibility="visible"/>
     </FrameLayout>
 
