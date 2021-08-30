@@ -215,6 +215,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  // Updates the browser window status when the web app tab of `tab_key` is
+  // inactivated.
+  void UpdateBrowserWindowStatus(const Instance::InstanceKey& tab_key);
+
   // Returns true if the browser with `browser_key` has activated tabs.
   // Otherwise, returns false.
   bool HasActivatedTab(const Instance::InstanceKey& browser_key);
