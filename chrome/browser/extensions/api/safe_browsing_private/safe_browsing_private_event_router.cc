@@ -74,7 +74,8 @@ void AddAnalysisConnectorVerdictToEvent(
     base::Value* event) {
   DCHECK(event);
   base::ListValue triggered_rule_info;
-  for (const auto& trigger : result.triggered_rules()) {
+  for (const enterprise_connectors::TriggeredRule& trigger :
+       result.triggered_rules()) {
     base::Value triggered_rule(base::Value::Type::DICTIONARY);
     triggered_rule.SetStringKey(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
@@ -252,7 +253,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
     return;
@@ -282,7 +284,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
     return;
@@ -322,7 +325,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -378,14 +382,15 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
   }
 
   PrefService* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
-  auto event_result =
+  safe_browsing::EventResult event_result =
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled)
           ? safe_browsing::EventResult::BLOCKED
           : safe_browsing::EventResult::WARNED;
@@ -427,7 +432,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
@@ -484,7 +490,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& malware_category,
     const std::string& evidence_locker_filepath,
     const std::string& scan_id) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -532,7 +539,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
@@ -575,7 +583,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
@@ -618,7 +627,8 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const std::string& reason,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyUnscannedFileEvent) == 0) {
     return;
@@ -668,7 +678,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& scan_id,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -720,7 +731,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -755,7 +767,8 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
     const GURL& url,
     bool is_federated,
     const GURL& federated_origin) {
-  auto settings = GetReportingSettings();
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyLoginEvent) == 0) {
     return;
@@ -865,11 +878,12 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient(
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto desc_and_client = InitBrowserReportingClient(settings.dm_token);
+  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
+      InitBrowserReportingClient(settings.dm_token);
 #else
-  auto desc_and_client = settings.per_profile
-                             ? InitProfileReportingClient(settings.dm_token)
-                             : InitBrowserReportingClient(settings.dm_token);
+  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
+      settings.per_profile ? InitProfileReportingClient(settings.dm_token)
+                           : InitBrowserReportingClient(settings.dm_token);
 #endif
   if (!desc_and_client.second)
     return;
@@ -903,9 +917,9 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
   policy::CloudPolicyClient* client = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* user = GetChromeOSUser();
+  const user_manager::User* user = GetChromeOSUser();
   if (user) {
-    auto* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
     // If primary user profile is not finalized, use the current profile.
     if (!profile)
       profile = Profile::FromBrowserContext(context_);
@@ -915,7 +929,8 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
       policy_client_desc = kActiveDirectoryPolicyClientDescription;
     } else {
       policy_client_desc = kUserPolicyClientDescription;
-      auto* policy_manager = profile->GetUserCloudPolicyManagerAsh();
+      policy::UserCloudPolicyManagerAsh* policy_manager =
+          profile->GetUserCloudPolicyManagerAsh();
       if (policy_manager)
         client = policy_manager->core()->client();
     }
@@ -1016,7 +1031,7 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
 #ifndef NDEBUG
   // Make sure that the event is included in the kAllEvents array.
   bool found = false;
-  for (auto* known_event_name :
+  for (const char* known_event_name :
        extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
     if (name == known_event_name) {
       found = true;
@@ -1041,7 +1056,8 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
       now_exploded.month, now_exploded.day_of_month, now_exploded.hour,
       now_exploded.minute, now_exploded.second, now_exploded.millisecond);
 
-  auto* client = settings.per_profile ? profile_client_ : browser_client_;
+  policy::CloudPolicyClient* client =
+      settings.per_profile ? profile_client_ : browser_client_;
   base::Value wrapper(base::Value::Type::DICTIONARY);
   wrapper.SetStringKey("time", now_str);
   wrapper.SetKey(name, std::move(event));
@@ -1095,7 +1111,7 @@ bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
 
   // The Chrome OS user must be affiliated with the device.
   // This also implies that the user is managed.
-  auto* user = GetChromeOSUser();
+  const user_manager::User* user = GetChromeOSUser();
   return user && user->IsAffiliated();
 #else
   // The management status is determined by the settings returned by
