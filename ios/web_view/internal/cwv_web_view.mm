@@ -159,7 +159,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 namespace {
 NSString* gCustomUserAgent = nil;
 NSString* gUserAgentProduct = nil;
-BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 }  // namespace
 
 @implementation CWVWebView
@@ -185,14 +184,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   }
 
   ios_web_view::InitializeGlobalState();
-}
-
-+ (BOOL)chromeLongPressAndForceTouchHandlingEnabled {
-  return gChromeLongPressAndForceTouchHandlingEnabled;
-}
-
-+ (void)setChromeLongPressAndForceTouchHandlingEnabled:(BOOL)newValue {
-  gChromeLongPressAndForceTouchHandlingEnabled = newValue;
 }
 
 + (NSString*)customUserAgent {
@@ -525,38 +516,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   return _javaScriptDialogPresenter.get();
-}
-
-- (BOOL)webState:(web::WebState*)webState
-    shouldPreviewLinkWithURL:(const GURL&)linkURL {
-  SEL selector = @selector(webView:shouldPreviewElement:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    CWVPreviewElementInfo* elementInfo = [[CWVPreviewElementInfo alloc]
-        initWithLinkURL:net::NSURLWithGURL(linkURL)];
-    return [_UIDelegate webView:self shouldPreviewElement:elementInfo];
-  }
-  return NO;
-}
-
-- (UIViewController*)webState:(web::WebState*)webState
-    previewingViewControllerForLinkWithURL:(const GURL&)linkURL {
-  SEL selector = @selector(webView:previewingViewControllerForElement:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    CWVPreviewElementInfo* elementInfo = [[CWVPreviewElementInfo alloc]
-        initWithLinkURL:net::NSURLWithGURL(linkURL)];
-    return [_UIDelegate webView:self
-        previewingViewControllerForElement:elementInfo];
-  }
-  return nil;
-}
-
-- (void)webState:(web::WebState*)webState
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  SEL selector = @selector(webView:commitPreviewingViewController:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        commitPreviewingViewController:previewingViewController];
-  }
 }
 
 - (void)webState:(web::WebState*)webState

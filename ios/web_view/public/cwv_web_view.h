@@ -125,12 +125,6 @@ CWV_EXPORT
 // https://developer.apple.com/documentation/webkit/wkwebview/1414977-backforwardlist
 @property(nonatomic, readonly, nonnull) CWVBackForwardList* backForwardList;
 
-// Enables Chrome's custom logic to handle long press and force touch. Defaults
-// to YES. To use the system context menu this must be set to NO.
-// This class property setting should only be changed BEFORE any
-// CWVWebViewConfiguration instance is initialized.
-@property(nonatomic, class) BOOL chromeLongPressAndForceTouchHandlingEnabled;
-
 // Set this to customize the underlying WKWebView's inputAccessoryView. Setting
 // to nil means to use the WKWebView's default inputAccessoryView instead.
 //

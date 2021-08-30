@@ -25,14 +25,6 @@
 @synthesize webStateClosingRequested = _webStateClosingRequested;
 @synthesize repostFormWarningRequested = _repostFormWarningRequested;
 @synthesize authenticationRequested = _authenticationRequested;
-@synthesize shouldPreviewLinkWithURLReturnValue =
-    _shouldPreviewLinkWithURLReturnValue;
-@synthesize linkURL = _linkURL;
-@synthesize previewingViewControllerForLinkWithURLReturnValue =
-    _previewingViewControllerForLinkWithURLReturnValue;
-@synthesize previewingViewController = _previewingViewController;
-@synthesize commitPreviewingViewControllerRequested =
-    _commitPreviewingViewControllerRequested;
 @synthesize isAppLaunchingAllowedForWebStateReturnValue =
     _isAppLaunchingAllowedForWebStateReturnValue;
 
@@ -95,27 +87,6 @@
 
 - (BOOL)javaScriptDialogPresenterRequested {
   return _javaScriptDialogPresenterRequested;
-}
-
-- (BOOL)webState:(web::WebState*)webState
-    shouldPreviewLinkWithURL:(const GURL&)linkURL {
-  _webState = webState;
-  _linkURL = linkURL;
-  return _shouldPreviewLinkWithURLReturnValue;
-}
-
-- (UIViewController*)webState:(web::WebState*)webState
-    previewingViewControllerForLinkWithURL:(const GURL&)linkURL {
-  _webState = webState;
-  _linkURL = linkURL;
-  return _previewingViewControllerForLinkWithURLReturnValue;
-}
-
-- (void)webState:(web::WebState*)webState
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  _webState = webState;
-  _previewingViewController = previewingViewController;
-  _commitPreviewingViewControllerRequested = YES;
 }
 
 - (BOOL)isAppLaunchingAllowedForWebState:(web::WebState*)webState {

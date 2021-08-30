@@ -70,22 +70,6 @@ CWV_EXPORT
                         completionHandler:
                             (void (^)(NSString* _Nullable))completionHandler;
 
-// Determines whether the given link with |linkURL| should show a preview on
-// force touch. Return value NO is assumed if the method is not implemented.
-- (BOOL)webView:(CWVWebView*)webView
-    shouldPreviewElement:(CWVPreviewElementInfo*)elementInfo;
-
-// Called when the user performs a peek action on a link with |linkURL| with
-// force touch. Returns a view controller shown as a pop-up. Uses Webkit's
-// default preview behavior when it returns nil.
-- (nullable UIViewController*)webView:(CWVWebView*)webView
-    previewingViewControllerForElement:(CWVPreviewElementInfo*)elementInfo;
-
-// Instructs the delegate to display |previewingViewController| inside the app,
-// in response to the user's pop action on the preview on force touch.
-- (void)webView:(CWVWebView*)webView
-    commitPreviewingViewController:(UIViewController*)previewingViewController;
-
 // Called when favicons become available in the current page.
 - (void)webView:(CWVWebView*)webView
     didLoadFavicons:(NSArray<CWVFavicon*>*)favIcons;

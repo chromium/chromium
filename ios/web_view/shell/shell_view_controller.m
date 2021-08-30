@@ -258,7 +258,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   ]];
 
   [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
-  CWVWebView.chromeLongPressAndForceTouchHandlingEnabled = NO;
 
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
@@ -585,30 +584,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                     actionWithTitle:@"Recreate web view"
                               style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction* action) {
-                              CWVWebViewConfiguration* configuration =
-                                  weakSelf.webView.configuration;
-                              [weakSelf removeWebView];
-                              weakSelf.webView = [weakSelf
-                                  createWebViewWithConfiguration:configuration];
-                            }]];
-
-  // Developers can choose to use system or Chrome context menu in the shell
-  // app. This will also recreate the web view.
-  BOOL chromeContextMenuEnabled =
-      CWVWebView.chromeLongPressAndForceTouchHandlingEnabled;
-  NSString* contextMenuSwitchActionTitle = [NSString
-      stringWithFormat:@"Use %@ context menu",
-                       chromeContextMenuEnabled ? @"system" : @"Chrome"];
-  [alertController
-      addAction:[UIAlertAction
-                    actionWithTitle:contextMenuSwitchActionTitle
-                              style:UIAlertActionStyleDefault
-                            handler:^(UIAlertAction* action) {
-                              CWVWebView
-                                  .chromeLongPressAndForceTouchHandlingEnabled =
-                                  !chromeContextMenuEnabled;
-                              NSLog(@"Chrome context menu is %@ now.",
-                                    !chromeContextMenuEnabled ? @"OFF" : @"ON");
                               CWVWebViewConfiguration* configuration =
                                   weakSelf.webView.configuration;
                               [weakSelf removeWebView];
@@ -1075,23 +1050,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView {
-  NSLog(@"%@", NSStringFromSelector(_cmd));
-}
-
-- (BOOL)webView:(CWVWebView*)webView
-    shouldPreviewElement:(CWVPreviewElementInfo*)elementInfo {
-  NSLog(@"%@", NSStringFromSelector(_cmd));
-  return YES;
-}
-
-- (UIViewController*)webView:(CWVWebView*)webView
-    previewingViewControllerForElement:(CWVPreviewElementInfo*)elementInfo {
-  NSLog(@"%@", NSStringFromSelector(_cmd));
-  return nil;
-}
-
-- (void)webView:(CWVWebView*)webView
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }
 

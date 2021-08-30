@@ -499,32 +499,6 @@ TEST_F(WebStateImplTest, DelegateTest) {
   EXPECT_EQ(delegate.last_authentication_request()->protection_space,
             protection_space);
   EXPECT_EQ(delegate.last_authentication_request()->credential, credential);
-
-  // Test that ShouldPreviewLink() is delegated correctly.
-  GURL link_url("http://link.test/");
-  delegate.SetShouldPreviewLink(false);
-  delegate.ClearLastLinkURL();
-  EXPECT_FALSE(web_state_->ShouldPreviewLink(link_url));
-  EXPECT_EQ(link_url, delegate.last_link_url());
-  delegate.SetShouldPreviewLink(true);
-  delegate.ClearLastLinkURL();
-  EXPECT_TRUE(web_state_->ShouldPreviewLink(link_url));
-  EXPECT_EQ(link_url, delegate.last_link_url());
-
-  // Test that GetPreviewingViewController() is delegated correctly.
-  UIViewController* previewing_view_controller =
-      OCMClassMock([UIViewController class]);
-  delegate.SetPreviewingViewController(previewing_view_controller);
-  delegate.ClearLastLinkURL();
-  EXPECT_EQ(previewing_view_controller,
-            web_state_->GetPreviewingViewController(link_url));
-  EXPECT_EQ(link_url, delegate.last_link_url());
-
-  // Test that CommitPreviewingViewController() is called.
-  delegate.ClearLastPreviewingViewController();
-  web_state_->CommitPreviewingViewController(previewing_view_controller);
-  EXPECT_EQ(previewing_view_controller,
-            delegate.last_previewing_view_controller());
 }
 
 // Verifies that GlobalWebStateObservers are called when expected.

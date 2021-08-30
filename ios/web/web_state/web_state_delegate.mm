@@ -55,21 +55,6 @@ void WebStateDelegate::OnAuthRequired(WebState* source,
   std::move(callback).Run(nil, nil);
 }
 
-bool WebStateDelegate::ShouldPreviewLink(WebState* source,
-                                         const GURL& link_url) {
-  return false;
-}
-
-UIViewController* WebStateDelegate::GetPreviewingViewController(
-    WebState* source,
-    const GURL& link_url) {
-  return nullptr;
-}
-
-void WebStateDelegate::CommitPreviewingViewController(
-    WebState* source,
-    UIViewController* previewing_view_controller) {}
-
 UIView* WebStateDelegate::GetWebViewContainer(WebState* source) {
   return nil;
 }

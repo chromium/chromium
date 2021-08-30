@@ -173,49 +173,4 @@ TEST_F(WebStateDelegateBridgeTest, OnAuthRequired) {
   EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
 }
 
-// Tests |ShouldPreviewLink| forwarding.
-TEST_F(WebStateDelegateBridgeTest, ShouldPreviewLinkWithURL) {
-  GURL link_url("http://link.test/");
-  EXPECT_FALSE(delegate_.webState);
-
-  delegate_.shouldPreviewLinkWithURLReturnValue = YES;
-  EXPECT_TRUE(bridge_->ShouldPreviewLink(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-
-  delegate_.shouldPreviewLinkWithURLReturnValue = NO;
-  EXPECT_FALSE(bridge_->ShouldPreviewLink(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-}
-
-// Tests |GetPreviewingViewController| forwarding.
-TEST_F(WebStateDelegateBridgeTest, GetPreviewingViewController) {
-  GURL link_url("http://link.test/");
-  UIViewController* previewing_view_controller =
-      OCMClassMock([UIViewController class]);
-
-  EXPECT_FALSE(delegate_.webState);
-  delegate_.previewingViewControllerForLinkWithURLReturnValue =
-      previewing_view_controller;
-  EXPECT_EQ(previewing_view_controller,
-            bridge_->GetPreviewingViewController(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-}
-
-// Tests |CommitPreviewingViewController| forwarding.
-TEST_F(WebStateDelegateBridgeTest, CommitPreviewingViewController) {
-  UIViewController* previewing_view_controller =
-      OCMClassMock([UIViewController class]);
-
-  EXPECT_FALSE(delegate_.webState);
-  EXPECT_FALSE(delegate_.previewingViewController);
-  bridge_->CommitPreviewingViewController(&fake_web_state_,
-                                          previewing_view_controller);
-  EXPECT_TRUE(delegate_.commitPreviewingViewControllerRequested);
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(previewing_view_controller, delegate_.previewingViewController);
-}
-
 }  // namespace web

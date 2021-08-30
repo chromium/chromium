@@ -173,27 +173,7 @@
 // TODO(crbug.com/1131852): Preview depracted is iOS13+
 - (BOOL)webView:(WKWebView*)webView
     shouldPreviewElement:(WKPreviewElementInfo*)elementInfo {
-  return self.webStateImpl->ShouldPreviewLink(
-      net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (UIViewController*)webView:(WKWebView*)webView
-    previewingViewControllerForElement:(WKPreviewElementInfo*)elementInfo
-                        defaultActions:
-                            (NSArray<id<WKPreviewActionItem>>*)previewActions {
-  // Prevent |_contextMenuController| from intercepting the default behavior for
-  // the current on-going touch. Otherwise it would cancel the on-going Peek&Pop
-  // action and show its own context menu instead (crbug.com/770619).
-  [self.contextMenuController allowSystemUIForCurrentGesture];
-
-  return self.webStateImpl->GetPreviewingViewController(
-      net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (void)webView:(WKWebView*)webView
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  return self.webStateImpl->CommitPreviewingViewController(
-      previewingViewController);
+  return NO;
 }
 
 #endif  // End of >iOS13 deprecated block.
