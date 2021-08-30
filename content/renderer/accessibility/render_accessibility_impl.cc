@@ -984,7 +984,12 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 #if DCHECK_IS_ON()
   // Never causes a document lifecycle change during serialization,
   // because the assumption is that layout is in a safe, stable state.
-  blink::WebDisallowTransitionScope disallow(&document);
+  // (Skip if image_annotation_debugging_ is enabled because it adds
+  // style attributes to images, affecting the document lifecycle
+  // during accessibility.)
+  std::unique_ptr<blink::WebDisallowTransitionScope> disallow;
+  if (!image_annotation_debugging_)
+    disallow = std::make_unique<blink::WebDisallowTransitionScope>(&document);
 #endif
 
   // Save the page language.
@@ -1012,7 +1017,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // statement because it's scoped.
   WebDocument popup_or_main_document =
       popup_document.IsNull() ? document : popup_document;
-  blink::WebDisallowTransitionScope disallow2(&popup_or_main_document);
+  std::unique_ptr<blink::WebDisallowTransitionScope> disallow2;
+  if (!image_annotation_debugging_) {
+    disallow = std::make_unique<blink::WebDisallowTransitionScope>(
+        &popup_or_main_document);
+  }
 #endif
 
   // Keep track of if the host node for a plugin has been invalidated,
