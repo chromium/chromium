@@ -270,8 +270,11 @@ bool WaylandEventWatcher::CheckForErrors() {
     wayland_error.Set(error_string);
 
     // This can be null in tests.
-    if (!shutdown_cb_.is_null())
+    if (!shutdown_cb_.is_null()) {
+      // Force a crash so that a crash report is generated.
+      CHECK(err == EPIPE || err == ECONNRESET) << "Wayland protocol error.";
       std::move(shutdown_cb_).Run();
+    }
     return false;
   }
 
