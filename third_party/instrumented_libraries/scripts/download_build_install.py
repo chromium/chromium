@@ -142,7 +142,7 @@ class InstrumentedPackageBuilder(object):
                       cwd=self._working_dir)
       fcntl.flock(lock, fcntl.LOCK_UN)
 
-    (dirpath, dirnames, filenames) = os.walk(self._working_dir).next()
+    (dirpath, dirnames, filenames) = next(os.walk(self._working_dir))
 
     if len(dirnames) != 1:
       raise Exception(
@@ -189,9 +189,9 @@ class InstrumentedPackageBuilder(object):
     try:
       self.build_and_install()
     except Exception as exception:
-      print(f'ERROR: Failed to build package {self._package}. Have you '
+      print('ERROR: Failed to build package %s. Have you '
             'run src/third_party/instrumented_libraries/scripts/'
-            'install-build-deps.sh?')
+            'install-build-deps.sh?' % self._package)
       raise
 
     # Touch a text file to indicate package is installed.
@@ -465,7 +465,7 @@ class NSSBuilder(InstrumentedPackageBuilder):
         if filename.endswith('.so'):
           full_path = os.path.join(dirpath, filename)
           if self._verbose:
-            print(f'download_build_install.py: installing {full_path}')
+            print('download_build_install.py: installing ' + full_path)
           shutil.copy(full_path, self.dest_libdir())
 
 

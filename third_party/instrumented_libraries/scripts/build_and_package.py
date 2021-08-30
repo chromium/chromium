@@ -24,7 +24,9 @@ BUILD_TYPES = {
     'tsan': ['is_tsan = true'],
     'asan': ['is_asan = true']
 }
-SUPPORTED_RELEASES = frozenset(['trusty'])
+
+# Xenial support is in development (https://crbug.com/1244199).
+SUPPORTED_RELEASES = frozenset([ 'trusty', 'xenial' ])
 
 
 class Error(Exception):
