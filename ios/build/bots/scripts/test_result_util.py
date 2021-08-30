@@ -4,13 +4,14 @@
 """Test result related classes."""
 
 from collections import OrderedDict
-import os
 import shard_util
 import time
 
 from result_sink_util import ResultSinkClient
 
-_VALID_TEST_STATUSES = ['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP']
+_VALID_RESULT_COLLECTION_INIT_KWARGS = set(['test_results', 'crashed'])
+_VALID_TEST_RESULT_INIT_KWARGS = set(['expected_status', 'test_log'])
+_VALID_TEST_STATUSES = set(['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'])
 
 
 class TestStatus:
@@ -24,6 +25,12 @@ class TestStatus:
   CRASH = 'CRASH'
   ABORT = 'ABORT'
   SKIP = 'SKIP'
+
+
+def _validate_kwargs(kwargs, valid_args_set):
+  """Validates if keywords in kwargs are accepted."""
+  diff = set(kwargs.keys()) - valid_args_set
+  assert len(diff) == 0, 'Invalid keyword argument(s) in %s passed in!' % diff
 
 
 def _validate_test_status(status):
@@ -58,6 +65,7 @@ class TestResult(object):
       expected_status: (str) Expected test outcome for the run.
       test_log: (str) Logs of the test.
     """
+    _validate_kwargs(kwargs, _VALID_TEST_RESULT_INIT_KWARGS)
     self.name = name
     _validate_test_status(status)
     self.status = status
@@ -114,6 +122,7 @@ class ResultCollection(object):
       crashed: (bool) Whether the ResultCollection is of a crashed test launch.
       test_results: (list) A list of test_results to initialize the collection.
     """
+    _validate_kwargs(kwargs, _VALID_RESULT_COLLECTION_INIT_KWARGS)
     self._test_results = []
     self._crashed = kwargs.get('crashed', False)
     self._crash_message = ''

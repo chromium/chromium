@@ -9,7 +9,7 @@ import mock
 import unittest
 
 import test_result_util
-from test_result_util import TestResult, TestStatus, ResultCollection, _to_standard_json_literal
+from test_result_util import TestResult, TestStatus, ResultCollection
 import test_runner_test
 
 PASSED_RESULT = TestResult('passed/test', TestStatus.PASS, test_log='Logs')
@@ -31,13 +31,24 @@ ABORTED_RESULT = TestResult('aborted/test', TestStatus.ABORT)
 class UtilTest(test_runner_test.TestCase):
   """Tests util methods in test_result_util module."""
 
+  def test_validate_kwargs(self):
+    """Tests _validate_kwargs."""
+    with self.assertRaises(AssertionError) as context:
+      TestResult('name', TestStatus.PASS, unknown='foo')
+    expected_message = (
+        'Invalid keyword argument(s) in set([\'unknown\']) passed in!')
+    self.assertTrue(expected_message in str(context.exception))
+    with self.assertRaises(AssertionError) as context:
+      ResultCollection(test_log='foo')
+    expected_message = (
+        'Invalid keyword argument(s) in set([\'test_log\']) passed in!')
+    self.assertTrue(expected_message in str(context.exception))
+
   def test_validate_test_status(self):
     """Tests exception raised from validation."""
     with self.assertRaises(TypeError) as context:
       test_result_util._validate_test_status('TIMEOUT')
-    expected_message = (
-        "Invalid test status: TIMEOUT. "
-        "Should be one of ['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'].")
+    expected_message = ('Invalid test status: TIMEOUT. Should be one of')
     self.assertTrue(expected_message in str(context.exception))
 
   def test_to_standard_json_literal(self):

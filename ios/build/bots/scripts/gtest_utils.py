@@ -583,7 +583,7 @@ class GTestLogParser(object):
                   TestResult(
                       test_name,
                       TestStatus.SKIP,
-                      except_status=TestStatus.SKIP,
+                      expected_status=TestStatus.SKIP,
                       test_log='Test disabled.'))
           self._disabled_tests_from_compiled_tests_file = (
               disabled_tests_from_json)
