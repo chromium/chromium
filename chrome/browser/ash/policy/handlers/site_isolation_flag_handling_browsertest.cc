@@ -168,16 +168,13 @@ const Params kTestCases[] = {
            {} /* expected_switches_for_user */,
            {"https://example.com"} /* expected_isolated_origins */)};
 
-constexpr char kTestUserAccountId[] = "username@examle.com";
-constexpr char kTestUserGaiaId[] = "1111111111";
-constexpr char kTestUserPassword[] = "password";
-constexpr char kEmptyServices[] = "[]";
-
 class SiteIsolationFlagHandlingTest
     : public OobeBaseTest,
       public ::testing::WithParamInterface<Params> {
  protected:
-  SiteIsolationFlagHandlingTest() = default;
+  SiteIsolationFlagHandlingTest()
+      : account_id_(AccountId::FromUserEmailGaiaId("username@examle.com",
+                                                   "1111111111")) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
@@ -219,7 +216,8 @@ class SiteIsolationFlagHandlingTest
   }
 
   void SetUpOnMainThread() override {
-    fake_gaia_.SetupFakeGaiaForLogin(kTestUserAccountId, kTestUserGaiaId,
+    fake_gaia_.SetupFakeGaiaForLogin(account_id_.GetUserEmail(),
+                                     account_id_.GetGaiaId(),
                                      ash::FakeGaiaMixin::kFakeRefreshToken);
 
     OobeBaseTest::SetUpOnMainThread();
@@ -250,6 +248,21 @@ class SiteIsolationFlagHandlingTest
     attempt_restart_called_ = true;
   }
 
+  void LogIn() {
+    // Start user sign-in. We can't use |LoginPolicyTestBase::LogIn|, because
+    // it waits for a user session start unconditionally, which will not happen
+    // if chrome requests a restart to set user-session flags.
+    ash::WizardController::SkipPostLoginScreensForTesting();
+    OobeBaseTest::WaitForSigninScreen();
+    login_manager_.LoginWithDefaultContext(user_);
+
+    // Wait for either the user session to start, or for restart to be requested
+    // (whichever happens first).
+    user_session_started_observer_->Wait();
+  }
+
+  const AccountId account_id_;
+
   // This will be set to |true| when chrome has requested a restart.
   bool attempt_restart_called_ = false;
 
@@ -257,12 +270,9 @@ class SiteIsolationFlagHandlingTest
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  ash::UserPolicyMixin user_policy_{
-      &mixin_host_,
-      AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId)};
+  ash::UserPolicyMixin user_policy_{&mixin_host_, account_id_};
 
-  LoginManagerMixin::TestUserInfo user_{
-      AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId)};
+  const LoginManagerMixin::TestUserInfo user_{account_id_};
   LoginManagerMixin login_manager_{&mixin_host_, {user_}};
 
   ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
@@ -277,12 +287,7 @@ class SiteIsolationFlagHandlingTest
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, PRE_FlagHandlingTest) {
-  ash::LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetView<ash::GaiaScreenHandler>()
-      ->ShowSigninScreenForTest(kTestUserAccountId, kTestUserPassword,
-                                kEmptyServices);
-  user_session_started_observer_->Wait();
+  LogIn();
 
   if (!GetParam().user_flag_internal_names.empty()) {
     Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
@@ -303,21 +308,9 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
   if (GetParam().expected_request_restart)
     return;
 
-  // Start user sign-in. We can't use |LoginPolicyTestBase::LogIn|, because
-  // it waits for a user session start unconditionally, which will not happen if
-  // chrome requests a restart to set user-session flags.
-  ash::WizardController::SkipPostLoginScreensForTesting();
-  OobeBaseTest::WaitForSigninScreen();
-
-  ash::LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetView<ash::GaiaScreenHandler>()
-      ->ShowSigninScreenForTest(kTestUserAccountId, kTestUserPassword,
-                                kEmptyServices);
-
-  // Wait for either the user session to start, or for restart to be requested
-  // (whichever happens first).
-  user_session_started_observer_->Wait();
+  // Log in and wait for either the user session to start, or for the restart
+  // to be requested (whichever happens first).
+  LogIn();
 
   EXPECT_EQ(GetParam().expected_request_restart, HasAttemptRestartBeenCalled());
 
@@ -332,12 +325,10 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
     return;
 
   // Also verify flags if chrome was restarted.
-  AccountId test_account_id =
-      AccountId::FromUserEmailGaiaId(kTestUserAccountId, kTestUserGaiaId);
   std::vector<std::string> switches_for_user;
   bool has_switches_for_user =
       ash::FakeSessionManagerClient::Get()->GetFlagsForUser(
-          cryptohome::CreateAccountIdentifierFromAccountId(test_account_id),
+          cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
           &switches_for_user);
   EXPECT_TRUE(has_switches_for_user);
 
