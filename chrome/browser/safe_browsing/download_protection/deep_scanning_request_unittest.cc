@@ -1054,8 +1054,10 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         expected_dlp_verdicts,
         /*mimetypes*/ TxtMimeTypes(),
         /*size*/ std::string("foo.exe").size(),
+        // Both results are BLOCKED since the highest precedence result will
+        // determine Chrome's UX for a given download.
         /*results*/
-        {EventResultToString(EventResult::WARNED),
+        {EventResultToString(EventResult::BLOCKED),
          EventResultToString(EventResult::BLOCKED)},
         /*username*/ kUserName,
         /*scan IDs*/

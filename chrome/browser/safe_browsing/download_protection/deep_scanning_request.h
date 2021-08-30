@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -210,6 +212,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // Cached danger type for the download to be used by reporting in case
   // scanning is skipped for any reason.
   download::DownloadDangerType pre_scan_danger_type_;
+
+  // Cached callbacks to report scanning results until the final `event_result_`
+  // is known. The callbacks in this list should be called in FinishRequest.
+  base::OnceCallbackList<void(EventResult result)> report_callbacks_;
 
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };

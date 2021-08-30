@@ -194,8 +194,11 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
 
 EventResult GetEventResult(DownloadCheckResult download_result,
                            Profile* profile) {
-  auto download_restriction = static_cast<DownloadPrefs::DownloadRestriction>(
-      profile->GetPrefs()->GetInteger(prefs::kDownloadRestrictions));
+  auto download_restriction =
+      profile
+          ? static_cast<DownloadPrefs::DownloadRestriction>(
+                profile->GetPrefs()->GetInteger(prefs::kDownloadRestrictions))
+          : DownloadPrefs::DownloadRestriction::NONE;
   switch (download_result) {
     case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SAFE:
@@ -502,7 +505,6 @@ void DeepScanningRequest::OnScanComplete(
       /*total_size=*/item_->GetTotalBytes(), /*result=*/result,
       /*response=*/response);
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  bool use_pre_scan_danger_type = false;
   if (result == BinaryUploadService::Result::SUCCESS) {
     ResponseToDownloadCheckResult(response, &download_result);
     base::UmaHistogramEnumeration(
@@ -535,12 +537,6 @@ void DeepScanningRequest::OnScanComplete(
                  BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE &&
              analysis_settings_.block_unsupported_file_types) {
     download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
-  } else {
-    // Reaching this branch implies that scanning did not occur and that the
-    // download didn't reach a scanning-specific special UX state (too large,
-    // password protected, etc), so `event_result` needs to be tweaked to
-    // reflect whatever danger type was known pre-deep scanning.
-    use_pre_scan_danger_type = true;
   }
 
   Profile* profile = Profile::FromBrowserContext(
@@ -548,16 +544,13 @@ void DeepScanningRequest::OnScanComplete(
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile && trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
-    EventResult event_result =
-        use_pre_scan_danger_type ? GetEventResult(pre_scan_danger_type_, item_)
-                                 : GetEventResult(download_result, profile);
     const auto& file_metadata = file_metadata_.at(current_path);
-    MaybeReportDeepScanningVerdict(
-        profile, item_->GetURL(), file_metadata.filename, file_metadata.sha256,
-        file_metadata.mime_type,
+    report_callbacks_.AddUnsafe(base::BindOnce(
+        &MaybeReportDeepScanningVerdict, profile, item_->GetURL(),
+        file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, file_metadata.size, result,
-        file_metadata.scan_response, event_result);
+        file_metadata.scan_response));
 
     enterprise_connectors::ScanResult* stored_result =
         static_cast<enterprise_connectors::ScanResult*>(
@@ -590,6 +583,20 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
 }
 
 void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
+  if (!report_callbacks_.empty()) {
+    DCHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_POLICY);
+    Profile* profile = Profile::FromBrowserContext(
+        content::DownloadItemUtils::GetBrowserContext(item_));
+    // If FinishRequest is reached with an unknown `result`, then it means no
+    // scanning request ever completed successfully, so `event_result` needs to
+    // reflect whatever danger type was known pre-deep scanning.
+    EventResult event_result =
+        result == DownloadCheckResult::UNKNOWN
+            ? GetEventResult(pre_scan_danger_type_, item_)
+            : GetEventResult(result, profile);
+    report_callbacks_.Notify(event_result);
+  }
+
   for (auto& observer : observers_)
     observer.OnFinish(this);
 
