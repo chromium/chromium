@@ -74,7 +74,7 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
             BasicListMenu listMenu = new BasicListMenu(activity, data, null);
             mView = listMenu.getContentView();
             mView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    activity.getResources(), R.drawable.popup_bg_tinted));
+                    activity.getResources(), R.drawable.menu_bg_tinted));
             int width = activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
             activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
         });

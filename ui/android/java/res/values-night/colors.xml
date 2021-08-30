@@ -45,6 +45,9 @@
     <!-- Bottom sheet colors -->
     <color name="sheet_bg_color">@color/default_bg_color_dark_elev_4</color>
 
+    <!-- Dialog colors -->
+    <color name="dialog_bg_color">@color/dialog_bg_color_dark</color>
+
     <!-- Snackbar colors -->
     <color name="snackbar_background_color">@color/default_bg_color_dark_elev_4</color>
 

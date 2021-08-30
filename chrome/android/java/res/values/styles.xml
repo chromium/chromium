@@ -454,7 +454,7 @@
         <item name="primaryTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="iconWidth">@dimen/context_menu_chip_icon_size</item>
         <item name="iconHeight">@dimen/context_menu_chip_icon_size</item>
-        <item name="chipColor">@color/popup_bg_color</item>
+        <item name="chipColor">@color/menu_item_bg_color</item>
         <item name="solidColorChip">true</item>
         <item name="allowMultipleLines">true</item>
         <item name="extendLateralPadding">true</item>

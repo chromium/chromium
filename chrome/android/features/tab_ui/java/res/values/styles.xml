@@ -83,7 +83,7 @@
     <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
         <item name="tabGridDividerVisible">@integer/view_visible</item>
         <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
-        <item name="tabGridBackground">@drawable/popup_bg_tinted</item>
+        <item name="tabGridBackground">@drawable/dialog_bg_tinted</item>
         <item name="tabGridMargin">@dimen/tab_list_card_margin</item>
 
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>

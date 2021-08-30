@@ -136,7 +136,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mPopup = new ListPopupWindow(context, null, 0, R.style.NavigationPopupDialog);
         mPopup.setOnDismissListener(this::onDismiss);
         mPopup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(resources,
-                anchorToBottom ? R.drawable.popup_bg_bottom_tinted : R.drawable.popup_bg_tinted));
+                anchorToBottom ? R.drawable.menu_bg_bottom_tinted : R.drawable.menu_bg_tinted));
         mPopup.setModal(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
