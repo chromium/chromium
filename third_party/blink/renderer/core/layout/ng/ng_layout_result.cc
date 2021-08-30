@@ -239,11 +239,8 @@ NGLayoutResult::NGLayoutResult(
   // re-layout now, and break at the early breakpoint (i.e. the status is
   // kNeedsEarlierBreak).
   if (builder->early_break_ &&
-      (!physical_fragment_ || !physical_fragment_->BreakToken())) {
-    auto* rare_data = EnsureRareData();
-    rare_data->early_break = builder->early_break_;
-    rare_data->early_break_appeal = builder->break_appeal_;
-  }
+      (!physical_fragment_ || !physical_fragment_->BreakToken()))
+    EnsureRareData()->early_break = builder->early_break_;
 
   if (builder->column_spanner_) {
     EnsureRareData()->column_spanner = builder->column_spanner_;

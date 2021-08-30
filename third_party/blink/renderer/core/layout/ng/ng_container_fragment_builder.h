@@ -369,7 +369,6 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   NGBlockNode column_spanner_ = nullptr;
 
   const NGEarlyBreak* early_break_ = nullptr;
-  NGBreakAppeal break_appeal_ = kBreakAppealLastResort;
 
   // See NGLayoutResult::AnnotationOverflow().
   LayoutUnit annotation_overflow_;

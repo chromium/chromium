@@ -28,20 +28,19 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
-  if (appeal) {
-    break_appeal_ = *appeal;
-    // If we're violating any orphans / widows or
-    // break-{after,before,inside}:avoid requests, or if we're inserting a
-    // last-resort break, remember this. If we're balancing columns, we may be
-    // able to stretch the columns to resolve the situation.
-    if (break_appeal_ < kBreakAppealPerfect)
-      has_violating_descendant_break_ = true;
-  }
   if (is_forced_break) {
     SetHasForcedBreak();
     // A forced break is considered to always have perfect appeal; they should
     // never be weighed against other potential breakpoints.
     DCHECK(!appeal || *appeal == kBreakAppealPerfect);
+  } else if (appeal) {
+    ClampBreakAppeal(*appeal);
+    // If we're violating any orphans / widows or
+    // break-{after,before,inside}:avoid requests, or if we're inserting a
+    // last-resort break, remember this. If we're balancing columns, we may be
+    // able to stretch the columns to resolve the situation.
+    if (*appeal < kBreakAppealPerfect)
+      has_violating_descendant_break_ = true;
   }
 
   DCHECK(has_block_fragmentation_);
@@ -352,21 +351,25 @@ void NGBoxFragmentBuilder::PropagateBreak(
     const NGLayoutResult& child_layout_result) {
   if (LIKELY(!has_block_fragmentation_))
     return;
-  if (!has_inflow_child_break_inside_ || !has_float_break_inside_) {
+  const auto& child_fragment =
+      To<NGPhysicalBoxFragment>(child_layout_result.PhysicalFragment());
+  if (const auto* token = child_fragment.BreakToken()) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
-    const auto& child_fragment =
-        To<NGPhysicalBoxFragment>(child_layout_result.PhysicalFragment());
-    if (const auto* token = child_fragment.BreakToken()) {
-      if (!token->IsBlockType() ||
-          !To<NGBlockBreakToken>(token)->IsAtBlockEnd()) {
-        if (child_fragment.IsFloating())
-          has_float_break_inside_ = true;
-        else if (!child_fragment.IsOutOfFlowPositioned())
-          has_inflow_child_break_inside_ = true;
-      }
+    if (!token->IsBlockType() ||
+        !To<NGBlockBreakToken>(token)->IsAtBlockEnd()) {
+      if (child_fragment.IsFloating())
+        has_float_break_inside_ = true;
+      else if (!child_fragment.IsOutOfFlowPositioned())
+        has_inflow_child_break_inside_ = true;
     }
+
+    // Downgrade the appeal of breaking inside this container, if the break
+    // inside the child is less appealing than what we've found so far.
+    NGBreakAppeal appeal_inside =
+        CalculateBreakAppealInside(*ConstraintSpace(), child_layout_result);
+    ClampBreakAppeal(appeal_inside);
   }
   if (child_layout_result.HasForcedBreak()) {
     SetHasForcedBreak();

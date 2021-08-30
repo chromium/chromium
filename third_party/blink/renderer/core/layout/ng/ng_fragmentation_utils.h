@@ -76,7 +76,6 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
 
 // Calculate the appeal of breaking inside this child.
 NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
-                                         NGBlockNode child,
                                          const NGLayoutResult&);
 
 // To ensure content progression, we need fragmentainers to hold something

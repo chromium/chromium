@@ -172,19 +172,23 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
 }
 
 NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
-                                         NGBlockNode child,
                                          const NGLayoutResult& layout_result) {
   if (layout_result.HasForcedBreak())
     return kBreakAppealPerfect;
   const auto& physical_fragment = layout_result.PhysicalFragment();
-  NGBreakAppeal appeal;
+  NGBreakAppeal appeal = kBreakAppealLastResort;
   // If we actually broke, get the appeal from the break token. Otherwise, get
   // the early break appeal.
   if (const auto* block_break_token =
-          DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken()))
+          DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken())) {
     appeal = block_break_token->BreakAppeal();
-  else
-    appeal = layout_result.EarlyBreakAppeal();
+  } else if (const NGEarlyBreak* early_break = layout_result.GetEarlyBreak()) {
+    appeal = early_break->BreakAppeal();
+  } else {
+    // If we have neither a break token nor an early-break object, we shouldn't
+    // really be here.
+    NOTREACHED();
+  }
 
   // We don't let break-inside:avoid affect the child's stored break appeal, but
   // we rather handle it now, on the outside. The reason is that we want to be
@@ -194,7 +198,7 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
   // necessary: if we need to break inside the child (even if it should be
   // avoided), we'll at least break at the most appealing location inside.
   if (appeal > kBreakAppealViolatingBreakAvoid &&
-      IsAvoidBreakValue(space, child.Style().BreakInside()))
+      IsAvoidBreakValue(space, physical_fragment.Style().BreakInside()))
     appeal = kBreakAppealViolatingBreakAvoid;
   return appeal;
 }
@@ -297,13 +301,8 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   LayoutUnit final_block_size = desired_block_size;
 
-  if (builder->FoundColumnSpanner()) {
+  if (builder->FoundColumnSpanner())
     builder->SetDidBreakSelf();
-
-    // A break before a spanner is a forced break, and is thus "perfect". It
-    // need not be weighed against other possible break points.
-    builder->SetBreakAppeal(kBreakAppealPerfect);
-  }
 
   if (is_past_end) {
     final_block_size = intrinsic_block_size = LayoutUnit();
@@ -439,14 +438,6 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
         builder->SetIsAtBlockEnd();
       }
-
-      // If we're going to break just because of floats or out-of-flow child
-      // breaks, no break appeal will have been recorded so far, since we only
-      // update the appeal at same-flow breakpoints, and since we start off by
-      // assuming the lowest appeal, upgrade it now. There's nothing here that
-      // makes breaking inside less appealing than perfect.
-      if (!builder->HasInflowChildBreakInside())
-        builder->SetBreakAppeal(kBreakAppealPerfect);
     }
 
     if (builder->IsAtBlockEnd()) {
@@ -465,7 +456,6 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   if (desired_block_size > space_left) {
     // No child inside broke, but we're too tall to fit.
-    NGBreakAppeal break_appeal = kBreakAppealPerfect;
     if (!previously_consumed_block_size) {
       // This is the first fragment generated for the node. Avoid breaking
       // inside block-start border, scrollbar and padding, if possible. No valid
@@ -475,7 +465,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
           geometry.border.block_start + geometry.scrollbar.block_start +
           geometry.padding.block_start;
       if (space_left < block_start_unbreakable_space)
-        break_appeal = kBreakAppealLastResort;
+        builder->ClampBreakAppeal(kBreakAppealLastResort);
     }
     if (space.BlockFragmentationType() == kFragmentColumn &&
         !space.IsInitialColumnBalancingPass())
@@ -492,9 +482,8 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
       if (builder->HasEarlyBreak())
         return NGBreakStatus::kNeedsEarlierBreak;
-      break_appeal = kBreakAppealLastResort;
+      builder->ClampBreakAppeal(kBreakAppealLastResort);
     }
-    builder->SetBreakAppeal(break_appeal);
     return NGBreakStatus::kContinue;
   }
 
@@ -754,22 +743,17 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   if (break_token) {
     // The block child broke inside. We now need to decide whether to keep that
     // break, or if it would be better to break before it.
-    NGBreakAppeal appeal_inside = CalculateBreakAppealInside(
-        space, To<NGBlockNode>(child), layout_result);
+    NGBreakAppeal appeal_inside =
+        CalculateBreakAppealInside(space, layout_result);
     // Allow breaking inside if it has the same appeal or higher than breaking
     // before or breaking earlier. Also, if breaking before is impossible, break
     // inside regardless of appeal.
-    bool want_break_inside = refuse_break_before;
-    if (!want_break_inside && appeal_inside >= appeal_before) {
-      if (!builder || !builder->HasEarlyBreak() ||
-          appeal_inside >= builder->BreakAppeal())
-        want_break_inside = true;
-    }
-    if (want_break_inside) {
-      if (builder)
-        builder->SetBreakAppeal(appeal_inside);
+    if (refuse_break_before)
       return true;
-    }
+    if (appeal_inside >= appeal_before &&
+        (!builder || !builder->HasEarlyBreak() ||
+         appeal_inside >= builder->EarlyBreak().BreakAppeal()))
+      return true;
   } else if (refuse_break_before ||
              BlockAxisLayoutOverflow(
                  layout_result, space.GetWritingDirection()) <= space_left) {
@@ -803,13 +787,14 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
   if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
-    appeal_inside = CalculateBreakAppealInside(space, child, layout_result);
-    if (builder->BreakAppeal() <= appeal_inside) {
+    appeal_inside = CalculateBreakAppealInside(space, layout_result);
+    if (!builder->HasEarlyBreak() ||
+        builder->EarlyBreak().BreakAppeal() <= breakpoint->BreakAppeal()) {
       // Found a good breakpoint inside the child. Add the child to the early
       // break container chain, and store it.
       auto* parent_break =
-          MakeGarbageCollected<NGEarlyBreak>(child, breakpoint);
-      builder->SetEarlyBreak(parent_break, appeal_inside);
+          MakeGarbageCollected<NGEarlyBreak>(child, appeal_inside, breakpoint);
+      builder->SetEarlyBreak(parent_break);
     }
   }
 
@@ -817,11 +802,15 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   // have (obviously), and also not if it has the same appeal as the break
   // location inside the child that we just found (when the appeal is the same,
   // whatever takes us further wins).
-  if (appeal_before < builder->BreakAppeal() || appeal_before == appeal_inside)
+  if (appeal_before <= appeal_inside)
     return;
 
-  builder->SetEarlyBreak(MakeGarbageCollected<NGEarlyBreak>(child),
-                         appeal_before);
+  if (builder->HasEarlyBreak() &&
+      builder->EarlyBreak().BreakAppeal() > appeal_before)
+    return;
+
+  builder->SetEarlyBreak(
+      MakeGarbageCollected<NGEarlyBreak>(child, appeal_before));
 }
 
 bool AttemptSoftBreak(const NGConstraintSpace& space,
@@ -832,7 +821,8 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
                       NGBoxFragmentBuilder* builder) {
   // if there's a breakpoint with higher appeal among earlier siblings, we need
   // to abort and re-layout to that breakpoint.
-  if (builder->HasEarlyBreak() && builder->BreakAppeal() > appeal_before) {
+  if (builder->HasEarlyBreak() &&
+      builder->EarlyBreak().BreakAppeal() > appeal_before) {
     // Found a better place to break. Before aborting, calculate and report
     // space shortage from where we'd actually break.
     PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,

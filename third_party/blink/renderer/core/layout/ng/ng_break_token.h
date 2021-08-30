@@ -105,7 +105,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // If the break is unforced, this is the appeal of the break. Higher is
   // better. Violating breaking rules decreases appeal. Forced breaks always
   // have perfect appeal.
-  unsigned break_appeal_ : 2;  // NGBreakAppeal
+  unsigned break_appeal_ : kNGBreakAppealBitsNeeded;  // NGBreakAppeal
 
   // All children of this container have been "seen" at this point. This means
   // that all children have been fully laid out, or have break tokens. No more

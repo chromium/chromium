@@ -735,8 +735,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         // to resume in the next outer fragmentainer.
         if (zero_outer_space_left)
           return nullptr;
-
-        container_builder_.SetBreakAppeal(kBreakAppealPerfect);
         break;
       }
 

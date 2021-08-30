@@ -391,9 +391,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     may_have_descendant_above_block_start_ = b;
   }
 
-  void SetEarlyBreak(const NGEarlyBreak* breakpoint, NGBreakAppeal appeal) {
+  void SetEarlyBreak(const NGEarlyBreak* breakpoint) {
     early_break_ = breakpoint;
-    break_appeal_ = appeal;
   }
   bool HasEarlyBreak() const { return early_break_; }
   const NGEarlyBreak& EarlyBreak() const {
@@ -401,15 +400,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *early_break_;
   }
 
-  // Set the highest break appeal found so far. This is either:
-  // 1: The highest appeal of a breakpoint found by our container
-  // 2: The appeal of a possible early break inside
-  // 3: The appeal of an actual break inside (to be stored in a break token)
-  void SetBreakAppeal(NGBreakAppeal appeal) { break_appeal_ = appeal; }
-  NGBreakAppeal BreakAppeal() const { return break_appeal_; }
-
-  // Offsets are not supposed to be set during fragment construction, so we
-  // do not provide a setter here.
+  // Downgrade the break appeal if the specified break appeal is lower than any
+  // found so far.
+  void ClampBreakAppeal(NGBreakAppeal appeal) {
+    break_appeal_ = std::min(break_appeal_, appeal);
+  }
 
   // Creates the fragment. Can only be called once.
   scoped_refptr<const NGLayoutResult> ToBoxFragment() {
@@ -639,6 +634,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
+
+  // The appeal of breaking inside this container.
+  NGBreakAppeal break_appeal_ = kBreakAppealPerfect;
 
   absl::optional<LayoutUnit> baseline_;
   absl::optional<LayoutUnit> last_baseline_;

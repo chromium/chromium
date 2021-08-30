@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 
 namespace blink {
 
@@ -21,14 +22,18 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
   };
 
   explicit NGEarlyBreak(NGBlockNode block,
+                        NGBreakAppeal break_appeal,
                         const NGEarlyBreak* break_inside_child = nullptr)
       : box_(block.GetLayoutBox()),
         break_inside_child_(break_inside_child),
-        const_type_(kBlock) {}
-  explicit NGEarlyBreak(int line_number)
-      : line_number_(line_number), const_type_(kLine) {}
+        const_type_(kBlock),
+        break_appeal_(break_appeal) {}
+  explicit NGEarlyBreak(int line_number, NGBreakAppeal break_appeal)
+      : line_number_(line_number),
+        const_type_(kLine),
+        break_appeal_(break_appeal) {}
 
-  BreakType Type() const { return const_type_; }
+  BreakType Type() const { return static_cast<BreakType>(const_type_); }
   bool IsBreakBefore() const { return !break_inside_child_; }
   NGBlockNode BlockNode() const {
     CHECK_EQ(const_type_, kBlock);
@@ -39,6 +44,10 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
     return line_number_;
   }
   const NGEarlyBreak* BreakInside() const { return break_inside_child_; }
+
+  NGBreakAppeal BreakAppeal() const {
+    return static_cast<NGBreakAppeal>(break_appeal_);
+  }
 
   void Trace(Visitor* visitor) const {
     // It is safe to check |const_type_| here because it is a const value.
@@ -55,7 +64,8 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
     int line_number_;  // Set if const_type_ == kLine
   };
   Member<const NGEarlyBreak> break_inside_child_;
-  const BreakType const_type_;
+  const unsigned const_type_ : 1;                     // BreakType
+  unsigned break_appeal_ : kNGBreakAppealBitsNeeded;  // NGBreakAppeal
 };
 
 }  // namespace blink
