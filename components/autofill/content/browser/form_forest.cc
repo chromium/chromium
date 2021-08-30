@@ -24,7 +24,6 @@
 #define AFCHECK(condition, ...)           \
   {                                       \
     if (!(condition)) {                   \
-      DCHECK(false);                      \
       base::debug::DumpWithoutCrashing(); \
       __VA_ARGS__;                        \
     }                                     \

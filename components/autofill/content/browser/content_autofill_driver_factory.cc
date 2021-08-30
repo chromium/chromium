@@ -162,13 +162,10 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
                 render_frame_host->GetLifecycleState());
       router_.HidePopup(driver);
     }
-    if (!render_frame_host->GetParent()) {
+    if (!render_frame_host->GetParent())
       router_.Reset();
-    } else {
-      // UnregisterDriver() must not be called if |driver| belongs to the main
-      // frame because of crbug/1190640.
+    else
       router_.UnregisterDriver(driver);
-    }
   }
   DeleteForKey(render_frame_host);
 }
@@ -203,13 +200,10 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
         DriverForFrame(navigation_handle->GetRenderFrameHost());
     if (!navigation_handle->IsSameDocument() &&
         !navigation_handle->IsServedFromBackForwardCache()) {
-      if (navigation_handle->IsInMainFrame()) {
+      if (navigation_handle->IsInMainFrame())
         router_.Reset();
-      } else {
-        // UnregisterDriver() must not be called if |driver| belongs to the main
-        // frame because of crbug/1190640.
+      else
         router_.UnregisterDriver(driver);
-      }
     }
     NavigationFinished(AutofillDriverFactory::HideUi(
         !navigation_handle->IsInPrerenderedMainFrame()));

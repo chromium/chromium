@@ -122,7 +122,12 @@ void ContentAutofillRouter::UnsetKeyPressHandler(
     return;
   }
 
-  AFCHECK(last_queried_source_, return );
+  // When AutofillPopupControllerImpl::Hide() calls this function,
+  // UnregisterDriver() may have reset |last_queried_source_| already to
+  // nullptr due to Mojo race conditions (https://crbug.com/1240246).
+  if (!last_queried_source_)
+    return;
+
   last_queried_source_->UnsetKeyPressHandlerImpl();
 }
 
