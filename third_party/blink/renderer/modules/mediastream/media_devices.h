@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -124,6 +126,15 @@ class MODULES_EXPORT MediaDevices final
   const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
   GetDispatcherHost(LocalFrame*);
 
+#if !defined(OS_ANDROID)
+  // Manage the window of opportunity that occurs immediately after
+  // display-capture starts. The application can call MediaStreamTrack.focus()
+  // on the microtask where the Promise<MediaStream> was resolved.
+  void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
+      MediaStream* media_stream);
+  void CloseFocusWindowOfOpportunity(MediaStream* media_stream);
+#endif
+
   bool stopped_;
   // Async runner may be null when there is no valid execution context.
   // No async work may be posted in this scenario.
@@ -136,6 +147,8 @@ class MODULES_EXPORT MediaDevices final
   EnumerateDevicesTestCallback enumerate_devices_test_callback_;
   base::OnceClosure connection_error_test_callback_;
   base::OnceClosure device_change_test_callback_;
+
+  base::WeakPtrFactory<MediaDevices> weak_factory_{this};
 };
 
 }  // namespace blink

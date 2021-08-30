@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -198,6 +199,10 @@ class MockMediaDevicesDispatcherHost final
           expected_config->permitted_origins[i].get()));
     }
   }
+
+#if !defined(OS_ANDROID)
+  void CloseFocusWindowOfOpportunity(const String& label) override {}
+#endif
 
   void ExpectSetCaptureHandleConfig(
       mojom::blink::CaptureHandleConfigPtr config) {

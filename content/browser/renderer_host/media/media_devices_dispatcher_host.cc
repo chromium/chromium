@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
+#include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -276,6 +277,13 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
           },
           render_process_id_, render_frame_id_, std::move(config)));
 }
+
+#if !defined(OS_ANDROID)
+void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
+    const std::string& label) {
+  media_stream_manager_->SetCapturedDisplaySurfaceFocus(label, /*focus=*/true);
+}
+#endif
 
 void MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID(
     GetVideoInputCapabilitiesCallback client_callback,

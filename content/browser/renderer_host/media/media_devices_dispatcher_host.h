@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
@@ -64,6 +65,9 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       override;
   void SetCaptureHandleConfig(
       blink::mojom::CaptureHandleConfigPtr config) override;
+#if !defined(OS_ANDROID)
+  void CloseFocusWindowOfOpportunity(const std::string& label) override;
+#endif
 
  private:
   friend class MediaDevicesDispatcherHostTest;

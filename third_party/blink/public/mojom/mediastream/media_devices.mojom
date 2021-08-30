@@ -117,6 +117,18 @@ interface MediaDevicesDispatcherHost {
   // Allows an application APP to opt-in to exposing certain information to
   // applications which end up capturing APP.
   SetCaptureHandleConfig(CaptureHandleConfig config);
+
+  // When starting to capture a focusable display-surface (tab/window),
+  // identified by the MediaStream ID of |label|, the browser has a decision
+  // to make - whether to focus the surface, or whether to keep the focus on
+  // the Chrome tab that initiated the capture.
+  // There exists a short window of opportunity where the application
+  // is allowed to influence that decision. This message closes this window
+  // of opportunity from the render side.
+  // (Note that a timer exists on the browser-side, too. This message serves
+  // to close the window early.)
+  [EnableIfNot=is_android]
+  CloseFocusWindowOfOpportunity(string label);
 };
 
 // This object lives in the renderer process and is used by the browser process

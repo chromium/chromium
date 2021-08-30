@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
@@ -53,13 +55,22 @@ const char kFeaturePolicyBlocked[] =
 
 class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
  public:
-  explicit PromiseResolverCallbacks(ScriptPromiseResolver* resolver)
-      : resolver_(resolver) {}
+  PromiseResolverCallbacks(
+      ScriptPromiseResolver* resolver,
+      base::OnceCallback<void(MediaStream*)> on_success_follow_up)
+      : resolver_(resolver),
+        on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
   void OnSuccess(ScriptWrappable* callback_this_value,
                  MediaStream* stream) override {
+    // Resolve Promise<MediaStream> on a microtask.
     resolver_->Resolve(stream);
+
+    // Enqueue the follow-up microtask, if any is intended.
+    if (on_success_follow_up_) {
+      std::move(on_success_follow_up_).Run(stream);
+    }
   }
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {
@@ -73,6 +84,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
  private:
   Member<ScriptPromiseResolver> resolver_;
+  base::OnceCallback<void(MediaStream*)> on_success_follow_up_;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -153,7 +165,18 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(resolver);
+
+  base::OnceCallback<void(MediaStream*)> on_success_follow_up;
+#if !defined(OS_ANDROID)
+  if (RuntimeEnabledFeatures::ConditionalFocusEnabled(GetExecutionContext())) {
+    on_success_follow_up = WTF::Bind(
+        &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
+        weak_factory_.GetWeakPtr());
+  }
+#endif
+
+  auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(
+      resolver, std::move(on_success_follow_up));
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaController* user_media = UserMediaController::From(window);
@@ -541,5 +564,28 @@ void MediaDevices::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
+
+#if !defined(OS_ANDROID)
+void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
+    MediaStream* media_stream) {
+  Microtask::EnqueueMicrotask(
+      WTF::Bind(&MediaDevices::CloseFocusWindowOfOpportunity,
+                WrapWeakPersistent(this), WrapWeakPersistent(media_stream)));
+}
+
+void MediaDevices::CloseFocusWindowOfOpportunity(MediaStream* media_stream) {
+  if (!media_stream) {
+    return;
+  }
+
+  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    return;
+  }
+
+  GetDispatcherHost(window->GetFrame())
+      ->CloseFocusWindowOfOpportunity(media_stream->id());
+}
+#endif
 
 }  // namespace blink
