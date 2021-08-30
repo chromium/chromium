@@ -51,17 +51,11 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
 }
 
 void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSinkBundle(
-    const viz::FrameSinkId& parent_frame_sink_id,
     const viz::FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,
     mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client) {
-  if (parent_frame_sink_id.client_id() != renderer_client_id_) {
-    receivers_.ReportBadMessage("Invalid parent client ID");
-    return;
-  }
-
   host_frame_sink_manager_->CreateFrameSinkBundle(
-      parent_frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+      bundle_id, std::move(receiver), std::move(client));
 }
 
 void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(

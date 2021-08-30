@@ -18,48 +18,188 @@
 
 namespace viz {
 
+// A SinkGroup is responsible for batching messages out to a group of
+// bundled CompositorFrameSink clients who all share a common BeginFrameSource.
+// FrameSinkBundleImpls may own any number of SinkGroups, and groups are created
+// or destroyed as needed when a sink is added to or removed from the bundle.
+class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
+ public:
+  SinkGroup(FrameSinkManagerImpl& manager,
+            FrameSinkBundleImpl& bundle,
+            BeginFrameSource& source,
+            mojom::FrameSinkBundleClient& client)
+      : manager_(manager), bundle_(bundle), source_(source), client_(client) {
+    source_.AddObserver(this);
+  }
+
+  ~SinkGroup() override { source_.RemoveObserver(this); }
+
+  bool IsEmpty() const { return frame_sinks_.empty(); }
+
+  void AddFrameSink(uint32_t sink_id) { frame_sinks_.insert(sink_id); }
+
+  void RemoveFrameSink(uint32_t sink_id) {
+    frame_sinks_.erase(sink_id);
+    unacked_submissions_.erase(sink_id);
+    FlushMessages();
+  }
+
+  void WillSubmitFrame(uint32_t sink_id) {
+    unacked_submissions_.insert(sink_id);
+  }
+
+  void EnqueueDidReceiveCompositorFrameAck(
+      uint32_t sink_id,
+      std::vector<ReturnedResource> resources) {
+    pending_received_frame_acks_.push_back(
+        mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
+
+    unacked_submissions_.erase(sink_id);
+
+    // We expect to be notified about the consumption of all previously
+    // submitted frames at approximately the same time. This condition allows us
+    // to batch most ack messages without any significant delays. Note that
+    // sink IDs are added to `unacked_submissions_` in WillSubmitFrame() for
+    // each sink that submits a frame.
+    if (unacked_submissions_.empty()) {
+      FlushMessages();
+    }
+  }
+
+  void EnqueueOnBeginFrame(
+      uint32_t sink_id,
+      const BeginFrameArgs& args,
+      const base::flat_map<uint32_t, FrameTimingDetails>& details) {
+    pending_on_begin_frames_.push_back(
+        mojom::BeginFrameInfo::New(sink_id, args, details));
+    if (!defer_on_begin_frames_) {
+      FlushMessages();
+    }
+  }
+
+  void EnqueueReclaimResources(uint32_t sink_id,
+                               std::vector<ReturnedResource> resources) {
+    // We always defer ReclaimResources until the next flush, whether it's done
+    // for frame acks or OnBeginFrames.
+    pending_reclaimed_resources_.push_back(
+        mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
+  }
+
+  // BeginFrameObserver implementation:
+  void OnBeginFrame(const BeginFrameArgs& args) override {
+    last_used_begin_frame_args_ = args;
+
+    // We expect the calls below to result in reentrant calls to our own
+    // EnqueueOnBeginFrame(), via the sink's BundleClientProxy. In a sense this
+    // means we act both as the sink's BeginFrameSource and its client. The
+    // indirection is useful since the sink performs some non-trivial logic in
+    // OnBeginFrame() and passes computed data to the client, which we want to
+    // be able to forward in our batched OnBeginFrame notifications back to the
+    // real remote client.
+    defer_on_begin_frames_ = true;
+    for (const auto sink_id : frame_sinks_) {
+      FrameSinkId id(bundle_.id().client_id(), sink_id);
+      if (BeginFrameObserver* observer = manager_.GetFrameSinkForId(id)) {
+        observer->OnBeginFrame(args);
+      }
+    }
+    defer_on_begin_frames_ = false;
+    FlushMessages();
+  }
+
+  const BeginFrameArgs& LastUsedBeginFrameArgs() const override {
+    return last_used_begin_frame_args_;
+  }
+
+  void OnBeginFrameSourcePausedChanged(bool paused) override {}
+
+  bool WantsAnimateOnlyBeginFrames() const override { return false; }
+
+  void FlushMessages() {
+    std::vector<mojom::BundledReturnedResourcesPtr> pending_received_frame_acks;
+    std::swap(pending_received_frame_acks_, pending_received_frame_acks);
+
+    std::vector<mojom::BeginFrameInfoPtr> pending_on_begin_frames;
+    std::swap(pending_on_begin_frames_, pending_on_begin_frames);
+
+    std::vector<mojom::BundledReturnedResourcesPtr> pending_reclaimed_resources;
+    std::swap(pending_reclaimed_resources_, pending_reclaimed_resources);
+
+    if (!pending_received_frame_acks.empty() ||
+        !pending_on_begin_frames.empty() ||
+        !pending_reclaimed_resources.empty()) {
+      client_.FlushNotifications(std::move(pending_received_frame_acks),
+                                 std::move(pending_on_begin_frames),
+                                 std::move(pending_reclaimed_resources));
+    }
+  }
+
+ private:
+  FrameSinkManagerImpl& manager_;
+  FrameSinkBundleImpl& bundle_;
+  BeginFrameSource& source_;
+  mojom::FrameSinkBundleClient& client_;
+
+  bool defer_on_begin_frames_ = false;
+  std::vector<mojom::BundledReturnedResourcesPtr> pending_received_frame_acks_;
+  std::vector<mojom::BundledReturnedResourcesPtr> pending_reclaimed_resources_;
+  std::vector<mojom::BeginFrameInfoPtr> pending_on_begin_frames_;
+  std::set<uint32_t> frame_sinks_;
+
+  // Tracks which sinks in the group are still expecting an ack for a previously
+  // submitted frame.
+  std::set<uint32_t> unacked_submissions_;
+
+  BeginFrameArgs last_used_begin_frame_args_;
+};
+
 FrameSinkBundleImpl::FrameSinkBundleImpl(
     FrameSinkManagerImpl& manager,
     const FrameSinkBundleId& id,
-    BeginFrameSource* begin_frame_source,
     mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
     mojo::PendingRemote<mojom::FrameSinkBundleClient> client)
     : manager_(manager),
       id_(id),
-      begin_frame_source_(begin_frame_source),
       receiver_(this, std::move(receiver)),
       client_(std::move(client)) {
-  DCHECK(begin_frame_source_);
-  begin_frame_source_->AddObserver(this);
-
   receiver_.set_disconnect_handler(base::BindOnce(
       &FrameSinkBundleImpl::OnDisconnect, base::Unretained(this)));
 }
 
-FrameSinkBundleImpl::~FrameSinkBundleImpl() {
-  if (begin_frame_source_) {
-    begin_frame_source_->RemoveObserver(this);
+FrameSinkBundleImpl::~FrameSinkBundleImpl() = default;
+
+void FrameSinkBundleImpl::AddFrameSink(CompositorFrameSinkSupport* support) {
+  uint32_t sink_id = support->frame_sink_id().sink_id();
+  auto* source = support->begin_frame_source();
+  if (!source) {
+    sourceless_sinks_.insert(sink_id);
+    return;
   }
+
+  auto& group = sink_groups_[source];
+  if (!group) {
+    group =
+        std::make_unique<SinkGroup>(manager_, *this, *source, *client_.get());
+  }
+  group->AddFrameSink(sink_id);
 }
 
-void FrameSinkBundleImpl::AddFrameSink(const FrameSinkId& id) {
-  frame_sinks_.insert(id.sink_id());
+void FrameSinkBundleImpl::UpdateFrameSink(CompositorFrameSinkSupport* support,
+                                          BeginFrameSource* old_source) {
+  uint32_t sink_id = support->frame_sink_id().sink_id();
+  RemoveFrameSinkImpl(old_source, sink_id);
+  AddFrameSink(support);
 }
 
-void FrameSinkBundleImpl::RemoveFrameSink(const FrameSinkId& id) {
-  frame_sinks_.erase(id.sink_id());
+void FrameSinkBundleImpl::RemoveFrameSink(CompositorFrameSinkSupport* support) {
+  auto sink_id = support->frame_sink_id().sink_id();
+  auto* source = support->begin_frame_source();
+  RemoveFrameSinkImpl(source, sink_id);
 }
 
 void FrameSinkBundleImpl::InitializeCompositorFrameSinkType(
     uint32_t sink_id,
     mojom::CompositorFrameSinkType type) {
-  if (!sink_type_.has_value()) {
-    sink_type_ = type;
-  } else if (type != *sink_type_) {
-    receiver_.ReportBadMessage("Bundled frame sinks must be of the same type");
-    return;
-  }
-
   if (auto* sink = GetFrameSink(sink_id)) {
     sink->InitializeCompositorFrameSinkType(type);
   }
@@ -74,13 +214,21 @@ void FrameSinkBundleImpl::SetNeedsBeginFrame(uint32_t sink_id,
 
 void FrameSinkBundleImpl::Submit(
     std::vector<mojom::BundledFrameSubmissionPtr> submissions) {
+  std::set<SinkGroup*> affected_groups;
   // Count the frame submissions before processing anything. This ensures that
   // any frames submitted here will be acked together in a batch, and not acked
   // individually in case they happen to ack synchronously within
   // SubmitCompositorFrame below.
+  //
+  // For sinks which can't currently be associated with a SinkGroup (because
+  // they have no BeginFrameSource), we count nothing and their acks will pass
+  // through to the client without batching.
   for (auto& submission : submissions) {
-    if (GetFrameSink(submission->sink_id) && submission->data->is_frame()) {
-      ++num_unacked_submissions_;
+    if (submission->data->is_frame()) {
+      if (auto* group = GetSinkGroup(submission->sink_id)) {
+        group->WillSubmitFrame(submission->sink_id);
+        affected_groups.insert(group);
+      }
     }
   }
 
@@ -108,7 +256,10 @@ void FrameSinkBundleImpl::Submit(
       }
     }
   }
-  FlushMessages();
+
+  for (auto* group : affected_groups) {
+    group->FlushMessages();
+  }
 }
 
 void FrameSinkBundleImpl::DidAllocateSharedBitmap(
@@ -123,17 +274,15 @@ void FrameSinkBundleImpl::DidAllocateSharedBitmap(
 void FrameSinkBundleImpl::EnqueueDidReceiveCompositorFrameAck(
     uint32_t sink_id,
     std::vector<ReturnedResource> resources) {
-  pending_received_frame_acks_.push_back(
-      mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
-
-  // We expect to be notified about the consumption of all previously submitted
-  // frames at approximately the same time. This condition allows us to batch
-  // most ack messages without any significant delays. Note that
-  // `num_unacked_submissions_` is incremented in Submit() exactly once for
-  // every actual frame submitted by clients within the bundle, and is
-  // decremented only when acks are flushed by FlushMessages().
-  if (pending_received_frame_acks_.size() >= num_unacked_submissions_) {
-    FlushMessages();
+  if (auto* group = GetSinkGroup(sink_id)) {
+    group->EnqueueDidReceiveCompositorFrameAck(sink_id, std::move(resources));
+  } else {
+    // The sink has no BeginFrameSource at the moment and therefore does not
+    // belong to a SinkGroup. Forward directly without batching.
+    std::vector<mojom::BundledReturnedResourcesPtr> acks;
+    acks.push_back(
+        mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
+    client_->FlushNotifications(std::move(acks), {}, {});
   }
 }
 
@@ -141,20 +290,30 @@ void FrameSinkBundleImpl::EnqueueOnBeginFrame(
     uint32_t sink_id,
     const BeginFrameArgs& args,
     const base::flat_map<uint32_t, FrameTimingDetails>& details) {
-  pending_on_begin_frames_.push_back(
-      mojom::BeginFrameInfo::New(sink_id, args, details));
-  if (!defer_on_begin_frames_) {
-    FlushMessages();
+  if (auto* group = GetSinkGroup(sink_id)) {
+    group->EnqueueOnBeginFrame(sink_id, args, details);
+  } else {
+    // The sink has no BeginFrameSource at the moment and therefore does not
+    // belong to a SinkGroup. Forward directly without batching.
+    std::vector<mojom::BeginFrameInfoPtr> begin_frames;
+    begin_frames.push_back(mojom::BeginFrameInfo::New(sink_id, args, details));
+    client_->FlushNotifications({}, std::move(begin_frames), {});
   }
 }
 
 void FrameSinkBundleImpl::EnqueueReclaimResources(
     uint32_t sink_id,
     std::vector<ReturnedResource> resources) {
-  // We always defer ReclaimResources until the next flush, whether it's done
-  // for frame acks or OnBeginFrames.
-  pending_reclaimed_resources_.push_back(
-      mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
+  if (auto* group = GetSinkGroup(sink_id)) {
+    group->EnqueueReclaimResources(sink_id, std::move(resources));
+  } else {
+    // The sink has no BeginFrameSource at the moment and therefore does not
+    // belong to a SinkGroup. Forward directly without batching.
+    std::vector<mojom::BundledReturnedResourcesPtr> reclaims;
+    reclaims.push_back(
+        mojom::BundledReturnedResources::New(sink_id, std::move(resources)));
+    client_->FlushNotifications({}, {}, std::move(reclaims));
+  }
 }
 
 void FrameSinkBundleImpl::SendOnBeginFramePausedChanged(uint32_t sink_id,
@@ -168,10 +327,22 @@ void FrameSinkBundleImpl::SendOnCompositorFrameTransitionDirectiveProcessed(
   client_->OnCompositorFrameTransitionDirectiveProcessed(sink_id, sequence_id);
 }
 
-void FrameSinkBundleImpl::UnregisterBeginFrameSource(BeginFrameSource* source) {
-  if (begin_frame_source_ == source) {
-    begin_frame_source_->RemoveObserver(this);
-    begin_frame_source_ = nullptr;
+void FrameSinkBundleImpl::RemoveFrameSinkImpl(BeginFrameSource* source,
+                                              uint32_t sink_id) {
+  if (!source) {
+    sourceless_sinks_.erase(sink_id);
+    return;
+  }
+
+  auto it = sink_groups_.find(source);
+  if (it == sink_groups_.end()) {
+    DVLOG(1) << "Unexpected missing SinkGroup entry for sink " << sink_id;
+    return;
+  }
+
+  it->second->RemoveFrameSink(sink_id);
+  if (it->second->IsEmpty()) {
+    sink_groups_.erase(it);
   }
 }
 
@@ -180,61 +351,28 @@ CompositorFrameSinkImpl* FrameSinkBundleImpl::GetFrameSink(
   return manager_.GetFrameSinkImpl(FrameSinkId(id_.client_id(), sink_id));
 }
 
-void FrameSinkBundleImpl::FlushMessages() {
-  std::vector<mojom::BundledReturnedResourcesPtr> pending_received_frame_acks;
-  std::swap(pending_received_frame_acks_, pending_received_frame_acks);
+CompositorFrameSinkSupport* FrameSinkBundleImpl::GetFrameSinkSupport(
+    uint32_t sink_id) const {
+  return manager_.GetFrameSinkForId(FrameSinkId(id_.client_id(), sink_id));
+}
 
-  DCHECK_GE(num_unacked_submissions_, pending_received_frame_acks.size());
-  num_unacked_submissions_ -= pending_received_frame_acks.size();
-
-  std::vector<mojom::BeginFrameInfoPtr> pending_on_begin_frames;
-  std::swap(pending_on_begin_frames_, pending_on_begin_frames);
-
-  std::vector<mojom::BundledReturnedResourcesPtr> pending_reclaimed_resources;
-  std::swap(pending_reclaimed_resources_, pending_reclaimed_resources);
-
-  if (!pending_received_frame_acks.empty() ||
-      !pending_on_begin_frames.empty() ||
-      !pending_reclaimed_resources.empty()) {
-    client_->FlushNotifications(std::move(pending_received_frame_acks),
-                                std::move(pending_on_begin_frames),
-                                std::move(pending_reclaimed_resources));
+FrameSinkBundleImpl::SinkGroup* FrameSinkBundleImpl::GetSinkGroup(
+    uint32_t sink_id) const {
+  auto* support = GetFrameSinkSupport(sink_id);
+  if (!support) {
+    return nullptr;
   }
+
+  auto* source = support->begin_frame_source();
+  auto it = sink_groups_.find(source);
+  if (it == sink_groups_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 void FrameSinkBundleImpl::OnDisconnect() {
   manager_.DestroyFrameSinkBundle(id_);
-}
-
-void FrameSinkBundleImpl::OnBeginFrame(const BeginFrameArgs& args) {
-  last_used_begin_frame_args_ = args;
-
-  // We expect the calls below to result in reentrant calls to our own
-  // EnqueueOnBeginFrame(), via the sink's BundleClientProxy. In a sense this
-  // means we act both as the sink's BeginFrameSource and its client. The
-  // indirection is useful since the sink performs some non-trivial logic in
-  // OnBeginFrame() and passes computed data to the client, which we want to
-  // be able to forward in our batched OnBeginFrame notifications back to the
-  // real remote client.
-  defer_on_begin_frames_ = true;
-  for (const auto sink_id : frame_sinks_) {
-    FrameSinkId id(id_.client_id(), sink_id);
-    if (BeginFrameObserver* observer = manager_.GetFrameSinkForId(id)) {
-      observer->OnBeginFrame(args);
-    }
-  }
-  defer_on_begin_frames_ = false;
-  FlushMessages();
-}
-
-const BeginFrameArgs& FrameSinkBundleImpl::LastUsedBeginFrameArgs() const {
-  return last_used_begin_frame_args_;
-}
-
-void FrameSinkBundleImpl::OnBeginFrameSourcePausedChanged(bool paused) {}
-
-bool FrameSinkBundleImpl::WantsAnimateOnlyBeginFrames() const {
-  return false;
 }
 
 }  // namespace viz

@@ -193,7 +193,6 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
 }
 
 void FrameSinkManagerImpl::CreateFrameSinkBundle(
-    const FrameSinkId& parent_frame_sink_id,
     const FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
     mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
@@ -203,16 +202,8 @@ void FrameSinkManagerImpl::CreateFrameSinkBundle(
     return;
   }
 
-  BeginFrameSource* parent_source =
-      frame_sink_source_map_[parent_frame_sink_id].source;
-  if (!parent_source) {
-    // The client can retry and eventually succeed in this case.
-    DVLOG(1) << "Terminating bundle established with no BeginFrameSource";
-    return;
-  }
-
   bundle_map_[bundle_id] = std::make_unique<FrameSinkBundleImpl>(
-      *this, bundle_id, parent_source, std::move(receiver), std::move(client));
+      *this, bundle_id, std::move(receiver), std::move(client));
 }
 
 void FrameSinkManagerImpl::CreateCompositorFrameSink(
@@ -457,10 +448,6 @@ void FrameSinkManagerImpl::UnregisterBeginFrameSource(
 
   FrameSinkId frame_sink_id = registered_sources_[source];
   registered_sources_.erase(source);
-
-  for (const auto& entry : bundle_map_) {
-    entry.second->UnregisterBeginFrameSource(source);
-  }
 
   if (frame_sink_source_map_.count(frame_sink_id) == 0u)
     return;

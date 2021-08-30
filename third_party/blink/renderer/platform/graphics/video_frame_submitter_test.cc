@@ -172,7 +172,7 @@ class VideoFrameSubmitterTest : public testing::Test {
     resource_provider_ = new StrictMock<MockVideoFrameResourceProvider>(
         context_provider_.get(), nullptr);
     submitter_ = std::make_unique<VideoFrameSubmitter>(
-        base::DoNothing(), reporting_cb, viz::FrameSinkId(1, 1),
+        base::DoNothing(), reporting_cb,
         base::WrapUnique<MockVideoFrameResourceProvider>(resource_provider_));
 
     submitter_->Initialize(video_frame_provider_.get(), false);

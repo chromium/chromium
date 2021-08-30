@@ -93,6 +93,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool is_root() const { return is_root_; }
 
   FrameSinkManagerImpl* frame_sink_manager() { return frame_sink_manager_; }
+  BeginFrameSource* begin_frame_source() { return begin_frame_source_; }
 
   const FrameTimingDetailsMap& timing_details() {
     return frame_timing_details_;

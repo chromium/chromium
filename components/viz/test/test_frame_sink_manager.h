@@ -37,7 +37,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {}
   void CreateFrameSinkBundle(
-      const FrameSinkId& parent_frame_sink_id,
       const FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
       mojo::PendingRemote<mojom::FrameSinkBundleClient> client) override {}

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -27,60 +29,60 @@
 
 namespace blink {
 
-// Encapsulates a thread-local FrameSinkBundle connection for a given parent
-// FrameSinkId which contains one or more VideoFrameSubmitters. This is
-// responsible for demultiplexing batched communication from Viz, as well as for
-// aggregating and apporopriately batching most outgoing communication to Viz on
-// behalf of each VideoFrameSubmitter.
+// Encapsulates a thread-local FrameSinkBundle connection for use by one or more
+// VideoFrameSubmitters. This is responsible for demultiplexing batched
+// communication from Viz, as well as for aggregating and apporopriately
+// batching most outgoing communication to Viz on behalf of each
+// VideoFrameSubmitter.
 class PLATFORM_EXPORT VideoFrameSinkBundle
     : public viz::mojom::blink::FrameSinkBundleClient {
  public:
-  VideoFrameSinkBundle(base::PassKey<VideoFrameSinkBundle>,
-                       mojom::blink::EmbeddedFrameSinkProvider& provider,
-                       const viz::FrameSinkId& parent_frame_sink_id,
-                       bool for_media_streams);
+  VideoFrameSinkBundle(base::PassKey<VideoFrameSinkBundle>, uint32_t client_id);
 
   VideoFrameSinkBundle(const VideoFrameSinkBundle&) = delete;
   VideoFrameSinkBundle& operator=(const VideoFrameSinkBundle&) = delete;
   ~VideoFrameSinkBundle() override;
 
-  // Acquires a lazily initialized VideoFrameSinkBundle instance dedicated to
-  // the given parent FrameSinkId and submitter type (media stream submitters vs
-  // video submitters cannot be bundled together) for the calling thread. If a
-  // matching instance already exists for these parameters it is reused;
-  // otherwise if a new FrameSinkBundle connection to Viz must be established
-  // for this object, it is done using `provider`.
-  static VideoFrameSinkBundle& GetOrCreateSharedInstance(
-      mojom::blink::EmbeddedFrameSinkProvider& provider,
-      const viz::FrameSinkId& parent_frame_sink_id,
-      bool for_media_streams);
+  // Acquires a lazily initialized VideoFrameSinkBundle instance for the calling
+  // thread and given client ID. Note that in practice, a single renderer must
+  // always call this with the same `client_id`.
+  static VideoFrameSinkBundle& GetOrCreateSharedInstance(uint32_t client_id);
 
-  // Acquires an instance that would be returned by GetOrCreateSharedInstance
-  // for the same parameters, but does not create an appropriate instance if one
-  // does not exist. Instead, this returns null in that case.
-  static VideoFrameSinkBundle* GetSharedInstanceForTesting(
-      const viz::FrameSinkId& parent_frame_sink_id,
-      bool for_media_streams);
+  // Acquires an instance that would be returned by GetOrCreateSharedInstance,
+  // but does not create a new instance if one does not exist. Instead this
+  // returns null in that case.
+  static VideoFrameSinkBundle* GetSharedInstanceForTesting();
 
-  // Ensures that all shared instances are torn down.
-  static void DestroySharedInstancesForTesting();
+  // Ensures that the calling thread's shared instances are torn down.
+  static void DestroySharedInstanceForTesting();
+
+  // Overrides the EmbeddedFrameSinkProvider used to register new bundles in
+  // tests. If null, any existing override is removed.
+  static void SetFrameSinkProviderForTesting(
+      mojom::blink::EmbeddedFrameSinkProvider* provider);
+
+  // Sets a callback to be invoked on disconnection. Used by tests to observe
+  // fake Viz connection lifetime.
+  void set_disconnect_handler_for_testing(base::OnceClosure handler) {
+    disconnect_handler_for_testing_ = std::move(handler);
+  }
 
   const viz::FrameSinkBundleId& bundle_id() const { return id_; }
-  bool is_context_lost() const { return is_context_lost_; }
 
   // Adds a new client to this bundle, to receive batch notifications from Viz.
   // `client` must outlive this object or be explicitly removed by
-  // RemoveClient() before being destroyed.
-  void AddClient(const viz::FrameSinkId& id,
-                 viz::mojom::blink::CompositorFrameSinkClient* client,
-                 mojo::Remote<viz::mojom::blink::CompositorFrameSink>& sink);
+  // RemoveClient() before being destroyed. Upon return, `receiver` and `remote`
+  // are initialized with new connections to Viz for the sink. Returns a
+  // WeakPtr to this VideoFrameSinkBundle which can be used by the client to
+  // safely reference the it.
+  base::WeakPtr<VideoFrameSinkBundle> AddClient(
+      const viz::FrameSinkId& frame_sink_id,
+      viz::mojom::blink::CompositorFrameSinkClient* client,
+      mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider>&
+          frame_sink_provider,
+      mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient>& receiver,
+      mojo::Remote<viz::mojom::blink::CompositorFrameSink>& remote);
   void RemoveClient(const viz::FrameSinkId& id);
-
-  // Notifies the bundle that one of its clients has been disconnected from Viz.
-  // `bundle_id` indicates the bundle ID that was in use by this object at the
-  // time the client was added, and is used to differentiate meaningful new
-  // disconnection events from stale ones already observed by this object.
-  void OnContextLost(const viz::FrameSinkBundleId& bundle_id);
 
   // Helper methods used by VideoFrameSubmitters to communicate potentially
   // batched requests to Viz. These correspond closely to methods on the
@@ -113,19 +115,10 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
       uint32_t sequence_id) override;
 
  private:
-  // Connects (or re-connects) to Viz to grant this object control over a unique
-  // FrameSinkBundle/Client interface connection. Must only be called on a newly
-  // initialized VideoFrameSinkBundle, or once the bundle's context has been
-  // lost.
-  void ConnectNewBundle(mojom::blink::EmbeddedFrameSinkProvider& provider);
-
+  void OnDisconnected();
   void FlushMessages();
 
-  const viz::FrameSinkId parent_frame_sink_id_;
-  const bool for_media_streams_;
-
-  viz::FrameSinkBundleId id_;
-  bool is_context_lost_ = false;
+  const viz::FrameSinkBundleId id_;
   mojo::Remote<viz::mojom::blink::FrameSinkBundle> bundle_;
   mojo::Receiver<viz::mojom::blink::FrameSinkBundleClient> receiver_{this};
   WTF::HashMap<uint32_t, viz::mojom::blink::CompositorFrameSinkClient*>
@@ -133,6 +126,10 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
 
   bool defer_submissions_ = false;
   WTF::Vector<viz::mojom::blink::BundledFrameSubmissionPtr> submission_queue_;
+
+  base::OnceClosure disconnect_handler_for_testing_;
+
+  base::WeakPtrFactory<VideoFrameSinkBundle> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

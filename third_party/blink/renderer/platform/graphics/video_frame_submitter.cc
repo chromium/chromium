@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -56,21 +57,27 @@ const base::Feature kUseVideoFrameSinkBundle{"UseVideoFrameSinkBundle",
 class VideoFrameSubmitter::FrameSinkBundleProxy
     : public viz::mojom::blink::CompositorFrameSink {
  public:
-  FrameSinkBundleProxy(VideoFrameSinkBundle& bundle,
+  FrameSinkBundleProxy(base::WeakPtr<VideoFrameSinkBundle> bundle,
                        const viz::FrameSinkId& frame_sink_id)
-      : bundle_(bundle),
-        bundle_id_(bundle.bundle_id()),
+      : bundle_(std::move(bundle)),
+        bundle_id_(bundle_->bundle_id()),
         frame_sink_id_(frame_sink_id) {}
   FrameSinkBundleProxy(const FrameSinkBundleProxy&) = delete;
   FrameSinkBundleProxy& operator=(const FrameSinkBundleProxy&) = delete;
 
-  ~FrameSinkBundleProxy() override { bundle_.RemoveClient(frame_sink_id_); }
-
-  void OnContextLost() { bundle_.OnContextLost(bundle_id_); }
+  ~FrameSinkBundleProxy() override {
+    if (bundle_) {
+      bundle_->RemoveClient(frame_sink_id_);
+    }
+  }
 
   // viz::mojom::Blink::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {
-    bundle_.SetNeedsBeginFrame(frame_sink_id_.sink_id(), needs_begin_frame);
+    if (!bundle_) {
+      return;
+    }
+
+    bundle_->SetNeedsBeginFrame(frame_sink_id_.sink_id(), needs_begin_frame);
   }
 
   // Not used by VideoFrameSubmitter.
@@ -81,9 +88,13 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
       viz::CompositorFrame frame,
       absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
-    bundle_.SubmitCompositorFrame(frame_sink_id_.sink_id(), local_surface_id,
-                                  std::move(frame),
-                                  std::move(hit_test_region_list), submit_time);
+    if (!bundle_) {
+      return;
+    }
+
+    bundle_->SubmitCompositorFrame(
+        frame_sink_id_.sink_id(), local_surface_id, std::move(frame),
+        std::move(hit_test_region_list), submit_time);
   }
 
   // Not used by VideoFrameSubmitter.
@@ -97,26 +108,38 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   }
 
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
-    bundle_.DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
+    if (!bundle_) {
+      return;
+    }
+    bundle_->DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
   }
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id) override {
-    bundle_.DidAllocateSharedBitmap(frame_sink_id_.sink_id(), std::move(region),
-                                    id);
+    if (!bundle_) {
+      return;
+    }
+    bundle_->DidAllocateSharedBitmap(frame_sink_id_.sink_id(),
+                                     std::move(region), id);
   }
 
   void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {
-    bundle_.DidDeleteSharedBitmap(frame_sink_id_.sink_id(), id);
+    if (!bundle_) {
+      return;
+    }
+    bundle_->DidDeleteSharedBitmap(frame_sink_id_.sink_id(), id);
   }
 
   void InitializeCompositorFrameSinkType(
       viz::mojom::blink::CompositorFrameSinkType type) override {
-    bundle_.InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
+    if (!bundle_) {
+      return;
+    }
+    bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
 
  private:
-  VideoFrameSinkBundle& bundle_;
+  const base::WeakPtr<VideoFrameSinkBundle> bundle_;
   const viz::FrameSinkBundleId bundle_id_;
   const viz::FrameSinkId frame_sink_id_;
 };
@@ -125,11 +148,9 @@ VideoFrameSubmitter::VideoFrameSubmitter(
     WebContextProviderCallback context_provider_callback,
     cc::VideoPlaybackRoughnessReporter::ReportingCallback
         roughness_reporting_callback,
-    const viz::FrameSinkId& parent_frame_sink_id,
     std::unique_ptr<VideoFrameResourceProvider> resource_provider)
     : context_provider_callback_(context_provider_callback),
       resource_provider_(std::move(resource_provider)),
-      parent_frame_sink_id_(parent_frame_sink_id),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
       frame_trackers_(false, nullptr),
@@ -267,10 +288,7 @@ void VideoFrameSubmitter::OnContextLost() {
   // should be reset after `remote_frame_sink_`.
   compositor_frame_sink_ = nullptr;
   remote_frame_sink_.reset();
-  if (bundle_proxy_) {
-    bundle_proxy_->OnContextLost();
-    bundle_proxy_.reset();
-  }
+  bundle_proxy_.reset();
 
   context_provider_callback_.Run(
       context_provider_,
@@ -456,17 +474,13 @@ void VideoFrameSubmitter::StartSubmitting() {
   mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       provider.BindNewPipeAndPassReceiver());
-
   if (base::FeatureList::IsEnabled(kUseVideoFrameSinkBundle)) {
     auto& bundle = VideoFrameSinkBundle::GetOrCreateSharedInstance(
-        *provider.get(), parent_frame_sink_id_, is_media_stream_);
-    provider->CreateBundledCompositorFrameSink(
-        frame_sink_id_, bundle.bundle_id(),
-        receiver_.BindNewPipeAndPassRemote(),
-        remote_frame_sink_.BindNewPipeAndPassReceiver());
-    bundle.AddClient(frame_sink_id_, this, remote_frame_sink_);
-    bundle_proxy_ =
-        std::make_unique<FrameSinkBundleProxy>(bundle, frame_sink_id_);
+        frame_sink_id_.client_id());
+    auto weak_bundle = bundle.AddClient(frame_sink_id_, this, provider,
+                                        receiver_, remote_frame_sink_);
+    bundle_proxy_ = std::make_unique<FrameSinkBundleProxy>(
+        std::move(weak_bundle), frame_sink_id_);
     compositor_frame_sink_ = bundle_proxy_.get();
   } else {
     provider->CreateCompositorFrameSink(

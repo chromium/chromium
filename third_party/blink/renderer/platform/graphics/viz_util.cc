@@ -16,11 +16,9 @@ std::atomic<uint32_t> g_next_bundle_id{1};
 
 }  // namespace
 
-viz::FrameSinkBundleId GenerateFrameSinkBundleId(
-    const viz::FrameSinkId& parent_frame_sink_id) {
+viz::FrameSinkBundleId GenerateFrameSinkBundleId(uint32_t client_id) {
   return viz::FrameSinkBundleId(
-      parent_frame_sink_id.client_id(),
-      g_next_bundle_id.fetch_add(1, std::memory_order_relaxed));
+      client_id, g_next_bundle_id.fetch_add(1, std::memory_order_relaxed));
 }
 
 }  // namespace blink

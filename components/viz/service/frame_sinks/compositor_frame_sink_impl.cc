@@ -91,14 +91,13 @@ CompositorFrameSinkImpl::CompositorFrameSinkImpl(
     absl::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client)
-    : manager_(*frame_sink_manager),
-      bundle_id_(bundle_id),
-      compositor_frame_sink_client_(std::move(client)),
-      proxying_client_(bundle_id.has_value()
-                           ? std::make_unique<BundleClientProxy>(manager_,
-                                                                 frame_sink_id,
-                                                                 *bundle_id)
-                           : nullptr),
+    : compositor_frame_sink_client_(std::move(client)),
+      proxying_client_(
+          bundle_id.has_value()
+              ? std::make_unique<BundleClientProxy>(*frame_sink_manager,
+                                                    frame_sink_id,
+                                                    *bundle_id)
+              : nullptr),
       compositor_frame_sink_receiver_(this, std::move(receiver)),
       support_(std::make_unique<CompositorFrameSinkSupport>(
           proxying_client_ ? proxying_client_.get()
@@ -111,19 +110,10 @@ CompositorFrameSinkImpl::CompositorFrameSinkImpl(
                      base::Unretained(this)));
   if (bundle_id.has_value()) {
     support_->SetBundle(*bundle_id);
-    manager_.GetFrameSinkBundle(*bundle_id)->AddFrameSink(frame_sink_id);
   }
 }
 
-CompositorFrameSinkImpl::~CompositorFrameSinkImpl() {
-  if (!bundle_id_.has_value()) {
-    return;
-  }
-
-  if (FrameSinkBundleImpl* bundle = manager_.GetFrameSinkBundle(*bundle_id_)) {
-    bundle->RemoveFrameSink(support_->frame_sink_id());
-  }
-}
+CompositorFrameSinkImpl::~CompositorFrameSinkImpl() = default;
 
 void CompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
   support_->SetNeedsBeginFrame(needs_begin_frame);

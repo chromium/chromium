@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -29,12 +30,11 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
-const viz::FrameSinkId kTestParentFrameSinkId(1, 1);
-const viz::FrameSinkId kTestDifferentParentFrameSinkId(1, 42);
+const uint32_t kTestClientId = 1;
 
-const viz::FrameSinkId kTestVideoSinkId1(1, 2);
-const viz::FrameSinkId kTestVideoSinkId2(1, 3);
-const viz::FrameSinkId kTestVideoSinkId3(1, 4);
+const viz::FrameSinkId kTestVideoSinkId1(kTestClientId, 2);
+const viz::FrameSinkId kTestVideoSinkId2(kTestClientId, 3);
+const viz::FrameSinkId kTestVideoSinkId3(kTestClientId, 4);
 
 MATCHER(IsEmpty, "") {
   return arg.IsEmpty();
@@ -83,10 +83,14 @@ const viz::LocalSurfaceId kTestSurfaceId(
 
 class VideoFrameSinkBundleTest : public testing::Test {
  public:
-  VideoFrameSinkBundleTest() = default;
+  VideoFrameSinkBundleTest() {
+    VideoFrameSinkBundle::SetFrameSinkProviderForTesting(
+        &frame_sink_provider());
+  }
 
   ~VideoFrameSinkBundleTest() override {
-    VideoFrameSinkBundle::DestroySharedInstancesForTesting();
+    VideoFrameSinkBundle::SetFrameSinkProviderForTesting(nullptr);
+    VideoFrameSinkBundle::DestroySharedInstanceForTesting();
   }
 
   void CreateTestBundle() {
@@ -95,9 +99,7 @@ class VideoFrameSinkBundleTest : public testing::Test {
   }
 
   VideoFrameSinkBundle& test_bundle() {
-    return VideoFrameSinkBundle::GetOrCreateSharedInstance(
-        frame_sink_provider(), kTestParentFrameSinkId,
-        /*for_media_streams=*/true);
+    return VideoFrameSinkBundle::GetOrCreateSharedInstance(kTestClientId);
   }
 
   MockEmbeddedFrameSinkProvider& frame_sink_provider() {
@@ -122,65 +124,33 @@ TEST_F(VideoFrameSinkBundleTest, GetOrCreateSharedInstance) {
   // Verify that GetOrCreateSharedInstance lazily initializes an instance.
   EXPECT_CALL(frame_sink_provider(), CreateFrameSinkBundle_).Times(1);
   VideoFrameSinkBundle& bundle =
-      VideoFrameSinkBundle::GetOrCreateSharedInstance(
-          frame_sink_provider(), kTestParentFrameSinkId,
-          /*for_media_streams=*/true);
-  EXPECT_FALSE(bundle.is_context_lost());
+      VideoFrameSinkBundle::GetOrCreateSharedInstance(kTestClientId);
 
-  // And that acquiring an instance with the same parameters reuses the existing
+  // And that acquiring an instance with the same client ID reuses the existing
   // instance.
   VideoFrameSinkBundle& other_bundle =
-      VideoFrameSinkBundle::GetOrCreateSharedInstance(
-          frame_sink_provider(), kTestParentFrameSinkId,
-          /*for_media_streams=*/true);
+      VideoFrameSinkBundle::GetOrCreateSharedInstance(kTestClientId);
   EXPECT_EQ(&other_bundle, &bundle);
-
-  // And finally that acquiring an instance with either a different parent frame
-  // sink ID or a different frame type will create a new instance.
-  EXPECT_CALL(frame_sink_provider(), CreateFrameSinkBundle_).Times(1);
-  VideoFrameSinkBundle& yet_another_bundle =
-      VideoFrameSinkBundle::GetOrCreateSharedInstance(
-          frame_sink_provider(), kTestDifferentParentFrameSinkId,
-          /*for_media_streams=*/true);
-  EXPECT_NE(&yet_another_bundle, &bundle);
-
-  EXPECT_CALL(frame_sink_provider(), CreateFrameSinkBundle_).Times(1);
-  VideoFrameSinkBundle::GetOrCreateSharedInstance(
-      frame_sink_provider(), kTestDifferentParentFrameSinkId,
-      /*for_media_streams=*/false);
 }
 
 TEST_F(VideoFrameSinkBundleTest, Reconnect) {
-  // Verifies that a VideoFrameSinkBundle reestablishes a connection to Viz
-  // when acquired again after disconnection.
+  // Verifies that VideoFrameSinkBundle is destroyed and recreated if
+  // disconnected, reestablishing a connection to Viz as a result.
   CreateTestBundle();
-  VideoFrameSinkBundle& bundle = test_bundle();
-  bundle.OnContextLost(bundle.bundle_id());
+  viz::FrameSinkBundleId first_bundle_id = test_bundle().bundle_id();
 
-  EXPECT_CALL(frame_sink_provider(), CreateFrameSinkBundle_).Times(1);
-  VideoFrameSinkBundle& another_bundle = test_bundle();
-  EXPECT_EQ(&another_bundle, &bundle);
-}
+  base::RunLoop loop;
+  test_bundle().set_disconnect_handler_for_testing(loop.QuitClosure());
+  mock_frame_sink_bundle().Disconnect();
+  loop.Run();
 
-TEST_F(VideoFrameSinkBundleTest, Cleanup) {
-  // Verifies that shared instances clean up after themselves when their last
-  // client is removed.
-  mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink;
-  ignore_result(sink.BindNewPipeAndPassReceiver());
-  MockCompositorFrameSinkClient client;
-  CreateTestBundle();
-  VideoFrameSinkBundle& bundle = test_bundle();
-  bundle.AddClient(kTestVideoSinkId1, &client, sink);
-  bundle.AddClient(kTestVideoSinkId2, &client, sink);
+  EXPECT_CALL(frame_sink_provider(), CreateFrameSinkBundle_)
+      .Times(1)
+      .WillOnce([&] { loop.Quit(); });
 
-  EXPECT_EQ(&bundle, VideoFrameSinkBundle::GetSharedInstanceForTesting(
-                         kTestParentFrameSinkId, true));
-  bundle.RemoveClient(kTestVideoSinkId1);
-  EXPECT_EQ(&bundle, VideoFrameSinkBundle::GetSharedInstanceForTesting(
-                         kTestParentFrameSinkId, true));
-  bundle.RemoveClient(kTestVideoSinkId2);
-  EXPECT_EQ(nullptr, VideoFrameSinkBundle::GetSharedInstanceForTesting(
-                         kTestParentFrameSinkId, true));
+  viz::FrameSinkBundleId second_bundle_id = test_bundle().bundle_id();
+  EXPECT_EQ(first_bundle_id.client_id(), second_bundle_id.client_id());
+  EXPECT_NE(first_bundle_id.bundle_id(), second_bundle_id.bundle_id());
 }
 
 TEST_F(VideoFrameSinkBundleTest, PassThrough) {
@@ -211,11 +181,23 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
   MockCompositorFrameSinkClient mock_client1;
   MockCompositorFrameSinkClient mock_client2;
   MockCompositorFrameSinkClient mock_client3;
-  mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink;
-  ignore_result(sink.BindNewPipeAndPassReceiver());
-  bundle.AddClient(kTestVideoSinkId1, &mock_client1, sink);
-  bundle.AddClient(kTestVideoSinkId2, &mock_client2, sink);
-  bundle.AddClient(kTestVideoSinkId3, &mock_client3, sink);
+  mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink1;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink2;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink3;
+  mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver1{
+      &mock_client1};
+  mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver2{
+      &mock_client2};
+  mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver3{
+      &mock_client3};
+  ignore_result(provider.BindNewPipeAndPassReceiver());
+  bundle.AddClient(kTestVideoSinkId1, &mock_client1, provider, receiver1,
+                   sink1);
+  bundle.AddClient(kTestVideoSinkId2, &mock_client2, provider, receiver2,
+                   sink2);
+  bundle.AddClient(kTestVideoSinkId3, &mock_client3, provider, receiver3,
+                   sink3);
 
   // All clients will submit a frame synchronously within OnBeginFrame.
   EXPECT_CALL(mock_client1, OnBeginFrame).Times(1).WillOnce([&] {

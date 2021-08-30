@@ -68,9 +68,6 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
 
   void OnClientConnectionLost();
 
-  FrameSinkManagerImpl& manager_;
-  const absl::optional<FrameSinkBundleId> bundle_id_;
-
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
   std::unique_ptr<mojom::CompositorFrameSinkClient> proxying_client_;
 

@@ -131,7 +131,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // CreateBundledCompositorFrameSink with the same `bundle_id` value, rather
   // than using CreateCompositorFrameSink.
   void CreateFrameSinkBundle(
-      const FrameSinkId& parent_frame_sink_id,
       const FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
       mojo::PendingRemote<mojom::FrameSinkBundleClient> client);

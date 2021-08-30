@@ -92,11 +92,9 @@ interface FrameSinkManager {
   CreateRootCompositorFrameSink(RootCompositorFrameSinkParams params);
 
   // Used by unprivileged clients to create a new FrameSinkBundle in the
-  // service. Each bundle is associated with a parent frame sink and can be
-  // used to communicate aggregate notifications and requests to and from any
-  // of the other frame sinks belonging to the same client.
-  CreateFrameSinkBundle(FrameSinkId parent_frame_sink_id,
-                        FrameSinkBundleId bundle_id,
+  // service. Each bundle can be used to communicate aggregate notifications and
+  // requests to and from any frame sinks belonging to the same client.
+  CreateFrameSinkBundle(FrameSinkBundleId bundle_id,
                         pending_receiver<FrameSinkBundle> receiver,
                         pending_remote<FrameSinkBundleClient> client);
 

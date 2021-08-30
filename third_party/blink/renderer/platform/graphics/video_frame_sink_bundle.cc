@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/viz_util.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -18,104 +20,98 @@ namespace blink {
 
 namespace {
 
-// We keep a thread-local map of VideoFrameSinkBundles, keyed by parent
-// FrameSinkId and whether or not the submitter is a media stream.
-using BundleKey = std::tuple<viz::FrameSinkId, bool>;
+mojom::blink::EmbeddedFrameSinkProvider* g_frame_sink_provider_override =
+    nullptr;
 
-// NOTE: We use flat_map because of the odd key type, relatively small
-// expected size, and relatively infrequent insertions and deletions.
-using FrameSinkBundleMap =
-    base::flat_map<BundleKey, std::unique_ptr<VideoFrameSinkBundle>>;
-
-FrameSinkBundleMap& GetThreadFrameSinkBundleMap() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<FrameSinkBundleMap>, bundles,
-                                  ());
-  return *bundles;
+std::unique_ptr<VideoFrameSinkBundle>& GetThreadFrameSinkBundlePtr() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<std::unique_ptr<VideoFrameSinkBundle>>, bundle, ());
+  return *bundle;
 }
 
 }  // namespace
 
-VideoFrameSinkBundle::VideoFrameSinkBundle(
-    base::PassKey<VideoFrameSinkBundle>,
-    mojom::blink::EmbeddedFrameSinkProvider& provider,
-    const viz::FrameSinkId& parent_frame_sink_id,
-    bool for_media_streams)
-    : parent_frame_sink_id_(parent_frame_sink_id),
-      for_media_streams_(for_media_streams) {
-  ConnectNewBundle(provider);
+VideoFrameSinkBundle::VideoFrameSinkBundle(base::PassKey<VideoFrameSinkBundle>,
+                                           uint32_t client_id)
+    : id_(GenerateFrameSinkBundleId(client_id)) {
+  mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> host_provider;
+  mojom::blink::EmbeddedFrameSinkProvider* provider;
+  if (g_frame_sink_provider_override) {
+    provider = g_frame_sink_provider_override;
+  } else {
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        host_provider.BindNewPipeAndPassReceiver());
+    provider = host_provider.get();
+  }
+  provider->RegisterEmbeddedFrameSinkBundle(
+      id_, bundle_.BindNewPipeAndPassReceiver(),
+      receiver_.BindNewPipeAndPassRemote());
+  bundle_.set_disconnect_handler(base::BindOnce(
+      &VideoFrameSinkBundle::OnDisconnected, base::Unretained(this)));
 }
 
 VideoFrameSinkBundle::~VideoFrameSinkBundle() = default;
 
 // static
 VideoFrameSinkBundle& VideoFrameSinkBundle::GetOrCreateSharedInstance(
-    mojom::blink::EmbeddedFrameSinkProvider& provider,
-    const viz::FrameSinkId& parent_frame_sink_id,
-    bool for_media_stream) {
-  const BundleKey key(parent_frame_sink_id, for_media_stream);
-  auto& bundle = GetThreadFrameSinkBundleMap()[key];
-  if (!bundle) {
-    bundle = std::make_unique<VideoFrameSinkBundle>(
-        base::PassKey<VideoFrameSinkBundle>(), provider, parent_frame_sink_id,
-        for_media_stream);
-  } else if (bundle->is_context_lost()) {
-    bundle->ConnectNewBundle(provider);
+    uint32_t client_id) {
+  auto& bundle_ptr = GetThreadFrameSinkBundlePtr();
+  if (bundle_ptr) {
+    // Renderers only use a single client ID with Viz, so this must always be
+    // true. If for whatever reason it changes, we would need to maintain a
+    // thread-local mapping from client ID to VideoFrameSinkBundle instead of
+    // sharing a single thread-local instance.
+    DCHECK_EQ(bundle_ptr->bundle_id().client_id(), client_id);
+    return *bundle_ptr;
   }
-  return *bundle;
+
+  bundle_ptr = std::make_unique<VideoFrameSinkBundle>(
+      base::PassKey<VideoFrameSinkBundle>(), client_id);
+  return *bundle_ptr;
 }
 
 // static
-VideoFrameSinkBundle* VideoFrameSinkBundle::GetSharedInstanceForTesting(
-    const viz::FrameSinkId& parent_frame_sink_id,
-    bool for_media_stream) {
-  const BundleKey key(parent_frame_sink_id, for_media_stream);
-  auto& bundles = GetThreadFrameSinkBundleMap();
-  auto it = bundles.find(key);
-  if (it == bundles.end()) {
-    return nullptr;
-  }
-  DCHECK(it->second);
-  return it->second.get();
+VideoFrameSinkBundle* VideoFrameSinkBundle::GetSharedInstanceForTesting() {
+  return GetThreadFrameSinkBundlePtr().get();
 }
 
 // static
-void VideoFrameSinkBundle::DestroySharedInstancesForTesting() {
-  GetThreadFrameSinkBundleMap().clear();
+void VideoFrameSinkBundle::DestroySharedInstanceForTesting() {
+  GetThreadFrameSinkBundlePtr().reset();
 }
 
-void VideoFrameSinkBundle::AddClient(
-    const viz::FrameSinkId& id,
+// static
+void VideoFrameSinkBundle::SetFrameSinkProviderForTesting(
+    mojom::blink::EmbeddedFrameSinkProvider* provider) {
+  g_frame_sink_provider_override = provider;
+}
+
+base::WeakPtr<VideoFrameSinkBundle> VideoFrameSinkBundle::AddClient(
+    const viz::FrameSinkId& frame_sink_id,
     viz::mojom::blink::CompositorFrameSinkClient* client,
-    mojo::Remote<viz::mojom::blink::CompositorFrameSink>& sink) {
-  clients_.Set(id.sink_id(), client);
+    mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider>& frame_sink_provider,
+    mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient>& receiver,
+    mojo::Remote<viz::mojom::blink::CompositorFrameSink>& remote) {
+  DCHECK_EQ(frame_sink_id.client_id(), id_.client_id());
 
-  // This serves as a synchronization barrier, blocking the bundle from
-  // receiving any new messages until the service-side CompositorFrameSinkImpl
-  // has been bound for this frame sink.
-  bundle_.PauseReceiverUntilFlushCompletes(sink.FlushAsync());
+  // Ensure that the bundle is created service-side before the our
+  // CreateBundledCompositorFrameSink message below reaches the Viz host.
+  frame_sink_provider.PauseReceiverUntilFlushCompletes(bundle_.FlushAsync());
+
+  frame_sink_provider->CreateBundledCompositorFrameSink(
+      frame_sink_id, id_, receiver.BindNewPipeAndPassRemote(),
+      remote.BindNewPipeAndPassReceiver());
+  clients_.Set(frame_sink_id.sink_id(), client);
+
+  // This serves as a second synchronization barrier, this time blocking the
+  // bundle from receiving any new messages until the service-side
+  // CompositorFrameSinkImpl has been bound for this frame sink.
+  bundle_.PauseReceiverUntilFlushCompletes(remote.FlushAsync());
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void VideoFrameSinkBundle::RemoveClient(const viz::FrameSinkId& frame_sink_id) {
   clients_.erase(frame_sink_id.sink_id());
-  if (!clients_.IsEmpty()) {
-    return;
-  }
-
-  // No more clients, so self-delete.
-  GetThreadFrameSinkBundleMap().erase(
-      BundleKey(parent_frame_sink_id_, for_media_streams_));
-}
-
-void VideoFrameSinkBundle::OnContextLost(
-    const viz::FrameSinkBundleId& bundle_id) {
-  if (bundle_id != id_) {
-    // If this context loss report is regarding a previously used bundle ID,
-    // we can ignore it. Someone else in the bundle already reported it and
-    // we've since connected a new bundle.
-    return;
-  }
-
-  is_context_lost_ = true;
 }
 
 void VideoFrameSinkBundle::InitializeCompositorFrameSinkType(
@@ -245,16 +241,14 @@ void VideoFrameSinkBundle::OnCompositorFrameTransitionDirectiveProcessed(
   it->value->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
-void VideoFrameSinkBundle::ConnectNewBundle(
-    mojom::blink::EmbeddedFrameSinkProvider& provider) {
-  DCHECK(!bundle_ || is_context_lost_);
-  is_context_lost_ = false;
-  bundle_.reset();
-  receiver_.reset();
-  id_ = GenerateFrameSinkBundleId(parent_frame_sink_id_);
-  provider.RegisterEmbeddedFrameSinkBundle(
-      parent_frame_sink_id_, id_, bundle_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
+void VideoFrameSinkBundle::OnDisconnected() {
+  if (disconnect_handler_for_testing_) {
+    std::move(disconnect_handler_for_testing_).Run();
+  }
+
+  // If the bundle was disconnected, Viz must have terminated. Self-delete so
+  // that a new bundle is created when the next client reconnects to Viz.
+  GetThreadFrameSinkBundlePtr().reset();
 }
 
 void VideoFrameSinkBundle::FlushMessages() {

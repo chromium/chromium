@@ -7,9 +7,11 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +24,7 @@
 namespace viz {
 
 class CompositorFrameSinkImpl;
+class CompositorFrameSinkSupport;
 class FrameSinkManagerImpl;
 
 // This object receives aggregate SubmitCompositorFrame and DidNotProduceFrame
@@ -31,28 +34,26 @@ class FrameSinkManagerImpl;
 // Outgoing client messages from the corresponding CompositorFrameSinkImpls are
 // also aggregated here and sent in batch back to the client.
 //
-// Every sink added to a bundle must be of the same CompositorFrameSinkType and
-// use the same BeginFrameSource.
-class FrameSinkBundleImpl : public mojom::FrameSinkBundle,
-                            public BeginFrameObserver {
+// The bundle accepts any kind of sink from the same client, and messages are
+// batched together for sinks which share a BeginFrameSource.
+class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
  public:
   // Constructs a new FrameSinkBundleImpl for a subset of sinks belonging to
-  // `client_id`. This object observes OnBeginFrame() events from
-  // `begin_frame_source` and pushes them synchronously to each frame sink in
-  // the bundle at the same time.
+  // `client_id`.
   FrameSinkBundleImpl(FrameSinkManagerImpl& manager,
                       const FrameSinkBundleId& id,
-                      BeginFrameSource* begin_frame_source,
                       mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
                       mojo::PendingRemote<mojom::FrameSinkBundleClient> client);
   FrameSinkBundleImpl(const FrameSinkBundleImpl&) = delete;
   FrameSinkBundleImpl& operator=(const FrameSinkBundleImpl&) = delete;
   ~FrameSinkBundleImpl() override;
 
-  BeginFrameSource* begin_frame_source() { return begin_frame_source_; }
+  const FrameSinkBundleId& id() const { return id_; }
 
-  void AddFrameSink(const FrameSinkId& id);
-  void RemoveFrameSink(const FrameSinkId& id);
+  void AddFrameSink(CompositorFrameSinkSupport* support);
+  void UpdateFrameSink(CompositorFrameSinkSupport* support,
+                       BeginFrameSource* old_source);
+  void RemoveFrameSink(CompositorFrameSinkSupport* support);
 
   // mojom::FrameSinkBundle implementation:
   void InitializeCompositorFrameSinkType(
@@ -80,37 +81,31 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle,
   void SendOnCompositorFrameTransitionDirectiveProcessed(uint32_t sink_id,
                                                          uint32_t sequence_id);
 
-  void UnregisterBeginFrameSource(BeginFrameSource* source);
-
  private:
+  class SinkGroup;
+
+  void RemoveFrameSinkImpl(BeginFrameSource* source, uint32_t sink_id);
+
   CompositorFrameSinkImpl* GetFrameSink(uint32_t sink_id) const;
+  CompositorFrameSinkSupport* GetFrameSinkSupport(uint32_t sink_id) const;
+  SinkGroup* GetSinkGroup(uint32_t sink_id) const;
 
-  void FlushMessages();
   void OnDisconnect();
-
-  // BeginFrameObserver implementation:
-  void OnBeginFrame(const BeginFrameArgs& args) override;
-  const BeginFrameArgs& LastUsedBeginFrameArgs() const override;
-  void OnBeginFrameSourcePausedChanged(bool paused) override;
-  bool WantsAnimateOnlyBeginFrames() const override;
 
   FrameSinkManagerImpl& manager_;
   const FrameSinkBundleId id_;
-  BeginFrameSource* begin_frame_source_;
+
   mojo::Receiver<mojom::FrameSinkBundle> receiver_;
   mojo::Remote<mojom::FrameSinkBundleClient> client_;
 
-  BeginFrameArgs last_used_begin_frame_args_;
+  // Set of sinks that are in the bundle but don't yet have a known
+  // BeginFrameSource. These sinks will not receive OnBeginFrame notifications
+  // until they get a BeginFrameSource.
+  std::set<uint32_t> sourceless_sinks_;
 
-  size_t num_unacked_submissions_ = 0;
-
-  absl::optional<mojom::CompositorFrameSinkType> sink_type_;
-  bool defer_on_begin_frames_ = false;
-  std::vector<mojom::BundledReturnedResourcesPtr> pending_received_frame_acks_;
-  std::vector<mojom::BundledReturnedResourcesPtr> pending_reclaimed_resources_;
-  std::vector<mojom::BeginFrameInfoPtr> pending_on_begin_frames_;
-
-  std::set<uint32_t> frame_sinks_;
+  // Mapping from BeginFrameSource to the SinkGroup which manages batched
+  // communication for all the sinks which share that source.
+  base::flat_map<BeginFrameSource*, std::unique_ptr<SinkGroup>> sink_groups_;
 };
 
 }  // namespace viz

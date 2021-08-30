@@ -29,6 +29,7 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
   MockFrameSinkBundle(const MockFrameSinkBundle&) = delete;
   MockFrameSinkBundle& operator=(const MockFrameSinkBundle&) = delete;
 
+  void Disconnect() { receiver_.reset(); }
   void FlushReceiver() { receiver_.FlushForTesting(); }
 
   viz::mojom::blink::FrameSinkBundleClient& client() { return *client_.get(); }

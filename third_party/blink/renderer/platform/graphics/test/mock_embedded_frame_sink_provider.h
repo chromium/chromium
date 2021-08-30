@@ -32,16 +32,15 @@ class MockEmbeddedFrameSinkProvider
            const viz::FrameSinkId&,
            mojo::PendingRemote<mojom::blink::EmbeddedFrameSinkClient>));
   void RegisterEmbeddedFrameSinkBundle(
-      const viz::FrameSinkId& parent_frame_sink_id,
       const viz::FrameSinkBundleId&,
       mojo::PendingReceiver<viz::mojom::blink::FrameSinkBundle> receiver,
       mojo::PendingRemote<viz::mojom::blink::FrameSinkBundleClient> client)
       override {
     mock_frame_sink_bundle_ = std::make_unique<MockFrameSinkBundle>(
         std::move(receiver), std::move(client));
-    CreateFrameSinkBundle_(parent_frame_sink_id);
+    CreateFrameSinkBundle_();
   }
-  MOCK_METHOD1(CreateFrameSinkBundle_, void(const viz::FrameSinkId&));
+  MOCK_METHOD0(CreateFrameSinkBundle_, void());
   void CreateCompositorFrameSink(
       const viz::FrameSinkId& frame_sink_id,
       mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient> client,

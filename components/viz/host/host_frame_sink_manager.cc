@@ -164,12 +164,11 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
 }
 
 void HostFrameSinkManager::CreateFrameSinkBundle(
-    const FrameSinkId& parent_frame_sink_id,
     const FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
     mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
-  frame_sink_manager_->CreateFrameSinkBundle(
-      parent_frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+  frame_sink_manager_->CreateFrameSinkBundle(bundle_id, std::move(receiver),
+                                             std::move(client));
 }
 
 void HostFrameSinkManager::CreateBundledCompositorFrameSink(

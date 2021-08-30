@@ -118,6 +118,12 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
 
   if (begin_frame_source_ && added_frame_observer_)
     begin_frame_source_->RemoveObserver(this);
+
+  if (bundle_id_.has_value()) {
+    if (auto* bundle = frame_sink_manager_->GetFrameSinkBundle(*bundle_id_)) {
+      bundle->RemoveFrameSink(this);
+    }
+  }
 }
 
 FrameTimingDetailsMap CompositorFrameSinkSupport::TakeFrameTimingDetailsMap() {
@@ -145,27 +151,34 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     begin_frame_source_->RemoveObserver(this);
     added_frame_observer_ = false;
   }
-  if (bundle_id_ && begin_frame_source_ != nullptr &&
-      begin_frame_source_ != begin_frame_source) {
-    // If we are in a bundle, our previous BeginFrameSource must have been
-    // identical to the bundle's. If that's changing, we're no longer able to
-    // participate in the bundle. Force the client to re-establish a
-    // CompositorFrameSink in this case.
-    ScheduleSelfDestruction();
-    return;
-  }
+
+  auto* old_source = begin_frame_source_;
   begin_frame_source_ = begin_frame_source;
+
+  FrameSinkBundleImpl* bundle = nullptr;
+  if (bundle_id_) {
+    bundle = frame_sink_manager_->GetFrameSinkBundle(*bundle_id_);
+    if (!bundle) {
+      // Our bundle has been destroyed.
+      ScheduleSelfDestruction();
+      return;
+    }
+    bundle->UpdateFrameSink(this, old_source);
+  }
+
   UpdateNeedsBeginFramesInternal();
 }
 
 void CompositorFrameSinkSupport::SetBundle(const FrameSinkBundleId& bundle_id) {
   auto* bundle = frame_sink_manager_->GetFrameSinkBundle(bundle_id);
-  if (!bundle || (begin_frame_source_ &&
-                  begin_frame_source_ != bundle->begin_frame_source())) {
+  if (!bundle) {
+    // The bundle is gone already, so force the client to re-establish their
+    // CompositorFrameSink.
     ScheduleSelfDestruction();
     return;
   }
 
+  bundle->AddFrameSink(this);
   bundle_id_ = bundle_id;
   UpdateNeedsBeginFramesInternal();
 }

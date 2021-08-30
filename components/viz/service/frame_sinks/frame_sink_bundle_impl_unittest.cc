@@ -220,7 +220,7 @@ class FrameSinkBundleImplTest : public testing::Test {
  public:
   FrameSinkBundleImplTest() {
     manager_.surface_manager()->SetTickClockForTesting(&test_clock_);
-    manager_.CreateFrameSinkBundle(kMainFrame, kBundleId,
+    manager_.CreateFrameSinkBundle(kBundleId,
                                    bundle_.BindNewPipeAndPassReceiver(),
                                    client_receiver_.BindNewPipeAndPassRemote());
   }

@@ -43,7 +43,6 @@ interface EmbeddedFrameSinkProvider {
   // frame sinks included in the bundle. See CreateBundledCompositorFrameSink()
   // below.
   RegisterEmbeddedFrameSinkBundle(
-      viz.mojom.FrameSinkId parent_frame_sink_id,
       viz.mojom.FrameSinkBundleId bundle_id,
       pending_receiver<viz.mojom.FrameSinkBundle> receiver,
       pending_remote<viz.mojom.FrameSinkBundleClient> client);
