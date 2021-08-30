@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<meta charset=utf-8>
+<meta charset="utf-8" />
 <title>PaymentRequest show() rejects if doc is not fully active</title>
-<link rel="help" href="https://w3c.github.io/payment-request/#show-method">
+<link rel="help" href="https://w3c.github.io/payment-request/#show-method" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -16,7 +16,7 @@ const applePay = Object.freeze({
     countryCode: "US",
     merchantCapabilities: ["supports3DS"],
     supportedNetworks: ["visa"],
-  }
+  },
 });
 const validMethod = Object.freeze({
   supportedMethods: "basic-card",
@@ -34,64 +34,56 @@ const validDetails = Object.freeze({
   total: validTotal,
 });
 
-function getLoadedPaymentRequest(iframe, url) {
-  return new Promise(resolve => {
-    iframe.addEventListener(
-      "load",
-      () => {
-        const { PaymentRequest } = iframe.contentWindow;
-        const request = new PaymentRequest(validMethods, validDetails);
-        resolve(request);
-      },
-      { once: true }
-    );
+async function getLoadedPaymentRequest(iframe, url) {
+  await new Promise((resolve) => {
+    iframe.addEventListener("load", resolve, { once: true });
     iframe.src = url;
   });
+  const { PaymentRequest } = iframe.contentWindow;
+  const request = new PaymentRequest(validMethods, validDetails);
+  return request;
 }
 
-promise_test(async t => {
+promise_test(async (t) => {
   const iframe = document.createElement("iframe");
-  iframe.allow = "payment";
   document.body.appendChild(iframe);
   // Make a request in the iframe.
   const request = await getLoadedPaymentRequest(
     iframe,
-    "/payment-request/resources/page1.html"
+    "resources/page1.html"
   );
-  const [showPromise] = await test_driver.bless("show payment request", () => {
-    return [request.show()];
-  });
+  await test_driver.bless("show payment request");
+  const showPromise = request.show();
+  const firstCtor = iframe.contentWindow.DOMException;
+
   // Navigate the iframe to a new location. Wait for the load event to fire.
-  await new Promise(resolve => {
-    iframe.addEventListener("load", resolve);
-    iframe.src = "/payment-request/resources/page2.html";
-    // An implementation may optionally reject |showPromise|.
-    showPromise.catch(e => {});
-  });
+  const request2 = await getLoadedPaymentRequest(
+    iframe,
+    "resources/page2.html"
+  );
 
-  // The navigaton should have dismissed the previous payment request so it
-  // should be possible to show another one now.
-  const request2 = new iframe.contentWindow.PaymentRequest(
-    validMethods, validDetails);
-  const [showPromise2] = await test_driver.bless(
-    "show 2nd payment request", () => {
-      return [request2.show()];
-    });
+  await promise_rejects_dom(
+    t,
+    "AbortError",
+    firstCtor,
+    showPromise,
+    "Show promise should abort."
+  );
 
-  // Stop the test in 1 second if it has not rejected, which means that a
-  // payment sheet is successfully shown.
-  t.step_timeout(async () => {
-    // We are done, so clean up.
-    iframe.remove();
-    t.done();
-  }, 1000);
-
-  // This should never settle because the payment sheet should be pending.
-  await showPromise2.then(() => {
-    assert_true(false, "Second payment should be pending but is resolved.");
-  })
-  .catch(e => {
-    assert_true(false, "Second payment should be pending but is rejected.");
-  });
+  // The navigation dismisses the previous payment request so it
+  // now possible to show another one.
+  await test_driver.bless("show 2nd payment request");
+  const showPromise2 = request2.show();
+  const secondCtor = iframe.contentWindow.DOMException;
+  // no longer fully active
+  iframe.remove();
+  await promise_rejects_dom(
+    t,
+    "AbortError",
+    secondCtor,
+    showPromise2,
+    "Show promise should abort."
+  );
 }, "If a payment request is showing, but its document is navigated away (so no longer fully active), the payment sheet is dismissed.");
 </script>
+</body>

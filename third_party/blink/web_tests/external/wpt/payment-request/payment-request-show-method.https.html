@@ -51,17 +51,15 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  await test_driver.bless(
-    "test: throws if the promise [[state]] is not 'created'"
-  );
-  const acceptPromise = request.show(); // Sets state to "interactive"
-  // No user activation...
   await promise_rejects_dom(t, "SecurityError", request.show());
 
-  // Get user activation
-  await test_driver.bless(
-    "test: throws if the promise [[state]] is not 'created'"
-  );
+  await test_driver.bless();
+  const acceptPromise = request.show(); // Sets state to "interactive"
+
+  await promise_rejects_dom(t, "InvalidStateError", request.show());
+
+  // With user activation, but already showing the sheet...
+  await test_driver.bless();
   await promise_rejects_dom(t, "InvalidStateError", request.show());
 
   await request.abort();
@@ -70,16 +68,15 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const request1 = new PaymentRequest(defaultMethods, defaultDetails);
-  const request2 = new PaymentRequest(defaultMethods, defaultDetails);
-
-  await test_driver.bless("payment request");
+  await test_driver.bless();
   const acceptPromise1 = request1.show();
 
   // User activation consumed, so...
+  const request2 = new PaymentRequest(defaultMethods, defaultDetails);
   await promise_rejects_dom(t, "SecurityError", request2.show());
 
   // Payment request already showing, so...
-  await test_driver.bless("payment request");
+  await test_driver.bless();
   await promise_rejects_dom(t, "AbortError", request2.show());
 
   await request1.abort();
@@ -91,27 +88,27 @@ promise_test(async (t) => {
     [{ supportedMethods: "this-is-not-supported" }],
     defaultDetails
   );
-  await test_driver.bless(`test: reject promise with "NotSupportedError"`);
+  await test_driver.bless();
   const acceptPromise = request.show();
   await promise_rejects_dom(t, "NotSupportedError", acceptPromise);
 }, `If payment method consultation produces no supported method of payment, then return a promise rejected with a "NotSupportedError" DOMException.`);
 
 promise_test(async (t) => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  await test_driver.bless("call show()");
+  await test_driver.bless();
   const p1 = request.show();
-  await test_driver.bless("call show()");
+  await test_driver.bless();
   const p2 = request.show();
-  await test_driver.bless("call show()");
+  await test_driver.bless();
   const p3 = request.show();
+  await request.abort();
+
   const promises = new Set([p1, p2, p3]);
   assert_equals(promises.size, 3, "Must have three unique objects");
 
+  await promise_rejects_dom(t, "AbortError", p1);
   await promise_rejects_dom(t, "InvalidStateError", p2);
   await promise_rejects_dom(t, "InvalidStateError", p3);
-
-  await request.abort();
-  await promise_rejects_dom(t, "AbortError", p1);
 }, "Calling show() multiple times always returns a new promise.");
 </script>
 <small>

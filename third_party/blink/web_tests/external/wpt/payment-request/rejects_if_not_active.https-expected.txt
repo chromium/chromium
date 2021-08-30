@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL If a payment request is showing, but its document is navigated away (so no longer fully active), the payment sheet is dismissed. assert_true: Second payment should be pending but is rejected. expected true got false
+FAIL If a payment request is showing, but its document is navigated away (so no longer fully active), the payment sheet is dismissed. promise_rejects_dom: Show promise should abort. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
 Harness: the test ran to completion.
 

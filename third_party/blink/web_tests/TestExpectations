@@ -2731,6 +2731,10 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/626703 [ Mac10.13 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
@@ -6350,7 +6354,7 @@ crbug.com/1207851 virtual/plz-dedicated-worker/external/wpt/service-workers/idlh
 # Sheriff 2021-05-10
 crbug.com/1207709 [ Mac10.13 ] external/wpt/resource-timing/document-domain-no-impact-opener.html [ Failure Pass ]
 crbug.com/1207709 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/document-domain-no-impact-opener.html [ Failure Pass ]
-crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Pass ]
+crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Pass Timeout ]
 
 # Will be passed when compositing-after-paint is used by default 2021-05-13
 crbug.com/1208213 external/wpt/css/css-transforms/add-child-in-empty-layer.html [ Failure ]

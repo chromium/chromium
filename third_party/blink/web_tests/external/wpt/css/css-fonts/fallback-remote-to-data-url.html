@@ -14,6 +14,8 @@ const src = "url(data:font/woff2;base64,d09GMgABAAAAAAaUAAsAAAAAMMAAAAZCAAEAQgAA
 // Covers digits 0-9 only.
 const dataFont = new FontFace('data-font', src, {unicodeRange: 'U+30-39'});
 document.fonts.add(dataFont);
+// Ensure loading of dataFont is initiated.
+dataFont.load();
 </script>
 
 <style>

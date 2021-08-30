@@ -812,6 +812,7 @@ crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-d
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-disturbed-4.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/response/response-stream-disturbed-5.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/html/semantics/embedded-content/the-embed-element/embed-dimension.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/payment-request/rejects_if_not_active.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/resize-observer/observe.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/resize-observer/svg.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/streams/piping/pipe-through.any.html [ Failure ]
