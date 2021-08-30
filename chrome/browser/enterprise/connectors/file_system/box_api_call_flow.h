@@ -196,6 +196,7 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
   using TaskCallback = base::OnceCallback<void(Response, const std::string&)>;
   BoxWholeFileUploadApiCallFlow(TaskCallback callback,
                                 const std::string& folder_id,
+                                const std::string& mime_type,
                                 const base::FilePath& target_file_name,
                                 const base::FilePath& local_file_path);
   ~BoxWholeFileUploadApiCallFlow() override;
@@ -215,13 +216,9 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
                              std::unique_ptr<std::string> body) override;
   void ProcessFailure(Response response) override;
 
-  void SetFileReadForTesting(std::string content, std::string mime_type);
+  void SetFileReadForTesting(std::string content);
 
  private:
-  struct FileRead {
-    std::string content;
-    std::string mime;
-  };
   // Post a task to ThreadPool to read the local file, forward the
   // parameters from Start() into OnFileRead(), which is the callback that then
   // kicks off OAuth2CallFlow::Start() after file content is read.
@@ -233,20 +230,19 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
   void OnFileRead(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      absl::optional<FileRead> file_read);
+      absl::optional<std::string> file_content);
 
   // Task posted to ThreadPool to read the local file. Return type is
   // base::Optional in case file is read successfully but the file content is
   // really empty.
-  static absl::optional<FileRead> ReadFile(
-      const base::FilePath& path,
-      const base::FilePath& target_file_name);
+  static absl::optional<std::string> ReadFile(const base::FilePath& path);
 
   const std::string folder_id_;
+  const std::string mime_type_;
   const base::FilePath target_file_name_;
   const base::FilePath local_file_path_;
   const std::string multipart_boundary_;
-  FileRead file_read_;
+  std::string file_content_;
 
   // Callback from the uploader to report success.
   TaskCallback callback_;

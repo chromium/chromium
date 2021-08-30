@@ -225,6 +225,7 @@ class BoxDirectUploader : public BoxUploader {
   void OnWholeFileUploadResponse(BoxApiCallResponse response,
                                  const std::string& file_id);
 
+  const std::string mime_type_;
   base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
 };
 
