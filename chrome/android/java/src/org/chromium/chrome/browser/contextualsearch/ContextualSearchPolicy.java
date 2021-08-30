@@ -499,11 +499,14 @@ class ContextualSearchPolicy {
      * @param enabled Whether Contextual Search should be enabled.
      */
     static void setContextualSearchState(boolean enabled) {
-        boolean privacyOptIn =
-                getPrefService().getBoolean(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
         @ContextualSearchPreference
-        int onState = privacyOptIn ? ContextualSearchPreference.ENABLED
+        int onState = ContextualSearchPreference.ENABLED;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
+            boolean privacyOptIn =
+                    getPrefService().getBoolean(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
+            onState = privacyOptIn ? ContextualSearchPreference.ENABLED
                                    : ContextualSearchPreference.UNINITIALIZED;
+        }
         setContextualSearchStateInternal(enabled ? onState : ContextualSearchPreference.DISABLED);
     }
 
