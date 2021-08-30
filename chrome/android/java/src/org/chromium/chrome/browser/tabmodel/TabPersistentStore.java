@@ -1806,4 +1806,9 @@ public class TabPersistentStore {
     public TabPersistencePolicy getTabPersistencePolicyForTesting() {
         return mPersistencePolicy;
     }
+
+    @VisibleForTesting
+    public List<Pair<AsyncTask<DataInputStream>, String>> getTabListToMergeTasksForTesting() {
+        return mPrefetchTabListToMergeTasks;
+    }
 }
