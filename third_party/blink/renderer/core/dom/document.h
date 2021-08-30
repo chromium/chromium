@@ -1753,6 +1753,21 @@ class CORE_EXPORT Document : public ContainerNode,
                            BeforeMatchExpandedHiddenMatchableUkmNoHandler);
   class NetworkStateObserver;
 
+  // Listed elements that are not associated to a <form> element.
+  class UnassociatedListedElementsList {
+    DISALLOW_NEW();
+
+   public:
+    void MarkDirty();
+    const ListedElement::List& Get(const Document& owner);
+    void Trace(Visitor*) const;
+
+   private:
+    ListedElement::List list_;
+    // Set this flag if the stored unassociated listed elements were changed.
+    bool dirty_ = false;
+  };
+
   friend class AXContext;
   void AddAXContext(AXContext*);
   void RemoveAXContext(AXContext*);
@@ -2090,13 +2105,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   std::unique_ptr<SelectorQueryCache> selector_query_cache_;
 
-  // Do not access |unassociated_listed_elements_| directly as they might have
-  // changed. Use UnassociatedListedElements() instead that re-extracts them
-  // when needed.
-  ListedElement::List unassociated_listed_elements_;
-  // Set this flag if the stored unassociated listed elements were changed.
-  bool unassociated_listed_elements_dirty_ = false;
-
   // It is safe to keep a raw, untraced pointer to this stack-allocated
   // cache object: it is set upon the cache object being allocated on
   // the stack and cleared upon leaving its allocated scope. Hence it
@@ -2189,6 +2197,8 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<PropertyRegistry> property_registry_;
 
   Member<NetworkStateObserver> network_state_observer_;
+
+  UnassociatedListedElementsList unassociated_listed_elements_;
 
   // |ukm_recorder_| and |source_id_| will allow objects that are part of
   // the document to record UKM.

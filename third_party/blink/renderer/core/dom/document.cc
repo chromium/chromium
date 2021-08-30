@@ -615,6 +615,41 @@ class Document::NetworkStateObserver final
       online_observer_handle_;
 };
 
+void Document::UnassociatedListedElementsList::MarkDirty() {
+  dirty_ = true;
+  list_.clear();
+}
+
+void Document::UnassociatedListedElementsList::Trace(Visitor* visitor) const {
+  visitor->Trace(list_);
+}
+
+const ListedElement::List& Document::UnassociatedListedElementsList::Get(
+    const Document& owner) {
+  if (dirty_) {
+    const Node& root = owner.GetTreeScope().RootNode();
+    DCHECK(list_.IsEmpty());
+
+    // TODO(crbug.com/1243730): We do not consider shadow trees for now.
+    for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
+      ListedElement* listed_element = ListedElement::From(element);
+      if (listed_element && !listed_element->Form()) {
+        list_.push_back(listed_element);
+      }
+    }
+    dirty_ = false;
+  }
+  return list_;
+}
+
+const ListedElement::List& Document::UnassociatedListedElements() const {
+  return const_cast<Document*>(this)->unassociated_listed_elements_.Get(*this);
+}
+
+void Document::MarkUnassociatedListedElementsDirty() {
+  unassociated_listed_elements_.MarkDirty();
+}
+
 ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
     Element* element) {
   DCHECK(element);
@@ -6519,29 +6554,6 @@ DocumentNameCollection* Document::DocumentNamedItems(const AtomicString& name) {
 HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
   return EnsureCachedCollection<DocumentAllNameCollection>(
       kDocumentAllNamedItems, name);
-}
-
-const ListedElement::List& Document::UnassociatedListedElements() const {
-  if (unassociated_listed_elements_dirty_) {
-    Document* mutable_this = const_cast<Document*>(this);
-    const Node& root = GetTreeScope().RootNode();
-    DCHECK(unassociated_listed_elements_.IsEmpty());
-
-    // TODO(crbug.com/1243730): We do not consider shadow trees for now.
-    for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
-      ListedElement* listed_element = ListedElement::From(element);
-      if (listed_element && !listed_element->Form()) {
-        mutable_this->unassociated_listed_elements_.push_back(listed_element);
-      }
-    }
-    mutable_this->unassociated_listed_elements_dirty_ = false;
-  }
-  return unassociated_listed_elements_;
-}
-
-void Document::MarkUnassociatedListedElementsDirty() {
-  unassociated_listed_elements_dirty_ = true;
-  unassociated_listed_elements_.clear();
 }
 
 DOMWindow* Document::defaultView() const {
