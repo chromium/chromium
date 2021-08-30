@@ -37,13 +37,13 @@ IconBitmaps::IconBitmaps() = default;
 
 IconBitmaps::~IconBitmaps() = default;
 
-IconBitmaps::IconBitmaps(const IconBitmaps&) = default;
+IconBitmaps::IconBitmaps(const IconBitmaps&) noexcept = default;
 
 IconBitmaps::IconBitmaps(IconBitmaps&&) = default;
 
 IconBitmaps& IconBitmaps::operator=(const IconBitmaps&) = default;
 
-IconBitmaps& IconBitmaps::operator=(IconBitmaps&&) = default;
+IconBitmaps& IconBitmaps::operator=(IconBitmaps&&) noexcept = default;
 
 const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
     IconPurpose purpose) const {
@@ -84,11 +84,11 @@ IconSizes::~IconSizes() = default;
 
 IconSizes::IconSizes(const IconSizes&) = default;
 
-IconSizes::IconSizes(IconSizes&&) = default;
+IconSizes::IconSizes(IconSizes&&) noexcept = default;
 
 IconSizes& IconSizes::operator=(const IconSizes&) = default;
 
-IconSizes& IconSizes::operator=(IconSizes&&) = default;
+IconSizes& IconSizes::operator=(IconSizes&&) noexcept = default;
 
 const std::vector<SquareSizePx>& IconSizes::GetSizesForPurpose(
     IconPurpose purpose) const {
