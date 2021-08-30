@@ -81,8 +81,7 @@ def _process_requested_path(
   owners_file = _find_owners_file(chromium_root, requested_path.path)
   owners = _build_owners_info(chromium_root, owners_file)
   git_data = _fetch_git_data(chromium_root, requested_path)
-  dir_metadata = owners_dir_metadata.build_dir_metadata(chromium_root,
-                                                        all_dir_metadata,
+  dir_metadata = owners_dir_metadata.build_dir_metadata(all_dir_metadata,
                                                         requested_path)
   path_data = owners_data.PathData(owners, git_data, dir_metadata)
   return (requested_path, path_data)
