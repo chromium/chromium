@@ -234,6 +234,5 @@ bindings_unittest_files = get_path_info(
           "core/v8/script_promise_tester.h",
           "modules/v8/serialization/v8_script_value_serializer_for_modules_test.cc",
           "modules/v8/v8_binding_for_modules_test.cc",
-          "modules/v8/v8_element_test.cc",
         ],
         "abspath")

@@ -53,7 +53,6 @@ namespace {
 struct SameSizeAsStringImpl {
 #if DCHECK_IS_ON()
   ThreadRestrictionVerifier verifier;
-  unsigned int ref_count_change_count;
 #endif
   int fields[3];
 };
