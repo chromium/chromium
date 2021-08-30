@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/interpolated_transform.h"
@@ -73,75 +74,139 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetDuration(
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetBounds(
-    ui::LayerOwner* target,
+    ui::Layer* target,
     const gfx::Rect& bounds,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::BOUNDS},
                       Element(bounds, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetBrightness(
+AnimationSequenceBlock& AnimationSequenceBlock::SetBounds(
     ui::LayerOwner* target,
+    const gfx::Rect& bounds,
+    gfx::Tween::Type tween_type) {
+  return SetBounds(target->layer(), bounds, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetBrightness(
+    ui::Layer* target,
     float brightness,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::BRIGHTNESS},
                       Element(brightness, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetClipRect(
+AnimationSequenceBlock& AnimationSequenceBlock::SetBrightness(
     ui::LayerOwner* target,
+    float brightness,
+    gfx::Tween::Type tween_type) {
+  return SetBrightness(target->layer(), brightness, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetClipRect(
+    ui::Layer* target,
     const gfx::Rect& clip_rect,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::CLIP},
                       Element(clip_rect, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
+AnimationSequenceBlock& AnimationSequenceBlock::SetClipRect(
     ui::LayerOwner* target,
+    const gfx::Rect& clip_rect,
+    gfx::Tween::Type tween_type) {
+  return SetClipRect(target->layer(), clip_rect, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
+    ui::Layer* target,
     SkColor color,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::COLOR},
                       Element(color, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetGrayscale(
+AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
     ui::LayerOwner* target,
+    SkColor color,
+    gfx::Tween::Type tween_type) {
+  return SetColor(target->layer(), color, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetGrayscale(
+    ui::Layer* target,
     float grayscale,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::GRAYSCALE},
                       Element(grayscale, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetOpacity(
+AnimationSequenceBlock& AnimationSequenceBlock::SetGrayscale(
     ui::LayerOwner* target,
+    float grayscale,
+    gfx::Tween::Type tween_type) {
+  return SetGrayscale(target->layer(), grayscale, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetOpacity(
+    ui::Layer* target,
     float opacity,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::OPACITY},
                       Element(opacity, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+AnimationSequenceBlock& AnimationSequenceBlock::SetOpacity(
     ui::LayerOwner* target,
+    float opacity,
+    gfx::Tween::Type tween_type) {
+  return SetOpacity(target->layer(), opacity, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+    ui::Layer* target,
     std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::TRANSFORM},
                       Element(std::move(interpolated_transform), tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
+AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
     ui::LayerOwner* target,
+    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Tween::Type tween_type) {
+  return SetInterpolatedTransform(
+      target->layer(), std::move(interpolated_transform), tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
+    ui::Layer* target,
     const gfx::RoundedCornersF& rounded_corners,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::ROUNDED_CORNERS},
                       Element(rounded_corners, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
+AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
     ui::LayerOwner* target,
+    const gfx::RoundedCornersF& rounded_corners,
+    gfx::Tween::Type tween_type) {
+  return SetRoundedCorners(target->layer(), rounded_corners, tween_type);
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
+    ui::Layer* target,
     bool visible,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::VISIBILITY},
                       Element(visible, tween_type));
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
+    ui::LayerOwner* target,
+    bool visible,
+    gfx::Tween::Type tween_type) {
+  return SetVisibility(target->layer(), visible, tween_type);
 }
 
 AnimationSequenceBlock AnimationSequenceBlock::At(
@@ -207,6 +272,7 @@ AnimationSequenceBlock::Element& AnimationSequenceBlock::Element::operator=(
 AnimationSequenceBlock& AnimationSequenceBlock::AddAnimation(AnimationKey key,
                                                              Element element) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
+  DCHECK(key.target) << "Animation targets must paint to a layer.";
   const auto result =
       elements_.insert(std::make_pair(std::move(key), std::move(element)));
   DCHECK(result.second) << "Animate (target, property) at most once per block.";

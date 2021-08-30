@@ -27,6 +27,7 @@ class RoundedCornersF;
 
 namespace ui {
 class InterpolatedTransform;
+class Layer;
 class LayerOwner;
 }  // namespace ui
 
@@ -56,36 +57,72 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   // Adds animation elements to this block.  Each (target, property) pair may be
   // added at most once.
   AnimationSequenceBlock& SetBounds(
+      ui::Layer* target,
+      const gfx::Rect& bounds,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetBounds(
       ui::LayerOwner* target,
       const gfx::Rect& bounds,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetBrightness(
+      ui::Layer* target,
+      float brightness,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetBrightness(
       ui::LayerOwner* target,
       float brightness,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetClipRect(
+      ui::Layer* target,
+      const gfx::Rect& clip_rect,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetClipRect(
       ui::LayerOwner* target,
       const gfx::Rect& clip_rect,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetColor(
+      ui::Layer* target,
+      SkColor color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetColor(
       ui::LayerOwner* target,
       SkColor color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetGrayscale(
+      ui::Layer* target,
+      float grayscale,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetGrayscale(
       ui::LayerOwner* target,
       float grayscale,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetOpacity(
+      ui::Layer* target,
+      float opacity,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetOpacity(
       ui::LayerOwner* target,
       float opacity,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetInterpolatedTransform(
+      ui::Layer* target,
+      std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetInterpolatedTransform(
       ui::LayerOwner* target,
       std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetRoundedCorners(
+      ui::Layer* target,
+      const gfx::RoundedCornersF& rounded_corners,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetRoundedCorners(
       ui::LayerOwner* target,
       const gfx::RoundedCornersF& rounded_corners,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetVisibility(
+      ui::Layer* target,
+      bool visible,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetVisibility(
       ui::LayerOwner* target,

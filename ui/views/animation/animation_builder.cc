@@ -168,14 +168,13 @@ AnimationBuilder::~AnimationBuilder() {
        it != layer_animation_sequences_.end();) {
     auto* const target = it->first;
     auto end_it = layer_animation_sequences_.upper_bound(target);
-    DCHECK(target->layer()) << "Animation targets must paint to a layer.";
-    ui::ScopedLayerAnimationSettings settings(target->layer()->GetAnimator());
+    ui::ScopedLayerAnimationSettings settings(target->GetAnimator());
     if (preemption_strategy_)
       settings.SetPreemptionStrategy(preemption_strategy_.value());
     std::vector<ui::LayerAnimationSequence*> sequences;
     std::transform(it, end_it, std::back_inserter(sequences),
                    [](auto& it) { return it.second.release(); });
-    target->layer()->GetAnimator()->StartTogether(std::move(sequences));
+    target->GetAnimator()->StartTogether(std::move(sequences));
     it = end_it;
   }
 }

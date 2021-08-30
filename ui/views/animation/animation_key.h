@@ -10,13 +10,13 @@
 #include "ui/compositor/layer_animation_element.h"
 
 namespace ui {
-class LayerOwner;
+class Layer;
 }
 
 namespace views {
 
 struct AnimationKey {
-  ui::LayerOwner* target;
+  ui::Layer* target;
   ui::LayerAnimationElement::AnimatableProperty property;
 
   bool operator<(const AnimationKey& key) const {

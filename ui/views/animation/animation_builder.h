@@ -24,7 +24,7 @@
 // used within ui/views/examples/.
 
 namespace ui {
-class LayerOwner;
+class Layer;
 }
 
 namespace views {
@@ -83,7 +83,7 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationSequenceBlock NewSequence();
 
   // Data for all sequences.
-  std::multimap<ui::LayerOwner*, std::unique_ptr<ui::LayerAnimationSequence>>
+  std::multimap<ui::Layer*, std::unique_ptr<ui::LayerAnimationSequence>>
       layer_animation_sequences_;
   std::unique_ptr<Observer> animation_observer_;
   absl::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
