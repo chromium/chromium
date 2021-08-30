@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -44,11 +45,13 @@ class WebApps : public apps::PublisherBase,
   WebApps& operator=(const WebApps&) = delete;
   ~WebApps() override;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Uninstall for web apps on Chrome.
   static void UninstallImpl(WebAppProvider* provider,
                             const std::string& app_id,
                             apps::mojom::UninstallSource uninstall_source,
                             gfx::NativeWindow parent_window);
+#endif
 
   virtual void Shutdown();
 

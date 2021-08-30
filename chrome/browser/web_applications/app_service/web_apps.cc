@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -84,6 +83,7 @@ WebApps::WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
 
 WebApps::~WebApps() = default;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void WebApps::UninstallImpl(WebAppProvider* provider,
                             const std::string& app_id,
@@ -104,6 +104,7 @@ void WebApps::UninstallImpl(WebAppProvider* provider,
                                            parent_window, base::DoNothing());
   }
 }
+#endif
 
 void WebApps::Shutdown() {
   if (provider_) {
