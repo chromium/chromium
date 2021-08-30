@@ -11,6 +11,7 @@ import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +58,11 @@ public class TabStripTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    @Before
+    public void setUp() throws ExecutionException {
+        setShouldCascadeTabsAndCheckTabStrips(true);
+    }
 
     /**
      * Tests that the initial state of the system is good.  This is so the default TabStrips match
