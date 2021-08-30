@@ -4,6 +4,7 @@
 
 #include "components/variations/variations_seed_processor.h"
 
+#include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
@@ -48,12 +49,13 @@ class TestOverrideStringCallback {
 
 struct Environment {
   Environment()
-      : field_trial_list_(std::make_unique<SHA1EntropyProvider>("client_id")) {
+      : field_trial_list(std::make_unique<SHA1EntropyProvider>("client_id")) {
     base::CommandLine::Init(0, nullptr);
     base::FeatureList::InitializeInstance(std::string(), std::string());
   }
 
-  base::FieldTrialList field_trial_list_;
+  base::FieldTrialList field_trial_list;
+  base::AtExitManager at_exit_manager;
 };
 
 }  // namespace
