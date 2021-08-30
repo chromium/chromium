@@ -1745,7 +1745,7 @@
 <translation id="2800760947029405028">படத்தை ஏற்று</translation>
 <translation id="2801954693771979815">திரையின் அளவு</translation>
 <translation id="2802557211515765772">நிர்வகிக்கப்படும் பிரிண்டர்கள் எதுவுமில்லை.</translation>
-<translation id="2803313416453193357">கோப்புறையைத் திற</translation>
+<translation id="2803313416453193357">ஃபோல்டரைத் திற</translation>
 <translation id="2804043232879091219">மாற்று உலாவியைத் திறக்க முடியவில்லை</translation>
 <translation id="2804667941345577550">திறந்துள்ள தாவல்களிலிருந்து உட்பட இந்தத் தளத்திலிருந்து வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="2804680522274557040">கேமரா முடக்கப்பட்டுள்ளது</translation>
@@ -2406,7 +2406,7 @@
 <translation id="3507421388498836150">"<ph name="EXTENSION_NAME" />" இன் தற்போதைய அனுமதிகள்</translation>
 <translation id="3507888235492474624">புளூடூத் சாதனங்களை மீண்டும் ஸ்கேன் செய்யும்</translation>
 <translation id="3508492320654304609">உங்கள் உள்நுழைவுத் தரவை நீக்க முடியவில்லை</translation>
-<translation id="3508920295779105875">வேறு கோப்புறையைத் தேர்வு செய்க...</translation>
+<translation id="3508920295779105875">வேறு ஃபோல்டரைத் தேர்வு செய்க...</translation>
 <translation id="3511200754045804813">மீண்டும் தேடு</translation>
 <translation id="3511307672085573050">இணைப்பு முகவ&amp;ரியை நகலெடு</translation>
 <translation id="351152300840026870">நிலையான-அகலம் கொண்ட எழுத்துரு</translation>
@@ -2777,7 +2777,7 @@
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">சமீபத்தில் அசிஸ்டண்ட்டைப் பயன்படுத்தித் தேடியவற்றையும் Sherlog மூலம் சேர். இதில் உங்கள் அடையாளம், இருப்பிடம் மற்றும் பிழைத்திருத்தத் தகவல் ஆகியவை இருக்கக்கூடும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
-<translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
+<translation id="3894427358181296146">ஃபோல்டரைச் சேர்</translation>
 <translation id="3894770151966614831">Google கணக்கிற்கு நகர்த்தவா?</translation>
 <translation id="3895076768659607631">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
 <translation id="3895090224522145010">Kerberos பயனர்பெயர்</translation>
@@ -2858,7 +2858,7 @@
 <translation id="3964480518399667971">செல்லுலார் நெட்வொர்க்கை முடக்கு</translation>
 <translation id="3965811923470826124">இதனுடன்</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />ஐ மூடு</translation>
-<translation id="3966072572894326936">வேறு கோப்புறையைத் தேர்வு செய்க...</translation>
+<translation id="3966072572894326936">வேறு ஃபோல்டரைத் தேர்வு செய்க...</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3970114302595058915">ஐடி</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
@@ -2913,7 +2913,7 @@
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> பக்கத்தில் இருந்து முந்தைய பக்கத்திற்குச் செல்</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4031527940632463547">சென்சார்கள் தடுக்கப்பட்டுள்ளன</translation>
-<translation id="4033471457476425443">புதிய கோப்புறையைச் சேர்</translation>
+<translation id="4033471457476425443">புதிய ஃபோல்டரைச் சேர்</translation>
 <translation id="4033963223187371752">பாதுகாப்பு இல்லாத படங்கள், இணைய ஃபிரேம்கள் போன்ற உள்ளடக்கத்தைப் பாதுகாக்கப்பட்ட தளங்கள் உட்பொதிக்கலாம்</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
 <translation id="4035758313003622889">&amp;பணி நிர்வாகி</translation>
@@ -2938,7 +2938,7 @@
 <translation id="4057896668975954729">அங்காடியில் காட்டு</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ஆவணத்தை இப்போது சரிபார்</translation>
-<translation id="4061374428807229313">Files ஆப்ஸிலிருந்து ஒரு கோப்புறையைப் பகிர, அதை வலது கிளிக் செய்து “Parallels Desktop மூலம் பகிர்" என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
+<translation id="4061374428807229313">Files ஆப்ஸிலிருந்து ஒரு ஃபோல்டரைப் பகிர, அதை வலது கிளிக் செய்து “Parallels Desktop மூலம் பகிர்" என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="406213378265872299">பிரத்தியேகப்படுத்தப்பட்ட செயற்பாடுகள்</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> சாதனத்தின் ஆப்ஸ், அமைப்புகள், மேலும் பல விஷயங்கள் ஒத்திசைக்கப்படும்</translation>
 <translation id="4064575710864784237">1x</translation>
@@ -3216,7 +3216,7 @@
 <translation id="4400632832271803360">மேல் வரிசையில் உள்ள விசைகளின் செயல்பாட்டை மாற்ற, தொடக்கி விசையைத் தொடர்ந்து அழுத்திப் பிடிக்கவும்</translation>
 <translation id="4400963414856942668">தாவலை புக்மார்க் செய்ய நட்சத்திரத்தை கிளிக் செய்யலாம்</translation>
 <translation id="4402755511846832236">இந்தச் சாதனத்தில் நீங்கள் செயலில் இருப்பது குறித்துத் தளங்கள் அறிந்துகொள்வதைத் தடுக்கும்</translation>
-<translation id="4403775189117163360">வேறு கோப்புறையைத் தேர்வுசெய்</translation>
+<translation id="4403775189117163360">வேறு ஃபோல்டரைத் தேர்வுசெய்</translation>
 <translation id="4404136731284211429">மீண்டும் ஸ்கேன் செய்</translation>
 <translation id="4404843640767531781">உங்கள் பெற்றோரால் <ph name="APP_NAME" /> தடுக்கப்பட்டுள்ளது. இந்த ஆப்ஸைப் பயன்படுத்த உங்கள் பெற்றோரிடம் அனுமதி கேட்கவும்.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6013,7 +6013,7 @@
 <translation id="7497981768003291373">சமீபத்தில் எடுக்கப்பட்ட WebRTC உரைப் பதிவுகள் எதுவும் இல்லை.</translation>
 <translation id="7503191893372251637">Netscape சான்றிதழ் வகை</translation>
 <translation id="7503985202154027481">நீங்கள் இந்த வலைதளத்தைப் பார்வையிட்டது தொடர்பான விவரங்கள் உங்கள் பாதுகாப்பு விசையில் பதிவுசெய்யப்படும்.</translation>
-<translation id="750509436279396091">பதிவிறக்கங்கள் கோப்புறையைத் திற</translation>
+<translation id="750509436279396091">பதிவிறக்கங்கள் ஃபோல்டரைத் திற</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> பொருட்களை மறை</translation>
 <translation id="7506093026325926984">இந்தக் கடவுச்சொல் இந்தச் சாதனத்தில் சேமிக்கப்படும்</translation>
 <translation id="7506130076368211615">புதிய நெட்வொர்க்கை அமையுங்கள்</translation>
