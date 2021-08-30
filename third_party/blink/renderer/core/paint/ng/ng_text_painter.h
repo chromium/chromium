@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class LayoutObject;
 class LayoutSVGInlineText;
 class NGFragmentItem;
 struct NGTextFragmentPaintInfo;
@@ -37,6 +38,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                       Color text_match_color);
 
     const LayoutSVGInlineText& InlineText() const;
+    const LayoutObject& TextDecorationObject() const;
     const ComputedStyle& Style() const;
     bool IsPaintingSelection() const;
     bool IsRenderingClipPathAsMaskImage() const;
@@ -125,6 +127,18 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                      DOMNodeId node_id);
 
   void PaintSvgTextFragment(DOMNodeId node_id);
+  void PaintSvgDecorationsExceptLineThrough(
+      const TextDecorationOffsetBase& decoration_offset,
+      TextDecorationInfo& decoration_info,
+      const PaintInfo& paint_info,
+      const Vector<AppliedTextDecoration>& decorations,
+      const TextPaintStyle& text_style,
+      bool* has_line_through_decoration);
+  void PaintSvgDecorationsOnlyLineThrough(
+      TextDecorationInfo& decoration_info,
+      const PaintInfo& paint_info,
+      const Vector<AppliedTextDecoration>& decorations,
+      const TextPaintStyle& text_style);
 
   NGTextFragmentPaintInfo fragment_paint_info_;
   const IntRect& visual_rect_;

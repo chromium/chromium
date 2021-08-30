@@ -462,7 +462,8 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
 void GraphicsContext::DrawLine(const IntPoint& point1,
                                const IntPoint& point2,
                                const DarkModeFilter::ElementRole role,
-                               bool is_text_line) {
+                               bool is_text_line,
+                               const PaintFlags* paint_flags) {
   DCHECK(canvas_);
 
   StrokeStyle pen_style = GetStrokeStyle();
@@ -479,8 +480,10 @@ void GraphicsContext::DrawLine(const IntPoint& point1,
   // probably worth the speed up of no square root, which also won't be exact.
   FloatSize disp = p2 - p1;
   int length = SkScalarRoundToInt(disp.Width() + disp.Height());
-  const DarkModeFlags flags(this, ImmutableState()->StrokeFlags(length, width),
-                            role);
+  const DarkModeFlags flags(
+      this,
+      paint_flags ? *paint_flags : ImmutableState()->StrokeFlags(length, width),
+      role);
 
   if (pen_style == kDottedStroke) {
     if (StrokeData::StrokeIsDashed(width, pen_style)) {
@@ -512,7 +515,9 @@ void GraphicsContext::DrawLine(const IntPoint& point1,
   canvas_->drawLine(p1.X(), p1.Y(), p2.X(), p2.Y(), flags);
 }
 
-void GraphicsContext::DrawLineForText(const FloatPoint& pt, float width) {
+void GraphicsContext::DrawLineForText(const FloatPoint& pt,
+                                      float width,
+                                      const PaintFlags* paint_flags) {
   if (width <= 0)
     return;
 
@@ -522,14 +527,18 @@ void GraphicsContext::DrawLineForText(const FloatPoint& pt, float width) {
     IntPoint start;
     IntPoint end;
     std::tie(start, end) = GetPointsForTextLine(pt, width, StrokeThickness());
-    DrawLine(start, end, DarkModeFilter::ElementRole::kText, true);
+    DrawLine(start, end, DarkModeFilter::ElementRole::kText, true, paint_flags);
   } else {
     SkRect r = GetRectForTextLine(pt, width, StrokeThickness());
-    PaintFlags flags;
-    flags = ImmutableState()->FillFlags();
-    // Text lines are drawn using the stroke color.
-    flags.setColor(StrokeColor().Rgb());
-    DrawRect(r, flags, DarkModeFilter::ElementRole::kText);
+    if (paint_flags) {
+      DrawRect(r, *paint_flags, DarkModeFilter::ElementRole::kText);
+    } else {
+      PaintFlags flags;
+      flags = ImmutableState()->FillFlags();
+      // Text lines are drawn using the stroke color.
+      flags.setColor(StrokeColor().Rgb());
+      DrawRect(r, flags, DarkModeFilter::ElementRole::kText);
+    }
   }
 }
 

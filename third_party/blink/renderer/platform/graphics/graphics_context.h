@@ -214,7 +214,8 @@ class PLATFORM_EXPORT GraphicsContext {
                 const IntPoint&,
                 const DarkModeFilter::ElementRole role =
                     DarkModeFilter::ElementRole::kBackground,
-                bool is_text_line = false);
+                bool is_text_line = false,
+                const PaintFlags* flags = nullptr);
 
   void FillPath(const Path&);
 
@@ -366,7 +367,9 @@ class PLATFORM_EXPORT GraphicsContext {
                             int from = 0,
                             int to = -1);
 
-  void DrawLineForText(const FloatPoint&, float width);
+  void DrawLineForText(const FloatPoint&,
+                       float width,
+                       const PaintFlags* flags = nullptr);
 
   // beginLayer()/endLayer() behave like save()/restore() for CTM and clip
   // states. Apply SkBlendMode when the layer is composited on the backdrop

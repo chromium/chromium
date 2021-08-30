@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -65,7 +66,8 @@ class CORE_EXPORT TextPainterBase {
 
   void PaintDecorationUnderOrOverLine(GraphicsContext&,
                                       TextDecorationInfo&,
-                                      TextDecoration line);
+                                      TextDecoration line,
+                                      const PaintFlags* flags = nullptr);
 
   static Color TextColorForWhiteBackground(Color);
   static TextPaintStyle TextPaintingStyle(const Document&,
@@ -104,11 +106,13 @@ class CORE_EXPORT TextPainterBase {
                                          const PaintInfo&,
                                          const Vector<AppliedTextDecoration>&,
                                          const TextPaintStyle& text_style,
-                                         bool* has_line_through_decoration);
+                                         bool* has_line_through_decoration,
+                                         const PaintFlags* flags = nullptr);
   void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
                                        const PaintInfo&,
                                        const Vector<AppliedTextDecoration>&,
-                                       const TextPaintStyle&);
+                                       const TextPaintStyle&,
+                                       const PaintFlags* flags = nullptr);
 
   // Paints emphasis mark as for ideographic full stop character. Callers of
   // this function should rotate canvas to paint emphasis mark at left/right

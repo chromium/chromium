@@ -234,7 +234,8 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
-    bool* has_line_through_decoration) {
+    bool* has_line_through_decoration,
+    const PaintFlags* flags) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
@@ -278,7 +279,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
           TextDecoration::kUnderline, paint_underline_offset,
           TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kUnderline);
+                                     TextDecoration::kUnderline, flags);
     }
 
     if (has_overline && decoration_info.FontData()) {
@@ -298,7 +299,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
           -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
           1);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kOverline);
+                                     TextDecoration::kOverline, flags);
     }
 
     // We could instead build a vector of the TextDecoration instances needing
@@ -312,7 +313,8 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
-    const TextPaintStyle& text_style) {
+    const TextPaintStyle& text_style,
+    const PaintFlags* flags) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
@@ -347,7 +349,7 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
                                                   TextDecoration::kLineThrough);
       // No skip: ink for line-through,
       // compare https://github.com/w3c/csswg-drafts/issues/711
-      decoration_painter.Paint();
+      decoration_painter.Paint(flags);
     }
   }
 }
@@ -355,7 +357,8 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
 void TextPainterBase::PaintDecorationUnderOrOverLine(
     GraphicsContext& context,
     TextDecorationInfo& decoration_info,
-    TextDecoration line) {
+    TextDecoration line,
+    const PaintFlags* flags) {
   AppliedDecorationPainter decoration_painter(context, decoration_info, line);
   if (decoration_info.Style().TextDecorationSkipInk() ==
       ETextDecorationSkipInk::kAuto) {
@@ -368,7 +371,7 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
         std::min(decoration_info.ResolvedThickness(),
                  kDecorationClipMaxDilation));
   }
-  decoration_painter.Paint();
+  decoration_painter.Paint(flags);
 }
 
 void TextPainterBase::PaintEmphasisMarkForCombinedText(

@@ -8,13 +8,13 @@
 
 namespace blink {
 
-void AppliedDecorationPainter::Paint() {
+void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
   context_.SetStrokeStyle(decoration_info_.StrokeStyle());
   context_.SetStrokeColor(decoration_info_.LineColor());
 
   switch (decoration_info_.DecorationStyle()) {
     case ETextDecorationStyle::kWavy:
-      StrokeWavyTextDecoration();
+      StrokeWavyTextDecoration(flags);
       break;
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
@@ -22,20 +22,25 @@ void AppliedDecorationPainter::Paint() {
       FALLTHROUGH;
     default:
       context_.DrawLineForText(decoration_info_.StartPoint(line_),
-                               decoration_info_.Width());
+                               decoration_info_.Width(), flags);
 
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
         context_.DrawLineForText(
             decoration_info_.StartPoint(line_) +
                 FloatPoint(0, decoration_info_.DoubleOffset(line_)),
-            decoration_info_.Width());
+            decoration_info_.Width(), flags);
       }
   }
 }
 
-void AppliedDecorationPainter::StrokeWavyTextDecoration() {
+void AppliedDecorationPainter::StrokeWavyTextDecoration(
+    const PaintFlags* flags) {
   context_.SetShouldAntialias(true);
-  context_.StrokePath(decoration_info_.PrepareWavyStrokePath(line_).value());
+  absl::optional<Path> path = decoration_info_.PrepareWavyStrokePath(line_);
+  if (flags)
+    context_.DrawPath(path->GetSkPath(), *flags);
+  else
+    context_.StrokePath(path.value());
 }
 
 }  // namespace blink
