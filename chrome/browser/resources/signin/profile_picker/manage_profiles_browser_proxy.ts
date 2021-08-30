@@ -112,9 +112,10 @@ export interface ManageProfilesBrowserProxy {
 
   /**
    * Loads Google sign in page (and silently creates a profile with the
-   * specified color, if specified).
+   * specified color and account, if specified).
    */
-  loadSignInProfileCreationFlow(profileColor: number|null): void;
+  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string):
+      void;
 
   /**
    * Retrieves custom avatar list for the select avatar dialog.
@@ -191,8 +192,8 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('getProfileStatistics', [profilePath]);
   }
 
-  loadSignInProfileCreationFlow(profileColor: number|null) {
-    chrome.send('loadSignInProfileCreationFlow', [profileColor]);
+  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string) {
+    chrome.send('loadSignInProfileCreationFlow', [profileColor, gaiaId]);
   }
 
   getAvailableIcons() {

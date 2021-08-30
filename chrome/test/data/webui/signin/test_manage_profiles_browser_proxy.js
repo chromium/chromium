@@ -115,8 +115,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  loadSignInProfileCreationFlow(profileColor) {
-    this.methodCalled('loadSignInProfileCreationFlow', profileColor);
+  loadSignInProfileCreationFlow(profileColor, gaiaId) {
+    this.methodCalled('loadSignInProfileCreationFlow', [profileColor, gaiaId]);
   }
 
   /** @override */

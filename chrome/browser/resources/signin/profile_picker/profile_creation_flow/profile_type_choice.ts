@@ -88,7 +88,8 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
     super.connectedCallback();
     this.addWebUIListener(
         'unassigned-accounts-changed',
-        this.handleUnassignedAccountsChanged_.bind(this));
+        (accounts: Array<UnassignedAccount>) =>
+            this.handleUnassignedAccountsChanged_(accounts));
   }
   // </if>
 
@@ -128,7 +129,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
     // history stack.
     recordPageVisited(ProfileCreationSteps.LOAD_SIGNIN);
     this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
-        this.profileThemeInfo.color);
+        this.profileThemeInfo.color, '');
   }
 
   private onBackClick_() {

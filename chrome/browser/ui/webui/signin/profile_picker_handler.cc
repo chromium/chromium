@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -697,7 +699,22 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(2U, args->GetSize());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+    // TODO(https://crbug.com/1226054): Implement the signin flow on Lacros: if
+    // the `gaiaId` parameter is non-empty, this the a unassigned account that
+    // should be used. If `gaiaId` is empty, an account should be added to the
+    // system and then used for the new profile.
+    NOTIMPLEMENTED();
+    FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
+    return;
+  }
+#endif
+
+  DCHECK(args->GetList()[1].GetString().empty())
+      << "gaiaId is only supported on Lacros with account consistency";
   absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
   if (signin_util::IsForceSigninEnabled()) {
     // Force sign-in policy uses a separate flow that doesn't initialize the
