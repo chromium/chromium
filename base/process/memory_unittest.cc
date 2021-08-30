@@ -16,7 +16,6 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
@@ -596,25 +595,20 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
 #endif  // defined(ARCH_CPU_32_BITS) && (defined(OS_WIN) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS))
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
-// Fuchsia and Android do not allow overcommits, so very large
-// UncheckedMallocs will yield OOM errors on those platforms.
-
+// See the comment in |UncheckedMalloc()|, it behaves as malloc() in these
+// cases.
 #if defined(OS_ANDROID)
+
 // TODO(crbug.com/1112840): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
-#elif defined(OS_FUCHSIA)
-#define MAYBE_UncheckedMallocDies UncheckedMallocDies
-#define MAYBE_UncheckedCallocDies UncheckedCallocDies
-#endif  // defined(OS_ANDROID)
 
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    ignore_result(base::UncheckedMalloc(test_size_, &data));
-    // Death expected here.
+    bool ok = base::UncheckedMalloc(test_size_, &data);
+    EXPECT_TRUE(!data || ok);
   });
 }
 
@@ -622,8 +616,8 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    ignore_result(base::UncheckedCalloc(1, test_size_, &data));
-    // Death expected here.
+    bool ok = base::UncheckedCalloc(1, test_size_, &data);
+    EXPECT_TRUE(!data || ok);
   });
 }
 
@@ -658,6 +652,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(value_ == nullptr);
 }
 
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(OS_ANDROID)
+
 #endif  // !defined(OS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

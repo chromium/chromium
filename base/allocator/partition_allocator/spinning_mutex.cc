@@ -74,12 +74,6 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#elif defined(OS_FUCHSIA)
-
-void SpinningMutex::LockSlow() {
-  sync_mutex_lock(&lock_);
-}
-
 #else
 
 void SpinningMutex::LockSlow() {

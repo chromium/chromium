@@ -61,9 +61,9 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_LINUX_KERNEL
 #endif
 
-// SpinningMutex uses either futex(2) on Linux, sync_mutex on Fuchsia, or a
-// fast userspace "try" operation, which is available on Windows.
-#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_FUCHSIA) || defined(OS_WIN)
+// SpinningMutex uses either futex(2) on Linux, or a fast userspace "try"
+// operation, which is available on Windows.
+#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
 #define PA_HAS_SPINNING_MUTEX
 #endif
 
@@ -76,7 +76,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Need TLS support.
-#if defined(OS_POSIX) || defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_POSIX) || defined(OS_WIN)
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 
