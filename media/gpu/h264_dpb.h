@@ -17,6 +17,7 @@
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
+#include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -90,6 +91,8 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
 
   // Position in DPB (i.e. index in DPB).
   int dpb_position;
+
+  absl::optional<H264Metadata> metadata_for_encoding;
 
  protected:
   ~H264Picture() override;

@@ -525,6 +525,9 @@ const base::Feature kVaapiVP9Encoder{"VaapiVP9Encoder",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+// Enable H264 temporal layer encoding with HW encoder on ChromeOS.
+const base::Feature kVaapiH264TemporalLayerHWEncoding{
+    "VaapiH264TemporalLayerEncoding", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case on ChromeOS.
 const base::Feature kVaapiVp9kSVCHWDecoding{"VaapiVp9kSVCHWDecoding",
                                             base::FEATURE_ENABLED_BY_DEFAULT};

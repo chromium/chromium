@@ -31,8 +31,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   struct EncodeParams {
     EncodeParams();
 
-    // Bitrate in bps.
-    uint32_t bitrate_bps;
+    VideoBitrateAllocation bitrate_allocation;
 
     // Framerate in FPS.
     uint32_t framerate;
@@ -68,8 +67,12 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
+  BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
+                                      size_t payload_size) override;
 
  private:
+  class TemporalLayers;
+
   friend class H264VaapiVideoEncoderDelegateTest;
 
   // Fill current_sps_ and current_pps_ with current encoding state parameters.
@@ -106,7 +109,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       const H264SPS& sps,
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
-      const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0);
+      const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
+      const absl::optional<size_t>& ref_frame_index);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
@@ -133,7 +137,9 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   unsigned int mb_width_ = 0;
   unsigned int mb_height_ = 0;
 
-  // frame_num (spec section 7.4.3) to be used for the next frame.
+  // The number of encoded frames. Resets to 0 on IDR frame.
+  unsigned int num_encoded_frames_ = 0;
+  // frame_num (spec section 7.4.3).
   unsigned int frame_num_ = 0;
 
   // idr_pic_id (spec section 7.4.3) to be used for the next frame.
@@ -146,6 +152,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // Currently active reference frames.
   // RefPicList0 per spec (spec section 8.2.4.2).
   base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
+
+  uint8_t num_temporal_layers_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoEncoderDelegate);
 };

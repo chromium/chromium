@@ -201,6 +201,7 @@ MEDIA_EXPORT extern const base::Feature kVaapiVideoMinResolutionForPerformance;
 MEDIA_EXPORT extern const base::Feature kVaapiVP8Encoder;
 MEDIA_EXPORT extern const base::Feature kVaapiVP9Encoder;
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+MEDIA_EXPORT extern const base::Feature kVaapiH264TemporalLayerHWEncoding;
 MEDIA_EXPORT extern const base::Feature kVaapiVp9kSVCHWDecoding;
 MEDIA_EXPORT extern const base::Feature kVaapiVp9kSVCHWEncoding;
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
