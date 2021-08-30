@@ -8133,6 +8133,24 @@
             ]
         }
     ],
+    "SyncTrustedVaultPassphraseRecovery": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncTrustedVaultPassphraseRecovery"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabHoverCardImages": [
         {
             "platforms": [

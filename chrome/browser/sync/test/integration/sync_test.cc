@@ -383,6 +383,13 @@ void SyncTest::AddTestSwitches(base::CommandLine* cl) {
   // directory isn't supported in Chrome.
   if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir))
     cl->AppendSwitch(switches::kAllowProfilesOutsideUserDir);
+
+  if (cl->HasSwitch(switches::kSyncServiceURL)) {
+    // TODO(crbug.com/1243653): setup real SecurityDomainService if
+    // UsingExternalServers().
+    // Effectively disables kSyncTrustedVaultPassphraseRecovery for E2E tests.
+    cl->AppendSwitchASCII(switches::kTrustedVaultServiceURL, "broken_url");
+  }
 }
 
 void SyncTest::BeforeSetupClient(int index,
