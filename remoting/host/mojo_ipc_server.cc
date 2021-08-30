@@ -135,6 +135,11 @@ void MojoIpcServerBase::OnInvitationSent(
   }
 
   pending_connection_ = std::move(pending_connection);
+
+  if (on_invitation_sent_callback_for_testing_) {
+    on_invitation_sent_callback_for_testing_.Run();
+  }
+
   pending_message_pipe_watcher_.Watch(
       pending_connection_->message_pipe.get(), MOJO_HANDLE_SIGNAL_READABLE,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,

@@ -44,6 +44,13 @@ class MojoIpcServerBase {
   // |id| doesn't exist or the receiver is already closed.
   void Close(mojo::ReceiverId id);
 
+  // Sets a callback to be run when an invitation is sent. Used by unit tests
+  // only.
+  void set_on_invitation_sent_callback_for_testing(
+      const base::RepeatingClosure& callback) {
+    on_invitation_sent_callback_for_testing_ = callback;
+  }
+
  protected:
   explicit MojoIpcServerBase(
       const mojo::NamedPlatformChannel::ServerName& server_name);
@@ -81,6 +88,8 @@ class MojoIpcServerBase {
   mojo::SimpleWatcher pending_message_pipe_watcher_;
   std::unique_ptr<PendingConnection> pending_connection_;
   ActiveConnectionMap active_connections_;
+
+  base::RepeatingClosure on_invitation_sent_callback_for_testing_;
 
   base::WeakPtrFactory<MojoIpcServerBase> weak_factory_{this};
 };
