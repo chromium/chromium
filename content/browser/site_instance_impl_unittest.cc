@@ -127,8 +127,7 @@ class SiteInstanceTest : public testing::Test {
 
   GURL GetSiteForURL(const IsolationContext& isolation_context,
                      const GURL& url) {
-    return SiteInfo::Create(isolation_context, UrlInfo(UrlInfoInit(url)),
-                            WebExposedIsolationInfo::CreateNonIsolated())
+    return SiteInfo::Create(isolation_context, UrlInfo(UrlInfoInit(url)))
         .site_url();
   }
 
@@ -492,11 +491,8 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSiteIsolation);
 
-  const auto cross_origin_isolation_info =
-      WebExposedIsolationInfo::CreateNonIsolated();
   auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
-      &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")),
-      cross_origin_isolation_info);
+      &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")));
 
   EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
   EXPECT_TRUE(site_instance->HasSite());
@@ -504,7 +500,7 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
             SiteInfo::CreateForDefaultSiteInstance(
                 &browser_context,
                 StoragePartitionConfig::CreateDefault(&browser_context),
-                cross_origin_isolation_info));
+                WebExposedIsolationInfo::CreateNonIsolated()));
   EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
 }
 
@@ -1914,10 +1910,11 @@ TEST_F(SiteInstanceTest, ErrorPage) {
   // non-isolated and isolated SiteInfos do not match even though the URL is
   // the same.
   const auto non_isolated_instance = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(non_error_page_url),
-      non_isolated_coi);
-  const auto isolated_instance = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(non_error_page_url), isolated_coi);
+      context(), UrlInfo::CreateForTesting(non_error_page_url));
+  UrlInfo isolated_url_info = UrlInfo::CreateForTesting(non_error_page_url);
+  isolated_url_info.web_exposed_isolation_info = isolated_coi;
+  const auto isolated_instance =
+      SiteInstanceImpl::CreateForUrlInfo(context(), isolated_url_info);
   EXPECT_NE(non_isolated_error_site_info, non_isolated_instance->GetSiteInfo());
   EXPECT_NE(isolated_error_site_info, isolated_instance->GetSiteInfo());
   EXPECT_NE(non_isolated_instance->GetSiteInfo(),
@@ -1926,9 +1923,11 @@ TEST_F(SiteInstanceTest, ErrorPage) {
   // Verify that an error page URL results in error page SiteInfos that match
   // the corresponding isolation info.
   const auto non_isolated_error_instance = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(error_page_url), non_isolated_coi);
-  const auto isolated_error_instance = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(error_page_url), isolated_coi);
+      context(), UrlInfo::CreateForTesting(error_page_url));
+  UrlInfo isolated_error_url_info = UrlInfo::CreateForTesting(error_page_url);
+  isolated_error_url_info.web_exposed_isolation_info = isolated_coi;
+  const auto isolated_error_instance =
+      SiteInstanceImpl::CreateForUrlInfo(context(), isolated_error_url_info);
   EXPECT_EQ(non_isolated_error_site_info,
             non_isolated_error_instance->GetSiteInfo());
   EXPECT_EQ(non_isolated_coi,
@@ -1963,7 +1962,6 @@ TEST_F(SiteInstanceTest, ErrorPage) {
 
 TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
   const GURL test_url("https://example.com");
-  const auto isolation_info = WebExposedIsolationInfo::CreateNonIsolated();
 
   // Create a UrlInfo for test_url loaded in a special StoragePartition.
   const auto non_default_partition_config =
@@ -1975,8 +1973,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
 
   // Create a SiteInstance for test_url in the special StoragePartition, and
   // verify that the StoragePartition is correct.
-  const auto partitioned_instance = SiteInstanceImpl::CreateForUrlInfo(
-      context(), partitioned_url_info, isolation_info);
+  const auto partitioned_instance =
+      SiteInstanceImpl::CreateForUrlInfo(context(), partitioned_url_info);
   EXPECT_EQ(non_default_partition_config,
             static_cast<SiteInstanceImpl*>(partitioned_instance.get())
                 ->GetSiteInfo()

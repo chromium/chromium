@@ -1445,6 +1445,10 @@ class CONTENT_EXPORT NavigationRequest
   // after the final response is received or ready.
   url::Origin GetOriginForURLLoaderFactoryWithFinalFrameHost();
 
+  // Computes the web-exposed isolation information based on `coop_status_` and
+  // current `frame_tree_node_` info.
+  WebExposedIsolationInfo ComputeWebExposedIsolationInfo();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 

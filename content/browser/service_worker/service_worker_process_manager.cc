@@ -130,17 +130,17 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
       !is_guest && cross_origin_embedder_policy.has_value() &&
       network::CompatibleWithCrossOriginIsolated(
           cross_origin_embedder_policy->value);
-  const UrlInfo url_info(
+  UrlInfo url_info(
       UrlInfoInit(service_worker_url)
-          .WithStoragePartitionConfig(storage_partition_->GetConfig()));
+          .WithStoragePartitionConfig(storage_partition_->GetConfig())
+          .WithWebExposedIsolationInfo(
+              is_coop_coep_cross_origin_isolated
+                  ? WebExposedIsolationInfo::CreateIsolated(
+                        url::Origin::Create(service_worker_url))
+                  : WebExposedIsolationInfo::CreateNonIsolated()));
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
-          browser_context_, url_info,
-          is_coop_coep_cross_origin_isolated
-              ? WebExposedIsolationInfo::CreateIsolated(
-                    url::Origin::Create(service_worker_url))
-              : WebExposedIsolationInfo::CreateNonIsolated(),
-          can_use_existing_process, is_guest);
+          browser_context_, url_info, can_use_existing_process, is_guest);
 
   // Get the process from the SiteInstance.
   RenderProcessHost* rph = site_instance->GetProcess();

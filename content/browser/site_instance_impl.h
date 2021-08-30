@@ -125,6 +125,13 @@ struct CONTENT_EXPORT UrlInfo {
   // CHECK failure.
   absl::optional<StoragePartitionConfig> storage_partition_config;
 
+  // Pages may choose to isolate themselves more strongly than the web's
+  // default, thus allowing access to APIs that would be difficult to
+  // safely expose otherwise. "Cross-origin isolation", for example, requires
+  // assertion of a Cross-Origin-Opener-Policy and
+  // Cross-Origin-Embedder-Policy, and unlocks SharedArrayBuffer.
+  WebExposedIsolationInfo web_exposed_isolation_info;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -142,6 +149,8 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithOrigin(const url::Origin& origin);
   UrlInfoInit& WithStoragePartitionConfig(
       absl::optional<StoragePartitionConfig> storage_partition_config);
+  UrlInfoInit& WithWebExposedIsolationInfo(
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
  private:
   UrlInfoInit(UrlInfoInit&);
@@ -153,6 +162,7 @@ class CONTENT_EXPORT UrlInfoInit {
       UrlInfo::OriginIsolationRequest::kNone;
   url::Origin origin_;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
+  WebExposedIsolationInfo web_exposed_isolation_info_;
 };  // class UrlInfoInit
 
 // SiteInfo represents the principal of a SiteInstance. All documents and
@@ -194,10 +204,8 @@ class CONTENT_EXPORT SiteInfo {
   // This function returns a SiteInfo with the appropriate site_url and
   // process_lock_url computed. This function can only be called on the UI
   // thread because it must be able to compute an effective URL.
-  static SiteInfo Create(
-      const IsolationContext& isolation_context,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  static SiteInfo Create(const IsolationContext& isolation_context,
+                         const UrlInfo& url_info);
 
   // Similar to the function above, but this method can only be called on the
   // IO thread. All fields except for the site_url should be the same as
@@ -205,7 +213,7 @@ class CONTENT_EXPORT SiteInfo {
   // in the object returned by this function. This is because we cannot compute
   // the effective URL from the IO thread.
   //
-  // |url_info| MUST contain a StoragePartitionConfig because we can't ask the
+  // `url_info` MUST contain a StoragePartitionConfig because we can't ask the
   // embedder which StoragePartitionConfig to use from the IO thread.
   //
   // NOTE: Do not use this method unless there is a very clear and good reason
@@ -213,10 +221,8 @@ class CONTENT_EXPORT SiteInfo {
   // from any thread. ProcessLocks do not rely on the site_url field so the
   // difference between this method and Create() does not cause problems for
   // that usecase.
-  static SiteInfo CreateOnIOThread(
-      const IsolationContext& isolation_context,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  static SiteInfo CreateOnIOThread(const IsolationContext& isolation_context,
+                                   const UrlInfo& url_info);
 
   // Method to make creating SiteInfo objects for tests easier. It is a thin
   // wrapper around Create() that uses UrlInfo::CreateForTesting(),
@@ -415,7 +421,6 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateInternal(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool compute_site_url);
 
   // Returns the URL to which a process should be locked for the given UrlInfo.
@@ -499,36 +504,34 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // are on the SiteInstance::Create* methods with the same name.
   static scoped_refptr<SiteInstanceImpl> Create(
       BrowserContext* browser_context);
-  // |url_info| contains the GURL for which we want to create a SiteInstance,
+  // `url_info` contains the GURL for which we want to create a SiteInstance,
   // along with other state relevant to making process allocation decisions.
-  // |web_exposed_isolation_info| is not exposed in content/public. It
-  // sets the BrowsingInstance web_exposed_isolation_info_ property.
-  // Once this property is set it cannot be changed and is used in process
-  // allocation decisions.
-  // TODO(wjmaclean): absorb |web_exposed_isolation_info| into UrlInfo.
   static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
       BrowserContext* browser_context,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const UrlInfo& url_info);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
       const GURL& guest_site_url);
 
   // Creates a SiteInstance that will be use for a service worker.
-  // |url| - The script URL for the service worker if |is_guest| is false.
-  //         The <webview> guest site URL if |is_guest| is true.
-  // |can_reuse_process| - Set to true if the new SiteInstance can use the
-  //                       same process as the renderer for |url|.
-  // |web_exposed_isolation_info| - Indicates the web-exposed isolation state
-  //                                of the main script (note that ServiceWorker
-  //                                "cross-origin isolation" does not require
-  //                                Cross-Origin-Opener-Policy to be set).
-  // |is_guest| - Set to true if the new SiteInstance is for a <webview>
+  // `url_info` - The UrlInfo for the service worker. It contains the URL and
+  //              other information necessary to take process model decisions.
+  //
+  //              Note: if `is_guest` is false, the URL is the main script URL.
+  //              If `is_guest` is true, it is the <webview> guest site URL.
+  //
+  //              Note: `url_info`'s web_exposed_isolation_info indicates the
+  //              web-exposed isolation state of the main script (note that
+  //              ServiceWorker "cross-origin isolation" does not require
+  //              Cross-Origin-Opener-Policy to be set).
+  //
+  // `can_reuse_process` - Set to true if the new SiteInstance can use the
+  //                       same process as the renderer for `url_info`.
+  // `is_guest` - Set to true if the new SiteInstance is for a <webview>
   // guest.
   static scoped_refptr<SiteInstanceImpl> CreateForServiceWorker(
       BrowserContext* browser_context,
       const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool can_reuse_process = false,
       bool is_guest = false);
 
@@ -688,21 +691,26 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   const SiteInfo& GetSiteInfoForRenderViewHost();
 
   // Derives a new SiteInfo based on this SiteInstance's current state, and
-  // the information provided in |url_info|. This function is slightly different
+  // the information provided in `url_info`. This function is slightly different
   // than SiteInfo::Create() because it takes into account information
   // specific to this SiteInstance, like whether it is a guest or not, and
-  // changes its behavior accordingly. |is_related| - Controls the SiteInfo
+  // changes its behavior accordingly. `is_related` - Controls the SiteInfo
   // returned for non-guest SiteInstances.
   //  Set to true if the caller wants the SiteInfo for an existing related
-  //  SiteInstance associated with |url_info|. This is identical to what you
+  //  SiteInstance associated with `url_info`. This is identical to what you
   //  would get from GetRelatedSiteInstanceImpl(url_info)->GetSiteInfo(). This
   //  may return the SiteInfo for the default SiteInstance so callers must be
   //  prepared to deal with that. If set to false, a SiteInfo created with
   //  SiteInfo::Create() is returned.
   //
-  // For guest SiteInstances, |site_info_| is returned because guests are not
+  // For guest SiteInstances, `site_info_` is returned because guests are not
   // allowed to derive new guest SiteInfos. All guest navigations must stay in
   // the same SiteInstance with the same SiteInfo.
+  // TODO(https://crbug.com/1243449): This function has become ambiguous with
+  // the inclusion of WebExposedIsolationInfo into UrlInfo, since the function
+  // overrides the value of WebExposedIsolationInfo in UrlInfo with that of the
+  // SiteInstance. It should be refactored and/or renamed to make its behavior
+  // more obvious.
   SiteInfo DeriveSiteInfo(const UrlInfo& url_info, bool is_related = false);
 
   // Returns a ProcessLock that can be used with SetProcessLock to lock a

@@ -7117,10 +7117,14 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // Check with ChildProcessSecurityPolicy, which enforces Site Isolation, etc.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
-      GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(UrlInfoInit(url).WithOrigin(origin).WithStoragePartitionConfig(
-          GetSiteInstance()->GetSiteInfo().storage_partition_config())),
-      GetSiteInstance()->GetWebExposedIsolationInfo());
+      GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(),
+      UrlInfo(
+          UrlInfoInit(url)
+              .WithOrigin(origin)
+              .WithStoragePartitionConfig(
+                  GetSiteInstance()->GetSiteInfo().storage_partition_config())
+              .WithWebExposedIsolationInfo(
+                  GetSiteInstance()->GetWebExposedIsolationInfo())));
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
     return can_commit_status;
@@ -7503,8 +7507,7 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   if (old_frame_host->GetProcess() != GetProcess()) {
     return false;
   }
-  if (!old_frame_host->IsNavigationSameSite(
-          dest_url_info, GetSiteInstance()->GetWebExposedIsolationInfo())) {
+  if (!old_frame_host->IsNavigationSameSite(dest_url_info)) {
     return false;
   }
   DCHECK(frame_tree_node_->IsMainFrame());
@@ -9645,9 +9648,10 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   SiteInfo site_info =
       url.is_empty()
           ? SiteInfo(browser_context)
-          : SiteInfo::Create(GetSiteInstance()->GetIsolationContext(),
-                             UrlInfo(UrlInfoInit(url)),
-                             GetSiteInstance()->GetWebExposedIsolationInfo());
+          : SiteInfo::Create(
+                GetSiteInstance()->GetIsolationContext(),
+                UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
+                    GetSiteInstance()->GetWebExposedIsolationInfo())));
 
   if (last_committed_site_info_ == site_info)
     return;
@@ -9801,11 +9805,9 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
   return client_security_state;
 }
 
-bool RenderFrameHostImpl::IsNavigationSameSite(
-    const UrlInfo& dest_url_info,
-    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+bool RenderFrameHostImpl::IsNavigationSameSite(const UrlInfo& dest_url_info) {
   if (GetSiteInstance()->GetWebExposedIsolationInfo() !=
-      web_exposed_isolation_info) {
+      dest_url_info.web_exposed_isolation_info) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(

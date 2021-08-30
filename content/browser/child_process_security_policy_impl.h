@@ -84,16 +84,14 @@ class CONTENT_EXPORT ProcessLock {
       const StoragePartitionConfig& storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
-  // Create a lock for a specific UrlInfo and WebExposedIsolationInfo. This
-  // method can be called from both the UI and IO threads. Locks created with
-  // the same parameters must always be considered equal independent of what
-  // thread they are called on. Special care must be taken since SiteInfos
-  // created on different threads don't always have the same contents for
-  // all their fields (e.g. site_url field is thread dependent).
-  static ProcessLock Create(
-      const IsolationContext& isolation_context,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  // Create a lock for a specific UrlInfo. This method can be called from both
+  // the UI and IO threads. Locks created with the same parameters must always
+  // be considered equal independent of what thread they are called on. Special
+  // care must be taken since SiteInfos created on different threads don't
+  // always have the same contents for all their fields (e.g. site_url field is
+  // thread dependent).
+  static ProcessLock Create(const IsolationContext& isolation_context,
+                            const UrlInfo& url_info);
 
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
@@ -339,20 +337,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
 
-  // Determines if the combination of |origin|, |url|, and
-  // |web_exposed_isolation_info| is safe to commit to the process
-  // associated with |child_id|.
+  // Determines if the combination of origin, url and web_exposed_isolation_info
+  // bundled in `url_info` are safe to commit to the process associated with
+  // `child_id`.
   //
-  // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit the |origin| and
-  // |url| combination to the process associated with |child_id|.
-  // Returns CANNOT_COMMIT_URL if |url| is not safe to commit.
-  // Returns CANNOT_COMMIT_ORIGIN if |origin| is not safe to commit.
+  // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit `url_info` origin
+  // and `url_info`'s url combination to the process associated with `child_id`.
+  // Returns CANNOT_COMMIT_URL if `url_info` url is not safe to commit.
+  // Returns CANNOT_COMMIT_ORIGIN if `url_info` origin is not safe to commit.
   CanCommitStatus CanCommitOriginAndUrl(
       int child_id,
       const IsolationContext& isolation_context,
-      const url::Origin& origin,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const UrlInfo& url_info);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the

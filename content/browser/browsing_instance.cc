@@ -183,22 +183,24 @@ BrowsingInstance::~BrowsingInstance() {
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
     const UrlInfo& url_info) const {
-  // If a StoragePartitionConfig is specified in both |url_info| and this
+  // If a StoragePartitionConfig is specified in both `url_info` and this
   // BrowsingInstance, make sure they match.
   if (url_info.storage_partition_config.has_value() &&
       storage_partition_config_.has_value()) {
     CHECK_EQ(storage_partition_config_.value(),
              url_info.storage_partition_config.value());
   }
-  // If no StoragePartitionConfig was set in |url_info|, create a new UrlInfo
+  // If no StoragePartitionConfig was set in `url_info`, create a new UrlInfo
   // that inherit's this BrowsingInstance's StoragePartitionConfig.
   UrlInfo url_info_with_partition =
       url_info.storage_partition_config.has_value()
           ? url_info
           : url_info.CreateCopyWithStoragePartitionConfig(
                 storage_partition_config_);
-  return SiteInfo::Create(isolation_context_, url_info_with_partition,
-                          web_exposed_isolation_info_);
+
+  url_info_with_partition.web_exposed_isolation_info =
+      web_exposed_isolation_info_;
+  return SiteInfo::Create(isolation_context_, url_info_with_partition);
 }
 
 }  // namespace content

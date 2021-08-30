@@ -49,7 +49,7 @@ class RenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
         browser_context(),
         UrlInfo::CreateForTesting(url,
                                   CreateStoragePartitionConfigForTesting()),
-        WebExposedIsolationInfo::CreateNonIsolated(), can_reuse_process);
+        can_reuse_process);
   }
 };
 

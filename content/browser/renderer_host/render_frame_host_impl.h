@@ -223,7 +223,6 @@ class WebAuthRequestSecurityChecker;
 class WebBluetoothServiceImpl;
 class WebBundleHandle;
 class WebBundleHandleTracker;
-class WebExposedIsolationInfo;
 class WebUIImpl;
 struct PendingNavigation;
 struct ResourceTimingInfo;
@@ -715,16 +714,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if the last committed navigation is for an error page.
   bool is_error_page() { return is_error_page_; }
 
-  // Returns true if |dest_url_info| should be considered the same site as the
+  // Returns true if `dest_url_info` should be considered the same site as the
   // current contents of this frame. This is the primary entry point for
-  // determining if a navigation to |dest_url_info| should stay in this
+  // determining if a navigation to `dest_url_info` should stay in this
   // RenderFrameHost's SiteInstance.
-  //
-  // |web_exposed_isolation_info| indicates the web-exposed isolation status,
-  // as deduced from COOP and COEP headers.
-  bool IsNavigationSameSite(
-      const UrlInfo& dest_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  bool IsNavigationSameSite(const UrlInfo& dest_url_info);
 
   // Returns |frame_origin| if this frame is the top (i.e. root) frame in the
   // frame tree. Otherwise, it returns the top frame's origin.

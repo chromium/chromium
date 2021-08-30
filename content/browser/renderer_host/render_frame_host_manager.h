@@ -550,12 +550,6 @@ class CONTENT_EXPORT RenderFrameHostManager
     attach_to_inner_delegate_state_ = AttachToInnerDelegateState::ATTACHED;
   }
 
-  // Computes the web-exposed isolation information based on the
-  // |navigation_request| and current |frame_tree_node_| & |render_frame_host_|
-  // info.
-  WebExposedIsolationInfo GetWebExposedIsolationInfo(
-      NavigationRequest* navigation_request);
-
   Delegate* delegate() { return delegate_; }
 
   // Collects the current page into StoredPage in preparation
@@ -599,14 +593,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   struct CONTENT_EXPORT SiteInstanceDescriptor {
     explicit SiteInstanceDescriptor(SiteInstance* site_instance)
         : existing_site_instance(site_instance),
-          relation(SiteInstanceRelation::PREEXISTING),
-          web_exposed_isolation_info(
-              WebExposedIsolationInfo::CreateNonIsolated()) {}
+          relation(SiteInstanceRelation::PREEXISTING) {}
 
-    SiteInstanceDescriptor(
-        UrlInfo dest_url_info,
-        SiteInstanceRelation relation_to_current,
-        const WebExposedIsolationInfo& web_exposed_isolation_info);
+    SiteInstanceDescriptor(UrlInfo dest_url_info,
+                           SiteInstanceRelation relation_to_current);
 
     // Set with an existing SiteInstance to be reused.
     SiteInstance* existing_site_instance;
@@ -617,13 +607,6 @@ class CONTENT_EXPORT RenderFrameHostManager
     // Specifies how the new site is related to the current BrowsingInstance.
     // This is PREEXISTING iff |existing_site_instance| is defined.
     SiteInstanceRelation relation;
-
-    // Pages may choose to isolate themselves more strongly than the web's
-    // default, thus allowing access to APIs that would be difficult to
-    // safely expose otherwise. "Cross-origin isolation", for example, requires
-    // assertion of a Cross-Origin-Opener-Policy and
-    // Cross-Origin-Embedder-Policy, and unlocks `SharedArrayBuffer`.
-    WebExposedIsolationInfo web_exposed_isolation_info;
   };
 
   // Create a RenderFrameProxyHost owned by this object.
@@ -634,22 +617,22 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Delete a RenderFrameProxyHost owned by this object.
   void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
 
-  // Returns kYes_* if for the navigation from |current_effective_url| to
-  // |destination_url_info|, a new SiteInstance and BrowsingInstance should be
+  // Returns kYes_* if for the navigation from `current_effective_url` to
+  // `destination_url_info`, a new SiteInstance and BrowsingInstance should be
   // created (even if we are in a process model that doesn't usually swap).
   // This forces a process swap and severs script connections with existing
   // tabs.  Cases where this can happen include transitions between WebUI and
   // regular web pages.
   //
-  // |source_instance| is the SiteInstance of the frame that initiated the
-  // navigation. |current_instance| is the SiteInstance of the frame that is
-  // currently navigating. |destination_instance| is a predetermined
-  // SiteInstance that will be used for |destination_url| if not
+  // `source_instance` is the SiteInstance of the frame that initiated the
+  // navigation. `current_instance` is the SiteInstance of the frame that is
+  // currently navigating. `destination_instance` is a predetermined
+  // SiteInstance that will be used for `destination_url_info` if not
   // null - we will swap BrowsingInstances if it's in a different
   // BrowsingInstance than the current one.
   //
-  // If there is no current NavigationEntry, then |current_is_view_source_mode|
-  // should be the same as |dest_is_view_source_mode|.
+  // If there is no current NavigationEntry, then `current_is_view_source_mode`
+  // should be the same as `dest_is_view_source_mode`.
   //
   // UrlInfo uses the effective URL here, since that's what is used in the
   // SiteInstance's site and when we later call IsSameSite.  If there is no
@@ -665,7 +648,6 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstanceImpl* current_instance,
       SiteInstance* destination_instance,
       const UrlInfo& destination_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool destination_is_view_source_mode,
       ui::PageTransition transition,
       bool is_failure,
@@ -678,7 +660,6 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
       const UrlInfo& destination_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool is_reload,
       bool should_replace_current_entry);
 
@@ -687,7 +668,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // This is a helper function for GetSiteInstanceForNavigationRequest.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
       const UrlInfo& dest_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* dest_instance,
       SiteInstanceImpl* candidate_instance,
@@ -704,22 +684,19 @@ class CONTENT_EXPORT RenderFrameHostManager
       std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given
-  // |dest_url_info|, possibly reusing the current, source or destination
+  // `dest_url_info`, possibly reusing the current, source or destination
   // SiteInstance. The actual SiteInstance can then be obtained calling
   // ConvertToSiteInstance with the descriptor.
   //
-  // |web_exposed_isolation_info| reflects the web-exposed isolation
-  // information we got from the response for |dest_url|.
-  //
-  // |source_instance| is the SiteInstance of the frame that initiated the
-  // navigation. |current_instance| is the SiteInstance of the frame that is
-  // currently navigating. |dest_instance| is a predetermined SiteInstance that
+  // `source_instance` is the SiteInstance of the frame that initiated the
+  // navigation. `current_instance` is the SiteInstance of the frame that is
+  // currently navigating. `dest_instance` is a predetermined SiteInstance that
   // will be used if not null.
   // For example, if you have a parent frame A, which has a child frame B, and
   // A is trying to change the src attribute of B, this will cause a navigation
   // where the source SiteInstance is A and B is the current SiteInstance.
   //
-  // |is_speculative| indicates that the SiteInstance is being computed for a
+  // `is_speculative` indicates that the SiteInstance is being computed for a
   // speculative RenderFrameHost, which may change once response is received and
   // a final RenderFrameHost/SiteInstance is computed. It is true at request
   // start time, but false for redirects and at OnResponseStarted time.
@@ -727,7 +704,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // This is a helper function for GetSiteInstanceForNavigation.
   SiteInstanceDescriptor DetermineSiteInstanceForURL(
       const UrlInfo& dest_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
       SiteInstance* source_instance,
       SiteInstance* current_instance,
       SiteInstance* dest_instance,
@@ -761,14 +737,12 @@ class CONTENT_EXPORT RenderFrameHostManager
       ui::PageTransition transition,
       const GURL& dest_url);
 
-  // Returns true if we can use |source_instance| for |dest_url|.
-  bool CanUseSourceSiteInstance(
-      const GURL& dest_url,
-      SiteInstance* source_instance,
-      bool was_server_redirect,
-      bool is_failure,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
-      bool is_speculative);
+  // Returns true if we can use `source_instance` for `dest_url_info`.
+  bool CanUseSourceSiteInstance(const UrlInfo& dest_url_info,
+                                SiteInstance* source_instance,
+                                bool was_server_redirect,
+                                bool is_failure,
+                                bool is_speculative);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
@@ -780,14 +754,12 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstanceImpl* candidate_instance,
       bool is_speculative);
 
-  // Returns true if |candidate| is currently on the same web site as
-  // |dest_url_info|. This method is a special case for handling hosted apps in
-  // this object. Most code should call IsNavigationSameSite() on
-  // |candidate| instead of this method.
-  bool IsCandidateSameSite(
-      RenderFrameHostImpl* candidate,
-      const UrlInfo& dest_url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  // Returns true if `candidate` is currently same site with `dest_url_info`.
+  // This method is a special case for handling hosted apps in this object. Most
+  // code should call IsNavigationSameSite() on `candidate` instead of this
+  // method.
+  bool IsCandidateSameSite(RenderFrameHostImpl* candidate,
+                           const UrlInfo& dest_url_info);
 
   // Ensure that we have created all needed proxies for a new RFH with
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for

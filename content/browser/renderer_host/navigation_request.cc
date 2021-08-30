@@ -2521,10 +2521,8 @@ void NavigationRequest::OnRequestRedirected(
   RenderProcessHost* expected_process =
       site_instance->HasProcess() ? site_instance->GetProcess() : nullptr;
 
-  WebExposedIsolationInfo web_exposed_isolation_info =
-      frame_tree_node_->render_manager()->GetWebExposedIsolationInfo(this);
-  WillRedirectRequest(common_params_->referrer->url, web_exposed_isolation_info,
-                      expected_process);
+  WillRedirectRequest(common_params_->referrer->url,
+                      ComputeWebExposedIsolationInfo(), expected_process);
 }
 
 base::WeakPtr<NavigationRequest> NavigationRequest::GetWeakPtr() {
@@ -2768,16 +2766,22 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   auto isolation_request =
       static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
 
+  // Compute the WebExposedIsolationInfo that will be bundled into UrlInfo.
+  auto web_exposed_isolation_info = ComputeWebExposedIsolationInfo();
+
   // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
   if (GetWebBundleURL().is_valid()) {
-    return UrlInfo(UrlInfoInit(GetURL())
-                       .WithOriginIsolationRequest(isolation_request)
-                       .WithOrigin(url::Origin::Resolve(
-                           GetURL(), url::Origin::Create(GetWebBundleURL()))));
+    return UrlInfo(
+        UrlInfoInit(GetURL())
+            .WithOriginIsolationRequest(isolation_request)
+            .WithOrigin(url::Origin::Resolve(
+                GetURL(), url::Origin::Create(GetWebBundleURL())))
+            .WithWebExposedIsolationInfo(web_exposed_isolation_info));
   }
 
-  return UrlInfo(
-      UrlInfoInit(GetURL()).WithOriginIsolationRequest(isolation_request));
+  return UrlInfo(UrlInfoInit(GetURL())
+                     .WithOriginIsolationRequest(isolation_request)
+                     .WithWebExposedIsolationInfo(web_exposed_isolation_info));
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {
@@ -3177,8 +3181,16 @@ void NavigationRequest::OnResponseStarted(
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-    auto site_info = SiteInfo::Create(isolation_context, GetUrlInfo(),
-                                      instance->GetWebExposedIsolationInfo());
+
+    // Explicitly use the web_exposed_isolation_info of `render_frame_host_`
+    // SiteInstance.
+    // TODO(https://crbug.com/1243449): It is unclear why we want to do that.
+    // Inspect call sites and write a proper comment describing why we need to
+    // use `render_frame_host_`'s information.
+    UrlInfo url_info = GetUrlInfo();
+    url_info.web_exposed_isolation_info =
+        instance->GetWebExposedIsolationInfo();
+    auto site_info = SiteInfo::Create(isolation_context, url_info);
     if (!instance->HasSite() &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
@@ -5485,10 +5497,16 @@ void NavigationRequest::DidCommitNavigation(
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
+  // We typically call this function when we don't yet have response headers, so
+  // the computed WebExposedIsolationInfo is not relevant. We override it with
+  // the value passed in.
+  UrlInfo url_info = GetUrlInfo();
+  url_info.web_exposed_isolation_info = web_exposed_isolation_info;
+
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
   return SiteInfo::Create(starting_site_instance_->GetIsolationContext(),
-                          GetUrlInfo(), web_exposed_isolation_info);
+                          url_info);
 }
 
 // TODO(zetamoo): Try to merge this function inside its callers.
@@ -7010,6 +7028,40 @@ void NavigationRequest::SendDeferredConsoleMessages() {
                                             std::move(message.message));
   }
   console_messages_.clear();
+}
+
+WebExposedIsolationInfo NavigationRequest::ComputeWebExposedIsolationInfo() {
+  // If we are in an iframe, we inherit the isolation state of the top level
+  // frame. This can be inferred from the main frame SiteInstance. Note that
+  // Iframes have to pass COEP tests in |OnResponseStarted| before being loaded
+  // and inheriting this cross-origin isolated state.
+  //
+  // TODO(crbug.com/1206150): This may change as we work out the model for
+  // isolation mechanisms beyond "cross-origin isolation".
+  if (!frame_tree_node_->IsMainFrame()) {
+    return frame_tree_node_->current_frame_host()
+        ->GetMainFrame()
+        ->GetSiteInstance()
+        ->GetWebExposedIsolationInfo();
+  }
+
+  // We consider navigations to be cross-origin isolated if the response
+  // asserts proper COOP and COEP headers.
+  if (coop_status().current_coop().value !=
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
+    return WebExposedIsolationInfo::CreateNonIsolated();
+  }
+
+  url::Origin origin = url::Origin::Create(common_params().url);
+
+  // For short-term testing, we'll treat COI as "good enough" to treat as
+  // an isolated application iff the kDirectSockets feature is also
+  // enabled.
+  //
+  // TODO(mkwst): Build a better distinction: https://crbug.com/1206150.
+  return base::FeatureList::IsEnabled(features::kDirectSockets)
+             ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
+             : WebExposedIsolationInfo::CreateIsolated(origin);
 }
 
 NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(

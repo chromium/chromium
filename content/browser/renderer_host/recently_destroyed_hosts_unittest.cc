@@ -55,8 +55,7 @@ TEST_F(RecentlyDestroyedHostsTest,
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
       UrlInfo::CreateForTesting(GURL("https://www.google.com"),
-                                CreateStoragePartitionConfigForTesting()),
-      WebExposedIsolationInfo::CreateNonIsolated());
+                                CreateStoragePartitionConfigForTesting()));
 
   constexpr char kHistogramName[] =
       "SiteIsolation.ReusePendingOrCommittedSite."
