@@ -12,8 +12,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace sharing_hub {
 
@@ -63,9 +65,36 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY, action_info.title));
   }
+
+  // This class wants to pretend to be a menu item visually, so it does its own
+  // hover effects by overriding LabelButton::UpdateBackgroundColor (below). It
+  // isn't sufficient to simply swap out the ink drop color - menu backgrounds
+  // are drawn below the text/icon but the ink drop would be drawn above them,
+  // which looks wrong.
+  // TODO(ellyjones): This removes ~all the benefit of being a HoverButton -
+  // should this class instead subclass LabelButton?
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  title()->SetTextContext(views::style::CONTEXT_MENU);
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
+
+void SharingHubBubbleActionButton::UpdateBackgroundColor() {
+  // Pretend to be a menu item:
+  SkColor bg_color = GetNativeTheme()->GetSystemColor(
+      GetVisualState() == STATE_HOVERED
+          ? ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor
+          : ui::NativeTheme::kColorId_MenuBackgroundColor);
+
+  SetBackground(views::CreateSolidBackground(bg_color));
+  SetTitleTextStyle(
+      // Give the hovered element the "selected" menu styling - otherwise the
+      // text color won't change appropriately to keep up with the background
+      // color changing in high contrast mode.
+      GetVisualState() == STATE_HOVERED ? views::style::STYLE_SELECTED
+                                        : views::style::STYLE_PRIMARY,
+      bg_color);
+}
 
 BEGIN_METADATA(SharingHubBubbleActionButton, HoverButton)
 END_METADATA

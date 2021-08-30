@@ -30,6 +30,8 @@ class SharingHubBubbleActionButton : public HoverButton {
     return action_name_for_metrics_;
   }
 
+  void UpdateBackgroundColor() override;
+
  private:
   const int action_command_id_;
   const bool action_is_first_party_;
