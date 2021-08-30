@@ -524,16 +524,6 @@
              "--enable-blink-features=CorsRFC1918"]
   },
   {
-    "prefix": "plz-service-worker",
-    "bases": ["http/tests/serviceworker",
-              "http/tests/devtools/service-workers",
-              "http/tests/devtools/console",
-              "http/tests/inspector-protocol",
-              "external/wpt/service-workers",
-              "external/wpt/html/cross-origin-embedder-policy"],
-    "args": ["--enable-features=PlzServiceWorker"]
-  },
-  {
     "prefix": "coep-for-shared-worker",
     "bases": ["external/wpt/html/cross-origin-embedder-policy"],
     "args": ["--enable-features=COEPForSharedWorker"]
@@ -582,6 +572,16 @@
     "bases": ["http/tests/devtools/isolated-code-cache"],
     "args": ["--enable-features=SplitCacheByNetworkIsolationKey",
              "--disable-site-isolation-trials"]
+  },
+  {
+    "prefix": "not-plz-service-worker",
+    "bases": ["http/tests/serviceworker",
+              "http/tests/devtools/service-workers",
+              "http/tests/devtools/console",
+              "http/tests/inspector-protocol",
+              "external/wpt/service-workers",
+              "external/wpt/html/cross-origin-embedder-policy"],
+    "args": ["--disable-features=PlzServiceWorker"]
   },
   {
     "prefix": "not-split-http-cache-not-site-per-process",

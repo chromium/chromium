@@ -1,6 +1,5 @@
 Tests that uncaught promise rejections are logged into console.
 
-error: Inspected target navigated or closed
 console-uncaught-promise.js:26 Uncaught (in promise) Error: err1
 promiseTest1 @ console-uncaught-promise.js:26
 timeout @ console-uncaught-promise.js:19

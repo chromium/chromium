@@ -499,7 +499,6 @@ crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageB
 
 crbug.com/626703 external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
-crbug.com/626703 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 crbug.com/626703 virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 
 # Slow when using Vulkan.

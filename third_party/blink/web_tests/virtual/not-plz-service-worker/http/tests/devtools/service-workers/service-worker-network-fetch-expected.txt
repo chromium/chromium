@@ -2,7 +2,7 @@ Tests fetch in Service Workers.
 
 Fetch in worker result: Hello world
 http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker.js
-resource.type: script
+resource.type: other
 request.failed: false
 http://127.0.0.1:8000/devtools/network/resources/resource.php
 resource.type: fetch
