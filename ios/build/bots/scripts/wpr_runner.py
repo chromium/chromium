@@ -13,6 +13,7 @@ import sys
 
 import gtest_utils
 import test_apps
+from test_result_util import ResultCollection
 import test_runner
 import xctest_utils
 
@@ -275,16 +276,13 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
         we build and execute in _run.
 
     Returns:
-      GTestResult instance.
-
+      TestResult.ResultCollection() object.
     Raises:
       ShardingDisabledError: If shards > 1 as currently sharding is not
         supported.
       SystemAlertPresentError: If system alert is shown on the device.
     """
-    result = gtest_utils.GTestResult(cmd)
-    completed_without_failure = True
-    total_returncode = 0
+    overall_result = ResultCollection()
     if shards > 1:
       # TODO(crbug.com/881096): reimplement sharding in the future
       raise test_runner.ShardingDisabledError()
@@ -307,43 +305,31 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
 
         parser, returncode = self.run_wpr_test(udid, test_name, recipe_path,
                                                replay_path)
+        recipe_result = parser.GetResultCollection()
+
 
         # If this test fails, immediately rerun it to see if it deflakes.
         # We simply overwrite the first result with the second.
-        if parser.FailedTests(include_flaky=True):
+        if recipe_result.never_expected_tests():
           parser, returncode = self.run_wpr_test(udid, test_name, recipe_path,
                                                  replay_path)
+          recipe_result = parser.GetResultCollection()
 
-        for test in parser.FailedTests(include_flaky=True):
-          # All test names will be the same since we re-run the same suite;
-          # therefore, to differentiate the results, we append the recipe
-          # name to the test suite.
-          testWithRecipeName = "{}.{}".format(base_name, test)
-
-          result.failed_tests[testWithRecipeName] = parser.FailureDescription(
-              test)
-
-        for test in parser.PassedTests(include_flaky=True):
-          testWithRecipeName = "{}.{}".format(base_name, test)
-          result.passed_tests.extend([testWithRecipeName])
+        # All test names will be the same since we re-run the same suite;
+        # therefore, to differentiate the results, we append the recipe
+        # name to the test suite.
+        recipe_result.add_name_prefix_to_tests(base_name + '.')
+        overall_result.add_result_collection(recipe_result)
 
         # Check for runtime errors.
         if self.xctest_path and parser.SystemAlertPresent():
           raise test_runner.SystemAlertPresentError()
-        if returncode != 0:
-          total_returncode = returncode
-        if not parser.CompletedWithoutFailure():
-          completed_without_failure = False
         LOGGER.info('%s test returned %s\n', recipe_path, returncode)
 
     self.deleteSimulator(udid)
 
-    # xcodebuild can return 5 if it exits noncleanly even if all tests passed.
-    # Therefore we cannot rely on process exit code to determine success.
+    return overall_result
 
-    # NOTE: total_returncode is 0 OR the last non-zero return code from a test.
-    result.finalize(total_returncode, completed_without_failure)
-    return result
 
   def get_launch_command(self, test_app=None, out_dir=None,
                          destination=None, shards=1):
