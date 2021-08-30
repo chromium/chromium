@@ -200,6 +200,7 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate> {
   NSMutableArray* _menuObservers;
+  gfx::Rect _anchorRect;
 }
 @end
 
@@ -219,6 +220,10 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
   [_menuObservers release];
 
   [super dealloc];
+}
+
+- (void)setAnchorRect:(gfx::Rect)rect {
+  _anchorRect = rect;
 }
 
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
@@ -278,24 +283,36 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
       // This situation is broken.
       //
-      // First, NSMenuDidBeginTrackingNotification is the best way to
-      // get called right before the menu is shown, but at the moment
-      // of the call, the menu isn't open yet. Second, to make things
-      // worse, the implementation of -_boundsIfOpen *tries* to return
-      // an NSZeroRect if the menu isn't open yet but fails to detect
-      // it correctly, and instead falls over and returns a bogus
-      // bounds. Fortunately, those bounds are broken in a predictable
-      // way, so that situation can be detected. Don't even bother
-      // trying to make the -_boundsIfOpen call on the notification;
-      // there's no point.
+      // First, NSMenuDidBeginTrackingNotification is the best way to get called
+      // right before the menu is shown, but at the moment of the call, the menu
+      // isn't open yet. Second, to make things worse, the implementation of
+      // -_boundsIfOpen *tries* to return an NSZeroRect if the menu isn't open
+      // yet but fails to detect it correctly, and instead falls over and
+      // returns a bogus bounds. Fortunately, those bounds are broken in a
+      // predictable way, so that situation can be detected. Don't even bother
+      // trying to make the -_boundsIfOpen call on the notification; there's no
+      // point.
       //
-      // However, it takes just one trip through the main loop for the
-      // menu to appear and the -_boundsIfOpen call to work.
-
+      // However, it takes just one trip through the main loop for the menu to
+      // appear and the -_boundsIfOpen call to work.
       dispatch_after(
           dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
           dispatch_get_main_queue(), ^{
-            gfx::Rect screen_rect;
+            // Since we can't get bounds on all platforms, we should have a
+            // reasonable fallback. This is intentionally twice as wide as it
+            // should be because even though we could check the RTL bit and
+            // guess whether the menu should appear to the left or right of the
+            // anchor, if the anchor is near one side of the screen the menu
+            // could end up on the other side.
+            //
+            // TODO(dfried): When 10.12 is the earliest version of MacOS we
+            // support, remove this code and always use the _boundsIfOpen call
+            // (assuming the call isn't deprecated in a future version of
+            // MacOS).
+            gfx::Rect screen_rect = _anchorRect;
+            CGSize menu_size = [menu_obj size];
+            screen_rect.Inset(gfx::Insets(0, -menu_size.width,
+                                          -menu_size.height, -menu_size.width));
             if ([menu_obj respondsToSelector:@selector(_boundsIfOpen)]) {
               CGRect bounds = [menu_obj _boundsIfOpen];
               // A broken bounds for a menu that isn't
@@ -519,6 +536,7 @@ void MenuRunnerImplCocoa::RunMenuAt(Widget* parent,
   DCHECK(parent);
   closing_event_time_ = base::TimeTicks();
   running_ = true;
+  [menu_delegate_ setAnchorRect:bounds];
 
   // Ensure the UI can update while the menu is fading out.
   base::ScopedPumpMessagesInPrivateModes pump_private;
