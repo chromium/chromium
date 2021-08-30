@@ -342,6 +342,21 @@ class PDFExtensionTestWithoutUnseasonedOverride
     return plugin_frame;
   }
 
+  // Finds the `RenderFrameHost`s of Unseasoned PDF plugins within a given
+  // `WebContents`. This method should only be used in Unseasoned PDF tests.
+  std::vector<content::RenderFrameHost*> GetUnseasonedPdfFrames(
+      WebContents* contents) {
+    EXPECT_TRUE(IsUnseasoned());
+
+    std::vector<content::RenderFrameHost*> pdf_frames;
+    contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+        [&pdf_frames](content::RenderFrameHost* frame) {
+          if (IsUnseasonedPdfFrame(*frame))
+            pdf_frames.push_back(frame);
+        }));
+    return pdf_frames;
+  }
+
   int CountPDFProcesses() {
     return IsUnseasoned() ? CountUnseasonedPDFProcesses()
                           : CountPepperPDFProcesses();
@@ -381,21 +396,17 @@ class PDFExtensionTestWithoutUnseasonedOverride
   }
 
   int CountUnseasonedPDFProcesses() {
-    base::flat_set<content::RenderProcessHost*> plugin_processes;
+    base::flat_set<content::RenderProcessHost*> pdf_processes;
 
     const TabStripModel* tab_strip = browser()->tab_strip_model();
     for (int tab = 0; tab < tab_strip->count(); ++tab) {
-      tab_strip->GetWebContentsAt(tab)->ForEachRenderFrameHost(
-          base::BindLambdaForTesting(
-              [&plugin_processes](content::RenderFrameHost* frame) {
-                if (IsUnseasonedPdfFrame(*frame))
-                  plugin_processes.insert(frame->GetProcess());
-              }));
+      for (content::RenderFrameHost* pdf_frame :
+           GetUnseasonedPdfFrames(tab_strip->GetWebContentsAt(tab))) {
+        pdf_processes.insert(pdf_frame->GetProcess());
+      }
     }
 
-    // TODO(crbug.com/1231763): HTML and PDF content are not separated yet, so
-    // we don't try to verify that the PDF renderer is a separate process.
-    return plugin_processes.size();
+    return pdf_processes.size();
   }
 
   static bool IsUnseasonedPdfFrame(content::RenderFrameHost& frame) {
@@ -598,7 +609,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
 
   console_observer.Wait();
 
-  // Didn't launch a PPAPI process.
   EXPECT_EQ(0, CountPDFProcesses());
 }
 
@@ -925,8 +935,6 @@ class PDFExtensionJSTest : public WithUnseasonedOverride,
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
-
-  // Ensure it loaded in a PPAPI process.
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
@@ -1270,7 +1278,6 @@ class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
 
     // Navigate to a PDF in the service worker's scope. It should load.
     RunTestsInJsModule("basic_test.js", "test.pdf");
-    // Ensure it loaded in a PPAPI process.
     EXPECT_EQ(1, CountPDFProcesses());
   }
 };
@@ -1355,7 +1362,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BlockDirectAccess) {
 
   console_observer.Wait();
 
-  // Didn't launch a PPAPI process.
   EXPECT_EQ(0, CountPDFProcesses());
 }
 
@@ -1374,7 +1380,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsurePDFFromLocalFileLoads) {
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
 
-  // Did launch a PPAPI process.
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
@@ -1393,7 +1398,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ExtensionlessPDFLocalFileLoads) {
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
 
-  // Did launch a PPAPI process.
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
@@ -1848,6 +1852,40 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MultipleDomains) {
       embedded_test_server()->GetURL("b.com", "/pdf/test.pdf")));
   EXPECT_EQ(2, CountPDFProcesses());
 }
+
+using PDFExtensionIsolatedContentTest = PDFExtensionTest;
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
+  content::RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // Load a page with an embedded PDF and an HTML iframe, both of the same
+  // origin.
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/embed_pdf_and_html.html"));
+  ASSERT_TRUE(guest_contents);
+
+  // The PDF and the iframe should not share renderer processes even though they
+  // share origins.
+  std::vector<content::RenderFrameHost*> pdf_frames =
+      GetUnseasonedPdfFrames(guest_contents);
+  ASSERT_EQ(pdf_frames.size(), 1u);
+
+  std::vector<content::RenderFrameHost*> frames =
+      GetActiveWebContents()->GetAllFrames();
+  ASSERT_EQ(frames.size(), 4u);
+  EXPECT_EQ(frames[1]->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("/title1.html"));
+
+  EXPECT_EQ(pdf_frames[0]->GetLastCommittedOrigin(),
+            frames[1]->GetLastCommittedOrigin());
+
+  // TODO(crbug.com/1231763): Isolate PDF content from HTML content.
+  EXPECT_EQ(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionIsolatedContentTest,
+                         testing::Values(true));
 
 class PDFExtensionLinkClickTest : public PDFExtensionTest {
  public:
