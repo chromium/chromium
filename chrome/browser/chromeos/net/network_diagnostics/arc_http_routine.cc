@@ -20,7 +20,6 @@ namespace {
 constexpr int kTotalHostsToQuery = 3;
 // The length of a random eight letter prefix.
 constexpr int kHostPrefixLength = 8;
-constexpr int kHttpPort = 443;
 constexpr char kHttpScheme[] = "http://";
 
 // Requests taking longer than 1000 ms are problematic.
@@ -32,11 +31,9 @@ constexpr int kPotentialProblemLatencyMs = 500;
 
 ArcHttpRoutine::ArcHttpRoutine()
     : hostnames_to_request_http_(
-          util::GetRandomHostsWithSchemeAndPortAndGenerate204Path(
-              kTotalHostsToQuery,
-              kHostPrefixLength,
-              kHttpScheme,
-              kHttpPort)) {}
+          util::GetRandomHostsWithSchemeAndGenerate204Path(kTotalHostsToQuery,
+                                                           kHostPrefixLength,
+                                                           kHttpScheme)) {}
 
 ArcHttpRoutine::~ArcHttpRoutine() = default;
 
@@ -56,7 +53,7 @@ void ArcHttpRoutine::AttemptNextRequest() {
     return;
   }
 
-  GURL url = hostnames_to_request_http_.back();
+  auto url = GURL(hostnames_to_request_http_.back());
   hostnames_to_request_http_.pop_back();
 
   // Call the HttpTest API from the instance of NetInstance.
@@ -98,7 +95,8 @@ arc::mojom::NetInstance* ArcHttpRoutine::GetNetInstance() {
 void ArcHttpRoutine::OnRequestComplete(
     arc::mojom::ArcHttpTestResultPtr result) {
   if (!result->is_successful ||
-      result->status_code != net::HttpStatusCode::HTTP_OK) {
+      // We generated path to a page that returns 204 response.
+      result->status_code != net::HttpStatusCode::HTTP_NO_CONTENT) {
     successfully_requested_targets_ = false;
     AnalyzeResultsAndExecuteCallback();
     return;

@@ -265,6 +265,7 @@ void NetworkDiagnostics::RunArcHttp(RunArcHttpCallback callback) {
 void NetworkDiagnostics::RunArcDnsResolution(
     RunArcDnsResolutionCallback callback) {
   auto routine = std::make_unique<ArcDnsResolutionRoutine>();
+  RunRoutine(std::move(routine), std::move(callback));
 }
 
 void NetworkDiagnostics::RunArcPing(RunArcPingCallback callback) {

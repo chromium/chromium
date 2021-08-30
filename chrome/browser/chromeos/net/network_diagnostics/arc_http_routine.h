@@ -47,7 +47,7 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   // Processes the |result| of an HttpTest API request.
   void OnRequestComplete(arc::mojom::ArcHttpTestResultPtr result);
 
-  std::vector<GURL> hostnames_to_request_http_;
+  std::vector<std::string> hostnames_to_request_http_;
   std::vector<mojom::ArcHttpProblem> problems_;
   bool successfully_requested_targets_ = true;
   bool failed_to_get_arc_service_manager_ = false;

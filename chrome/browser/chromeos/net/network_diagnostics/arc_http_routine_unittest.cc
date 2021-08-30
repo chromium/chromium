@@ -73,7 +73,7 @@ class ArcHttpRoutineTest : public ::testing::Test {
 TEST_F(ArcHttpRoutineTest, TestNoProblem) {
   arc::mojom::ArcHttpTestResult result;
   result.is_successful = true;
-  result.status_code = net::HttpStatusCode::HTTP_OK;
+  result.status_code = net::HttpStatusCode::HTTP_NO_CONTENT;
   result.duration_ms = kNoProblemDelayMs;
 
   SetUpRoutine(result);
@@ -103,7 +103,7 @@ TEST_F(ArcHttpRoutineTest, TestBadStatusCode) {
 TEST_F(ArcHttpRoutineTest, TestHighLatency) {
   arc::mojom::ArcHttpTestResult result;
   result.is_successful = true;
-  result.status_code = net::HttpStatusCode::HTTP_OK;
+  result.status_code = net::HttpStatusCode::HTTP_NO_CONTENT;
   result.duration_ms = kHighLatencyDelayMs;
 
   SetUpRoutine(result);
@@ -114,7 +114,7 @@ TEST_F(ArcHttpRoutineTest, TestHighLatency) {
 TEST_F(ArcHttpRoutineTest, TestVeryHighLatency) {
   arc::mojom::ArcHttpTestResult result;
   result.is_successful = true;
-  result.status_code = net::HttpStatusCode::HTTP_OK;
+  result.status_code = net::HttpStatusCode::HTTP_NO_CONTENT;
   result.duration_ms = kVeryHighLatencyDelayMs;
 
   SetUpRoutine(result);
