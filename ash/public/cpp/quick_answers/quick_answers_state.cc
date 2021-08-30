@@ -61,6 +61,9 @@ void MigrateQuickAnswersConsentStatus(PrefService* prefs) {
       prefs->SetInteger(
           kQuickAnswersConsentStatus,
           consented ? ConsentStatus::kAccepted : ConsentStatus::kRejected);
+      // Enable Quick Answers settings for existing users.
+      if (consented)
+        prefs->SetBoolean(kQuickAnswersEnabled, true);
     } else {
       // Set the consent status to unknown for new users.
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kUnknown);
@@ -222,6 +225,8 @@ void QuickAnswersState::OnConsentResult(ConsentResultType result) {
   switch (result) {
     case ConsentResultType::kAllow:
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
+      // Enable Quick Answers if the user accepted the consent.
+      prefs->SetBoolean(kQuickAnswersEnabled, true);
       break;
     case ConsentResultType::kNoThanks:
       prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
@@ -276,12 +281,6 @@ void QuickAnswersState::UpdateConsentStatus() {
     return;
   }
   consent_status_ = consent_status;
-
-  // If the user allow Quick Answers consent, turn on the Quick Answers settings
-  // pref.
-  if (consent_status_) {
-    pref_change_registrar_->prefs()->SetBoolean(kQuickAnswersEnabled, true);
-  }
 }
 
 void QuickAnswersState::UpdateDefinitionEnabled() {
@@ -321,10 +320,8 @@ void QuickAnswersState::UpdateEligibility() {
     std::string resolved_locale;
     l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
                                      /*perform_io=*/false);
-    bool should_show_consent = consent_status_ == ConsentStatus::kUnknown;
-    is_eligible_ = (settings_enabled_ || should_show_consent) &&
-                   IsQuickAnswersAllowedForLocale(
-                       resolved_locale, icu::Locale::getDefault().getName());
+    is_eligible_ = IsQuickAnswersAllowedForLocale(
+        resolved_locale, icu::Locale::getDefault().getName());
     return;
   }
 
