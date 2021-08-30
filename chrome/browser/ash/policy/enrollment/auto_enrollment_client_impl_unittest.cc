@@ -66,9 +66,6 @@ const char kDisabledMessage[] = "This device has been disabled.";
 
 const char kSerialNumber[] = "SN123456";
 const char kBrandCode[] = "AABC";
-const char kInitialEnrollmentIdHash[] = "\x30\x18\xb7\x0f\x76\x09\xc5\xc7";
-
-const int kInitialEnrollmentIdHashLength = 8;
 
 const bool kNotWithLicense = false;
 const bool kWithLicense = true;
@@ -225,6 +222,10 @@ class AutoEnrollmentClientImplTest
   }
 
   void ServerWillReply(int64_t modulus, bool with_hashes, bool with_id_hash) {
+    // This function should be called only when the client has been created for
+    // FRE use case.
+    ASSERT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
+
     em::DeviceManagementResponse response;
     em::DeviceAutoEnrollmentResponse* enrollment_response =
         response.mutable_auto_enrollment_response();
@@ -233,22 +234,13 @@ class AutoEnrollmentClientImplTest
     if (with_hashes) {
       for (int i = 0; i < 10; ++i) {
         std::string state_key = base::StringPrintf("state_key %d", i);
-        std::string hash_full = crypto::SHA256HashString(state_key);
-        std::string hash =
-            GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
-                ? hash_full
-                : hash_full.substr(0, kInitialEnrollmentIdHashLength);
+        std::string hash = crypto::SHA256HashString(state_key);
         enrollment_response->mutable_hashes()->Add()->assign(hash);
       }
     }
     if (with_id_hash) {
-      if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
-        enrollment_response->mutable_hashes()->Add()->assign(
-            kStateKeyHash, crypto::kSHA256Length);
-      } else {
-        enrollment_response->mutable_hashes()->Add()->assign(
-            kInitialEnrollmentIdHash, kInitialEnrollmentIdHashLength);
-      }
+      enrollment_response->mutable_hashes()->Add()->assign(
+          kStateKeyHash, crypto::kSHA256Length);
     }
 
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
