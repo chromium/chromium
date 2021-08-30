@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
-import("//build/config/devtools.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
@@ -474,7 +473,7 @@ source_set("blink_headers") {
   ]
 }
 
-devtools_frontend_path = "//$devtools_root_location"
+devtools_frontend_path = "//third_party/devtools-frontend/src"
 
 group("blink_devtools_frontend_resources") {
   public_deps = [ "$devtools_frontend_path:devtools_frontend_resources" ]
@@ -515,15 +514,8 @@ grit("devtools_inspector_resources") {
     "inspector_overlay_resources.pak",
   ]
 
-  _shared_intermediate_dir = rebase_path(root_out_dir, root_build_dir)
-  _devtools_grd_path = "$shared_intermediate_dir/$devtools_grd_location"
-  _devtools_grd_path_no_ext = get_path_info(_devtools_grd_path, "dir") + "/" +
-                              get_path_info(_devtools_grd_path, "name")
-
-  defines = [
-    "SHARED_INTERMEDIATE_DIR=" + _shared_intermediate_dir,
-    "DEVTOOLS_GRD_PATH=" + _devtools_grd_path_no_ext,
-  ]
+  defines =
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_out_dir, root_build_dir) ]
 
   deps = [
     "$devtools_frontend_path:generate_devtools_inspector_overlay_resources",
