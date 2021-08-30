@@ -79,20 +79,20 @@
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"
-            is-test-running="{{isTestRunning}}"
+            test-suite-status="{{testSuiteStatus}}"
             is-active="[[isActive]]">
         </battery-status-card>
       </div>
     </template>
     <div class="card-width">
       <cpu-card id="cpuCard"
-          is-test-running="{{isTestRunning}}"
+          test-suite-status="{{testSuiteStatus}}"
           is-active="[[isActive]]">
       </cpu-card>
     </div>
     <div class="card-width">
       <memory-card id="memoryCard"
-          is-test-running="{{isTestRunning}}"
+          test-suite-status="{{testSuiteStatus}}"
           is-active="[[isActive]]">
       </memory-card>
     </div>

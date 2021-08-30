@@ -19,6 +19,16 @@ export let ExecutionProgress = {
 };
 
 /**
+ * Represents the status of the test suite.
+ * @enum {number}
+ */
+export let TestSuiteStatus = {
+  kNotRunning: 0,
+  kRunning: 1,
+  kCompleted: 2,
+};
+
+/**
  * Represents the input to a single routine-result-entry in a
  * routine-result-list.
  */

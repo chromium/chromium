@@ -9,6 +9,7 @@ import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeP
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
@@ -151,7 +152,10 @@ export function connectivityCardTestSuite() {
 
   test('TestsRunAutomaticallyWhenPageIsActive', () => {
     return initializeConnectivityCard('ethernetGuid', true)
-        .then(() => assertTrue(connectivityCardElement.isTestRunning));
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kRunning,
+                connectivityCardElement.testSuiteStatus));
   });
 
   test(

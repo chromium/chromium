@@ -73,6 +73,7 @@ js_library("connectivity_card_test") {
     "../..:test_util.m",
     "//ash/webui/diagnostics_ui/resources:connectivity_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
+    "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:routine_section",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -355,6 +356,7 @@ js_library("system_page_test") {
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
+    "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:system_page",
   ]
 }

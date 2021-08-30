@@ -15,6 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
 import {getNetworkState, getNetworkType, getRoutinesByNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 
 /**
@@ -40,10 +41,10 @@ Polymer({
   networkStateObserverReceiver_: null,
 
   properties: {
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 

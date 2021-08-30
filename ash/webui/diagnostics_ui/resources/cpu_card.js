@@ -17,6 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CpuUsage, CpuUsageObserverInterface, CpuUsageObserverReceiver, RoutineType, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 /**
  * @fileoverview
@@ -65,10 +66,10 @@ Polymer({
       value: '',
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 

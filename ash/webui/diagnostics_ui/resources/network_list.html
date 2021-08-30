@@ -29,7 +29,7 @@
   <div class="diagnostics-cards-container">
     <template is="dom-if" if="[[activeGuid_]]">
       <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
-          is-test-running="{{isTestRunning}}"
+          test-suite-status="{{testSuiteStatus}}"
           is-active="[[isActive]]">
       </connectivity-card>
     </template>

@@ -19,7 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
-import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
+import {ExecutionProgress, RoutineListExecutor, TestSuiteStatus} from './routine_list_executor.js';
 import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
 import {BadgeType} from './text_badge.js';
 
@@ -95,9 +95,10 @@ Polymer({
       value: '',
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 
@@ -229,7 +230,7 @@ Polymer({
     if (this.routines.length === 0) {
       return;
     }
-    this.isTestRunning = true;
+    this.testSuiteStatus = TestSuiteStatus.kRunning;
     this.hasTestFailure_ = false;
 
     this.systemRoutineController_ = getSystemRoutineController();
@@ -285,7 +286,7 @@ Polymer({
               })
           .then((/** @type {!ExecutionProgress} */ status) => {
             this.executionStatus_ = status;
-            this.isTestRunning = false;
+            this.testSuiteStatus = TestSuiteStatus.kCompleted;
             this.routineStartTimeMs_ = -1;
             this.runTestsButtonText =
                 loadTimeData.getString('runAgainButtonText');
@@ -460,8 +461,16 @@ Polymer({
    * @protected
    * @return {boolean}
    */
+  isTestRunning_() {
+    return this.testSuiteStatus === TestSuiteStatus.kRunning;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
   isRunTestsButtonHidden_() {
-    return this.isTestRunning &&
+    return this.isTestRunning_() &&
         this.executionStatus_ === ExecutionProgress.kRunning;
   },
 
@@ -478,7 +487,7 @@ Polymer({
    * @return {boolean}
    */
   isRunTestsButtonDisabled_() {
-    return this.isTestRunning || this.additionalMessage != '';
+    return this.isTestRunning_() || this.additionalMessage != '';
   },
 
   /**
@@ -538,7 +547,7 @@ Polymer({
       return;
     }
 
-    if (this.runTestsAutomatically && !this.isTestRunning) {
+    if (this.runTestsAutomatically && !this.isTestRunning_()) {
       this.runTests_();
     }
   },

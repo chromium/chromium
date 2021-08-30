@@ -21,6 +21,7 @@ import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryCharge
 import {getDiagnosticsIcon} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 const BATTERY_ICON_PREFIX = 'battery-';
 
@@ -82,10 +83,10 @@ Polymer({
       computed: 'getPowerTimeString_(batteryChargeStatus_.powerTime)',
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 

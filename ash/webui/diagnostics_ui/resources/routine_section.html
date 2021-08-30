@@ -85,10 +85,10 @@
         [[getReportToggleButtonText_(opened)]]
       </cr-button>
       <cr-button id="runTestsButton"
-          hidden$="[[isRunTestsButtonHidden_(isTestRunning,
+          hidden$="[[isRunTestsButtonHidden_(testSuiteStatus,
               executionStatus_)]]"
           on-click="runTests_"
-          disabled="[[isRunTestsButtonDisabled_(isTestRunning,
+          disabled="[[isRunTestsButtonDisabled_(testSuiteStatus,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>

@@ -12,6 +12,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js'
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 /**
  * @fileoverview
@@ -37,11 +38,10 @@ Polymer({
   networkListObserverReceiver_: null,
 
   properties: {
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
-      notify: true,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
     },
 
     /** @private {Array<?string>} */

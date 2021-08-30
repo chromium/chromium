@@ -9,7 +9,7 @@ import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnosti
 import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
+import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -66,7 +66,7 @@ export function routineSectionTestSuite() {
 
     // Assign the routines to the property.
     routineSectionElement.routines = routines;
-    routineSectionElement.isTestRunning = false;
+    routineSectionElement.testSuiteStatus = TestSuiteStatus.kNotRunning;
     routineSectionElement.routineRuntime = runtime;
 
     if (routines.length === 1 && [
@@ -291,13 +291,16 @@ export function routineSectionTestSuite() {
     return initializeRoutineSection(routines)
         .then(() => {
           assertFalse(isRunTestsButtonDisabled());
-          assertFalse(routineSectionElement.isTestRunning);
+          assertEquals(
+              TestSuiteStatus.kNotRunning,
+              routineSectionElement.testSuiteStatus);
           return clickRunTestsButton();
         })
         .then(() => {
           assertFalse(isVisible(getRunTestsButton()));
           assertTrue(isVisible(getStopTestsButton()));
-          assertTrue(routineSectionElement.isTestRunning);
+          assertEquals(
+              TestSuiteStatus.kRunning, routineSectionElement.testSuiteStatus);
           dx_utils.assertElementContainsText(
               getStopTestsButton(),
               loadTimeData.getString('stopTestButtonText'));
@@ -955,8 +958,14 @@ export function routineSectionTestSuite() {
     return initializeRoutineSection([])
         .then(() => setRunTestsAutomatically(true))
         .then(() => setIsActive(true))
-        .then(() => assertFalse(routineSectionElement.isTestRunning))
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kNotRunning,
+                routineSectionElement.testSuiteStatus))
         .then(() => setRoutines([RoutineType.kCpuStress]))
-        .then(() => assertTrue(routineSectionElement.isTestRunning));
+        .then(
+            () => assertEquals(
+                TestSuiteStatus.kRunning,
+                routineSectionElement.testSuiteStatus));
   });
 }

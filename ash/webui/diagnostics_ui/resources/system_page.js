@@ -22,6 +22,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 /**
  * @fileoverview
@@ -52,10 +53,10 @@ Polymer({
       value: false,
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
     },
 
     /** @type {boolean} */

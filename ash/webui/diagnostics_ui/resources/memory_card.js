@@ -19,6 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
 import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
+import {TestSuiteStatus} from './routine_list_executor.js';
 
 /**
  * @fileoverview
@@ -58,10 +59,10 @@ Polymer({
       type: Object,
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
-      value: false,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 
