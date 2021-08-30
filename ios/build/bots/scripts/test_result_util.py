@@ -148,6 +148,11 @@ class ResultCollection(object):
     """Logs from crashes in collection which are unrelated to single tests."""
     return self._crash_message
 
+  @crash_message.setter
+  def crash_message(self, value):
+    """Sets crash_message value."""
+    self._crash_message = value
+
   @property
   def test_results(self):
     return self._test_results
@@ -202,8 +207,23 @@ class ResultCollection(object):
     for test_name in test_names:
       self.add_test_result(TestResult(test_name, test_status, **kwargs))
 
+  def add_and_report_test_names_status(self, test_names, test_status, **kwargs):
+    """Adds a list of test names with status and report these to ResultSink.
+
+    Args:
+      test_names: (list) A list of names of tests to add.
+      test_status: (str) The test outcome of the tests to add.
+      **kwargs: See possible **kwargs in TestResult.__init__ docstring.
+    """
+    another_collection = ResultCollection()
+    another_collection.add_test_names_status(test_names, test_status, **kwargs)
+    another_collection.report_to_result_sink()
+    self.add_result_collection(another_collection)
+
   def append_crash_message(self, message):
     """Appends crash message str to current."""
+    if not message:
+      return
     if self._crash_message:
       self._crash_message += '\n'
     self._crash_message += message
@@ -318,8 +338,8 @@ class ResultCollection(object):
             'is_unexpected': not test_result.expected()
         }
       else:
-        tests[test_name]['actual'] += ' ' + _to_standard_json_literal(
-            test_result.status)
+        tests[test_name]['actual'] += (
+            ' ' + _to_standard_json_literal(test_result.status))
         # This means there are both expected & unexpected results for the test.
         # Thus, the overall status would be expected (is_unexpected = False)
         # and the test is regarded flaky.

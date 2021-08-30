@@ -210,6 +210,23 @@ class ResultCollectionTest(test_runner_test.TestCase):
     self.assertEqual(collection.disabled_tests(),
                      set(['test4', 'test5', 'test6']))
 
+  @mock.patch('test_result_util.TestResult.report_to_result_sink')
+  @mock.patch('result_sink_util.ResultSinkClient.close')
+  @mock.patch('result_sink_util.ResultSinkClient.__init__', return_value=None)
+  def test_add_and_report_test_names_status(self, mock_sink_init,
+                                            mock_sink_close, mock_report):
+    """Tests add_test_names_status."""
+    test_names = ['test1', 'test2', 'test3']
+    collection = ResultCollection(test_results=[PASSED_RESULT])
+    collection.add_and_report_test_names_status(test_names, TestStatus.SKIP)
+    self.assertEqual(collection.test_results[0], PASSED_RESULT)
+    unexpected_skipped = collection.tests_by_expression(
+        lambda t: not t.expected() and t.status == TestStatus.SKIP)
+    self.assertEqual(unexpected_skipped, set(['test1', 'test2', 'test3']))
+    self.assertEqual(1, len(mock_sink_init.mock_calls))
+    self.assertEqual(3, len(mock_report.mock_calls))
+    self.assertEqual(1, len(mock_sink_close.mock_calls))
+
   def testappend_crash_message(self):
     """Tests append_crash_message."""
     collection = ResultCollection(test_results=[PASSED_RESULT])
