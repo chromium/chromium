@@ -47,12 +47,16 @@ class ObsoleteClientsDbHolder
 }  // namespace
 
 // static
+bool SharedProtoDatabaseClient::HasPrefix(const std::string& key,
+                                          const std::string& prefix) {
+  return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE);
+}
+
+// static
 std::string SharedProtoDatabaseClient::StripPrefix(const std::string& key,
                                                    const std::string& prefix) {
-  DCHECK(base::StartsWith(key, prefix, base::CompareCase::SENSITIVE));
-  return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE)
-             ? key.substr(prefix.length())
-             : key;
+  DCHECK(HasPrefix(key, prefix));
+  return HasPrefix(key, prefix) ? key.substr(prefix.length()) : key;
 }
 
 // static
@@ -81,6 +85,8 @@ SharedProtoDatabaseClient::KeyIteratorControllerStripPrefix(
     const std::string& prefix,
     const std::string& key) {
   DCHECK(!controller.is_null());
+  if (!HasPrefix(key, prefix))
+    return Enums::kSkipAndStop;
   return controller.Run(StripPrefix(key, prefix));
 }
 

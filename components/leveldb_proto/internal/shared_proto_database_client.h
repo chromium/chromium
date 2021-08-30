@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
  public:
   static std::string PrefixForDatabase(ProtoDbType db_type);
 
+  static bool HasPrefix(const std::string& key, const std::string& prefix);
   static std::string StripPrefix(const std::string& key,
                                  const std::string& prefix);
 
