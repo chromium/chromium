@@ -225,6 +225,7 @@ void UpdateFinalizerClientData(
 
 void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
+    bool overwrite_existing_manifest_fields,
     ForInstallableSite for_installable_site,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
@@ -245,6 +246,8 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = install_source;
   options.locally_installed = true;
+  options.overwrite_existing_manifest_fields =
+      overwrite_existing_manifest_fields;
 
   UpdateFinalizerClientData(install_params_, &options);
 
@@ -781,8 +784,12 @@ void WebAppInstallTask::OnDialogCompleted(
   WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = install_source_;
   finalize_options.locally_installed = true;
+  finalize_options.overwrite_existing_manifest_fields = true;
+
   if (install_params_) {
     finalize_options.locally_installed = install_params_->locally_installed;
+    finalize_options.overwrite_existing_manifest_fields =
+        install_params_->force_reinstall;
 
     UpdateFinalizerClientData(install_params_, &finalize_options);
 

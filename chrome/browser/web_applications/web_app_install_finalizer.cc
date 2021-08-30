@@ -217,8 +217,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id);
 
-  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
-                                      std::move(commit_callback));
+  if (options.overwrite_existing_manifest_fields || !existing_web_app) {
+    SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
+                                        std::move(commit_callback));
+  } else {
+    // Updates the web app with an additional source.
+    OnIconsDataWritten(std::move(commit_callback), std::move(web_app),
+                       /*success=*/true);
+  }
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(

@@ -348,7 +348,8 @@ class WebAppInstallManagerTest
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromInfo(
-        std::move(web_application_info), ForInstallableSite::kYes,
+        std::move(web_application_info),
+        /*overwrite_existing_manifest_fields=*/false, ForInstallableSite::kYes,
         install_source,
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {

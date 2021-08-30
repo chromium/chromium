@@ -1234,8 +1234,9 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
           weak_ptr_factory_.GetWeakPtr());
 
   web_app_provider_->install_manager().InstallWebAppFromInfo(
-      std::move(web_app), web_app::ForInstallableSite::kUnknown,
-      webapps::WebappInstallSource::SYNC, std::move(install_complete_callback));
+      std::move(web_app), /*overwrite_existing_manifest_fields=*/false,
+      web_app::ForInstallableSite::kUnknown, webapps::WebappInstallSource::SYNC,
+      std::move(install_complete_callback));
 }
 
 void AppLauncherHandler::OnExtensionPreferenceChanged() {

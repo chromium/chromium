@@ -36,6 +36,7 @@ WebAppInstallParams CreateSyncInstallParams(
   const bool locally_install_we_apps_on_sync = AreAppsLocallyInstalledBySync();
 
   WebAppInstallParams params;
+  params.force_reinstall = true;
   params.override_manifest_id = manifest_id;
   params.user_display_mode = user_display_mode;
   params.fallback_start_url = start_url;
@@ -149,15 +150,18 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
 
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
+    bool overwrite_existing_manifest_fields,
     ForInstallableSite for_installable_site,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
-  InstallWebAppFromInfo(std::move(web_application_info), for_installable_site,
-                        absl::nullopt, install_source, std::move(callback));
+  InstallWebAppFromInfo(
+      std::move(web_application_info), overwrite_existing_manifest_fields,
+      for_installable_site, absl::nullopt, install_source, std::move(callback));
 }
 
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
+    bool overwrite_existing_manifest_fields,
     ForInstallableSite for_installable_site,
     const absl::optional<WebAppInstallParams>& install_params,
     webapps::WebappInstallSource install_source,
@@ -171,7 +175,8 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     task->SetInstallParams(install_params.value());
   }
   task->InstallWebAppFromInfo(
-      std::move(web_application_info), for_installable_site, install_source,
+      std::move(web_application_info), overwrite_existing_manifest_fields,
+      for_installable_site, install_source,
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
                      base::Unretained(this), task.get(), std::move(callback)));
 
@@ -374,6 +379,7 @@ void WebAppInstallManager::
   WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = webapps::WebappInstallSource::SYNC;
   finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
+  finalize_options.overwrite_existing_manifest_fields = true;
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons,

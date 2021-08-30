@@ -930,8 +930,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
   base::RunLoop run_loop;
 
   install_task_->InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes,
-      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      ForInstallableSite::kYes, webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
@@ -963,8 +963,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
   base::RunLoop run_loop;
 
   install_task_->InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes,
-      webapps::WebappInstallSource::ARC,
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                      InstallResultCode code) {
         std::unique_ptr<WebApplicationInfo> final_web_app_info =

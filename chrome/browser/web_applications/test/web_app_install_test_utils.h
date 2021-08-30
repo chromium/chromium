@@ -43,7 +43,9 @@ AppId InstallDummyWebApp(Profile* profile,
 
 // Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
 // used in unit tests and browser tests.
-AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
+AppId InstallWebApp(Profile* profile,
+                    std::unique_ptr<WebApplicationInfo> web_app_info,
+                    bool overwrite_existing_manifest_fields = false);
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))

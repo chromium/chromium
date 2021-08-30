@@ -264,7 +264,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
         Profile::FromBrowserContext(context));
 
     provider->install_manager().InstallWebAppFromInfo(
-        std::move(web_app_info), web_app::ForInstallableSite::kNo,
+        std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+        web_app::ForInstallableSite::kNo,
         webapps::WebappInstallSource::MANAGEMENT_API,
         base::BindOnce(OnGenerateAppForLinkCompleted,
                        base::RetainedRef(function)));

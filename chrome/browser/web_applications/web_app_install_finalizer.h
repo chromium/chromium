@@ -54,6 +54,7 @@ class WebAppInstallFinalizer {
     webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::COUNT;
     bool locally_installed = true;
+    bool overwrite_existing_manifest_fields = true;
 
     absl::optional<WebAppChromeOsData> chromeos_data;
     absl::optional<WebAppSystemWebAppData> system_web_app_data;

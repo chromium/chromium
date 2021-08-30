@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
     base::RunLoop run_loop;
     install_manager.InstallWebAppFromInfo(
-        std::move(web_application_info), ForInstallableSite::kYes,
+        std::move(web_application_info),
+        /*overwrite_existing_manifest_fields=*/false, ForInstallableSite::kYes,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindLambdaForTesting(
             [&app_id, &run_loop](const AppId& installed_app_id,

@@ -143,6 +143,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
         ->install_manager()
         .InstallWebAppFromInfo(
             std::make_unique<WebApplicationInfo>(info),
+            /*overwrite_existing_manifest_fields=*/true,
             ForInstallableSite::kYes, source,
             base::BindLambdaForTesting(
                 [&run_loop, &app_id](const AppId& new_app_id,

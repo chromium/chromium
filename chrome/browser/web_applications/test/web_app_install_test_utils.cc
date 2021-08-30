@@ -93,7 +93,8 @@ AppId InstallDummyWebApp(Profile* profile,
 }
 
 AppId InstallWebApp(Profile* profile,
-                    std::unique_ptr<WebApplicationInfo> web_app_info) {
+                    std::unique_ptr<WebApplicationInfo> web_app_info,
+                    bool overwrite_existing_manifest_fields) {
   // The sync system requires that sync entity name is never empty.
   if (web_app_info->title.empty())
     web_app_info->title = u"WebApplicationInfo App Name";
@@ -104,7 +105,8 @@ AppId InstallWebApp(Profile* profile,
   DCHECK(provider);
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes,
+      std::move(web_app_info), overwrite_existing_manifest_fields,
+      ForInstallableSite::kYes,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {

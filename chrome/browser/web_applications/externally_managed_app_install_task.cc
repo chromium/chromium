@@ -163,8 +163,9 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
     web_app_info->additional_search_terms.push_back(std::move(search_term));
   }
   install_manager_->InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes, install_params,
-      internal_install_source,
+      std::move(web_app_info),
+      /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
+      ForInstallableSite::kYes, install_params, internal_install_source,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
                      /*offline_install=*/true, std::move(result_callback)));
@@ -250,6 +251,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
+  options.overwrite_existing_manifest_fields = false;
 
   install_finalizer_->FinalizeInstall(
       web_app_info, options,

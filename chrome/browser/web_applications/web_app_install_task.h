@@ -119,6 +119,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // WebAppInstallManager doesn't fetch a manifest.
   void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
+      bool overwrite_existing_manifest_fields,
       ForInstallableSite for_installable_site,
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);

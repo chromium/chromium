@@ -351,7 +351,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
   // update.
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->title = u"Testy test App";
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true);
   EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
@@ -385,7 +386,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
   // update.
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->scope = GURL("https://www.differentexample.com/");
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true);
   EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
@@ -444,7 +446,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->share_target->action =
       GURL("https://www.differentexample.com/");
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true);
   EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
@@ -476,7 +479,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
   web_app_info->title = u"Testy test App";
   web_app_info->share_target->action =
       GURL("https://www.differentexample.com/");
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true);
   base::HistogramTester histograms;
   EXPECT_TRUE(UpdateWebApk(app_id));
 
@@ -553,7 +557,8 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
   // update.
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->title = u"Testy test App";
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true);
 
   base::HistogramTester histograms;
   webapk_test_server()->RespondWithError();

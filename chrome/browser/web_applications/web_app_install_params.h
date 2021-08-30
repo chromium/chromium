@@ -65,6 +65,9 @@ struct WebAppInstallParams {
   ~WebAppInstallParams();
   WebAppInstallParams(const WebAppInstallParams&);
 
+  // Whether the app should be reinstalled even if it is already installed.
+  bool force_reinstall = false;
+
   DisplayMode user_display_mode = DisplayMode::kUndefined;
 
   // URL to be used as start_url if manifest is unavailable.

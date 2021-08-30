@@ -158,6 +158,8 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
     const ExternalInstallOptions& install_options) {
   WebAppInstallParams params;
 
+  params.force_reinstall = install_options.force_reinstall;
+
   params.user_display_mode = install_options.user_display_mode;
 
   if (install_options.fallback_app_name.has_value()) {

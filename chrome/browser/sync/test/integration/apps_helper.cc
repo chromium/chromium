@@ -234,6 +234,7 @@ web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
   auto* provider = web_app::WebAppProvider::GetForTest(profile);
   provider->install_manager().InstallWebAppFromInfo(
       std::make_unique<WebApplicationInfo>(info),
+      /*overwrite_existing_manifest_fields=*/true,
       web_app::ForInstallableSite::kYes,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       base::BindLambdaForTesting(

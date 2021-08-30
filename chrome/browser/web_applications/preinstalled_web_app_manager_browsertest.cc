@@ -17,10 +17,12 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -72,6 +74,46 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
   *path_exists = base::PathExists(path);
   return path;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ExpectInitialManifestFieldsFromBasicWebApp(Profile* profile,
+                                                const WebApp* web_app,
+                                                const GURL& expect_start_url,
+                                                const GURL& expect_scope) {
+  // Manifest fields:
+  EXPECT_EQ(web_app->name(), "Basic web app");
+  EXPECT_EQ(web_app->start_url().spec(), expect_start_url);
+  EXPECT_EQ(web_app->scope().spec(), expect_scope);
+  EXPECT_EQ(web_app->display_mode(), DisplayMode::kStandalone);
+  EXPECT_FALSE(web_app->theme_color().has_value());
+
+  EXPECT_FALSE(web_app->sync_fallback_data().theme_color.has_value());
+  EXPECT_EQ("Basic web app", web_app->sync_fallback_data().name);
+  EXPECT_EQ(expect_scope.spec(), web_app->sync_fallback_data().scope);
+
+  EXPECT_EQ(2u, web_app->sync_fallback_data().icon_infos.size());
+
+  EXPECT_EQ(expect_start_url.Resolve("basic-48.png"),
+            web_app->sync_fallback_data().icon_infos[0].url);
+  EXPECT_EQ(48, web_app->sync_fallback_data().icon_infos[0].square_size_px);
+  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+            web_app->sync_fallback_data().icon_infos[0].purpose);
+
+  EXPECT_EQ(expect_start_url.Resolve("basic-192.png"),
+            web_app->sync_fallback_data().icon_infos[1].url);
+  EXPECT_EQ(192, web_app->sync_fallback_data().icon_infos[1].square_size_px);
+  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+            web_app->sync_fallback_data().icon_infos[1].purpose);
+
+  // Manifest Resources: This is chrome/test/data/web_apps/basic-192.png
+  EXPECT_EQ(ReadAppIconPixel(profile, web_app->app_id(), /*size=*/192,
+                             /*x=*/0, /*y=*/0),
+            SK_ColorBLACK);
+
+  // User preferences:
+  EXPECT_EQ(web_app->user_display_mode(), DisplayMode::kStandalone);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -151,7 +193,7 @@ class PreinstalledWebAppManagerBrowserTest
     PreinstalledWebAppManager::SetConfigsForTesting(nullptr);
   }
 
-  // Mocks "icon.png" as available in the config's directory.
+  // Mocks "icon.png" as chrome/test/data/web_apps/blue-192.png.
   absl::optional<InstallResultCode> SyncPreinstalledAppConfig(
       const GURL& install_url,
       base::StringPiece app_config_string) {
@@ -946,6 +988,66 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       app_list_syncable_service->GetSyncItem(preinstalled_app_id)->parent_id,
       "");
   EXPECT_EQ(app_list_syncable_service->GetSyncItem(user_app_id)->parent_id, "");
+}
+
+// Check that offline only installs don't overwrite fresh online manifest
+// obtained via sync install.
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       OfflineOnlyManifest_SiteAlreadyInstalledFromSync) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL install_url = GetAppUrl();
+  GURL start_url = install_url;
+  GURL scope = embedded_test_server()->GetURL("/web_apps/");
+
+  const AppId app_id = InstallWebAppFromPage(browser(), install_url);
+
+  const WebApp* web_app = registrar().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  EXPECT_TRUE(web_app->IsSynced());
+  EXPECT_FALSE(web_app->IsPreinstalledApp());
+
+  {
+    SCOPED_TRACE("Expect initial manifest fields from basic.html web app.");
+    ExpectInitialManifestFieldsFromBasicWebApp(profile(), web_app, start_url,
+                                               scope);
+  }
+
+  constexpr char kAppConfigTemplate[] =
+      R"({
+        "app_url": "$1",
+        "launch_container": "tab",
+        "user_type": ["unmanaged"],
+        "only_use_offline_manifest": true,
+        "offline_manifest": {
+          "name": "$2",
+          "start_url": "$3",
+          "scope": "$4",
+          "display": "minimal-ui",
+          "theme_color_argb_hex": "AABBCCDD",
+          "icon_any_pngs": ["icon.png"]
+        }
+      })";
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kAppConfigTemplate,
+      {install_url.spec(), "Overwrite app name", start_url.spec(),
+       "https://overwrite.scope/"},
+      nullptr);
+  EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
+            InstallResultCode::kSuccessOfflineOnlyInstall);
+
+  EXPECT_EQ(web_app, registrar().GetAppById(app_id));
+
+  EXPECT_TRUE(web_app->IsSynced());
+  EXPECT_TRUE(web_app->IsPreinstalledApp());
+
+  {
+    SCOPED_TRACE(
+        "Expect same manifest fields from basic.html web app, no overwrites.");
+    ExpectInitialManifestFieldsFromBasicWebApp(profile(), web_app, start_url,
+                                               scope);
+  }
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -163,9 +163,11 @@ void ApkWebAppInstaller::DoInstall() {
 
   GURL start_url = web_app_info_->start_url;
 
+  // Doesn't overwrite already existing web app with manifest fields from the
+  // apk.
   provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info_), web_app::ForInstallableSite::kYes,
-      webapps::WebappInstallSource::ARC,
+      std::move(web_app_info_), /*overwrite_existing_manifest_fields=*/false,
+      web_app::ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
       base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
                      base::Unretained(this), std::move(start_url)));
 }
