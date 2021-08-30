@@ -374,6 +374,34 @@ void ShimlessRmaService::ReimageFromUsb(ReimageFromUsbCallback callback) {
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::ShutdownForRestock(
+    ShutdownForRestockCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRestock) {
+    LOG(ERROR) << "ShutdownForRestock called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_restock()->set_choice(
+      rmad::RestockState::RMAD_RESTOCK_SHUTDOWN_AND_RESTOCK);
+  TransitionNextStateGeneric(std::move(callback));
+}
+void ShimlessRmaService::ContinueFinalizationAfterRestock(
+    ContinueFinalizationAfterRestockCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRestock) {
+    LOG(ERROR)
+        << "ContinueFinalizationAfterRestock called from incorrect state "
+        << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_restock()->set_choice(
+      rmad::RestockState::RMAD_RESTOCK_CONTINUE_RMA);
+  TransitionNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::GetRegionList(GetRegionListCallback callback) {}
 void ShimlessRmaService::GetSkuList(GetSkuListCallback callback) {}
 

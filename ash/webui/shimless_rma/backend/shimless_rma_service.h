@@ -72,8 +72,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void ReimageSkipped(ReimageSkippedCallback callback) override;
   void ReimageFromDownload(ReimageFromDownloadCallback callback) override;
   void ReimageFromUsb(ReimageFromUsbCallback callback) override;
-  void GetRegionList(GetRegionListCallback callback) override;
 
+  void ShutdownForRestock(ShutdownForRestockCallback callback) override;
+  void ContinueFinalizationAfterRestock(
+      ContinueFinalizationAfterRestockCallback callback) override;
+
+  void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;

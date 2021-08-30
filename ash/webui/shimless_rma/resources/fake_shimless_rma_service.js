@@ -397,6 +397,22 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!StateResult>}
+   *
+   */
+  shutdownForRestock() {
+    return this.getNextStateForMethod_('shutdownForRestock', RmaState.kRestock);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  continueFinalizationAfterRestock() {
+    return this.getNextStateForMethod_(
+        'continueFinalizationAfterRestock', RmaState.kRestock);
+  }
+
+  /**
    * @return {!Promise<!{regions: !Array<string>}>}
    */
   getRegionList() {
@@ -759,6 +775,9 @@ export class FakeShimlessRmaService {
     this.methods_.register('getRsuDisableWriteProtectChallenge');
     this.methods_.register('getRsuDisableWriteProtectChallengeQrCode');
     this.methods_.register('setRsuDisableWriteProtectCode');
+
+    this.methods_.register('shutdownForRestock');
+    this.methods_.register('continueFinalizationAfterRestock');
 
     this.methods_.register('getComponentList');
     this.methods_.register('setComponentList');

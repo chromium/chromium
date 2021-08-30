@@ -31,6 +31,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+// TODO(gavindodd): Make sure all EXPECT_* calls have parameters in correct
+// order.
+
 namespace ash {
 namespace shimless_rma {
 
@@ -1272,6 +1275,109 @@ TEST_F(ShimlessRmaServiceTest, ReimageFromUsbFromWrongStateFails) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
       }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ShutdownForRestock) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kRestock);
+        EXPECT_EQ(state.restock().choice(),
+                  rmad::RestockState::RMAD_RESTOCK_SHUTDOWN_AND_RESTOCK);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kRestock);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ShutdownForRestock(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ShutdownForRestockFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ShutdownForRestock(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ContinueFinalizationAfterRestock) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kRestock);
+        EXPECT_EQ(state.restock().choice(),
+                  rmad::RestockState::RMAD_RESTOCK_CONTINUE_RMA);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kRestock);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ContinueFinalizationAfterRestock(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest,
+       ContinueFinalizationAfterRestockFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ContinueFinalizationAfterRestock(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 

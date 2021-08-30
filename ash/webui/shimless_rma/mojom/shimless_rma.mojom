@@ -451,6 +451,15 @@ interface ShimlessRmaService {
   ReimageFromUsb() => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
+  // Methods for kRestock state.
+  //
+  // Shutdown the device so mainboard can be restocked.
+  // Note: This will only return a result if there is an error.
+  ShutdownForRestock() => (RmaState state, RmadErrorCode error);
+  // Continue RMA finalization after mainboard is used in another device.
+  ContinueFinalizationAfterRestock() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
   // Methods for kUpdateDeviceInformation state.
   //
   // Get the list of OEM regions for this device.
