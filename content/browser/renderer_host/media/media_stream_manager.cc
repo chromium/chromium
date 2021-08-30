@@ -76,6 +76,7 @@
 #include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -452,6 +453,24 @@ void FinalizeGetMediaDeviceIDForHMAC(
                         base::BindOnce(std::move(callback), absl::nullopt));
 }
 
+#if !defined(OS_ANDROID)
+base::TimeDelta GetConditionalFocusWindow() {
+  const std::string custom_window =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kConditionalFocusWindowMs);
+
+  if (!custom_window.empty()) {
+    int64_t ms;
+    if (base::StringToInt64(custom_window, &ms) && ms >= 0) {
+      return base::TimeDelta::FromMilliseconds(ms);
+    } else {
+      LOG(ERROR) << "Could not parse custom conditional focus window.";
+    }
+  }
+
+  return base::TimeDelta::FromSeconds(1);
+}
+#endif
 }  // namespace
 
 // MediaStreamManager::DeviceRequest represents a request to either enumerate
@@ -695,11 +714,6 @@ class MediaStreamManager::DeviceRequest {
   int target_frame_id_;
 };
 
-#if !defined(OS_ANDROID)
-const base::TimeDelta MediaStreamManager::kConditionalFocusWindow =
-    base::TimeDelta::FromSeconds(1);
-#endif
-
 // static
 void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
@@ -730,7 +744,11 @@ MediaStreamManager::MediaStreamManager(
     media::AudioSystem* audio_system,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     std::unique_ptr<VideoCaptureProvider> video_capture_provider)
-    : audio_system_(audio_system) {
+    :
+#if !defined(OS_ANDROID)
+      conditional_focus_window_(GetConditionalFocusWindow()),
+#endif
+      audio_system_(audio_system) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForMediaStream)) {
     fake_ui_factory_ = base::BindRepeating([] {
@@ -1873,21 +1891,21 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
            pan_tilt_zoom_allowed);
 
 #if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(blink::features::kConditionalFocus)) {
-    // 1. Only the first call to SetCapturedDisplaySurfaceFocus() has an
-    //    effect, so a direct call to SetCapturedDisplaySurfaceFocus()
-    //    before the scheduled task is executed would render the scheduled
-    //    task ineffectual (by design).
-    // 2. Using base::Unretained is safe since MediaStreamManager is deleted on
-    //    the UI thread, after the IO thread has been stopped.
-    GetIOThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&MediaStreamManager::SetCapturedDisplaySurfaceFocus,
-                       base::Unretained(this), label, /*focus=*/true),
-        kConditionalFocusWindow);
-  } else {
-    SetCapturedDisplaySurfaceFocus(label, /*focus=*/true);
-  }
+  // 1. Only the first call to SetCapturedDisplaySurfaceFocus() has an
+  //    effect, so a direct call to SetCapturedDisplaySurfaceFocus()
+  //    before the scheduled task is executed would render the scheduled
+  //    task ineffectual (by design).
+  //    If conditional-focus is enabled in Blink, the application might
+  //    suppress this focus-change by calling focus(false). Otherwise,
+  //    either this following task changes focus in 1s, or the microtask
+  //    that Blink schedules does so even sooner.
+  // 2. Using base::Unretained is safe since MediaStreamManager is deleted on
+  //    the UI thread, after the IO thread has been stopped.
+  GetIOThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&MediaStreamManager::SetCapturedDisplaySurfaceFocus,
+                     base::Unretained(this), label, /*focus=*/true),
+      conditional_focus_window_);
 #endif
 
   // We only start tracking once stream generation is truly complete.

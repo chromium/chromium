@@ -125,16 +125,6 @@ class CONTENT_EXPORT MediaStreamManager
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
 
-#if !defined(OS_ANDROID)
-  // Defines a window of opportunity for the Web-application to decide
-  // whether a display-surface which it's capturing should be focused.
-  // After |kConditionalFocusWindow| past the beginning of the capture,
-  // the browser makes its own decision and ignores further instructions
-  // from Web-applications, thereby preventing applications from changing
-  // focus at an arbitrary time.
-  static const base::TimeDelta kConditionalFocusWindow;
-#endif
-
   // Adds |message| to native logs for outstanding device requests, for use by
   // render processes hosts whose corresponding render processes are requesting
   // logging from webrtcLoggingPrivate API. Safe to call from any thread.
@@ -639,6 +629,16 @@ class CONTENT_EXPORT MediaStreamManager
   void OnCaptureHandleChange(const std::string& label,
                              blink::mojom::MediaStreamType type,
                              media::mojom::CaptureHandlePtr capture_handle);
+
+#if !defined(OS_ANDROID)
+  // Defines a window of opportunity for the Web-application to decide
+  // whether a display-surface which it's capturing should be focused.
+  // After |kConditionalFocusWindow| past the beginning of the capture,
+  // the browser makes its own decision and ignores further instructions
+  // from Web-applications, thereby preventing applications from changing
+  // focus at an arbitrary time.
+  const base::TimeDelta conditional_focus_window_;
+#endif
 
   media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;

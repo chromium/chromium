@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -447,12 +446,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kSyncLoadDataUrlFonts;
 // Makes Persistent quota the same as Temporary quota.
 BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
-
-#if !defined(OS_ANDROID)
-// Enables the MediaStreamTrack.focus() API.
-// TODO(crbug.com/1215480): Add unit-tests and remove.
-BLINK_COMMON_EXPORT extern const base::Feature kConditionalFocus;
-#endif
 
 }  // namespace features
 }  // namespace blink

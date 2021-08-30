@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <title>Conditional Focus Test - Capturing Page</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let mediaStreamKeepAlive;  // Keeps the capture alive.
+
+      // Calls getDisplayMedia().
+      // Calling with |busyWaitMs| set to a positive value leads to hogging
+      // the CPU for that long *before* calling focus().
+      // Then:
+      // * If (focusCallValue == ''), don't call focus().
+      // * If (focusCallValue != ''), call focus(focusCallValue).
+      function captureOtherTab(busyWaitMs, focusCallValue) {
+        navigator.mediaDevices.getDisplayMedia()
+          .then((mediaStream) => {
+            handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue);
+          })
+          .catch(handleCaptureError);
+      }
+
+      function busyWait(durationMs) {
+        const targetTime = new Date().getTime() + durationMs;
+        while (new Date().getTime() < targetTime) {
+          // Busy-wait.
+        }
+      }
+
+      function handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue) {
+        mediaStreamKeepAlive = mediaStream;
+
+        if (busyWaitMs > 0) {
+          busyWait(busyWaitMs);
+        }
+
+        if (focusCallValue) {
+          const [track] = mediaStream.getVideoTracks();
+          track.focus(focusCallValue);
+        }
+
+        // Allow the microtask to fire before unblocking the test.
+        setTimeout(() => {
+          window.domAutomationController.send("capture-success");
+        });
+      }
+
+      function handleCaptureError(error) {
+        window.domAutomationController.send("capture-failure");
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Conditional Focus Test - Capturing Page</h1>
+  </body>
+</html>
+[trac]
