@@ -37,6 +37,8 @@ import six.moves.urllib.error
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.web import Web
 from blinkpy.common.net.web_test_results import WebTestResults
+from blinkpy.common.system.filesystem import FileSystem
+from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.layout_package import json_results_generator
 
 _log = logging.getLogger(__name__)
@@ -69,6 +71,7 @@ class TestResultsFetcher(object):
 
     def __init__(self):
         self.web = Web()
+        self.builders = BuilderList.load_default_builder_list(FileSystem())
 
     def results_url(self, builder_name, build_number=None, step_name=None):
         """Returns a URL for one set of archived web test results.
@@ -160,6 +163,12 @@ class TestResultsFetcher(object):
         if not build.builder_name or not build.build_number:
             _log.debug('Builder name or build number is None')
             return None
+
+        # We were not able to retrieve step name for some builders from
+        # https://test-results.appspot.com. Read from config file instead
+        step_name = self.builders.step_name_for_builder(build.builder_name)
+        if step_name:
+            return step_name
 
         url = '%s/testfile?%s' % (
             TEST_RESULTS_SERVER,

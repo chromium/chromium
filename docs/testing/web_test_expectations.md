@@ -108,22 +108,27 @@ results from try jobs, by using the command-tool
    * Optionally one can choose to trigger only blink try bots alone.
    Run the tool with the option -
    `blink_tool.py rebaseline-cl --use-blink-try-bots-only`
-   * If you would like to rebaseline for highdpi, use the flag-specific option.
+   * If you would like to rebaseline for flag specific builders, use the flag-specific option.
+   Rebaseline for highdpi, disable-layout-ng and composite-after-paint are
+   supported for now. For example, to rebaseline for highdpi, use
    `blink_tool.py rebaseline-cl --flag-specific=highdpi`. This will trigger
    only the highdpi try builder. Since this is an experimental builder at this time,
    this will not be triggered with the default or '--use-blink-try-bots-only' options.
-   * If you need to trigger all the builders including highdpi, run the tool with
-   desired options multiple times. There is no need to wait for the builders
-   triggered with default option to finish before triggering the highdpi and vice versa.
+   * If you need to trigger all the builders including supported flag-specific builders, run the
+   tool with desired options multiple times. There is no need to wait for the builders
+   triggered with default option to finish before triggering the flag specific
+   builders and vice versa.
 3. Wait for all try jobs to finish.
 4. Run `blink_tool.py rebaseline-cl` again to fetch new baselines.
    By default, this will download new baselines for any failing tests
    in the blink try jobs and CQ try bots.
    * Again, there is an option to use only blink try jobs results for rebaselining.
    (Run `blink_tool.py rebaseline-cl --help` for more specific options.)
-   * To rebaseline for highdpi runs -
+   * To rebaseline for flag-specific builders (using highdpi as an example again), runs -
    `blink_tool.py rebaseline-cl --flag-specific=highdpi` which will download baselines
-   for any failures in the highdpi run only.
+   for any failures in the highdpi run only. We suggest running flag-specific rebaseline
+   after non-flag-specific rebaseline as baseline optimization is not
+   implemented for flag-specific rebaseline yet.
 5. Commit the new baselines and upload a new patch.
 
 This way, the new baselines can be reviewed along with the changes, which helps

@@ -159,6 +159,24 @@
         "is_try_builder": true,
         "is_cq_builder":true
     },
+    "linux_layout_tests_layout_ng_disabled": {
+        "master": "tryserver.chromium.linux",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "flag_specific": "disable-layout-ng",
+        "step_name": "blink_web_tests (with patch)",
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
+    "linux_layout_tests_composite_after_paint": {
+        "master": "tryserver.chromium.linux",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "flag_specific": "composite-after-paint",
+        "step_name": "blink_web_tests (with patch)",
+        "is_try_builder": true,
+        "is_cq_builder":true
+    },
     "android-weblayer-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
         "master": "chromium.android.fyi",

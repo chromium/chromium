@@ -93,14 +93,15 @@ class AbstractRebaseliningCommand(Command):
               'should be used to retrieve results from.'))
     flag_specific_option = optparse.make_option(
         '--flag-specific',
+        # TODO: build the list from builders.json
+        choices=["composite-after-paint", "disable-layout-ng", "highdpi"],
         default=None,
         action='store',
         help=(
             'Name of a flag-specific configuration defined in '
             'FlagSpecificConfig. This option will rebaseline '
             'results for the given FlagSpecificConfig while ignoring results '
-            'from other builders. Highdpi is the only suported config '
-            'at this time.'))
+            'from other builders.'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
@@ -436,7 +437,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if self._tool.builders.is_wpt_builder(build.builder_name):
                 continue
 
-            # For flag_specific(highdpi) we skip both 'copy existing baselines'
+            # For flag_specific we skip both 'copy existing baselines'
             # and  optimizer.
             if self._tool.builders.is_flag_specific_builder(
                     build.builder_name):

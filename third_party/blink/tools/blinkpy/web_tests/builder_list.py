@@ -133,6 +133,9 @@ class BuilderList(object):
     def specifiers_for_builder(self, builder_name):
         return self._builders[builder_name]['specifiers']
 
+    def step_name_for_builder(self, builder_name):
+        return self._builders[builder_name].get('step_name', None)
+
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
 

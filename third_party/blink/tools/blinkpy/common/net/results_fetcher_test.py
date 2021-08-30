@@ -90,6 +90,7 @@ class BuilderTest(LoggingTestCase):
 
     def test_fetch_results_with_weird_step_name(self):
         fetcher = TestResultsFetcher()
+        fetcher.builders.step_name_for_builder = lambda builder: None
         fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=123&'
@@ -119,6 +120,7 @@ class BuilderTest(LoggingTestCase):
 
     def test_get_step_name(self):
         fetcher = TestResultsFetcher()
+        fetcher.builders.step_name_for_builder = lambda builder: None
         fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=5&'
@@ -141,6 +143,7 @@ class BuilderTest(LoggingTestCase):
 
     def test_get_step_name_for_wpt(self):
         fetcher = TestResultsFetcher()
+        fetcher.builders.step_name_for_builder = lambda builder: None
         fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=5&'
