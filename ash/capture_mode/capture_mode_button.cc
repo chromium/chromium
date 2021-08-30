@@ -28,9 +28,6 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
       AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, normal_color));
-
-  // TODO(afakhry): Fix this.
-  GetViewAccessibility().OverrideName(GetClassName());
 }
 
 // static
