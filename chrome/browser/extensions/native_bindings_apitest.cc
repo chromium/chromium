@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
            "background": {
              "service_worker": "background.js"
            },
-           "permissions": ["tabs"]
+           "permissions": ["tabs", "storage"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdExample;
@@ -337,6 +337,24 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                  chrome.test.succeed();
                });
              },
+             async function storageAreaCustomTypeWithPromises() {
+               await chrome.storage.local.set({foo: 'bar', alpha: 'beta'});
+               {
+                 const {foo} = await chrome.storage.local.get('foo');
+                 chrome.test.assertEq('bar', foo);
+               }
+               await chrome.storage.local.remove('foo');
+               {
+                 const {foo} = await chrome.storage.local.get('foo');
+                 chrome.test.assertEq(undefined, foo);
+               }
+               let allValues = await chrome.storage.local.get(null);
+               chrome.test.assertEq({alpha: 'beta'}, allValues);
+               await chrome.storage.local.clear();
+               allValues = await chrome.storage.local.get(null);
+               chrome.test.assertEq({}, allValues);
+               chrome.test.succeed();
+             },
 
              function createNewTabCallback() {
                chrome.tabs.create({url: googleUrl}, (tab) => {
@@ -355,7 +373,22 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                  chrome.test.assertNoLastError();
                  chrome.test.succeed();
                });
-             }
+             },
+             function storageAreaCustomTypeWithCallbacks() {
+               // Lots of stuff would probably fail if the callback version of
+               // storage failed, so this is mostly just a rough sanity check.
+               chrome.storage.local.set({gamma: 'delta'}, () => {
+                 chrome.storage.local.get('gamma', ({gamma}) => {
+                   chrome.test.assertEq('delta', gamma);
+                   chrome.storage.local.clear(() => {
+                     chrome.storage.local.get(null, (allValues) => {
+                       chrome.test.assertEq({}, allValues);
+                       chrome.test.succeed();
+                     });
+                   });
+                 });
+               });
+             },
            ]);
          });)";
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
@@ -379,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
            "background": {
              "scripts": ["background.js"]
            },
-           "permissions": ["tabs"]
+           "permissions": ["tabs", "storage"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdGooge;
@@ -401,6 +434,15 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
                chrome.test.assertThrows(chrome.tabs.query,
                                         [{url: exampleUrl}],
                                         expectedError);
+               chrome.test.succeed();
+             },
+             function storageAreaPromise() {
+               let expectedError = 'Error in invocation of storage.get(' +
+                   'optional [string|array|object] keys, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(chrome.storage.local.get,
+                                        chrome.storage.local,
+                                        ['foo'], expectedError);
                chrome.test.succeed();
              },
 

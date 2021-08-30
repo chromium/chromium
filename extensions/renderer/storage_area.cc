@@ -295,9 +295,21 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
 
   parse_result.arguments_list->Insert(
       parse_result.arguments_list->GetList().begin(), base::Value(name_));
-  request_handler_->StartRequest(
-      context, full_method_name, std::move(parse_result.arguments_list),
-      parse_result.callback, v8::Local<v8::Function>());
+
+  // TODO(devlin): Make APIRequestHandler take in an AsyncResponseType and
+  // combine the methods, to make this type of handling a little simpler?
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    int request_id = 0;
+    v8::Local<v8::Promise> promise;
+    std::tie(request_id, promise) = request_handler_->StartPromiseBasedRequest(
+        context, full_method_name, std::move(parse_result.arguments_list),
+        v8::Local<v8::Function>());
+    arguments->Return(promise);
+  } else {
+    request_handler_->StartRequest(
+        context, full_method_name, std::move(parse_result.arguments_list),
+        parse_result.callback, v8::Local<v8::Function>());
+  }
 }
 
 v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
