@@ -6,6 +6,8 @@
 #include <fuchsia/feedback/cpp/fidl_test_base.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl_test_base.h>
+#include <fuchsia/recovery/cpp/fidl.h>
+#include <fuchsia/recovery/cpp/fidl_test_base.h>
 #include <fuchsia/io/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/cpp/outgoing_directory.h>
@@ -139,6 +141,31 @@ class FakeLastRebootInfoProvider
   fuchsia::feedback::LastReboot last_reboot_;
 };
 
+class FakeFactoryReset
+    : public fuchsia::recovery::testing::FactoryReset_TestBase {
+ public:
+  explicit FakeFactoryReset(
+      sys::OutgoingDirectory* outgoing_directory)
+      : binding_(outgoing_directory, this) {}
+
+  void reset_called(bool* reset_called) {
+    *reset_called = reset_called_;
+  }
+
+ private:
+  void Reset(ResetCallback callback) final {
+    reset_called_ = true;
+    callback(ZX_OK);
+  }
+
+  void NotImplemented_(const std::string& name) final {
+    ADD_FAILURE() << "NotImplemented_: " << name;
+  }
+
+  base::ScopedServiceBinding<fuchsia::recovery::FactoryReset> binding_;
+  bool reset_called_ = false;
+};
+
 class RebootFuchsiaTest: public ::testing::Test {
  public:
   RebootFuchsiaTest()
@@ -169,6 +196,9 @@ class RebootFuchsiaTest: public ::testing::Test {
     last_reboot_info_provider_ =
         base::SequenceBound<FakeLastRebootInfoProvider>(
             thread_.task_runner(), outgoing_directory_.get());
+    factory_reset_service_ =
+        base::SequenceBound<FakeFactoryReset>(
+            thread_.task_runner(), outgoing_directory_.get());
 
     // Ensure that the services above finish publishing themselves.
     thread_.FlushForTesting();
@@ -195,6 +225,14 @@ class RebootFuchsiaTest: public ::testing::Test {
     thread_.FlushForTesting();
   }
 
+  bool FdrTriggered() {
+    bool reset_called;
+    factory_reset_service_.AsyncCall(&FakeFactoryReset::reset_called).WithArgs(
+        &reset_called);
+    thread_.FlushForTesting();
+    return reset_called;
+  }
+
  private:
   void ServeOutgoingDirectory(
       fidl::InterfaceRequest<fuchsia::io::Directory> channel) {
@@ -209,6 +247,7 @@ class RebootFuchsiaTest: public ::testing::Test {
   std::unique_ptr<sys::ServiceDirectory> incoming_directory_;
   base::SequenceBound<FakeAdmin> admin_;
   base::SequenceBound<FakeLastRebootInfoProvider> last_reboot_info_provider_;
+  base::SequenceBound<FakeFactoryReset> factory_reset_service_;
   base::ScopedTempDir dir_;
   base::FilePath full_path_;
 
@@ -257,6 +296,15 @@ TEST_F(RebootFuchsiaTest, RebootReasonZbiSwapTranslatesFromFuchsia) {
   SetLastReboot(GenerateLastReboot(true, RebootReason::ZBI_SWAP));
   EXPECT_THAT(RebootUtil::GetLastRebootSource(),
               Eq(RebootShlib::RebootSource::OTA));
+}
+
+TEST_F(RebootFuchsiaTest, RebootNowTriggersFdr) {
+  EXPECT_TRUE(RebootShlib::IsFdrForNextRebootSupported());
+
+  RebootShlib::SetFdrForNextReboot();
+
+  EXPECT_TRUE(RebootShlib::RebootNow(RebootShlib::RebootSource::API));
+  EXPECT_TRUE(FdrTriggered());
 }
 
 class RebootFuchsiaParamTest : public RebootFuchsiaTest,
