@@ -2062,7 +2062,9 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
       NOTREACHED();
       return nullptr;
   }
-  DCHECK(image_for_rendering);
+
+  if (!image_for_rendering)
+    return nullptr;
 
   bool origin_clean = !WouldTaintOrigin(image_source);
 
