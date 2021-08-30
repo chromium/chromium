@@ -40,6 +40,12 @@ const MS_DISPLAYED_SUFFIX = '_SECONDS_DISPLAYED';
 const DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS = 10000;
 
 /**
+ * Local storage key suffix for a banner that has been dismissed forever.
+ * @type {string}
+ */
+const DISMISSED_FOREVER_SUFFIX = '_DISMISSED_FOREVER';
+
+/**
  * The HTML attribute to force show a banner, if applied, the banner will always
  * show.
  * @private {string}
@@ -177,6 +183,8 @@ export class BannerController extends EventTarget {
     for (const banner of this.educationalBanners_) {
       this.localStorageCache_[`${banner.tagName}_${MS_DISPLAYED_SUFFIX}`] = 0;
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
+      this.localStorageCache_[`${banner.tagName}_${DISMISSED_FOREVER_SUFFIX}`] =
+          0;
 
       this.maybeAddVolumeSizeObserver_(banner);
     }
@@ -245,6 +253,12 @@ export class BannerController extends EventTarget {
     // Check if the banner should be shown on this particular volume type.
     const allowedVolumeTypes = banner.allowedVolumeTypes();
     if (!isAllowedVolume(this.currentVolume_, allowedVolumeTypes)) {
+      return false;
+    }
+
+    // Check if the banner has been dismissed forever.
+    if (this.localStorageCache_[`${banner.tagName}_${
+            DISMISSED_FOREVER_SUFFIX}`] === 1) {
       return false;
     }
 
@@ -445,11 +459,9 @@ export class BannerController extends EventTarget {
     const banner = event.detail.banner;
 
     // If the banner has been dismissed forever (in the case of educational
-    // banners) set the view counter to the max limit to ensure it is not
-    // shown again.
+    // banners) set the localStorage value to be 1.
     if (event.type === Banner.Event.BANNER_DISMISSED_FOREVER) {
-      this.setLocalStorage_(
-          `${banner.tagName}_${VIEW_COUNTER_SUFFIX}`, banner.showLimit());
+      this.setLocalStorage_(`${banner.tagName}_${DISMISSED_FOREVER_SUFFIX}`, 1);
       this.hideBannerIfShown_(banner);
       return;
     }

@@ -15,6 +15,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {BannerController} from './banner_controller.js';
 import {DirectoryModel} from './directory_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
+import {EducationalBanner} from './ui/banners/educational_banner.js';
 
 /** @type {!BannerController} */
 let controller;
@@ -257,7 +258,7 @@ function changeCurrentVolumeDiskSpace(newSizeStats, dispatchEvent = true) {
 }
 
 /**
- * Sends a dismiss-click event to the supplied banner. This synthetic event is
+ * Sends a DISMISS event to the supplied banner. This synthetic event is
  * wired up to the event handler set in the BannerController.
  * @param {!TestBanner} banner The banner to click dismiss on.
  */
@@ -266,6 +267,19 @@ function clickDismissButton(banner) {
       /** @type {!Banner} */ (bannerContainer.querySelector(banner.tagName));
   visibleBanner.dispatchEvent(new CustomEvent(
       Banner.Event.BANNER_DISMISSED,
+      {bubbles: true, composed: true, detail: {banner: visibleBanner}}));
+}
+
+/**
+ * Sends a DISMISS_FOREVER event to the supplied banner. This synthetic event is
+ * wired up to the event handler set in the BannerController.
+ * @param {!TestBanner} banner The banner to click dismiss on.
+ */
+function clickDismissForeverButton(banner) {
+  const visibleBanner =
+      /** @type {!Banner} */ (bannerContainer.querySelector(banner.tagName));
+  visibleBanner.dispatchEvent(new CustomEvent(
+      Banner.Event.BANNER_DISMISSED_FOREVER,
       {bubbles: true, composed: true, detail: {banner: visibleBanner}}));
 }
 
@@ -929,4 +943,33 @@ export async function testInfiniteTimeLimitWorks() {
   mockDate.setDate(9999999);
   await controller.updateTimeLimit_(banner);
   await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+}
+
+/**
+ * Test the dismiss forever correctly hides the banner during the current Files
+ * app session.
+ */
+export async function testEducationalBannerDismissedForever() {
+  // Add 1 educational banner.
+  controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
+
+  // Set the educational banner to downloads volume type and show limit to 10.
+  testEducationalBanners[0].setShowLimit(10);
+  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+
+  // Changing to the Downloads directory should show the educational banner
+  // only.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  // Click the dismiss forever button which should set the times shown to past
+  // the maximum number of times to show. This banner should never show again.
+  clickDismissForeverButton(testEducationalBanners[0]);
+
+  // Navigate to Drive and back to Downloads and expect the banner to be hidden.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isAllBannersHidden);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isAllBannersHidden);
 }
