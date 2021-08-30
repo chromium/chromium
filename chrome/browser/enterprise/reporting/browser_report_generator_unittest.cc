@@ -104,7 +104,10 @@ void VerifyExtendedStableChannel(em::BrowserReport* report) {
     EXPECT_EQ(report->channel(), em::Channel::CHANNEL_STABLE);
   } else {
     EXPECT_FALSE(report->has_is_extended_stable_channel());
+    // On Android, local Chrome branded builds report "CHANNEL_UNKNOWN".
+#if !defined(OS_ANDROID)
     EXPECT_NE(report->channel(), em::Channel::CHANNEL_UNKNOWN);
+#endif
   }
 #else
   EXPECT_FALSE(report->has_is_extended_stable_channel());
