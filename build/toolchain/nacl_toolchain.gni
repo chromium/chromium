@@ -61,6 +61,8 @@ template("nacl_toolchain") {
       if (use_rbe) {
         if (is_win) {
           rbe_cc_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_windows.cfg"
+        } else if (is_mac) {
+          rbe_cc_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_mac.cfg"
         } else {
           # TODO(ukai): non linux?
           rbe_cc_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_linux.cfg"
