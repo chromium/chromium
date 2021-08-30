@@ -406,10 +406,12 @@ void VideoEncoderClient::BitstreamBufferReady(
     }
   }
   if (metadata.vp9.has_value()) {
-    if (metadata.vp9->spatial_idx + 1 ==
-        encoder_client_config_.num_spatial_layers) {
-      frame_index_++;
+    if (!metadata.vp9->spatial_layer_resolutions.empty()) {
+      current_top_spatial_index_ =
+          metadata.vp9->spatial_layer_resolutions.size() - 1;
     }
+    if (metadata.vp9->spatial_idx == current_top_spatial_index_)
+      frame_index_++;
   } else {
     frame_index_++;
   }

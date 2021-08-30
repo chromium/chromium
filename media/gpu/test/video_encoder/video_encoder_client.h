@@ -260,6 +260,9 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // BitstreamBufferReady().
   size_t frame_index_ = 0;
 
+  // The current top spatial layer index.
+  uint8_t current_top_spatial_index_ = 0;
+
   // Force a key frame on next Encode(), only accessed on the
   // |encoder_client_thread_|.
   bool force_keyframe_ = false;
