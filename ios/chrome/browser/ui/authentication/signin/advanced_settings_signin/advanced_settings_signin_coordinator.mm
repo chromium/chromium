@@ -130,11 +130,6 @@ using l10n_util::GetNSString;
   }
 }
 
-- (BOOL)isSettingsViewPresented {
-  // This coordinator presents the Google services settings.
-  return YES;
-}
-
 #pragma mark - Private
 
 // Displays the Sync or Google services settings page.

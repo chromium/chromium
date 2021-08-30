@@ -215,12 +215,6 @@ using signin_metrics::PromoAction;
   DCHECK(!self.signinCompletion);
 }
 
-#pragma mark - Properties
-
-- (BOOL)isSettingsViewPresented {
-  return NO;
-}
-
 #pragma mark - Private
 
 - (void)runCompletionCallbackWithSigninResult:

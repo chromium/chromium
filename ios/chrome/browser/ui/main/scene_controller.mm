@@ -207,11 +207,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // browser state level UrlLoadingService instances.
 @property(nonatomic, assign) SceneUrlLoadingService* sceneURLLoadingService;
 
-// Returns YES if the settings are presented, either from
-// self.settingsNavigationController or from SigninCoordinator.
-@property(nonatomic, assign, readonly, getter=isSettingsViewPresented)
-    BOOL settingsViewPresented;
-
 // Coordinator for displaying history.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 
@@ -344,11 +339,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (id<BrowserInterfaceProvider>)interfaceProvider {
   return self.browserViewWrangler;
-}
-
-- (BOOL)isSettingsViewPresented {
-  return self.settingsNavigationController ||
-         self.signinCoordinator.isSettingsViewPresented;
 }
 
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
@@ -1330,11 +1320,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                  dismissOmnibox:YES
                                      completion:nil];
   };
-  [self closeSettingsAnimated:YES completion:completion];
+  [self closeSettingsOrSigninAnimated:YES completion:completion];
 }
 
 - (void)closeSettingsUI {
-  [self closeSettingsAnimated:YES completion:nullptr];
+  [self closeSettingsOrSigninAnimated:YES completion:nullptr];
 }
 
 - (void)prepareTabSwitcher {
@@ -1582,7 +1572,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             (UIViewController*)baseViewController
                                            URL:(const GURL&)url {
   // Do not display the web sign-in promo if there is any UI on the screen.
-  if (self.signinCoordinator || self.isSettingsViewPresented)
+  if (self.signinCoordinator || self.settingsNavigationController)
     return;
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
@@ -2351,18 +2341,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                          ? completionWithoutBVC
                                          : completionWithBVC;
 
-  if (self.isSettingsViewPresented) {
-    // In this case, the settings are up and the BVC is showing. Close the
-    // settings then call the chosen completion.
-    [self closeSettingsAnimated:NO completion:chosenCompletion];
-  } else if (self.signinCoordinator) {
-    // The sign-in screen is showing, interrupt it and call the chosen
-    // completion.
-    [self interruptSigninCoordinatorAnimated:NO completion:chosenCompletion];
-  } else {
-    // Does not require a special case. Run the chosen completion.
-    chosenCompletion();
-  }
+  [self closeSettingsOrSigninAnimated:NO completion:chosenCompletion];
 
   // Verify that no modal views are left presented.
   ios::GetChromeBrowserProvider().LogIfModalViewsArePresented();
@@ -2683,10 +2662,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  completion:nil];
 }
 
-// TODO(crbug.com/1192019): Rename this method in -[SceneController
-// closeUIAnimated:completion:].
-- (void)closeSettingsAnimated:(BOOL)animated
-                   completion:(ProceduralBlock)completion {
+- (void)closeSettingsOrSigninAnimated:(BOOL)animated
+                           completion:(ProceduralBlock)completion {
   if (self.settingsNavigationController) {
     ProceduralBlock dismissSettings = ^() {
       [self.settingsNavigationController cleanUpSettings];
@@ -2709,21 +2686,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       dismissSettings();
     }
   } else if (self.signinCoordinator) {
-    // |self.signinCoordinator| can also present settings, like
-    // the advanced sign-in settings navigation controller. If the settings has
-    // to be closed, it is thus the responsibility of the main controller to
-    // dismiss the advanced sign-in settings by dismssing the settings
-    // presented by |self.signinCoordinator|.
-    // To reproduce this case:
-    //  - open Bookmark view
-    //  - start sign-in
-    //  - tap on "Settings" to open the advanced sign-in settings
-    //  - tap on "Manage Your Google Account"
+    //      |self.signinCoordinator| can be presented without settings, from the
+    //      bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
   } else {
-    // This can happens when starting a reauth coordinator and the user choose
-    // "Create account". The coordinator dismisses itself, calls its completion
-    // block and then open the create account URL.
     completion();
   }
 }
