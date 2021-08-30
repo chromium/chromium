@@ -9500,22 +9500,6 @@
             ]
         }
     ],
-    "WebRTC-VP8VariableFramerateScreenshare": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-VP9-PerformanceFlags": [
         {
             "platforms": [
