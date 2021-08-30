@@ -41,6 +41,7 @@
 #include "extensions/common/extension.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/aura/window.h"
 
 namespace {
 
@@ -531,6 +532,12 @@ void RecordAppLaunchMetrics(Profile* profile,
   }
 }
 
+AppPlatformMetrics::BrowserToTab::BrowserToTab(
+    const Instance::InstanceKey& browser_key,
+    const Instance::InstanceKey& tab_key)
+    : browser_key(Instance::InstanceKey(browser_key)),
+      tab_key(Instance::InstanceKey(tab_key)) {}
+
 AppPlatformMetrics::AppPlatformMetrics(
     Profile* profile,
     apps::AppRegistryCache& app_registry_cache,
@@ -752,6 +759,48 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
   apps::InstanceRegistry::Observer::Observe(nullptr);
+}
+
+bool AppPlatformMetrics::HasActivatedTab(
+    const Instance::InstanceKey& browser_key) {
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.browser_key == browser_key) {
+      return true;
+    }
+  }
+  return false;
+}
+
+aura::Window* AppPlatformMetrics::GetBrowserWindow(
+    const Instance::InstanceKey& tab_key) const {
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.tab_key == tab_key) {
+      return it.browser_key.GetEnclosingAppWindow();
+    }
+  }
+  return nullptr;
+}
+
+void AppPlatformMetrics::AddActivatedTab(
+    const Instance::InstanceKey& browser_key,
+    const Instance::InstanceKey& tab_key) {
+  bool found = false;
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.browser_key == browser_key && it.tab_key == tab_key) {
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    active_browsers_to_tabs_.push_back(BrowserToTab(browser_key, tab_key));
+  }
+}
+
+void AppPlatformMetrics::RemoveActivatedTab(
+    const Instance::InstanceKey& tab_key) {
+  active_browsers_to_tabs_.remove_if(
+      [&tab_key](const BrowserToTab& item) { return item.tab_key == tab_key; });
 }
 
 void AppPlatformMetrics::SetWindowActivated(
