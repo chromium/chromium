@@ -14,8 +14,9 @@ namespace ui {
 DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementMac)
 
 TrackedElementMac::TrackedElementMac(ElementIdentifier identifier,
-                                     ElementContext context)
-    : TrackedElement(identifier, context) {}
+                                     ElementContext context,
+                                     const gfx::Rect& screen_bounds)
+    : TrackedElement(identifier, context), screen_bounds_(screen_bounds) {}
 
 TrackedElementMac::~TrackedElementMac() = default;
 
@@ -26,16 +27,20 @@ class ElementTrackerMac::ContextData {
   }
 
   ~ContextData() {
-    DCHECK(elements_.empty());
-    DCHECK(to_be_hidden_.empty());
+    for (const auto& element : elements_) {
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
+          element.second.get());
+    }
   }
 
   ContextData(const ContextData& other) = delete;
   void operator=(const ContextData& other) = delete;
 
-  void AddElement(ElementIdentifier identifier) {
-    const auto result = elements_.emplace(
-        identifier, std::make_unique<TrackedElementMac>(identifier, context_));
+  void AddElement(ElementIdentifier identifier,
+                  const gfx::Rect& screen_bounds) {
+    const auto result =
+        elements_.emplace(identifier, std::make_unique<TrackedElementMac>(
+                                          identifier, context_, screen_bounds));
     DCHECK(result.second);
     ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(
         result.first->second.get());
@@ -49,25 +54,16 @@ class ElementTrackerMac::ContextData {
   }
 
   void HideElement(ElementIdentifier identifier) {
-    const auto result = to_be_hidden_.insert(identifier);
-    DCHECK(result.second);
-  }
-
-  void DoPendingHides() {
-    for (const ElementIdentifier identifier : to_be_hidden_) {
-      const auto it = elements_.find(identifier);
-      DCHECK(it != elements_.end());
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
-          it->second.get());
-      elements_.erase(it);
-    }
-    to_be_hidden_.clear();
+    const auto it = elements_.find(identifier);
+    DCHECK(it != elements_.end());
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
+        it->second.get());
+    elements_.erase(it);
   }
 
  private:
   const ElementContext context_;
   std::map<ElementIdentifier, std::unique_ptr<TrackedElementMac>> elements_;
-  std::set<ElementIdentifier> to_be_hidden_;
 };
 
 // static
@@ -90,31 +86,34 @@ void ElementTrackerMac::NotifyMenuDoneShowing(NSMenu* menu) {
   DCHECK(it != root_menu_to_context_.end());
   const auto it2 = context_to_data_.find(it->second);
   DCHECK(it2 != context_to_data_.end());
-  it2->second->DoPendingHides();
   root_menu_to_context_.erase(it);
   context_to_data_.erase(it2);
 }
 
 void ElementTrackerMac::NotifyMenuItemShown(NSMenu* menu,
-                                            ElementIdentifier identifier) {
+                                            ElementIdentifier identifier,
+                                            const gfx::Rect& screen_bounds) {
   const ElementContext context = GetContextForMenu(menu);
   DCHECK(context);
-  context_to_data_[context]->DoPendingHides();
-  context_to_data_[context]->AddElement(identifier);
-}
-
-void ElementTrackerMac::NotifyMenuItemHidden(NSMenu* menu,
-                                             ElementIdentifier identifier) {
-  const ElementContext context = GetContextForMenu(menu);
-  DCHECK(context);
-  context_to_data_[context]->HideElement(identifier);
+  context_to_data_[context]->AddElement(identifier, screen_bounds);
 }
 
 void ElementTrackerMac::NotifyMenuItemActivated(NSMenu* menu,
                                                 ElementIdentifier identifier) {
   const ElementContext context = GetContextForMenu(menu);
-  DCHECK(context);
-  context_to_data_[context]->ActivateElement(identifier);
+  DCHECK(context)
+      << "Element was activated but was not registered as visible. "
+         "It is likely you assigned an ElementIdentifier to a submenu item. "
+         "Note that submenu item identifiers are not yet supported on Mac.";
+  if (context)
+    context_to_data_[context]->ActivateElement(identifier);
+}
+
+void ElementTrackerMac::NotifyMenuItemHidden(NSMenu* menu,
+                                             ElementIdentifier identifier) {
+  const ElementContext context = GetContextForMenu(menu);
+  if (context)
+    context_to_data_[context]->HideElement(identifier);
 }
 
 ElementTrackerMac::ElementTrackerMac() = default;
@@ -129,8 +128,7 @@ NSMenu* ElementTrackerMac::GetRootMenu(NSMenu* menu) const {
 ElementContext ElementTrackerMac::GetContextForMenu(NSMenu* menu) const {
   menu = GetRootMenu(menu);
   const auto it = root_menu_to_context_.find(menu);
-  DCHECK(it != root_menu_to_context_.end());
-  return it->second;
+  return it == root_menu_to_context_.end() ? ElementContext() : it->second;
 }
 
 }  // namespace ui

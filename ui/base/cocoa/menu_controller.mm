@@ -178,9 +178,6 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
       [self addItemToMenu:menu atIndex:index fromModel:model];
   }
 
-  if (_delegate)
-    [_delegate controllerWillAddMenu:menu fromModel:model];
-
   return menu;
 }
 
@@ -313,6 +310,14 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   if (!_menu && _model) {
     _menu.reset([[self menuFromModel:_model.get()] retain]);
     [_menu setDelegate:self];
+
+    // TODO(dfried): Ideally we'd do this after each submenu is created.
+    // However, the way we currently hook menu events only supports the root
+    // menu. Therefore we call this method here and submenus are not supported
+    // for auto-highlighting or ElementTracker events.
+    if (_delegate)
+      [_delegate controllerWillAddMenu:_menu fromModel:_model.get()];
+
     // If this is to be used with a NSPopUpButtonCell, add an item at the 0th
     // position that's empty. Doing it after the menu has been constructed won't
     // complicate creation logic, and since the tags are model indexes, they

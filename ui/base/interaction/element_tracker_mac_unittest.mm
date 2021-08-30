@@ -27,6 +27,10 @@ NSMenu* const kFakeMenu1 = reinterpret_cast<NSMenu*>(1);
 NSMenu* const kFakeMenu2 = reinterpret_cast<NSMenu*>(2);
 NSMenu* const kFakeMenu3 = reinterpret_cast<NSMenu*>(3);
 
+constexpr gfx::Rect kScreenBounds1(30, 50, 100, 200);
+constexpr gfx::Rect kScreenBounds2(60, 70, 120, 220);
+constexpr gfx::Rect kScreenBounds3(90, 100, 110, 210);
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier3);
@@ -71,11 +75,20 @@ class ExpectedCall {
 
   ~ExpectedCall() { EXPECT_EQ(expected_count_, count_); }
 
+  void set_expected_bounds(const gfx::Rect& expected_bounds) {
+    expected_bounds_ = expected_bounds;
+  }
+
   int count() const { return count_; }
 
  private:
   void OnCalled(TrackedElement* element) {
     ASSERT_TRUE(element->IsA<TrackedElementMac>());
+    if (expected_bounds_.has_value()) {
+      EXPECT_EQ(expected_bounds_.value(),
+                element->AsA<TrackedElementMac>()->screen_bounds());
+      expected_bounds_.reset();
+    }
     EXPECT_EQ(identifier_, element->identifier());
     EXPECT_EQ(context_, element->context());
     ++count_;
@@ -86,6 +99,7 @@ class ExpectedCall {
   const ElementContext context_;
   const int expected_count_;
   int count_ = 0;
+  absl::optional<gfx::Rect> expected_bounds_;
   ElementTracker::Subscription subscription_;
 };
 
@@ -141,7 +155,8 @@ TEST_F(ElementTrackerMacTest, OpenShowOneIdentifier) {
   ExpectedCall activated(kElementIdentifier1, kElementContext1,
                          ExpectedCall::kActivated, 0);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
@@ -160,8 +175,10 @@ TEST_F(ElementTrackerMacTest, OpenShowMultipleIdentifiers) {
   ExpectedCall activated2(kElementIdentifier2, kElementContext1,
                           ExpectedCall::kActivated, 0);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier2);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
@@ -181,9 +198,11 @@ TEST_F(ElementTrackerMacTest, OpenShowMultipleIdentifiersDifferentMenus) {
   ExpectedCall activated2(kElementIdentifier1, kElementContext2,
                           ExpectedCall::kActivated, 0);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu2, kElementContext2);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier1,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier1);
@@ -204,11 +223,13 @@ TEST_F(ElementTrackerMacTest, OpenShowMultipleIdentifiersActivate) {
   ExpectedCall activated2(kElementIdentifier2, kElementContext1,
                           ExpectedCall::kActivated, 0);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2,
+                                        kScreenBounds2);
+  element_tracker_->NotifyMenuItemActivated(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier2);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 
@@ -227,14 +248,16 @@ TEST_F(ElementTrackerMacTest,
   ExpectedCall activated2(kElementIdentifier1, kElementContext2,
                           ExpectedCall::kActivated, 1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu2, kElementContext2);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier1,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemActivated(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
-  element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier1);
   element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu2);
 }
 
@@ -252,14 +275,52 @@ TEST_F(ElementTrackerMacTest, ShowHideMultipleTimes) {
   ExpectedCall activated2(kElementIdentifier2, kElementContext1,
                           ExpectedCall::kActivated, 0);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2,
+                                        kScreenBounds3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier2);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
+
+TEST_F(ElementTrackerMacTest, ScreenBounds) {
+  ExpectedCall shown(kElementIdentifier1, kElementContext1,
+                     ExpectedCall::kShown, 2);
+  ExpectedCall hidden(kElementIdentifier1, kElementContext1,
+                      ExpectedCall::kHidden, 2);
+  ExpectedCall activated(kElementIdentifier1, kElementContext1,
+                         ExpectedCall::kActivated, 0);
+  ExpectedCall shown2(kElementIdentifier2, kElementContext1,
+                      ExpectedCall::kShown, 1);
+  ExpectedCall hidden2(kElementIdentifier2, kElementContext1,
+                       ExpectedCall::kHidden, 1);
+  ExpectedCall activated2(kElementIdentifier2, kElementContext1,
+                          ExpectedCall::kActivated, 0);
+  element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
+  shown.set_expected_bounds(kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
+  shown.set_expected_bounds(kScreenBounds2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds2);
+  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
+  shown2.set_expected_bounds(kScreenBounds3);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier2,
+                                        kScreenBounds3);
+  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier2);
+  element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
+}
+
+// Note that while we don't yet officially support nested menus with
+// identifiers, the infrastructure is set up to support them (assuming we can)
+// get the callbacks to work properly.
+//
+// So we will still test nested menus.
 
 TEST_F(ElementTrackerMacTest, NestedMenus) {
   ExpectedCall shown(kElementIdentifier1, kElementContext1,
@@ -276,8 +337,10 @@ TEST_F(ElementTrackerMacTest, NestedMenus) {
                           ExpectedCall::kActivated, 0);
   element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
@@ -298,11 +361,13 @@ TEST_F(ElementTrackerMacTest, NestedMenusActivate) {
                           ExpectedCall::kActivated, 1);
   element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds2);
+  element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 
@@ -321,14 +386,17 @@ TEST_F(ElementTrackerMacTest, NestMenusSendHideEvents) {
                           ExpectedCall::kActivated, 1);
   element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
   EXPECT_EQ(1, hidden2.count());
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds3);
+  element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 
@@ -354,14 +422,17 @@ TEST_F(ElementTrackerMacTest, NestMenusSendHideEvents_SecondSubmenuOpened) {
   element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
   element_tracker_->SetParent(kFakeMenu3, kFakeMenu1);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu3, kElementIdentifier3);
   EXPECT_EQ(1, hidden2.count());
+  element_tracker_->NotifyMenuItemShown(kFakeMenu3, kElementIdentifier3,
+                                        kScreenBounds3);
+  element_tracker_->NotifyMenuItemActivated(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 
@@ -387,13 +458,16 @@ TEST_F(ElementTrackerMacTest, NestMenusSendHideEvents_DoubleSubmenu) {
   element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
   element_tracker_->SetParent(kFakeMenu3, kFakeMenu2);
   element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu3, kElementIdentifier3);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
+                                        kScreenBounds1);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
+                                        kScreenBounds2);
+  element_tracker_->NotifyMenuItemShown(kFakeMenu3, kElementIdentifier3,
+                                        kScreenBounds3);
+  element_tracker_->NotifyMenuItemActivated(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 

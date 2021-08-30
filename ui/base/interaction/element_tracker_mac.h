@@ -22,10 +22,17 @@ namespace ui {
 // menu item, since we use Views for everything else).
 class COMPONENT_EXPORT(UI_BASE) TrackedElementMac : public TrackedElement {
  public:
-  TrackedElementMac(ElementIdentifier identifier, ElementContext context);
+  TrackedElementMac(ElementIdentifier identifier,
+                    ElementContext context,
+                    const gfx::Rect& screen_bounds);
   ~TrackedElementMac() override;
 
+  gfx::Rect screen_bounds() const { return screen_bounds_; }
+
   DECLARE_ELEMENT_TRACKER_METADATA()
+
+ private:
+  const gfx::Rect screen_bounds_;
 };
 
 // Helper class for translating between Mac visual elements and TrackedElements.
@@ -39,14 +46,16 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerMac {
   // Gets the global instance of the tracker for native Mac elements.
   static ElementTrackerMac* GetInstance();
 
-  // Called after a root menu fully fades out.
-  void NotifyMenuDoneShowing(NSMenu* menu);
-
   // Called before a root menu will be displayed.
   void NotifyMenuWillShow(NSMenu* menu, ElementContext context);
 
+  // Called after a root menu fully fades out.
+  void NotifyMenuDoneShowing(NSMenu* menu);
+
   // Called when a specific menu item becomes visible.
-  void NotifyMenuItemShown(NSMenu* menu, ElementIdentifier identifier);
+  void NotifyMenuItemShown(NSMenu* menu,
+                           ElementIdentifier identifier,
+                           const gfx::Rect& screen_bounds);
 
   // Called when a specific menu item is hidden.
   void NotifyMenuItemHidden(NSMenu* menu, ElementIdentifier identifier);
