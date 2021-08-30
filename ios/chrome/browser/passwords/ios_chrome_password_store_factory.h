@@ -33,11 +33,6 @@ class IOSChromePasswordStoreFactory
 
   static IOSChromePasswordStoreFactory* GetInstance();
 
-  // Called by the PasswordDataTypeController whenever there is a possibility
-  // that syncing passwords has just started or ended for |browser_state|.
-  static void OnPasswordsSyncedStatePotentiallyChanged(
-      ChromeBrowserState* browser_state);
-
  private:
   friend class base::NoDestructor<IOSChromePasswordStoreFactory>;
 

@@ -11,7 +11,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -89,10 +88,8 @@ struct AffiliationServiceImpl::FetchInfo {
 };
 
 AffiliationServiceImpl::AffiliationServiceImpl(
-    syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : sync_service_(sync_service),
-      url_loader_factory_(std::move(url_loader_factory)),
+    : url_loader_factory_(std::move(url_loader_factory)),
       fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()) {}
 
 AffiliationServiceImpl::~AffiliationServiceImpl() = default;
@@ -100,12 +97,24 @@ AffiliationServiceImpl::~AffiliationServiceImpl() = default;
 void AffiliationServiceImpl::PrefetchChangePasswordURLs(
     const std::vector<GURL>& urls,
     base::OnceClosure callback) {
-  if (ShouldAffiliationBasedMatchingBeActive(sync_service_)) {
-    RequestFacetsAffiliations(urls, {.change_password_info = true},
-                              std::move(callback));
-  } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+  std::vector<FacetURI> facets;
+  std::vector<url::SchemeHostPort> tuple_origins;
+  for (const auto& url : urls) {
+    if (url.is_valid()) {
+      url::SchemeHostPort scheme_host_port(url);
+      if (!base::Contains(change_password_urls_, scheme_host_port)) {
+        facets.push_back(
+            FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
+        tuple_origins.push_back(std::move(scheme_host_port));
+      }
+    }
+  }
+  if (!facets.empty()) {
+    auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
+    fetcher->StartRequest(facets,
+                          /*request_info=*/{.change_password_info = true});
+    pending_fetches_.emplace_back(std::move(fetcher), tuple_origins,
+                                  std::move(callback));
   }
 }
 
@@ -173,30 +182,6 @@ void AffiliationServiceImpl::OnMalformedResponse(
   base::EraseIf(pending_fetches_, [fetcher](const auto& info) {
     return info.fetcher.get() == fetcher;
   });
-}
-
-void AffiliationServiceImpl::RequestFacetsAffiliations(
-    const std::vector<GURL>& urls,
-    const AffiliationFetcherInterface::RequestInfo request_info,
-    base::OnceClosure callback) {
-  std::vector<FacetURI> facets;
-  std::vector<url::SchemeHostPort> tuple_origins;
-  for (const auto& url : urls) {
-    if (url.is_valid()) {
-      url::SchemeHostPort scheme_host_port(url);
-      if (!base::Contains(change_password_urls_, scheme_host_port)) {
-        facets.push_back(
-            FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
-        tuple_origins.push_back(std::move(scheme_host_port));
-      }
-    }
-  }
-  if (!facets.empty()) {
-    auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-    fetcher->StartRequest(facets, request_info);
-    pending_fetches_.emplace_back(std::move(fetcher), tuple_origins,
-                                  std::move(callback));
-  }
 }
 
 }  // namespace password_manager

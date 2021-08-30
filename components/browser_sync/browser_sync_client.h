@@ -71,7 +71,6 @@ class BrowserSyncClient : public syncer::SyncClient {
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
   virtual BookmarkUndoService* GetBookmarkUndoService() = 0;
-  virtual base::RepeatingClosure GetPasswordStateChangedCallback() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserSyncClient);

@@ -11,7 +11,6 @@
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -238,11 +237,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   EXPECT_CALL(*(mock_fetcher_factory.get()), CreateInstance)
       .WillOnce(testing::Return(testing::ByMove(std::move(mock_fetcher))));
 
-  syncer::TestSyncService test_sync_service;
-  test_sync_service.SetFirstSetupComplete(true);
-  test_sync_service.SetIsUsingExplicitPassphrase(false);
-  AffiliationServiceImpl affiliation_service(&test_sync_service,
-                                             test_shared_loader_factory());
+  AffiliationServiceImpl affiliation_service(test_shared_loader_factory());
   affiliation_service.SetFetcherFactoryForTesting(
       std::move(mock_fetcher_factory));
 

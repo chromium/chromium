@@ -65,20 +65,6 @@ IOSChromePasswordStoreFactory* IOSChromePasswordStoreFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-void IOSChromePasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
-    ChromeBrowserState* browser_state) {
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      GetForBrowserState(browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
-  password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
-      password_store.get(), sync_service,
-      browser_state->GetSharedURLLoaderFactory(),
-      GetApplicationContext()->GetNetworkConnectionTracker(),
-      browser_state->GetStatePath());
-}
-
 IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
@@ -122,12 +108,8 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    // Try to create affiliation service without awaiting synced state changes.
-    // TODO(crbug.com/1202699): Remove sync service completely after
-    // launching HashAffiliationLookup.
-    password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
-        store.get(), /*sync_service=*/nullptr,
-        context->GetSharedURLLoaderFactory(),
+    password_manager::EnableAffiliationBasedMatching(
+        store.get(), context->GetSharedURLLoaderFactory(),
         GetApplicationContext()->GetNetworkConnectionTracker(),
         context->GetStatePath());
   }

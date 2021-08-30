@@ -175,12 +175,6 @@ IOSChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
-base::RepeatingClosure IOSChromeSyncClient::GetPasswordStateChangedCallback() {
-  return base::BindRepeating(
-      &IOSChromePasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
-      base::Unretained(browser_state_));
-}
-
 syncer::DataTypeController::TypeVector
 IOSChromeSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {

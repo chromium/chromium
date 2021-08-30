@@ -13,7 +13,6 @@
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_base.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,9 +53,7 @@ std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
 class AffiliationServiceImplTest : public testing::Test {
  public:
   AffiliationServiceImplTest()
-      : sync_service_(std::make_unique<syncer::TestSyncService>()),
-        service_(sync_service_.get(),
-                 base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {
+      : service_(base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {
     auto fetcher_factory = std::make_unique<MockAffiliationFetcherFactory>();
     mock_fetcher_factory_ = fetcher_factory.get();
     service_.SetFetcherFactoryForTesting(std::move(fetcher_factory));
@@ -65,28 +62,34 @@ class AffiliationServiceImplTest : public testing::Test {
   ~AffiliationServiceImplTest() override = default;
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  syncer::TestSyncService* sync_service() { return sync_service_.get(); }
   AffiliationServiceImpl* service() { return &service_; }
   MockAffiliationFetcherFactory& mock_fetcher_factory() {
     return *mock_fetcher_factory_;
   }
 
-  // Sets TestSyncService flags.
-  void SetSyncServiceStates(bool is_setup_completed, bool is_passphrase_set) {
-    sync_service()->SetFirstSetupComplete(is_setup_completed);
-    sync_service()->SetIsUsingExplicitPassphrase(is_passphrase_set);
-  }
-
  private:
   base::test::TaskEnvironment task_env_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<syncer::TestSyncService> sync_service_;
   AffiliationServiceImpl service_;
   MockAffiliationFetcherFactory* mock_fetcher_factory_;
 };
 
 TEST_F(AffiliationServiceImplTest, GetChangePasswordURLReturnsEmpty) {
   EXPECT_EQ(GURL(), service()->GetChangePasswordURL(GURL(k1ExampleURL)));
+}
+
+TEST_F(AffiliationServiceImplTest, FetchRequestIsStarted) {
+  const std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+
+  EXPECT_CALL(*mock_fetcher,
+              StartRequest(ToFacetsURIs(origins),
+                           AffiliationFetcherInterface::RequestInfo{
+                               .change_password_info = true}));
+  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
+      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
+
+  service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
 }
 
 TEST_F(AffiliationServiceImplTest, ClearStopsOngoingRequest) {
@@ -264,49 +267,6 @@ TEST_F(AffiliationServiceImplTest,
 
   service()->PrefetchChangePasswordURLs(origins_1, base::DoNothing());
   service()->PrefetchChangePasswordURLs(origins_2, base::DoNothing());
-}
-
-TEST_F(AffiliationServiceImplTest,
-       FetchRequiresCompleteSetupAndPassphraseDisabled) {
-  // The only scenario when the StartRequest() should be called.
-  // Setup is completed and explicit passphrase feature is disabled.
-  SetSyncServiceStates(/*is_setup_completed=*/true,
-                       /*is_passphrase_set=*/false);
-
-  const std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
-  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
-
-  EXPECT_CALL(*mock_fetcher,
-              StartRequest(ToFacetsURIs(origins),
-                           AffiliationFetcherInterface::RequestInfo{
-                               .change_password_info = true}));
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
-      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
-
-  service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
-}
-
-TEST_F(AffiliationServiceImplTest, PassphraseSetDoesNotPreventFetch) {
-  SetSyncServiceStates(/*is_setup_completed=*/true, /*is_passphrase_set=*/true);
-
-  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
-      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
-
-  service()->PrefetchChangePasswordURLs(
-      {GURL(k1ExampleURL), GURL(k2ExampleURL)}, base::DoNothing());
-}
-
-TEST_F(AffiliationServiceImplTest, SetupNotCompletedDoesNotPreventFetch) {
-  SetSyncServiceStates(/*is_setup_completed=*/false,
-                       /*is_passphrase_set=*/false);
-
-  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
-      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
-
-  service()->PrefetchChangePasswordURLs(
-      {GURL(k1ExampleURL), GURL(k2ExampleURL)}, base::DoNothing());
 }
 
 // Below are the tests veryfing recorded metrics for

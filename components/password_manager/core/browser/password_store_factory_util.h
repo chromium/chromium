@@ -22,14 +22,11 @@ class NetworkConnectionTracker;
 
 namespace password_manager {
 
-// Activates or deactivates affiliation-based matching for |password_store|,
-// depending on whether or not the |sync_service| is syncing passwords stored
-// therein. The AffiliationService will use |url_loader_factory| to fetch
-// affiliation information. This function should be called whenever there is a
-// possibility that syncing passwords has just started or ended.
-void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
+// Activates affiliation-based matching for |password_store|, The
+// AffiliationService will use |url_loader_factory| to fetch affiliation
+// information.
+void EnableAffiliationBasedMatching(
     PasswordStore* password_store,
-    syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& profile_path);
@@ -41,15 +38,6 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
     const base::FilePath& profile_path);
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
     const base::FilePath& profile_path);
-
-// Determines if affiliation based matching can be performed.
-// It checks whether the user
-// 1) has password syncing across multiple devices enabled
-//    (first setup must be completed)
-// 2) does not have explicit passphrase set.
-// Failure to meet both of those requirements results in preventing Chrome from
-// sending requests to Google Affiliation Service API.
-bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service);
 
 }  // namespace password_manager
 

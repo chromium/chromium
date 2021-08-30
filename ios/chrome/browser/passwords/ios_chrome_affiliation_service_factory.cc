@@ -12,7 +12,6 @@
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
@@ -33,9 +32,7 @@ IOSChromeAffiliationServiceFactory::GetForBrowserState(
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AffiliationService",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(SyncServiceFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
     default;
@@ -43,10 +40,6 @@ IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
   return std::make_unique<password_manager::AffiliationServiceImpl>(
-      sync_service, context->GetSharedURLLoaderFactory());
+      context->GetSharedURLLoaderFactory());
 }

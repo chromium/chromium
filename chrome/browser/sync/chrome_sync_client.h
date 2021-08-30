@@ -54,7 +54,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
-  base::RepeatingClosure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;

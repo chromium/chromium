@@ -323,12 +323,6 @@ sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForProfile(profile_);
 }
 
-base::RepeatingClosure ChromeSyncClient::GetPasswordStateChangedCallback() {
-  return base::BindRepeating(
-      &PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
-      base::Unretained(profile_));
-}
-
 syncer::DataTypeController::TypeVector
 ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   syncer::ModelTypeSet disabled_types = GetDisabledTypesFromCommandLine();

@@ -52,15 +52,13 @@ PasswordModelTypeController::PasswordModelTypeController(
     scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service,
-    const base::RepeatingClosure& state_changed_callback)
+    syncer::SyncService* sync_service)
     : ModelTypeController(syncer::PASSWORDS,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      state_changed_callback_(state_changed_callback),
       account_storage_settings_watcher_(
           pref_service_,
           sync_service_,
@@ -95,7 +93,6 @@ void PasswordModelTypeController::LoadModels(
   sync_service_->AddObserver(this);
   sync_mode_ = configure_context.sync_mode;
   ModelTypeController::LoadModels(configure_context, model_load_callback);
-  state_changed_callback_.Run();
 }
 
 void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
@@ -118,7 +115,6 @@ void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
     }
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));
-  state_changed_callback_.Run();
 }
 
 syncer::DataTypeController::PreconditionState
@@ -149,7 +145,6 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
 void PasswordModelTypeController::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
   sync_service_->DataTypePreconditionChanged(syncer::PASSWORDS);
-  state_changed_callback_.Run();
 }
 
 void PasswordModelTypeController::OnAccountsInCookieUpdated(

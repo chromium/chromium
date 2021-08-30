@@ -315,8 +315,7 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
                   ? account_password_store_->CreateSyncControllerDelegate()
                   : nullptr,
               account_password_store_, sync_client_->GetPrefService(),
-              sync_client_->GetIdentityManager(), sync_service,
-              sync_client_->GetPasswordStateChangedCallback()));
+              sync_client_->GetIdentityManager(), sync_service));
     }
   }
 

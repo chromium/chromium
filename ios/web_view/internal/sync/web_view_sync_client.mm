@@ -159,10 +159,6 @@ WebViewSyncClient::GetSendTabToSelfSyncService() {
   return nullptr;
 }
 
-base::RepeatingClosure WebViewSyncClient::GetPasswordStateChangedCallback() {
-  return base::DoNothing();
-}
-
 syncer::DataTypeController::TypeVector
 WebViewSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {

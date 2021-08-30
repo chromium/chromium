@@ -23,11 +23,22 @@ namespace password_manager {
 
 namespace {
 
-void ActivateAffiliationBasedMatching(
+base::FilePath GetAffiliationDatabasePath(const base::FilePath& profile_path) {
+  return profile_path.Append(kAffiliationDatabaseFileName);
+}
+
+}  // namespace
+
+void EnableAffiliationBasedMatching(
     PasswordStore* password_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
-    const base::FilePath& db_path) {
+    const base::FilePath& profile_path) {
+  DCHECK(password_store);
+  // Return if the matching is already enabled.
+  if (password_store->affiliated_match_helper())
+    return;
+
   // The PasswordStore is so far the only consumer of the
   // AndroidAffiliationService, therefore the service is owned by the
   // AffiliatedMatchHelper, which in turn is owned by the PasswordStore.
@@ -38,40 +49,13 @@ void ActivateAffiliationBasedMatching(
       new AndroidAffiliationService(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})));
   affiliation_service->Initialize(std::move(url_loader_factory),
-                                  network_connection_tracker, db_path);
+                                  network_connection_tracker,
+                                  GetAffiliationDatabasePath(profile_path));
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper(
       new AffiliatedMatchHelper(password_store,
                                 std::move(affiliation_service)));
   affiliated_match_helper->Initialize();
   password_store->SetAffiliatedMatchHelper(std::move(affiliated_match_helper));
-}
-
-base::FilePath GetAffiliationDatabasePath(const base::FilePath& profile_path) {
-  return profile_path.Append(kAffiliationDatabaseFileName);
-}
-
-}  // namespace
-
-void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
-    PasswordStore* password_store,
-    syncer::SyncService* sync_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    const base::FilePath& profile_path) {
-  DCHECK(password_store);
-
-  const bool matching_should_be_active =
-      ShouldAffiliationBasedMatchingBeActive(sync_service);
-  const bool matching_is_active =
-      password_store->affiliated_match_helper() != nullptr;
-
-  if (matching_should_be_active && !matching_is_active) {
-    ActivateAffiliationBasedMatching(
-        password_store, std::move(url_loader_factory),
-        network_connection_tracker, GetAffiliationDatabasePath(profile_path));
-  } else if (!matching_should_be_active && matching_is_active) {
-    password_store->SetAffiliatedMatchHelper(nullptr);
-  }
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
@@ -88,10 +72,6 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
       profile_path.Append(kLoginDataForAccountFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
                                          IsAccountStore(true));
-}
-
-bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service) {
-  return true;
 }
 
 }  // namespace password_manager

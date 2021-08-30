@@ -73,23 +73,6 @@ PasswordStoreFactory* PasswordStoreFactory::GetInstance() {
   return base::Singleton<PasswordStoreFactory>::get();
 }
 
-// static
-void PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
-    Profile* profile) {
-  scoped_refptr<PasswordStore> password_store =
-      GetForProfile(profile, ServiceAccessType::EXPLICIT_ACCESS);
-  if (!password_store)
-    return;
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-
-  password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
-      password_store.get(), sync_service,
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      content::GetNetworkConnectionTracker(), profile->GetPath());
-}
-
 PasswordStoreFactory::PasswordStoreFactory()
     : RefcountedBrowserContextKeyedServiceFactory(
           "PasswordStore",
@@ -149,11 +132,8 @@ PasswordStoreFactory::BuildServiceInstanceFor(
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    // Try to create affiliation service without awaiting synced state changes.
-    // TODO(http://crbug.com/1202699): Remove sync service completely after
-    // launching HashAffiliationLookup.
-    password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
-        ps.get(), /*sync_service=*/nullptr,
+    password_manager::EnableAffiliationBasedMatching(
+        ps.get(),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         content::GetNetworkConnectionTracker(), profile->GetPath());

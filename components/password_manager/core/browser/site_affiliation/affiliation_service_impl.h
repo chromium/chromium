@@ -21,10 +21,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace syncer {
-class SyncService;
-}
-
 namespace url {
 class SchemeHostPort;
 }
@@ -42,14 +38,13 @@ class AffiliationServiceImpl : public AffiliationService,
   };
 
   explicit AffiliationServiceImpl(
-      syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~AffiliationServiceImpl() override;
 
   // Prefetches change password URLs and saves them to |change_password_urls_|
-  // map. The verification if affiliation based matching is enabled must be
-  // performed. Creates a unique fetcher and appends it to |pending_fetches_|
-  // along with |urls| and |callback|.
+  // map. Creates a unique fetcher and appends it to |pending_fetches_|
+  // along with |urls| and |callback|. When prefetch is finished or a fetcher
+  // gets destroyed as a result of Clear() a callback is run.
   void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
                                   base::OnceClosure callback) override;
 
@@ -70,10 +65,6 @@ class AffiliationServiceImpl : public AffiliationService,
     fetcher_factory_ = std::move(fetcher_factory);
   }
 
-  void SetSyncServiceForTesting(syncer::SyncService* sync_service) {
-    sync_service_ = sync_service;
-  }
-
  private:
   struct FetchInfo;
 
@@ -84,16 +75,6 @@ class AffiliationServiceImpl : public AffiliationService,
   void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
 
-  // Creates AffiliationFetcher and starts a request to retrieve affiliations
-  // for given |urls|. |Request_info| defines what info should be requested.
-  // When prefetch is finished or a fetcher gets destroyed as a result of
-  // Clear() a callback is run.
-  void RequestFacetsAffiliations(
-      const std::vector<GURL>& urls,
-      const AffiliationFetcherInterface::RequestInfo request_info,
-      base::OnceClosure callback);
-
-  syncer::SyncService* sync_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   std::vector<FetchInfo> pending_fetches_;
