@@ -423,8 +423,21 @@ void ScanService::OnPageReceived(
   // In case the last reported progress percent was less than 100, send one
   // final progress event before the page complete event.
   scan_job_observer_->OnPageProgress(page_number, kMaxProgressPercent);
+
+  uint32_t new_page_index;
+  if (file_type == mojo_ipc::FileType::kPdf) {
+    new_page_index = page_index_to_replace.has_value()
+                         ? page_index_to_replace.value()
+                         : scanned_images_.size();
+  } else {
+    // Non-PDF scans do not save images in |scanned_images_| so the next index
+    // is based off |page_number|.
+    DCHECK(!page_index_to_replace.has_value());
+    new_page_index = page_number - 1;
+  }
   scan_job_observer_->OnPageComplete(
-      std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
+      std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()),
+      new_page_index);
 
   // Only increment the |num_pages_scanned_| tracker if appending, not
   // replacing, a page.

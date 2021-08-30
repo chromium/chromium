@@ -109,7 +109,7 @@ class ScanService : public scanning::mojom::ScanService,
   // Processes each |scanned_image| received after calling
   // LorgnetteScannerManager::Scan(). |scan_to_path| is where images will be
   // saved, and |file_type| specifies the file type to use when saving scanned
-  // images. If |page_index_to_replace| >= 0 then |scanned_image| will replace
+  // images. If |page_index_to_replace| exists then |scanned_image| will replace
   // an existing scanned image instead of being appended.
   void OnPageReceived(const base::FilePath& scan_to_path,
                       const scanning::mojom::FileType file_type,

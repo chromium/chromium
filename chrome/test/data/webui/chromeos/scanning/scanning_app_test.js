@@ -191,13 +191,16 @@ class FakeScanService {
   }
 
   /**
-   * @param {number} pageNumber
+   * @param {number} pageNumber Always 1 for Flatbed scans, increments for ADF
+   *    scans.
+   * @param {number} newPageIndex The index the new page should take in the
+   *    objects array.
    * @return {!Promise}
    */
-  simulatePageComplete(pageNumber) {
+  simulatePageComplete(pageNumber, newPageIndex) {
     this.scanJobObserverRemote_.onPageProgress(pageNumber, 100);
     const fakePageData = [2, 57, 13, 289];
-    this.scanJobObserverRemote_.onPageComplete(fakePageData);
+    this.scanJobObserverRemote_.onPageComplete(fakePageData, newPageIndex);
     return flushTasks();
   }
 
@@ -339,11 +342,11 @@ class FakeMultiPageScanController {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
+   * @param {!mojoBase.mojom.UnguessableToken} scannerId
    * @param {!ash.scanning.mojom.ScanSettings} settings
    * @return {!Promise<{success: boolean}>}
    */
-  scanNextPage(scanner_id, settings) {
+  scanNextPage(scannerId, settings) {
     return new Promise(resolve => {
       this.methodCalled('scanNextPage');
       resolve({success: true});
@@ -578,6 +581,7 @@ export function scanningAppTest() {
     /** @type {!Array<!mojoBase.mojom.FilePath>} */
     const scannedFilePaths =
         [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
+    let newPageIndex = 0;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -677,7 +681,8 @@ export function scanningAppTest() {
 
           // Simulate a page complete update and verify the progress bar and
           // text are updated correctly.
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           assertEquals('Scanning page 1', progressText.textContent.trim());
@@ -692,7 +697,8 @@ export function scanningAppTest() {
           assertEquals(53, progressBar.value);
 
           // Complete the page.
-          return fakeScanService_.simulatePageComplete(2);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 2, newPageIndex++);
         })
         .then(() => {
           // Complete the scan.
@@ -816,6 +822,7 @@ export function scanningAppTest() {
   test('MultiPageScan', () => {
     /** @type {!Array<!mojoBase.mojom.FilePath>} */
     const scannedFilePaths = [{'path': '/test/path/scan1.pdf'}];
+    let newPageIndex = 0;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -836,7 +843,8 @@ export function scanningAppTest() {
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           // The scanned images and multi-page scan page should be visible.
@@ -852,7 +860,8 @@ export function scanningAppTest() {
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           // The scanned images and multi-page scan page should still be visible
@@ -889,6 +898,8 @@ export function scanningAppTest() {
   // Verify a multi-page scan job can fail scanning a page then scan another
   // page successfully.
   test('MultiPageScanPageFailed', () => {
+    let newPageIndex = 0;
+
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -911,7 +922,8 @@ export function scanningAppTest() {
               scanningApp.$$('#scanPreview')
                   .$$('#progressText')
                   .textContent.trim());
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           scanningApp.$$('multi-page-scan').$$('#scanButton').click();
@@ -952,7 +964,8 @@ export function scanningAppTest() {
               scanningApp.$$('#scanPreview')
                   .$$('#progressText')
                   .textContent.trim());
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           scanningApp.$$('multi-page-scan').$$('#saveButton').click();
@@ -978,6 +991,8 @@ export function scanningAppTest() {
   test('MultiPageScanPageRemoved', () => {
     const pageNumberToRemove = 2;
     let expectedObjectUrls;
+    let newPageIndex = 0;
+
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -995,21 +1010,24 @@ export function scanningAppTest() {
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           scanningApp.$$('multi-page-scan').$$('#scanButton').click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           scanningApp.$$('multi-page-scan').$$('#scanButton').click();
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           // Save the current scanned images
@@ -1044,6 +1062,8 @@ export function scanningAppTest() {
   // removed, the scan is reset, and the user is returned to the scan settings
   // page.
   test('MultiPageScanRemoveLastPage', () => {
+    let newPageIndex = 0;
+
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -1061,7 +1081,8 @@ export function scanningAppTest() {
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           // Open the remove page dialog.
@@ -1077,13 +1098,15 @@ export function scanningAppTest() {
         })
         .then(() => {
           assertArrayEquals([], scanningApp.$$('#scanPreview').objectUrls);
+          --newPageIndex;
 
           // Attempt a new multi-page scan from the scan settings page.
           scanningApp.$$('#scanButton').click();
           return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
-          return fakeScanService_.simulatePageComplete(1);
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
         })
         .then(() => {
           // The scanned images and multi-page scan page should be visible.

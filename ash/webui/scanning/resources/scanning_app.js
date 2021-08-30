@@ -423,12 +423,15 @@ Polymer({
   /**
    * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {!Array<number>} pageData
+   * @param {number} newPageIndex
    */
-  onPageComplete(pageData) {
+  onPageComplete(pageData, newPageIndex) {
     assert(
         this.appState_ === AppState.SCANNING ||
         this.appState_ === AppState.MULTI_PAGE_SCANNING ||
         this.appState_ === AppState.CANCELING);
+
+    assert(newPageIndex === this.objectUrls_.length);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     this.push('objectUrls_', URL.createObjectURL(blob));
     if (this.multiPageScanChecked) {

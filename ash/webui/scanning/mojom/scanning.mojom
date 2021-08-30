@@ -121,9 +121,10 @@ interface ScanJobObserver {
   OnPageProgress(uint32 page_number, uint32 progress_percent);
 
   // Called when scanning a page is complete. |page_data| contains the page's
-  // image data encoded as a PNG.
+  // image data encoded as a PNG. |new_page_index| is the expected index of this
+  // page in the array of scanned images.
   // TODO(b/184747389): Send a lower resolution preview.
-  OnPageComplete(array<uint8> page_data);
+  OnPageComplete(array<uint8> page_data, uint32 new_page_index);
 
   // Called when the scan is complete. |result| indicates the result of the scan
   // and is set to kSuccess when the scan completes successfully.
