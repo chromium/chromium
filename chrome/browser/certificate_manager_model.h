@@ -170,13 +170,8 @@ class CertificateManagerModel {
   // |BrowserContext|.
   CertificateManagerModel(std::unique_ptr<Params> params,
                           Observer* observer,
-                          net::NSSCertDatabase* nss_cert_database,
-                          bool is_user_db_available,
-                          bool is_tpm_available);
+                          net::NSSCertDatabase* nss_cert_database);
   ~CertificateManagerModel();
-
-  bool is_user_db_available() const { return is_user_db_available_; }
-  bool is_tpm_available() const { return is_tpm_available_; }
 
   // Accessor for read-only access to the underlying NSSCertDatabase.
   const net::NSSCertDatabase* cert_db() const { return cert_db_; }
@@ -257,9 +252,7 @@ class CertificateManagerModel {
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
       CreationCallback callback,
-      net::NSSCertDatabase* cert_db,
-      bool is_user_db_available,
-      bool is_tpm_available);
+      net::NSSCertDatabase* cert_db);
   static void DidGetCertDBOnIOThread(
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
@@ -278,11 +271,6 @@ class CertificateManagerModel {
   std::vector<std::unique_ptr<CertsSource>> certs_sources_;
 
   bool hold_back_updates_ = false;
-
-  // Whether the certificate database has a public slot associated with the
-  // profile. If not set, importing certificates is not allowed with this model.
-  bool is_user_db_available_;
-  bool is_tpm_available_;
 
   // The observer to notify when certificate list is refreshed.
   Observer* observer_;

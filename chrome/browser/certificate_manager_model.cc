@@ -519,13 +519,8 @@ void CertificateManagerModel::Create(
 CertificateManagerModel::CertificateManagerModel(
     std::unique_ptr<Params> params,
     Observer* observer,
-    net::NSSCertDatabase* nss_cert_database,
-    bool is_user_db_available,
-    bool is_tpm_available)
-    : cert_db_(nss_cert_database),
-      is_user_db_available_(is_user_db_available),
-      is_tpm_available_(is_tpm_available),
-      observer_(observer) {
+    net::NSSCertDatabase* nss_cert_database)
+    : cert_db_(nss_cert_database), observer_(observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Fill |certs_sources_|. Note that the order matters. Higher priority
@@ -676,15 +671,12 @@ void CertificateManagerModel::DidGetCertDBOnUIThread(
     std::unique_ptr<Params> params,
     CertificateManagerModel::Observer* observer,
     CreationCallback callback,
-    net::NSSCertDatabase* cert_db,
-    bool is_user_db_available,
-    bool is_tpm_available) {
+    net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<CertificateManagerModel> model =
       std::make_unique<CertificateManagerModel>(std::move(params), observer,
-                                                cert_db, is_user_db_available,
-                                                is_tpm_available);
+                                                cert_db);
   std::move(callback).Run(std::move(model));
 }
 
@@ -696,16 +688,11 @@ void CertificateManagerModel::DidGetCertDBOnIOThread(
     net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  bool is_user_db_available = !!cert_db->GetPublicSlot();
-  bool is_tpm_available = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_tpm_available = crypto::IsTPMTokenEnabledForNSS();
-#endif
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&CertificateManagerModel::DidGetCertDBOnUIThread,
-                     std::move(params), observer, std::move(callback), cert_db,
-                     is_user_db_available, is_tpm_available));
+                     std::move(params), observer, std::move(callback),
+                     cert_db));
 }
 
 // static

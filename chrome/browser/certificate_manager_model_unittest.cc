@@ -78,8 +78,7 @@ class CertificateManagerModelTest : public testing::Test {
     fake_observer_ = std::make_unique<FakeObserver>();
     certificate_manager_model_ = std::make_unique<CertificateManagerModel>(
         GetCertificateManagerModelParams(), fake_observer_.get(),
-        nss_cert_db_.get(), true /* is_user_db_available */,
-        true /* bool is_tpm_available */);
+        nss_cert_db_.get());
   }
 
   void TearDown() override {
