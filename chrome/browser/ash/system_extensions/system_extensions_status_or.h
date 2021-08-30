@@ -7,32 +7,35 @@
 
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 
-// StatusOrSystemExtension is a union of an status enum class and a
-// SystemExtension. This class either holds an object in a usable state, or a
-// status code explaining why SystemExtension is not present. This class is
-// typically the return value of a function which may fail.
+// SystemExtensionsStatusOr is a union of an status enum class and an object.
+// This class either holds an object in a usable state, or a status code
+// explaining why `T` is not present. This class is typically the return value
+// of a function which may fail.
 //
-// An StatusOrSystemExtension can never hold an "OK" status (an `S::kOk` value);
-// instead, the presence of SystemExtension indicates success. Instead of
-// checking for a `kOk` value, use the `ok()` member function.
-template <typename S>
-class StatusOrSystemExtension {
+// An SystemExtensionsStatusOr can never hold an "OK" status (an `S::kOk`
+// value); instead, the presence of `T` indicates success. Instead of checking
+// for a `kOk` value, use the `ok()` member function.
+//
+// There is nothing SystemExtensions specific about this class so if needed
+// this can be moved to //base.
+template <typename T, typename S>
+class SystemExtensionsStatusOr {
  public:
-  // Constructs a new `StatusOrSystemExtension` with an `S::kUnknown` status.
+  // Constructs a new `SystemExtensionsStatusOr` with an `S::kUnknown` status.
   // This constructor is marked 'explicit' to prevent usages in return values
   // such as 'return {};'.
-  explicit StatusOrSystemExtension() : status_(S::kUnknown) {}  // NOLINT
+  explicit SystemExtensionsStatusOr() : status_(S::kUnknown) {}  // NOLINT
 
   // All of these are implicit, so that one may just return Status or
   // SystemExtension.
-  StatusOrSystemExtension(S status) : status_(status) {}     // NOLINT
-  StatusOrSystemExtension(SystemExtension system_extension)  // NOLINT
-      : status_(S::kOk), system_extension_(std::move(system_extension)) {}
+  SystemExtensionsStatusOr(S status) : status_(status) {}  // NOLINT
+  SystemExtensionsStatusOr(T value)                        // NOLINT
+      : status_(S::kOk), value_(std::move(value)) {}
 
-  StatusOrSystemExtension(StatusOrSystemExtension&&) = default;
-  StatusOrSystemExtension& operator=(StatusOrSystemExtension&&) = default;
+  SystemExtensionsStatusOr(SystemExtensionsStatusOr&&) = default;
+  SystemExtensionsStatusOr& operator=(SystemExtensionsStatusOr&&) = default;
 
-  ~StatusOrSystemExtension() = default;
+  ~SystemExtensionsStatusOr() = default;
 
   bool ok() const { return status_ == S::kOk; }
 
@@ -43,21 +46,24 @@ class StatusOrSystemExtension {
     return status_;
   }
 
-  // Returns the SystemExtension if ok() is true. CHECKs otherwise.
-  const SystemExtension& system_extension() const& {
+  // Returns the object if ok() is true. CHECKs otherwise.
+  const T& value() const& {
     CHECK(ok());
-    return system_extension_;
+    return value_;
   }
 
   // Returns the SystemExtension if ok() is true. CHECKs otherwise.
-  SystemExtension&& system_extension() && {
+  T&& value() && {
     CHECK(ok());
-    return std::move(system_extension_);
+    return std::move(value_);
   }
 
  private:
   S status_;
-  SystemExtension system_extension_;
+  T value_;
 };
+
+template <typename S>
+using StatusOrSystemExtension = SystemExtensionsStatusOr<SystemExtension, S>;
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_

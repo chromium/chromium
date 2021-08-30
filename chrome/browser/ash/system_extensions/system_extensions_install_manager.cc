@@ -77,7 +77,7 @@ void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
   // TODO(ortuno): Move resources from the specified directory into the user
   // profile.
   SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
-      result.system_extension());
-  system_extensions_[{1, 2, 3, 4}] = std::move(result).system_extension();
+      result.value());
+  system_extensions_[{1, 2, 3, 4}] = std::move(result).value();
   on_command_line_install_finished_.Signal();
 }

@@ -18,6 +18,7 @@
 
 namespace {
 
+const constexpr char kManifestName[] = "manifest.json";
 const constexpr char kIdKey[] = "id";
 const constexpr char kTypeKey[] = "type";
 const constexpr char kNameKey[] = "name";
@@ -50,9 +51,29 @@ SystemExtensionsSandboxedUnpacker::SystemExtensionsSandboxedUnpacker() =
 SystemExtensionsSandboxedUnpacker::~SystemExtensionsSandboxedUnpacker() =
     default;
 
+void SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromDir(
+    base::FilePath system_extension_dir,
+    GetSystemExtensionFromCallback callback) {
+  io_helper_.AsyncCall(&IOHelper::ReadManifestInDirectory)
+      .WithArgs(system_extension_dir)
+      .Then(base::BindOnce(
+          &SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestRead,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestRead(
+    GetSystemExtensionFromCallback callback,
+    SystemExtensionsStatusOr<std::string, Status> result) {
+  if (!result.ok()) {
+    std::move(callback).Run(result.status());
+    return;
+  }
+  GetSystemExtensionFromString(result.value(), std::move(callback));
+}
+
 void SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromString(
     base::StringPiece system_extension_manifest_string,
-    GetSystemExtensionFromStringCallback callback) {
+    GetSystemExtensionFromCallback callback) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       std::string(system_extension_manifest_string),
       base::BindOnce(
@@ -61,7 +82,7 @@ void SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromString(
 }
 
 void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
-    GetSystemExtensionFromStringCallback callback,
+    GetSystemExtensionFromCallback callback,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   if (value_or_error.error.has_value()) {
     std::move(callback).Run(Status::kFailedJsonErrorParsingManifest);
@@ -161,4 +182,24 @@ void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
   }
 
   std::move(callback).Run(std::move(system_extension));
+}
+
+SystemExtensionsSandboxedUnpacker::IOHelper::~IOHelper() = default;
+
+SystemExtensionsStatusOr<std::string, SystemExtensionsSandboxedUnpacker::Status>
+SystemExtensionsSandboxedUnpacker::IOHelper::ReadManifestInDirectory(
+    const base::FilePath& system_extension_dir) {
+  // Validate input |system_extension_dir|.
+  if (system_extension_dir.value().empty() ||
+      !base::DirectoryExists(system_extension_dir)) {
+    return Status::kFailedDirectoryMissing;
+  }
+
+  base::FilePath manifest_path = system_extension_dir.Append(kManifestName);
+  std::string manifest_contents;
+  if (!base::ReadFileToString(manifest_path, &manifest_contents)) {
+    return Status::kFailedManifestReadError;
+  }
+
+  return manifest_contents;
 }
