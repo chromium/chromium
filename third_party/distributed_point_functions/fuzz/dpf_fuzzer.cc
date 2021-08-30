@@ -265,7 +265,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       default:
         // DPF construction should've failed if the parameters were invalid.
         DPF_FUZZER_ASSERT(false);
-        break;
     }
   }
 
