@@ -63,7 +63,8 @@ static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
 
 PerformanceTiming::PerformanceTiming(ExecutionContext* context)
     : ExecutionContextClient(context) {
-  cross_origin_isolated_capability_ = context->CrossOriginIsolatedCapability();
+  cross_origin_isolated_capability_ =
+      context && context->CrossOriginIsolatedCapability();
 }
 
 uint64_t PerformanceTiming::navigationStart() const {
