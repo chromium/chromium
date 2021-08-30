@@ -318,6 +318,10 @@ bool IsDrDcEnabled() {
   if (!IsAImageReaderEnabled())
     return false;
 
+  // Currently not supported when passthrough command decoder is enabled.
+  if (UsePassthroughCommandDecoder())
+    return false;
+
   return base::FeatureList::IsEnabled(kEnableDrDc);
 #else
   return false;
