@@ -106,6 +106,8 @@ source_set("common") {
     deps += [
       "//chromeos/ui/vector_icons",
       "//remoting/host/chromeos",
+      "//ui/message_center",
+      "//ui/message_center/public/cpp",
     ]
   }
   if (is_mac) {

@@ -154,15 +154,6 @@ void MessageBox::Show() {
   core_->Show();
 }
 
-void MessageBox::SetIcon(const gfx::ImageSkia& icon) {
-  core_->SetIcon(icon);
-  core_->SetShowIcon(true);
-}
-
-void MessageBox::SetDefaultButton(ui::DialogButton button) {
-  core_->SetDefaultButton(button);
-}
-
 MessageBox::~MessageBox() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (core_) {

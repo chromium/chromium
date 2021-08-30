@@ -39,12 +39,6 @@ class MessageBox {
 
   void Show();
 
-  // Set and display the given icon.
-  void SetIcon(const gfx::ImageSkia& icon);
-
-  // Select which button is selected by default.
-  void SetDefaultButton(ui::DialogButton button);
-
  private:
   class Core;
   Core* core_;
