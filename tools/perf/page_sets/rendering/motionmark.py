@@ -231,7 +231,7 @@ class MotionMarkRampPage(MotionMarkPage):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    return ('https://browserbench.org/MotionMark1.1/developer.html'
+    return ('https://browserbench.org/MotionMark1.2/developer.html'
             '?suite-name=%s'
             '&test-name=%s'
             '&test-interval=20'
@@ -240,6 +240,8 @@ class MotionMarkRampPage(MotionMarkPage):
             '&controller=ramp'
             '&kalman-process-error=1'
             '&kalman-measurement-error=4'
+            '&warmup-length=2000'
+            '&warmup-frame-count=30'
             '&time-measurement=performance') % (suite_name, test_name)
 
 
@@ -266,11 +268,6 @@ class MotionMarkRampPaths(MotionMarkRampPage):
 class MotionMarkRampCanvasLines(MotionMarkRampPage):
   BASE_NAME = 'motionmark_ramp_canvas_lines'
   URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Canvas Lines')
-
-
-class MotionMarkRampFocus(MotionMarkRampPage):
-  BASE_NAME = 'motionmark_ramp_focus'
-  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Focus')
 
 
 class MotionMarkRampImages(MotionMarkRampPage):
