@@ -162,6 +162,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     std::string value;
   };
 
+  // Invokes the test helper command by running a unit test from the
+  // "updater_integration_tests_helper" program. The program returns 0 if
+  // the unit test passes.
   void RunCommand(const std::string& command_switch,
                   const std::vector<Param>& params) const {
     const base::CommandLine command_line =
@@ -179,13 +182,26 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
     base::CommandLine helper_command(path);
     helper_command.AppendSwitch(command_switch);
-
     for (const Param& param : params) {
       helper_command.AppendSwitchASCII(param.name, param.value);
     }
 
+    // Avoids the test runner banner about test debugging.
+    helper_command.AppendSwitch("single-process-tests");
+    helper_command.AppendSwitchASCII("gtest_filter",
+                                     "TestHelperCommandRunner.Run");
+    helper_command.AppendSwitchASCII("gtest_brief", "1");
+
     int exit_code = -1;
     ASSERT_TRUE(Run(kUpdaterScope, helper_command, &exit_code));
+
+    // A failure here indicates that the integration test helper
+    // process ran but the invocation of the test helper command was not
+    // successful for a number of reasons.
+    // If the `exit_code` is 1 then there were failed assertions in
+    // the code invoked by the test command. This is the most common case.
+    // Other exit codes mean that the helper command is not defined or the
+    // helper command line syntax is wrong for some reason.
     EXPECT_EQ(exit_code, 0);
   }
 

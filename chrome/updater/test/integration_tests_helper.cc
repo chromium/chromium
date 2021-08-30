@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -16,14 +18,17 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
-#include "base/test/test_timeouts.h"
+#include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/test_suite.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -33,6 +38,14 @@
 namespace updater {
 namespace test {
 namespace {
+
+using ::testing::EmptyTestEventListener;
+using ::testing::Test;
+using ::testing::TestCase;
+using ::testing::TestEventListeners;
+using ::testing::TestInfo;
+using ::testing::TestPartResult;
+using ::testing::UnitTest;
 
 constexpr int kSuccess = 0;
 constexpr int kUnknownSwitch = 101;
@@ -210,31 +223,84 @@ scoped_refptr<App> MakeAppTestHelper() {
   return base::MakeRefCounted<AppTestHelper>();
 }
 
+// Provides custom formatting for the unit test output.
+class TersePrinter : public EmptyTestEventListener {
+ private:
+  // Called before any test activity starts.
+  void OnTestProgramStart(const UnitTest& /*unit_test*/) override {}
+
+  // Called after all test activities have ended.
+  void OnTestProgramEnd(const UnitTest& unit_test) override {
+    std::cout << "Command " << (unit_test.Passed() ? "SUCCEEDED" : "FAILED")
+              << "." << std::endl
+              << std::flush;
+  }
+
+  // Called before a test starts.
+  void OnTestStart(const TestInfo& /*test_info*/) override {}
+
+  // Called after a failed assertion or a SUCCEED() invocation. Prints a
+  // backtrace showing the failure.
+  void OnTestPartResult(const TestPartResult& test_part_result) override {
+    std::cout << (test_part_result.failed() ? "*** Failure" : "Success")
+              << " in : " << test_part_result.file_name() << ":"
+              << test_part_result.line_number() << std::endl
+              << test_part_result.message() << std::endl
+              << std::flush;
+  }
+
+  // Called after a test ends.
+  void OnTestEnd(const TestInfo& /*test_info*/) override {}
+};
+
 int IntegrationTestsHelperMain(int argc, char** argv) {
   base::PlatformThread::SetName("IntegrationTestsHelperMain");
-  base::AtExitManager exit_manager;
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-
   base::CommandLine::Init(argc, argv);
-
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
-  TestTimeouts::Initialize();
-
 #if defined(OS_WIN)
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
 #endif
-  return MakeAppTestHelper()->Run();
+  chrome::RegisterPathProvider();
+  base::TestSuite test_suite(argc, argv);
+  TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
+  delete listeners.Release(listeners.default_result_printer());
+  listeners.Append(new TersePrinter);
+  return base::LaunchUnitTestsSerially(
+      argc, argv,
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+}
+
+class TestHelperCommandRunner : public ::testing::Test {
+ private:
+  void TearDown() override {
+    // Avoids reporting the thread pool instance leak in gtest.
+    base::ThreadPoolInstance::Get()->JoinForTesting();
+    base::ThreadPoolInstance::Set(nullptr);
+  }
+};
+
+// Do not disable this test when encountering integration tests failures.
+// This is not a unit test. It just wraps the execution of an integration test
+// command, which is typical a step of an integration test.
+TEST_F(TestHelperCommandRunner, Run) {
+  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  EXPECT_EQ(MakeAppTestHelper()->Run(), 0);
 }
 
 }  // namespace
 }  // namespace test
 }  // namespace updater
 
+// Wraps the execution of one integration test command in a unit test. The test
+// commands contain gtest assertions, therefore the invocation of test commands
+// must occur within the scope of a unit test of a gtest program. The test
+// helper defines a unit test "TestHelperCommandRunner.Run", which runs the
+// actual test command. Returns 0 if the test command succeeded.
 int main(int argc, char** argv) {
   return updater::test::IntegrationTestsHelperMain(argc, argv);
 }

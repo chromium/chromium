@@ -137,7 +137,6 @@ bool DeleteService(const std::wstring& service_name) {
 }
 
 bool IsServiceGone(const std::wstring& service_name) {
-  LOG(ERROR) << "IsServiceGone()" << std::endl;
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
   if (!scm)
@@ -228,7 +227,6 @@ void Clean(UpdaterScope scope) {
 }
 
 void ExpectClean(UpdaterScope scope) {
-  LOG(ERROR) << "ExpectClean()" << std::endl;
   const HKEY root =
       scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
@@ -253,7 +251,6 @@ void ExpectClean(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kSystem) {
-    LOG(ERROR) << "Check services..." << std::endl;
     for (const bool is_internal_service : {true, false}) {
       EXPECT_TRUE(IsServiceGone(GetServiceName(is_internal_service)));
     }
@@ -274,8 +271,6 @@ void ExpectClean(UpdaterScope scope) {
     EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
         [&]() { return !base::PathExists(*path); })));
   }
-
-  LOG(ERROR) << "ExpectClean() returned" << std::endl;
 }
 
 void EnterTestMode(const GURL& url) {
