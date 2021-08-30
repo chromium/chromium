@@ -197,4 +197,13 @@ public class ScreenshotBoundsManagerTest {
                 boundsManager.calculateBoundsRelativeToCapture(new Rect(0, 250, 0, 3500));
         compareRects(50, 1000, relativeRect);
     }
+
+    @Test
+    public void testCalculateFullClipBounds() {
+        ScreenshotBoundsManager boundsManager =
+                ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
+
+        Rect bounds = boundsManager.calculateFullClipBounds();
+        compareRects(400, 1100, bounds);
+    }
 }

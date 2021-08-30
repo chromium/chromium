@@ -53,7 +53,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
 
     /**
      * @param tab The current tab being screen-shotted.
-     * @param rect The area of the webpage to capture
+     * @param boundsManager The bounds manager of the page to determine capture regions.
      * @param callback Callback to receive updates from the generation.
      */
     public BitmapGenerator(

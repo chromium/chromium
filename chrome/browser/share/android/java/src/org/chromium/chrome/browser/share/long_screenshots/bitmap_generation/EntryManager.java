@@ -34,6 +34,7 @@ public class EntryManager {
     private ScreenshotBoundsManager mBoundsManager;
     private int mMemoryUsedInKb;
     private int mMaxMemoryUsageInKb;
+    private static final String TAG = "long_screenshot";
 
     /**
      * @param context An instance of current Android {@link Context}.
@@ -47,7 +48,7 @@ public class EntryManager {
         mGenerator = new BitmapGenerator(tab, mBoundsManager, createBitmapGeneratorCallback());
         mGenerator.captureTab();
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
-        // TODO(cb/1153969): Make this a finch param instead.
+        // TODO(cb/1153969): Remove, or make this a finch param. Consider increasing default.
         mMaxMemoryUsageInKb = 16 * 1024;
     }
 
@@ -58,11 +59,14 @@ public class EntryManager {
      */
     public LongScreenshotsEntry generateInitialEntry() {
         LongScreenshotsEntry entry = new LongScreenshotsEntry(
-                mGenerator, mBoundsManager.getInitialEntryBounds(), this::updateMemoryUsage);
+                mGenerator, mBoundsManager.getFullEntryBounds(), this::updateMemoryUsage);
         processEntry(entry, false);
         // Pre-compute these entries so that they are ready to go when the user starts scrolling.
-        getPreviousEntry(entry.getId());
-        getNextEntry(entry.getId());
+        // Not used when requesting a full page.
+        // TODO(skare): We're currently always requesting a full page. Fully clean up if testing
+        // full-page bitmap has acceptable memory usage.
+        // getPreviousEntry(entry.getId());
+        // getNextEntry(entry.getId());
         return entry;
     }
 
