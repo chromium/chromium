@@ -37,7 +37,7 @@
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1291603679744561561">SIM లాక్ చేయబడింది</translation>
 <translation id="1293556467332435079">Files</translation>
-<translation id="1297922636971898492">Google డిస్క్ ప్రస్తుతం అందుబాటులో లేదు. Google డిస్క్ అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
+<translation id="1297922636971898492">Google Drive ప్రస్తుతం అందుబాటులో లేదు. Google Drive అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="1307931752636661898">Linux ఫైళ్లను చూడటం సాధ్యపడలేదు</translation>
 <translation id="1313405956111467313">ఆటోమేటిక్‌ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ఫైళ్లను దిగుమతి చేస్తోంది...</translation>
@@ -274,7 +274,7 @@
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> ఫోటోలు <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి</translation>
+<translation id="3468522857997926824"><ph name="FILE_COUNT" /> ఫోటోలు <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="3475447146579922140">Google స్ప్రెడ్‌షీట్</translation>
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
@@ -297,7 +297,7 @@
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తరలించబడ్డాయి.</translation>
 <translation id="3645531960514756307">ఫోల్డర్‌ను అన్‌పిన్ చేయి</translation>
-<translation id="3685122418104378273">మొబైల్ డేటాను ఉపయోగిస్తున్నప్పుడు Google డిస్క్ సింక్ డిఫాల్ట్‌గా నిలిపివేయబడుతుంది.</translation>
+<translation id="3685122418104378273">మొబైల్ డేటాను ఉపయోగిస్తున్నప్పుడు Google Drive సింక్ డిఫాల్ట్‌గా నిలిపివేయబడుతుంది.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
@@ -485,7 +485,7 @@
     మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైళ్లు Google డిస్క్‌లో సురక్షితంగా నిల్వ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
     అన్ని ఫైళ్లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, క్రియేట్ చేయండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
-<translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైళ్లు</translation>
+<translation id="5275973617553375938">Google Drive నుండి పునరుద్ధరించబడిన ఫైళ్లు</translation>
 <translation id="5288441970121584418">బర్గర్</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">మీరు ఖచ్చితంగా ట్రాష్ USB‌ను ఖాళీ చేయాలనుకుంటున్నారా?</translation>
@@ -495,7 +495,7 @@
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
 <translation id="5330145655348521461">ఈ ఫైల్స్ వేరే డెస్క్‌టాప్‌లో తెరవబడ్డాయి. దీన్ని వీక్షించడానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="5330512191124428349">సమాచారం పొందండి</translation>
-<translation id="5335458522276292100"><ph name="FILE_COUNT" /> వాటిని <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కు బ్యాకప్ చేస్తోంది</translation>
+<translation id="5335458522276292100"><ph name="FILE_COUNT" /> వాటిని <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />కు బ్యాకప్ చేస్తోంది</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
 <translation id="5368191757080475556">Linuxతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="5402367795255837559">బ్రెయిలీ</translation>
@@ -619,12 +619,12 @@
 <translation id="6549689063733911810">ఇటీవల</translation>
 <translation id="6558280019477628686">ఎర్రర్ ఏర్పడింది. కొన్ని అంశాలు తొలగించబడి ఉండకపోవచ్చు.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>
-<translation id="6581162200855843583">Google డిస్క్ లింక్</translation>
+<translation id="6581162200855843583">Google Drive లింక్</translation>
 <translation id="6594855146910089723">ఈ ఫోల్డర్ Linux ఇంకా Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="6607272825297743757">ఫైల్ సమాచారం</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు Parallels Desktopతో చేర్చబడ్డాయి</translation>
 <translation id="6629518321609546825">కనీసం 4 నంబర్‌లను ఎంటర్ చేయండి</translation>
-<translation id="6629841649550503054">అన్నీ <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి!</translation>
+<translation id="6629841649550503054">అన్నీ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి!</translation>
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
 <translation id="6650726141019353908">గులాబి రంగు సీతాకోకచిలుక</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
@@ -700,7 +700,7 @@
 <translation id="7248671827512403053">అప్లికేషన్‌</translation>
 <translation id="7256405249507348194">గుర్తించబడని ఎర్రర్: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">అందుబాటులో ఉన్న సేవలు</translation>
-<translation id="7283041136720745563">Google డిస్క్ కోటా తగినంత పెద్దది కాదు.</translation>
+<translation id="7283041136720745563">Google Drive కోటా తగినంత పెద్దది కాదు.</translation>
 <translation id="7294063083760278948">తెలుగు ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7295662345261934369">ఇతరులతో భాగస్వామ్యం చేయి</translation>
 <translation id="7297443947353982503">వినియోగదారు పేరు/పాస్‌వర్డ్ తప్పు లేదా EAP-ప్రామాణీకరణ విఫలమైంది</translation>
@@ -717,7 +717,7 @@
 <translation id="7486315294984620427">Parallels Desktopలో ఫైళ్లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైళ్లకు కాపీ చేయబడి ఉండాలి.</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> కనుగొనబడ్డాయి
     <ph name="LINE_BREAK1" />
-    <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కు బ్యాకప్ చేయడానికి సిద్ధంగా ఉంది</translation>
+    <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />కు బ్యాకప్ చేయడానికి సిద్ధంగా ఉంది</translation>
 <translation id="7495372004724182530">మలయాళం ఫొనెటిక్</translation>
 <translation id="7505167922889582512">దాచిన ఫైళ్లను చూపు</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
@@ -765,7 +765,7 @@
 <translation id="78104721049218340">కెడ్మానీ కీబోర్డ్‌తో థాయ్</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> కనుగొనబడ్డాయి.
     <ph name="LINE_BREAK1" />
-    Google డిస్క్ కోటా తగినంత పెద్దది కాదు. అదనంగా <ph name="FILE_SIZE" /> అవసరం.
+    Google Drive కోటా తగినంత పెద్దది కాదు. అదనంగా <ph name="FILE_SIZE" /> అవసరం.
     <ph name="LINE_BREAK2" />
     కొన్ని ఫోటోలను ఎంచుకోవడానికి ప్రయత్నించండి.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
@@ -800,7 +800,7 @@
 <translation id="8049184478152619004">వ్యక్తిగత అన్‌బ్లాకింగ్ కీ(PUK)ని ఎంటర్ చేయండి</translation>
 <translation id="8079530767338315840">పునరావృతం చేయి</translation>
 <translation id="8087576439476816834">డౌన్‌లోడ్ చేయి, <ph name="PROFILE_NAME" /></translation>
-<translation id="8106045200081704138">నాతో భాగస్వామ్యం చేసినవి</translation>
+<translation id="8106045200081704138">నాతో షేర్ చేసినవి</translation>
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
 <translation id="8128733386027980860">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" మీతో షేర్ చేయబడింది. మీకు ఇది స్వంతం కానందున మీరు దీన్ని తొలగించలేరు.</translation>
@@ -843,7 +843,7 @@
 <translation id="8461914792118322307">ప్రాక్సీ</translation>
 <translation id="8463494891489624050">వియత్నామీస్ VIQR</translation>
 <translation id="8466234950814670489">Tar ఆర్కైవ్</translation>
-<translation id="8475647382427415476">Google డిస్క్ ప్రస్తుతం "<ph name="FILENAME" />"ని సమకాలీకరించలేకపోయింది. Google డిస్క్ తర్వాత మళ్లీ ప్రయత్నిస్తుంది.</translation>
+<translation id="8475647382427415476">Google Drive ప్రస్తుతం "<ph name="FILENAME" />"ని సమకాలీకరించలేకపోయింది. Google Drive తర్వాత మళ్లీ ప్రయత్నిస్తుంది.</translation>
 <translation id="8477649328507734757">స్పిన్</translation>
 <translation id="8484284835977497781">మీ ఇటీవల ఫోటోల నుండి ఎంచుకోండి.</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
