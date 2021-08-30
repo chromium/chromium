@@ -44,6 +44,8 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
                           session_manager::SessionManagerObserver>
       session_observation_{this};
 
+  bool done_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(SessionStateWaiter);
 };
 

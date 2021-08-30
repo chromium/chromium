@@ -142,6 +142,23 @@ void TapUserCreationNext() {
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
 }
 
+void WaitForOobeCreated() {
+  if (!LoginDisplayHost::default_host()->GetOobeUI()) {
+    base::RunLoop run_loop;
+    LoginDisplayHost::default_host()->AddWizardCreatedObserverForTests(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+void WaitForOobeJSReady() {
+  base::RunLoop run_loop;
+  if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
 void WaitForEulaScreen() {
   if (!WizardController::IsBrandedBuild())
     return;

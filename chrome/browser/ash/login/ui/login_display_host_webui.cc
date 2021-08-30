@@ -587,6 +587,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
     wizard_controller_ = std::make_unique<WizardController>(wizard_context());
+    NotifyWizardCreated();
     wizard_controller_->Init(first_screen);
   }
 }

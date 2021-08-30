@@ -17,8 +17,13 @@
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
@@ -177,20 +182,33 @@ bool LoginManagerMixin::LoginAndWaitForActiveSession(
 
 void LoginManagerMixin::LoginWithDefaultContext(const TestUserInfo& user_info) {
   UserContext user_context = CreateDefaultUserContext(user_info);
+  test::ProfilePreparedWaiter profile_prepared(user_info.account_id);
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
+  profile_prepared.Wait();
 }
 
-void LoginManagerMixin::LoginAsNewRegularUser() {
+void LoginManagerMixin::LoginAsNewRegularUser(
+    absl::optional<UserContext> user_context) {
+  ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  test::WaitForOobeCreated();
+  test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
-  TestUserInfo test_user(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
-  UserContext user_context = CreateDefaultUserContext(test_user);
+  if (!user_context.has_value()) {
+    user_context = CreateDefaultUserContext(TestUserInfo(
+        AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)));
+  }
+
+  test::ProfilePreparedWaiter profile_prepared(user_context->GetAccountId());
   AttemptLoginUsingAuthenticator(
-      user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
+      *user_context, std::make_unique<StubAuthenticatorBuilder>(*user_context));
+  profile_prepared.Wait();
 }
 
 void LoginManagerMixin::LoginAsNewChildUser() {
+  ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  test::WaitForOobeCreated();
+  test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   TestUserInfo test_child_user_(
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
@@ -202,8 +220,10 @@ void LoginManagerMixin::LoginAsNewChildUser() {
       test_child_user_.account_id.GetUserEmail(),
       test_child_user_.account_id.GetGaiaId(), FakeGaiaMixin::kFakeRefreshToken,
       false /*issue_any_scope_token*/);
+  test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
+  profile_prepared.Wait();
 }
 
 }  // namespace chromeos
