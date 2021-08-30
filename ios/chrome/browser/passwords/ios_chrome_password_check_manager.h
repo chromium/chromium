@@ -78,6 +78,9 @@ class IOSChromePasswordCheckManager
                         base::StringPiece new_username,
                         base::StringPiece new_password);
 
+  // Adds new password credentials |form| to the store.
+  bool AddPasswordForm(const password_manager::PasswordForm& form);
+
   // Edits password form using |insecure_credentials_manager_|.
   void EditCompromisedPasswordForm(const password_manager::PasswordForm& form,
                                    base::StringPiece password);

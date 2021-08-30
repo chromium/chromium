@@ -15,6 +15,13 @@
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password;
 
+// Called when user finished adding a new password credential.
+- (void)passwordDetailsViewController:
+            (PasswordDetailsTableViewController*)viewController
+        didAddPasswordDetailsWithSite:(NSString*)website
+                             username:(NSString*)username
+                             password:(NSString*)password;
+
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername;
 

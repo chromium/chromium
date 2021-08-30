@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 
 @protocol ApplicationCommands;
+@protocol AddPasswordHandler;
 @protocol PasswordDetailsHandler;
 @protocol PasswordDetailsTableViewControllerDelegate;
 @protocol ReauthenticationProtocol;
@@ -17,8 +18,17 @@
 @interface PasswordDetailsTableViewController
     : AutofillEditTableViewController <PasswordDetailsConsumer>
 
+// The designated initializer.
+- (instancetype)initWithIsAddingNewCredential:(BOOL)isAddingNewCredential
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
 // Handler for PasswordDetails related actions.
 @property(nonatomic, weak) id<PasswordDetailsHandler> handler;
+
+// Handler for AddPasswordDetails related actions.
+@property(nonatomic, weak) id<AddPasswordHandler> addPasswordHandler;
 
 // Delegate for PasswordDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<PasswordDetailsTableViewControllerDelegate>

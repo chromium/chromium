@@ -156,6 +156,11 @@ bool IOSChromePasswordCheckManager::EditPasswordForm(
       form, base::UTF8ToUTF16(new_username), base::UTF8ToUTF16(new_password));
 }
 
+bool IOSChromePasswordCheckManager::AddPasswordForm(
+    const password_manager::PasswordForm& form) {
+  return saved_passwords_presenter_.AddPassword(form);
+}
+
 void IOSChromePasswordCheckManager::EditCompromisedPasswordForm(
     const password_manager::PasswordForm& form,
     base::StringPiece password) {

@@ -771,8 +771,7 @@ void RemoveFormsToBeDeleted(
 }
 
 - (void)handleAddPassword:(id)sender {
-  // TODO(crbug.com/1226006): Implement functionality to save the newly created
-  // password profile.
+  [self.handler showAddPasswordSheet];
 }
 
 - (void)editOrDoneButtonPressed {

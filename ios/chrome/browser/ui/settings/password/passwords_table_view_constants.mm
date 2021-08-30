@@ -17,6 +17,10 @@ NSString* const kPasswordsAddPasswordButtonId = @"PasswordsAddPasswordButtonId";
 NSString* const kPasswordDetailsTableViewId = @"PasswordDetailsTableViewId";
 NSString* const kPasswordDetailsDeletionAlertViewId =
     @"PasswordDetailsDeletionAlertViewId";
+NSString* const kPasswordsAddPasswordSaveButtonId =
+    @"PasswordsAddPasswordSaveButtonId";
+NSString* const kPasswordsAddPasswordCancelButtonId =
+    @"PasswordsAddPasswordCancelButtonId";
 
 NSString* const kSavePasswordSwitchTableViewId =
     @"kSavePasswordSwitchTableViewId";

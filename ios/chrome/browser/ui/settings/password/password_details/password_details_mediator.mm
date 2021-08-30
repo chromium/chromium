@@ -87,6 +87,14 @@ using InsecureCredentialsView =
   [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
 }
 
+- (void)passwordDetailsViewController:
+            (PasswordDetailsTableViewController*)viewController
+        didAddPasswordDetailsWithSite:(NSString*)website
+                             username:(NSString*)username
+                             password:(NSString*)password {
+  NOTREACHED();
+}
+
 - (BOOL)isUsernameReused:(NSString*)newUsername {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the |_manager|.
