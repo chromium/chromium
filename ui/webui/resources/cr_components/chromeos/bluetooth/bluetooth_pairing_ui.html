@@ -4,6 +4,11 @@
   }
 </style>
 <div id="container">
-  <!-- TODO(crbug.com/1010321): Move base page to individual UI pages. -->
-  <bluetooth-base-page></bluetooth-base-page>
+  <iron-pages
+      attr-for-selected="id"
+      selected="[[selectedPageId_]]">
+    <bluetooth-pairing-device-selection-page id="deviceSelectionPage">
+    </bluetooth-pairing-device-selection-page>
+    <!-- TODO(crbug.com/1010321): Add other bluetooth pairing subpage UI elements. -->
+  </iron-pages>
 </div>

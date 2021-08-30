@@ -22,8 +22,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   });
 
   test('Base test', function() {
-    const basePage =
-        bluetoothPairingUi.shadowRoot.querySelector('bluetooth-base-page');
-    assertTrue(!!basePage);
+    const deviceSelectionPage =
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    assertTrue(!!deviceSelectionPage);
   });
 });

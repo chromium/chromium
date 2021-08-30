@@ -12,8 +12,12 @@ GEN('#include "content/public/test/browser_test.h"');
 
 // clang-format off
 [
-  ['BluetoothPairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
-  ['BluetoothBasePage', 'bluetooth/bluetooth_base_page_test.js'],
+  ['BasePage', 'bluetooth/bluetooth_base_page_test.js'],
+  [
+    'DeviceSelectionPage',
+    'bluetooth/bluetooth_pairing_device_selection_page_test.js'
+  ],
+  ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
 
 [['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.m.js'],
