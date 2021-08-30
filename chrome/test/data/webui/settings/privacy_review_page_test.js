@@ -55,6 +55,7 @@ suite('PrivacyReviewPage', function() {
    * @param {!{
    *   headerTextExpected: (string|undefined),
    *   isSettingFooterVisibleExpected: (boolean|undefined),
+   *   isBackButtonVisibleExpected: (boolean|undefined),
    *   isWelcomeFragmentVisibleExpected: (boolean|undefined),
    *   isCompletionFragmentVisibleExpected: (boolean|undefined),
    *   isMsbbFragmentVisibleExpected: (boolean|undefined),
@@ -64,6 +65,7 @@ suite('PrivacyReviewPage', function() {
   function assertCardVisibility({
     headerTextExpected,
     isSettingFooterVisibleExpected,
+    isBackButtonVisibleExpected,
     isWelcomeFragmentVisibleExpected,
     isCompletionFragmentVisibleExpected,
     isMsbbFragmentVisibleExpected,
@@ -78,6 +80,14 @@ suite('PrivacyReviewPage', function() {
     assertEquals(
         !!isSettingFooterVisibleExpected,
         isChildVisible(page, '#settingFooter'));
+    if (isSettingFooterVisibleExpected) {
+      const backButtonVisibility =
+          getComputedStyle(page.shadowRoot.querySelector('#backButton'))
+              .visibility;
+      assertEquals(
+          isBackButtonVisibleExpected ? 'visible' : 'hidden',
+          backButtonVisibility);
+    }
     assertEquals(
         !!isWelcomeFragmentVisibleExpected,
         isChildVisible(page, '#welcomeFragment'));
@@ -119,6 +129,7 @@ suite('PrivacyReviewPage', function() {
     assertCardVisibility({
       headerTextExpected: page.i18n('privacyReviewClearOnExitCardHeader'),
       isSettingFooterVisibleExpected: true,
+      isBackButtonVisibleExpected: true,
       isClearOnExitFragmentVisibleExpected: true,
     });
   }

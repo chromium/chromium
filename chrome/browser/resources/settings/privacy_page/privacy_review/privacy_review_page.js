@@ -207,6 +207,18 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         .onNextButtonClick();
   }
 
+  /**
+   * @private
+   * @return {string}
+   */
+  computeBackButtonClass_() {
+    return 'cr-button' +
+        (this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)
+                     .onBackButtonClick === undefined ?
+             ' visibility-hidden' :
+             '');
+  }
+
   /** @private */
   onBackButtonClick_() {
     this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)

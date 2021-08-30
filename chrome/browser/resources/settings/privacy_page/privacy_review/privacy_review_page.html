@@ -14,6 +14,10 @@
     padding: 16px;
   }
 
+  .visibility-hidden {
+    visibility: hidden;
+  }
+
   .privacy-review-card {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
@@ -59,8 +63,8 @@
   </template>
   <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
     <div id="settingFooter" class="footer hr">
-      <cr-button class="cr-button" id="backButton" role="button"
-          on-click="onBackButtonClick_">
+      <cr-button id="backButton" role="button" on-click="onBackButtonClick_"
+          class$="[[computeBackButtonClass_(privacyReviewStep_)]]">
         $i18n{privacyReviewBackButton}
       </cr-button>
       <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
