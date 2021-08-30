@@ -78,6 +78,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.ColorPicker.FixedColor"
     enum="DevToolsColorPickerFixedColor" expires_after="2021-10-04">
+  <obsolete>
+    Removed in M95 because it is no longer needed for analysis.
+  </obsolete>
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>alexrudenko@chromium.org</owner>

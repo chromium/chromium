@@ -129,8 +129,6 @@ static const char kDevtoolsExperimentDisabledHistogram[] =
     "DevTools.ExperimentDisabled";
 static const char kDevtoolsExperimentEnabledAtLaunchHistogram[] =
     "DevTools.ExperimentEnabledAtLaunch";
-static const char kDevToolsColorPickerFixedColorHistogram[] =
-    "DevTools.ColorPicker.FixedColor";
 static const char kDevToolsComputedStyleGroupingHistogram[] =
     "DevTools.ComputedStyleGrouping";
 static const char kDevtoolsIssuesPanelIssueExpandedHistogram[] =
@@ -1328,7 +1326,6 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
       name == kDevtoolsExperimentEnabledHistogram ||
       name == kDevtoolsExperimentDisabledHistogram ||
       name == kDevtoolsExperimentEnabledAtLaunchHistogram ||
-      name == kDevToolsColorPickerFixedColorHistogram ||
       name == kDevToolsComputedStyleGroupingHistogram ||
       name == kDevtoolsIssuesPanelIssueExpandedHistogram ||
       name == kDevtoolsIssuesPanelResourceOpenedHistogram ||
