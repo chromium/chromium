@@ -272,6 +272,13 @@ void BoxPainter::PaintMaskImages(const PaintInfo& paint_info,
 void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
                                    const PhysicalRect& paint_rect,
                                    const DisplayItemClient& background_client) {
+  if (BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                             layout_box_) &&
+      layout_box_.EffectiveAllowedTouchAction() == TouchAction::kAuto &&
+      !layout_box_.InsideBlockingWheelEventHandler()) {
+    return;
+  }
+
   // Hit test data are only needed for compositing. This flag is used for for
   // printing and drag images which do not need hit testing.
   if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)

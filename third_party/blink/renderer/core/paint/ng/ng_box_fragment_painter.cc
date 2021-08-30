@@ -527,6 +527,12 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
 
 bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     const PaintInfo& paint_info) {
+  if (IsPaintingBackgroundInContentsSpace(paint_info) &&
+      PhysicalFragment().EffectiveAllowedTouchAction() == TouchAction::kAuto &&
+      !PhysicalFragment().InsideBlockingWheelEventHandler()) {
+    return false;
+  }
+
   // Hit test data are only needed for compositing. This flag is used for for
   // printing and drag images which do not need hit testing.
   if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
