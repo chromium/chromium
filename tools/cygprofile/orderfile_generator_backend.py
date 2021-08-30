@@ -484,7 +484,11 @@ class OrderfileGenerator(object):
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
-    return self._path_to_orderfile % self._options.arch
+    # Build GN files use the ".arm" orderfile irrespective of the actual
+    # architecture. Fake it, otherwise the orderfile we generate here is not
+    # going to be picked up by builds.
+    orderfile_fake_arch = 'arm'
+    return self._path_to_orderfile % orderfile_fake_arch
 
   def _GetUnpatchedOrderfileFilename(self):
     """Gets the path to the architecture-specific unpatched orderfile."""
@@ -1136,6 +1140,14 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   """
   logging.basicConfig(level=logging.INFO)
   devil_chromium.Initialize(adb_path=options.adb_path)
+
+  # Since we generate a ".arm" orderfile irrespective of the architecture (see
+  # comment in _GetPathToOrderfile()), make sure that we don't commit it.
+  if options.arch != 'arm':
+    assert not options.buildbot, (
+        'ARM is the only supported architecture on bots')
+    assert not options.upload_ready_orderfiles, (
+        'ARM is the only supported architecture on bots')
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
   try:
