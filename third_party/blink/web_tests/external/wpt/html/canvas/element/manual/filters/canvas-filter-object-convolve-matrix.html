@@ -17,8 +17,9 @@ function makeConvolveFilter(options) {
     [0, 0, -3],
   ];
 
-  options = Object.assign(options, {kernelMatrix: KERNEL_MATRIX});
-  return new CanvasFilter({convolveMatrix: options});
+  options = Object.assign(options, {
+    kernelMatrix: KERNEL_MATRIX, filter: "convolveMatrix"});
+  return new CanvasFilter(options);
 }
 
 const test_cases = [

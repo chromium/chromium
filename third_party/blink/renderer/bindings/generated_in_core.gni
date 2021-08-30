@@ -1607,6 +1607,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_object_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_performancemeasureoptions_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_performancemeasureoptions_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_readablebytestreamcontroller_readablestreamdefaultcontroller.cc",

@@ -2508,8 +2508,6 @@ generated_union_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilterdictionary_canvasfilterdictionaryarray.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilterdictionary_canvasfilterdictionaryarray.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_client_messageport_serviceworker.cc",

@@ -169,32 +169,34 @@ ComponentTransferFilterOperation* ResolveComponentTransfer(
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
-    HeapVector<Member<CanvasFilterDictionary>> filters,
+    HeapVector<ScriptValue> filters,
     ExceptionState& exception_state) {
   FilterOperations operations;
 
   for (auto filter : filters) {
-    if (filter->hasBlur()) {
-      if (auto* blur_operation =
-              ResolveBlur(Dictionary(filter->blur()), exception_state)) {
+    Dictionary filter_dict = Dictionary(filter);
+    absl::optional<String> name =
+        filter_dict.Get<IDLString>("filter", exception_state);
+    if (!name)
+      continue;
+
+    if (name == "gaussianBlur") {
+      if (auto* blur_operation = ResolveBlur(filter_dict, exception_state)) {
         operations.Operations().push_back(blur_operation);
       }
     }
-    if (filter->hasColorMatrix()) {
-      Dictionary colormatrix_dict(filter->colorMatrix());
-      String type = colormatrix_dict.Get<IDLString>("type", exception_state)
+    if (name == "colorMatrix") {
+      String type = filter_dict.Get<IDLString>("type", exception_state)
                         .value_or("matrix");
       if (type == "hueRotate") {
         double amount =
-            colormatrix_dict.Get<IDLDouble>("values", exception_state)
-                .value_or(0);
+            filter_dict.Get<IDLDouble>("values", exception_state).value_or(0);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
                 amount, FilterOperation::HUE_ROTATE));
       } else if (type == "saturate") {
         double amount =
-            colormatrix_dict.Get<IDLDouble>("values", exception_state)
-                .value_or(0);
+            filter_dict.Get<IDLDouble>("values", exception_state).value_or(0);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
                 amount, FilterOperation::SATURATE));
@@ -203,19 +205,19 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
                 0, FilterOperation::LUMINANCE_TO_ALPHA));
       } else if (auto* color_matrix_operation =
-                     ResolveColorMatrix(colormatrix_dict, exception_state)) {
+                     ResolveColorMatrix(filter_dict, exception_state)) {
         operations.Operations().push_back(color_matrix_operation);
       }
     }
-    if (filter->hasConvolveMatrix()) {
-      if (auto* convolve_operation = ResolveConvolveMatrix(
-              Dictionary(filter->convolveMatrix()), exception_state)) {
+    if (name == "convolveMatrix") {
+      if (auto* convolve_operation =
+              ResolveConvolveMatrix(filter_dict, exception_state)) {
         operations.Operations().push_back(convolve_operation);
       }
     }
-    if (filter->hasComponentTransfer()) {
-      if (auto* component_transfer_operation = ResolveComponentTransfer(
-              Dictionary(filter->componentTransfer()), exception_state)) {
+    if (name == "componentTransfer") {
+      if (auto* component_transfer_operation =
+              ResolveComponentTransfer(filter_dict, exception_state)) {
         operations.Operations().push_back(component_transfer_operation);
       }
     }
