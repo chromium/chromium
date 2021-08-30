@@ -345,13 +345,12 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
   // explicitly set the bounds to the current desired ones or the previous
   // bounds.
   if (width_dip > 1 && height_dip > 1) {
-    if (frame_insets_px()) {
-      width_dip += (frame_insets_px()->left() + frame_insets_px()->right()) /
-                   window_scale();
-      height_dip += (frame_insets_px()->top() + frame_insets_px()->bottom()) /
-                    window_scale();
-    }
     pending_bounds_dip_ = gfx::Rect(0, 0, width_dip, height_dip);
+    if (frame_insets_px()) {
+      pending_bounds_dip_.Inset(
+          -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
+      pending_bounds_dip_.set_origin({0, 0});
+    }
   } else if (is_normal) {
     pending_bounds_dip_.set_size(
         gfx::ScaleToRoundedSize(GetRestoredBoundsInPixels().IsEmpty()

@@ -26,6 +26,7 @@
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
@@ -313,6 +314,83 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
   EXPECT_CALL(*mock_surface, SetInputRegion(_));
   window_->UpdateVisualSize(kNormalBounds.size());
+}
+
+// Checks that decoration insets do not change final bounds and that
+// WaylandToplevelWindow::HandleToplevelConfigure does correct rounding when
+// some sides of insets divides by 2 with remainder.
+TEST_P(WaylandWindowTest, SetDecorationInsets) {
+  const auto kNormalBounds = gfx::Rect{0, 0, 956, 556};
+  uint32_t serial = 0;
+  auto state = InitializeWlArrayWithActivatedState();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output = server_.output();
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output->resource());
+
+  Sync();
+
+  // window_->set_update_visual_size_immediately(false);
+  window_->SetBounds(kNormalBounds);
+  // auto* mock_surface = server_.GetObject<wl::MockSurface>(
+  //     window_->root_surface()->GetSurfaceId());
+  const gfx::Insets kDecorationInsets = {24, 28, 32, 28};
+  auto bounds_with_insets = kNormalBounds;
+  bounds_with_insets.Inset(kDecorationInsets);
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
+                                bounds_with_insets.width(),
+                                bounds_with_insets.height()));
+  window_->SetDecorationInsets(kDecorationInsets);
+
+  Sync();
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
+                                bounds_with_insets.width(),
+                                bounds_with_insets.height()));
+  SendConfigureEvent(xdg_surface_, bounds_with_insets.width(),
+                     bounds_with_insets.height(), ++serial, state.get());
+
+  Sync();
+
+  // Change scale. WaylandToplevelWindow should still configure pending bounds
+  // correctly.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(1);
+  output->SetScale(2);
+  output->Flush();
+
+  Sync();
+
+  // Set new insets so that rounding does not result in integer.
+  const gfx::Insets kDecorationInsets_2x = {48, 55, 63, 55};
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
+                                bounds_with_insets.width(),
+                                bounds_with_insets.height()));
+  window_->SetDecorationInsets(kDecorationInsets_2x);
+
+  Sync();
+
+  // Now send configure events many times - bounds mustn't change.
+  for (size_t i = 0; i < 10; i++) {
+    EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+    EXPECT_CALL(*xdg_surface_, SetWindowGeometry(bounds_with_insets.x(),
+                                                 bounds_with_insets.y(),
+                                                 bounds_with_insets.width(),
+                                                 bounds_with_insets.height()));
+    SendConfigureEvent(xdg_surface_, bounds_with_insets.width(),
+                       bounds_with_insets.height(), ++serial, state.get());
+
+    Sync();
+  }
 }
 
 TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
