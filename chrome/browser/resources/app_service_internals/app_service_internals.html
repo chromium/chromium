@@ -1,10 +1,21 @@
 <h1>App Service Internals</h1>
 
+<ul>
+  <li>
+    <a href="#app-list">App List</a>
+    <ul>
+      <template is="dom-repeat" items="[[appList_]]">
+        <li><a href="#app-[[item.id]]">[[item.name]]</a></li>
+      </template>
+    </ul>
+  </li>
+</ul>
+
 <section>
-  <h2>App List</h2>
+  <h2 id="app-list">App List</h2>
 
   <template is="dom-repeat" items="[[appList_]]">
-    <div>
+    <div id="app-[[item.id]]">
       <h3>[[item.name]]</h3>
       <img src="chrome://app-icon/[[item.id]]/128">
       <pre>[[item.debugInfo]]</pre>

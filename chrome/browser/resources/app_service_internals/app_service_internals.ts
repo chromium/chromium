@@ -25,6 +25,7 @@ export class AppServiceInternalsElement extends PolymerElement {
 
   /** List containing debug information for all installed apps. */
   appList_: Array<AppInfo> = [];
+  hashChangeListener_ = () => this.onHashChanged_();
 
   ready() {
     super.ready();
@@ -33,7 +34,32 @@ export class AppServiceInternalsElement extends PolymerElement {
 
       this.appList_ = (await remote.getApps()).appList;
       this.appList_.sort((a, b) => a.name.localeCompare(b.name));
+
+      this.onHashChanged_();
+      window.addEventListener('hashchange', this.hashChangeListener_);
     })();
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('hashchange', this.hashChangeListener_);
+  }
+
+  /**
+   * Manually responds to URL hash changes, since the regular browser handling
+   * doesn't work in the Shadow DOM.
+   */
+  onHashChanged_() {
+    if (!location.hash || !this.shadowRoot) {
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    const selected = this.shadowRoot.querySelector(location.hash);
+    if (!selected) {
+      return;
+    }
+
+    selected.scrollIntoView();
   }
 }
 
