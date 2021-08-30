@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
@@ -17,6 +18,8 @@ namespace ash {
 
 struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo();
+
+  explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params);
 
   WallpaperInfo(const std::string& in_location,
                 const absl::optional<uint64_t>& in_asset_id,

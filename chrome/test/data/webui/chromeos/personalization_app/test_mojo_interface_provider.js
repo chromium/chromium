@@ -17,7 +17,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'fetchImagesForCollection',
       'getLocalImages',
       'getLocalImageThumbnail',
-      'getCurrentWallpaper',
+      'setWallpaperObserver',
       'selectWallpaper',
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
@@ -93,9 +93,17 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     /** @public */
     this.selectWallpaperResponse = true;
 
+    /** @public */
     this.selectLocalImageResponse = true;
 
+    /** @public */
     this.updateDailyRefreshWallpaperResponse = true;
+
+    /**
+     * @public
+     * @type {?chromeos.personalizationApp.mojom.WallpaperObserverInterface}
+     */
+    this.wallpaperObserverRemote = null;
   }
 
   /**
@@ -142,9 +150,10 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /** @override */
-  getCurrentWallpaper() {
-    this.methodCalled('getCurrentWallpaper');
-    return Promise.resolve({image: this.currentWallpaper});
+  setWallpaperObserver(remote) {
+    this.methodCalled('setWallpaperObserver');
+    this.wallpaperObserverRemote = remote;
+    this.wallpaperObserverRemote.onWallpaperChanged(this.currentWallpaper);
   }
 
   /** @override */

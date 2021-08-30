@@ -13,14 +13,19 @@
 #include <string>
 
 #include "ash/public/cpp/wallpaper/local_image_info.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -47,7 +52,8 @@ class Profile;
 // Implemented in //chrome because this will rely on chrome
 // |backdrop_wallpaper_handlers| code when fully implemented.
 // TODO(b/182012641) add wallpaper API code here.
-class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
+class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
+                                           ash::WallpaperControllerObserver {
  public:
   explicit ChromePersonalizationAppUiDelegate(content::WebUI* web_ui);
 
@@ -77,8 +83,15 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void GetLocalImageThumbnail(const base::UnguessableToken& file_path,
                               GetLocalImageThumbnailCallback callback) override;
 
-  void GetCurrentWallpaper(GetCurrentWallpaperCallback callback) override;
+  void SetWallpaperObserver(
+      mojo::PendingRemote<
+          chromeos::personalization_app::mojom::WallpaperObserver> observer)
+      override;
 
+  // ash::WallpaperControllerObserver:
+  void OnWallpaperChanged() override;
+
+  // chromeos::personalization_app::mojom::WallpaperProvider:
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;
 
@@ -96,6 +109,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       UpdateDailyRefreshWallpaperCallback callback) override;
 
  private:
+  friend class ChromePersonalizationAppUiDelegateTest;
+
   void OnFetchCollections(bool success,
                           const std::vector<backdrop::Collection>& collections);
 
@@ -127,6 +142,10 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   AccountId GetAccountId() const;
 
+  void NotifyWallpaperChanged(
+      chromeos::personalization_app::mojom::CurrentWallpaperPtr
+          current_wallpaper);
+
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
   std::vector<FetchCollectionsCallback> pending_collections_callbacks_;
@@ -136,8 +155,6 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
-
-  GetCurrentWallpaperCallback pending_get_current_wallpaper_callback_;
 
   std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 
@@ -158,15 +175,25 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
 
+  base::ScopedObservation<ash::WallpaperController,
+                          ash::WallpaperControllerObserver>
+      wallpaper_controller_observer_{this};
+
   // Place near bottom of class so this is cleaned up before any pending
   // callbacks are dropped.
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};
 
-  // Used for interacting with local filesystem and fetching online image
-  // attribution.
+  mojo::Remote<chromeos::personalization_app::mojom::WallpaperObserver>
+      wallpaper_observer_remote_;
+
+  // Used for interacting with local filesystem.
   base::WeakPtrFactory<ChromePersonalizationAppUiDelegate>
       backend_weak_ptr_factory_{this};
+
+  // Used for fetching online image attribution.
+  base::WeakPtrFactory<ChromePersonalizationAppUiDelegate>
+      attribution_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_

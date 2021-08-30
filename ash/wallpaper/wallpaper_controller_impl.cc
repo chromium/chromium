@@ -583,8 +583,6 @@ WallpaperControllerImpl::WallpaperControllerImpl(PrefService* local_state)
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       local_state_(local_state) {
-  DCHECK(!g_instance_);
-  g_instance_ = this;
   DCHECK(!color_profiles_.empty());
   prominent_colors_ =
       std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor);
@@ -601,8 +599,6 @@ WallpaperControllerImpl::~WallpaperControllerImpl() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   weak_factory_.InvalidateWeakPtrs();
-  DCHECK_EQ(g_instance_, this);
-  g_instance_ = nullptr;
 }
 
 // static
@@ -1930,9 +1926,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
     const OnlineWallpaperParams& params,
     const gfx::ImageSkia& image,
     bool show_wallpaper) {
-  WallpaperInfo wallpaper_info = {
-      params.url.spec(), params.asset_id, params.collection_id,
-      params.layout,     ONLINE,          base::Time::Now()};
+  WallpaperInfo wallpaper_info(params);
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
                   "except in tests.";
@@ -2130,11 +2124,14 @@ void WallpaperControllerImpl::OnCustomWallpaperDecoded(
     SetCustomWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
+  // Run callback before finishing setting the image. This is the same timing of
+  // success callback, then |WallpaperControllerObserver::OnWallpaperChanged|,
+  // when setting online wallpaper and simplifies the logic in observers.
+  std::move(callback).Run(success);
   if (success) {
     SetCustomWallpaper(account_id, path.BaseName().value(), layout, image,
                        preview_mode);
   }
-  std::move(callback).Run(success);
 }
 
 void WallpaperControllerImpl::OnWallpaperDecoded(const AccountId& account_id,

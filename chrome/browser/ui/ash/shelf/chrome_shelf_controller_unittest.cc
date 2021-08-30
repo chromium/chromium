@@ -80,8 +80,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1262,11 +1260,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     // Initialize the rest.
     ChromeShelfControllerTest::SetUp();
 
-    // Initialize WallpaperControllerClientImpl.
-    wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClientImpl>();
-    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
-
     // Ensure there are multiple profiles. User 0 is created during setup.
     CreateMultiUserProfile("user1");
     ASSERT_TRUE(SessionControllerClientImpl::IsMultiProfileAvailable());
@@ -1275,7 +1268,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   void TearDown() override {
     ChromeShelfControllerTest::TearDown();
     user_manager_enabler_.reset();
-    wallpaper_controller_client_.reset();
 
     // A Task is leaked if we don't destroy everything, then run the message
     // loop.
@@ -1364,10 +1356,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
-
-  TestWallpaperController test_wallpaper_controller_;
 
   ProfileToNameMap created_profiles_;
 };

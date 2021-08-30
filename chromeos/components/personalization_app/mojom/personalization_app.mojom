@@ -95,6 +95,14 @@ struct CurrentWallpaper {
   string key;
 };
 
+// Receives updated wallpaper information whenever it is changed.
+interface WallpaperObserver {
+  // Triggered by |WallpaperControllerObserver::OnWallpaperChanged|. Retrieves
+  // updated wallpaper information and calls the observer. |image| will be null
+  // if there is an error retrieving wallpaper information.
+  OnWallpaperChanged(CurrentWallpaper? image);
+};
+
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
 // the Personalization App (chrome://personalization). It is a mojom wrapper for
 // APIs found in |backdrop_wallpaper.proto|.
@@ -119,9 +127,8 @@ interface WallpaperProvider {
     GetLocalImageThumbnail(mojo_base.mojom.UnguessableToken id) =>
         (string data);
 
-    // Get information about the currently set wallpaper. |image| will be null
-    // on failure.
-    GetCurrentWallpaper() => (CurrentWallpaper? image);
+    // Binds a listener to start receiving updates on wallpaper changes.
+    SetWallpaperObserver(pending_remote<WallpaperObserver> observer);
 
     // Sets the given backdrop wallpaper as the user's background.
     SelectWallpaper(uint64 image_asset_id) => (bool success);

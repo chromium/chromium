@@ -6,12 +6,24 @@
 
 #include <iostream>
 
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+
 namespace ash {
 
 WallpaperInfo::WallpaperInfo() {
   layout = WALLPAPER_LAYOUT_CENTER;
   type = WALLPAPER_TYPE_COUNT;
 }
+
+WallpaperInfo::WallpaperInfo(
+    const OnlineWallpaperParams& online_wallpaper_params)
+    : WallpaperInfo(online_wallpaper_params.url.spec(),
+                    online_wallpaper_params.asset_id,
+                    online_wallpaper_params.collection_id,
+                    online_wallpaper_params.layout,
+                    WallpaperType::ONLINE,
+                    base::Time::Now()) {}
 
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
                              const absl::optional<uint64_t>& in_asset_id,

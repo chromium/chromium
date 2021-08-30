@@ -45,7 +45,10 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void GetLocalImageThumbnail(const base::UnguessableToken& id,
                               GetLocalImageThumbnailCallback callback) override;
 
-  void GetCurrentWallpaper(GetCurrentWallpaperCallback callback) override;
+  void SetWallpaperObserver(
+      mojo::PendingRemote<
+          chromeos::personalization_app::mojom::WallpaperObserver> observer)
+      override;
 
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;

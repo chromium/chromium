@@ -9,6 +9,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/notreached.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 TestWallpaperController::TestWallpaperController() = default;
@@ -22,8 +23,10 @@ void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
 }
 
 void TestWallpaperController::ClearCounts() {
+  set_online_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
   collection_id_ = std::string();
+  wallpaper_info_ = absl::nullopt;
 }
 
 void TestWallpaperController::SetClient(
@@ -49,19 +52,20 @@ void TestWallpaperController::SetCustomWallpaper(
   std::move(callback).Run(true);
 }
 
-void TestWallpaperController::SetCustomWallpaper(
-    const AccountId& account_id,
-    const std::string& file_name,
-    ash::WallpaperLayout layout,
-    const gfx::ImageSkia& image,
-    bool preview_mode) {
+void TestWallpaperController::SetCustomWallpaper(const AccountId& account_id,
+                                                 const std::string& file_name,
+                                                 ash::WallpaperLayout layout,
+                                                 const gfx::ImageSkia& image,
+                                                 bool preview_mode) {
   ++set_custom_wallpaper_count_;
 }
 
 void TestWallpaperController::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
-  NOTIMPLEMENTED();
+  ++set_online_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo(params);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperController::SetOnlineWallpaperIfExists(
@@ -77,9 +81,8 @@ void TestWallpaperController::SetOnlineWallpaperFromData(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::SetDefaultWallpaper(
-    const AccountId& account_id,
-    bool show_wallpaper) {
+void TestWallpaperController::SetDefaultWallpaper(const AccountId& account_id,
+                                                  bool show_wallpaper) {
   ++set_default_wallpaper_count_;
 }
 
@@ -89,9 +92,8 @@ void TestWallpaperController::SetCustomizedDefaultWallpaperPaths(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::SetPolicyWallpaper(
-    const AccountId& account_id,
-    const std::string& data) {
+void TestWallpaperController::SetPolicyWallpaper(const AccountId& account_id,
+                                                 const std::string& data) {
   NOTIMPLEMENTED();
 }
 
@@ -209,8 +211,7 @@ bool TestWallpaperController::IsActiveUserWallpaperControlledByPolicy() {
 }
 
 ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() {
-  NOTIMPLEMENTED();
-  return {};
+  return wallpaper_info_.value_or(ash::WallpaperInfo());
 }
 
 bool TestWallpaperController::ShouldShowWallpaperSetting() {

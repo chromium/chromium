@@ -9,13 +9,24 @@
 
 namespace ash {
 
-// static
-WallpaperController* WallpaperController::Get() {
-  return g_instance_;
+namespace {
+WallpaperController* g_instance = nullptr;
+}  // namespace
+
+WallpaperController::WallpaperController() {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+WallpaperController::~WallpaperController() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
 }
 
 // static
-WallpaperController* WallpaperController::g_instance_ = nullptr;
+WallpaperController* WallpaperController::Get() {
+  return g_instance;
+}
 
 // static
 std::string WallpaperController::GetBackdropWallpaperSuffix() {

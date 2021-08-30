@@ -4207,6 +4207,7 @@ source_set("unit_tests") {
     "../ash/usb/cros_usb_detector_unittest.cc",
     "../ash/web_applications/help_app/help_app_discover_tab_notification_unittest.cc",
     "../ash/web_applications/help_app/help_app_notification_controller_unittest.cc",
+    "../ash/web_applications/personalization_app/chrome_personalization_app_ui_delegate_unittest.cc",
     "../ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.cc",
     "../ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.h",
     "../ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.cc",
