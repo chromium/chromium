@@ -208,6 +208,14 @@ crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html 
 
 # --- END CanvasFormattedText tests
 
+# These tests were disabled to allow enabling WebAssembly Reference Types.
+crbug.com/v8/7581 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Failure Pass ]
+crbug.com/v8/7581 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
+crbug.com/v8/7581 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.html [ Failure Pass ]
+crbug.com/v8/7581 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.worker.html [ Failure Pass ]
+crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.html [ Failure Pass ]
+crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.worker.html [ Failure Pass ]
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
