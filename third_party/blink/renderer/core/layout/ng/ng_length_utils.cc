@@ -659,6 +659,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
 
   LayoutUnit extent = kIndefiniteSize;
   if (has_aspect_ratio && inline_size) {
+    DCHECK_GE(*inline_size, LayoutUnit());
     const bool has_explicit_stretch =
         logical_height.IsAuto() &&
         space.BlockAutoBehavior() == NGAutoBehavior::kStretchExplicit &&

@@ -67,11 +67,14 @@ LayoutUnit NGFlexLayoutAlgorithm::MainAxisContentExtent(
     // the term "content".
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
+    absl::optional<LayoutUnit> inline_size;
+    if (container_builder_.InlineSize() != kIndefiniteSize)
+      inline_size = container_builder_.InlineSize();
     return ComputeBlockSizeForFragment(
                ConstraintSpace(), Style(), BorderPadding(),
                sum_hypothetical_main_size.ClampNegativeToZero() +
                    border_scrollbar_padding,
-               container_builder_.InlineSize()) -
+               inline_size) -
            border_scrollbar_padding;
   }
   return ChildAvailableSize().inline_size;
