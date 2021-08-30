@@ -3066,6 +3066,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.Navigation.Permissions"
     enum="ExtensionNavigationPermissions" expires_after="M95">
+  <obsolete>
+    2021.08.30 - Removed.
+  </obsolete>
   <owner>dtapuska@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>
