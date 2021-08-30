@@ -622,23 +622,17 @@ SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
   DCHECK(contents_view_);
 
-  ui::NativeTheme::ColorId color_id;
   switch (dialog_state_) {
     case State::PENDING:
       NOTREACHED();
-      color_id = ui::NativeTheme::kColorId_ThrobberSpinningColor;
-      break;
+      return gfx::kGoogleBlue500;
     case State::SUCCESS:
-      color_id = ui::NativeTheme::kColorId_ThrobberSpinningColor;
-      break;
+      return gfx::kGoogleBlue500;
     case State::FAILURE:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
-      break;
+      return gfx::kGoogleRed500;
     case State::WARNING:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityMedium;
-      break;
+      return gfx::kGoogleYellow500;
   }
-  return contents_view_->GetNativeTheme()->GetSystemColor(color_id);
 }
 
 int ContentAnalysisDialog::GetTopImageId(bool use_dark) const {
@@ -732,8 +726,7 @@ SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
   switch (dialog_state_) {
     case State::PENDING:
       // Match the spinner in the pending state.
-      return contents_view_->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor);
+      return gfx::kGoogleBlue500;
     case State::SUCCESS:
     case State::FAILURE:
     case State::WARNING:
