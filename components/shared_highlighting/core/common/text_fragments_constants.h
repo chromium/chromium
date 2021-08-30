@@ -7,6 +7,9 @@
 
 namespace shared_highlighting {
 
+// Delimiter indicating the start of an anchor in a URL.
+extern const char kAnchorDelimiter;
+
 // Delimiter indicating the start of the text fragments in a URL.
 extern const char kFragmentsUrlDelimiter[];
 
