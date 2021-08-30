@@ -22,8 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_connection_observer.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_lockout_strategy.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -142,24 +140,6 @@ void StubCRDHostDelegate::TerminateSession(base::OnceClosure callback) {
   terminate_session_called_ = true;
   std::move(callback).Run();
 }
-
-class StubCrdLockoutStrategy : public CrdLockoutStrategy {
- public:
-  explicit StubCrdLockoutStrategy() = default;
-  StubCrdLockoutStrategy(const StubCrdLockoutStrategy&) = delete;
-  StubCrdLockoutStrategy& operator=(const StubCrdLockoutStrategy&) = delete;
-  ~StubCrdLockoutStrategy() override = default;
-
-  void SetCanAttemptConnection(bool value) { can_attempt_connection_ = value; }
-
-  // CrdLockoutStrategy implementation:
-  bool CanAttemptConnection() const override { return can_attempt_connection_; }
-  void OnConnectionRejected() override {}
-  void OnConnectionEstablished() override {}
-
- private:
-  bool can_attempt_connection_ = true;
-};
 
 void StubCRDHostDelegate::StartCRDHostAndGetCode(
     const SessionParameters& parameters,
@@ -305,8 +285,6 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
   StubCRDHostDelegate& crd_host_delegate() { return crd_host_delegate_; }
   DeviceCommandStartCRDSessionJob& job() { return job_; }
 
-  StubCrdLockoutStrategy& lockout_strategy() { return lockout_strategy_; }
-
  private:
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
@@ -358,9 +336,8 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple local_state_;
 
-  StubCrdLockoutStrategy lockout_strategy_;
   StubCRDHostDelegate crd_host_delegate_;
-  DeviceCommandStartCRDSessionJob job_{&crd_host_delegate_, &lockout_strategy_};
+  DeviceCommandStartCRDSessionJob job_{&crd_host_delegate_};
 
   // Future value that will be populated with the result once the remote command
   // job is completed.
@@ -602,32 +579,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   SetDeviceIdleTime(device_idle_time);
   SetIdlenessCutoff(idleness_cutoff);
-
-  Result result = RunJobAndWaitForResult();
-
-  EXPECT_SUCCESS(result);
-}
-
-TEST_F(DeviceCommandStartCRDSessionJobTest,
-       ShouldFailIfLockoutStrategyDeclinesAttempt) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  lockout_strategy().SetCanAttemptConnection(false);
-
-  Result result = RunJobAndWaitForResult();
-
-  EXPECT_ERROR(
-      result,
-      DeviceCommandStartCRDSessionJob::FAILURE_TOO_MANY_REJECTED_ATTEMPTS, "");
-}
-
-TEST_F(DeviceCommandStartCRDSessionJobTest,
-       ShouldSucceedIfLockoutStrategyAcceptsAttempt) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  lockout_strategy().SetCanAttemptConnection(true);
 
   Result result = RunJobAndWaitForResult();
 

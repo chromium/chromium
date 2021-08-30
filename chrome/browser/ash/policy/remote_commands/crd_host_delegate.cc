@@ -10,7 +10,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_connection_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,12 +43,6 @@ class DefaultNativeMessageHostFactory
   }
 };
 
-bool IsConnectionRejected(const std::string& disconnect_reason) {
-  return (disconnect_reason ==
-          remoting::protocol::ErrorCodeToString(
-              remoting::protocol::ErrorCode::SESSION_REJECTED));
-}
-
 std::string FindStringKeyOrDefault(
     const base::Value& dictionary,
     const std::string& key_name,
@@ -70,10 +63,6 @@ CRDHostDelegate::CRDHostDelegate(
 }
 
 CRDHostDelegate::~CRDHostDelegate() = default;
-
-void CRDHostDelegate::AddConnectionObserver(CrdConnectionObserver* observer) {
-  connection_observers_.AddObserver(observer);
-}
 
 bool CRDHostDelegate::HasActiveSession() const {
   return host_ != nullptr;
@@ -220,9 +209,6 @@ void CRDHostDelegate::OnConnectionError(const std::string& error_reason) {
 }
 
 void CRDHostDelegate::OnStateRemoteConnected(const base::Value& message) {
-  for (auto& observer : connection_observers_)
-    observer.OnConnectionEstablished();
-
   remote_connected_ = true;
 
   // TODO(antrim): set up watchdog timer (session duration).
@@ -237,11 +223,6 @@ void CRDHostDelegate::OnStateRemoteDisconnected(
   // receive "disconnected" message without actually receiving "connected".
   if (!remote_connected_) {
     CRD_DVLOG(1) << "Connection failed with reason: " << disconnect_reason;
-
-    if (IsConnectionRejected(disconnect_reason)) {
-      for (auto& observer : connection_observers_)
-        observer.OnConnectionRejected();
-    }
     return;
   }
   remote_connected_ = false;

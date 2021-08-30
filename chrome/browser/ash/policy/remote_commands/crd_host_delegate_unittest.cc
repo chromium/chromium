@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_connection_observer.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -289,18 +288,6 @@ class Response {
   base::WeakPtrFactory<Response> weak_factory_{this};
 };
 
-class ConnectionObserverMock : public CrdConnectionObserver {
- public:
-  ConnectionObserverMock() = default;
-  ConnectionObserverMock(const ConnectionObserverMock&) = delete;
-  ConnectionObserverMock& operator=(const ConnectionObserverMock&) = delete;
-  ~ConnectionObserverMock() override = default;
-
-  // CRDConnectionObserver  implementation:
-  MOCK_METHOD(void, OnConnectionRejected, ());
-  MOCK_METHOD(void, OnConnectionEstablished, ());
-};
-
 }  // namespace
 
 class CRDHostDelegateTest : public ::testing::Test {
@@ -326,16 +313,10 @@ class CRDHostDelegateTest : public ::testing::Test {
   CRDHostDelegate& delegate() { return delegate_; }
   NativeMessageHostStub& host() { return host_; }
 
-  ConnectionObserverMock& InstallConnectionObserverMock() {
-    delegate_.AddConnectionObserver(&connection_observer_);
-    return connection_observer_;
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   NativeMessageHostStub host_;
-  ::testing::StrictMock<ConnectionObserverMock> connection_observer_;
   CRDHostDelegate delegate_{
       std::make_unique<NativeMessageHostFactoryStub>(&host_)};
 
@@ -633,53 +614,6 @@ TEST_F(CRDHostDelegateTest, ShouldIgnoreOtherStateValues) {
     EXPECT_FALSE(host().is_destroyed())
         << "Unexpected shutdown due to state " << state;
   }
-}
-
-TEST_F(CRDHostDelegateTest, ShouldReportSuccessfullAttemptsToLockoutStrategy) {
-  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
-
-  StartCRDHostAndGetCode();
-  host().HandleHandshake();
-
-  EXPECT_CALL(connection_observer, OnConnectionEstablished);
-
-  host().PostMessage(Message()
-                         .WithType(remoting::kHostStateChangedMessage)
-                         .WithState(remoting::kHostStateConnected));
-  RunUntilIdle();
-}
-
-TEST_F(CRDHostDelegateTest, ShouldReportRejectedAttemptsToLockoutStrategy) {
-  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
-
-  StartCRDHostAndGetCode();
-  host().HandleHandshake();
-
-  EXPECT_CALL(connection_observer, OnConnectionRejected());
-
-  host().PostMessage(
-      Message()
-          .WithType(remoting::kHostStateChangedMessage)
-          .WithState(remoting::kHostStateDisconnected)
-          .WithString(remoting::kDisconnectReason, "SESSION_REJECTED"));
-  RunUntilIdle();
-}
-
-TEST_F(CRDHostDelegateTest,
-       ShouldNotReportOtherConnectionFailedReasonsToLockoutStrategy) {
-  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
-
-  StartCRDHostAndGetCode();
-  host().HandleHandshake();
-
-  EXPECT_NO_CALLS(connection_observer, OnConnectionRejected());
-
-  host().PostMessage(
-      Message()
-          .WithType(remoting::kHostStateChangedMessage)
-          .WithState(remoting::kHostStateDisconnected)
-          .WithString(remoting::kDisconnectReason, "other disconnect reason"));
-  RunUntilIdle();
 }
 
 }  // namespace policy

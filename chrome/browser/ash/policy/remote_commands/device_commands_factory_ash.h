@@ -13,7 +13,6 @@
 namespace policy {
 
 class CRDHostDelegate;
-class CrdLockoutStrategy;
 class DeviceCloudPolicyManagerAsh;
 
 class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
@@ -29,13 +28,9 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
 
  private:
   DeviceCloudPolicyManagerAsh* policy_manager_;
-  // Note: This is used by |crd_host_delegate_| so it must always outlive
-  // |crd_host_delegate_|.
-  std::unique_ptr<CrdLockoutStrategy> crd_lockout_strategy_;
   std::unique_ptr<CRDHostDelegate> crd_host_delegate_;
 
   CRDHostDelegate* GetCRDHostDelegate();
-  CrdLockoutStrategy* GetCrdLockoutStrategy();
 
   DISALLOW_COPY_AND_ASSIGN(DeviceCommandsFactoryAsh);
 };
