@@ -99,22 +99,9 @@ using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-// The min version of BrowserService mojo interface that supports
-// GetFeedbackData API.
-constexpr uint32_t kGetFeedbackDataMinVersion = 6;
-// The min version of BrowserService mojo interface that supports
-// GetHistograms API.
-constexpr uint32_t kGetHistogramsMinVersion = 7;
-// The min version of BrowserService mojo interface that supports
-// GetActiveTabUrl API.
-constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
-// The min version of BrowserService mojo interface that supports
-// NewFullscreenWindow API.
-constexpr uint32_t kNewFullscreenWindowMinVersion = 11;
-
-const char kLacrosCannotLaunchNotificationID[] =
+constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
-const char kLacrosLauncherNotifierID[] = "lacros_launcher";
+constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
 // To be sure the lacros is running with neutral priority
 class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
@@ -341,7 +328,8 @@ void BrowserManager::NewWindow(bool incognito) {
 
 bool BrowserManager::NewFullscreenWindowSupported() const {
   return browser_service_.has_value() &&
-         browser_service_->interface_version >= kNewFullscreenWindowMinVersion;
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kNewFullscreenWindowMinVersion;
 }
 
 void BrowserManager::NewFullscreenWindow(const GURL& url,
@@ -412,7 +400,8 @@ void BrowserManager::RestoreTab() {
 
 bool BrowserManager::GetFeedbackDataSupported() const {
   return browser_service_.has_value() &&
-         browser_service_->interface_version >= kGetFeedbackDataMinVersion;
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kGetFeedbackDataMinVersion;
 }
 
 void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
@@ -422,7 +411,8 @@ void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
 
 bool BrowserManager::GetHistogramsSupported() const {
   return browser_service_.has_value() &&
-         browser_service_->interface_version >= kGetHistogramsMinVersion;
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kGetHistogramsMinVersion;
 }
 
 void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
@@ -432,7 +422,8 @@ void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
 
 bool BrowserManager::GetActiveTabUrlSupported() const {
   return browser_service_.has_value() &&
-         browser_service_->interface_version >= kGetActiveTabUrlMinVersion;
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kGetActiveTabUrlMinVersion;
 }
 
 void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
@@ -572,14 +563,11 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
                      cleared_user_data_dir),
       base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr(), initial_browser_action,
-                     browser_util::GetLacrosSelectionUpdateChannel(
-                         lacros_selection_.value())));
+                     weak_factory_.GetWeakPtr(), initial_browser_action));
 }
 
 void BrowserManager::StartWithLogFile(
     mojom::InitialBrowserAction initial_browser_action,
-    version_info::Channel update_channel,
     LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
@@ -601,6 +589,9 @@ void BrowserManager::StartWithLogFile(
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
 
+  DCHECK(lacros_selection_.has_value());
+  version_info::Channel update_channel =
+      browser_util::GetLacrosSelectionUpdateChannel(lacros_selection_.value());
   // If we don't have channel information, we default to the "dev" channel.
   if (update_channel == version_info::Channel::UNKNOWN)
     update_channel = browser_util::kLacrosDefaultChannel;
@@ -657,12 +648,12 @@ void BrowserManager::StartWithLogFile(
   std::string additional_flags =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           chromeos::switches::kLacrosChromeAdditionalArgs);
-  std::vector<std::string> delimited_flags = base::SplitStringUsingSubstr(
-      additional_flags, "####", base::TRIM_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& flag : delimited_flags) {
-    argv.push_back(flag);
-  }
+  std::vector<base::StringPiece> delimited_flags =
+      base::SplitStringPieceUsingSubstr(additional_flags, "####",
+                                        base::TRIM_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
+  for (const auto& flag : delimited_flags)
+    argv.emplace_back(flag);
 
   // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
   if (params.logfd.is_valid()) {

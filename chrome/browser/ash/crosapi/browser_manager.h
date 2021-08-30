@@ -280,7 +280,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
   void StartWithLogFile(mojom::InitialBrowserAction initial_browser_action,
-                        version_info::Channel update_channel,
                         LaunchParamsFromBackground params);
 
   // BrowserServiceHostObserver:
