@@ -8,32 +8,40 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Metrics, MetricsContext} from '../metrics.js';
 
-Polymer({
-  is: 'print-preview-more-settings',
+/** @polymer */
+class PrintPreviewMoreSettingsElement extends PolymerElement {
+  static get is() {
+    return 'print-preview-more-settings';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [I18nBehavior],
+  static get properties() {
+    return {
+      settingsExpandedByUser: {
+        type: Boolean,
+        notify: true,
+      },
 
-  properties: {
-    settingsExpandedByUser: {
-      type: Boolean,
-      notify: true,
-    },
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
-  },
+  constructor() {
+    super();
 
-  /** @private {!MetricsContext} */
-  metrics_: MetricsContext.printSettingsUi(),
+    /** @private {!MetricsContext} */
+    this.metrics_ = MetricsContext.printSettingsUi();
+  }
 
   /**
    * Toggles the expand button within the element being listened to.
@@ -59,5 +67,8 @@ Polymer({
         this.settingsExpandedByUser ?
             Metrics.PrintSettingsUiBucket.MORE_SETTINGS_CLICKED :
             Metrics.PrintSettingsUiBucket.LESS_SETTINGS_CLICKED);
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewMoreSettingsElement.is, PrintPreviewMoreSettingsElement);

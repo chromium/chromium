@@ -63,6 +63,8 @@ export {PrintPreviewLinkContainerElement} from './ui/link_container.js';
 export {PrintPreviewMarginControlElement} from './ui/margin_control.js';
 export {PrintPreviewMarginControlContainerElement} from './ui/margin_control_container.js';
 export {PrintPreviewMarginsSettingsElement} from './ui/margins_settings.js';
+export {PrintPreviewMediaSizeSettingsElement} from './ui/media_size_settings.js';
+export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_section.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
 export {SelectBehavior} from './ui/select_behavior.js';

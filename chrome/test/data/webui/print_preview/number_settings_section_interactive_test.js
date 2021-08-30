@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://print/print_preview.js';
+import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
 window.number_settings_section_interactive_test = {};
 number_settings_section_interactive_test.suiteName =
@@ -20,15 +22,14 @@ suite(number_settings_section_interactive_test.suiteName, function() {
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-
     document.body.innerHTML = `
           <print-preview-number-settings-section id="numberSettings"
               min-value="1" max-value="100" default-value="50"
               current-value="10" hint-message="incorrect value entered"
               input-valid>
           </print-preview-number-settings-section>`;
-    numberSettings = document.querySelector('#numberSettings');
+    numberSettings = /** @type {!PrintPreviewNumberSettingsSectionElement} */ (
+        document.querySelector('#numberSettings'));
   });
 
   // Verifies that blurring the input will reset it to the default if it is

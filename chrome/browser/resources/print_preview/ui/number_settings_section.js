@@ -7,77 +7,98 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputBehavior} from './input_behavior.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 
-Polymer({
-  is: 'print-preview-number-settings-section',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {InputBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewNumberSettingsSectionElementBase =
+    mixinBehaviors([InputBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewNumberSettingsSectionElement extends
+    PrintPreviewNumberSettingsSectionElementBase {
+  static get is() {
+    return 'print-preview-number-settings-section';
+  }
 
-  behaviors: [InputBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {string} */
-    inputString_: {
-      type: String,
-      notify: true,
-      observer: 'onInputChanged_',
-    },
+  static get properties() {
+    return {
+      /** @private {string} */
+      inputString_: {
+        type: String,
+        notify: true,
+        observer: 'onInputStringChanged_',
+      },
 
-    /** @type {boolean} */
-    inputValid: {
-      type: Boolean,
-      notify: true,
-      reflectToAttribute: true,
-      value: true,
-    },
+      /** @type {boolean} */
+      inputValid: {
+        type: Boolean,
+        notify: true,
+        reflectToAttribute: true,
+        value: true,
+      },
 
-    /** @type {string} */
-    currentValue: {
-      type: String,
-      notify: true,
-      observer: 'onCurrentValueChanged_',
-    },
+      /** @type {string} */
+      currentValue: {
+        type: String,
+        notify: true,
+        observer: 'onCurrentValueChanged_',
+      },
 
-    defaultValue: String,
+      defaultValue: String,
 
-    maxValue: Number,
+      maxValue: Number,
 
-    minValue: Number,
+      minValue: Number,
 
-    inputLabel: String,
+      inputLabel: String,
 
-    inputAriaLabel: String,
+      inputAriaLabel: String,
 
-    hintMessage: String,
+      hintMessage: String,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    /** @private */
-    errorMessage_: {
-      type: String,
-      computed: 'computeErrorMessage_(hintMessage, inputValid)',
-    },
-  },
+      /** @private */
+      errorMessage_: {
+        type: String,
+        computed: 'computeErrorMessage_(hintMessage, inputValid)',
+      },
 
-  listeners: {
-    'input-change': 'onInputChange_',
-  },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'input-change',
+        e => this.onInputChangeEvent_(/** @type {!CustomEvent<string>} */ (e)));
+  }
 
   /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
   getInput() {
     return /** @type {!CrInputElement} */ (this.$.userValue);
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e Contains the new input value.
    * @private
    */
-  onInputChange_(e) {
+  onInputChangeEvent_(e) {
     this.inputString_ = e.detail;
-  },
+  }
 
   /**
    * @return {boolean} Whether the input should be disabled.
@@ -85,10 +106,11 @@ Polymer({
    */
   getDisabled_() {
     return this.disabled && this.inputValid;
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e The keyboard event
+   * @private
    */
   onKeydown_(e) {
     if (['.', 'e', 'E', '-', '+'].includes(e.key)) {
@@ -99,7 +121,7 @@ Polymer({
     if (e.key === 'Enter') {
       this.onBlur_();
     }
-  },
+  }
 
   /** @private */
   onBlur_() {
@@ -109,19 +131,19 @@ Polymer({
     if (this.$.userValue.value === '') {
       this.$.userValue.value = this.defaultValue;
     }
-  },
+  }
 
   /** @private */
-  onInputChanged_() {
+  onInputStringChanged_() {
     this.inputValid = this.computeValid_();
     this.currentValue = this.inputString_;
-  },
+  }
 
   /** @private */
   onCurrentValueChanged_() {
     this.inputString_ = this.currentValue;
     this.resetString();
-  },
+  }
 
   /**
    * @return {boolean} Whether input value represented by inputString_ is
@@ -132,7 +154,7 @@ Polymer({
     // Make sure value updates first, in case inputString_ was updated by JS.
     this.$.userValue.value = this.inputString_;
     return !this.$.userValue.invalid;
-  },
+  }
 
   /**
    * @return {string}
@@ -140,5 +162,9 @@ Polymer({
    */
   computeErrorMessage_() {
     return this.inputValid ? '' : this.hintMessage;
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewNumberSettingsSectionElement.is,
+    PrintPreviewNumberSettingsSectionElement);

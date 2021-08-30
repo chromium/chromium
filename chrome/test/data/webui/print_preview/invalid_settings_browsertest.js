@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -352,7 +352,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
               assertEquals(State.ERROR, page.state);
               assertTrue(
                   layoutSettings.shadowRoot.querySelector('select').disabled);
-              assertTrue(scalingSettings.$$('cr-input').disabled);
+              assertTrue(scalingSettings.shadowRoot.querySelector('cr-input')
+                             .disabled);
 
               // The destination select dropdown should be enabled, so that the
               // user can select a new printer.
@@ -377,7 +378,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
               // Settings sections are now active.
               assertFalse(
                   layoutSettings.shadowRoot.querySelector('select').disabled);
-              assertFalse(scalingSettings.$$('cr-input').disabled);
+              assertFalse(scalingSettings.shadowRoot.querySelector('cr-input')
+                              .disabled);
 
               // The destination select dropdown should still be enabled.
               assertFalse(destinationSettings.shadowRoot

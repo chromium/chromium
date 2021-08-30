@@ -5,26 +5,43 @@
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 import {SelectOption} from './settings_select.js';
 
-Polymer({
-  is: 'print-preview-media-size-settings',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewMediaSizeSettingsElementBase =
+    mixinBehaviors([SettingsBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewMediaSizeSettingsElement extends
+    PrintPreviewMediaSizeSettingsElementBase {
+  static get is() {
+    return 'print-preview-media-size-settings';
+  }
 
-  behaviors: [SettingsBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    capability: Object,
+  static get properties() {
+    return {
+      capability: Object,
 
-    disabled: Boolean,
-  },
+      disabled: Boolean,
+    };
+  }
 
-  observers:
-      ['onMediaSizeSettingChange_(settings.mediaSize.*, capability.option)'],
+  static get observers() {
+    return [
+      'onMediaSizeSettingChange_(settings.mediaSize.*, capability.option)',
+    ];
+  }
 
   /** @private */
   onMediaSizeSettingChange_() {
@@ -35,7 +52,8 @@ Polymer({
     for (const option of
          /** @type {!Array<!SelectOption>} */ (this.capability.option)) {
       if (JSON.stringify(option) === valueToSet) {
-        this.$$('print-preview-settings-select').selectValue(valueToSet);
+        this.shadowRoot.querySelector('print-preview-settings-select')
+            .selectValue(valueToSet);
         return;
       }
     }
@@ -43,5 +61,9 @@ Polymer({
     const defaultOption = this.capability.option.find(o => !!o.is_default) ||
         this.capability.option[0];
     this.setSetting('mediaSize', defaultOption);
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewMediaSizeSettingsElement.is,
+    PrintPreviewMediaSizeSettingsElement);
