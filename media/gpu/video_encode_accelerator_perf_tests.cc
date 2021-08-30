@@ -37,7 +37,8 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_encode_accelerator_perf_tests\n"
     "           [--codec=<codec>] [--num_spatial_layers=<number>]\n"
-    "           [--num_temporal_layers=<number>] [--bitrate=<bitrate>]\n"
+    "           [--num_temporal_layers=<number>] [--reverse]\n"
+    "           [--bitrate=<bitrate>]\n"
     "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
     "           [--gtest_help] [--help]\n"
     "           [<video path>] [<video metadata path>]\n";
@@ -59,6 +60,9 @@ constexpr const char* help_msg =
     "  --num_temporal_layers the number of temporal layers of the encoded\n"
     "                        bitstream. A default value is 1. Only affected\n"
     "                        if --codec=vp9 currently.\n"
+    "  --reverse             the stream plays backwards if the stream reaches\n"
+    "                        end of stream. So the input stream to be encoded\n"
+    "                        is consecutive. By default this is false.\n"
     "  --bitrate             bitrate (bits in second) of a produced bitstram.\n"
     "                        If not specified, a proper value for the video\n"
     "                        resolution is selected by the test.\n"
@@ -469,7 +473,8 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(!bitstream_processors.empty())
         << "Failed to create bitstream processors";
 
-    VideoEncoderClientConfig config(video, profile, spatial_layers, bitrate);
+    VideoEncoderClientConfig config(video, profile, spatial_layers, bitrate,
+                                    g_env->Reverse());
     config.input_storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
@@ -539,7 +544,7 @@ class VideoEncoderTest : public ::testing::Test {
           spatial_layers) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
 
-    raw_data_helper_ = RawDataHelper::Create(video);
+    raw_data_helper_ = RawDataHelper::Create(video, g_env->Reverse());
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
       return bitstream_processors;
@@ -576,8 +581,7 @@ class VideoEncoderTest : public ::testing::Test {
   scoped_refptr<const VideoFrame> GetModelFrame(const gfx::Rect& visible_rect,
                                                 size_t frame_index) {
     LOG_ASSERT(raw_data_helper_);
-    auto frame =
-        raw_data_helper_->GetFrame(frame_index % g_env->Video()->NumFrames());
+    auto frame = raw_data_helper_->GetFrame(frame_index);
     if (!frame)
       return nullptr;
     if (visible_rect.size() == frame->visible_rect().size())
@@ -674,6 +678,7 @@ int main(int argc, char** argv) {
   std::string codec = "h264";
   size_t num_spatial_layers = 1u;
   size_t num_temporal_layers = 1u;
+  bool reverse = false;
   absl::optional<uint32_t> encode_bitrate;
 
   // Parse command line arguments.
@@ -711,6 +716,8 @@ int main(int argc, char** argv) {
                   << "\n";
         return EXIT_FAILURE;
       }
+    } else if (it->first == "reverse") {
+      reverse = true;
     } else if (it->first == "bitrate") {
       unsigned value;
       if (!base::StringToUint(it->second, &value)) {
@@ -733,7 +740,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
           codec, num_temporal_layers, num_spatial_layers,
-          false /* output_bitstream */, encode_bitrate);
+          false /* output_bitstream */, encode_bitrate, reverse);
   if (!test_environment)
     return EXIT_FAILURE;
 

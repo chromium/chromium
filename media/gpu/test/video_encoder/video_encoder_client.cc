@@ -52,7 +52,8 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     VideoCodecProfile output_profile,
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
-    const VideoBitrateAllocation& bitrate)
+    const VideoBitrateAllocation& bitrate,
+    bool reverse)
     : output_profile(output_profile),
       output_resolution(video->Resolution()),
       num_temporal_layers(spatial_layers.empty()
@@ -63,7 +64,8 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       spatial_layers(spatial_layers),
       bitrate(bitrate),
       framerate(video->FrameRate()),
-      num_frames_to_encode(video->NumFrames()) {}
+      num_frames_to_encode(video->NumFrames()),
+      reverse(reverse) {}
 
 VideoEncoderClientConfig::VideoEncoderClientConfig(
     const VideoEncoderClientConfig&) = default;
@@ -304,7 +306,9 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   // Follow the behavior of the chrome capture stack; |natural_size| is the
   // dimension to be encoded.
   aligned_data_helper_ = std::make_unique<AlignedDataHelper>(
-      video_->Data(), video_->NumFrames(), video_->PixelFormat(),
+      video_->Data(), video_->NumFrames(),
+      encoder_client_config_.num_frames_to_encode,
+      encoder_client_config_.reverse, video_->PixelFormat(),
       /*src_coded_size=*/video_->Resolution(),
       /*dst_coded_size=*/coded_size,
       /*visible_rect=*/video_->VisibleRect(),
@@ -516,17 +520,13 @@ void VideoEncoderClient::EncodeNextFrameTask() {
   if (encoder_client_state_ != VideoEncoderClientState::kEncoding)
     return;
 
-  const bool end_of_stream =
-      encoder_client_config_.num_frames_to_encode == num_encodes_requested_;
-  if (end_of_stream) {
+  if (aligned_data_helper_->AtEndOfStream()) {
     // Flush immediately when we reached the end of the stream (either the real
     // end, or the artificial end when using num_encode_frames). This changes
     // the state to kFlushing so further encode tasks will be aborted.
     FlushTask();
     return;
   }
-  if (aligned_data_helper_->AtEndOfStream())
-    aligned_data_helper_->Rewind();
 
   scoped_refptr<VideoFrame> video_frame = aligned_data_helper_->GetNextFrame();
   ASSERT_TRUE(video_frame);

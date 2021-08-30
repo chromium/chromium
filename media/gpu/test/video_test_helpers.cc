@@ -49,6 +49,23 @@ bool IsHevcSPSNALU(const uint8_t* data, size_t size) {
          (size >= 5 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 &&
           data[3] == 0x1 && (data[4] & 0x7e) == 0x42);
 }
+
+// If |reverse| is true , GetNextFrame() for a frame returns frames in a
+// round-trip playback fashion (0, 1,.., |num_frames| - 2, |num_frames| - 1,
+// |num_frames| - 1, |num_frames_| - 2,.., 1, 0, 0, 1,..).
+// If |reverse| is false, GetNextFrame() just loops the stream (0, 1,..,
+// |num_frames| - 2, |num_frames| - 1, 0, 1,..).
+uint32_t GetReadFrameIndex(uint32_t frame_index,
+                           bool reverse,
+                           uint32_t num_frames) {
+  if (!reverse)
+    return frame_index % num_frames;
+
+  const uint32_t number_of_loops = frame_index / num_frames;
+  const bool is_even_loop = number_of_loops % 2 == 0;
+  const uint32_t local_index = frame_index % num_frames;
+  return is_even_loop ? local_index : num_frames - local_index - 1;
+}
 }  // namespace
 
 IvfFileHeader GetIvfFileHeader(const base::span<const uint8_t>& data) {
@@ -384,6 +401,8 @@ struct AlignedDataHelper::VideoFrameData {
 AlignedDataHelper::AlignedDataHelper(
     const std::vector<uint8_t>& stream,
     uint32_t num_frames,
+    uint32_t num_read_frames,
+    bool reverse,
     VideoPixelFormat pixel_format,
     const gfx::Size& src_coded_size,
     const gfx::Size& dst_coded_size,
@@ -393,6 +412,8 @@ AlignedDataHelper::AlignedDataHelper(
     VideoFrame::StorageType storage_type,
     gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
     : num_frames_(num_frames),
+      num_read_frames_(num_read_frames),
+      reverse_(reverse),
       storage_type_(storage_type),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
@@ -428,7 +449,7 @@ bool AlignedDataHelper::AtHeadOfStream() const {
 }
 
 bool AlignedDataHelper::AtEndOfStream() const {
-  return frame_index_ == num_frames_;
+  return frame_index_ == num_read_frames_;
 }
 
 void AlignedDataHelper::UpdateFrameRate(uint32_t frame_rate) {
@@ -451,8 +472,10 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 
   elapsed_frame_time_ += time_stamp_interval_;
 
+  uint32_t read_frame_index =
+      GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    const auto& gmb_handle = video_frame_data_[frame_index_++].gmb_handle;
+    const auto& gmb_handle = video_frame_data_[read_frame_index].gmb_handle;
     auto dup_handle = gmb_handle.Clone();
     if (dup_handle.is_null()) {
       LOG(ERROR) << "Failed duplicating GpuMemoryBufferHandle";
@@ -484,7 +507,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
         frame_timestamp);
   } else {
-    const auto& mojo_handle = video_frame_data_[frame_index_++].mojo_handle;
+    const auto& mojo_handle = video_frame_data_[read_frame_index].mojo_handle;
     auto dup_handle =
         mojo_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
     if (!dup_handle.is_valid()) {
@@ -623,7 +646,8 @@ VideoFrameLayout AlignedDataHelper::GetAlignedVideoFrameLayout(
 }
 
 // static
-std::unique_ptr<RawDataHelper> RawDataHelper::Create(Video* video) {
+std::unique_ptr<RawDataHelper> RawDataHelper::Create(Video* video,
+                                                     bool reverse) {
   size_t frame_size = 0;
   VideoPixelFormat pixel_format = video->PixelFormat();
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
@@ -666,24 +690,25 @@ std::unique_ptr<RawDataHelper> RawDataHelper::Create(Video* video) {
     return nullptr;
   }
 
-  return base::WrapUnique(new RawDataHelper(video, frame_size, *layout));
+  return base::WrapUnique(
+      new RawDataHelper(video, reverse, frame_size, *layout));
 }
 
 RawDataHelper::RawDataHelper(Video* video,
+                             bool reverse,
                              size_t frame_size,
                              const VideoFrameLayout& layout)
-    : video_(video), frame_size_(frame_size), layout_(layout) {}
+    : video_(video),
+      reverse_(reverse),
+      frame_size_(frame_size),
+      layout_(layout) {}
 
 RawDataHelper::~RawDataHelper() = default;
 
 scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) {
-  if (index >= video_->NumFrames()) {
-    LOG(ERROR) << "index is too big. index=" << index
-               << ", num_frames=" << video_->NumFrames();
-    return nullptr;
-  }
-
-  size_t offset = frame_size_ * index;
+  uint32_t read_frame_index =
+      GetReadFrameIndex(index, reverse_, video_->NumFrames());
+  size_t offset = frame_size_ * read_frame_index;
   uint8_t* frame_data[VideoFrame::kMaxPlanes] = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
   for (size_t i = 0; i < num_planes; ++i) {

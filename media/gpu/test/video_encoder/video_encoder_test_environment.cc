@@ -157,6 +157,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     size_t num_spatial_layers,
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
+    bool reverse,
     const FrameOutputConfig& frame_output_config) {
   if (video_path.empty()) {
     LOG(ERROR) << "No video specified";
@@ -209,7 +210,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
       num_temporal_layers, num_spatial_layers, bitrate, save_output_bitstream,
-      frame_output_config);
+      reverse, frame_output_config);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -221,6 +222,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     size_t num_spatial_layers,
     uint32_t bitrate,
     bool save_output_bitstream,
+    bool reverse,
     const FrameOutputConfig& frame_output_config)
     : VideoTestEnvironment(kEnabledFeaturesForVideoEncoderTest,
                            kDisabledFeaturesForVideoEncoderTest),
@@ -236,6 +238,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
                                               num_spatial_layers_,
                                               num_temporal_layers_)),
       save_output_bitstream_(save_output_bitstream),
+      reverse_(reverse),
       frame_output_config_(frame_output_config),
       gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
@@ -304,6 +307,10 @@ VideoBitrateAllocation VideoEncoderTestEnvironment::Bitrate() const {
 
 bool VideoEncoderTestEnvironment::SaveOutputBitstream() const {
   return save_output_bitstream_;
+}
+
+bool VideoEncoderTestEnvironment::Reverse() const {
+  return reverse_;
 }
 
 const FrameOutputConfig& VideoEncoderTestEnvironment::ImageOutputConfig()

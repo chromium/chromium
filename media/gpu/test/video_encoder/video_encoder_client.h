@@ -41,7 +41,8 @@ struct VideoEncoderClientConfig {
       VideoCodecProfile output_profile,
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
-      const media::VideoBitrateAllocation& bitrate);
+      const media::VideoBitrateAllocation& bitrate,
+      bool reverse);
   VideoEncoderClientConfig(const VideoEncoderClientConfig&);
   ~VideoEncoderClientConfig();
 
@@ -72,6 +73,9 @@ struct VideoEncoderClientConfig {
   // The storage type of the input VideoFrames.
   VideoEncodeAccelerator::Config::StorageType input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kShmem;
+  // True if the video should play backwards at reaching the end of video.
+  // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
+  const bool reverse = false;
 };
 
 struct VideoEncoderStats {

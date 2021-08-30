@@ -41,7 +41,7 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_encode_accelerator_tests\n"
     "           [--codec=<codec>] [--num_temporal_layers=<number>]\n"
-    "           [--num_spatial_layers=<number>]\n"
+    "           [--num_spatial_layers=<number>] [--reverse]\n"
     "           [--disable_validator] [--output_bitstream]\n"
     "           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]\n"
     "           [--output_folder=<filepath>] [--output_limit=<number>]\n"
@@ -67,6 +67,9 @@ constexpr const char* help_msg =
     "                        bitstream. Only used in --codec=vp9 currently.\n"
     "                        Spatial SVC encoding is applied only in\n"
     "                        NV12Dmabuf test cases.\n"
+    "  --reverse             the stream plays backwards if the stream reaches\n"
+    "                        end of stream. So the input stream to be encoded\n"
+    "                        is consecutive. By default this is false. \n"
     "  --disable_validator   disable validation of encoded bitstream.\n"
     "  --output_bitstream    save the output bitstream in either H264 AnnexB\n"
     "                        format (for H264) or IVF format (for vp8 and\n"
@@ -113,7 +116,8 @@ class VideoEncoderTest : public ::testing::Test {
     CHECK_LE(spatial_layers.size(), 1u);
 
     return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    spatial_layers, g_env->Bitrate());
+                                    spatial_layers, g_env->Bitrate(),
+                                    g_env->Reverse());
   }
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
@@ -266,7 +270,7 @@ class VideoEncoderTest : public ::testing::Test {
         break;
     }
 
-    raw_data_helper_ = RawDataHelper::Create(video);
+    raw_data_helper_ = RawDataHelper::Create(video, g_env->Reverse());
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
       return bitstream_processors;
@@ -324,8 +328,7 @@ class VideoEncoderTest : public ::testing::Test {
   scoped_refptr<const VideoFrame> GetModelFrame(const gfx::Rect& visible_rect,
                                                 size_t frame_index) {
     LOG_ASSERT(raw_data_helper_);
-    auto frame =
-        raw_data_helper_->GetFrame(frame_index % g_env->Video()->NumFrames());
+    auto frame = raw_data_helper_->GetFrame(frame_index);
     if (!frame)
       return nullptr;
     if (visible_rect.size() == frame->visible_rect().size())
@@ -584,7 +587,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 
   Video* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate(),
+                                  g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
@@ -631,7 +635,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   }
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers,
-      g_env->GetDefaultVideoBitrateAllocation(new_bitrate));
+      g_env->GetDefaultVideoBitrateAllocation(new_bitrate), g_env->Reverse());
   config.output_resolution = output_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -672,7 +676,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate(),
+                                  g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -713,7 +718,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate(),
+                                  g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -773,7 +779,8 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
   bitrate_allocations.emplace_back(bitrate_allocation);
 
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate(),
+                                  g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());
@@ -825,6 +832,7 @@ int main(int argc, char** argv) {
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
   bool output_bitstream = false;
+  bool reverse = false;
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath output_folder =
       base::FilePath(base::FilePath::kCurrentDirectory);
@@ -856,6 +864,8 @@ int main(int argc, char** argv) {
       enable_bitstream_validator = false;
     } else if (it->first == "output_bitstream") {
       output_bitstream = true;
+    } else if (it->first == "reverse") {
+      reverse = true;
     } else if (it->first == "output_images") {
       if (it->second == "all") {
         frame_output_config.output_mode = media::test::FrameOutputMode::kAll;
@@ -902,7 +912,7 @@ int main(int argc, char** argv) {
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, num_temporal_layers, num_spatial_layers,
           output_bitstream,
-          /*output_bitrate=*/absl::nullopt, frame_output_config);
+          /*output_bitrate=*/absl::nullopt, reverse, frame_output_config);
 
   if (!test_environment)
     return EXIT_FAILURE;

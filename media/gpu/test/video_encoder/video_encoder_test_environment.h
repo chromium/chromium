@@ -43,8 +43,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const std::string& codec,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
-      bool output_bitstream,
+      bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
+      bool reverse,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
 
   ~VideoEncoderTestEnvironment() override;
@@ -69,6 +70,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   VideoBitrateAllocation Bitrate() const;
   // Whether the encoded bitstream is saved to disk.
   bool SaveOutputBitstream() const;
+  // True if the video should play backwards at reaching the end of video.
+  // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
+  bool Reverse() const;
   absl::optional<base::FilePath> OutputBitstreamFilePath() const;
   // Gets the frame output configuration.
   const FrameOutputConfig& ImageOutputConfig() const;
@@ -91,6 +95,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
                               size_t num_spatial_layers,
                               uint32_t bitrate,
                               bool save_output_bitstream,
+                              bool reverse,
                               const FrameOutputConfig& frame_output_config);
 
   // Video file to be used for testing.
@@ -116,6 +121,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   std::vector<VideoEncodeAccelerator::Config::SpatialLayer> spatial_layers_;
   // Whether the bitstream produced by VideoEncoder is saved to disk.
   const bool save_output_bitstream_;
+  // True if the video should play backwards at reaching the end of video.
+  // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
+  const bool reverse_;
   // The configuration about saving decoded images of bitstream encoded by
   // VideoEncoder.
   // The configuration used when saving the decoded images of bitstream encoded
