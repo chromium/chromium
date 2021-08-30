@@ -4987,7 +4987,7 @@
                         "CrosHealthdProducerFrequencySeconds": "60",
                         "DiagnosticsLoggerEnabled": "true",
                         "ProcessLoggerEnabled": "true",
-                        "SystemLoggerEnabled": "true",
+                        "SystemLoggerEnabled": "false",
                         "SystemLoggerFrequencySeconds": "30"
                     },
                     "enable_features": [
