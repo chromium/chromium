@@ -1435,7 +1435,9 @@ void CopyPasswordDetailWithID(int detail_id) {
 }
 
 // Checks that attempts to edit a password provide appropriate feedback.
-- (void)testEditPassword {
+// Disabled test due to multiple builder failulres.
+// TODO(crbug.com/1245004): re-enable the test with fix.
+- (void)DISABLED_testEditPassword {
   SaveExamplePasswordForm();
 
   OpenPasswordSettings();
