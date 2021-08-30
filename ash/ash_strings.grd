@@ -530,6 +530,15 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
         <ph name="NUM_DEVICES">$1<ex>3</ex></ph> devices
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE" desc="The sub-header label for the button to pair a new device.">
+        Pair new device
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_CURRENTLY_CONNECTED_DEVICES" desc="The sub-header label for currently connected devices in Bluetooth device list.">
+        Currently connected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_PREVIOUSLY_CONNECTED_DEVICES" desc="The sub-header label for previously connected devices in Bluetooth device list.">
+        Previously connected
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
         Restart to update

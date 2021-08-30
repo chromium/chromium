@@ -275,6 +275,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_menu_bluetooth.icon",
     "system_menu_bluetooth_connected.icon",
     "system_menu_bluetooth_disabled.icon",
+    "system_menu_bluetooth_plus.icon",
     "system_menu_brightness.icon",
     "system_menu_business.icon",
     "system_menu_caps_lock.icon",
