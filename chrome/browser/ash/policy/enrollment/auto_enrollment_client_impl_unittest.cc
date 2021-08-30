@@ -141,17 +141,7 @@ class AutoEnrollmentClientImplTest
         local_state_(scoped_testing_local_state_.Get()),
         state_(AUTO_ENROLLMENT_STATE_PENDING) {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) const {
-    // Disable PSM switch when its protocol state param is kDisabled.
-    if (GetPsmState() == PsmState::kDisabled) {
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kEnterpriseEnablePsm,
-          ash::AutoEnrollmentController::kEnablePsmNever);
-    }
-  }
-
   void SetUp() override {
-    SetUpCommandLine(base::CommandLine::ForCurrentProcess());
     CreateClient(kPowerStart, kPowerLimit);
     ASSERT_FALSE(local_state_->GetUserPref(prefs::kShouldAutoEnroll));
     ASSERT_FALSE(local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
