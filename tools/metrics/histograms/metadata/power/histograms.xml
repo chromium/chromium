@@ -526,7 +526,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-03-31">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -536,7 +536,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2022-03-31">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1075,7 +1075,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.NumberOfSessionsPerCharge" units="units"
-    expires_after="2021-10-04">
+    expires_after="2022-03-31">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
