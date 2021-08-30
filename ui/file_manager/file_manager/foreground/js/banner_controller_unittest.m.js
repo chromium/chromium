@@ -31,6 +31,9 @@ let mockChromeFileManagerPrivate;
 /** @type {?VolumeInfo} */
 let volumeManagerGetVolumeInfoType;
 
+/** @type {{ setDate: !function(number), restoreDate: !function()}} */
+let mockDate;
+
 /**
  * @typedef {{
  *    setAllowedVolumeTypes: function(!Array<!Banner.AllowedVolumeType>),
@@ -38,6 +41,7 @@ let volumeManagerGetVolumeInfoType;
  *    setDiskThreshold:
  * function((!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined)),
  *    setHideAfterDismissedDurationSeconds: function(number),
+ *    setTimeLimit: function(number),
  *    reset: function(),
  *    tagName: string,
  * }}
@@ -107,6 +111,11 @@ function createTestBanner(tagName) {
    */
   let hideAfterDismissDurationSeconds;
 
+  /**
+   * @type {number|undefined}
+   */
+  let timeLimitSeconds;
+
   class FakeBanner extends Banner {
     allowedVolumeTypes() {
       return allowedVolumeTypes;
@@ -118,6 +127,10 @@ function createTestBanner(tagName) {
 
     diskThreshold() {
       return diskThreshold;
+    }
+
+    timeLimit() {
+      return timeLimitSeconds;
     }
 
     hideAfterDismissedDurationSeconds() {
@@ -144,6 +157,9 @@ function createTestBanner(tagName) {
     },
     setHideAfterDismissedDurationSeconds: (duration) => {
       hideAfterDismissDurationSeconds = duration;
+    },
+    setTimeLimit: (seconds) => {
+      timeLimitSeconds = seconds;
     },
     // Element.tagName returns uppercase.
     tagName: tagName.toUpperCase(),
@@ -259,7 +275,7 @@ function clickDismissButton(banner) {
  * to restore the Date.now() to it's existing functionality.
  * @returns {{ setDate: !function(number), restoreDate: !function() }}
  */
-function mockDate() {
+function mockDateNow() {
   const dateNowRestore = Date.now;
   const setDate = (seconds) => {
     // Date.now works in milliseconds, convert seconds appropriately.
@@ -312,6 +328,8 @@ export function setUp() {
   controller = new BannerController(directoryModel, volumeManager);
   controller.disableBannersForTesting();
 
+  mockDate = mockDateNow();
+
   // Ensure localStorage is cleared between each test.
   xfm.storage.local.clear();
 }
@@ -323,6 +341,8 @@ export function tearDown() {
     testWarningBanners[i].reset();
     testEducationalBanners[i].reset();
   }
+
+  mockDate.restoreDate();
 }
 
 /**
@@ -754,23 +774,18 @@ export async function testDismissedBannerShowsAfterDuration() {
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
 
-  const mock = mockDate();
-
   // Move the clock to 10s and click the dismiss button. This should have the
   // banner be hidden for the duration [10s, 25s].
-  mock.setDate(10);
+  mockDate.setDate(10);
   clickDismissButton(testWarningBanners[0]);
   await waitUntil(isAllBannersHidden);
 
   // Move the clock to 1 second after the banner duration has expired (banner
   // expires at 25s, so 26s the banner should appear again). Change the
   // directory to the same place to kick off a reconciliation.
-  mock.setDate(26);
+  mockDate.setDate(26);
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
-
-  // Restore the Date.now() function to prior to it's mock.
-  mock.restoreDate();
 }
 
 /**
@@ -849,5 +864,69 @@ export async function testMultipleWinningBannersOnlyTopPriorityShown() {
   // even though shouldShowBanner returns true, as the warning banner is higher
   // priority.
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+}
+
+/**
+ * Test that a banner with timeLimit set hides after the defined time limit.
+ * @suppress {accessControls} to call updateTimeLimit_ on BannerController.
+ */
+export async function testTimeLimitReachedHidesBanner() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setTimeLimit(60);
+
+  mockDate.setDate(1);
+
+  // Verify that the banner is initially shown correctly then manually invoke
+  // the updateTimeLimit_. The time limit is updated after the first interval so
+  // we can expect the time limit to be
+  // 1 + DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  const banner = /** @type{!Banner} */ (
+      document.querySelector(testWarningBanners[0].tagName));
+  await controller.updateTimeLimit_(banner);
+
+  // Move the clock to 30 seconds and update the time limit shown. Given the
+  // time limit is updated after the fact the time shown is at 10s now, so we
+  // expect this to update to 40s (still below the 60s time limit).
+  mockDate.setDate(30);
+  await controller.updateTimeLimit_(banner);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+
+  // Move the clock to 61 and update the time limit shown. The time limit should
+  // be recorded as 40s and this should take it to 61s which is beyond the time
+  // limit specified and thus should be hidden.
+  mockDate.setDate(61);
+  await controller.updateTimeLimit_(banner);
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that the constant Banner.INFINITE_TIME allows the banner to display for
+ * a super long time.
+ * @suppress {accessControls} to call updateTimeLimit_ on BannerController.
+ */
+export async function testInfiniteTimeLimitWorks() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setTimeLimit(Banner.INIFINITE_TIME);
+
+  mockDate.setDate(1);
+
+  // Verify that the banner is initially shown correctly then manually invoke
+  // the updateTimeLimit_.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  const banner = /** @type{!Banner} */ (
+      document.querySelector(testWarningBanners[0].tagName));
+  await controller.updateTimeLimit_(banner);
+
+  // Move the clock to 9999999 seconds and verify the banner is still visible.
+  mockDate.setDate(9999999);
+  await controller.updateTimeLimit_(banner);
   await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
 }

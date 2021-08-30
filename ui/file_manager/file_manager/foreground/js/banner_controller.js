@@ -27,6 +27,19 @@ const VIEW_COUNTER_SUFFIX = '_VIEW_COUNTER';
 const LAST_DISMISSED_SUFFIX = '_LAST_DISMISSED';
 
 /**
+ * Local storage key suffix that stores the total number of seconds a banner has
+ * been visible for.
+ * @type {string}
+ */
+const MS_DISPLAYED_SUFFIX = '_SECONDS_DISPLAYED';
+
+/**
+ * Duration between calls to keep the current banners time limit in sync.
+ * @type {number}
+ */
+const DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS = 10000;
+
+/**
  * The HTML attribute to force show a banner, if applied, the banner will always
  * show.
  * @private {string}
@@ -115,6 +128,19 @@ export class BannerController extends EventTarget {
     this.disableBanners_ = false;
 
     /**
+     * setInterval handle that keeps track of the total time a banner has
+     * been shown for.
+     * @private {?number|undefined}
+     */
+    this.timeLimitInterval_ = null;
+
+    /**
+     * Last time that the setInterval was invoked.
+     * @private {?number}
+     */
+    this.timeLimitIntervalLastInvokedMs_ = null;
+
+    /**
      * Bind the onDirectorySizeChanged_ method to this instance once.
      * @private {!function(!chrome.fileManagerPrivate.FileWatchEvent)}
      */
@@ -141,13 +167,15 @@ export class BannerController extends EventTarget {
     }
 
     for (const banner of this.warningBanners_) {
-      this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
       this.localStorageCache_[`${banner.tagName}_${LAST_DISMISSED_SUFFIX}`] = 0;
+      this.localStorageCache_[`${banner.tagName}_${MS_DISPLAYED_SUFFIX}`] = 0;
+      this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
 
       this.maybeAddVolumeSizeObserver_(banner);
     }
 
     for (const banner of this.educationalBanners_) {
+      this.localStorageCache_[`${banner.tagName}_${MS_DISPLAYED_SUFFIX}`] = 0;
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
 
       this.maybeAddVolumeSizeObserver_(banner);
@@ -254,6 +282,15 @@ export class BannerController extends EventTarget {
       return false;
     }
 
+    // Check if the banner has been shown for more than it's required limit.
+    // Date.now returns in milliseconds so convert seconds into milliseconds.
+    const timeLimitMs = banner.timeLimit() * 1000;
+    const totalTimeShownMs =
+        this.localStorageCache_[`${banner.tagName}_${MS_DISPLAYED_SUFFIX}`];
+    if (timeLimitMs && timeLimitMs < totalTimeShownMs) {
+      return false;
+    }
+
     return true;
   }
 
@@ -275,6 +312,15 @@ export class BannerController extends EventTarget {
       }
     }
 
+    // If the banner to be shown needs to checkpoint it's time shown, start
+    // the checkpoint interval.
+    this.resetTimeLimitInterval_();
+    if (banner.timeLimit() && banner.timeLimit() !== Banner.INIFINITE_TIME) {
+      this.timeLimitInterval_ = setInterval(
+          () => this.updateTimeLimit_(banner),
+          DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS);
+    }
+
     banner.removeAttribute('hidden');
     banner.setAttribute('aria-hidden', 'false');
 
@@ -287,10 +333,11 @@ export class BannerController extends EventTarget {
    * @private
    */
   hideBannerIfShown_(banner) {
-    if (banner.parentElement !== this.container_) {
+    if (!banner.isConnected) {
       return;
     }
 
+    this.resetTimeLimitInterval_();
     banner.toggleAttribute('hidden', true);
     banner.setAttribute('aria-hidden', 'true');
   }
@@ -354,6 +401,17 @@ export class BannerController extends EventTarget {
    */
   disableBannersForTesting() {
     this.disableBanners_ = true;
+  }
+
+  /**
+   * Clears the time interval and resets the tracked interval and time in ms
+   * back to null.
+   * @private
+   */
+  resetTimeLimitInterval_() {
+    clearInterval(this.timeLimitInterval_);
+    this.timeLimitInterval_ = null;
+    this.timeLimitIntervalLastInvokedMs_ = null;
   }
 
   /**
@@ -478,6 +536,32 @@ export class BannerController extends EventTarget {
     }
     this.volumeSizeStats_[eventVolumeInfo.volumeId] = sizeStats;
     await this.reconcile();
+  }
+
+  /**
+   * Updates the time limit for the bound banner. Ensures the time limit only
+   * loses DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS granularity in the event
+   * of a crash or the Files app window is closed.
+   * @param {!Banner} banner The banner that requires it's time limit updated.
+   * @private
+   */
+  async updateTimeLimit_(banner) {
+    const localStorageKey = `${banner.tagName}_${MS_DISPLAYED_SUFFIX}`;
+    const currentDateNowMs = Date.now();
+    const durationBannerHasBeenShownMs =
+        (this.timeLimitIntervalLastInvokedMs_) ?
+        (Date.now() - this.timeLimitIntervalLastInvokedMs_) :
+        DURATION_BETWEEN_TIME_LIMIT_UPDATES_MS;
+    await this.setLocalStorage_(
+        localStorageKey,
+        durationBannerHasBeenShownMs +
+            this.localStorageCache_[localStorageKey]);
+    this.timeLimitIntervalLastInvokedMs_ = currentDateNowMs;
+
+    // Hide the banner if it's reached the time limit.
+    if (!this.shouldShowBanner_(banner)) {
+      await this.reconcile();
+    }
   }
 
   /**

@@ -93,3 +93,9 @@ Banner.Event = {
   BANNER_DISMISSED: 'banner-dismissed',
   BANNER_DISMISSED_FOREVER: 'banner-dismissed-forever',
 };
+
+/**
+ * Used to denote a banner that shows has an infinite time limit.
+ * @const {number}
+ */
+Banner.INIFINITE_TIME = 0;
