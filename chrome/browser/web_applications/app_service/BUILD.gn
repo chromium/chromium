@@ -8,8 +8,8 @@ source_set("app_service") {
   sources = [
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
-    "web_apps_base.cc",
-    "web_apps_base.h",
+    "web_apps.cc",
+    "web_apps.h",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ui" ]

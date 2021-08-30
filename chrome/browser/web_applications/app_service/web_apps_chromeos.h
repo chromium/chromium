@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/app_service/web_apps_base.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -21,7 +21,7 @@ class Profile;
 namespace web_app {
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebAppsChromeOs : public WebAppsBase {
+class WebAppsChromeOs : public WebApps {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,

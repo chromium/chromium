@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_H_
 
 #include <memory>
 #include <string>
@@ -34,15 +34,15 @@ class WebAppProvider;
 class WebAppRegistrar;
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebAppsBase : public apps::PublisherBase,
-                    public WebAppPublisherHelper::Delegate,
-                    public base::SupportsWeakPtr<WebAppsBase> {
+class WebApps : public apps::PublisherBase,
+                public WebAppPublisherHelper::Delegate,
+                public base::SupportsWeakPtr<WebApps> {
  public:
-  WebAppsBase(const mojo::Remote<apps::mojom::AppService>& app_service,
-              Profile* profile);
-  WebAppsBase(const WebAppsBase&) = delete;
-  WebAppsBase& operator=(const WebAppsBase&) = delete;
-  ~WebAppsBase() override;
+  WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+          Profile* profile);
+  WebApps(const WebApps&) = delete;
+  WebApps& operator=(const WebApps&) = delete;
+  ~WebApps() override;
 
   // Uninstall for web apps on Chrome.
   static void UninstallImpl(WebAppProvider* provider,
@@ -130,4 +130,4 @@ class WebAppsBase : public apps::PublisherBase,
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_H_

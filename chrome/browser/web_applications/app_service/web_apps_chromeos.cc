@@ -58,7 +58,7 @@ WebAppsChromeOs::WebAppsChromeOs(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     Profile* profile,
     apps::InstanceRegistry* instance_registry)
-    : WebAppsBase(app_service, profile), instance_registry_(instance_registry) {
+    : WebApps(app_service, profile), instance_registry_(instance_registry) {
   DCHECK(instance_registry_);
   Initialize();
 }

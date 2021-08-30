@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_base.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 
 #include <utility>
 
@@ -59,7 +59,7 @@ apps::mojom::AppType GetWebAppType() {
 bool ShouldObserveMediaRequests() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // The publisher helper owned by WebAppsPublisherHost observes media requests,
-  // not the publisher helper owned by WebAppsBase.
+  // not the publisher helper owned by WebApps.
   return false;
 #else
   return true;
@@ -68,9 +68,8 @@ bool ShouldObserveMediaRequests() {
 
 }  // namespace
 
-WebAppsBase::WebAppsBase(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
+WebApps::WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+                 Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       app_service_(nullptr),
@@ -83,13 +82,13 @@ WebAppsBase::WebAppsBase(
   Initialize(app_service);
 }
 
-WebAppsBase::~WebAppsBase() = default;
+WebApps::~WebApps() = default;
 
 // static
-void WebAppsBase::UninstallImpl(WebAppProvider* provider,
-                                const std::string& app_id,
-                                apps::mojom::UninstallSource uninstall_source,
-                                gfx::NativeWindow parent_window) {
+void WebApps::UninstallImpl(WebAppProvider* provider,
+                            const std::string& app_id,
+                            apps::mojom::UninstallSource uninstall_source,
+                            gfx::NativeWindow parent_window) {
   WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(provider);
   if (!web_app_ui_manager) {
     return;
@@ -106,23 +105,23 @@ void WebAppsBase::UninstallImpl(WebAppProvider* provider,
   }
 }
 
-void WebAppsBase::Shutdown() {
+void WebApps::Shutdown() {
   if (provider_) {
     publisher_helper().Shutdown();
   }
 }
 
-const WebApp* WebAppsBase::GetWebApp(const AppId& app_id) const {
+const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
   // GetRegistrar() might return nullptr if the legacy bookmark apps registry is
   // enabled. This may happen in migration browser tests.
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
-bool WebAppsBase::Accepts(const std::string& app_id) const {
+bool WebApps::Accepts(const std::string& app_id) const {
   return WebAppPublisherHelper::Accepts(app_id);
 }
 
-void WebAppsBase::Initialize(
+void WebApps::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
   DCHECK(profile_);
   if (!AreWebAppsEnabled(profile_)) {
@@ -135,67 +134,67 @@ void WebAppsBase::Initialize(
   app_service_ = app_service.get();
 }
 
-const WebAppRegistrar* WebAppsBase::GetRegistrar() const {
+const WebAppRegistrar* WebApps::GetRegistrar() const {
   DCHECK(provider_);
   return &provider_->registrar();
 }
 
-void WebAppsBase::Connect(
+void WebApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   DCHECK(provider_);
 
   provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&WebAppsBase::StartPublishingWebApps,
-                                AsWeakPtr(), std::move(subscriber_remote)));
+      FROM_HERE, base::BindOnce(&WebApps::StartPublishingWebApps, AsWeakPtr(),
+                                std::move(subscriber_remote)));
 }
 
-void WebAppsBase::LoadIcon(const std::string& app_id,
-                           apps::mojom::IconKeyPtr icon_key,
-                           apps::mojom::IconType icon_type,
-                           int32_t size_hint_in_dip,
-                           bool allow_placeholder_icon,
-                           LoadIconCallback callback) {
+void WebApps::LoadIcon(const std::string& app_id,
+                       apps::mojom::IconKeyPtr icon_key,
+                       apps::mojom::IconType icon_type,
+                       int32_t size_hint_in_dip,
+                       bool allow_placeholder_icon,
+                       LoadIconCallback callback) {
   publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
                               size_hint_in_dip, allow_placeholder_icon,
                               std::move(callback));
 }
 
-void WebAppsBase::Launch(const std::string& app_id,
-                         int32_t event_flags,
-                         apps::mojom::LaunchSource launch_source,
-                         apps::mojom::WindowInfoPtr window_info) {
+void WebApps::Launch(const std::string& app_id,
+                     int32_t event_flags,
+                     apps::mojom::LaunchSource launch_source,
+                     apps::mojom::WindowInfoPtr window_info) {
   publisher_helper().Launch(app_id, event_flags, launch_source,
                             std::move(window_info));
 }
 
-void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
-                                     int32_t event_flags,
-                                     apps::mojom::LaunchSource launch_source,
-                                     apps::mojom::FilePathsPtr file_paths) {
+void WebApps::LaunchAppWithFiles(const std::string& app_id,
+                                 int32_t event_flags,
+                                 apps::mojom::LaunchSource launch_source,
+                                 apps::mojom::FilePathsPtr file_paths) {
   publisher_helper().LaunchAppWithFiles(app_id, event_flags, launch_source,
                                         std::move(file_paths));
 }
 
-void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,
-                                      int32_t event_flags,
-                                      apps::mojom::IntentPtr intent,
-                                      apps::mojom::LaunchSource launch_source,
-                                      apps::mojom::WindowInfoPtr window_info) {
+void WebApps::LaunchAppWithIntent(const std::string& app_id,
+                                  int32_t event_flags,
+                                  apps::mojom::IntentPtr intent,
+                                  apps::mojom::LaunchSource launch_source,
+                                  apps::mojom::WindowInfoPtr window_info) {
   publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
                                          launch_source, std::move(window_info));
 }
 
-void WebAppsBase::SetPermission(const std::string& app_id,
-                                apps::mojom::PermissionPtr permission) {
+void WebApps::SetPermission(const std::string& app_id,
+                            apps::mojom::PermissionPtr permission) {
   publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
-void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
+void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
-void WebAppsBase::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
+void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
   const bool should_notify_initialized = false;
   if (subscribers_.size() == 1) {
     auto& subscriber = *subscribers_.begin();
@@ -211,11 +210,11 @@ void WebAppsBase::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
   }
 }
 
-void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {
+void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
   Publish(std::move(app), subscribers_);
 }
 
-void WebAppsBase::ModifyWebAppCapabilityAccess(
+void WebApps::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
     absl::optional<bool> accessing_camera,
     absl::optional<bool> accessing_microphone) {
@@ -223,7 +222,7 @@ void WebAppsBase::ModifyWebAppCapabilityAccess(
                          std::move(accessing_microphone));
 }
 
-void WebAppsBase::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
+void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   const WebAppRegistrar* registrar = GetRegistrar();
   // Can be nullptr in tests.
   if (!registrar)
@@ -236,7 +235,7 @@ void WebAppsBase::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   }
 }
 
-void WebAppsBase::StartPublishingWebApps(
+void WebApps::StartPublishingWebApps(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote) {
   std::vector<apps::mojom::AppPtr> apps;
   ConvertWebApps(&apps);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_base.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 
 #include <vector>
 
@@ -32,13 +32,13 @@
 
 namespace web_app {
 
-class WebAppsBaseBrowserTest : public InProcessBrowserTest {
+class WebAppsBrowserTest : public InProcessBrowserTest {
  public:
-  WebAppsBaseBrowserTest() {}
-  ~WebAppsBaseBrowserTest() override = default;
+  WebAppsBrowserTest() {}
+  ~WebAppsBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
+IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
+IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/poster.html"));
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
+IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, ExposeAppServicePublisherId) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
 
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
       });
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
+IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
