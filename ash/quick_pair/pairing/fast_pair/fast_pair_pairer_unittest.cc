@@ -72,6 +72,11 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
     return encrypted_bytes_;
   }
 
+  const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() override {
+    static absl::optional<std::array<uint8_t, 64>> val = absl::nullopt;
+    return val;
+  }
+
   FakeFastPairDataEncryptor() = default;
   ~FakeFastPairDataEncryptor() override = default;
 

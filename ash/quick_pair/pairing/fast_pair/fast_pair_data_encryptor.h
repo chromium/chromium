@@ -10,6 +10,8 @@
 
 #include <array>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace {
 
 constexpr int kBlockSizeBytes = 16;
@@ -26,6 +28,8 @@ class FastPairDataEncryptor {
   // Encrypts bytes with the stored secret key.
   virtual const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) = 0;
+
+  virtual const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() = 0;
 
   virtual ~FastPairDataEncryptor() = default;
 };

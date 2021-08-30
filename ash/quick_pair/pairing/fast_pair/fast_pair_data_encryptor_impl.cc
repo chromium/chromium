@@ -90,5 +90,10 @@ FastPairDataEncryptorImpl::EncryptBytes(
   return fast_pair_encryption::EncryptBytes(secret_key_, bytes_to_encrypt);
 }
 
+const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>&
+FastPairDataEncryptorImpl::GetPublicKey() {
+  return public_key_;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

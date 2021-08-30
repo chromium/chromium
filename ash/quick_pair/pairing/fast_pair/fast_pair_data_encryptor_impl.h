@@ -53,6 +53,9 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override;
 
+  const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>& GetPublicKey()
+      override;
+
   ~FastPairDataEncryptorImpl() override;
 
  protected:
