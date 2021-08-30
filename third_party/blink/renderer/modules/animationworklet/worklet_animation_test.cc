@@ -183,7 +183,7 @@ TEST_F(WorkletAnimationTest,
 }
 
 TEST_F(WorkletAnimationTest,
-       CurrentTimeFromScrollTimelineNotOffsetByStartTime) {
+       DSIABLED_CurrentTimeFromScrollTimelineNotOffsetByStartTime) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; width: 100px; height: 100px; }
@@ -300,7 +300,7 @@ TEST_F(WorkletAnimationTest, PausePlay) {
 
 // Verifies correctness of current time when playback rate is set while
 // scroll-linked animation is in idle state.
-TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRate) {
+TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineSetPlaybackRate) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; width: 100px; height: 100px; }
@@ -356,7 +356,8 @@ TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRate) {
 
 // Verifies correctness of current time when playback rate is set while the
 // scroll-linked animation is playing.
-TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRateWhilePlaying) {
+TEST_F(WorkletAnimationTest,
+       DISABLED_ScrollTimelineSetPlaybackRateWhilePlaying) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; width: 100px; height: 100px; }
@@ -409,7 +410,7 @@ TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRateWhilePlaying) {
 
 // Verifies correcteness of worklet animation start and current time when
 // inactive timeline becomes active.
-TEST_F(WorkletAnimationTest, ScrollTimelineNewlyActive) {
+TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyActive) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: visible; width: 100px; height: 100px; }
@@ -466,7 +467,7 @@ TEST_F(WorkletAnimationTest, ScrollTimelineNewlyActive) {
 
 // Verifies correcteness of worklet animation start and current time when
 // active timeline becomes inactive and then active again.
-TEST_F(WorkletAnimationTest, ScrollTimelineNewlyInactive) {
+TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyInactive) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; width: 100px; height: 100px; }
