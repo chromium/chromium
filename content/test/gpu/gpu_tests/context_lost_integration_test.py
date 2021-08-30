@@ -152,6 +152,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'gpu_process_crash.html'),
              ('ContextLost_WebGPUContextLostFromGPUProcessExit',
               'webgpu-context-lost.html?query=kill_after_notification'),
+             ('ContextLost_WebGPUStressRequestDeviceAndRemoveLoop',
+              'webgpu-stress-request-device-and-remove-loop.html'),
              ('ContextLost_WebGLContextLostFromGPUProcessExit',
               'webgl.html?query=kill_after_notification'),
              ('ContextLost_WebGLContextLostFromLoseContextExtension',
@@ -353,6 +355,15 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._WaitForTabAndCheckCompletion(timeout=180)
 
     self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(self, test_path):
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--enable-unsafe-webgpu',
+    ])
+    self._NavigateAndWaitForLoad(test_path)
+
+    # Test runs for 90 seconds; wait for 120 seconds.
+    self._WaitForTabAndCheckCompletion(timeout=120000)
 
   def _ContextLost_WebGLContextLostFromLoseContextExtension(self, test_path):
     self.RestartBrowserIfNecessaryWithArgs(

@@ -267,8 +267,8 @@ ScriptPromise GPUQueue::onSubmittedWorkDone(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnCallback(&GPUQueue::OnWorkDoneCallback, WrapPersistent(this),
-                       WrapPersistent(resolver));
+      BindDawnOnceCallback(&GPUQueue::OnWorkDoneCallback, WrapPersistent(this),
+                           WrapPersistent(resolver));
 
   GetProcs().queueOnSubmittedWorkDone(
       GetHandle(), 0u, callback->UnboundCallback(), callback->AsUserdata());
