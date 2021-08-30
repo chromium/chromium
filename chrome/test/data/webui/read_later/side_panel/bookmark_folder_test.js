@@ -270,13 +270,17 @@ suite('SidePanelBookmarkFolderTest', () => {
     bookmarksApi.resetResolver('openBookmark');
 
     // Middle mouse button click.
-    item.dispatchEvent(new MouseEvent('auxclick'));
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
     const [, , auxClick] = await bookmarksApi.whenCalled('openBookmark');
     assertTrue(auxClick.middleButton);
     assertFalse(
         auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
         auxClick.shiftKey);
     bookmarksApi.resetResolver('openBookmark');
+
+    // Non-middle mouse aux clicks.
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 2}));
+    assertEquals(0, bookmarksApi.getCallCount('openBookmark'));
 
     // Modifier keys.
     item.dispatchEvent(new MouseEvent('click', {

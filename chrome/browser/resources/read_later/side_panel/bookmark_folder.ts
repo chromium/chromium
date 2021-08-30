@@ -88,11 +88,28 @@ export class BookmarkFolderElement extends PolymerElement {
     return this.open_ ? 'true' : 'false';
   }
 
+  private onBookmarkAuxClick_(event: RepeaterMouseEvent) {
+    if (event.button !== 1) {
+      // Not a middle click.
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+      middleButton: true,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
+  }
+
   private onBookmarkClick_(event: RepeaterMouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
-      middleButton: event.type === 'auxclick',
+      middleButton: false,
       altKey: event.altKey,
       ctrlKey: event.ctrlKey,
       metaKey: event.metaKey,
