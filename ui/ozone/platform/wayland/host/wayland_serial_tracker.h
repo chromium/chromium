@@ -11,10 +11,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ui {
-class WaylandConnection;
-}
-
 namespace wl {
 
 // Utility classes that help on tracking and retrieving "serial" values and
@@ -37,7 +33,7 @@ struct Serial {
 
 class SerialTracker final {
  public:
-  explicit SerialTracker(ui::WaylandConnection* connection);
+  SerialTracker();
   SerialTracker(const SerialTracker&) = delete;
   SerialTracker& operator=(const SerialTracker&) = delete;
   ~SerialTracker();
@@ -55,8 +51,6 @@ class SerialTracker final {
   absl::optional<Serial> GetSerial(const std::vector<SerialType>& types) const;
 
  private:
-  ui::WaylandConnection* const connection_;
-
   base::fixed_flat_map<SerialType,
                        absl::optional<Serial>,
                        static_cast<size_t>(SerialType::kMaxValue) + 1>

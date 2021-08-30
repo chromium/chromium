@@ -5,15 +5,12 @@
 #include <cstdint>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace wl {
 
 TEST(WaylandSerialTrackerTest, Basics) {
-  ui::WaylandConnection connection;
-  SerialTracker serial_tracker(&connection);
+  SerialTracker serial_tracker;
   absl::optional<Serial> serial;
 
   // Ensure it is initialized as expected.
@@ -63,8 +60,7 @@ TEST(WaylandSerialTrackerTest, Basics) {
 // Verifies GetSerial() behaves correctly when multiple values are set and
 // queried.
 TEST(WaylandSerialTrackerTest, Queries) {
-  ui::WaylandConnection connection;
-  SerialTracker serial_tracker(&connection);
+  SerialTracker serial_tracker;
   absl::optional<Serial> serial;
 
   serial_tracker.UpdateSerial(SerialType::kMouseEnter, 1u);

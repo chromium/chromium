@@ -82,12 +82,6 @@ void ReportShellUMA(UMALinuxWaylandShell shell);
 
 class WaylandConnection {
  public:
-  // Stores the last serial and the event type it is associated with.
-  struct EventSerial {
-    uint32_t serial = 0;
-    EventType event_type = EventType::ET_UNKNOWN;
-  };
-
   WaylandConnection();
   WaylandConnection(const WaylandConnection&) = delete;
   WaylandConnection& operator=(const WaylandConnection&) = delete;
@@ -147,12 +141,6 @@ class WaylandConnection {
   zxdg_output_manager_v1* xdg_output_manager_v1() const {
     return xdg_output_manager_.get();
   }
-
-  // TODO(crbug.com/1211874): Drop once SerialTracker migration is complete.
-  void set_serial(uint32_t serial, EventType event_type) {
-    serial_ = {serial, event_type};
-  }
-  uint32_t serial() const { return serial_.serial; }
 
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
 
@@ -414,9 +402,7 @@ class WaylandConnection {
 
   bool scheduled_flush_ = false;
 
-  EventSerial serial_;
-
-  wl::SerialTracker serial_tracker_{this};
+  wl::SerialTracker serial_tracker_;
 
   // Global Wayland interfaces available in the current session, with their
   // versions.
