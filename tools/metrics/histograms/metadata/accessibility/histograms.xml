@@ -1332,7 +1332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs.GetPropertyValue"
-    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2021-09-19">
+    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2022-03-19">
   <owner>dmazzoni@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>kbabbitt@microsoft.com</owner>
