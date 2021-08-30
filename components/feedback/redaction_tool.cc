@@ -86,6 +86,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // capture everything until the end of the line, since the mount path is the
     // last field.
     {"Volume Label", R"xxx((/media/removable/)(.+?)(['"/\n]|$))xxx"},
+
+    // IPP (Internet Printing Protocol) Addresses
+    {"IPP Address", R"xxx((ipp:\/\/)(.+?)(\/ipp))xxx"},
 };
 
 bool MaybeUnmapAddress(net::IPAddress* addr) {
