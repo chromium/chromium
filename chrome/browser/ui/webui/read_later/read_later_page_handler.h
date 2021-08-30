@@ -95,7 +95,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   absl::optional<GURL> active_tab_url_;
   read_later::mojom::CurrentPageActionButtonState
       current_page_action_button_state_ =
-          read_later::mojom::CurrentPageActionButtonState::kAdd;
+          read_later::mojom::CurrentPageActionButtonState::kDisabled;
 
   base::Clock* clock_;
 

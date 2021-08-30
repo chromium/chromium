@@ -251,6 +251,15 @@ ReadingListModel* GetReadingListModel(Browser* browser) {
   return model;
 }
 
+bool CanMoveWebContentsToReadLater(Browser* browser,
+                                   content::WebContents* web_contents,
+                                   ReadingListModel* model,
+                                   GURL* url,
+                                   std::u16string* title) {
+  return model && GetTabURLAndTitleToSave(web_contents, url, title) &&
+         model->IsUrlSupported(*url) && !browser->profile()->IsGuestSession();
+}
+
 }  // namespace
 
 using base::UserMetricsAction;
@@ -1111,15 +1120,13 @@ bool CanBookmarkAllTabs(const Browser* browser) {
 }
 
 bool CanMoveActiveTabToReadLater(Browser* browser) {
+  GURL url;
+  std::u16string title;
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ReadingListModel* model = GetReadingListModel(browser);
-  // |web_contents| can be nullptr if the last tab in the browser was closed
-  // but the browser wasn't closed yet. https://crbug.com/799668
-  if (!web_contents || !model)
-    return false;
-  GURL url = GetURLToBookmark(web_contents);
-  return model->IsUrlSupported(url);
+  return CanMoveWebContentsToReadLater(browser, web_contents, model, &url,
+                                       &title);
 }
 
 bool MoveCurrentTabToReadLater(Browser* browser) {
@@ -1131,9 +1138,10 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   GURL url;
   std::u16string title;
   ReadingListModel* model = GetReadingListModel(browser);
-  if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title) ||
-      !model->IsUrlSupported(url))
+  if (!CanMoveWebContentsToReadLater(browser, web_contents, model, &url,
+                                     &title)) {
     return false;
+  }
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
   MaybeShowBookmarkBarForReadLater(browser);

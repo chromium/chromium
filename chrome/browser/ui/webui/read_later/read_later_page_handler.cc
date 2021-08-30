@@ -375,7 +375,8 @@ std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
 }
 
 void ReadLaterPageHandler::UpdateCurrentPageActionButton() {
-  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN)
+  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+      Profile::FromWebUI(web_ui_)->IsGuestSession())
     return;
 
   const absl::optional<GURL> url = GetActiveTabURL();

@@ -166,6 +166,8 @@ TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
   // Expect ItemsChanged to be called twice from the two AddEntry calls in
   // SetUp().
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
       /* unread_size= */ 2u, /* read_size= */ 0u,
@@ -188,6 +190,8 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -207,6 +211,8 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -223,6 +229,8 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -239,6 +247,8 @@ TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
   // Twice for the two AddEntry calls in SetUp().
   // Once for the RemoveEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -259,6 +269,8 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
   // Once for the OpenURL call above.
   // Once for the RemoveEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -280,6 +292,8 @@ TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
   // Twice for the two AddEntry calls in SetUp().
   // Once for the two updates above performed during a batch update.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -305,6 +319,8 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
   // SetUp() and the two above calls to not trigger an ItemsChanged call because
   // the WebContents is not visible.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 
   // Get Read later entries. Calling GetReadLaterEntries will trigger an update.
   GetAndVerifyReadLaterEntries(
@@ -328,7 +344,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
   // Expect CurrentPageActionButtonStateChanged to be called once when the
   // current page is added while on that page.
-  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(2);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(

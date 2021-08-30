@@ -50,7 +50,7 @@ export class ReadLaterAppElement extends PolymerElement {
       /** @private {!readLater.mojom.CurrentPageActionButtonState} */
       currentPageActionButtonState_: {
         type: Number,
-        value: readLater.mojom.CurrentPageActionButtonState.kAdd,
+        value: readLater.mojom.CurrentPageActionButtonState.kDisabled,
       },
 
       /** @type {boolean} */

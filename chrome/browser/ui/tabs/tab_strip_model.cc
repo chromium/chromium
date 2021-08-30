@@ -1195,6 +1195,9 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
 bool TabStripModel::IsReadLaterSupportedForAny(
     const std::vector<int>& indices) {
+  if (profile_->IsGuestSession())
+    return false;
+
   ReadingListModel* model =
       ReadingListModelFactory::GetForBrowserContext(profile_);
   if (!model || !model->loaded())
