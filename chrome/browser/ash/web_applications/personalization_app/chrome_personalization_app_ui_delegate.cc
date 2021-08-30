@@ -67,6 +67,14 @@ const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
       image, skia::ImageOperations::RESIZE_BEST, gfx::Size(width, height));
 }
 
+// Return the online wallpaper key. Use |info.asset_id| if available so we might
+// be able to fallback to the cached attribution.
+const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
+  return info.asset_id.has_value()
+             ? base::NumberToString(info.asset_id.value())
+             : base::UnguessableToken::Create().ToString();
+}
+
 }  // namespace
 
 ChromePersonalizationAppUiDelegate::ChromePersonalizationAppUiDelegate(
@@ -365,8 +373,7 @@ void ChromePersonalizationAppUiDelegate::FindAttribution(
     std::move(pending_get_current_wallpaper_callback_)
         .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
             wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
-            info.layout, info.type,
-            /*key=*/base::UnguessableToken::Create().ToString()));
+            info.layout, info.type, GetOnlineWallpaperKey(info)));
 
     return;
   }
@@ -426,8 +433,7 @@ void ChromePersonalizationAppUiDelegate::FindAttributionInCollection(
     std::move(pending_get_current_wallpaper_callback_)
         .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
             wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
-            info.layout, info.type,
-            /*key=*/base::UnguessableToken::Create().ToString()));
+            info.layout, info.type, GetOnlineWallpaperKey(info)));
     wallpaper_attribution_info_fetcher_.reset();
     return;
   }
