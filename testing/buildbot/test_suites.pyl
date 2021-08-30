@@ -5661,6 +5661,18 @@
           '--ui-test-action-timeout=40000',
         ],
       },
+      'updater_tests_system': {
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+          # Timeouts based on empirical
+          # observations of test runtimes,
+          # 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
       'zucchini_unittests': {},
     },
 
