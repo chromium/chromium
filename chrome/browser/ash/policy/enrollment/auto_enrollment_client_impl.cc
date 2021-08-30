@@ -840,8 +840,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
       std::make_unique<DeviceIdentifierProviderFRE>(server_backed_state_key),
       std::make_unique<StateDownloadMessageProcessorFRE>(
           server_backed_state_key),
-      power_initial, power_limit,
-      /*power_outdated_server_detect=*/absl::nullopt, kUMASuffixFRE,
+      power_initial, power_limit, kUMASuffixFRE,
       /*private_set_membership_helper=*/nullptr));
 }
 
@@ -855,7 +854,6 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    int power_outdated_server_detect,
     PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) {
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
@@ -864,7 +862,6 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
       std::make_unique<StateDownloadMessageProcessorInitialEnrollment>(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
-      absl::make_optional(power_outdated_server_detect),
       kUMASuffixInitialEnrollment,
       std::make_unique<PsmHelper>(
           device_management_service, url_loader_factory, local_state,
@@ -947,7 +944,6 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
         state_download_message_processor,
     int power_initial,
     int power_limit,
-    absl::optional<int> power_outdated_server_detect,
     std::string uma_suffix,
     std::unique_ptr<PsmHelper> private_set_membership_helper)
     : progress_callback_(callback),
@@ -957,7 +953,6 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       device_id_(base::GenerateGUID()),
       current_power_(power_initial),
       power_limit_(power_limit),
-      power_outdated_server_detect_(power_outdated_server_detect),
       modulus_updates_received_(0),
       device_management_service_(service),
       local_state_(local_state),
@@ -1254,21 +1249,6 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
       LOG(ERROR) << "Auto enrollment error: already retried with an updated "
                  << "modulus but the server asked for a new one again: "
                  << power;
-    } else if (power_outdated_server_detect_.has_value() &&
-               power >= power_outdated_server_detect_.value()) {
-      LOG(ERROR) << "Skipping auto enrollment: The server was detected as "
-                 << "outdated (power=" << power
-                 << ", power_outdated_server_detect="
-                 << power_outdated_server_detect_.value() << ").";
-      has_server_state_ = false;
-      // Cache the decision in local_state, so that it is reused in case
-      // the device reboots before completing OOBE. Note that this does not
-      // disable Forced Re-Enrollment for this device, because local state will
-      // be empty after the device is wiped.
-      local_state_->SetBoolean(prefs::kShouldAutoEnroll, false);
-      local_state_->SetInteger(prefs::kAutoEnrollmentPowerLimit, power_limit_);
-      local_state_->CommitPendingWrite();
-      return true;
     } else if (power > power_limit_) {
       LOG(ERROR) << "Auto enrollment error: the server asked for a larger "
                  << "modulus than the client accepts (" << power << " vs "

@@ -63,16 +63,6 @@ namespace {
 // enrollment check.
 constexpr int kInitialEnrollmentModulusPowerLimit = 6;
 
-// If the modulus requested by the server is higher or equal to
-// `1<<kInitialEnrollmentModulusPowerOutdatedServer`, assume that the server
-// does not know initial enrollment yet.
-// This is currently set to `14`, the server was requesting `16` for FRE on
-// 2018-05-25.
-// TODO(pmarko): Remove this mechanism when the server version supporting
-// Initial Enrollment has been in production for a while
-// (https://crbug.com/846645).
-const int kInitialEnrollmentModulusPowerOutdatedServer = 14;
-
 const int kMaxRequestStateKeysTries = 10;
 
 // Maximum time to wait for the auto-enrollment check to reach a decision.
@@ -776,7 +766,6 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
-      kInitialEnrollmentModulusPowerOutdatedServer,
       psm_rlwe_client_factory_.get());
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";

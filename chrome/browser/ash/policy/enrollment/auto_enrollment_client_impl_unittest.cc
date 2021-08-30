@@ -208,7 +208,7 @@ class AutoEnrollmentClientImplTest
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
               power_initial, power_limit,
-              kInitialEnrollmentModulusPowerOutdatedServer,
+
               psm_rlwe_test_client_factory_.get());
     }
   }

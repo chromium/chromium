@@ -105,7 +105,6 @@ class AutoEnrollmentClientImpl
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        int power_outdated_server_detect,
         PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) override;
 
    private:
@@ -149,7 +148,6 @@ class AutoEnrollmentClientImpl
           state_download_message_processor,
       int power_initial,
       int power_limit,
-      absl::optional<int> power_outdated_server_detect,
       std::string uma_suffix,
       std::unique_ptr<PsmHelper> psm_helper);
 
@@ -257,11 +255,6 @@ class AutoEnrollmentClientImpl
   // Power of the maximum power-of-2 modulus that this client will accept from
   // a retry response from the server.
   int power_limit_;
-
-  // If set and the modulus requested by the server is higher than
-  // |1<<power_outdated_server_detect|, this client will assume that the server
-  // is outdated.
-  absl::optional<int> power_outdated_server_detect_;
 
   // Number of requests for a different modulus received from the server.
   // Used to determine if the server keeps asking for different moduli.
