@@ -424,6 +424,9 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
+  DCHECK_EQ(constraint_space.GetWritingMode(),
+            Base::StyleRef().GetWritingMode());
+
   scoped_refptr<const NGLayoutResult> result =
       NGBlockNode(this).Layout(constraint_space);
 
