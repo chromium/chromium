@@ -325,32 +325,6 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
-  // The |callback| should be called whether the request is rejected or not, so
-  // passing it in both cases.
-  auto split = base::SplitOnceCallback(std::move(callback));
-  RejectPrintPreviewRequestIfRestricted(
-      base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewAllowed,
-                     weak_factory_.GetWeakPtr(), std::move(split.first),
-                     rph->GetID(), rfh->GetRoutingID()),
-      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
-                     weak_factory_.GetWeakPtr(), rph->GetID(),
-                     rfh->GetRoutingID())
-          .Then(std::move(split.second)));
-}
-
-void PrintViewManager::OnScriptedPrintPreviewAllowed(
-    SetupScriptedPrintPreviewCallback callback,
-    int render_process_id,
-    int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  auto* rph = content::RenderProcessHost::FromID(render_process_id);
-  if (!rfh || !rph) {
-    return;
-  }
-  auto& map = g_scripted_print_preview_closure_map.Get();
-
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = SCRIPTED_PREVIEW;
@@ -371,6 +345,32 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   DCHECK(print_preview_rfh_);
   if (GetCurrentTargetFrame() != print_preview_rfh_)
     return;
+
+  int render_process_id = print_preview_rfh_->GetProcess()->GetID();
+  int render_frame_id = print_preview_rfh_->GetRoutingID();
+
+  RejectPrintPreviewRequestIfRestricted(
+      base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewAllowed,
+                     weak_factory_.GetWeakPtr(), source_is_modifiable,
+                     render_process_id, render_frame_id),
+      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
+                     weak_factory_.GetWeakPtr(), render_process_id,
+                     render_frame_id));
+}
+
+void PrintViewManager::OnScriptedPrintPreviewAllowed(bool source_is_modifiable,
+                                                     int render_process_id,
+                                                     int render_frame_id) {
+  if (print_preview_state_ != SCRIPTED_PREVIEW)
+    return;
+
+  DCHECK(print_preview_rfh_);
+
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!rfh || rfh != print_preview_rfh_) {
+    return;
+  }
 
   PrintPreviewDialogController* dialog_controller =
       PrintPreviewDialogController::GetInstance();
