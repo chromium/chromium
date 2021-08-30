@@ -381,7 +381,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!profiles::AreSecondaryProfilesAllowed()) {
-    if (Profile::IsMainProfilePath(*profile_path)) {
+    if (!Profile::IsMainProfilePath(*profile_path)) {
       LoginUIServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())->GetOriginalProfile())
           ->SetProfileBlockingErrorMessage();
