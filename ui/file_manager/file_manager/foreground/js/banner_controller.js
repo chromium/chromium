@@ -188,9 +188,14 @@ export class BannerController extends EventTarget {
         continue;
       }
 
-      if (!bannerToShow) {
-        bannerToShow = banner;
+      // If a higher priority banner has been chosen, hide any lower priority
+      // banners that may already be showing.
+      if (bannerToShow) {
+        this.hideBannerIfShown_(banner);
+        continue;
       }
+
+      bannerToShow = banner;
     }
 
     if (bannerToShow) {
