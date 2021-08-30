@@ -399,9 +399,7 @@
                   '|third_party/blink/public/web/.*geolocation'
     },
     'blink_heap': {
-      'filepath': 'third_party/blink/renderer/platform/heap' \
-                  '|base/allocator/partition_allocator/' \
-                  '|components/gc/'
+      'filepath': 'third_party/blink/renderer/platform/heap'
     },
     'blink_html': {
       'filepath': 'third_party/blink/renderer/core/html/' \
@@ -1502,6 +1500,9 @@
                   '|chrome/browser/ui/cocoa/panels'\
                   '|chrome/browser/ui/views/panels'
     },
+    'partition_alloc': {
+      'filepath': 'base/allocator/partition_allocator/'
+    },
     'password_manager': {
       'filepath': 'chrome/.*/password_'\
                   '|chrome/browser/ui/passwords'\
@@ -2249,7 +2250,7 @@
     'blink_geolocation': ['timvolodine@chromium.org'],
     'blink_heap': ['haraken@chromium.org',
                    'kouhei+heap@chromium.org',
-                   'oilpan-reviews@chromium.org'],
+                   'oilpan-reviews+blink@chromium.org'],
     'blink_html': ['blink-reviews-html@chromium.org'],
     'blink_htmlparser': ['kinuko+watch@chromium.org',
                          'loading-reviews+parser@chromium.org'],
@@ -2675,6 +2676,9 @@
     'panels': ['dimich@chromium.org',
                'jennb@chromium.org',
                'jianli@chromium.org'],
+    'partition_alloc': ['chrome-memory-tok+pa@google.com',
+                        'haraken@chromium.org',
+                        'lizeb+pa@chromium.org'],
     'password_manager': ['gcasto+watchlist@chromium.org',
                          'vasilii+watchlistpasswordmanager@chromium.org'],
     'payments': ['rouslan+payments@chromium.org',
