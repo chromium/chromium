@@ -42,9 +42,7 @@ export class Background extends ChromeVoxState {
 
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
-      get: (function() {
-             return this.earcons_;
-           }).bind(this)
+      get: () => this.earcons_,
     });
 
     Object.defineProperty(ChromeVox, 'typingEcho', {
@@ -77,9 +75,12 @@ export class Background extends ChromeVoxState {
     /** @private {string|undefined} */
     this.lastClipboardEvent_;
 
-    chrome.clipboard.onClipboardDataChanged.addListener(
-        this.onClipboardDataChanged_.bind(this));
-    document.addEventListener('copy', this.onClipboardCopyEvent_.bind(this));
+    chrome.clipboard.onClipboardDataChanged.addListener(() => {
+      this.onClipboardDataChanged_();
+    });
+    document.addEventListener('copy', (event) => {
+      this.onClipboardCopyEvent_(event);
+    });
 
     /** @private {cursors.Range} */
     this.pageSel_;
@@ -101,6 +102,7 @@ export class Background extends ChromeVoxState {
     CommandHandler.init();
     FindHandler.init();
     DownloadHandler.init();
+    JaPhoneticData.init(JaPhoneticMap.MAP);
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
         (announceText) => {
@@ -376,13 +378,13 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   setCurrentRangeToFocus_() {
-    chrome.automation.getFocus(function(focus) {
+    chrome.automation.getFocus((focus) => {
       if (focus) {
         this.setCurrentRange(cursors.Range.fromNode(focus));
       } else {
         this.setCurrentRange(null);
       }
-    }.bind(this));
+    });
   }
 
   /**

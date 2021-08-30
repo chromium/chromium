@@ -112,6 +112,7 @@ chromevox_modules = [
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
+  "third_party/tamachiyomi/ja_phonetic_map.js",
 ]
 
 # ES6 modules.
