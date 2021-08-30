@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"

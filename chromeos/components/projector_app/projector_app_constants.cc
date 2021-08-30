@@ -17,5 +17,6 @@ const char kChromeUIUntrustedProjectorPwaUrl[] =
 const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/";
 const char kChromeUITrustedProjectorSelfieCamUrl[] =
     "chrome://projector/selfie_cam/selfie_cam.html";
-
+const char kChromeUITrustedAnnotatorURL[] =
+    "chrome://projector/annotator/annotator_embedder.html";
 }  // namespace chromeos

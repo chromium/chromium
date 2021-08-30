@@ -8,13 +8,15 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
+class GURL;
+
 namespace chromeos {
 
 // The implementation for the Projector selfie cam and player app WebUI.
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
 class TrustedProjectorUI : public ui::MojoBubbleWebUIController {
  public:
-  explicit TrustedProjectorUI(content::WebUI* web_ui);
+  TrustedProjectorUI(content::WebUI* web_ui, const GURL& url);
   ~TrustedProjectorUI() override;
   TrustedProjectorUI(const TrustedProjectorUI&) = delete;
   TrustedProjectorUI& operator=(const TrustedProjectorUI&) = delete;

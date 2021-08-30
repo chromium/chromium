@@ -4,6 +4,7 @@
 
 #include "chromeos/components/projector_app/trusted_projector_ui.h"
 
+#include "chromeos/components/projector_app/annotator_message_handler.h"
 #include "chromeos/components/projector_app/projector_app_constants.h"
 #include "chromeos/components/projector_app/projector_message_handler.h"
 #include "chromeos/grit/chromeos_projector_app_trusted_resources.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -39,12 +41,28 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
 }  // namespace
 
-TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui)
+TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
-  web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
+
+  // The selfie cam doesn't have any dependencies on WebUIMessageHandlers;
+  // it also doesn't embed chrome-untrusted:// resources. Therefore, return
+  // early.
+  if (url == GURL(kChromeUITrustedProjectorSelfieCamUrl))
+    return;
+
+  // The Annotator and Projector SWA embed contents in a sandboxed
+  // chrome-untrusted:// iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  if (url == GURL(kChromeUITrustedAnnotatorURL)) {
+    web_ui->AddMessageHandler(std::make_unique<AnnotatorMessageHandler>());
+    return;
+  }
+
+  // The requested WebUI is hosting the Projector SWA.
+  web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
 }
 
 TrustedProjectorUI::~TrustedProjectorUI() = default;

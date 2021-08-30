@@ -382,6 +382,12 @@ WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
   return new chromeos::OobeUI(web_ui, url);
 }
 
+template <>
+WebUIController* NewWebUI<chromeos::TrustedProjectorUI>(WebUI* web_ui,
+                                                        const GURL& url) {
+  return new chromeos::TrustedProjectorUI(web_ui, url);
+}
+
 void BindPrintManagement(
     Profile* profile,
     mojo::PendingReceiver<
