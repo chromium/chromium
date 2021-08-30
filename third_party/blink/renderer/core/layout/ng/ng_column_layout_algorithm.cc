@@ -854,10 +854,13 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   // Commit all column fragments to the fragment builder.
   const NGBlockBreakToken* incoming_column_token = next_column_token;
   for (auto result_with_offset : new_columns) {
-    const NGPhysicalBoxFragment& fragment = result_with_offset.Fragment();
-    container_builder_.AddChild(fragment, result_with_offset.offset);
+    const NGPhysicalBoxFragment& column = result_with_offset.Fragment();
+    container_builder_.AddChild(column, result_with_offset.offset);
     Node().AddColumnResult(result_with_offset.result, incoming_column_token);
-    incoming_column_token = To<NGBlockBreakToken>(fragment.BreakToken());
+    incoming_column_token = To<NGBlockBreakToken>(column.BreakToken());
+
+    if (incoming_column_token)
+      container_builder_.ClampBreakAppeal(incoming_column_token->BreakAppeal());
   }
 
   return result;
