@@ -21,13 +21,13 @@ IconInfo::IconInfo(const GURL& url, SquareSizePx size)
 
 IconInfo::IconInfo(const IconInfo&) = default;
 
-IconInfo::IconInfo(IconInfo&&) = default;
+IconInfo::IconInfo(IconInfo&&) noexcept = default;
 
 IconInfo::~IconInfo() = default;
 
 IconInfo& IconInfo::operator=(const IconInfo&) = default;
 
-IconInfo& IconInfo::operator=(IconInfo&&) = default;
+IconInfo& IconInfo::operator=(IconInfo&&) noexcept = default;
 
 base::Value IconInfo::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
