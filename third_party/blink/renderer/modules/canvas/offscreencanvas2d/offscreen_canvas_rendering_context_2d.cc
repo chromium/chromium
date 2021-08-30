@@ -715,6 +715,8 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
             paint_canvas, text_run_paint_info, location,
             Font::kUseFallbackIfFontNotReady, kCDeviceScaleFactor, *flags);
       },
+      [](const SkIRect& rect)  // overdraw test lambda
+      { return false; },
       bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 

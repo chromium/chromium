@@ -360,6 +360,241 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
 
 //============================================================================
 
+class MockImageBufferSurfaceForOverwriteTesting : public Canvas2DLayerBridge {
+ public:
+  MockImageBufferSurfaceForOverwriteTesting(const IntSize& size,
+                                            CanvasColorParams color_params)
+      : Canvas2DLayerBridge(size, RasterMode::kCPU, color_params) {}
+  ~MockImageBufferSurfaceForOverwriteTesting() override = default;
+  MOCK_METHOD0(WillOverwriteCanvas, void());
+};
+
+//============================================================================
+
+#define TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                                \
+  IntSize size(10, 10);                                                        \
+  std::unique_ptr<MockImageBufferSurfaceForOverwriteTesting> mock_surface =    \
+      std::make_unique<MockImageBufferSurfaceForOverwriteTesting>(             \
+          size, CanvasColorParams());                                          \
+  MockImageBufferSurfaceForOverwriteTesting* surface_ptr = mock_surface.get(); \
+  CanvasElement().SetResourceProviderForTesting(                               \
+      nullptr, std::move(mock_surface), size);                                 \
+  EXPECT_CALL(*surface_ptr, WillOverwriteCanvas()).Times(EXPECTED_OVERDRAWS);  \
+  Context2D()->save();
+
+#define TEST_OVERDRAW_FINALIZE \
+  Context2D()->restore();      \
+  Mock::VerifyAndClearExpectations(surface_ptr);
+
+#define TEST_OVERDRAW_1(EXPECTED_OVERDRAWS, CALL1) \
+  do {                                             \
+    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)        \
+    Context2D()->CALL1;                            \
+    TEST_OVERDRAW_FINALIZE                         \
+  } while (0)
+
+#define TEST_OVERDRAW_2(EXPECTED_OVERDRAWS, CALL1, CALL2) \
+  do {                                                    \
+    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)               \
+    Context2D()->CALL1;                                   \
+    Context2D()->CALL2;                                   \
+    TEST_OVERDRAW_FINALIZE                                \
+  } while (0)
+
+#define TEST_OVERDRAW_3(EXPECTED_OVERDRAWS, CALL1, CALL2, CALL3) \
+  do {                                                           \
+    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                      \
+    Context2D()->CALL1;                                          \
+    Context2D()->CALL2;                                          \
+    Context2D()->CALL3;                                          \
+    TEST_OVERDRAW_FINALIZE                                       \
+  } while (0)
+
+#define TEST_OVERDRAW_4(EXPECTED_OVERDRAWS, CALL1, CALL2, CALL3, CALL4) \
+  do {                                                                  \
+    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                             \
+    Context2D()->CALL1;                                                 \
+    Context2D()->CALL2;                                                 \
+    Context2D()->CALL3;                                                 \
+    Context2D()->CALL4;                                                 \
+    TEST_OVERDRAW_FINALIZE                                              \
+  } while (0)
+
+//============================================================================
+
+TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithFillRect) {
+  CreateContext(kNonOpaque);
+
+  TEST_OVERDRAW_1(1, fillRect(-1, -1, 12, 12));
+  TEST_OVERDRAW_1(1, fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_1(
+      0, strokeRect(0, 0, 10,
+                    10));  // stroking instead of filling does not overwrite
+  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f), fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_1(0, fillRect(0, 0, 9, 9));
+  TEST_OVERDRAW_2(0, translate(1, 1), fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, translate(1, 1), fillRect(-1, -1, 10, 10));
+  TEST_OVERDRAW_2(1, setFillStyle(OpaqueGradient()), fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(0, setFillStyle(AlphaGradient()), fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5), setFillStyle(OpaqueGradient()),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
+                  setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 9, 9));
+  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(), fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_4(0, rect(0, 0, 5, 5), clip(),
+                  setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 10, 10));
+}
+
+TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithClearRect) {
+  CreateContext(kNonOpaque);
+
+  TEST_OVERDRAW_1(1, clearRect(0, 0, 10, 10));
+  TEST_OVERDRAW_1(0, clearRect(0, 0, 9, 9));
+  TEST_OVERDRAW_2(1, setGlobalAlpha(0.5f), clearRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, setFillStyle(AlphaGradient()), clearRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(0, translate(1, 1), clearRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, translate(1, 1), clearRect(-1, -1, 10, 10));
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("destination-in")),
+                  clearRect(0, 0, 10, 10));  // composite op ignored
+  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(), clearRect(0, 0, 10, 10));
+}
+
+TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithDrawImage) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
+                               0, 0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 1, 1, 0,
+                               0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f),
+                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10,
+                               0, 0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f),
+                  drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
+                               1, 0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
+                               0, 0, 9, 9, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
+                               0, 0, 11, 11, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(1, translate(-1, 0),
+                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(0, translate(-1, 0),
+                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(
+      0, setFillStyle(OpaqueGradient()),
+      drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                exception_state));  // fillStyle ignored by drawImage
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(
+      1, setFillStyle(AlphaGradient()),
+      drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                exception_state));  // fillStyle ignored by drawImage
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
+                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(),
+                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
+                            0, 10, 10, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithPutImageData) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  // Test putImageData
+  TEST_OVERDRAW_1(1,
+                  putImageData(full_image_data_.Get(), 0, 0, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(1, putImageData(full_image_data_.Get(), 0, 0, 0, 0, 10, 10,
+                                  exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(0, putImageData(full_image_data_.Get(), 0, 0, 1, 1, 8, 8,
+                                  exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(1, setGlobalAlpha(0.5f),
+                  putImageData(full_image_data_.Get(), 0, 0,
+                               exception_state));  // alpha has no effect
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(
+      0, putImageData(partial_image_data_.Get(), 0, 0, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_2(1, translate(1, 1),
+                  putImageData(full_image_data_.Get(), 0, 0,
+                               exception_state));  // ignores tranforms
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_1(0,
+                  putImageData(full_image_data_.Get(), 1, 0, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  TEST_OVERDRAW_3(1, rect(0, 0, 5, 5), clip(),
+                  putImageData(full_image_data_.Get(), 0, 0,
+                               exception_state));  // ignores clip
+  EXPECT_FALSE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithCompositeOperations) {
+  CreateContext(kNonOpaque);
+
+  // Test composite operators with an opaque rect that covers the entire canvas
+  // Note: all the untested composite operations take the same code path as
+  // source-in, which assumes that the destination may not be overwritten
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("clear")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("source-over")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-in")),
+                  fillRect(0, 0, 10, 10));
+  // Test composite operators with a transparent rect that covers the entire
+  // canvas
+  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
+                  setGlobalCompositeOperation(String("clear")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
+                  setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5f),
+                  setGlobalCompositeOperation(String("source-over")),
+                  fillRect(0, 0, 10, 10));
+  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5f),
+                  setGlobalCompositeOperation(String("source-in")),
+                  fillRect(0, 0, 10, 10));
+  // Test composite operators with an opaque rect that does not cover the entire
+  // canvas
+  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("clear")),
+                  fillRect(0, 0, 5, 5));
+  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
+                  fillRect(0, 0, 5, 5));
+  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-over")),
+                  fillRect(0, 0, 5, 5));
+  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-in")),
+                  fillRect(0, 0, 5, 5));
+}
+
 TEST_F(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().CreateRawElement(html_names::kCanvasTag));
