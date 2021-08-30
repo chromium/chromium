@@ -317,7 +317,23 @@ WebInputEventResult GestureManager::HandleGestureTap(
       Node* click_target_node = current_hit_test.InnerNode()->CommonAncestor(
           *tapped_element, event_handling_util::ParentForClickEvent);
       auto* click_target_element = DynamicTo<Element>(click_target_node);
-      fake_mouse_up.id = GetPointerIdFromWebGestureEvent(gesture_event);
+      // When tests send GestureTap directly (e.g. from eventSender) there is no
+      // primary_unique_touch_event_id populated.
+      if (gesture_event.primary_unique_touch_event_id != 0) {
+        // If everything works correctly, the first touch id, pointer id pair
+        // in the deque is the one we are interested in.
+        if (!recent_pointerdown_pointer_ids_.empty()) {
+          if (gesture_event.primary_unique_touch_event_id ==
+              recent_pointerdown_pointer_ids_.front().first) {
+            fake_mouse_up.id = recent_pointerdown_pointer_ids_.front().second;
+          } else {
+            // Getting here means either we saw no pointerdown for the gesture,
+            // or that the gestures were not generated in order resulting in
+            // prematurely clearing pointerdown id in HandleGestureEventInFrame.
+            NOTREACHED();
+          }
+        }
+      }
       fake_mouse_up.pointer_type = gesture_event.primary_pointer_type;
       click_event_result =
           mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
@@ -496,8 +512,6 @@ WebInputEventResult GestureManager::SendContextMenuEventForGesture(
                                                ->GetInputDeviceCapabilities()
                                                ->FiresTouchEvents(true));
   }
-  mouse_event.id = GetPointerIdFromWebGestureEvent(gesture_event);
-  mouse_event.pointer_type = gesture_event.primary_pointer_type;
   return frame_->GetEventHandler().SendContextMenuEvent(mouse_event);
 }
 
@@ -578,27 +592,4 @@ void GestureManager::NotifyPointerEventHandled(
       {web_pointer_event.unique_touch_event_id, pointer_id});
 }
 
-PointerId GestureManager::GetPointerIdFromWebGestureEvent(
-    const WebGestureEvent& gesture_event) const {
-  // When tests send Tap, LongTap, LongPress, TwoFingerTap directly
-  // (e.g. from eventSender) there is no primary_unique_touch_event_id
-  // populated.
-  if (gesture_event.primary_unique_touch_event_id == 0)
-    return PointerEventFactory::kInvalidId;
-  // TODO(crbug.com/1244085): Look into why pointerdown event is not sent
-  // in some tests even though pointerup event is sent.
-  // Return kInvalidId if we saw no pointerdown for the gesture sequence.
-  if (recent_pointerdown_pointer_ids_.empty())
-    return PointerEventFactory::kInvalidId;
-  // If everything works correctly, the first touch id, pointer id pair
-  // in the deque is the one we are interested in.
-  if (gesture_event.primary_unique_touch_event_id ==
-      recent_pointerdown_pointer_ids_.front().first)
-    return recent_pointerdown_pointer_ids_.front().second;
-  // Getting here means either we saw no pointerdown for the gesture,
-  // or that the gestures were not generated in order resulting in
-  // prematurely clearing pointerdown id in HandleGestureEventInFrame.
-  NOTREACHED();
-  return PointerEventFactory::kInvalidId;
-}
 }  // namespace blink

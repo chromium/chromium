@@ -6343,6 +6343,7 @@ crbug.com/1207851 virtual/plz-dedicated-worker/external/wpt/service-workers/idlh
 # Sheriff 2021-05-10
 crbug.com/1207709 [ Mac10.13 ] external/wpt/resource-timing/document-domain-no-impact-opener.html [ Failure Pass ]
 crbug.com/1207709 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/document-domain-no-impact-opener.html [ Failure Pass ]
+crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Pass ]
 
 # Will be passed when compositing-after-paint is used by default 2021-05-13
 crbug.com/1208213 external/wpt/css/css-transforms/add-child-in-empty-layer.html [ Failure ]
