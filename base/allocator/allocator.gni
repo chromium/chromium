@@ -99,12 +99,14 @@ assert(!is_ios || use_allocator != "tcmalloc", "Tcmalloc doesn't work on iOS.")
 
 assert(
     !use_allocator_shim || is_linux || is_chromeos || is_android || is_win ||
-        is_apple,
-    "use_allocator_shim works only on Android, iOS, Linux, macOS, and Windows.")
+        is_fuchsia || is_apple,
+    "use_allocator_shim works only on Android, iOS, Linux, macOS, Fuchsia, " +
+        "and Windows.")
 
-if (is_win && use_allocator_shim) {
+if ((is_win || is_fuchsia) && use_allocator_shim) {
   assert(!is_component_build,
-         "The allocator shim doesn't work for the component build on Windows.")
+         "The allocator shim doesn't work for the component build on Windows " +
+             "or Fuchsia.")
 }
 
 # Prevent using BackupRefPtr when PartitionAlloc-Everywhere isn't used.

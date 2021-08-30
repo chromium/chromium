@@ -19,6 +19,10 @@
 #include "base/win/windows_types.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include <lib/sync/mutex.h>
+#endif
+
 #if defined(PA_HAS_SPINNING_MUTEX)
 namespace base {
 namespace internal {
@@ -68,6 +72,8 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   static constexpr int kLockedContended = 2;
 
   std::atomic<int32_t> state_{kUnlocked};
+#elif defined(OS_FUCHSIA)
+  sync_mutex lock_;
 #else
   CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
 #endif
@@ -139,6 +145,17 @@ ALWAYS_INLINE void SpinningMutex::Release() {
     // kernel, and is what bionic (Android's libc) also does.
     FutexWake();
   }
+}
+
+#elif defined(OS_FUCHSIA)
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  zx_status_t status = sync_mutex_trylock(&lock_);
+  return status == ZX_OK;
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  sync_mutex_unlock(&lock_);
 }
 
 #else

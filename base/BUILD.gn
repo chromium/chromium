@@ -1953,6 +1953,7 @@ component("base") {
         sources += [
           "allocator/partition_allocator/page_allocator_internals_fuchsia.h",
         ]
+        public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/sync" ]
       }
 
       if (current_cpu == "x64") {
