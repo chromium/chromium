@@ -36,6 +36,17 @@ std::unique_ptr<FastInitiationScanner> FastInitiationScanner::Factory::Create(
 }
 
 // static
+bool FastInitiationScanner::Factory::IsHardwareSupportAvailable(
+    device::BluetoothAdapter* adapter) {
+  if (factory_instance_)
+    return factory_instance_->IsHardwareSupportAvailable();
+
+  return adapter->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+         device::BluetoothAdapter::
+             LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+}
+
+// static
 void FastInitiationScanner::Factory::SetFactoryForTesting(
     FastInitiationScanner::Factory* factory) {
   factory_instance_ = factory;

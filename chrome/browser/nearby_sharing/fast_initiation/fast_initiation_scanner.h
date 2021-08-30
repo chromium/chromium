@@ -33,12 +33,15 @@ class FastInitiationScanner
     static std::unique_ptr<FastInitiationScanner> Create(
         scoped_refptr<device::BluetoothAdapter> adapter);
 
+    static bool IsHardwareSupportAvailable(device::BluetoothAdapter* adapter);
+
     static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual ~Factory() = default;
     virtual std::unique_ptr<FastInitiationScanner> CreateInstance(
         scoped_refptr<device::BluetoothAdapter> adapter) = 0;
+    virtual bool IsHardwareSupportAvailable() = 0;
 
    private:
     static Factory* factory_instance_;

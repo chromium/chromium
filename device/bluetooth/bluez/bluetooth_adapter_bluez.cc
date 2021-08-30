@@ -1662,7 +1662,9 @@ BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
       bluez::BluezDBusManager::Get()
           ->GetBluetoothAdvertisementMonitorManagerClient()
           ->GetProperties(object_path_);
-  DCHECK(properties);
+  if (!properties) {
+    return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
+  }
 
   // Cache the response to avoid D-Bus traffic from repeated calls.
   bool supported = base::Contains(properties->supported_features.value(),

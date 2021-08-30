@@ -47,11 +47,19 @@ void FakeBluetoothAdvertisementMonitorManagerClient::
         FakeBluetoothAdvertisementMonitorApplicationServiceProvider* provider) {
   DCHECK(provider);
   application_provider_ = provider;
+  InitializeProperties();
+}
+
+void FakeBluetoothAdvertisementMonitorManagerClient::InitializeProperties() {
   properties_ = std::make_unique<Properties>(
       nullptr,
       bluetooth_advertisement_monitor_manager::
           kBluetoothAdvertisementMonitorManagerInterface,
       base::DoNothing());
+}
+
+void FakeBluetoothAdvertisementMonitorManagerClient::RemoveProperties() {
+  properties_.reset();
 }
 
 }  // namespace bluez

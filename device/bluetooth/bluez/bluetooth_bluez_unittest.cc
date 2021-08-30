@@ -4991,18 +4991,39 @@ TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
       static_cast<bluez::FakeBluetoothAdvertisementMonitorManagerClient*>(
           bluez::BluezDBusManager::Get()
               ->GetBluetoothAdvertisementMonitorManagerClient());
-  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
-      client->GetProperties(adapter_bluez->object_path());
-  ASSERT_TRUE(properties);
+
+  // If no properties are returned we should get |kUndetermined| status.
+  client->RemoveProperties();
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kUndetermined);
 
   // Once we add the "controller-patterns" feature, the adapter should report
   // hardware offloading as supported.
+  client->InitializeProperties();
+  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
+      client->GetProperties(adapter_bluez->object_path());
+  ASSERT_TRUE(properties);
   properties->supported_features.ReplaceValue(
       {bluetooth_advertisement_monitor_manager::
            kSupportedFeaturesControllerPatterns});
   EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kSupported);
+
+  // Ensure that if no properties are returned we still get the cached value.
+  client->RemoveProperties();
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kSupported);
+
+  // If the adapter becomes not present we should clear the cached value.
+  fake_bluetooth_adapter_client_->SetPresent(false);
+  GetAdapter();
+  ASSERT_FALSE(adapter_->IsPresent());
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kUndetermined);
 }
 #endif
 

@@ -2160,6 +2160,15 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
     return;
   }
 
+  if (!FastInitiationScanner::Factory::IsHardwareSupportAvailable(
+          bluetooth_adapter_.get())) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because hardware "
+                       "support is not available or not ready.";
+    StopFastInitiationScanning();
+    return;
+  }
+
   process_shutdown_pending_timer_.Stop();
 
   if (fast_initiation_scanner_) {

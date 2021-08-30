@@ -47,6 +47,11 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorManagerClient
   void RegisterApplicationServiceProvider(
       FakeBluetoothAdvertisementMonitorApplicationServiceProvider* provider);
 
+  // This allows tests to control whether GetProperties() will return nullptr or
+  // a valid object.
+  void InitializeProperties();
+  void RemoveProperties();
+
   FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
   application_provider() {
     return application_provider_;
