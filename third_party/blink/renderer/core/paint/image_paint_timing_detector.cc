@@ -236,6 +236,11 @@ void ImagePaintTimingDetector::RecordImage(
   if (!node)
     return;
 
+  // Before the image resource starts loading, <img> has no size info. We wait
+  // until the size is known.
+  if (image_border.IsEmpty())
+    return;
+
   RecordId record_id = std::make_pair(&object, &cached_image);
   if (records_manager_.IsRecordedInvisibleImage(record_id))
     return;
@@ -279,10 +284,6 @@ void ImagePaintTimingDetector::RecordImage(
   if (is_recorded_visible_image || !is_recording_)
     return;
 
-  // Before the image resource starts loading, <img> has no size info. We wait
-  // until the size is known.
-  if (image_border.IsEmpty())
-    return;
   FloatRect mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           image_border, current_paint_chunk_properties);
