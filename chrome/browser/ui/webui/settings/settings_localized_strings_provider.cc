@@ -395,11 +395,12 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(USE_OZONE)
-  const bool show_custom_chrome_frame =
-      features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .supports_server_side_window_decorations;
+  bool show_custom_chrome_frame = true;
+  if (features::IsUsingOzonePlatform()) {
+    show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
+                                   ->GetPlatformRuntimeProperties()
+                                   .supports_server_side_window_decorations;
+  }
 #else
   const bool show_custom_chrome_frame = true;
 #endif
