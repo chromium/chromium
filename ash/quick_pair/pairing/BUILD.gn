@@ -32,6 +32,7 @@ source_set("pairing") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
+    "//ash/services/quick_pair",
     "//ash/services/quick_pair/public/cpp",
     "//base",
     "//crypto:crypto",
@@ -61,6 +62,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/fast_pair_data_encryptor_unittest.cc",
     "fast_pair/fast_pair_encryption_unittest.cc",
     "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
@@ -71,6 +73,10 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
     "//ash/services/quick_pair/public/cpp",
     "//base",
     "//base/test:test_support",

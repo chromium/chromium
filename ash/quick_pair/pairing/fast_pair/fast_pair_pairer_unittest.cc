@@ -77,6 +77,16 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
     return val;
   }
 
+  void ParseDecryptedResponse(
+      const std::vector<uint8_t>& encrypted_response_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+          callback) override {}
+
+  void ParseDecryptedPasskey(
+      const std::vector<uint8_t>& encrypted_passkey_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
+          callback) override {}
+
   FakeFastPairDataEncryptor() = default;
   ~FakeFastPairDataEncryptor() override = default;
 

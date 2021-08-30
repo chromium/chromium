@@ -9,6 +9,7 @@
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
+#include "ash/services/quick_pair/quick_pair_process.h"
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 
@@ -19,6 +20,17 @@ namespace {
 
 // static
 FastPairDataEncryptorImpl::Factory* g_test_factory_ = nullptr;
+
+bool ValidateInputSize(const std::vector<uint8_t>& encrypted_bytes) {
+  if (encrypted_bytes.size() != kBlockSizeBytes) {
+    QP_LOG(WARNING) << __func__ << ": Encrypted bytes should have size = "
+                    << kBlockSizeBytes
+                    << ", actual =  " << encrypted_bytes.size();
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -93,6 +105,54 @@ FastPairDataEncryptorImpl::EncryptBytes(
 const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>&
 FastPairDataEncryptorImpl::GetPublicKey() {
   return public_key_;
+}
+
+void FastPairDataEncryptorImpl::ParseDecryptedResponse(
+    const std::vector<uint8_t>& encrypted_response_bytes,
+    base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+        callback) {
+  if (!ValidateInputSize(encrypted_response_bytes)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  quick_pair_process::ParseDecryptedResponse(
+      std::vector<uint8_t>(secret_key_.begin(), secret_key_.end()),
+      encrypted_response_bytes, std::move(callback),
+      base::BindOnce(
+          &FastPairDataEncryptorImpl::QuickPairProcessStoppedOnResponse,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairDataEncryptorImpl::ParseDecryptedPasskey(
+    const std::vector<uint8_t>& encrypted_passkey_bytes,
+    base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
+        callback) {
+  if (!ValidateInputSize(encrypted_passkey_bytes)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  quick_pair_process::ParseDecryptedPasskey(
+      std::vector<uint8_t>(secret_key_.begin(), secret_key_.end()),
+      encrypted_passkey_bytes, std::move(callback),
+      base::BindOnce(
+          &FastPairDataEncryptorImpl::QuickPairProcessStoppedOnPasskey,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairDataEncryptorImpl::QuickPairProcessStoppedOnResponse(
+    QuickPairProcessManager::ShutdownReason shutdown_reason) {
+  QP_LOG(WARNING)
+      << "Quick Pair process stopped while decrypting response due to error: "
+      << shutdown_reason;
+}
+
+void FastPairDataEncryptorImpl::QuickPairProcessStoppedOnPasskey(
+    QuickPairProcessManager::ShutdownReason shutdown_reason) {
+  QP_LOG(WARNING)
+      << "Quick Pair process stopped while decrypting passkey due to error: "
+      << shutdown_reason;
 }
 
 }  // namespace quick_pair

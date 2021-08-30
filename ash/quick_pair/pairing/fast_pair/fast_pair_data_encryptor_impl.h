@@ -13,9 +13,9 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
-#include "base/callback.h"
+#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 namespace quick_pair {
@@ -56,6 +56,16 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
   const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>& GetPublicKey()
       override;
 
+  void ParseDecryptedResponse(
+      const std::vector<uint8_t>& encrypted_response_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+          callback) override;
+
+  void ParseDecryptedPasskey(
+      const std::vector<uint8_t>& encrypted_passkey_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
+          callback) override;
+
   ~FastPairDataEncryptorImpl() override;
 
  protected:
@@ -65,12 +75,19 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
       delete;
 
  private:
+  void QuickPairProcessStoppedOnResponse(
+      QuickPairProcessManager::ShutdownReason shutdown_reason);
+  void QuickPairProcessStoppedOnPasskey(
+      QuickPairProcessManager::ShutdownReason shutdown_reason);
+
   std::array<uint8_t, kPrivateKeyByteSize> secret_key_;
 
   // The public key is only required during initial pairing and optional during
   // communication with paired devices.
   absl::optional<std::array<uint8_t, kPublicKeyByteSize>> public_key_ =
       absl::nullopt;
+
+  base::WeakPtrFactory<FastPairDataEncryptorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair

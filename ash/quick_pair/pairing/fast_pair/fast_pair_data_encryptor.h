@@ -8,6 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 #include <array>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,6 +35,18 @@ class FastPairDataEncryptor {
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) = 0;
 
   virtual const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() = 0;
+
+  // Decrypt and parse decrypted response bytes with the stored secret key.
+  virtual void ParseDecryptedResponse(
+      const std::vector<uint8_t>& encrypted_response_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+          callback) = 0;
+
+  // Decrypt and parse decrypted passkey bytes with the stored secret key.
+  virtual void ParseDecryptedPasskey(
+      const std::vector<uint8_t>& encrypted_passkey_bytes,
+      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
+          callback) = 0;
 
   virtual ~FastPairDataEncryptor() = default;
 };
