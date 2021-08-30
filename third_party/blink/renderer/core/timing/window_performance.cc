@@ -43,6 +43,8 @@
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -513,10 +515,15 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
                                          const IntSize& intrinsic_size,
                                          const AtomicString& id,
                                          Element* element) {
+  if (!DomWindow())
+    return;
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
       intrinsic_size.Width(), intrinsic_size.Height(), id, element);
+  TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
+               entry->ToTracedValue(), "frame",
+               ToTraceValue(DomWindow()->GetFrame()));
   if (HasObserverFor(PerformanceEntry::kElement))
     NotifyObserversOfEntry(*entry);
   if (!IsElementTimingBufferFull())

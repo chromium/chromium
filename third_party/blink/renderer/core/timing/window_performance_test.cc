@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/trace_event_analyzer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -929,6 +930,65 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+}
+
+TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+  // |element| needs to be non-null to prevent a crash.
+  performance_->AddElementTiming(
+      "image-paint", "url", FloatRect(10, 20, 30, 40), GetTimeStamp(2000),
+      GetTimeStamp(1000), "identifier", IntSize(200, 300), "id",
+      /*element*/ page_holder_->GetDocument().documentElement());
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("PerformanceElementTiming");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("loading", events[0]->category);
+  EXPECT_TRUE(events[0]->HasArg("frame"));
+
+  EXPECT_TRUE(events[0]->HasArg("data"));
+  base::Value arg;
+  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
+  base::DictionaryValue* arg_dict;
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
+  std::string element_type;
+  EXPECT_TRUE(arg_dict->GetString("elementType", &element_type));
+  EXPECT_EQ(element_type, "image-paint");
+  int load_time;
+  EXPECT_TRUE(arg_dict->GetInteger("loadTime", &load_time));
+  EXPECT_EQ(load_time, 1000);
+  int render_time;
+  EXPECT_TRUE(arg_dict->GetInteger("renderTime", &render_time));
+  EXPECT_EQ(render_time, 2000);
+  double rect_left;
+  EXPECT_TRUE(arg_dict->GetDouble("rectLeft", &rect_left));
+  EXPECT_EQ(rect_left, 10);
+  double rect_top;
+  EXPECT_TRUE(arg_dict->GetDouble("rectTop", &rect_top));
+  EXPECT_EQ(rect_top, 20);
+  double rect_width;
+  EXPECT_TRUE(arg_dict->GetDouble("rectWidth", &rect_width));
+  EXPECT_EQ(rect_width, 30);
+  double rect_height;
+  EXPECT_TRUE(arg_dict->GetDouble("rectHeight", &rect_height));
+  EXPECT_EQ(rect_height, 40);
+  std::string identifier;
+  EXPECT_TRUE(arg_dict->GetString("identifier", &identifier));
+  EXPECT_EQ(identifier, "identifier");
+  int natural_width;
+  EXPECT_TRUE(arg_dict->GetInteger("naturalWidth", &natural_width));
+  EXPECT_EQ(natural_width, 200);
+  int natural_height;
+  EXPECT_TRUE(arg_dict->GetInteger("naturalHeight", &natural_height));
+  EXPECT_EQ(natural_height, 300);
+  std::string element_id;
+  EXPECT_TRUE(arg_dict->GetString("elementId", &element_id));
+  EXPECT_EQ(element_id, "id");
+  std::string url;
+  EXPECT_TRUE(arg_dict->GetString("url", &url));
+  EXPECT_EQ(url, "url");
 }
 
 }  // namespace blink

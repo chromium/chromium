@@ -71,6 +71,23 @@ Element* PerformanceElementTiming::element() const {
   return Performance::CanExposeNode(element_) ? element_ : nullptr;
 }
 
+std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetString("elementType", name());
+  traced_value->SetInteger("loadTime", load_time_);
+  traced_value->SetInteger("renderTime", render_time_);
+  traced_value->SetDouble("rectLeft", intersection_rect_->left());
+  traced_value->SetDouble("rectTop", intersection_rect_->top());
+  traced_value->SetDouble("rectWidth", intersection_rect_->width());
+  traced_value->SetDouble("rectHeight", intersection_rect_->height());
+  traced_value->SetString("identifier", identifier_);
+  traced_value->SetInteger("naturalWidth", naturalWidth_);
+  traced_value->SetInteger("naturalHeight", naturalHeight_);
+  traced_value->SetString("elementId", id_);
+  traced_value->SetString("url", url_);
+  return traced_value;
+}
+
 void PerformanceElementTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.Add("renderTime", render_time_);
