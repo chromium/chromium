@@ -427,6 +427,53 @@ TEST_F(PdfViewPluginBaseTest, LoadUrl) {
             saved_request.buffer_upper_threshold);
 }
 
+TEST_F(PdfViewPluginBaseTest, DocumentLoadProgress) {
+  fake_plugin_.DocumentLoadProgress(10, 200);
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 5.0,
+  })")));
+}
+
+TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressIgnoreSmall) {
+  fake_plugin_.DocumentLoadProgress(2, 100);
+  fake_plugin_.clear_sent_messages();
+
+  fake_plugin_.DocumentLoadProgress(3, 100);
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
+}
+
+TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
+  fake_plugin_.DocumentLoadProgress(2, 100);
+  fake_plugin_.clear_sent_messages();
+
+  fake_plugin_.DocumentLoadProgress(3, 100);
+  fake_plugin_.DocumentLoadProgress(4, 100);
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 4.0,
+  })")));
+}
+
+TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressResetByLoadUrl) {
+  fake_plugin_.DocumentLoadProgress(2, 100);
+  fake_plugin_.clear_sent_messages();
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([]() {
+    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
+  });
+
+  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/false);
+  fake_plugin_.DocumentLoadProgress(3, 100);
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 3.0,
+  })")));
+}
+
 TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
   fake_plugin_.set_full_frame(true);
   ASSERT_TRUE(fake_plugin_.full_frame());

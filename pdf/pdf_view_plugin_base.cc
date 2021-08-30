@@ -681,6 +681,8 @@ void PdfViewPluginBase::ValidateDocumentUrl(base::StringPiece document_url) {
 }
 
 void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
+  last_progress_sent_ = 0;
+
   UrlRequest request;
   request.url = url;
   request.method = "GET";
