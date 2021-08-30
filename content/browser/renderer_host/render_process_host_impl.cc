@@ -3691,11 +3691,8 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   if (!skip_unload_handlers && !SuddenTerminationAllowed())
     return false;
 
-  if (keep_alive_ref_count_ != 0) {
-    if (keep_alive_start_time_.is_null())
-      keep_alive_start_time_ = base::TimeTicks::Now();
+  if (keep_alive_ref_count_ != 0)
     return false;
-  }
 
   if (worker_ref_count_ != 0)
     return false;
@@ -3878,13 +3875,6 @@ void RenderProcessHostImpl::Cleanup() {
   }
   delayed_cleanup_needed_ = false;
 
-  // Records the time when the process starts kept alive by the ref count for
-  // UMA.
-  if (listeners_.IsEmpty() && keep_alive_ref_count_ > 0 &&
-      keep_alive_start_time_.is_null()) {
-    keep_alive_start_time_ = base::TimeTicks::Now();
-  }
-
   // Until there are no other owners of this object, we can't delete
   // ourselves.
   if (!listeners_.IsEmpty()) {
@@ -3924,11 +3914,6 @@ void RenderProcessHostImpl::Cleanup() {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebRtcLog::ClearLogMessageCallback, GetID()));
-  }
-
-  if (!keep_alive_start_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("BrowserRenderProcessHost.KeepAliveDuration",
-                             base::TimeTicks::Now() - keep_alive_start_time_);
   }
 
   // We cannot clean up twice; if this fails, there is an issue with our

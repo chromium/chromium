@@ -1075,9 +1075,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   std::unique_ptr<FramelessMediaInterfaceProxy> media_interface_proxy_;
 
-  // Records the time when the process starts surviving for workers for UMA.
-  base::TimeTicks keep_alive_start_time_;
-
   // Context shared for each mojom::PermissionService instance created for this
   // RenderProcessHost. This is destroyed early in ResetIPC() method.
   std::unique_ptr<PermissionServiceContext> permission_service_context_;
