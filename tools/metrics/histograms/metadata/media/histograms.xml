@@ -2890,6 +2890,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.MojoVideoDecoderServiceTiming.{Impl}.{Method}"
     units="ms" expires_after="M95">
+  <obsolete>
+    Removed Aug 2021.
+  </obsolete>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3199,7 +3202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.PeakWebMediaPlayerCount" units="players"
-    expires_after="M95">
+    expires_after="M100">
   <owner>dalecurtis@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
