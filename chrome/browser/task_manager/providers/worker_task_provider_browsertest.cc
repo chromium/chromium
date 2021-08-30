@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 // If the profile are created dynamically and there is more than one profile
 // simultaneously, the WorkerTaskProvider can still works.
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
-                       CreateTasksForMultiProfiles) {
+                       DISABLED_CreateTasksForMultiProfiles) {
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
