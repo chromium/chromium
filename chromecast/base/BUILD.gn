@@ -59,6 +59,9 @@ cast_source_set("base") {
     "device_capabilities_impl.h",
     "error_codes.cc",
     "error_codes.h",
+    "hash_util.cc",
+    "hash_util.h",
+    "legacy_app_id_mapper.h",
     "observer.h",
     "path_utils.cc",
     "path_utils.h",
@@ -87,13 +90,18 @@ cast_source_set("base") {
   ]
 
   deps = [
+    ":cast_version",
     "//chromecast:chromecast_buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]
 
   if (chromecast_branding == "public") {
-    sources += [ "cast_features_internal.cc" ]
+    sources += [
+      "cast_features_internal.cc",
+      "legacy_app_id_mapper_dummy.cc",
+    ]
   } else {
+    sources += [ "//chromecast/internal/base/legacy_app_id_mapper_impl.cc" ]
     deps += [ "//chromecast/internal/base:cast_internal_features" ]
   }
 
@@ -165,6 +173,7 @@ test("cast_base_unittests") {
     "cast_features_unittest.cc",
     "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",
+    "hash_util_test.cc",
     "metrics/cast_metrics_helper_unittest.cc",
     "observer_unittest.cc",
     "path_utils_unittest.cc",
