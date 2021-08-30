@@ -1589,8 +1589,15 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 //
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_ClearKeyCdmNotRegistered DISABLED_ClearKeyCdmNotRegistered
+#else
+#define MAYBE_ClearKeyCdmNotRegistered ClearKeyCdmNotRegistered
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesTest,
-                       ClearKeyCdmNotRegistered) {
+                       MAYBE_ClearKeyCdmNotRegistered) {
   // External Clear Key will not be supported because Clear Key CDM is not
   // registered on the command line.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
@@ -1601,9 +1608,15 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesTest,
                                         video_webm_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest,
-    Basic) {
+    MAYBE_Basic) {
   // External Clear Key will not be supported because Clear Key CDM is
   // registered with the wrong path.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
