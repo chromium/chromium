@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -217,8 +218,12 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
       hold_back_chance = features::kPermissionPredictionsHoldbackChance.Get();
       break;
     case permissions::RequestType::kGeolocation:
-      is_permissions_predictions_enabled = base::FeatureList::IsEnabled(
-          features::kPermissionGeolocationPredictions);
+      // Only quiet chip ui is supported for Geolocation
+      is_permissions_predictions_enabled =
+          base::FeatureList::IsEnabled(
+              features::kPermissionGeolocationPredictions) &&
+          base::FeatureList::IsEnabled(
+              permissions::features::kPermissionQuietChip);
       hold_back_chance =
           features::kPermissionGeolocationPredictionsHoldbackChance.Get();
       break;
