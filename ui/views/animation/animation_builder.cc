@@ -196,23 +196,28 @@ AnimationSequenceBlock AnimationBuilder::Repeatedly() {
   return NewSequence();
 }
 
-void AnimationBuilder::SetOnStarted(base::OnceClosure callback) {
+void AnimationBuilder::SetOnStarted(base::PassKey<AnimationSequenceBlock>,
+                                    base::OnceClosure callback) {
   GetObserver()->SetOnStarted(std::move(callback));
 }
 
-void AnimationBuilder::SetOnEnded(base::OnceClosure callback) {
+void AnimationBuilder::SetOnEnded(base::PassKey<AnimationSequenceBlock>,
+                                  base::OnceClosure callback) {
   GetObserver()->SetOnEnded(std::move(callback));
 }
 
-void AnimationBuilder::SetOnWillRepeat(base::RepeatingClosure callback) {
+void AnimationBuilder::SetOnWillRepeat(base::PassKey<AnimationSequenceBlock>,
+                                       base::RepeatingClosure callback) {
   GetObserver()->SetOnWillRepeat(std::move(callback));
 }
 
-void AnimationBuilder::SetOnAborted(base::OnceClosure callback) {
+void AnimationBuilder::SetOnAborted(base::PassKey<AnimationSequenceBlock>,
+                                    base::OnceClosure callback) {
   GetObserver()->SetOnAborted(std::move(callback));
 }
 
-void AnimationBuilder::SetOnScheduled(base::OnceClosure callback) {
+void AnimationBuilder::SetOnScheduled(base::PassKey<AnimationSequenceBlock>,
+                                      base::OnceClosure callback) {
   GetObserver()->SetOnScheduled(std::move(callback));
 }
 

@@ -58,11 +58,16 @@ class VIEWS_EXPORT AnimationBuilder {
   void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
 
   // Called through the corresponding functions on AnimationSequenceBlock.
-  void SetOnStarted(base::OnceClosure callback);
-  void SetOnEnded(base::OnceClosure callback);
-  void SetOnWillRepeat(base::RepeatingClosure callback);
-  void SetOnAborted(base::OnceClosure callback);
-  void SetOnScheduled(base::OnceClosure callback);
+  void SetOnStarted(base::PassKey<AnimationSequenceBlock>,
+                    base::OnceClosure callback);
+  void SetOnEnded(base::PassKey<AnimationSequenceBlock>,
+                  base::OnceClosure callback);
+  void SetOnWillRepeat(base::PassKey<AnimationSequenceBlock>,
+                       base::RepeatingClosure callback);
+  void SetOnAborted(base::PassKey<AnimationSequenceBlock>,
+                    base::OnceClosure callback);
+  void SetOnScheduled(base::PassKey<AnimationSequenceBlock>,
+                      base::OnceClosure callback);
 
   static void SetObserverDeletedCallbackForTesting(
       base::RepeatingClosure deleted_closure);

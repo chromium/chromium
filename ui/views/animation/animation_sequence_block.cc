@@ -164,35 +164,35 @@ AnimationSequenceBlock AnimationSequenceBlock::Then() {
 AnimationSequenceBlock& AnimationSequenceBlock::OnStarted(
     base::OnceClosure callback) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnStarted(std::move(callback));
+  owner_->SetOnStarted(PassKey(), std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnEnded(
     base::OnceClosure callback) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnEnded(std::move(callback));
+  owner_->SetOnEnded(PassKey(), std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnWillRepeat(
     base::RepeatingClosure callback) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnWillRepeat(std::move(callback));
+  owner_->SetOnWillRepeat(PassKey(), std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnAborted(
     base::OnceClosure callback) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnAborted(std::move(callback));
+  owner_->SetOnAborted(PassKey(), std::move(callback));
   return *this;
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::OnScheduled(
     base::OnceClosure callback) {
   DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnScheduled(std::move(callback));
+  owner_->SetOnScheduled(PassKey(), std::move(callback));
   return *this;
 }
 
