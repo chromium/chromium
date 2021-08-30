@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
@@ -14,7 +15,10 @@
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
+#include "ash/services/quick_pair/quick_pair_process.h"
+#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -27,6 +31,7 @@ namespace {
 
 constexpr char kNearbyShareModelId[] = "fc128e";
 constexpr double kDefaultRangeInMeters = 2;
+constexpr int kMaxParseModelIdRetryCount = 5;
 
 }  // namespace
 
@@ -50,7 +55,31 @@ FastPairDiscoverableScanner::~FastPairDiscoverableScanner() = default;
 void FastPairDiscoverableScanner::OnDeviceFound(
     device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
-  absl::optional<std::string> model_id = GetModelIdForDevice(device);
+
+  const std::vector<uint8_t>* fast_pair_service_data =
+      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+
+  if (!fast_pair_service_data) {
+    QP_LOG(WARNING) << __func__
+                    << ": Device doesn't have any Fast Pair Service Data.";
+    return;
+  }
+
+  model_id_parse_attempts_[device->GetAddress()] = 1;
+
+  quick_pair_process::GetHexModelIdFromServiceData(
+      *fast_pair_service_data,
+      base::BindOnce(&FastPairDiscoverableScanner::OnModelIdRetrieved,
+                     weak_pointer_factory_.GetWeakPtr(), device),
+      base::BindOnce(&FastPairDiscoverableScanner::OnProcessStopped,
+                     weak_pointer_factory_.GetWeakPtr(), device));
+}
+
+void FastPairDiscoverableScanner::OnModelIdRetrieved(
+    device::BluetoothDevice* device,
+    const absl::optional<std::string>& model_id) {
+  // Safe to remove from this map because we have successfully parsed it here.
+  model_id_parse_attempts_.erase(device->GetAddress());
 
   if (!model_id)
     return;
@@ -65,11 +94,13 @@ void FastPairDiscoverableScanner::OnDeviceFound(
   FastPairRepository::Get()->GetDeviceMetadata(
       *model_id,
       base::BindOnce(&FastPairDiscoverableScanner::OnDeviceMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), device));
+                     weak_pointer_factory_.GetWeakPtr(), device,
+                     model_id.value()));
 }
 
 void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     device::BluetoothDevice* device,
+    const std::string model_id,
     DeviceMetadata* device_metadata) {
   double trigger_distance;
   if (device_metadata && device_metadata->device.trigger_distance() > 0) {
@@ -87,24 +118,7 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
   range_tracker_->Track(
       device, trigger_distance,
       base::BindRepeating(&FastPairDiscoverableScanner::NotifyDeviceFound,
-                          weak_pointer_factory_.GetWeakPtr()));
-}
-
-absl::optional<std::string> FastPairDiscoverableScanner::GetModelIdForDevice(
-    device::BluetoothDevice* device) {
-  const std::vector<uint8_t>* service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
-
-  if (!fast_pair_decoder::HasModelId(service_data))
-    return absl::nullopt;
-
-  absl::optional<std::string> model_id =
-      fast_pair_decoder::GetHexModelIdFromServiceData(service_data);
-
-  DCHECK(model_id.has_value()) << "The fast_pair_decoder::HasModelId check "
-                                  "above should guarantee we get a model id";
-
-  return model_id;
+                          weak_pointer_factory_.GetWeakPtr(), model_id));
 }
 
 void FastPairDiscoverableScanner::OnDeviceLost(
@@ -125,19 +139,40 @@ void FastPairDiscoverableScanner::OnDeviceLost(
 }
 
 void FastPairDiscoverableScanner::NotifyDeviceFound(
+    const std::string model_id,
     device::BluetoothDevice* bluetooth_device) {
-  absl::optional<std::string> model_id = GetModelIdForDevice(bluetooth_device);
-
-  DCHECK(model_id) << "This function shouldn't be invoked unless the device "
-                      "has previously been confirmed to have a model id";
-
-  auto device = base::MakeRefCounted<Device>(model_id.value_or(""),
-                                             bluetooth_device->GetAddress(),
-                                             Protocol::kFastPair);
+  auto device = base::MakeRefCounted<Device>(
+      model_id, bluetooth_device->GetAddress(), Protocol::kFastPair);
 
   notified_devices_[bluetooth_device->GetAddress()] = device;
 
   found_callback_.Run(device);
+}
+
+void FastPairDiscoverableScanner::OnProcessStopped(
+    device::BluetoothDevice* device,
+    QuickPairProcessManager::ShutdownReason shutdown_reason) {
+  int current_retry_count = model_id_parse_attempts_[device->GetAddress()];
+  if (current_retry_count > kMaxParseModelIdRetryCount) {
+    QP_LOG(WARNING) << "Failed to parse model id from device more than "
+                    << kMaxParseModelIdRetryCount << " times.";
+    // Clean up the state here which enables trying again in the future if this
+    // device is re-discovered.
+    model_id_parse_attempts_.erase(device->GetAddress());
+    return;
+  }
+
+  model_id_parse_attempts_[device->GetAddress()] = current_retry_count + 1;
+
+  const std::vector<uint8_t>* fast_pair_service_data =
+      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+
+  quick_pair_process::GetHexModelIdFromServiceData(
+      *fast_pair_service_data,
+      base::BindOnce(&FastPairDiscoverableScanner::OnModelIdRetrieved,
+                     weak_pointer_factory_.GetWeakPtr(), device),
+      base::BindOnce(&FastPairDiscoverableScanner::OnProcessStopped,
+                     weak_pointer_factory_.GetWeakPtr(), device));
 }
 
 }  // namespace quick_pair
