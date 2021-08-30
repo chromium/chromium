@@ -1318,6 +1318,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         break;
     }
     [self.bottomToolbar setAddToButtonMenu:menu];
+    BOOL incognitoTabsNeedsAuth =
+        (self.currentPage == TabGridPageIncognitoTabs &&
+         self.incognitoTabsViewController.contentNeedsAuthentication);
+    [self.bottomToolbar setAddToButtonEnabled:!incognitoTabsNeedsAuth];
   }
 
   // When current page is a remote tabs page.
@@ -1348,6 +1352,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
+  [self updateSelectionModeToolbars];
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureNewTabButtonBasedOnContentPermissions];
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
@@ -1532,10 +1537,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [currentGridViewController.selectedShareableItemIDsForEditing count];
   self.topToolbar.selectedTabsCount = selectedItemsCount;
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
-  [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
-  [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
-  [self.bottomToolbar setCloseTabsButtonEnabled:selectedItemsCount];
-  [self.topToolbar setSelectAllButtonEnabled:YES];
+
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+  BOOL enableMultipleItemsSharing =
+      !incognitoTabsNeedsAuth && sharableSelectedItemsCount > 0;
+  [self.bottomToolbar setShareTabsButtonEnabled:enableMultipleItemsSharing];
+  [self.bottomToolbar setAddToButtonEnabled:enableMultipleItemsSharing];
+  [self.bottomToolbar
+      setCloseTabsButtonEnabled:!incognitoTabsNeedsAuth && selectedItemsCount];
+  [self.topToolbar setSelectAllButtonEnabled:!incognitoTabsNeedsAuth];
 
   if (currentGridViewController.allItemsSelectedForEditing) {
     [self.topToolbar configureDeselectAllButtonTitle];
