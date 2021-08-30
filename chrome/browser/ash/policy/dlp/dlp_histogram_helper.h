@@ -16,6 +16,8 @@ namespace dlp {
 // Constants with UMA histogram name suffixes.
 constexpr char kCaptureModeInitBlockedUMA[] = "CaptureModeInitBlocked";
 constexpr char kClipboardReadBlockedUMA[] = "ClipboardReadBlocked";
+constexpr char kDataTransferReportingTimeDiffUMA[] =
+    "DataTransferReportingTimeDiff";
 constexpr char kDataTransferControllerStartedUMA[] =
     "DataTransferControllerStarted";
 constexpr char kDlpPolicyPresentUMA[] = "DlpPolicyPresent";

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/syslog_logging.h"
@@ -239,8 +240,14 @@ bool DataTransferDlpController::ShouldSkipReporting(
                               : !last_reported_.data_src.has_value();
   bool is_same_dst = data_dst ? *data_dst == last_reported_.data_dst
                               : !last_reported_.data_dst.has_value();
-  return is_same_src && is_same_dst &&
-         curr_time - last_reported_.time < kSkipReportingTimeout;
+  if (is_same_src && is_same_dst) {
+    base::TimeDelta time_diff = curr_time - last_reported_.time;
+    base::UmaHistogramTimes(
+        GetDlpHistogramPrefix() + dlp::kDataTransferReportingTimeDiffUMA,
+        time_diff);
+    return time_diff < kSkipReportingTimeout;
+  }
+  return false;
 }
 
 template <typename T>

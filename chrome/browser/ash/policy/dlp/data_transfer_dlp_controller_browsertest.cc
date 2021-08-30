@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
@@ -740,6 +741,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
 #define MAYBE_Reporting Reporting
 #endif
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -819,6 +822,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
                   DlpRulesManager::Level::kReport)));
+  EXPECT_GE(
+      histogram_tester.GetTotalSum(GetDlpHistogramPrefix() +
+                                   dlp::kDataTransferReportingTimeDiffUMA),
+      1);
 }
 
 }  // namespace policy
