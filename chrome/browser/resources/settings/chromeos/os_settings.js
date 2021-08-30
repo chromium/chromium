@@ -73,6 +73,7 @@ import './os_bluetooth_page/os_bluetooth_device_battery_info.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
 import './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
+import './os_bluetooth_page/os_bluetooth_pairing_dialog.js';
 import './os_bluetooth_page/os_bluetooth_page.js';
 import './os_bluetooth_page/os_bluetooth_summary.js';
 import './os_bluetooth_page/os_paired_bluetooth_list.js';

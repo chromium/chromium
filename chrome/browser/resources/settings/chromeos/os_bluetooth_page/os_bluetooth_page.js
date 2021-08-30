@@ -15,6 +15,7 @@ import '../../settings_page/settings_animated_pages.js';
 import './os_bluetooth_devices_subpage.js';
 import './os_bluetooth_summary.js';
 import './os_bluetooth_device_detail_subpage.js';
+import './os_bluetooth_pairing_dialog.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,6 +46,12 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
        * @private {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
        */
       systemProperties_: Object,
+
+      /** @private */
+      shouldShowPairingDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -75,6 +82,16 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
    */
   onPropertiesUpdated(properties) {
     this.systemProperties_ = properties;
+  }
+
+  /** @private */
+  onStartPairing_() {
+    this.shouldShowPairingDialog_ = true;
+  }
+
+  /** @private */
+  onClosePairingDialog_() {
+    this.shouldShowPairingDialog_ = false;
   }
 }
 

@@ -236,6 +236,14 @@ class SettingsBluetoothSummaryElement extends
     }
     this.navigateToBluetoothDevicesSubpage_();
   }
+
+  /** @private */
+  onPairNewDeviceBtnClick_() {
+    this.dispatchEvent(new CustomEvent('start-pairing', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 }
 
 customElements.define(

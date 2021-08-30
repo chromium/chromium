@@ -20,6 +20,11 @@ suite('OsBluetoothPageTest', function() {
   /** @type {!SettingsBluetoothPageElement|undefined} */
   let bluetoothPage;
 
+  function flushAsync() {
+    Polymer.dom.flush();
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
   setup(function() {
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
@@ -28,8 +33,22 @@ suite('OsBluetoothPageTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Base Test', function() {
+  test('Show bluetooth pairing UI', async function() {
+    const getBluetoothPairingUi = () =>
+        bluetoothPage.$$('os-settings-bluetooth-pairing-dialog');
     const bluetoothSummary = bluetoothPage.$$('os-settings-bluetooth-summary');
+
     assertTrue(!!bluetoothSummary);
+    assertFalse(!!getBluetoothPairingUi());
+
+    bluetoothSummary.dispatchEvent(new CustomEvent('start-pairing'));
+
+    await flushAsync();
+    assertTrue(!!getBluetoothPairingUi());
+
+    getBluetoothPairingUi().dispatchEvent(new CustomEvent('close'));
+
+    await flushAsync();
+    assertFalse(!!getBluetoothPairingUi());
   });
 });

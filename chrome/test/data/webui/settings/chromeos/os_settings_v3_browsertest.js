@@ -425,6 +425,7 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['OncMojoTest', 'onc_mojo_test.m.js'],
  ['OsBluetoothDevicesSubpage', 'os_bluetooth_devices_subpage_tests.m.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
+ ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.m.js'],
  ['OsBluetoothSummary', 'os_bluetooth_summary_tests.m.js'],
  [
    'OsBluetoothChangeDeviceNameDialog',

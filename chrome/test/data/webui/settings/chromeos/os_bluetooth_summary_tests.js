@@ -13,6 +13,7 @@
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from './fake_bluetooth_config.m.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // #import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {
@@ -204,5 +205,20 @@ suite('OsBluetoothSummaryTest', function() {
     label = bluetoothSecondaryLabel.textContent.trim();
     assertEquals(bluetoothSummary.i18n('bluetoothSummaryPageOn'), label);
     assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
+  });
+
+  test('start-pairing is fired on pairNewDeviceBtn click', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushAsync();
+
+    const toggleBluetoothPairingUiPromise =
+        test_util.eventToPromise('start-pairing', bluetoothSummary);
+    const getPairNewDeviceBtn = () => bluetoothSummary.$$('#pairNewDeviceBtn');
+
+    assertTrue(!!getPairNewDeviceBtn());
+    getPairNewDeviceBtn().click();
+
+    await toggleBluetoothPairingUiPromise;
   });
 });

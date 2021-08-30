@@ -347,6 +347,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_device_detail_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_change_device_name_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_summary.html",
+                                 "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_pairing_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_paired_bluetooth_list.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_paired_bluetooth_list_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_files_page/os_files_page.html",
