@@ -404,8 +404,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         Collections.sort(availableResolveInfos, new ResolveInfoPackageNameComparator());
 
         for (ResolveInfo r : availableResolveInfos) {
-            availableActivities.add(r.activityInfo.name);
-            models.put(r.activityInfo.name,
+            String name = r.activityInfo.packageName + "/" + r.activityInfo.name;
+            availableActivities.add(name);
+            models.put(name,
                     mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params, r,
                             saveLastUsed, mShareStartTime, NO_LOG_INDEX,
                             mLinkGenerationStatusForMetrics));
