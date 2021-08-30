@@ -11,7 +11,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/installer/util/initial_preferences.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
