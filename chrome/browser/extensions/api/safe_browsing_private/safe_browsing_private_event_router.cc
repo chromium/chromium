@@ -169,6 +169,13 @@ const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
 const char SafeBrowsingPrivateEventRouter::kKeyIsFederated[] = "isFederated";
 const char SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin[] =
     "federatedOrigin";
+const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentities[] =
+    "identities";
+const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl[] =
+    "url";
+const char
+    SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUsername[] =
+        "username";
 
 // All new event names should be added to the kAllEvents array below!
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
@@ -184,8 +191,10 @@ const char SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent[] =
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
     "unscannedFileEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyLoginEvent[] = "loginEvent";
+const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent[] =
+    "passwordBreachEvent";
 // All new event names should be added to this array!
-const char* SafeBrowsingPrivateEventRouter::kAllEvents[7] = {
+const char* SafeBrowsingPrivateEventRouter::kAllEvents[8] = {
     SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
     SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
     SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
@@ -193,6 +202,7 @@ const char* SafeBrowsingPrivateEventRouter::kAllEvents[7] = {
     SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
     SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
     SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
+    SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
 };
 
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
@@ -758,6 +768,33 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   event.SetStringKey(kKeyProfileUserName, GetProfileUserName());
 
   ReportRealtimeEvent(kKeyLoginEvent, std::move(settings.value()),
+                      std::move(event));
+}
+
+void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
+    const std::string& trigger,
+    const std::vector<std::pair<GURL, std::string>>& identities) {
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordBreachEvent) == 0) {
+    return;
+  }
+
+  base::Value event(base::Value::Type::DICTIONARY);
+  std::vector<base::Value> identities_list;
+  event.SetStringKey(kKeyTrigger, trigger);
+  for (const std::pair<GURL, std::string>& i : identities) {
+    base::Value identity(base::Value::Type::DICTIONARY);
+    identity.SetStringKey(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
+    identity.SetStringKey(kKeyPasswordBreachIdentitiesUsername, i.second);
+    identities_list.push_back(std::move(identity));
+  }
+  event.SetKey(kKeyPasswordBreachIdentities,
+               base::Value(std::move(identities_list)));
+  event.SetStringKey(kKeyProfileUserName, GetProfileUserName());
+
+  ReportRealtimeEvent(kKeyPasswordBreachEvent, std::move(settings.value()),
                       std::move(event));
 }
 

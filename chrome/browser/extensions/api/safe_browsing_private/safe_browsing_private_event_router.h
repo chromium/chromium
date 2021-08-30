@@ -88,6 +88,9 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyScanId[];
   static const char kKeyIsFederated[];
   static const char kKeyFederatedOrigin[];
+  static const char kKeyPasswordBreachIdentities[];
+  static const char kKeyPasswordBreachIdentitiesUrl[];
+  static const char kKeyPasswordBreachIdentitiesUsername[];
 
   static const char kKeyPasswordReuseEvent[];
   static const char kKeyPasswordChangedEvent[];
@@ -96,7 +99,8 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeySensitiveDataEvent[];
   static const char kKeyUnscannedFileEvent[];
   static const char kKeyLoginEvent[];
-  static const char* kAllEvents[7];
+  static const char kKeyPasswordBreachEvent[];
+  static const char* kAllEvents[8];
 
   static const char kKeyUnscannedReason[];
 
@@ -221,6 +225,10 @@ class SafeBrowsingPrivateEventRouter
   void OnLoginEvent(const GURL& url,
                     bool is_federated,
                     const GURL& federated_origin);
+
+  void OnPasswordBreach(
+      const std::string& trigger,
+      const std::vector<std::pair<GURL, std::string>>& identities);
 
   // Returns true if enterprise real-time reporting should be initialized,
   // checking both the feature flag. This function is public so that it can

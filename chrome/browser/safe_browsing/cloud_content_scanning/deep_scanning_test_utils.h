@@ -139,6 +139,12 @@ class EventReportValidator {
                         const std::string& expected_federated_origin,
                         const std::string& expected_username);
 
+  void ExpectPasswordBreachEvent(
+      const std::string& expected_trigger,
+      const std::vector<std::pair<std::string, std::string>>&
+          expected_identities,
+      const std::string& expected_username);
+
   void ExpectNoReport();
 
   // Closure to run once all expected events are validated.
@@ -146,6 +152,7 @@ class EventReportValidator {
 
  private:
   void ValidateReport(base::Value* report);
+  void ValidateIdentities(base::Value* value);
   void ValidateMimeType(base::Value* value);
   void ValidateDlpVerdict(
       base::Value* value,
@@ -167,7 +174,7 @@ class EventReportValidator {
   policy::MockCloudPolicyClient* client_;
 
   std::string event_key_;
-  std::string url_;
+  absl::optional<std::string> url_;
   absl::optional<std::string> trigger_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;
@@ -176,6 +183,8 @@ class EventReportValidator {
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;
+  absl::optional<std::vector<std::pair<std::string, std::string>>>
+      password_breach_identities_ = absl::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them

@@ -337,6 +337,24 @@ void EventReportValidator::ExpectLoginEvent(
       });
 }
 
+void EventReportValidator::ExpectPasswordBreachEvent(
+    const std::string& expected_trigger,
+    const std::vector<std::pair<std::string, std::string>>& expected_identities,
+    const std::string& expected_username) {
+  event_key_ = SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent;
+  trigger_ = expected_trigger;
+  password_breach_identities_ = expected_identities;
+  username_ = expected_username;
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
+                       base::OnceCallback<void(bool)>& callback) {
+        ValidateReport(&report);
+        if (!done_closure_.is_null())
+          done_closure_.Run();
+      });
+}
+
 void EventReportValidator::ValidateReport(base::Value* report) {
   DCHECK(report);
 
@@ -371,7 +389,40 @@ void EventReportValidator::ValidateReport(base::Value* report) {
                 is_federated_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin,
                 federated_origin_);
+  ValidateIdentities(event);
   ValidateMimeType(event);
+}
+
+void EventReportValidator::ValidateIdentities(base::Value* value) {
+  base::Value* v = value->FindListKey(
+      SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentities);
+  if (!password_breach_identities_) {
+    EXPECT_EQ(nullptr, v);
+  } else {
+    EXPECT_NE(nullptr, v);
+
+    EXPECT_TRUE(v->is_list());
+    const auto& identities = v->GetList();
+    EXPECT_EQ(password_breach_identities_->size(), identities.size());
+    for (const auto& expected_identity : *password_breach_identities_) {
+      bool matched = false;
+      for (const auto& actual_identity : identities) {
+        const std::string* url = actual_identity.FindStringKey(
+            SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl);
+        const std::string* username = actual_identity.FindStringKey(
+            SafeBrowsingPrivateEventRouter::
+                kKeyPasswordBreachIdentitiesUsername);
+        EXPECT_NE(nullptr, url);
+        EXPECT_NE(nullptr, username);
+        if (expected_identity.first == *url &&
+            expected_identity.second == *username) {
+          matched = true;
+          break;
+        }
+      }
+      EXPECT_TRUE(matched);
+    }
+  }
 }
 
 void EventReportValidator::ValidateMimeType(base::Value* value) {
@@ -448,7 +499,7 @@ void EventReportValidator::ValidateField(
         << "Mismatch in field " << field_key;
   } else {
     ASSERT_EQ(nullptr, value->FindStringKey(field_key))
-        << "Field " << field_key << "should not be populated";
+        << "Field " << field_key << " should not be populated";
   }
 }
 
