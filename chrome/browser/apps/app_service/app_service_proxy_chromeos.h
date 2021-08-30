@@ -27,7 +27,7 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace web_app {
-class WebAppsChromeOs;
+class WebApps;
 }  // namespace web_app
 
 namespace apps {
@@ -188,7 +188,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
-  std::unique_ptr<web_app::WebAppsChromeOs> web_apps_;
+  std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<BorealisApps> borealis_apps_;
 
   bool arc_is_registered_ = false;

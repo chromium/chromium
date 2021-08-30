@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
-#include "chrome/browser/web_applications/app_service/web_apps_chromeos.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/full_restore/features.h"
@@ -128,8 +128,8 @@ void AppServiceProxyChromeOs::Initialize() {
     standalone_browser_apps_ =
         std::make_unique<StandaloneBrowserApps>(app_service_, profile_);
   }
-  web_apps_ = std::make_unique<web_app::WebAppsChromeOs>(app_service_, profile_,
-                                                         &instance_registry_);
+  web_apps_ = std::make_unique<web_app::WebApps>(app_service_,
+                                                 &instance_registry_, profile_);
 
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =

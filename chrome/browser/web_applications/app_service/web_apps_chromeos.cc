@@ -2,80 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_chromeos.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 
-#include <string>
 #include <utility>
-#include <vector>
 
-#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/chromeos/extensions/gfx_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/services/app_service/public/cpp/intent_filter_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/clear_site_data_utils.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 using apps::IconEffects;
 
 namespace web_app {
 
-WebAppsChromeOs::WebAppsChromeOs(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile,
-    apps::InstanceRegistry* instance_registry)
-    : WebApps(app_service, profile), instance_registry_(instance_registry) {
-  DCHECK(instance_registry_);
-  Initialize();
-}
-
-WebAppsChromeOs::~WebAppsChromeOs() = default;
-
-void WebAppsChromeOs::Initialize() {
-  DCHECK(profile());
-  if (!AreWebAppsEnabled(profile())) {
-    return;
-  }
-}
-
-void WebAppsChromeOs::Uninstall(const std::string& app_id,
-                                apps::mojom::UninstallSource uninstall_source,
-                                bool clear_site_data,
-                                bool report_abuse) {
+void WebApps::Uninstall(const std::string& app_id,
+                        apps::mojom::UninstallSource uninstall_source,
+                        bool clear_site_data,
+                        bool report_abuse) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
@@ -85,18 +45,18 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
                                      report_abuse);
 }
 
-void WebAppsChromeOs::PauseApp(const std::string& app_id) {
+void WebApps::PauseApp(const std::string& app_id) {
   publisher_helper().PauseApp(app_id);
 }
 
-void WebAppsChromeOs::UnpauseApp(const std::string& app_id) {
+void WebApps::UnpauseApp(const std::string& app_id) {
   publisher_helper().UnpauseApp(app_id);
 }
 
-void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
-                                   apps::mojom::MenuType menu_type,
-                                   int64_t display_id,
-                                   GetMenuModelCallback callback) {
+void WebApps::GetMenuModel(const std::string& app_id,
+                           apps::mojom::MenuType menu_type,
+                           int64_t display_id,
+                           GetMenuModelCallback callback) {
   bool is_system_web_app = false;
   bool can_use_uninstall = true;
   apps::mojom::WindowMode display_mode;
@@ -159,7 +119,7 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
                                  std::move(callback));
 }
 
-void WebAppsChromeOs::GetMenuModelFromWebAppProvider(
+void WebApps::GetMenuModelFromWebAppProvider(
     const std::string& app_id,
     apps::mojom::MenuType menu_type,
     apps::mojom::MenuItemsPtr menu_items,
@@ -176,15 +136,15 @@ void WebAppsChromeOs::GetMenuModelFromWebAppProvider(
       !web_app->shortcuts_menu_item_infos().empty()) {
     provider()->icon_manager().ReadAllShortcutsMenuIcons(
         app_id,
-        base::BindOnce(&WebAppsChromeOs::OnShortcutsMenuIconsRead,
-                       base::AsWeakPtr<WebAppsChromeOs>(this), app_id,
-                       menu_type, std::move(menu_items), std::move(callback)));
+        base::BindOnce(&WebApps::OnShortcutsMenuIconsRead,
+                       base::AsWeakPtr<WebApps>(this), app_id, menu_type,
+                       std::move(menu_items), std::move(callback)));
   } else {
     std::move(callback).Run(std::move(menu_items));
   }
 }
 
-void WebAppsChromeOs::OnShortcutsMenuIconsRead(
+void WebApps::OnShortcutsMenuIconsRead(
     const std::string& app_id,
     apps::mojom::MenuType menu_type,
     apps::mojom::MenuItemsPtr menu_items,
@@ -247,10 +207,10 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
   std::move(callback).Run(std::move(menu_items));
 }
 
-void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
-                                                int command_id,
-                                                const std::string& shortcut_id,
-                                                int64_t display_id) {
+void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
+                                        int command_id,
+                                        const std::string& shortcut_id,
+                                        int64_t display_id) {
   apps::mojom::LaunchSource launch_source;
   // shortcut_id contains menu_type.
   switch (apps::MenuTypeFromString(shortcut_id)) {
@@ -266,8 +226,8 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
       apps::GetAppLaunchSource(launch_source), display_id);
 }
 
-void WebAppsChromeOs::SetWindowMode(const std::string& app_id,
-                                    apps::mojom::WindowMode window_mode) {
+void WebApps::SetWindowMode(const std::string& app_id,
+                            apps::mojom::WindowMode window_mode) {
   publisher_helper().SetWindowMode(app_id, window_mode);
 }
 

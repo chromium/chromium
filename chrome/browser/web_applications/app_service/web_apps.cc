@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #endif
 
 using apps::IconEffects;
@@ -68,11 +69,17 @@ bool ShouldObserveMediaRequests() {
 }  // namespace
 
 WebApps::WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                 apps::InstanceRegistry* instance_registry,
+#endif
                  Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       app_service_(nullptr),
       app_type_(GetWebAppType()),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      instance_registry_(instance_registry),
+#endif
       publisher_helper_(profile_,
                         provider_,
                         app_type_,

@@ -157,10 +157,10 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     }
   }
 
-  // Note that default web apps *DO* show app icons on Chrome OS however it
-  // is done via the |WebAppsChromeOs| publishing live our current app state to
-  // the app service rather than writing shortcut files as the case on all other
-  // desktop platforms.
+  // Note that default web apps *DO* show app icons on Chrome OS however it is
+  // done via the |WebApps| publishing live our current app state to the app
+  // service rather than writing shortcut files as the case on all other desktop
+  // platforms.
   auto* test_os_integration_manager =
       provider.os_integration_manager().AsTestOsIntegrationManager();
   EXPECT_EQ(test_os_integration_manager->num_create_shortcuts_calls(), 0u);

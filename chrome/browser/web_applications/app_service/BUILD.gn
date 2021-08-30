@@ -29,10 +29,7 @@ source_set("app_service") {
 
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
-    sources += [
-      "web_apps_chromeos.cc",
-      "web_apps_chromeos.h",
-    ]
+    sources += [ "web_apps_chromeos.cc" ]
 
     deps += [
       "//ash/public/cpp",
