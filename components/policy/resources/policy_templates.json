@@ -2717,6 +2717,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable printing',
+        },
+        {
+          'value': False,
+          'caption': 'Disable printing',
+        },
+      ],
       'example_value': True,
       'id': 12,
       'caption': '''Enable printing''',
@@ -2736,6 +2746,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy',
+        },
+        {
+          'value': False,
+          'caption': 'Disable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy',
+        },
+      ],
       'example_value': True,
       'id': 13,
       'caption': '''Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy''',
@@ -3253,6 +3273,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable sending username and filename to native printers',
+        },
+        {
+          'value': False,
+          'caption': 'Disable sending username and filename to native printers',
+        },
+      ],
       'example_value': True,
       'id': 506,
       'caption': '''Send username and filename to native printers''',
@@ -3289,6 +3319,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force AppCache to be enabled',
+        },
+        {
+          'value': False,
+          'caption': 'Use default AppCache behavior',
+        },
+      ],
       'example_value': False,
       'id': 704,
       'caption': '''Allows the AppCache feature to be re-enabled even if it is off by default.''',
@@ -3375,6 +3415,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force the use of SafeSearch in Google Search and YouTube Restricted Mode to be at least Moderate',
+        },
+        {
+          'value': False,
+          'caption': 'Do not enforce the use of SafeSearch in Google Search or YouTube Restricted Mode',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 162,
@@ -3399,6 +3449,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force the use of SafeSearch in Google Search',
+        },
+        {
+          'value': False,
+          'caption': 'Do not enforce the use of SafeSearch in Google Search',
+        },
+      ],
       'example_value': False,
       'id': 282,
       'caption': '''Force Google SafeSearch''',
@@ -3418,6 +3478,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force YouTube Restricted Mode to be at least Moderate',
+        },
+        {
+          'value': False,
+          'caption': 'Do not enforce YouTube Restricted Mode',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 283,
