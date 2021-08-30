@@ -113,8 +113,6 @@ class MediaStreamUIProxy::Core {
 
   base::WeakPtr<Core> weak_this_;
 
-  // WeakPtr<> is used to RequestMediaAccessPermission() because there is no way
-  // cancel media requests.
   base::WeakPtrFactory<Core> weak_factory_{this};
 
   // Used for calls supplied to `ui_`. Invalidated every time a new UI is
@@ -157,9 +155,8 @@ void MediaStreamUIProxy::Core::RequestAccess(
 
   render_delegate->RequestMediaAccessPermission(
       *request,
-      base::BindOnce(&Core::ProcessAccessRequestResponse,
-                     weak_factory_.GetWeakPtr(), request->render_process_id,
-                     request->render_frame_id));
+      base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
+                     request->render_process_id, request->render_frame_id));
 }
 
 void MediaStreamUIProxy::Core::OnStarted(
