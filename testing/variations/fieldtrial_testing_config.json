@@ -8830,54 +8830,6 @@
             ]
         }
     ],
-    "V8OffThreadFinalization": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledOffThreadFinalizationAndSmallScripts",
-                    "enable_features": [
-                        "SmallScriptStreaming",
-                        "V8OffThreadFinalization"
-                    ]
-                },
-                {
-                    "name": "EnabledOffThreadFinalization",
-                    "enable_features": [
-                        "V8OffThreadFinalization"
-                    ],
-                    "disable_features": [
-                        "SmallScriptStreaming"
-                    ]
-                },
-                {
-                    "name": "EnabledSmallScripts",
-                    "enable_features": [
-                        "SmallScriptStreaming"
-                    ],
-                    "disable_features": [
-                        "V8OffThreadFinalization"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SmallScriptStreaming",
-                        "V8OffThreadFinalization"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8PerFrameMemoryMonitoringStudy": [
         {
             "platforms": [
