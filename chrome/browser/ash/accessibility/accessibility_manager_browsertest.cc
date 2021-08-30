@@ -373,6 +373,10 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
       // Cancel any SODA downloads to pretend this logic didn't trigger.
       UninstallSodaForTesting();
     }
+    TriggerDictationChangedBySystem();
+  }
+
+  void TriggerDictationChangedBySystem() {
     AccessibilityManager::Get()->OnDictationChanged(
         /*triggered_by_user=*/false);
   }
@@ -802,22 +806,37 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaDownloadNotTriggeredByUserShowsNudge) {
+  SetDictationEnabled(true);
+  // Reset to initial state: no SODA, no locale. Then trigger the dictation
+  // changed callback as if by the system when the pref is set at start-up.
   ClearDictationOfflineNudgePref("en-US");
-  EXPECT_FALSE(IsSodaDownloading());
-  EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/true);
+  UninstallSodaForTesting();
+  ClearDictationLocale();
+  TriggerDictationChangedBySystem();
+
   EXPECT_TRUE(IsSodaDownloading());
   // The nudge should be shown when SODA download finishes.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()
+      ->NotifyOnSodaLanguagePackInstalledForTesting(
+          speech::LanguageCode::kEnUs);
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
+  // No notifications were shown.
+  AssertMessageCenterEmpty();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaErrorNotTriggeredByUserTriesToShowNudge) {
+  SetDictationEnabled(true);
+  // Reset to initial state: no SODA, no locale. Then trigger the dictation
+  // changed callback as if by the system when the pref is set at start-up.
   ClearDictationOfflineNudgePref("en-US");
-  EXPECT_FALSE(IsSodaDownloading());
-  EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/true);
+  UninstallSodaForTesting();
+  ClearDictationLocale();
+  TriggerDictationChangedBySystem();
+
   EXPECT_TRUE(IsSodaDownloading());
   // The nudge should be shown when SODA download finishes.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
@@ -825,6 +844,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   EXPECT_FALSE(IsSodaDownloading());
   // The nudge was never shown because of the error.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
+  // No download failed notifications were shown.
+  AssertMessageCenterEmpty();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
@@ -880,6 +901,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   EXPECT_FALSE(IsSodaDownloading());
   // The nudge was never shown because this was a user-initiated change.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
+  // The notification was shown.
+  AssertSodaNotificationShownForDictation(u"English (United States)",
+                                          /*success=*/true);
 }
 
 // Ensures that we show the SODA succeeded notification for Dictation if the
@@ -894,7 +918,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting();
   AssertMessageCenterEmpty();
   soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr);
-  AssertSodaNotificationShownForDictation(u"français (France)", true);
+  AssertSodaNotificationShownForDictation(u"français (France)",
+                                          /*success=*/true);
 }
 
 // Similar to above. Ensures that we show the SODA succeeded notification for
@@ -905,7 +930,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaInstalledForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(), true);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/true);
 }
 
 // Ensures that we show the SODA failed notification for Dictation if the SODA
@@ -914,7 +940,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationBinaryError) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
 }
 
 // Similar to above. Ensures that we show the SODA failed notification for
@@ -923,7 +950,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationLanguageError) {
   SetDictationEnabled(true);
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
 }
 
 // Ensures that the SODA failed notification for Dictation is given if
@@ -934,7 +962,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaErrorForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
 }
 
 // Similar to above. Ensures that we show the SODA failed notification if the
@@ -948,7 +977,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting();
   AssertMessageCenterEmpty();
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
-  AssertSodaNotificationShownForDictation(u"français (France)", false);
+  AssertSodaNotificationShownForDictation(u"français (France)",
+                                          /*success=*/false);
 }
 
 // Ensures that SODA failed notification is shown just once if both the SODA
@@ -957,7 +987,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationNotShownTwice) {
   SetDictationEnabled(true);
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
   ClearMessageCenter();
 
   // No second message is shown on additional failures.
@@ -973,7 +1004,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationShownOncePerDownload) {
   SetDictationEnabled(true);
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
   SetDictationEnabled(false);
 
   // Reset SODA state so that it tries the download again.
@@ -983,7 +1015,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // A fresh attempt at Dictation means another chance to show an error message.
   SetDictationEnabled(true);
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(), false);
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/false);
 }
 
 // Tests that the SODA download notification for Dictation is NOT given if
@@ -1005,6 +1038,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, WrongLanguage) {
   AssertMessageCenterEmpty();
   soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+                       NotificationShownOnDictationLocaleChange) {
+  // it-IT is not supported by SODA.
+  SetDictationLocale("it-IT");
+  EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
+  AssertMessageCenterEmpty();
+
+  // Change the locale to one supported by SODA without changing Dictation
+  // enabled. This mocks selecting a new locale from settings.
+  SetDictationLocale("en-US");
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+
+  // The notification should have been shown.
+  AssertSodaNotificationShownForDictation(en_us_display_name(),
+                                          /*success=*/true);
 }
 
 enum DictationDialogTestVariant {

@@ -422,9 +422,12 @@ class AccessibilityManager
   // Dictation enabled setting in Chrome OS settings or in the tray quick
   // settings menu.
   void OnDictationChanged(bool triggered_by_user);
-  // Called after Dictation is enabled by the user or the Dictation locale pref
-  // changes.
-  void MaybeShowNetworkDictationDialogOrInstallSoda();
+  // Called after the Dictation locale pref is changed.
+  void OnDictationLocaleChanged();
+  // Called after Dictation is enabled by the user to ensure the correct
+  // dialogs/downloads occur.
+  void MaybeShowNetworkDictationDialogOrInstallSoda(
+      const std::string& dictation_locale);
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(
@@ -566,6 +569,7 @@ class AccessibilityManager
   // could fail separately.
   bool soda_failed_notification_shown_ = false;
   bool dictation_triggered_by_user_ = false;
+  bool ignore_dictation_locale_pref_change_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;

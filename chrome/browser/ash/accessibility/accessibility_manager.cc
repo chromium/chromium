@@ -886,11 +886,12 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     // settings) and pick the language accordingly.
     const std::string locale = Dictation::DetermineDefaultSupportedLocale(
         profile_, /*new_user=*/triggered_by_user);
+
+    // Ensure we don't trigger nudges, downloads or notifications for the locale
+    // pref upgrade. If these need to occur they will occur below.
+    ignore_dictation_locale_pref_change_ = true;
     pref_service->SetString(prefs::kAccessibilityDictationLocale, locale);
     pref_service->CommitPendingWrite();
-    // Note that updating the pref may cause a duplicate call to
-    // MaybeShowNetworkDictationDialogOrInstallSoda. This is OK because that
-    // method ensures SODA download or dialog show only occur once.
   }
 
   // If SODA isn't available on the device, no need to try to install it.
@@ -941,30 +942,42 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         DictionaryPrefUpdate update(
             pref_service, prefs::kAccessibilityDictationLocaleOfflineNudge);
         update.Get()->SetBoolKey(dictation_locale, false);
-        // Trigger an installation.
-        MaybeInstallSoda(dictation_locale);
       }
     }
+    // This shouldn't depend on offline nudge in case SODA was uninstalled out
+    // from under us (could happen manually on a test image).
+    // Trigger an installation.
+    MaybeInstallSoda(dictation_locale);
   } else {
     // Explicit user action. Show download notification or dialog.
-    MaybeShowNetworkDictationDialogOrInstallSoda();
+    MaybeShowNetworkDictationDialogOrInstallSoda(dictation_locale);
   }
 }
 
-void AccessibilityManager::MaybeShowNetworkDictationDialogOrInstallSoda() {
+void AccessibilityManager::OnDictationLocaleChanged() {
+  if (ignore_dictation_locale_pref_change_) {
+    ignore_dictation_locale_pref_change_ = false;
+    return;
+  }
+
   PrefService* pref_service = profile_->GetPrefs();
   const bool enabled =
       pref_service->GetBoolean(prefs::kAccessibilityDictationEnabled);
   if (!enabled)
     return;
+
   const std::string dictation_locale =
       pref_service->GetString(prefs::kAccessibilityDictationLocale);
-  if (ShouldShowNetworkDictationDialog(dictation_locale)) {
-    // Only show the Dictation dialog if Dictation was enabled by the user.
+  dictation_triggered_by_user_ = true;
+  MaybeShowNetworkDictationDialogOrInstallSoda(dictation_locale);
+}
+
+void AccessibilityManager::MaybeShowNetworkDictationDialogOrInstallSoda(
+    const std::string& dictation_locale) {
+  if (ShouldShowNetworkDictationDialog(dictation_locale))
     ShowNetworkDictationDialog();
-  } else {
+  else
     MaybeInstallSoda(dictation_locale);
-  }
 }
 
 void AccessibilityManager::ShowDictationLanguageUpgradedNudge(
@@ -1313,9 +1326,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
                             /*triggered_by_user=*/true));
     pref_change_registrar_->Add(
         prefs::kAccessibilityDictationLocale,
-        base::BindRepeating(
-            &AccessibilityManager::MaybeShowNetworkDictationDialogOrInstallSoda,
-            base::Unretained(this)));
+        base::BindRepeating(&AccessibilityManager::OnDictationLocaleChanged,
+                            base::Unretained(this)));
 
     for (const std::string& feature : kAccessibilityCommonFeatures) {
       pref_change_registrar_->Add(
@@ -2052,13 +2064,14 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
     soda_observation_.Observe(soda_installer);
   soda_installer->Init(profile_->GetPrefs(), g_browser_process->local_state());
 
+  // If the installer was already initialized the language code might not have
+  // started installing. Try again.
+  if (!soda_installer->IsSodaDownloading(language_code))
+    soda_installer->InstallLanguage(locale, g_browser_process->local_state());
+
   // Reset whether failed notification was shown. This ensures it is only shown
   // at most once per download attempt.
   soda_failed_notification_shown_ = false;
-
-  // TODO(crbug.com/1173135): The SODA installer may have already been
-  // initialized. To support multiple locales, if download didn't start, try
-  // installing the locale directly.
 }
 
 void AccessibilityManager::OnSodaInstallSucceeded() {
