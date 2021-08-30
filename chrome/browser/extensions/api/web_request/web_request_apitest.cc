@@ -3274,59 +3274,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, AppCacheRequests) {
-  std::string origin = "http://127.0.0.1:8080";
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "content/test/data", GURL(origin));
-  GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
-
-  std::u16string expected_title = u"AppCache updated";
-
-  // Load the main page first to make sure it is cached. After the first
-  // navigation, load the extension, then navigate again.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(R"({
-        "name": "Web Request Appcache Test",
-        "manifest_version": 2,
-        "version": "0.1",
-        "background": { "scripts": ["background.js"] },
-        "permissions": ["<all_urls>", "webRequest"]
-      })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-        window.numMainResourceRequests = 0;
-        window.numSubresourceRequests = 0;
-        chrome.webRequest.onBeforeRequest.addListener(function(details) {
-          if (details.url.includes('logo.png'))
-            window.numSubresourceRequests++;
-          else if (details.url.includes('simple_page_with_manifest.html'))
-            window.numMainResourceRequests++;
-        }, {urls: ['<all_urls>']}, []);
-
-        chrome.test.sendMessage('ready');
-      )");
-
-  ExtensionTestMessageListener listener("ready", false);
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  // This navigation should go through appcache.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  EXPECT_EQ(GetCountFromBackgroundPage(extension, profile(),
-                                       "window.numSubresourceRequests"),
-            1);
-  EXPECT_EQ(GetCountFromBackgroundPage(extension, profile(),
-                                       "window.numMainResourceRequests"),
-            1);
-}
-
 // Ensure that when an extension blocks a main-frame request, the resultant
 // error page attributes this to an extension.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
@@ -3345,69 +3292,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   EXPECT_TRUE(
       base::Contains(body, "This page has been blocked by an extension"));
   EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
-}
-
-// Regression test for http://crbug.com/996940. Requests that redirected to an
-// appcache handled URL could have request ID collisions.
-// This test is flaky on Linux and Mac: https://crbug.com/1094834.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_RedirectToAppCacheRequest DISABLED_RedirectToAppCacheRequest
-#else
-#define MAYBE_RedirectToAppCacheRequest RedirectToAppCacheRequest
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       MAYBE_RedirectToAppCacheRequest) {
-  // Use the embedded test server to support server-redirect, but serve
-  // appcache from a fixed port using the url loader interceptor below
-  // so that the appcache origin trial works.
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  std::string origin = "http://127.0.0.1:8080";
-  auto interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "content/test/data", GURL(origin));
-  GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
-
-  std::u16string expected_title = u"AppCache updated";
-
-  // Load the main page first to make sure it is cached. After the first
-  // navigation, load the extension, then navigate again.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(R"({
-        "name": "Web Request Appcache Redirect Test",
-        "manifest_version": 2,
-        "version": "0.1",
-        "background": { "scripts": ["background.js"] },
-        "permissions": ["<all_urls>", "webRequest"]
-      })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-        window.numErrors = 0;
-        chrome.webRequest.onErrorOccurred.addListener(function(details) {
-          window.numErrors++;
-        }, {urls: ['<all_urls>']});
-
-        chrome.test.sendMessage('ready');
-      )");
-
-  ExtensionTestMessageListener listener("ready", false);
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  // This navigation should go through appcache.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/server-redirect?" + main_url.spec())));
-
-  EXPECT_EQ(
-      GetCountFromBackgroundPage(extension, profile(), "window.numErrors"), 0);
 }
 
 // Regression test for https://crbug.com/1019614.

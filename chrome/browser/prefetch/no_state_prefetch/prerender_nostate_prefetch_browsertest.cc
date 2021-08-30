@@ -103,7 +103,6 @@ namespace prerender {
 
 const char k302RedirectPage[] = "/prerender/302_redirect.html";
 const char kPrefetchAppcache[] = "/prerender/prefetch_appcache.html";
-const char kPrefetchAppcacheManifest[] = "/prerender/appcache.manifest";
 const char kPrefetchCookiePage[] = "/prerender/cookie.html";
 const char kPrefetchFromSubframe[] = "/prerender/prefetch_from_subframe.html";
 const char kPrefetchImagePage[] = "/prerender/prefetch_image.html";
@@ -290,27 +289,6 @@ class NoStatePrefetchBrowserTest
     GetNoStatePrefetchManager()->SetTickClockForTesting(&clock_);
   }
 
-  // Block until an AppCache exists for |manifest_url|.
-  void WaitForAppcache(const GURL& manifest_url) {
-    bool found_manifest = false;
-    content::AppCacheService* appcache_service =
-        current_browser()
-            ->profile()
-            ->GetDefaultStoragePartition()
-            ->GetAppCacheService();
-    do {
-      base::RunLoop wait_loop;
-      WaitForAppcache(manifest_url, appcache_service, base::DoNothing(),
-                      &found_manifest);
-      // There seems to be some flakiness in the appcache getting back to us, so
-      // use a timeout task to try the appcache query again.
-      content::GetUIThreadTaskRunner({})->PostDelayedTask(
-          FROM_HERE, wait_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(2000));
-      wait_loop.Run();
-    } while (!found_manifest);
-  }
-
  protected:
   // Loads kPrefetchLoaderPath and specifies |target_url| as a query param. The
   // |loader_url| looks something like:
@@ -443,45 +421,6 @@ class NoStatePrefetchBrowserTest
   base::SimpleTestTickClock clock_;
 
  private:
-  // Schedule a task to retrieve AppCacheInfo from |appcache_service|. This sets
-  // |found_manifest| if an appcache exists for |manifest_url|. |callback| will
-  // be called on the UI thread after the info is retrieved, whether or not the
-  // manifest exists.
-  static void WaitForAppcache(const GURL& manifest_url,
-                              content::AppCacheService* appcache_service,
-                              base::OnceClosure callback,
-                              bool* found_manifest) {
-    scoped_refptr<content::AppCacheInfoCollection> info_collection =
-        new content::AppCacheInfoCollection();
-    appcache_service->GetAllAppCacheInfo(
-        info_collection.get(),
-        base::BindOnce(ProcessAppCacheInfo, manifest_url, std::move(callback),
-                       found_manifest, info_collection));
-  }
-
-  // Look through |info_collection| for an entry matching |target_manifest|,
-  // setting |found_manifest| appropriately. Then |callback| will be invoked on
-  // the UI thread.
-  static void ProcessAppCacheInfo(
-      const GURL& target_manifest,
-      base::OnceClosure callback,
-      bool* found_manifest,
-      scoped_refptr<content::AppCacheInfoCollection> info_collection,
-      int status) {
-    if (status == net::OK) {
-      for (const auto& origin_pair : info_collection->infos_by_origin) {
-        for (const auto& info : origin_pair.second) {
-          if (info.manifest_url == target_manifest) {
-            *found_manifest = true;
-            break;
-          }
-        }
-      }
-    }
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(callback));
-  }
-
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchBrowserTest);
@@ -1495,107 +1434,6 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlUninitialized) {
   PrefetchFromFile(kPrefetchAppcache, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
-}
-
-// Checks that prefetching does not if an initialized appcache is mentioned in
-// the html tag.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlInitialized) {
-  base::TimeTicks current_time =
-      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
-  OverrideNoStatePrefetchManagerTimeTicks();
-  // Some navigations have already occurred in test setup. In order to track
-  // duplicate prefetches correctly the test clock needs to be beyond those
-  // navigations.
-  clock_.SetNowTicks(current_time);
-  clock_.Advance(base::TimeDelta::FromSeconds(600));
-
-  std::string origin = "http://127.0.0.1:8080";
-  GURL image_url(origin + kPrefetchPng);
-  GURL manifest_url(origin + kPrefetchAppcacheManifest);
-  GURL appcache_page_url(origin + kPrefetchAppcache);
-  GURL script_url(origin + kPrefetchScript);
-
-  base::RunLoop run_loop;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "chrome/test/data", GURL(origin),
-          base::BindRepeating(base::BindLambdaForTesting([&](const GURL& url) {
-            if (url == script_url)
-              run_loop.Quit();
-          })));
-
-  // Load the page into the appcache.
-  ui_test_utils::NavigateToURL(current_browser(), appcache_page_url);
-
-  WaitForAppcache(manifest_url);
-
-  // If a page is prefetch shortly after being loading, the prefetch is
-  // canceled. Advancing the clock prevents the cancelation.
-  clock_.Advance(base::TimeDelta::FromSeconds(6000));
-
-  // While the prefetch stops when it sees the AppCache manifest, from the point
-  // of view of the prerender manager the prefetch stops normally.
-  PrefetchFromURL(appcache_page_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-
-  // The prefetch should have been canceled before the script in
-  // kPrefetchAppcache is loaded (note the script is not mentioned in the
-  // manifest).
-  run_loop.Run();
-}
-
-// If a page has been cached by another AppCache, the prefetch should be
-// canceled.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheRegistered) {
-  base::TimeTicks current_time =
-      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
-  OverrideNoStatePrefetchManagerTimeTicks();
-  // Some navigations have already occurred in test setup. In order to track
-  // duplicate prefetches correctly the test clock needs to be beyond those
-  // navigations.
-  clock_.SetNowTicks(current_time);
-  clock_.Advance(base::TimeDelta::FromSeconds(600));
-
-  std::string origin = "http://127.0.0.1:8080";
-  // This manifest lists kPrefetchPage, but does not explicitly
-  // list a manifest itself.
-  GURL manifest_url(origin + kPrefetchAppcacheManifest);
-  GURL appcache_page_url(origin + kPrefetchAppcache);
-  GURL prefetch_page_url(origin + kPrefetchPage);
-  GURL script_url(origin + kPrefetchScript);
-
-  bool seen_page_url = false;
-  bool seen_script_url = false;
-  base::RunLoop run_loop;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "chrome/test/data", GURL(origin),
-          base::BindRepeating(base::BindLambdaForTesting([&](const GURL& url) {
-            if (url == script_url)
-              seen_script_url = true;
-            if (url == prefetch_page_url)
-              seen_page_url = true;
-            if (seen_script_url && seen_page_url)
-              run_loop.Quit();
-          })));
-
-  // Load the page into the appcache, and then the prefetch page so it can be
-  // cached. After each navigation, wait for the appcache to catch up. This
-  // avoids timeouts which for an unknown reason occur if the Appcache is
-  // queried only after both navitations.
-  ui_test_utils::NavigateToURL(current_browser(), appcache_page_url);
-  WaitForAppcache(manifest_url);
-  ui_test_utils::NavigateToURL(current_browser(), prefetch_page_url);
-  WaitForAppcache(manifest_url);
-
-  // If a page is prefetch shortly after being loading, the prefetch is
-  // canceled. Advancing the clock prevents the cancelation.
-  clock_.Advance(base::TimeDelta::FromSeconds(6000));
-
-  PrefetchFromURL(prefetch_page_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-
-  // Neither the page nor the script should be prefetched, so
-  // wait until we see both.
-  run_loop.Run();
 }
 
 class NoStatePrefetchIncognitoBrowserTest : public NoStatePrefetchBrowserTest {

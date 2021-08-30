@@ -2047,66 +2047,6 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ("LOADED", result);
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
-                       ProgrammaticContentScriptVsAppCache) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(InstallExtension());
-
-  // Set up http server serving files from content/test/data (which conveniently
-  // already contains appcache-related test files, unlike chrome/test/data).
-  std::string origin = "http://127.0.0.1:8080";
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "content/test/data", GURL(origin));
-
-  // Load the main page twice. The second navigation should have AppCache
-  // initialized for the page.
-  //
-  // Note that localhost / 127.0.0.1 need to be used, because Application Cache
-  // is restricted to secure contexts.
-  GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
-  ui_test_utils::NavigateToURL(browser(), main_url);
-  std::u16string expected_title = u"AppCache updated";
-  content::TitleWatcher title_watcher(active_web_contents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  ui_test_utils::NavigateToURL(browser(), main_url);
-
-  // Turn off the server and sanity check that the resource is still available.
-  const char kScriptTemplate[] = R"(
-      new Promise(function (resolve, reject) {
-          var img = document.createElement('img');
-          img.src = '/appcache/' + $1;
-          img.onload = _ => resolve('IMG LOADED');
-          img.onerror = reject;
-      })
-  )";
-  EXPECT_EQ("IMG LOADED",
-            content::EvalJs(active_web_contents(),
-                            content::JsReplace(kScriptTemplate, "logo.png")));
-
-  // Inject a content script and verify that this doesn't negatively impact
-  // AppCache.
-  {
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::HistogramTester histograms;
-    content::WebContentsConsoleObserver console_observer(active_web_contents());
-    GURL cross_site_resource(
-        embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
-    std::string fetch_result =
-        FetchViaContentScript(cross_site_resource, active_web_contents());
-
-    // Verify whether the fetch worked or not (expectations differ depending on
-    // various factors - see the body of
-    // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(
-        histograms, console_observer, fetch_result, "nosniff.xml - body\n");
-  }
-  // Using a different image, to bypass renderer-side caching.
-  EXPECT_EQ("IMG LOADED",
-            content::EvalJs(active_web_contents(),
-                            content::JsReplace(kScriptTemplate, "logo2.png")));
-}
-
 class CorbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
  public:
   CorbAndCorsAppBrowserTest() = default;
