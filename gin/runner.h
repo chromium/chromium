@@ -10,7 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "gin/gin_export.h"
 #include "gin/public/context_holder.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-isolate.h"
 
 namespace gin {
 

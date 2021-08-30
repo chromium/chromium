@@ -6,7 +6,7 @@
 #define GIN_DEBUG_IMPL_H_
 
 #include "gin/public/debug.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-callbacks.h"
 
 namespace gin {
 

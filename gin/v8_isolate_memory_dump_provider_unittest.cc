@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
+#include "v8/include/v8-initialization.h"
 
 namespace gin {
 

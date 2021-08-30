@@ -9,11 +9,15 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/gin_export.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
-#include "v8/include/v8.h"
+
+namespace v8 {
+class StartupData;
+}
 
 namespace gin {
 

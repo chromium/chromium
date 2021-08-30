@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-locker.h"
 
 namespace gin {
 

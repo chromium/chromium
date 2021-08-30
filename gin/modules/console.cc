@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 

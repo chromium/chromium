@@ -7,7 +7,7 @@
 
 #include "base/supports_user_data.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 

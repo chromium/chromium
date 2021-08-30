@@ -14,7 +14,8 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/v8_foreground_task_runner_base.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 

@@ -10,10 +10,15 @@
 #include "base/memory/ref_counted.h"
 #include "gin/gin_export.h"
 #include "gin/public/v8_idle_task_runner.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
+}
+
+namespace v8 {
+class SnapshotCreator;
 }
 
 namespace gin {

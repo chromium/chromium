@@ -9,7 +9,13 @@
 #include "gin/object_template_builder.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 

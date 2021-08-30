@@ -15,7 +15,7 @@
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 

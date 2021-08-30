@@ -31,6 +31,8 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
+#include "v8/include/v8-initialization.h"
+#include "v8/include/v8-snapshot.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(OS_ANDROID)
