@@ -3568,8 +3568,15 @@ EchoReferrerRequestHandler(const net::test_server::HttpRequest& request) {
   return std::move(response);
 }
 
+// TODO(https://crbug.com/1244128): Flaky on Win7
+#if defined(OS_WIN)
+#define MAYBE_AltClickDownloadReferrerPolicy \
+  DISABLED_AltClickDownloadReferrerPolicy
+#else
+#define MAYBE_AltClickDownloadReferrerPolicy AltClickDownloadReferrerPolicy
+#endif
 IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
-                       AltClickDownloadReferrerPolicy) {
+                       MAYBE_AltClickDownloadReferrerPolicy) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&EchoReferrerRequestHandler));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -3642,10 +3649,17 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   }
 }
 
+// TODO(https://crbug.com/1244128): Flaky on Win7
+#if defined(OS_WIN)
+#define MAYBE_SaveLinkAsReferrerPolicy DISABLED_SaveLinkAsReferrerPolicy
+#else
+#define MAYBE_SaveLinkAsReferrerPolicy SaveLinkAsReferrerPolicy
+#endif
 // This test ensures that the Referer header is properly sanitized when
 // Save Link As is chosen from the context menu from a page with all possible
 // referrer policies.
-IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest, SaveLinkAsReferrerPolicy) {
+IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
+                       MAYBE_SaveLinkAsReferrerPolicy) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&EchoReferrerRequestHandler));
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3720,11 +3734,20 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest, SaveLinkAsReferrerPolicy) {
   }
 }
 
+// TODO(https://crbug.com/1244128): Flaky on Win7
+#if defined(OS_WIN)
+#define MAYBE_SaveLinkAsVsCrossOriginResourcePolicy \
+  DISABLED_SaveLinkAsVsCrossOriginResourcePolicy
+#else
+#define MAYBE_SaveLinkAsVsCrossOriginResourcePolicy \
+  SaveLinkAsVsCrossOriginResourcePolicy
+#endif
 // This test ensures that Cross-Origin-Resource-Policy response header doesn't
 // apply to download requests initiated via Save Link As context menu (such
 // requests are considered browser-initiated).  See also
 // https://crbug.com/952834.
-IN_PROC_BROWSER_TEST_F(DownloadTest, SaveLinkAsVsCrossOriginResourcePolicy) {
+IN_PROC_BROWSER_TEST_F(DownloadTest,
+                       MAYBE_SaveLinkAsVsCrossOriginResourcePolicy) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
 
@@ -3870,10 +3893,18 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   }
 }
 
+// TODO(https://crbug.com/1244128): Flaky on Win7
+#if defined(OS_WIN)
+#define MAYBE_DownloadCrossDomainReferrerPolicy \
+  DISABLED_DownloadCrossDomainReferrerPolicy
+#else
+#define MAYBE_DownloadCrossDomainReferrerPolicy \
+  DownloadCrossDomainReferrerPolicy
+#endif
 // This test ensures that a cross-domain download correctly sets the referrer
 // according to the referrer policy.
 IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
-                       DownloadCrossDomainReferrerPolicy) {
+                       MAYBE_DownloadCrossDomainReferrerPolicy) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&ServerRedirectRequestHandler));
   embedded_test_server()->RegisterRequestHandler(
