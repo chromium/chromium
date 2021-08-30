@@ -526,7 +526,13 @@ class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Basic) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, MAYBE_Basic) {
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType,
                                         video_webm_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kAudioWebMMimeType,
@@ -541,7 +547,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Basic) {
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, NoCodecs) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_NoCodecs DISABLED_NoCodecs
+#else
+#define MAYBE_NoCodecs NoCodecs
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_NoCodecs) {
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType, no_codecs()));
   EXPECT_UNSUPPORTED(
@@ -552,8 +565,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, NoCodecs) {
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, no_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_InvalidKeySystems DISABLED_InvalidKeySystems
+#else
+#define MAYBE_InvalidKeySystems InvalidKeySystems
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
-                       InvalidKeySystems) {
+                       MAYBE_InvalidKeySystems) {
   // Case sensitive.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       "org.w3.ClEaRkEy", kVideoWebMMimeType, video_webm_codecs()));
@@ -585,7 +604,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
       "org.w3.clearkey.foo", kVideoWebMMimeType, video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_WebM) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_WebM DISABLED_Video_WebM
+#else
+#define MAYBE_Video_WebM Video_WebM
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_Video_WebM) {
   // Valid video types.
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType,
                                         video_webm_codecs()));
@@ -613,7 +639,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_WebM DISABLED_Audio_WebM
+#else
+#define MAYBE_Audio_WebM Audio_WebM
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_Audio_WebM) {
   // Valid audio types.
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kAudioWebMMimeType,
                                         audio_webm_codecs()));
@@ -637,7 +670,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_MP4) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_MP4 DISABLED_Video_MP4
+#else
+#define MAYBE_Video_MP4 Video_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_Video_MP4) {
   // Valid video types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, video_mp4_codecs()));
@@ -675,7 +715,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_MP4) {
                                             video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_MP4) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_MP4 DISABLED_Audio_MP4
+#else
+#define MAYBE_Audio_MP4 Audio_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_Audio_MP4) {
   // Valid audio types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
@@ -699,7 +746,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_MP4) {
                                             video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, SessionType) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_SessionType DISABLED_SessionType
+#else
+#define MAYBE_SessionType SessionType
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_SessionType) {
   // Temporary session always supported.
   EXPECT_SUCCESS(IsSessionTypeSupported(kClearKey, SessionType::kTemporary));
 
@@ -708,7 +762,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, SessionType) {
       IsSessionTypeSupported(kClearKey, SessionType::kPersistentLicense));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Robustness) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Robustness DISABLED_Robustness
+#else
+#define MAYBE_Robustness Robustness
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
+                       MAYBE_Robustness) {
   // External Clear Key doesn't require a robustness string.
   EXPECT_SUCCESS(IsVideoRobustnessSupported(kClearKey, nullptr));
   EXPECT_SUCCESS(IsVideoRobustnessSupported(kClearKey, ""));
@@ -745,9 +806,15 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 // External Clear Key
 //
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
 // When BUILDFLAG(ENABLE_LIBRARY_CDMS), this also tests the Pepper CDM check.
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Basic) {
+                       MAYBE_Basic) {
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoWebMMimeType,
                                     video_webm_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kAudioWebMMimeType,
@@ -769,8 +836,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_NoCodecs DISABLED_NoCodecs
+#else
+#define MAYBE_NoCodecs NoCodecs
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       NoCodecs) {
+                       MAYBE_NoCodecs) {
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kExternalClearKey,
                                             kVideoWebMMimeType, no_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kExternalClearKey,
@@ -781,8 +854,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                             kAudioMP4MimeType, no_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_InvalidKeySystems DISABLED_InvalidKeySystems
+#else
+#define MAYBE_InvalidKeySystems InvalidKeySystems
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       InvalidKeySystems) {
+                       MAYBE_InvalidKeySystems) {
   // Case sensitive.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem("org.chromium.ExTeRnAlClEaRkEy",
                                             kVideoWebMMimeType,
@@ -813,8 +892,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                             video_webm_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_WebM DISABLED_Video_WebM
+#else
+#define MAYBE_Video_WebM Video_WebM
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Video_WebM) {
+                       MAYBE_Video_WebM) {
   // Valid video types.
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoWebMMimeType,
                                     video_webm_codecs()));
@@ -842,8 +927,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kVideoWebMMimeType, video_mp4_hevc_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_WebM DISABLED_Audio_WebM
+#else
+#define MAYBE_Audio_WebM Audio_WebM
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Audio_WebM) {
+                       MAYBE_Audio_WebM) {
   // Valid audio types.
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kAudioWebMMimeType,
                                     audio_webm_codecs()));
@@ -867,8 +958,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_MP4 DISABLED_Video_MP4
+#else
+#define MAYBE_Video_MP4 Video_MP4
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Video_MP4) {
+                       MAYBE_Video_MP4) {
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
@@ -905,8 +1002,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kVideoMP4MimeType, video_webm_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_MP4 DISABLED_Audio_MP4
+#else
+#define MAYBE_Audio_MP4 Audio_MP4
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Audio_MP4) {
+                       MAYBE_Audio_MP4) {
   // Valid audio types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
@@ -930,8 +1033,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioMP4MimeType, video_webm_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_SessionType DISABLED_SessionType
+#else
+#define MAYBE_SessionType SessionType
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       SessionType) {
+                       MAYBE_SessionType) {
   // Temporary session always supported.
   EXPECT_SUCCESS(
       IsSessionTypeSupported(kExternalClearKey, SessionType::kTemporary));
@@ -941,8 +1050,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                         SessionType::kPersistentLicense));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Robustness DISABLED_Robustness
+#else
+#define MAYBE_Robustness Robustness
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Robustness) {
+                       MAYBE_Robustness) {
   // External Clear Key doesn't require a robustness string.
   EXPECT_SUCCESS(IsVideoRobustnessSupported(kExternalClearKey, nullptr));
   EXPECT_SUCCESS(IsVideoRobustnessSupported(kExternalClearKey, ""));
@@ -983,10 +1098,16 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   EXPECT_UNSUPPORTED(IsVideoEncryptionSchemeSupported(kExternalClearKey, ""));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
 // External Clear Key is disabled by default.
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesExternalClearKeyNotEnabledTest,
-    Basic) {
+    MAYBE_Basic) {
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kExternalClearKey, kVideoWebMMimeType, video_webm_codecs()));
 
@@ -999,7 +1120,13 @@ IN_PROC_BROWSER_TEST_F(
 // Widevine
 //
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Basic) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, MAYBE_Basic) {
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
                                    video_webm_codecs()));
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
@@ -1020,8 +1147,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Basic) {
                                             video_mp4_hevc_codecs()));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_InvalidKeySystems DISABLED_InvalidKeySystems
+#else
+#define MAYBE_InvalidKeySystems InvalidKeySystems
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
-                       InvalidKeySystems) {
+                       MAYBE_InvalidKeySystems) {
   // Case sensitive.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       "com.widevine.WideVine", kVideoWebMMimeType, video_webm_codecs()));
@@ -1049,7 +1182,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
       "com.widevine.alpha.child", kVideoWebMMimeType, video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, NoCodecs) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_NoCodecs DISABLED_NoCodecs
+#else
+#define MAYBE_NoCodecs NoCodecs
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_NoCodecs) {
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType, no_codecs()));
   EXPECT_UNSUPPORTED(
@@ -1060,7 +1200,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, NoCodecs) {
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, no_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_WebM) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_WebM DISABLED_Video_WebM
+#else
+#define MAYBE_Video_WebM Video_WebM
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Video_WebM) {
   // Valid video types.
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
                                    video_webm_codecs()));
@@ -1090,7 +1237,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_WebM DISABLED_Audio_WebM
+#else
+#define MAYBE_Audio_WebM Audio_WebM
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Audio_WebM) {
   // Valid audio types.
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
                                    audio_webm_codecs()));
@@ -1114,7 +1268,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Video_MP4 DISABLED_Video_MP4
+#else
+#define MAYBE_Video_MP4 Video_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Video_MP4) {
   // Valid video types.
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, video_mp4_codecs()));
@@ -1150,7 +1311,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
                                             video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Audio_MP4 DISABLED_Audio_MP4
+#else
+#define MAYBE_Audio_MP4 Audio_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Audio_MP4) {
   // Valid audio types.
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, audio_mp4_codecs()));
@@ -1174,7 +1342,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
                                             video_webm_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_SessionType DISABLED_SessionType
+#else
+#define MAYBE_SessionType SessionType
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_SessionType) {
   // Temporary session always supported.
   EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
 
@@ -1193,7 +1368,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Robustness DISABLED_Robustness
+#else
+#define MAYBE_Robustness Robustness
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Robustness) {
   // Robustness is recommended but not required.
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
@@ -1259,8 +1441,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
 // 'cbcs'/'cbcs-1-9', for HW_SECURE* robustness levels. With the switch, real
 // hardware capabilities are not checked for the stability of tests.
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_Robustness DISABLED_Robustness
+#else
+#define MAYBE_Robustness Robustness
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
-                       Robustness) {
+                       MAYBE_Robustness) {
   // Robustness is recommended but not required.
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
