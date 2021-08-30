@@ -3374,7 +3374,7 @@ void MenuController::SetAnchorParametersForItem(MenuItemView* item,
         ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY;
   } else {
     if (state_.context_menu) {
-      anchor->anchor_position = ui::OwnedWindowAnchorPosition::kTopLeft;
+      anchor->anchor_position = ui::OwnedWindowAnchorPosition::kBottomLeft;
       anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
       anchor->constraint_adjustment =
           ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |

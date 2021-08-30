@@ -2792,7 +2792,8 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
   ui::OwnedWindowAnchor* anchor =
       window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
-  EXPECT_EQ(ui::OwnedWindowAnchorPosition::kTopLeft, anchor->anchor_position);
+  EXPECT_EQ(ui::OwnedWindowAnchorPosition::kBottomLeft,
+            anchor->anchor_position);
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
