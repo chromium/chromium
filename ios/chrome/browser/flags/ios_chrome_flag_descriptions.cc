@@ -11,6 +11,10 @@
 
 namespace flag_descriptions {
 
+const char kAddPasswordsInSettingsName[] = "Add passwords in settings";
+const char kAddPasswordsInSettingsDescription[] =
+    "Enables manually creating password credentials from the settings";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =
