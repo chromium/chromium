@@ -5,12 +5,12 @@
 #ifndef FUCHSIA_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 #define FUCHSIA_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 
-#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <memory>
 
 #include "base/strings/string_piece.h"
+#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_component.h"
 
 namespace base {
