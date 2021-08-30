@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/secure_dns_prefs_observer.h"
+#include "chrome/browser/lacros/prefs_ash_observer.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 
-SecureDnsPrefsObserver::SecureDnsPrefsObserver(PrefService* local_state)
+PrefsAshObserver::PrefsAshObserver(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
 }
 
-SecureDnsPrefsObserver::~SecureDnsPrefsObserver() = default;
+PrefsAshObserver::~PrefsAshObserver() = default;
 
-void SecureDnsPrefsObserver::Init() {
+void PrefsAshObserver::Init() {
   // Initial values are obtained when the observers are created, there is no
   // need to do so explcitly.
   doh_mode_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kDnsOverHttpsMode,
-      base::BindRepeating(&SecureDnsPrefsObserver::OnDnsOverHttpsModeChanged,
+      base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsModeChanged,
                           base::Unretained(this)));
   doh_templates_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kDnsOverHttpsTemplates,
-      base::BindRepeating(
-          &SecureDnsPrefsObserver::OnDnsOverHttpsTemplatesChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsTemplatesChanged,
+                          base::Unretained(this)));
 }
 
-void SecureDnsPrefsObserver::OnDnsOverHttpsModeChanged(base::Value value) {
+void PrefsAshObserver::OnDnsOverHttpsModeChanged(base::Value value) {
   if (!value.is_string()) {
     LOG(WARNING) << "Unexpected value type: "
                  << base::Value::GetTypeName(value.type());
@@ -37,7 +37,8 @@ void SecureDnsPrefsObserver::OnDnsOverHttpsModeChanged(base::Value value) {
   }
   local_state_->SetString(prefs::kDnsOverHttpsMode, value.GetString());
 }
-void SecureDnsPrefsObserver::OnDnsOverHttpsTemplatesChanged(base::Value value) {
+
+void PrefsAshObserver::OnDnsOverHttpsTemplatesChanged(base::Value value) {
   if (!value.is_string()) {
     LOG(WARNING) << "Unexpected value type: "
                  << base::Value::GetTypeName(value.type());
