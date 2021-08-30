@@ -1230,12 +1230,13 @@ test.util.sync.recordEnumMetric = (name, value, validValues) => {
  * appId/windowId won't be usable after the reload.
  */
 test.util.sync.reload = () => {
+  // TODO(b/198106171): Remove chrome.runtime.reload.
   if (chrome && chrome.runtime && chrome.runtime.reload) {
     chrome.runtime.reload();
-    return true;
+  } else {
+    window.location.reload();
   }
-  console.error('Unable to run chrome.runtime.reload');
-  return false;
+  return true;
 };
 
 /**

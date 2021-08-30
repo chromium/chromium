@@ -37,6 +37,7 @@ testcase.breadcrumbsDownloadsTranslation = async () => {
   // Switch UI to Portuguese (Portugal).
   await sendTestMessage({name: 'switchLanguage', language: 'pt-PT'});
 
+  // TODO(b/198106171): Remove call to reload, once Chrome App Files is removed.
   // Reload Files app extension to pick up the new language.
   const isFilesAppSwa = await sendTestMessage({name: 'isFilesAppSwa'});
   if (isFilesAppSwa !== 'true') {
