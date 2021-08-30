@@ -89,6 +89,17 @@ std::string GetReportPostBody(const content::ConversionReport& report) {
   dict.SetStringKey("trigger_data",
                     base::NumberToString(report.conversion_data));
 
+  const char* source_type = nullptr;
+  switch (report.impression.source_type()) {
+    case StorableImpression::SourceType::kNavigation:
+      source_type = "navigation";
+      break;
+    case StorableImpression::SourceType::kEvent:
+      source_type = "event";
+      break;
+  }
+  dict.SetStringKey("source_type", source_type);
+
   // Write the dict to json;
   std::string output_json;
   bool success = base::JSONWriter::Write(dict, &output_json);
