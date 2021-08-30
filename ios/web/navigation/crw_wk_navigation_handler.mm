@@ -1971,18 +1971,22 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         if (errorHTML) {
           CRWErrorPageHelper* errorPageHelper =
               [[CRWErrorPageHelper alloc] initWithError:context->GetError()];
-
-          [webView evaluateJavaScript:[errorPageHelper
-                                          scriptForInjectingHTML:errorHTML
-                                              addAutomaticReload:YES]
-                    completionHandler:^(id result, NSError* error) {
-                      if (error) {
-                        DCHECK(error.code == WKErrorWebViewInvalidated ||
-                               error.code == WKErrorWebContentProcessTerminated)
-                            << "Error injecting error page HTML: "
-                            << base::SysNSStringToUTF8(error.description);
-                      }
-                    }];
+          [webView
+              evaluateJavaScript:[errorPageHelper
+                                     scriptForInjectingHTML:errorHTML
+                                         addAutomaticReload:YES]
+               completionHandler:^(id result, NSError* error) {
+                 if (error) {
+                   // WKErrorJavaScriptResultTypeIsUnsupported can be received
+                   // if the WKWebView is released during this call.
+                   DCHECK(error.code == WKErrorWebViewInvalidated ||
+                          error.code == WKErrorWebContentProcessTerminated ||
+                          error.code ==
+                              WKErrorJavaScriptResultTypeIsUnsupported)
+                       << "Error injecting error page HTML: "
+                       << base::SysNSStringToUTF8(error.description);
+                 }
+               }];
         }
 
         // TODO(crbug.com/973765): This is a workaround because |item| might

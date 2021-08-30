@@ -560,6 +560,18 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager->GetLastCommittedItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_RELOAD));
+
+  // The restoration of www.0.com ends with displaying an error page which may
+  // not be complete at this point.
+  // Queue some javascript to wait for every handler to complete.
+  // TODO(crbug.com/1244067): Remove this workaround.
+  __block BOOL called = false;
+  web_state->ExecuteJavaScript(u"0;", base::BindOnce(^(const base::Value* res) {
+                                 called = true;
+                               }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return called;
+  }));
 }
 
 // Verifies that calling WebState::Stop() does not stop the session restoration.
