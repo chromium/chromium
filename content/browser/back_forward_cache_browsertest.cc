@@ -72,6 +72,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
@@ -3791,6 +3792,88 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(
       ExecJs(rfh_a.get(),
              JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Navigate back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+class WebTransportBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  WebTransportBackForwardCacheBrowserTest() { server_.Start(); }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    server_.SetUpCommandLine(command_line);
+  }
+  int port() const { return server_.server_address().port(); }
+
+ private:
+  WebTransportSimpleTestServer server_;
+};
+
+// Pages with active WebTransport should not be cached.
+// TODO(yhirano): Update this test once
+// https://github.com/w3c/webtransport/issues/326 is resolved.
+IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
+                       ActiveWebTransportEvictsPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // Establish a WebTransport session.
+  const char script[] = R"(
+      let transport = new WebTransport('https://localhost:$1/echo');
+      )";
+  ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace(script, port())));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Confirm A is evicted.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {},
+      FROM_HERE);
+}
+
+// Pages with inactive WebTransport should be cached.
+IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
+                       WebTransportCachedIfClosed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Establish a WebTransport session.
+  const char script[] = R"(
+      let transport;
+      window.onpagehide = event => {
+        transport.close();
+      };
+      transport = new WebTransport('https://localhost:$1/echo');
+      )";
+  ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace(script, port())));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
