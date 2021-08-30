@@ -40,7 +40,10 @@ enum AssistantViewID {
 
   // UIs in QueryView
   kHighConfidenceLabel,
-  kLowConfidenceLabel
+  kLowConfidenceLabel,
+
+  // UIs in UiElementContainer
+  kOverflowIndicator
 };
 
 }  // namespace ash

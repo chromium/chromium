@@ -16,7 +16,9 @@
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_factory.h"
 #include "ash/assistant/ui/main_stage/element_animator.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
@@ -35,6 +37,15 @@ namespace {
 // Appearance.
 constexpr int kPaddingBottomDip = 8;
 constexpr int kScrollIndicatorHeightDip = 1;
+
+SkColor GetOverflowIndicatorBackgroundColor() {
+  if (features::IsDarkLightModeEnabled()) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+
+  return gfx::kGoogleGrey300;
+}
 
 }  // namespace
 
@@ -98,8 +109,9 @@ void UiElementContainerView::InitLayout() {
 
   // Scroll indicator.
   scroll_indicator_ = AddChildView(std::make_unique<views::View>());
+  scroll_indicator_->SetID(kOverflowIndicator);
   scroll_indicator_->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
+      views::CreateSolidBackground(GetOverflowIndicatorBackgroundColor()));
 
   // The scroll indicator paints to its own layer which is animated in/out using
   // implicit animation settings.
@@ -123,6 +135,16 @@ void UiElementContainerView::OnCommittedQueryChanged(
   // Scroll to the top to play nice with the transition animation.
   ScrollToPosition(vertical_scroll_bar(), 0);
   AnimatedContainerView::OnCommittedQueryChanged(query);
+}
+
+void UiElementContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  scroll_indicator_->background()->SetNativeControlColor(
+      GetOverflowIndicatorBackgroundColor());
+
+  // SetNativeControlColor doesn't trigger a repaint.
+  scroll_indicator_->SchedulePaint();
 }
 
 std::unique_ptr<ElementAnimator> UiElementContainerView::HandleUiElement(

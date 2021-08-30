@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -38,6 +39,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   void Layout() override;
   void OnContentsPreferredSizeChanged(views::View* content_view) override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
+
+  // views::View:
+  void OnThemeChanged() override;
 
  private:
   void InitLayout();

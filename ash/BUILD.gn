@@ -2137,6 +2137,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/assistant_query_view_unittest.cc",
     "assistant/ui/main_stage/assistant_zero_state_view_unittest.cc",
     "assistant/ui/main_stage/suggestion_chip_view_unittest.cc",
+    "assistant/ui/main_stage/ui_element_container_view_unittest.cc",
     "assistant/util/deep_link_util_unittest.cc",
     "assistant/util/resource_util_unittest.cc",
     "bubble/bubble_utils_unittest.cc",
