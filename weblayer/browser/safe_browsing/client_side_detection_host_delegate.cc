@@ -35,14 +35,14 @@ scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 ClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
-  return sb_service ? sb_service->GetSafeBrowsingDBManager() : nullptr;
+  return sb_service->GetSafeBrowsingDBManager();
 }
 
 scoped_refptr<safe_browsing::BaseUIManager>
 ClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
-  return sb_service ? sb_service->GetSafeBrowsingUIManager() : nullptr;
+  return sb_service->GetSafeBrowsingUIManager();
 }
 
 safe_browsing::ClientSideDetectionService*

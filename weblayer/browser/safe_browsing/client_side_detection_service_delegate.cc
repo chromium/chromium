@@ -37,7 +37,7 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
-  return sb_service ? sb_service->GetURLLoaderFactory() : nullptr;
+  return sb_service->GetURLLoaderFactory();
 }
 
 safe_browsing::ChromeUserPopulation

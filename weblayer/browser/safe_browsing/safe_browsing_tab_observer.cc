@@ -54,9 +54,7 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     safe_browsing::ClientSideDetectionService* csd_service =
         ClientSideDetectionServiceFactory::GetForBrowserContext(
             browser_context);
-    if (safe_browsing::IsSafeBrowsingEnabled(*prefs) &&
-        BrowserProcess::GetInstance()->GetSafeBrowsingService() &&
-        csd_service) {
+    if (safe_browsing::IsSafeBrowsingEnabled(*prefs) && csd_service) {
       safebrowsing_detection_host_ =
           CreateClientSideDetectionHost(web_contents, prefs, browser_context);
       csd_service->AddClientSideDetectionHost(

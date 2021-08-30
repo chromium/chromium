@@ -267,10 +267,8 @@ GetDatabaseManagerFromSafeBrowsingService() {
 #if defined(OS_ANDROID)
   SafeBrowsingService* safe_browsing_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
-  return safe_browsing_service
-             ? scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>(
-                   safe_browsing_service->GetSafeBrowsingDBManager())
-             : nullptr;
+  return scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>(
+      safe_browsing_service->GetSafeBrowsingDBManager());
 #else
   return nullptr;
 #endif

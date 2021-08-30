@@ -97,9 +97,9 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* safe_browsing_context = nullptr;
 #if defined(OS_ANDROID)
-    auto* sb_service = BrowserProcess::GetInstance()->GetSafeBrowsingService();
-    if (sb_service)
-      safe_browsing_context = sb_service->GetNetworkContext();
+    safe_browsing_context = BrowserProcess::GetInstance()
+                                ->GetSafeBrowsingService()
+                                ->GetNetworkContext();
 #endif
     browsing_data::RemoveEmbedderCookieData(
         delete_begin, delete_end, filter_builder, host_content_settings_map,
