@@ -44,6 +44,21 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   if (!document)
     return;
 
+  // Markers are still valid if there were no changes in DOM or style and there
+  // were no calls to |HighlightRegistry::ScheduleRepaint|, so we can avoid
+  // rebuilding them.
+  if (dom_tree_version_for_validate_highlight_markers_ ==
+          document->DomTreeVersion() &&
+      style_version_for_validate_highlight_markers_ ==
+          document->StyleVersion() &&
+      !force_markers_validation_) {
+    return;
+  }
+
+  dom_tree_version_for_validate_highlight_markers_ = document->DomTreeVersion();
+  style_version_for_validate_highlight_markers_ = document->StyleVersion();
+  force_markers_validation_ = false;
+
   document->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::Highlight());
 
@@ -66,7 +81,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   }
 }
 
-void HighlightRegistry::ScheduleRepaint() const {
+void HighlightRegistry::ScheduleRepaint() {
+  force_markers_validation_ = true;
   if (LocalFrameView* local_frame_view = frame_->View()) {
     local_frame_view->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
