@@ -603,7 +603,7 @@ const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
 // transfer or access it later.
 const base::Feature kHoldingSpaceIncognitoProfileIntegration{
     "HoldingSpaceIncognitoProfileIntegration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
