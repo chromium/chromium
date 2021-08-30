@@ -118,7 +118,7 @@
     </style>
 
     <style name="TabThumbnailPlaceHolderStyle.Selected">
-        <item name="colorTileBase">?attr/colorPrimaryContainer</item>
+        <item name="colorTileBase">?attr/colorOnPrimary</item>
         <item name="elevationTileBase">@dimen/default_elevation_0</item>
     </style>
 

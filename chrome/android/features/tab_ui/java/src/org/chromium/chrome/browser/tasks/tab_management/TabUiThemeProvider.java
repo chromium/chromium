@@ -89,9 +89,8 @@ public class TabUiThemeProvider {
                                       : R.color.incognito_tab_tile_number_color;
             return ApiCompatibilityUtils.getColor(context.getResources(), colorRes);
         } else {
-            return isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorOnPrimaryContainer, TAG)
-                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+            return isSelected ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
+                              : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         }
     }
 
