@@ -21,6 +21,8 @@ class ASH_PUBLIC_EXPORT UndirectedGraph {
  public:
   UndirectedGraph();
   ~UndirectedGraph();
+  UndirectedGraph(const UndirectedGraph& other);
+  UndirectedGraph& operator=(const UndirectedGraph& other) = default;
 
   // Add node weight to both from_node and to_node.
   void AddUndirectedEdgeAndNodeWeight(size_t from_node, size_t to_node);
