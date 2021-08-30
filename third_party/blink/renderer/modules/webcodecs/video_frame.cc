@@ -417,7 +417,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     // Above format determination unfortunately uses a bit of internal knowledge
     // from CreateFromSkImage(). Make sure they stay in sync.
-    DCHECK_EQ(frame->format(), format);
+    DCHECK(!frame || frame->format() == format);
   }
 
   if (!frame) {
