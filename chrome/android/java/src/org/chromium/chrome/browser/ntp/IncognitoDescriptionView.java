@@ -13,12 +13,6 @@ import android.widget.CompoundButton;
  */
 public interface IncognitoDescriptionView {
     /**
-     * Set NTP Header.
-     * @param newTabPageHeader The new tab page header.
-     */
-    void setNewTabHeader(String newTabPageHeader);
-
-    /**
      * Set learn more on click listener.
      * @param listener The given listener.
      */

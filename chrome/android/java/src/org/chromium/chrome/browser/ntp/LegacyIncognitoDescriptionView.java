@@ -67,11 +67,6 @@ public class LegacyIncognitoDescriptionView
     }
 
     @Override
-    public void setNewTabHeader(String newTabPageHeader) {
-        mHeader.setText(newTabPageHeader);
-    }
-
-    @Override
     public void setLearnMoreOnclickListener(OnClickListener listener) {
         mLearnMore.setOnClickListener(listener);
     }

@@ -123,10 +123,6 @@ public class IncognitoNewTabPage
                 (IncognitoNewTabPageView) inflater.inflate(R.layout.new_tab_page_incognito, null);
         mIncognitoNewTabPageView.initialize(mIncognitoNewTabPageManager);
 
-        String newTabPageHeader =
-                mIncognitoNewTabPageView.getContext().getString(R.string.new_tab_otr_title);
-        mIncognitoNewTabPageView.setIncognitoNewTabHeader(newTabPageHeader);
-
         // Work around https://crbug.com/943873 and https://crbug.com/963385 where default focus
         // highlight shows up after toggling dark mode.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

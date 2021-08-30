@@ -184,8 +184,4 @@ public class IncognitoNewTabPageView extends FrameLayout {
     void setIncognitoCookieControlsIconOnclickListener(OnClickListener listener) {
         mDescriptionView.setCookieControlsIconOnclickListener(listener);
     }
-
-    void setIncognitoNewTabHeader(String newTabPageHeader) {
-        mDescriptionView.setNewTabHeader(newTabPageHeader);
-    }
 }

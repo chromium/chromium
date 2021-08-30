@@ -16,18 +16,19 @@
 
     <ImageView
         android:id="@+id/revamped_incognito_ntp_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:ignore="ContentDescription"
+        android:layout_width="@dimen/incognito_ntp_icon_size"
+        android:layout_height="@dimen/incognito_ntp_icon_size"
+        android:importantForAccessibility="no"
         android:src="@drawable/incognito_splash"
-        app:tint="@color/ntp_incognito_icon_color" />
+        app:tint="@color/ntp_incognito_icon_color"/>
 
     <TextView
         android:id="@+id/revamped_incognito_ntp_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/new_tab_otr_title"
-        android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light" />
+        android:text="@string/revamped_incognito_ntp_title"
+        android:textAppearance="@style/TextAppearance.HeadlineThick.Primary.Baseline.Light"
+        android:layout_marginTop="@dimen/incognito_ntp_space_between_icon_and_title"/>
 
     <LinearLayout
         android:id="@+id/revamped_incognito_ntp_content"
@@ -44,7 +45,7 @@
                 android:id="@+id/revamped_incognito_ntp_does_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/does_and_doesnt_top_spacing">
+                android:layout_marginTop="@dimen/incognito_ntp_does_and_doesnt_top_spacing">
 
                 <TextView
                     android:id="@+id/revamped_incognito_ntp_does_header"
@@ -54,7 +55,8 @@
                     android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"
+                    android:layout_marginEnd="@dimen/incognito_ntp_space_between_header_and_icon"/>
 
                 <ImageView
                     android:id="@+id/revamped_incognito_ntp_does_icon"
@@ -63,7 +65,6 @@
                     android:layout_toEndOf="@id/revamped_incognito_ntp_does_header"
                     android:layout_alignBottom="@id/revamped_incognito_ntp_does_header"
                     android:layout_alignTop="@id/revamped_incognito_ntp_does_header"
-                    android:layout_marginStart="8dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_check"/>
 
@@ -91,7 +92,8 @@
                     android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"
+                    android:layout_marginEnd="@dimen/incognito_ntp_space_between_header_and_icon"/>
 
                 <ImageView
                     android:id="@+id/revamped_incognito_ntp_does_not_icon"
@@ -100,7 +102,6 @@
                     android:layout_toEndOf="@id/revamped_incognito_ntp_does_not_header"
                     android:layout_alignTop="@id/revamped_incognito_ntp_does_not_header"
                     android:layout_alignBottom="@id/revamped_incognito_ntp_does_not_header"
-                    android:layout_marginStart="8dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_cross"/>
 

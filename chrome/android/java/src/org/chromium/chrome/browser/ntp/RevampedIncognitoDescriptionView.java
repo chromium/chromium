@@ -38,9 +38,8 @@ public class RevampedIncognitoDescriptionView
         extends LinearLayout implements IncognitoDescriptionView {
     private Resources mResources;
 
-    private int mWidthDp;
-    private int mHeightDp;
     private int mWidthPx;
+    private int mHeightPx;
 
     private TextView mTitle;
     private LinearLayout mContainer;
@@ -58,11 +57,6 @@ public class RevampedIncognitoDescriptionView
     /** Default constructor needed to inflate via XML. */
     public RevampedIncognitoDescriptionView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    @Override
-    public void setNewTabHeader(String newTabPageTitle) {
-        mTitle.setText(newTabPageTitle);
     }
 
     @Override
@@ -93,9 +87,8 @@ public class RevampedIncognitoDescriptionView
 
         mResources = getContext().getResources();
 
-        mWidthDp = mResources.getConfiguration().screenWidthDp;
-        mHeightDp = mResources.getConfiguration().screenHeightDp;
-        mWidthPx = dpToPx(getContext(), mWidthDp);
+        mWidthPx = dpToPx(getContext(), mResources.getConfiguration().screenWidthDp);
+        mHeightPx = dpToPx(getContext(), mResources.getConfiguration().screenHeightDp);
 
         mContainer = findViewById(R.id.revamped_incognito_ntp_container);
 
@@ -117,7 +110,7 @@ public class RevampedIncognitoDescriptionView
         mCookieControlsTitle = findViewById(R.id.revamped_cookie_controls_card_title);
         mCookieControlsSubtitle = findViewById(R.id.revamped_cookie_controls_card_subtitle);
 
-        adjustViews();
+        adjustLayout();
     }
 
     @Override
@@ -125,19 +118,15 @@ public class RevampedIncognitoDescriptionView
         // View#onConfigurationChanged() doesn't get called when resizing this view in
         // multi-window mode, so #onMeasure() is used instead.
         Configuration config = mResources.getConfiguration();
-        if (mWidthDp != config.screenWidthDp || mHeightDp != config.screenHeightDp) {
-            mWidthDp = config.screenWidthDp;
-            mWidthPx = dpToPx(getContext(), mWidthDp);
-            mHeightDp = config.screenHeightDp;
-            adjustViews();
+        int widthPx = dpToPx(getContext(), config.screenWidthDp);
+        int heightPx = dpToPx(getContext(), config.screenHeightDp);
+        if (mWidthPx != widthPx || mHeightPx != heightPx) {
+            mWidthPx = widthPx;
+            mHeightPx = heightPx;
+            adjustLayout();
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    private void adjustViews() {
-        adjustLayout();
-        adjustIcon();
     }
 
     /**
@@ -173,31 +162,26 @@ public class RevampedIncognitoDescriptionView
      * containers.
      */
     private void adjustLayout() {
-        // Old title adjustments.
-        int totalSpaceBetweenViews = getContext().getResources().getDimensionPixelSize(
-                R.dimen.incognito_ntp_total_space_between_views);
-
-        ((LinearLayout.LayoutParams) mTitle.getLayoutParams())
-                .setMargins(0, totalSpaceBetweenViews, 0, 0);
-        mTitle.setLayoutParams(mTitle.getLayoutParams());
-
         int paddingHorizontalPx;
         int paddingVerticalPx;
 
-        int contentMaxWidthPx = mResources.getDimensionPixelSize(R.dimen.content_max_width);
+        int contentMaxWidthPx =
+                mResources.getDimensionPixelSize(R.dimen.incognito_ntp_content_max_width);
         int contentWidthPx;
 
-        int doesTopMarginPx = mResources.getDimensionPixelSize(R.dimen.does_and_doesnt_top_spacing);
+        int doesTopMarginPx =
+                mResources.getDimensionPixelSize(R.dimen.incognito_ntp_does_and_doesnt_top_spacing);
         int descriptionsWeight = mResources.getInteger(R.integer.descriptions_weight);
 
         if (isNarrowScreen()) {
             // Small padding.
-            int thresholdPx =
-                    mResources.getDimensionPixelSize(R.dimen.portrait_small_or_big_threshold);
+            int thresholdPx = mResources.getDimensionPixelSize(
+                    R.dimen.incognito_ntp_portrait_small_or_big_threshold);
             paddingHorizontalPx = mResources.getDimensionPixelSize(mWidthPx <= thresholdPx
-                            ? R.dimen.portrait_horizontal_small_padding
-                            : R.dimen.portrait_horizontal_big_padding);
-            paddingVerticalPx = mResources.getDimensionPixelSize(R.dimen.portrait_vertical_padding);
+                            ? R.dimen.incognito_ntp_portrait_horizontal_small_padding
+                            : R.dimen.incognito_ntp_portrait_horizontal_big_padding);
+            paddingVerticalPx = mResources.getDimensionPixelSize(
+                    R.dimen.incognito_ntp_portrait_vertical_padding);
 
             mContainer.setGravity(Gravity.START);
 
@@ -215,13 +199,13 @@ public class RevampedIncognitoDescriptionView
             mDoesNotLayout.setLayoutParams(layoutParams);
         } else {
             // Large padding.
-            int thresholdPx =
-                    mResources.getDimensionPixelSize(R.dimen.landscape_small_or_big_threshold);
-            paddingHorizontalPx =
-                    mResources.getDimensionPixelSize(R.dimen.landscape_horizontal_padding);
-            paddingVerticalPx = mResources.getDimensionPixelSize(mHeightDp <= thresholdPx
-                            ? R.dimen.landscape_vertical_small_padding
-                            : R.dimen.landscape_vertical_big_padding);
+            int thresholdPx = mResources.getDimensionPixelSize(
+                    R.dimen.incognito_ntp_landscape_small_or_big_threshold);
+            paddingHorizontalPx = mResources.getDimensionPixelSize(
+                    R.dimen.incognito_ntp_landscape_horizontal_padding);
+            paddingVerticalPx = mResources.getDimensionPixelSize(mHeightPx <= thresholdPx
+                            ? R.dimen.incognito_ntp_landscape_vertical_small_padding
+                            : R.dimen.incognito_ntp_landscape_vertical_big_padding);
 
             mContainer.setGravity(Gravity.CENTER_HORIZONTAL);
 
@@ -230,8 +214,8 @@ public class RevampedIncognitoDescriptionView
             contentWidthPx = Math.min(contentMaxWidthPx, mWidthPx - 2 * paddingHorizontalPx);
 
             // Set layout params for landscape orientation.
-            int doesRightMarginPx =
-                    mResources.getDimensionPixelSize(R.dimen.descriptions_horizontal_spacing);
+            int doesRightMarginPx = mResources.getDimensionPixelSize(
+                    R.dimen.incognito_ntp_descriptions_horizontal_spacing);
             LinearLayout.LayoutParams layoutParamsDoes = new LinearLayoutCompat.LayoutParams(
                     0, LayoutParams.WRAP_CONTENT, descriptionsWeight);
             layoutParamsDoes.setMargins(0, doesTopMarginPx, doesRightMarginPx, 0);
@@ -256,7 +240,7 @@ public class RevampedIncognitoDescriptionView
                                           - mLearnMore.getTextSize())
                 / 2);
         int learnMoreVerticalMargin =
-                mResources.getDimensionPixelSize(R.dimen.learn_more_vertical_spacing)
+                mResources.getDimensionPixelSize(R.dimen.incognito_ntp_learn_more_vertical_spacing)
                 - innerSpacing;
 
         LinearLayout.LayoutParams params = (LayoutParams) mLearnMore.getLayoutParams();
@@ -264,22 +248,6 @@ public class RevampedIncognitoDescriptionView
 
         mContainer.setPadding(
                 paddingHorizontalPx, paddingVerticalPx, paddingHorizontalPx, paddingVerticalPx);
-    }
-
-    /** Adjust the Incognito icon. */
-    private void adjustIcon() {
-        // The icon resource is 120dp x 120dp (i.e. 120px x 120px at MDPI). This method always
-        // resizes the icon view to 120dp x 120dp or smaller, therefore image quality is not lost.
-        int sizeDp;
-        if (isNarrowScreen()) {
-            sizeDp = (mWidthDp <= 240 || mHeightDp <= 480) ? 48 : 72;
-        } else {
-            sizeDp = mHeightDp <= 480 ? 72 : 120;
-        }
-
-        ImageView icon = (ImageView) findViewById(R.id.revamped_incognito_ntp_icon);
-        icon.getLayoutParams().width = dpToPx(getContext(), sizeDp);
-        icon.getLayoutParams().height = dpToPx(getContext(), sizeDp);
     }
 
     /** Populate LearnMore view. **/
@@ -299,7 +267,8 @@ public class RevampedIncognitoDescriptionView
     }
 
     private boolean isNarrowScreen() {
-        int wideLayoutThresholdPx = mResources.getDimensionPixelSize(R.dimen.wide_layout_threshold);
+        int wideLayoutThresholdPx =
+                mResources.getDimensionPixelSize(R.dimen.incognito_ntp_wide_layout_threshold);
         return mWidthPx <= wideLayoutThresholdPx;
     }
 

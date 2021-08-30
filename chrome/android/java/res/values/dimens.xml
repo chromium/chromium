@@ -203,6 +203,28 @@
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
 
+    <!-- Incognito NTP -->
+    <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
+
+    <!-- Revamped Incognito NTP -->
+    <dimen name="incognito_ntp_portrait_small_or_big_threshold">240dp</dimen>
+    <dimen name="incognito_ntp_portrait_horizontal_small_padding">24dp</dimen>
+    <dimen name="incognito_ntp_portrait_horizontal_big_padding">32dp</dimen>
+    <dimen name="incognito_ntp_portrait_vertical_padding">48dp</dimen>
+    <dimen name="incognito_ntp_landscape_small_or_big_threshold">320dp</dimen>
+    <dimen name="incognito_ntp_landscape_horizontal_padding">24dp</dimen>
+    <dimen name="incognito_ntp_landscape_vertical_small_padding">24dp</dimen>
+    <dimen name="incognito_ntp_landscape_vertical_big_padding">32dp</dimen>
+    <dimen name="incognito_ntp_icon_size">72dp</dimen>
+    <dimen name="incognito_ntp_space_between_icon_and_title">16dp</dimen>
+    <dimen name="incognito_ntp_wide_layout_threshold">720dp</dimen>
+    <dimen name="incognito_ntp_content_max_width">704dp</dimen>
+    <dimen name="incognito_ntp_does_and_doesnt_top_spacing">32dp</dimen>
+    <dimen name="incognito_ntp_descriptions_horizontal_spacing">32dp</dimen>
+    <dimen name="incognito_ntp_space_between_header_and_description">8dp</dimen>
+    <dimen name="incognito_ntp_space_between_header_and_icon">8dp</dimen>
+    <dimen name="incognito_ntp_learn_more_vertical_spacing">22dp</dimen>
+
     <!-- Explore sites page -->
     <dimen name="explore_sites_category_padding_vertical">20dp</dimen>
     <dimen name="explore_sites_category_padding_horizontal">12dp</dimen>

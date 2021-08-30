@@ -125,6 +125,9 @@
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
+    <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textSize">@dimen/headline_size</item>
+    </style>
     <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
@@ -196,6 +199,9 @@
     <!-- Non Adaptive Text Styles -->
     <!--  Light version  -->
     <style name="TextAppearance.Headline.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+    <style name="TextAppearance.HeadlineThick.Primary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
     <style name="TextAppearance.TextLarge.Primary.Baseline.Light" tools:ignore="UnusedResources">
@@ -356,6 +362,9 @@
 
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary.Baseline" parent="TextAppearance.Headline">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+    <style name="TextAppearance.HeadlineThick.Primary.Baseline" parent="TextAppearance.HeadlineThick">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
 

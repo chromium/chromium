@@ -186,6 +186,9 @@
 
       <!-- Revamped Incognito New Tab Page strings -->
 
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_TITLE" desc="Title of the Incognito new tab page." formatter_data="android_java">
+        Incognito
+      </message>
       <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER" desc="Header for the 'Incognito does' section that informs users about what happens while browsing Incognito: browsing activity, search history and information entered in forms are not saved locally." formatter_data="android_java">
         What Incognito does
       </message>
