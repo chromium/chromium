@@ -28,6 +28,7 @@
 
 import re
 import sys
+from six.moves import map
 
 
 class PlatformInfo(object):
@@ -109,7 +110,7 @@ class PlatformInfo(object):
 
     def total_bytes_memory(self):
         if self.is_mac():
-            return long(
+            return int(
                 self._executive.run_command(['sysctl', '-n', 'hw.memsize']))
         return None
 

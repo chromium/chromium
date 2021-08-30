@@ -10,11 +10,16 @@ This code doesn't support other diff commands such as "diff" and "svn diff".
 """
 
 import base64
-import cgi
 import difflib
 import mimetypes
 import re
+import six
 import zlib
+
+if six.PY2:
+    import cgi
+else:
+    import html as cgi
 
 from blinkpy.common.base85 import decode_base85
 

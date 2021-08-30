@@ -172,14 +172,13 @@ class TestResultsFetcher(object):
 
         url = '%s/testfile?%s' % (
             TEST_RESULTS_SERVER,
-            six.moves.urllib.parse.
-            urlencode({
-                'builder': build.builder_name,
-                'buildnumber': build.build_number,
-                'name': 'full_results.json',
+            six.moves.urllib.parse.urlencode([
+                ('buildnumber', build.build_number),
                 # This forces the server to gives us JSON rather than an HTML page.
-                'callback': json_results_generator.JSON_CALLBACK,
-            }))
+                ('callback', json_results_generator.JSON_CALLBACK),
+                ('builder', build.builder_name),
+                ('name', 'full_results.json')
+            ]))
         data = self.web.get_binary(url, return_none_on_404=True)
         if not data:
             _log.debug('Got 404 response from:\n%s', url)
@@ -226,15 +225,14 @@ class TestResultsFetcher(object):
             _log.debug('Builder name or build number or master is None')
             return None
 
-        url = '%s/testfile?%s' % (
-            TEST_RESULTS_SERVER,
-            six.moves.urllib.parse.urlencode({
-                'builder': build.builder_name,
-                'buildnumber': build.build_number,
-                'name': 'full_results.json',
-                'testtype': 'webdriver_tests_suite (with patch)',
-                'master': master
-            }))
+        url = '%s/testfile?%s' % (TEST_RESULTS_SERVER,
+                                  six.moves.urllib.parse.urlencode(
+                                      [('buildnumber', build.build_number),
+                                       ('master', master),
+                                       ('builder', build.builder_name),
+                                       ('testtype',
+                                        'webdriver_tests_suite (with patch)'),
+                                       ('name', 'full_results.json')]))
 
         data = self.web.get_binary(url, return_none_on_404=True)
         if not data:
@@ -258,7 +256,8 @@ def filter_latest_builds(builds):
     latest_builds = {}
     for build in builds:
         builder = build.builder_name
-        if builder not in latest_builds or build.build_number > latest_builds[
-                builder].build_number:
+        if builder not in latest_builds or (
+                build.build_number
+                and build.build_number > latest_builds[builder].build_number):
             latest_builds[builder] = build
     return sorted(latest_builds.values())

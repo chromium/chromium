@@ -232,7 +232,7 @@ class Executive(object):
             for line in stdout.splitlines():
                 # In some cases the line can contain one or more
                 # leading white-spaces, so strip it before split.
-                pid, process_name = line.strip().split(' ', 1)
+                pid, process_name = line.strip().split(b' ', 1)
                 processes.append([process_name, pid])
         return processes
 

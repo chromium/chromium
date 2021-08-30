@@ -77,7 +77,7 @@ class MockInfo(object):
         # The name of the headers (keys) are case-insensitive, and values are stripped.
         self._headers = {
             key.lower(): value.strip()
-            for key, value in headers.iteritems()
+            for key, value in headers.items()
         }
 
     def getheader(self, header):

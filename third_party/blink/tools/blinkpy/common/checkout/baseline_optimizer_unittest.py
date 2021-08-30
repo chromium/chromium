@@ -113,7 +113,7 @@ class BaselineOptimizerTest(unittest.TestCase):
             '[{"prefix": "gpu", "bases": ["fast/canvas"], "args": ["--foo"]}]')
 
         for dirname, contents in results_by_directory.items():
-            self.fs.write_binary_file(
+            self.fs.write_text_file(
                 self.fs.join(web_tests_dir, dirname, baseline_name), contents)
 
         baseline_optimizer = BaselineOptimizer(
@@ -131,9 +131,8 @@ class BaselineOptimizerTest(unittest.TestCase):
                     self.fs.exists(path),
                     '%s should not exist after optimization' % path)
             else:
-                self.assertEqual(
-                    self.fs.read_binary_file(path), contents,
-                    'Content of %s != "%s"' % (path, contents))
+                self.assertEqual(self.fs.read_text_file(path), contents,
+                                 'Content of %s != "%s"' % (path, contents))
 
         for dirname in results_by_directory:
             path = self.fs.join(web_tests_dir, dirname, baseline_name)

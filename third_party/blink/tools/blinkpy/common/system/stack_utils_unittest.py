@@ -33,7 +33,7 @@ from blinkpy.common.system import stack_utils
 
 
 def current_thread_id():
-    thread_id, _ = sys._current_frames().items()[0]
+    thread_id, _ = list(sys._current_frames().items())[0]
     return thread_id
 
 
