@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
@@ -52,6 +53,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 namespace login_api_errors {
 
 const char kAlreadyActiveSession[] = "There is already an active session";
+const char kLoginScreenIsNotActive[] = "Login screen is not active";
 const char kAnotherLoginAttemptInProgress[] =
     "Another login attempt is in progress";
 const char kNoManagedGuestSessionAccounts[] =
@@ -64,7 +66,18 @@ const char kNoPermissionToUnlock[] =
 const char kSessionIsNotLocked[] = "Session is not locked";
 const char kAnotherUnlockAttemptInProgress[] =
     "Another unlock attempt is in progress";
+const char kSharedMGSAlreadyLaunched[] =
+    "Shared Managed Guest Session has already been launched";
 const char kAuthenticationFailed[] = "Authentication failed";
+const char kNoSharedMGSFound[] = "No shared Managed Guest Session found";
+const char kSharedSessionIsNotActive[] = "Shared session is not active";
+const char kSharedSessionAlreadyLaunched[] =
+    "Another shared session has already been launched";
+const char kScryptFailure[] = "Scrypt failed";
+const char kCleanupInProgress[] = "Cleanup is already in progress";
+const char kUnlockFailure[] = "Managed Guest Session unlock failed";
+const char kNoPermissionToUseApi[] =
+    "The extension does not have permission to use this API";
 
 }  // namespace login_api_errors
 
@@ -77,7 +90,7 @@ ExtensionFunction::ResponseAction
 LoginLaunchManagedGuestSessionFunction::Run() {
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  std::unique_ptr<api::login::LaunchManagedGuestSession::Params> parameters =
+  auto parameters =
       api::login::LaunchManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
@@ -113,8 +126,7 @@ LoginExitCurrentSessionFunction::LoginExitCurrentSessionFunction() = default;
 LoginExitCurrentSessionFunction::~LoginExitCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
-  std::unique_ptr<api::login::ExitCurrentSession::Params> parameters =
-      api::login::ExitCurrentSession::Params::Create(args());
+  auto parameters = api::login::ExitCurrentSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   PrefService* local_state = g_browser_process->local_state();
@@ -182,7 +194,7 @@ ExtensionFunction::ResponseAction
 LoginUnlockManagedGuestSessionFunction::Run() {
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  std::unique_ptr<api::login::UnlockManagedGuestSession::Params> parameters =
+  auto parameters =
       api::login::UnlockManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
@@ -219,6 +231,106 @@ void LoginUnlockManagedGuestSessionFunction::OnAuthenticationComplete(
     bool success) {
   if (!success) {
     Respond(Error(login_api_errors::kAuthenticationFailed));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+LoginLaunchSharedManagedGuestSessionFunction::
+    LoginLaunchSharedManagedGuestSessionFunction() = default;
+LoginLaunchSharedManagedGuestSessionFunction::
+    ~LoginLaunchSharedManagedGuestSessionFunction() = default;
+
+ExtensionFunction::ResponseAction
+LoginLaunchSharedManagedGuestSessionFunction::Run() {
+  auto parameters =
+      api::login::LaunchSharedManagedGuestSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  absl::optional<std::string> error =
+      chromeos::SharedSessionHandler::Get()->LaunchSharedManagedGuestSession(
+          extension_id(), parameters->password);
+  if (error) {
+    return RespondNow(Error(*error));
+  }
+
+  return RespondNow(NoArguments());
+}
+
+LoginEnterSharedSessionFunction::LoginEnterSharedSessionFunction() = default;
+LoginEnterSharedSessionFunction::~LoginEnterSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
+  auto parameters = api::login::EnterSharedSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  chromeos::SharedSessionHandler::Get()->EnterSharedSession(
+      parameters->password,
+      base::BindOnce(
+          &LoginEnterSharedSessionFunction::OnEnterSharedSessionComplete,
+          this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void LoginEnterSharedSessionFunction::OnEnterSharedSessionComplete(
+    absl::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+LoginUnlockSharedSessionFunction::LoginUnlockSharedSessionFunction() = default;
+LoginUnlockSharedSessionFunction::~LoginUnlockSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
+  auto parameters = api::login::UnlockSharedSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  if (!active_user ||
+      extension_id() != GetLaunchExtensionIdPrefValue(active_user)) {
+    return RespondNow(Error(login_api_errors::kNoPermissionToUnlock));
+  }
+
+  chromeos::SharedSessionHandler::Get()->UnlockSharedSession(
+      parameters->password,
+      base::BindOnce(
+          &LoginUnlockSharedSessionFunction::OnUnlockSharedSessionComplete,
+          this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void LoginUnlockSharedSessionFunction::OnUnlockSharedSessionComplete(
+    absl::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+LoginEndSharedSessionFunction::LoginEndSharedSessionFunction() = default;
+LoginEndSharedSessionFunction::~LoginEndSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginEndSharedSessionFunction::Run() {
+  chromeos::SharedSessionHandler::Get()->EndSharedSession(base::BindOnce(
+      &LoginEndSharedSessionFunction::OnEndSharedSessionComplete, this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void LoginEndSharedSessionFunction::OnEndSharedSessionComplete(
+    absl::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*error));
     return;
   }
 

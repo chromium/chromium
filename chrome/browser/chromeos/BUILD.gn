@@ -3267,6 +3267,8 @@ source_set("chromeos") {
     "extensions/login_screen/login/login_api.h",
     "extensions/login_screen/login/login_api_lock_handler.cc",
     "extensions/login_screen/login/login_api_lock_handler.h",
+    "extensions/login_screen/login/shared_session_handler.cc",
+    "extensions/login_screen/login/shared_session_handler.h",
     "extensions/login_screen/login_screen_storage/login_screen_storage_api.cc",
     "extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
     "extensions/login_screen/login_screen_ui/login_screen_ui_api.cc",

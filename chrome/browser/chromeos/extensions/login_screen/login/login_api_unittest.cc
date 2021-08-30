@@ -20,12 +20,14 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -43,6 +45,7 @@
 using testing::_;
 using testing::Invoke;
 using testing::Return;
+using testing::SaveArg;
 
 namespace {
 
@@ -89,7 +92,7 @@ class MockLoginApiLockHandler : public chromeos::LoginApiLockHandler {
   MOCK_CONST_METHOD0(IsUnlockInProgress, bool());
 };
 
-// Wrapper which calls |DeleteTestingProfile()| on |profile| upon destruction.
+// Wrapper which calls `DeleteTestingProfile()` on `profile` upon destruction.
 class ScopedTestingProfile {
  public:
   ScopedTestingProfile(TestingProfile* profile,
@@ -147,7 +150,8 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     mock_login_display_host_ = std::make_unique<ash::MockLoginDisplayHost>();
     mock_existing_user_controller_ =
         std::make_unique<MockExistingUserController>();
-    // Set |LOGIN_PRIMARY| as the default state.
+    mock_lock_handler_ = std::make_unique<MockLoginApiLockHandler>();
+    // Set `LOGIN_PRIMARY` as the default state.
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
@@ -191,7 +195,8 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
-  // Sets up the global |SessionManager| instance.
+  std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
+  // Sets up the global `SessionManager` instance.
   session_manager::SessionManager session_manager_;
 };
 
@@ -206,8 +211,8 @@ MATCHER_P(MatchUserContextSecret, expected, "") {
   return expected == arg.GetKey()->GetSecret();
 }
 
-// Test that calling |login.launchManagedGuestSession()| calls the corresponding
-// method from the |ExistingUserController|.
+// Test that calling `login.launchManagedGuestSession()` calls the corresponding
+// method from the `ExistingUserController`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
   base::TimeTicks now_ = base::TimeTicks::Now();
   ui::UserActivityDetector::Get()->set_now_for_test(now_);
@@ -220,14 +225,14 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
 
   RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[]");
 
-  // Test that calling |login.launchManagedGuestSession()| triggered a user
-  // activity in the |UserActivityDetector|.
+  // Test that calling `login.launchManagedGuestSession()` triggered a user
+  // activity in the `UserActivityDetector`.
   EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
-// Test that calling |login.launchManagedGuestSession()| with a password sets
-// the correct extension ID in the |UserContext| passed to
-// |ExistingUserController|.
+// Test that calling `login.launchManagedGuestSession()` with a password sets
+// the correct password in the `UserContext` passed to
+// `ExistingUserController`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   chromeos::UserContext user_context = GetPublicUserContext(kEmail);
@@ -240,7 +245,7 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
   RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[\"password\"]");
 }
 
-// Test that calling |login.launchManagedGuestSession()| returns an error when
+// Test that calling `login.launchManagedGuestSession()` returns an error when
 // there are no managed guest session accounts.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionNoAccounts) {
   ASSERT_EQ(login_api_errors::kNoManagedGuestSessionAccounts,
@@ -248,8 +253,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionNoAccounts) {
                 new LoginLaunchManagedGuestSessionFunction(), "[]"));
 }
 
-// Test that calling |login.launchManagedGuestSession()| returns an error when
-// the session state is not |LOGIN_PRIMARY|.
+// Test that calling `login.launchManagedGuestSession()` returns an error when
+// the session state is not `LOGIN_PRIMARY`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWrongSessionState) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::ACTIVE);
@@ -258,7 +263,7 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWrongSessionState) {
                 new LoginLaunchManagedGuestSessionFunction(), "[]"));
 }
 
-// Test that calling |login.launchManagedGuestSession()| returns an error when
+// Test that calling `login.launchManagedGuestSession()` returns an error when
 // there is another signin in progress.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionSigninInProgress) {
   EXPECT_CALL(*mock_existing_user_controller_, IsSigninInProgress())
@@ -268,8 +273,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionSigninInProgress) {
                 new LoginLaunchManagedGuestSessionFunction(), "[]"));
 }
 
-// Test that calling |login.exitCurrentSession()| with data for the next login
-// attempt sets the |kLoginExtensionApiDataForNextLoginAttempt| pref to the
+// Test that calling `login.exitCurrentSession()` with data for the next login
+// attempt sets the `kLoginExtensionApiDataForNextLoginAttempt` pref to the
 // given data.
 TEST_F(LoginApiUnittest, ExitCurrentSessionWithData) {
   const std::string data_for_next_login_attempt = "hello world";
@@ -284,8 +289,8 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithData) {
       local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
-// Test that calling |login.exitCurrentSession()| with no data clears the
-// |kLoginExtensionApiDataForNextLoginAttempt| pref.
+// Test that calling `login.exitCurrentSession()` with no data clears the
+// `kLoginExtensionApiDataForNextLoginAttempt` pref.
 TEST_F(LoginApiUnittest, ExitCurrentSessionWithNoData) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
@@ -297,8 +302,8 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithNoData) {
                     prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
-// Test that calling |login.fetchDataForNextLoginAttempt()| function returns the
-// value stored in the |kLoginExtensionsApiDataForNextLoginAttempt| pref and
+// Test that calling `login.fetchDataForNextLoginAttempt()` function returns the
+// value stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref and
 // clears the pref.
 TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   const std::string data_for_next_login_attempt = "hello world";
@@ -325,14 +330,12 @@ TEST_F(LoginApiUnittest, LockManagedGuestSession) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::ACTIVE);
 
-  MockLoginApiLockHandler mock_login_api_lock_handler;
-  EXPECT_CALL(mock_login_api_lock_handler, RequestLockScreen())
-      .WillOnce(Return());
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
 
   RunFunction(new LoginLockManagedGuestSessionFunction(), "[]");
 
-  // Test that calling |login.lockManagedGuestSession()| triggered a user
-  // activity in the |UserActivityDetector|.
+  // Test that calling `login.lockManagedGuestSession()` triggered a user
+  // activity in the `UserActivityDetector`.
   EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
@@ -387,10 +390,9 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  MockLoginApiLockHandler mock_login_api_lock_handler;
-  EXPECT_CALL(mock_login_api_lock_handler, IsUnlockInProgress())
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress())
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_login_api_lock_handler,
+  EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
       .WillOnce([](chromeos::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
@@ -399,8 +401,8 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
 
   RunFunction(new LoginUnlockManagedGuestSessionFunction(), "[\"password\"]");
 
-  // Test that calling |login.unlockManagedGuestSession()| triggered a user
-  // activity in the |UserActivityDetector|.
+  // Test that calling `login.unlockManagedGuestSession()` triggered a user
+  // activity in the `UserActivityDetector`.
   EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
@@ -460,9 +462,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionUnlockInProgress) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  MockLoginApiLockHandler mock_login_api_lock_handler;
-  EXPECT_CALL(mock_login_api_lock_handler, IsUnlockInProgress())
-      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress()).WillOnce(Return(true));
 
   ASSERT_EQ(
       login_api_errors::kAnotherUnlockAttemptInProgress,
@@ -480,10 +480,9 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  MockLoginApiLockHandler mock_login_api_lock_handler;
-  EXPECT_CALL(mock_login_api_lock_handler, IsUnlockInProgress())
+  EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress())
       .WillOnce(Return(false));
-  EXPECT_CALL(mock_login_api_lock_handler,
+  EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
       .WillOnce([](chromeos::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
@@ -494,6 +493,420 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
       login_api_errors::kAuthenticationFailed,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
+}
+
+class LoginApiSharedSessionUnittest : public LoginApiUnittest {
+ public:
+  LoginApiSharedSessionUnittest() = default;
+
+  LoginApiSharedSessionUnittest(const LoginApiSharedSessionUnittest&) = delete;
+
+  LoginApiSharedSessionUnittest& operator=(
+      const LoginApiSharedSessionUnittest&) = delete;
+
+  ~LoginApiSharedSessionUnittest() override = default;
+
+ protected:
+  void SetUp() override {
+    GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
+    GetCrosSettingsHelper()->SetBoolean(
+        ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
+
+    LoginApiUnittest::SetUp();
+  }
+
+  void TearDown() override {
+    GetCrosSettingsHelper()->RestoreRealDeviceSettingsProvider();
+    chromeos::SharedSessionHandler::Get()->ResetStateForTesting();
+    testing_profile_.reset();
+
+    LoginApiUnittest::TearDown();
+  }
+
+  void LaunchSharedManagedGuestSession(const std::string& password) {
+    SetExtensionWithId(kExtensionId);
+    EXPECT_CALL(*mock_existing_user_controller_,
+                Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
+        .Times(1);
+
+    testing_profile_ = AddPublicAccountUser(kEmail);
+
+    RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(),
+                "[\"" + password + "\"]");
+
+    SetLoginExtensionApiLaunchExtensionIdPref(testing_profile_->profile(),
+                                              kExtensionId);
+    fake_chrome_user_manager_->SwitchActiveUser(
+        AccountId::FromUserEmail(kEmail));
+
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
+  }
+
+  void ExpectAuthenticateWithSessionSecret(bool auth_success) {
+    const std::string& session_secret =
+        chromeos::SharedSessionHandler::Get()->GetSessionSecretForTesting();
+    EXPECT_CALL(*mock_lock_handler_,
+                Authenticate(MatchUserContextSecret(session_secret), _))
+        .WillOnce([auth_success](
+                      chromeos::UserContext user_context,
+                      base::OnceCallback<void(bool auth_success)> callback) {
+          std::move(callback).Run(/*auth_success=*/auth_success);
+        });
+  }
+
+  std::unique_ptr<ScopedTestingProfile> testing_profile_;
+};
+
+// Test that calling `login.launchSharedManagedGuestSession()` sets the correct
+// extension ID and session secret in the `UserContext` passed to
+// `ExistingUserController`, and sets user hash and salt.
+TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
+  SetExtensionWithId(kExtensionId);
+  std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
+  chromeos::UserContext user_context;
+  EXPECT_CALL(*mock_existing_user_controller_,
+              Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
+      .WillOnce(SaveArg<0>(&user_context));
+
+  RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]");
+
+  EXPECT_EQ(user_context.GetManagedGuestSessionLaunchExtensionId(),
+            kExtensionId);
+  chromeos::SharedSessionHandler* handler =
+      chromeos::SharedSessionHandler::Get();
+  const std::string& session_secret = handler->GetSessionSecretForTesting();
+  EXPECT_EQ(user_context.GetKey()->GetSecret(), session_secret);
+  EXPECT_NE("", session_secret);
+  EXPECT_NE("", handler->GetUserSecretHashForTesting());
+  EXPECT_NE("", handler->GetUserSecretSaltForTesting());
+}
+
+// Test that calling `login.launchSharedManagedGuestSession()` returns an error
+// when the DeviceRestrictedManagedGuestSessionEnabled policy is set to false.
+TEST_F(LoginApiSharedSessionUnittest,
+       LaunchSharedManagedGuestSessionRestrictedMGSNotEnabled) {
+  GetCrosSettingsHelper()->SetBoolean(
+      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
+
+  ASSERT_EQ(
+      login_api_errors::kNoPermissionToUseApi,
+      RunFunctionAndReturnError(
+          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+}
+
+// Test that calling `login.launchSharedManagedGuestSession()` returns an error
+// when there are no managed guest session accounts.
+TEST_F(LoginApiSharedSessionUnittest,
+       LaunchSharedManagedGuestSessionNoAccounts) {
+  ASSERT_EQ(
+      login_api_errors::kNoManagedGuestSessionAccounts,
+      RunFunctionAndReturnError(
+          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+}
+
+// Test that calling `login.launchSharedManagedGuestSession()` returns an error
+// when the session state is not `LOGIN_PRIMARY`.
+TEST_F(LoginApiSharedSessionUnittest,
+       LaunchSharedManagedGuestSessionWrongSessionState) {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  ASSERT_EQ(
+      login_api_errors::kLoginScreenIsNotActive,
+      RunFunctionAndReturnError(
+          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+}
+
+// Test that calling `login.launchSharedManagedGuestSession()` returns an error
+// when there is another signin in progress.
+TEST_F(LoginApiSharedSessionUnittest,
+       LaunchSharedManagedGuestSessionSigninInProgress) {
+  EXPECT_CALL(*mock_existing_user_controller_, IsSigninInProgress())
+      .WillOnce(Return(true));
+  ASSERT_EQ(
+      login_api_errors::kAnotherLoginAttemptInProgress,
+      RunFunctionAndReturnError(
+          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` works.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSession) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
+
+  RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when the
+// session is not locked.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNotLocked) {
+  SetExtensionWithId(kExtensionId);
+  std::unique_ptr<ScopedTestingProfile> scoped_profile =
+      AddPublicAccountUser(kEmail);
+  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
+                                            kExtensionId);
+  ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when there
+// is no shared MGS launched.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedMGS) {
+  SetExtensionWithId(kExtensionId);
+  std::unique_ptr<ScopedTestingProfile> scoped_profile =
+      AddPublicAccountUser(kEmail);
+  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
+                                            kExtensionId);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  ASSERT_EQ(login_api_errors::kNoSharedMGSFound,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when there
+// is no shared session active.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedSession) {
+  LaunchSharedManagedGuestSession("foo");
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ASSERT_EQ(login_api_errors::kSharedSessionIsNotActive,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when a
+// different password is used.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionAuthenticationFailed) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ASSERT_EQ(login_api_errors::kAuthenticationFailed,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"bar\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when there
+// is an error when unlocking the screen.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionUnlockFailed) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/false);
+
+  ASSERT_EQ(login_api_errors::kUnlockFailure,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when it is
+// called by an extension with a different ID.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionWrongExtension) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  SetExtensionWithId("wrong_extension_id");
+
+  ASSERT_EQ(login_api_errors::kNoPermissionToUnlock,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.unlockSharedSession()` returns an error when the
+// extension ID does not match the `kLoginExtensionApiLaunchExtensionId` pref.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionWrongExtensionId) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  SetLoginExtensionApiLaunchExtensionIdPref(testing_profile_->profile(),
+                                            "wrong_extension_id");
+
+  ASSERT_EQ(login_api_errors::kNoPermissionToUnlock,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.endSharedSession()` clears the user hash and salt
+// and locks the screen when the screen is not locked.
+TEST_F(LoginApiSharedSessionUnittest, EndSharedSession) {
+  LaunchSharedManagedGuestSession("foo");
+
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
+
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+
+  chromeos::SharedSessionHandler* handler =
+      chromeos::SharedSessionHandler::Get();
+  EXPECT_EQ("", handler->GetUserSecretHashForTesting());
+  EXPECT_EQ("", handler->GetUserSecretSaltForTesting());
+}
+
+// Test that calling `login.endSharedSession()` works on the lock screen as
+// well.
+TEST_F(LoginApiSharedSessionUnittest, EndSharedSessionLocked) {
+  LaunchSharedManagedGuestSession("foo");
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).Times(0);
+
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+
+  chromeos::SharedSessionHandler* handler =
+      chromeos::SharedSessionHandler::Get();
+  EXPECT_EQ("", handler->GetUserSecretHashForTesting());
+  EXPECT_EQ("", handler->GetUserSecretSaltForTesting());
+}
+
+// Test that calling `login.endSharedSession()` returns an error when no shared
+// MGS was launched.
+TEST_F(LoginApiSharedSessionUnittest, EndSharedSessionNoSharedMGS) {
+  ASSERT_EQ(
+      login_api_errors::kNoSharedMGSFound,
+      RunFunctionAndReturnError(new LoginEndSharedSessionFunction(), "[]"));
+}
+
+// Test that calling `login.endSharedSession()` returns an error when there is
+// no shared session active.
+TEST_F(LoginApiSharedSessionUnittest, EndSharedSessionNoSharedSession) {
+  LaunchSharedManagedGuestSession("foo");
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+
+  ASSERT_EQ(
+      login_api_errors::kSharedSessionIsNotActive,
+      RunFunctionAndReturnError(new LoginEndSharedSessionFunction(), "[]"));
+}
+
+// Test that calling `login.enterSharedSession()` with a password sets the user
+// hash and salt.
+TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
+  LaunchSharedManagedGuestSession("foo");
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
+
+  RunFunction(new LoginEnterSharedSessionFunction(), "[\"bar\"]");
+
+  chromeos::SharedSessionHandler* handler =
+      chromeos::SharedSessionHandler::Get();
+  EXPECT_NE("", handler->GetUserSecretHashForTesting());
+  EXPECT_NE("", handler->GetUserSecretSaltForTesting());
+}
+
+// Test that calling `login.enterSharedSession()` returns an error when the
+// DeviceRestrictedManagedGuestSessionEnabled policy is set to false.
+TEST_F(LoginApiSharedSessionUnittest,
+       EnterSharedSessionRestrictedMGSNotEnabled) {
+  GetCrosSettingsHelper()->SetBoolean(
+      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
+
+  ASSERT_EQ(login_api_errors::kNoPermissionToUseApi,
+            RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.enterSharedSession()` returns an error when the
+// session is not locked.
+TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionNotLocked) {
+  ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
+            RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.enterSharedSession()` returns an error when there is
+// no shared MGS launched.
+TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionNoSharedMGSFound) {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  ASSERT_EQ(login_api_errors::kNoSharedMGSFound,
+            RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.enterSharedSession()` returns an error when there
+// is another shared session present.
+TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionAlreadyLaunched) {
+  LaunchSharedManagedGuestSession("foo");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ASSERT_EQ(login_api_errors::kSharedSessionAlreadyLaunched,
+            RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test that calling `login.enterSharedSession()` returns an error when there is
+// an error when unlocking the screen.
+TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionUnlockFailed) {
+  LaunchSharedManagedGuestSession("foo");
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/false);
+
+  ASSERT_EQ(login_api_errors::kUnlockFailure,
+            RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
+                                      "[\"foo\"]"));
+}
+
+// Test the full shared session flow.
+TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
+  LaunchSharedManagedGuestSession("foo");
+
+  chromeos::SharedSessionHandler* handler =
+      chromeos::SharedSessionHandler::Get();
+  std::string foo_hash = handler->GetUserSecretHashForTesting();
+  std::string foo_salt = handler->GetUserSecretSaltForTesting();
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ASSERT_EQ(login_api_errors::kAuthenticationFailed,
+            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
+                                      "[\"bar\"]"));
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
+
+  RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
+
+  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+
+  EXPECT_EQ("", handler->GetUserSecretHashForTesting());
+  EXPECT_EQ("", handler->GetUserSecretSaltForTesting());
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
+
+  RunFunction(new LoginEnterSharedSessionFunction(), "[\"baz\"]");
+
+  const std::string& baz_hash = handler->GetUserSecretHashForTesting();
+  const std::string& baz_salt = handler->GetUserSecretSaltForTesting();
+
+  EXPECT_NE("", baz_hash);
+  EXPECT_NE("", baz_salt);
+  EXPECT_NE(foo_hash, baz_hash);
+  EXPECT_NE(foo_salt, baz_salt);
 }
 
 }  // namespace extensions
