@@ -453,9 +453,6 @@ const char kEnterpriseEnableForcedReEnrollment[] =
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";
 
-// Whether to enable PSM (private set membership) queries.
-const char kEnterpriseEnablePsm[] = "enterprise-enable-psm";
-
 // Whether to use fake PSM RLWE client for testing purposes.
 const char kEnterpriseUseFakePsmRlweClient[] =
     "enterprise-use-fake-psm-rlwe-client";
