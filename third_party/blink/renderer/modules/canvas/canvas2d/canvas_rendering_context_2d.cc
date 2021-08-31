@@ -205,9 +205,9 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
-  PostDeferrableAction(
-      WTF::Bind([](BaseRenderingContext2D* context) { context->reset(); },
-                WrapPersistent(this)));
+  PostDeferrableAction(WTF::Bind(
+      [](BaseRenderingContext2D* context) { context->ResetInternal(); },
+      WrapPersistent(this)));
   if (context_lost_mode_ == kSyntheticLostContext && Host()) {
     Host()->DiscardResourceProvider();
   }
@@ -308,7 +308,7 @@ void CanvasRenderingContext2D::WillOverwriteCanvas() {
 
 void CanvasRenderingContext2D::Reset() {
   // This is a multiple inheritance bootstrap
-  BaseRenderingContext2D::reset();
+  BaseRenderingContext2D::ResetInternal();
 }
 
 void CanvasRenderingContext2D::RestoreCanvasMatrixClipStack(

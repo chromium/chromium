@@ -90,7 +90,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void beginLayer();
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer();
-  void reset();
+  void reset();          // Called by the javascript interface
+  void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);
   void scale(double sx, double sy, double sz);

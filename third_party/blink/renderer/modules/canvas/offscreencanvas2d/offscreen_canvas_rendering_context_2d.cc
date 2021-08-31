@@ -193,7 +193,7 @@ OffscreenCanvasRenderingContext2D::GetCanvasResourceProvider() const {
 
 void OffscreenCanvasRenderingContext2D::Reset() {
   Host()->DiscardResourceProvider();
-  BaseRenderingContext2D::reset();
+  BaseRenderingContext2D::ResetInternal();
   // Because the host may have changed to a zero size
   is_valid_size_ = IsValidImageSize(Host()->Size());
   // We must resize the damage rect to avoid a potentially larger damage than
@@ -754,9 +754,9 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
 
 void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
     TimerBase* time) {
-  PostDeferrableAction(
-      WTF::Bind([](BaseRenderingContext2D* context) { context->reset(); },
-                WrapPersistent(this)));
+  PostDeferrableAction(WTF::Bind(
+      [](BaseRenderingContext2D* context) { context->ResetInternal(); },
+      WrapPersistent(this)));
   BaseRenderingContext2D::DispatchContextLostEvent(time);
 }
 

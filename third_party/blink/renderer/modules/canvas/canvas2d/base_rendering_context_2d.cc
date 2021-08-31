@@ -297,7 +297,7 @@ void BaseRenderingContext2D::UnwindStateStack() {
   }
 }
 
-void BaseRenderingContext2D::reset() {
+void BaseRenderingContext2D::ResetInternal() {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kReset);
   }
@@ -325,6 +325,12 @@ void BaseRenderingContext2D::reset() {
   }
   ValidateStateStack();
   origin_tainted_by_content_ = false;
+}
+
+void BaseRenderingContext2D::reset() {
+  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DRoundRect);
+  ResetInternal();
 }
 
 static V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString*
@@ -1710,7 +1716,7 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
 
 void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   DCHECK(context_lost_mode_ != CanvasRenderingContext::kNotLostContext);
-  reset();
+  ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   if (GetCanvasRenderingContextHost() &&
       RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(

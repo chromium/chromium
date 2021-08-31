@@ -34386,6 +34386,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3998" label="CanvasRenderingContext2DRoundRect"/>
   <int value="3999"
       label="NewLayoutOverflowDifferentBlockWithNonEmptyInflowBounds"/>
+  <int value="4000" label="CanvasRenderingContext2DReset"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
