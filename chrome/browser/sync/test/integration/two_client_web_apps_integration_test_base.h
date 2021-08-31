@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
+#define CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
+#include "content/public/test/browser_test.h"
+
+namespace base {
+class CommandLine;
+}
+
+namespace web_app {
+
+class TwoClientWebAppsIntegrationTestBase
+    : public SyncTest,
+      public WebAppIntegrationBrowserTestBase::TestDelegate {
+ public:
+  TwoClientWebAppsIntegrationTestBase();
+
+  // WebAppIntegrationBrowserTestBase::TestDelegate:
+  Browser* CreateBrowser(Profile* profile) override;
+  void AddBlankTabAndShow(Browser* browser) override;
+  net::EmbeddedTestServer* EmbeddedTestServer() override;
+  std::vector<Profile*> GetAllProfiles() override;
+  bool IsSyncTest() override;
+  void SyncTurnOff() override;
+  void SyncTurnOn() override;
+  void AwaitWebAppQuiescence() override;
+
+ protected:
+  void SetUp() override;
+  bool SetupClients() override;
+
+  // BrowserTestBase:
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  WebAppIntegrationBrowserTestBase helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace web_app
+
+#endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_

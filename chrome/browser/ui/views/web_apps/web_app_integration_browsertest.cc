@@ -68,6 +68,7 @@ class WebAppIntegrationBrowserTest
 
   void SyncTurnOff() override { NOTREACHED(); }
   void SyncTurnOn() override { NOTREACHED(); }
+  void AwaitWebAppQuiescence() override { NOTREACHED(); }
 
   WebAppIntegrationBrowserTestBase helper_;
 };

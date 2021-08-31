@@ -8820,10 +8820,6 @@ if (!is_android && !is_fuchsia) {
       deps += [ "//chromeos" ]
     }
 
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_sync_test_mac_win_linux.cc" ]
-    }
-
     if (toolkit_views) {
       deps += [ "//ui/views" ]
     }

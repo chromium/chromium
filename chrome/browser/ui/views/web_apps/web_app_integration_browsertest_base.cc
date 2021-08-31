@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
+#include <tuple>
 
 #include "base/base_paths.h"
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/strings/pattern.h"
@@ -58,21 +60,6 @@
 namespace web_app {
 
 namespace {
-
-constexpr char kPlatformName[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    "ChromeOS";
-#elif defined(OS_LINUX)
-    "Linux";
-#elif defined(OS_MAC)
-    "Mac";
-#elif defined(OS_WIN)
-    "Win";
-#elif defined(OS_FUCHSIA)
-    "Fuchsia";
-#else
-#error "Unknown platform"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::flat_map<std::string, std::string> scope_to_path = {
     {"SiteA", "site_a"},
@@ -166,6 +153,8 @@ WebAppIntegrationBrowserTestBase::~WebAppIntegrationBrowserTestBase() = default;
 void WebAppIntegrationBrowserTestBase::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
+  DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
+      << "Manifest update waiting only supported on single profile tests.";
   bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
   ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected";
   if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
@@ -264,8 +253,10 @@ void WebAppIntegrationBrowserTestBase::SetUp(base::FilePath test_data_dir) {
 
 void WebAppIntegrationBrowserTestBase::SetUpOnMainThread() {
   os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+
+  // Only support manifest updates on non-sync tests, as the current
+  // infrastructure here only supports listening on one profile.
   if (!delegate_->IsSyncTest()) {
-    observation_.Reset();
     observation_.Observe(&GetProvider()->registrar());
   }
 }
@@ -287,7 +278,7 @@ void WebAppIntegrationBrowserTestBase::BeforeStateChangeAction() {
 void WebAppIntegrationBrowserTestBase::AfterStateChangeAction() {
   after_state_change_action_state_ =
       std::make_unique<StateSnapshot>(ConstructStateSnapshot());
-  MaybeWaitForManifestUpdates(profile());
+  MaybeWaitForManifestUpdates();
 }
 
 void WebAppIntegrationBrowserTestBase::BeforeStateCheckAction() {
@@ -523,6 +514,7 @@ void WebAppIntegrationBrowserTestBase::SwitchProfileClients() {
   }
   active_browser_ = chrome::FindTabbedBrowser(
       active_profile_, /*match_original_profiles=*/false);
+  delegate_->AwaitWebAppQuiescence();
 }
 
 void WebAppIntegrationBrowserTestBase::SyncTurnOff() {
@@ -761,26 +753,6 @@ void WebAppIntegrationBrowserTestBase::CheckWindowDisplayMode(
   }
 }
 
-// Helpers
-std::string WebAppIntegrationBrowserTestBase::BuildLogForTest(
-    const std::vector<std::string>& testing_actions,
-    bool is_sync_test) {
-  const std::string test_case = base::JoinString(testing_actions, ", ");
-  return base::StringPrintf(
-      "Current test case: %s\n"
-      "To disable this test, add the following line to "
-      "//chrome/test/data/web_apps/TestExpectations (without the quotes):\n"
-      "\"crbug.com/XXXXX [ %s ] [ Skip ] %s\"\n"
-      "To run this test in isolation, run the following command:\n"
-      "out/Default/%s_tests --gtest_filter=\"*%s*\" "
-      "--web-app-integration-test-case=%s\n",
-      test_case.c_str(), kPlatformName, test_case.c_str(),
-      is_sync_test ? "sync_integration" : "browser",
-      is_sync_test ? "TwoClientWebAppsIntegrationSyncTest"
-                   : "WebAppIntegrationBrowserTest",
-      test_case.c_str());
-}
-
 std::vector<AppId> WebAppIntegrationBrowserTestBase::GetAppIdsForProfile(
     Profile* profile) {
   return WebAppProvider::GetForTest(profile)->registrar().GetAppIds();
@@ -797,10 +769,6 @@ GURL WebAppIntegrationBrowserTestBase::GetInstallableAppURL(
 WebAppProvider* WebAppIntegrationBrowserTestBase::GetProviderForProfile(
     Profile* profile) {
   return WebAppProvider::GetForTest(profile);
-}
-
-void WebAppIntegrationBrowserTestBase::ResetRegistrarObserver() {
-  observation_.Reset();
 }
 
 StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
@@ -947,13 +915,15 @@ void WebAppIntegrationBrowserTestBase::ForceUpdateManifestContents(
   app_ids_with_pending_manifest_updates_.insert(app_id);
 }
 
-void WebAppIntegrationBrowserTestBase::MaybeWaitForManifestUpdates(
-    Profile* profile) {
+void WebAppIntegrationBrowserTestBase::MaybeWaitForManifestUpdates() {
+  if (delegate_->GetAllProfiles().size() > 1) {
+    return;
+  }
   bool continue_checking_for_updates = true;
   while (continue_checking_for_updates) {
     continue_checking_for_updates = false;
     for (const AppId& app_id : app_ids_with_pending_manifest_updates_) {
-      if (AreNoAppWindowsOpen(profile, app_id)) {
+      if (AreNoAppWindowsOpen(profile(), app_id)) {
         waiting_for_update_id_ = absl::make_optional(app_id);
         waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
         waiting_for_update_run_loop_->Run();

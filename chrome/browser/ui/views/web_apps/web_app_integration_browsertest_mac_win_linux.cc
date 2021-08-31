@@ -13,8 +13,7 @@ namespace web_app {
 
 class WebAppIntegrationBrowserTestMacWinLinux
     : public InProcessBrowserTest,
-      public WebAppIntegrationBrowserTestBase::TestDelegate,
-      public testing::WithParamInterface<std::string> {
+      public WebAppIntegrationBrowserTestBase::TestDelegate {
  public:
   WebAppIntegrationBrowserTestMacWinLinux() : helper_(this) {}
 
@@ -68,6 +67,7 @@ class WebAppIntegrationBrowserTestMacWinLinux
 
   void SyncTurnOff() override { NOTREACHED(); }
   void SyncTurnOn() override { NOTREACHED(); }
+  void AwaitWebAppQuiescence() override { NOTREACHED(); }
 
   WebAppIntegrationBrowserTestBase helper_;
 };
