@@ -107,7 +107,8 @@ void CreateSerializedMessageObject(uint32_t name,
       handles ? reinterpret_cast<MojoHandle*>(handles->data()) : nullptr,
       handles ? static_cast<uint32_t>(handles->size()) : 0, nullptr, &buffer,
       &buffer_size);
-  DCHECK_EQ(MOJO_RESULT_OK, rv);
+  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  CHECK_EQ(MOJO_RESULT_OK, rv);
   if (handles) {
     // Handle ownership has been taken by MojoAppendMessageData.
     for (size_t i = 0; i < handles->size(); ++i)
@@ -266,7 +267,10 @@ Message::Message(base::span<const uint8_t> payload,
       handle_->value(), static_cast<uint32_t>(payload.size()),
       reinterpret_cast<MojoHandle*>(handles.data()),
       static_cast<uint32_t>(handles.size()), &options, &buffer, &buffer_size);
-  DCHECK_EQ(MOJO_RESULT_OK, rv);
+
+  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  CHECK_EQ(MOJO_RESULT_OK, rv);
+
   // Handle ownership has been taken by MojoAppendMessageData.
   for (auto& handle : handles)
     ignore_result(handle.release());
@@ -423,7 +427,11 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
   if (mutable_associated_endpoint_handles()->empty()) {
     // Attaching only non-associated handles is easier since we don't have to
     // modify the message header. Faster path for that.
-    payload_buffer_.AttachHandles(mutable_handles());
+    bool attached = payload_buffer_.AttachHandles(mutable_handles());
+
+    // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+    CHECK(attached);
+
     return;
   }
 

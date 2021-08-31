@@ -1043,6 +1043,8 @@ component("base") {
       "win/map.h",
       "win/message_window.cc",
       "win/message_window.h",
+      "win/nt_status.cc",
+      "win/nt_status.h",
       "win/object_watcher.cc",
       "win/object_watcher.h",
       "win/patch_util.cc",
