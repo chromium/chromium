@@ -733,11 +733,17 @@ void NGBlockNode::FinishLayout(
     else
       box_->ForceLayout();
 
-    // Round to Int in this DCHECK because legacy sends LayoutUnit to float and
-    // back, which can change the LayoutUnit's raw value.
-    DCHECK_EQ(RoundedIntSize(PhysicalSize(box_->Size())),
-              RoundedIntSize(physical_fragment.Size()))
-        << "Legacy was supposed to use the size that NG computed.";
+#if DCHECK_IS_ON()
+    // Assert that legacy uses the size NG forces above. But legacy sends
+    // LayoutUnit to float and back, which can slightly change the result. So
+    // give a 1px cushion.
+    PhysicalSize difference =
+        PhysicalSize(box_->Size()) - physical_fragment.Size();
+    DCHECK_LE(difference.width.Abs(), LayoutUnit(1))
+        << box_->Size() << " " << physical_fragment.Size();
+    DCHECK_LE(difference.height.Abs(), LayoutUnit(1))
+        << box_->Size() << " " << physical_fragment.Size();
+#endif
   }
 
   if (physical_fragment.IsOnlyForNode()) {
