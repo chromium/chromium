@@ -276,7 +276,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // Forward) but modify the navigation type while pending to look like an
   // address bar + typed transition (like Gmail auto navigation)
   std::unique_ptr<content::NavigationSimulator> forward_nav =
-      content::NavigationSimulator::CreateHistoryNavigation(1, web_contents);
+      content::NavigationSimulator::CreateHistoryNavigation(
+          1, web_contents, false /* is_renderer_initiated */);
   forward_nav->Start();
   web_contents->GetController().GetPendingEntry()->SetTransitionType(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |

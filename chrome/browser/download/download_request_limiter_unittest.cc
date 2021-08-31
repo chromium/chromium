@@ -514,8 +514,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
 
   // History back shouldn't reset the state, either.
   auto backward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(-1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -541,7 +541,7 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
   // History back should use the old download state, as one of the origin
   // is in a restricted state.
   backward_navigation = content::NavigationSimulator::CreateHistoryNavigation(
-      -1 /* Offset */, web_contents());
+      -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -576,8 +576,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
 
   // History back shouldn't reset the state, either.
   auto backward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(-1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -588,8 +588,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
   // History forward shouldn't reset the state, as the host is encountered
   // before.
   auto forward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   forward_navigation->Start();
   forward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -599,7 +599,7 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
 
   // History backward again, nothing should change.
   backward_navigation = content::NavigationSimulator::CreateHistoryNavigation(
-      -1 /* Offset */, web_contents());
+      -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
