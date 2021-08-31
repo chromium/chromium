@@ -110,7 +110,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->challenge = request_->challenge;
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
-      request_->instrument.Clone()));
+      request_->instrument.Clone(), request_->payee_origin));
 
   authenticator_->GetAssertion(
       std::move(options),

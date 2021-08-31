@@ -49,6 +49,9 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
       input->instrument()->displayName(),
       blink::KURL(input->instrument()->icon()));
 
+  output->payee_origin =
+      blink::SecurityOrigin::CreateFromString(input->payeeOrigin());
+
   return output;
 }
 

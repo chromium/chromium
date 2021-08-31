@@ -116,6 +116,9 @@ std::string BuildClientDataJson(
     ret.append(R"(,"topOrigin":)");
     ret.append(ToJSONString(payment_top_origin));
 
+    ret.append(R"(,"payeeOrigin":)");
+    ret.append(ToJSONString(payment_options->payee_origin.Serialize()));
+
     ret.append(R"(,"total":{)");
 
     ret.append(R"("value":)");

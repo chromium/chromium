@@ -34,6 +34,7 @@ async function requestPayment(credentialId) {
               icon: window.location.origin + '/icon.png',
             },
             timeout: 6000,
+            payeeOrigin: 'https://example-payee-origin.test',
           }}],
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
     const response = await request.show();

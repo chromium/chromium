@@ -678,6 +678,18 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ASSERT_TRUE(cross_origin.has_value()) << response;
   EXPECT_TRUE(cross_origin.value());
 
+  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  ASSERT_NE(nullptr, payee_origin) << response;
+  EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
+
+  std::string* top_origin = value->FindStringPath("payment.topOrigin");
+  ASSERT_NE(nullptr, top_origin) << response;
+  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*top_origin));
+
+  std::string* rp = value->FindStringPath("payment.rp");
+  ASSERT_NE(nullptr, rp) << response;
+  EXPECT_EQ("a.com", *rp);
+
   int expected_enroll_histogram_value = 0;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
                           expected_enroll_histogram_value);

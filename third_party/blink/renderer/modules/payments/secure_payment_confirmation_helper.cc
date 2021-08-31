@@ -67,6 +67,19 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "the \"instrument.icon\" field.");
     return nullptr;
   }
+  if (request->payeeOrigin().IsEmpty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"payeeOrigin\" field.");
+    return nullptr;
+  }
+  KURL payee_url(request->payeeOrigin());
+  if (!payee_url.IsValid() || !payee_url.ProtocolIs("https")) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a valid HTTPS URL "
+        "in the \"payeeOrigin\" field.");
+    return nullptr;
+  }
 
   return mojo::ConvertTo<
       payments::mojom::blink::SecurePaymentConfirmationRequestPtr>(request);

@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
 namespace payments {
 
@@ -73,7 +74,17 @@ void SecurePaymentConfirmationController::
       request_->spec()->request_shipping() ||
       request_->spec()->request_payer_name() ||
       request_->spec()->request_payer_email() ||
-      request_->spec()->request_payer_phone()) {
+      request_->spec()->request_payer_phone() ||
+      request_->spec()->method_data().size() != 1 ||
+      !request_->spec()->method_data().front() ||
+      request_->spec()->method_data().front()->supported_method !=
+          methods::kSecurePaymentConfirmation ||
+      !request_->spec()->method_data().front()->secure_payment_confirmation ||
+      request_->spec()
+              ->method_data()
+              .front()
+              ->secure_payment_confirmation->payee_origin.scheme() !=
+          url::kHttpsScheme) {
     OnCancel();
     return;
   }
@@ -89,7 +100,10 @@ void SecurePaymentConfirmationController::
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
   model_.set_merchant_value(url_formatter::FormatUrlForSecurityDisplay(
-      request_->state()->GetTopOrigin(),
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_origin.GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   model_.set_instrument_label(l10n_util::GetStringUTF16(

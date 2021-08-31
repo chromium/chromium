@@ -8,7 +8,7 @@ module payments.mojom;
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
-import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
 
 struct PaymentResponse {
@@ -157,17 +157,20 @@ struct SecurePaymentConfirmationRequest {
   array<array<uint8>> credential_ids;
 
   // An indefinite-length blob passed from the relying party server, to be sent
-  // to an authenticator for signing together with the price and merchant
-  // origin.
+  // to an authenticator for signing.
   array<uint8> challenge;
 
-  // The name and icon to display to the user and to be sent to the authenticator
-  // device for signing.
+  // The name and icon of the payment instrument to display to the user and to
+  // be sent to the authenticator device for signing.
   blink.mojom.PaymentCredentialInstrument instrument;
 
   // Time to wait for an authenticator to complete an operation provided by the
   // relying party.
   mojo_base.mojom.TimeDelta? timeout;
+
+  // The origin of the payee that will be displayed in the payment confirmation
+  // dialog and will be sent to the authenticator device for signing.
+  url.mojom.Origin payee_origin;
 };
 
 struct PaymentMethodData {

@@ -139,6 +139,7 @@ function createPaymentRequest(
        credentialIds: [Uint8Array.from(atob(credentialId),
                                        (b) => b.charCodeAt(0))],
        timeout: 6000,
+       payeeOrigin: 'https://example-payee-origin.test',
        challenge,
        instrument: {
         icon: window.location.origin + '/icon.png',

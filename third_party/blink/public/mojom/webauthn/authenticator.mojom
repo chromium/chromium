@@ -7,6 +7,7 @@ module blink.mojom;
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // This file describes the communication between the WebAuthentication renderer
@@ -298,6 +299,7 @@ struct PRFValues {
 struct PaymentOptions {
   payments.mojom.PaymentCurrencyAmount total;
   PaymentCredentialInstrument instrument;
+  url.mojom.Origin payee_origin;
 };
 
 // TODO(https://crbug.com/1239249): Move to payment_request.mojom after this

@@ -25,7 +25,7 @@ function getTestMethodData(credentialIdentifier) {
         icon: window.location.origin + '/icon.png',
       },
       timeout: 60000,
-      fallbackUrl: 'https://fallback.example/url',
+      payeeOrigin: 'https://example-payee-origin.test',
   }}];
 }
 
