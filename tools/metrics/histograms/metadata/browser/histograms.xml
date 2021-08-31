@@ -261,6 +261,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Browser.ContinuousSearch.UI.ItemClickedAtLeastOnce{ExperimentCategory}"
+    enum="Boolean" expires_after="2021-12-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records whether any item was pressed while UI was being shown. It is emmited
+    when the CSN session is considered ended. Actions that can end the session
+    include closing the tab, navigating away from the CSN url list or dismissing
+    the UI.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
+</histogram>
+
+<histogram
     name="Browser.ContinuousSearch.UI.ProviderButtonClicked{ExperimentCategory}"
     enum="Boolean" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>

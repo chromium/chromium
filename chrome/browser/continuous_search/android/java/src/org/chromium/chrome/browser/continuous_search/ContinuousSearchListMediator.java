@@ -68,6 +68,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     @VisibleForTesting
     boolean mScrolled;
     private boolean mProviderButtonClicked;
+    private boolean mItemClickedAtLeastOnce;
 
     @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
     @Retention(RetentionPolicy.SOURCE)
@@ -121,6 +122,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mUiShown = false;
         mScrolled = false;
         mProviderButtonClicked = false;
+        mItemClickedAtLeastOnce = false;
         mSrpVisits = 0;
     }
 
@@ -321,6 +323,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
             mCurrentTab.loadUrl(params);
 
+            mItemClickedAtLeastOnce = true;
             RecordHistogram.recordCount100Histogram(
                     "Browser.ContinuousSearch.UI.ClickedItemPosition"
                             + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
@@ -349,6 +352,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         RecordHistogram.recordBooleanHistogram(
                 "Browser.ContinuousSearch.UI.ProviderButtonClicked" + histogramSuffix,
                 mProviderButtonClicked);
+        RecordHistogram.recordBooleanHistogram(
+                "Browser.ContinuousSearch.UI.ItemClickedAtLeastOnce" + histogramSuffix,
+                mItemClickedAtLeastOnce);
         RecordHistogram.recordBooleanHistogram(
                 "Browser.ContinuousSearch.UI.DismissButtonClicked" + histogramSuffix, mDismissed);
     }
