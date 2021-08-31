@@ -74,6 +74,7 @@ namespace blink {
 class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
+class DarkModeFilter;
 class DocumentLifecycle;
 class FloatSize;
 class FragmentAnchor;
@@ -347,7 +348,7 @@ class CORE_EXPORT LocalFrameView final
 
   void AddPartToUpdate(LayoutEmbeddedObject&);
 
-  Color DocumentBackgroundColor() const;
+  Color DocumentBackgroundColor();
 
   // Called when this view is going to be removed from its owning
   // LocalFrame.
@@ -1008,6 +1009,8 @@ class CORE_EXPORT LocalFrameView final
 
   bool AnyFrameIsPrintingOrPaintingPreview();
 
+  DarkModeFilter& EnsureDarkModeFilter();
+
   LayoutSize size_;
 
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
@@ -1168,6 +1171,9 @@ class CORE_EXPORT LocalFrameView final
 
   // These tasks will be run at the beginning of the next lifecycle.
   WTF::Vector<base::OnceClosure> start_of_lifecycle_tasks_;
+
+  // Filter used for inverting the document background for forced darkening.
+  std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;

@@ -152,6 +152,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -2014,41 +2015,49 @@ void LocalFrameView::DidAttachDocument() {
   }
 }
 
-Color LocalFrameView::DocumentBackgroundColor() const {
+Color LocalFrameView::DocumentBackgroundColor() {
   // The LayoutView's background color is set in
-  // Document::inheritHtmlAndBodyElementStyles.  Blend this with the base
+  // StyleResolver::PropagateStyleToViewport(). Blend this with the base
   // background color of the LocalFrameView. This should match the color drawn
   // by ViewPainter::paintBoxDecorationBackground.
   Color result = BaseBackgroundColor();
+
+  bool blend_with_base = true;
+  LayoutObject* background_source = GetLayoutView();
 
   // If we have a fullscreen element grab the fullscreen color from the
   // backdrop.
   if (Document* doc = frame_->GetDocument()) {
     if (Element* element = Fullscreen::FullscreenElementFrom(*doc)) {
+      if (LayoutObject* layout_object =
+              element->PseudoElementLayoutObject(kPseudoIdBackdrop)) {
+        background_source = layout_object;
+      }
       if (doc->IsXrOverlay()) {
         // Use the fullscreened element's background directly. Don't bother
         // blending with the backdrop since that's transparent.
-        if (LayoutObject* layout_object = element->GetLayoutObject()) {
-          return layout_object->ResolveColor(GetCSSPropertyBackgroundColor());
-        }
-        if (LayoutObject* layout_object =
-                element->PseudoElementLayoutObject(kPseudoIdBackdrop)) {
-          return layout_object->ResolveColor(GetCSSPropertyBackgroundColor());
-        }
-      }
-      if (LayoutObject* layout_object =
-              element->PseudoElementLayoutObject(kPseudoIdBackdrop)) {
-        return result.Blend(
-            layout_object->ResolveColor(GetCSSPropertyBackgroundColor()));
+        blend_with_base = false;
+        if (LayoutObject* layout_object = element->GetLayoutObject())
+          background_source = layout_object;
       }
     }
   }
-  auto* layout_view = GetLayoutView();
-  if (layout_view) {
-    result = result.Blend(
-        layout_view->ResolveColor(GetCSSPropertyBackgroundColor()));
+
+  if (!background_source)
+    return result;
+
+  Color doc_bg =
+      background_source->ResolveColor(GetCSSPropertyBackgroundColor());
+  if (Settings* settings = frame_->GetSettings()) {
+    if (settings->GetForceDarkModeEnabled() &&
+        !background_source->StyleRef().DarkColorScheme()) {
+      doc_bg = EnsureDarkModeFilter().InvertColorIfNeeded(
+          doc_bg.Rgb(), DarkModeFilter::ElementRole::kBackground);
+    }
   }
-  return result;
+  if (blend_with_base)
+    return result.Blend(doc_bg);
+  return doc_bg;
 }
 
 void LocalFrameView::WillBeRemovedFromFrame() {
@@ -5068,6 +5077,14 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
           root->ApproximateUnsharedMemoryUsageRecursive();
     }
   }
+}
+
+DarkModeFilter& LocalFrameView::EnsureDarkModeFilter() {
+  if (!dark_mode_filter_) {
+    dark_mode_filter_ =
+        std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
+  }
+  return *dark_mode_filter_;
 }
 
 }  // namespace blink
