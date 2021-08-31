@@ -212,10 +212,11 @@ bool GetLaunchOnLoginPref() {
 
 // Returns the initial browser action. No browser will be opened when
 // lacros-chrome is initialized in the web Kiosk session.
-mojom::InitialBrowserAction GetInitialBrowserAction() {
-  return user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()
-             ? crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow
-             : mojom::InitialBrowserAction::kUseStartupPreference;
+browser_util::InitialBrowserAction GetInitialBrowserAction() {
+  return browser_util::InitialBrowserAction(
+      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()
+          ? mojom::InitialBrowserAction::kDoNotOpenWindow
+          : mojom::InitialBrowserAction::kUseStartupPreference);
 }
 
 }  // namespace
@@ -313,9 +314,9 @@ void BrowserManager::NewWindow(bool incognito) {
   // Chrome OS uses different user model where clicking the chrome icon always
   // opens a new tab page, and it doesn't matter whether lacros is launching
   // for the first time or not.
-  auto result = MaybeStart(
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
       incognito ? mojom::InitialBrowserAction::kOpenIncognitoWindow
-                : mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+                : mojom::InitialBrowserAction::kOpenNewTabPageWindow));
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -334,7 +335,8 @@ bool BrowserManager::NewFullscreenWindowSupported() const {
 
 void BrowserManager::NewFullscreenWindow(const GURL& url,
                                          NewFullscreenWindowCallback callback) {
-  auto result = MaybeStart(mojom::InitialBrowserAction::kDoNotOpenWindow);
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kDoNotOpenWindow));
   if (result != MaybeStartResult::kRunning) {
     std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning);
     return;
@@ -354,7 +356,8 @@ void BrowserManager::NewFullscreenWindow(const GURL& url,
 }
 
 void BrowserManager::NewTab() {
-  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenNewTabPageWindow));
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -366,9 +369,8 @@ void BrowserManager::NewTab() {
 }
 
 void BrowserManager::OpenUrl(const GURL& url) {
-  // TODO(crbug.com/1236859): Pass URL parameter via BrowserInitParams here
-  // to open the tab in case the browser is not running.
-  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}));
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -385,7 +387,8 @@ void BrowserManager::OpenUrl(const GURL& url) {
 }
 
 void BrowserManager::RestoreTab() {
-  auto result = MaybeStart(mojom::InitialBrowserAction::kRestoreLastSession);
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kRestoreLastSession));
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -484,7 +487,7 @@ BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 
 BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
-    mojom::InitialBrowserAction initial_browser_action) {
+    browser_util::InitialBrowserAction initial_browser_action) {
   if (!browser_util::IsLacrosEnabled())
     return MaybeStartResult::kNotStarted;
 
@@ -530,14 +533,15 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
 
   if (state_ == State::STOPPED) {
     // If lacros-chrome is not running, launch it.
-    Start(initial_browser_action);
+    Start(std::move(initial_browser_action));
     return MaybeStartResult::kStarting;
   }
 
   return MaybeStartResult::kRunning;
 }
 
-void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
+void BrowserManager::Start(
+    browser_util::InitialBrowserAction initial_browser_action) {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
   // Ensure we're not trying to open a window before the shelf is initialized.
@@ -561,11 +565,12 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
                      cleared_user_data_dir),
       base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr(), initial_browser_action));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(initial_browser_action)));
 }
 
 void BrowserManager::StartWithLogFile(
-    mojom::InitialBrowserAction initial_browser_action,
+    browser_util::InitialBrowserAction initial_browser_action,
     LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
@@ -668,7 +673,7 @@ void BrowserManager::StartWithLogFile(
   }
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_.get(), initial_browser_action);
+      environment_provider_.get(), std::move(initial_browser_action));
   if (startup_fd.is_valid()) {
     // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
     // Lacros-chrome should not depend on the hardcoded value though. Instead
@@ -789,7 +794,8 @@ void BrowserManager::OnLacrosChromeTerminated() {
   SetLaunchOnLoginPref(false);
 
   if (relaunch_requested_)
-    Start(mojom::InitialBrowserAction::kRestoreLastSession);
+    Start(browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kRestoreLastSession));
 }
 
 void BrowserManager::OnSessionStateChanged() {
@@ -940,7 +946,8 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
   if (state_ == State::STOPPED && !keep_alive_features_.empty()) {
     CHECK(browser_util::IsLacrosEnabled());
     CHECK(browser_util::IsLacrosAllowedToLaunch());
-    Start(mojom::InitialBrowserAction::kDoNotOpenWindow);
+    Start(browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kDoNotOpenWindow));
   }
 }
 

@@ -185,11 +185,28 @@ bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 
+// Represents how to launch Lacros Chrome.
+struct InitialBrowserAction {
+  explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
+  InitialBrowserAction(crosapi::mojom::InitialBrowserAction action,
+                       std::vector<GURL> urls);
+  InitialBrowserAction(InitialBrowserAction&&);
+  InitialBrowserAction& operator=(InitialBrowserAction&&);
+  ~InitialBrowserAction();
+
+  // Mode how to launch Lacros chrome.
+  crosapi::mojom::InitialBrowserAction action;
+
+  // If action is kOpenWindowWithUrls, URLs here is passed to Lacros Chrome,
+  // and they will be opened.
+  std::vector<GURL> urls;
+};
+
 // Returns the initial parameter to be passed to Crosapi client,
 // such as lacros-chrome.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
-    crosapi::mojom::InitialBrowserAction initial_browser_action);
+    InitialBrowserAction initial_browser_action);
 
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
@@ -205,7 +222,7 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
 // and returns its FD.
 base::ScopedFD CreateStartupData(
     ::crosapi::EnvironmentProvider* environment_provider,
-    crosapi::mojom::InitialBrowserAction initial_browser_action);
+    InitialBrowserAction initial_browser_action);
 
 // Reads `kDataVerPref` and gets corresponding data version for `user_id_hash`.
 // If no such version is registered yet, returns `Version` that is invalid.

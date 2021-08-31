@@ -27,7 +27,8 @@ class BrowserManagerFake : public BrowserManager {
  public:
   BrowserManagerFake() : BrowserManager(nullptr) {}
   ~BrowserManagerFake() override = default;
-  void Start(mojom::InitialBrowserAction initial_browser_action) override {
+  void Start(
+      browser_util::InitialBrowserAction initial_browser_action) override {
     ++start_count_;
     SetState(State::STARTING);
   }
