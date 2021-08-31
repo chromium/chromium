@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -59,6 +60,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
   gfx::Rect GetAnchorRect() const override;
+  // This needs to be added as it does not know the correct theme color until it
+  // is added to widget.
+  void AddedToWidget() override;
 
  private:
   TabGroupEditorBubbleView(const Browser* browser,
@@ -126,6 +130,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   ColorPickerView* color_selector_;
 
   views::ToggleButton* save_group_toggle_ = nullptr;
+  views::LabelButton* move_menu_item_ = nullptr;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.
