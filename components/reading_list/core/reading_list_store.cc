@@ -246,8 +246,6 @@ absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
       *(entity_data->specifics.mutable_reading_list()) = *entry_sync_pb;
       entity_data->name = entry_sync_pb->entry_id();
 
-      // TODO(crbug.com/666232): Investigate if there is a risk of sync
-      // ping-pong.
       change_processor()->Put(entry_sync_pb->entry_id(), std::move(entity_data),
                               metadata_change_list.get());
     }
@@ -325,19 +323,11 @@ absl::optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
         batch_->WriteData(merged_entry->URL().spec(),
                           entry_local_pb->SerializeAsString());
 
-        // Send to sync
-        std::unique_ptr<sync_pb::ReadingListSpecifics> entry_sync_pb =
-            merged_entry->AsReadingListSpecifics();
-        DCHECK(CompareEntriesForSync(specifics, *entry_sync_pb));
-        auto entity_data = std::make_unique<syncer::EntityData>();
-        *(entity_data->specifics.mutable_reading_list()) = *entry_sync_pb;
-        entity_data->name = entry_sync_pb->entry_id();
-
-        // TODO(crbug.com/666232): Investigate if there is a risk of sync
-        // ping-pong.
-        change_processor()->Put(entry_sync_pb->entry_id(),
-                                std::move(entity_data),
-                                metadata_change_list.get());
+        // Note: Do NOT send the merged data back to Sync. Doing that could
+        // cause ping-pong between two devices that disagree on the "correct"
+        // form of the data, see e.g. crbug.com/1243254.
+        // Instead, any local changes will get committed the next time this
+        // entity is changed.
       }
     }
   }
