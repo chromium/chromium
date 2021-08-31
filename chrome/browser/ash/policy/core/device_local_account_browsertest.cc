@@ -2006,16 +2006,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
   VerifyKeyboardLayoutMatchesLocale();
 }
 
-#if defined(OS_CHROMEOS)
-// TODO(https://crbug.com/1245153):
-// DeviceLocalAccountTest.TermsOfServiceWithLocaleSwitch flaky on chrome os.
-#define MAYBE_TermsOfServiceWithLocaleSwitch \
-  DISABLED_TermsOfServiceWithLocaleSwitch
-#else
-#define MAYBE_TermsOfServiceWithLocaleSwitch TermsOfServiceWithLocaleSwitch
-#endif
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
-                       MAYBE_TermsOfServiceWithLocaleSwitch) {
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(
@@ -2024,8 +2015,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
           .spec());
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
-
   WaitForPolicy();
+
+  // Prevent browser start in user session so that we do not need to wait
+  // for its initialization.
+  ash::test::UserSessionManagerTestApi(ash::UserSessionManager::GetInstance())
+      .SetShouldLaunchBrowserInTests(false);
+
   ExpandPublicSessionPod(false);
 
   // Select a different locale.
