@@ -463,7 +463,7 @@ class BoxWholeFileUploadApiCallFlowTest
     flow_ = std::make_unique<BoxWholeFileUploadApiCallFlowForTest>(
         base::BindOnce(&BoxWholeFileUploadApiCallFlowTest::OnResponse,
                        factory_.GetWeakPtr()),
-        folder_id_, file_name_, file_path_);
+        folder_id_, mime_type_, file_name_, file_path_);
   }
 
   void OnResponse(BoxApiCallResponse response, const std::string& file_id) {
@@ -528,7 +528,7 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallBodyAndContentType) {
   std::string expected_type("multipart/form-data; boundary=");
   ASSERT_EQ(content_type.substr(0, expected_type.size()), expected_type);
 
-  flow_->SetFileReadForTesting(file_content_, mime_type_);
+  flow_->SetFileReadForTesting(file_content_);
   ASSERT_EQ(flow_->CreateApiCallBody(), MakeExpectedBody());
 }
 

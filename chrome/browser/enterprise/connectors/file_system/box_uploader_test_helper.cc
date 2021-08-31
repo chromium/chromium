@@ -36,6 +36,7 @@ BoxUploaderTestBase::BoxUploaderTestBase(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  test_item_.SetMimeType("text/plain");
   EXPECT_TRUE(profile_manager_.SetUp());
   prefs_ = profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
   SetInterceptorForURLLoader(

@@ -524,8 +524,10 @@ void BoxUploader::SetUploadApiCallFlowDoneForTesting(InterruptReason reason,
 // BoxDirectUploader
 ////////////////////////////////////////////////////////////////////////////////
 
+// For possible MIME types:
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 BoxDirectUploader::BoxDirectUploader(download::DownloadItem* download_item)
-    : BoxUploader(download_item) {}
+    : BoxUploader(download_item), mime_type_(download_item->GetMimeType()) {}
 
 BoxDirectUploader::~BoxDirectUploader() = default;
 
@@ -533,7 +535,7 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxDirectUploader::MakeFileUploadApiCall() {
   return std::make_unique<BoxWholeFileUploadApiCallFlow>(
       base::BindOnce(&BoxDirectUploader::OnWholeFileUploadResponse,
                      weak_factory_.GetWeakPtr()),
-      GetFolderId(), GetUploadFileName(), GetLocalFilePath());
+      GetFolderId(), mime_type_, GetUploadFileName(), GetLocalFilePath());
 }
 
 void BoxDirectUploader::OnWholeFileUploadResponse(BoxApiCallResponse response,
