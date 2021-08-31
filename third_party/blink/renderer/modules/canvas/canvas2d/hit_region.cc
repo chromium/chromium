@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/hit_region.h"
 
+#include "base/check.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 
 namespace blink {
@@ -59,7 +60,8 @@ void HitRegionManager::RemoveHitRegionById(const String& id) {
 }
 
 void HitRegionManager::RemoveHitRegionByControl(const Element* control) {
-  RemoveHitRegion(GetHitRegionByControl(control));
+  if (control)
+    RemoveHitRegion(GetHitRegionByControl(control));
 }
 
 void HitRegionManager::RemoveHitRegionsInRect(const FloatRect& rect,
@@ -90,17 +92,16 @@ void HitRegionManager::RemoveAllHitRegions() {
 }
 
 HitRegion* HitRegionManager::GetHitRegionById(const String& id) const {
-  // TODO(https://crbug.com/1236734) Refactor call to deprecated method.
-  return hit_region_id_map_.DeprecatedAtOrEmptyValue(id);
+  DCHECK(id);
+  auto it = hit_region_id_map_.find(id);
+  return it != hit_region_id_map_.end() ? it->value : nullptr;
 }
 
 HitRegion* HitRegionManager::GetHitRegionByControl(
     const Element* control) const {
-  // TODO(https://crbug.com/1236734) Refactor call to deprecated method.
-  if (control)
-    return hit_region_control_map_.DeprecatedAtOrEmptyValue(control);
-
-  return nullptr;
+  DCHECK(control);
+  auto it = hit_region_control_map_.find(control);
+  return it != hit_region_control_map_.end() ? it->value : nullptr;
 }
 
 HitRegion* HitRegionManager::GetHitRegionAtPoint(
