@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -39,8 +40,9 @@ SecurityOrigin* BlobURLNullOriginMap::Get(const KURL& blob_url) {
   DCHECK_EQ(BlobURL::GetOrigin(blob_url), "null");
   KURL blob_url_without_fragment = blob_url;
   blob_url_without_fragment.RemoveFragmentIdentifier();
-  return blob_url_null_origin_map_.DeprecatedAtOrEmptyValue(
-      blob_url_without_fragment.GetString());
+  auto it =
+      blob_url_null_origin_map_.find(blob_url_without_fragment.GetString());
+  return it != blob_url_null_origin_map_.end() ? it->value.get() : nullptr;
 }
 
 BlobURLOpaqueOriginNonceMap& BlobURLOpaqueOriginNonceMap::GetInstance() {
@@ -74,8 +76,11 @@ base::UnguessableToken BlobURLOpaqueOriginNonceMap::Get(const KURL& blob_url) {
   DCHECK_EQ(BlobURL::GetOrigin(blob_url), "null");
   KURL blob_url_without_fragment = blob_url;
   blob_url_without_fragment.RemoveFragmentIdentifier();
-  return blob_url_opaque_origin_nonce_map_.DeprecatedAtOrEmptyValue(
+  auto it = blob_url_opaque_origin_nonce_map_.find(
       blob_url_without_fragment.GetString());
+  return it != blob_url_opaque_origin_nonce_map_.end()
+             ? it->value
+             : base::UnguessableToken();
 }
 
 }  // namespace blink
