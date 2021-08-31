@@ -1,0 +1,17 @@
+Tests Page.navigate returns for fragment navigation.
+{
+    id : <number>
+    result : {
+        frameId : <string>
+        loaderId : <string>
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        frameId : <string>
+    }
+    sessionId : <string>
+}
+

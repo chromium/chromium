@@ -119,6 +119,12 @@
         "specifiers": ["Mac11.0", "Release"],
         "is_try_builder": true
     },
+    "mac11.0.arm64-blink-rel": {
+        "master": "tryserver.blink",
+        "port_name": "mac-mac-arm11.0",
+        "specifiers": ["Mac-arm11.0", "Release"],
+        "is_try_builder": true
+    },
     "win7-blink-rel": {
         "master": "tryserver.blink",
         "port_name": "win-win7",

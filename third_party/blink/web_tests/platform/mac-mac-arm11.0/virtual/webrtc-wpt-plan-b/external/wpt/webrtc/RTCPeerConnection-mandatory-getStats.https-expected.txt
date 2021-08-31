@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 77 tests; 70 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 75 tests; 71 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS RTCRtpStreamStats's ssrc
@@ -9,7 +9,7 @@ PASS RTCRtpStreamStats's codecId
 PASS RTCReceivedRtpStreamStats's packetsReceived
 PASS RTCReceivedRtpStreamStats's packetsLost
 PASS RTCReceivedRtpStreamStats's jitter
-FAIL RTCReceivedRtpStreamStats's packetsDiscarded assert_true: Is packetsDiscarded present expected true got false
+PASS RTCReceivedRtpStreamStats's packetsDiscarded
 PASS RTCReceivedRtpStreamStats's framesDropped
 FAIL RTCInboundRtpStreamStats's receiverId assert_true: Is receiverId present expected true got false
 PASS RTCInboundRtpStreamStats's remoteId
@@ -49,7 +49,6 @@ PASS RTCVideoSourceStats's height
 PASS RTCVideoSourceStats's framesPerSecond
 FAIL RTCMediaHandlerStats's trackIdentifier assert_true: Is trackIdentifier present expected true got false
 PASS RTCCodecStats's payloadType
-FAIL RTCCodecStats's codecType assert_true: Is codecType present expected true got false
 PASS RTCCodecStats's mimeType
 PASS RTCCodecStats's clockRate
 PASS RTCCodecStats's channels
@@ -76,6 +75,5 @@ FAIL RTCIceCandidateStats's url assert_true: Is url present expected true got fa
 PASS RTCCertificateStats's fingerprint
 PASS RTCCertificateStats's fingerprintAlgorithm
 PASS RTCCertificateStats's base64Certificate
-FAIL RTCCertificateStats's issuerCertificateId assert_true: Is issuerCertificateId present expected true got false
 Harness: the test ran to completion.
 
