@@ -431,9 +431,19 @@ Polymer({
         this.appState_ === AppState.MULTI_PAGE_SCANNING ||
         this.appState_ === AppState.CANCELING);
 
-    assert(newPageIndex === this.objectUrls_.length);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
-    this.push('objectUrls_', URL.createObjectURL(blob));
+    const objectUrl = URL.createObjectURL(blob);
+    if (newPageIndex === this.objectUrls_.length) {
+      this.push('objectUrls_', objectUrl);
+    } else {
+      this.splice('objectUrls_', newPageIndex, 1, objectUrl);
+    }
+
+    // |pageNumber_| gets set to the number of existing scanned images so
+    // when the next scan is started, |pageNumber_| gets incremented and
+    // the preview area shows 'Scanning length+1'.
+    this.pageNumber_ = this.objectUrls_.length;
+
     if (this.multiPageScanChecked) {
       this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
     }
@@ -680,6 +690,25 @@ Polymer({
     }
   },
 
+  /**
+   * Sends the request to initiate a new scan and once completed, use it to
+   * replace the existing scanned image at |pageIndex|.
+   * @param {Event} e
+   * @private
+   */
+  onRescanPage_(e) {
+    const pageIndex = e.detail;
+    assert(pageIndex >= 0 && pageIndex < this.objectUrls_.length);
+
+    this.multiPageScanController_
+        .rescanPage(
+            this.getSelectedScannerToken_(), this.getScanSettings_(), pageIndex)
+        .then(
+            /*@type {!{success: boolean}}*/ (response) => {
+              this.onRescanPageResponse_(response, pageIndex);
+            });
+  },
+
   /** @private */
   onCompleteMultiPageScan_() {
     this.multiPageScanController_.completeMultiPageScan();
@@ -705,6 +734,22 @@ Polymer({
     this.setAppState_(AppState.MULTI_PAGE_SCANNING);
     ++this.pageNumber_;
     this.progressPercent_ = 0;
+  },
+
+  /**
+   * @param {!{success: boolean}} response
+   * @param {number} pageIndex
+   * @private
+   */
+  onRescanPageResponse_(response, pageIndex) {
+    if (!response.success) {
+      this.showToast_('startScanFailedToast');
+      return;
+    }
+
+    this.progressPercent_ = 0;
+    this.pageNumber_ = ++pageIndex;
+    this.setAppState_(AppState.MULTI_PAGE_SCANNING);
   },
 
   /** @private */
