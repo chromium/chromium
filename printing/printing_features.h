@@ -43,6 +43,8 @@ bool ShouldPrintUsingXps(bool source_is_pdf);
     defined(OS_CHROMEOS)
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kEnableOopPrintDrivers;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint;
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
