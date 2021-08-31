@@ -140,11 +140,13 @@ public final class CommandLineFlags {
     }
 
     private static void tearDownClass() {
-        for (Activity a : ApplicationStatus.getRunningActivities()) {
-            if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
-                Log.w(TAG,
-                        "Activity " + a + ", is still starting up while the Command Line flags are "
-                                + "being reset. This is a known source of flakiness.");
+        if (ApplicationStatus.isInitialized()) {
+            for (Activity a : ApplicationStatus.getRunningActivities()) {
+                if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
+                    Log.w(TAG,
+                            "Activity " + a + ", is still starting up while the Command Line flags "
+                                    + "are being reset. This is a known source of flakiness.");
+                }
             }
         }
         restoreFlags(sClassFlagsToRemove, sClassFlagsToAdd);
