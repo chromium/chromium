@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from './shortcut_types.js';
 
 const ModifierRawKeys = [
@@ -105,8 +106,28 @@ export class AcceleratorViewElement extends PolymerElement {
       isCapturing_: {
         type: Boolean,
         value: false,
+      },
+
+      statusMessage: {
+        type: String,
+        notify: true,
+      },
+
+      /** Informs parent components that an error has occurred. */
+      hasError: {
+        type: Boolean,
+        value: false,
+        notify: true,
       }
     }
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!AcceleratorLookupManager} */
+    this.lookupManager_ = AcceleratorLookupManager.getInstance();
   }
 
   /**
@@ -169,6 +190,8 @@ export class AcceleratorViewElement extends PolymerElement {
       return;
     }
 
+    this.statusMessage = '';
+    this.hasError = false;
     this.isCapturing_ = false;
     this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
     this.isEditable = false;
@@ -210,6 +233,37 @@ export class AcceleratorViewElement extends PolymerElement {
     }
     this.set('pendingAcceleratorInfo_.accelerator',
         this.keystrokeToAccelerator_(e));
+
+    this.processPendingAccelerator_();
+  }
+
+  /**
+   * Checks that |pendingAccelerator_| is not a pre-existing shortcut. Sets the
+   * error message if there is a conflict.
+   * @private
+   */
+  processPendingAccelerator_() {
+    // Reset status state when process the new accelerator.
+    this.statusMessage = '';
+    this.hasError = false;
+
+    const pendingKeys = this.pendingAcceleratorInfo_.accelerator;
+    const foundId = this.lookupManager_.getAcceleratorFromKeys(
+        JSON.stringify(pendingKeys));
+
+    // Pre-existing shortcut, update the error message.
+    if (foundId != undefined) {
+      // TODO(jimmyxgong): Fetch name of accelerator with real implementation.
+      const uuidParams = foundId.split('-');
+      const conflictAccelName = this.lookupManager_.getAcceleratorName(
+          /**source=*/ parseInt(uuidParams[0], 10),
+          /**action=*/ parseInt(uuidParams[1], 10));
+      // TODO(jimmyxgong): i18n this string.
+      this.statusMessage = 'Shortcut is used by ' + conflictAccelName +
+          '. Press a new shortcut or press the same one again to use it for ' +
+          'this action instead.';
+      this.hasError = true;
+    }
   }
 
   /**

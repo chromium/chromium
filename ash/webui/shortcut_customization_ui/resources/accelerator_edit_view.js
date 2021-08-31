@@ -53,6 +53,28 @@ export class AcceleratorEditViewElement extends PolymerElement {
         notify:true,
         reflectToAttribute: true,
       },
+
+      /** @protected */
+      statusMessage: {
+        type: String,
+        value: '',
+        observer: 'onStatusMessageChanged_',
+      },
+
+      hasError: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      }
+    }
+  }
+
+  /** @protected */
+  onStatusMessageChanged_() {
+    if (this.statusMessage === '') {
+      // TODO(jimmyxgong): i18n this string.
+      this.statusMessage =
+          'Press 1-4 modifiers and 1 other key on your keyboard';
     }
   }
 
@@ -68,6 +90,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   /** @protected  */
   onCancelButtonClicked_() {
+    this.statusMessage = '';
     this.isEditView = false;
   }
 }

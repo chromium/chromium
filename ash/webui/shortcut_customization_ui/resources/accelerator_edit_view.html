@@ -10,6 +10,10 @@
     padding-top: 10px
   }
 
+  :host([has-error]) #acceleratorInfoText {
+    color: #D93025;
+  }
+
   #cancelButtonContainer {
     margin-top: 5px;
   }
@@ -36,12 +40,9 @@
   <div id="acceleratorContainer">
     <div id="acceleratorView">
       <accelerator-view id="acceleratorItem"
-          accelerator-info=[[acceleratorInfo]] is-editable={{isEditView}}>
+          accelerator-info=[[acceleratorInfo]] is-editable={{isEditView}}
+          status-message={{statusMessage}} has-error={{hasError}}>
       </accelerator-view>
-    </div>
-    <div id="acceleratorInfoText" hidden=[[!isEditView]]>
-      <!-- TODO(jimmyxgong): Localize string -->
-      Press 1-4 modifiers and 1 other key on your keyboard
     </div>
   </div>
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
@@ -70,4 +71,8 @@
     <iron-icon id="lockedIcon" icon="shortcut-customization:lock">
     </iron-icon>
   </div>
+</div>
+
+<div id="acceleratorInfoText" hidden=[[!isEditView]]>
+  [[statusMessage]]
 </div>

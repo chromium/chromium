@@ -4,9 +4,12 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
 
@@ -14,13 +17,21 @@ export function acceleratorEditViewTest() {
   /** @type {?AcceleratorEditViewElement} */
   let editViewElement = null;
 
+  /** @type {?AcceleratorLookupManager} */
+  let manager = null;
+
   setup(() => {
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+
     editViewElement = /** @type {!AcceleratorEditViewElement} */ (
         document.createElement('accelerator-edit-view'));
     document.body.appendChild(editViewElement);
   });
 
   teardown(() => {
+    manager.reset();
     editViewElement.remove();
     editViewElement = null;
   });
@@ -82,5 +93,61 @@ export function acceleratorEditViewTest() {
     // Lock icon should be visible.
     assertFalse(
         editViewElement.shadowRoot.querySelector('#lockContainer').hidden);
+  });
+
+  test('DetectShortcutConflict', async () => {
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
+
+    editViewElement.acceleratorInfo = acceleratorInfo;
+    await flushTasks();
+
+    // Check that the edit buttons are visible.
+    assertFalse(
+        editViewElement.shadowRoot.querySelector('#editButtonsContainer')
+            .hidden);
+    assertTrue(
+        editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
+            .hidden);
+
+    // Assert that no error has occurred.
+    assertFalse(editViewElement.hasError);
+
+    // Click on the edit button.
+    editViewElement.shadowRoot.querySelector('#editButton').click();
+
+    // Press 'Snap Window left' key, expect an error due since it is a
+    // pre-existing shortcut.
+    const viewElement =
+        editViewElement.shadowRoot.querySelector('#acceleratorItem');
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: '[',
+      keyCode: '219',
+      code: 'Key[',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+    assertTrue(editViewElement.hasError);
+
+    // Press another shortcut, expect no error.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'e',
+      keyCode: '69',
+      code: 'KeyE',
+      ctrlKey: true,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+    assertFalse(editViewElement.hasError);
   });
 }
