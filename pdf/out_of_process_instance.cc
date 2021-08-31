@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <utility>
@@ -680,7 +681,7 @@ void OutOfProcessInstance::SelectFindResult(bool forward) {
 void OutOfProcessInstance::StopFind() {
   PdfViewPluginBase::StopFind();
   tickmarks_.clear();
-  SetTickmarks(tickmarks_);
+  NotifyFindTickmarks();
 }
 
 void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
@@ -739,10 +740,11 @@ void OutOfProcessInstance::UpdateTickMarks(
   float inverse_scale = 1.0f / device_scale();
   tickmarks_.clear();
   tickmarks_.reserve(tickmarks.size());
-  for (auto& tickmark : tickmarks) {
-    tickmarks_.emplace_back(
-        PPRectFromRect(gfx::ScaleToEnclosingRect(tickmark, inverse_scale)));
-  }
+  std::transform(tickmarks.begin(), tickmarks.end(),
+                 std::back_inserter(tickmarks_),
+                 [inverse_scale](const gfx::Rect& t) -> gfx::Rect {
+                   return gfx::ScaleToEnclosingRect(t, inverse_scale);
+                 });
 }
 
 void OutOfProcessInstance::NotifyNumberOfFindResultsChanged(int total,
@@ -751,16 +753,16 @@ void OutOfProcessInstance::NotifyNumberOfFindResultsChanged(int total,
   // find results. Don't send an update if we sent one too recently. If it's the
   // final update, we always send it though.
   if (final_result) {
-    NumberOfFindResultsChanged(total, final_result);
-    SetTickmarks(tickmarks_);
+    NotifyFindResultsChanged(total, final_result);
+    NotifyFindTickmarks();
     return;
   }
 
   if (recently_sent_find_update_)
     return;
 
-  NumberOfFindResultsChanged(total, final_result);
-  SetTickmarks(tickmarks_);
+  NotifyFindResultsChanged(total, final_result);
+  NotifyFindTickmarks();
   recently_sent_find_update_ = true;
   ScheduleTaskOnMainThread(
       FROM_HERE,
@@ -982,6 +984,19 @@ void OutOfProcessInstance::NotifyUnsupportedFeature() {
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   // TODO(raymes): Move this function to PPB_UMA_Private.
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
+}
+
+void OutOfProcessInstance::NotifyFindResultsChanged(int total,
+                                                    bool final_result) {
+  NumberOfFindResultsChanged(total, final_result);
+}
+
+void OutOfProcessInstance::NotifyFindTickmarks() {
+  std::vector<pp::Rect> pp_tickmarks;
+  pp_tickmarks.reserve(tickmarks_.size());
+  std::transform(tickmarks_.begin(), tickmarks_.end(),
+                 std::back_inserter(pp_tickmarks), PPRectFromRect);
+  SetTickmarks(pp_tickmarks);
 }
 
 }  // namespace chrome_pdf

@@ -148,6 +148,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:
+  void NotifyFindResultsChanged(int total, bool final_result);
+  void NotifyFindTickmarks();
   void ResetRecentlySentFindUpdate(int32_t);
 
   bool CanSaveEdits() const;
@@ -170,7 +172,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool recently_sent_find_update_ = false;
 
   // The tickmarks.
-  std::vector<pp::Rect> tickmarks_;
+  std::vector<gfx::Rect> tickmarks_;
 
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };
