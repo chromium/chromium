@@ -280,7 +280,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
                        std::move(output_buffer));
 }
 
-void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
+void MojoJpegEncodeAcceleratorService::EncodeWithDmaBufAndQuality(
     int32_t task_id,
     uint32_t input_format,
     std::vector<chromeos_camera::mojom::DmaBufPlanePtr> input_planes,
@@ -289,14 +289,15 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     uint32_t exif_buffer_size,
     int32_t coded_size_width,
     int32_t coded_size_height,
+    int32_t quality,
     EncodeWithDmaBufCallback callback) {
-  EncodeWithDmaBufAndQuality(
-      task_id, input_format, std::move(input_planes), std::move(output_planes),
-      std::move(exif_handle), exif_buffer_size, coded_size_width,
-      coded_size_height, kJpegQuality, std::move(callback));
+  EncodeWithDmaBuf(task_id, input_format, std::move(input_planes),
+                   std::move(output_planes), std::move(exif_handle),
+                   exif_buffer_size, coded_size_width, coded_size_height,
+                   quality, std::move(callback));
 }
 
-void MojoJpegEncodeAcceleratorService::EncodeWithDmaBufAndQuality(
+void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     int32_t task_id,
     uint32_t input_format,
     std::vector<chromeos_camera::mojom::DmaBufPlanePtr> input_planes,

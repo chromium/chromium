@@ -81,6 +81,7 @@ class MojoJpegEncodeAcceleratorService
       uint32_t exif_buffer_size,
       int32_t coded_size_width,
       int32_t coded_size_height,
+      int32_t quality,
       EncodeWithDmaBufCallback callback) override;
 
   void EncodeWithDmaBufAndQuality(
