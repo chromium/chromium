@@ -139,7 +139,21 @@ void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
 
 void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   DCHECK(xdg_toplevel_);
-  xdg_toplevel_set_title(xdg_toplevel_.get(), base::UTF16ToUTF8(title).c_str());
+
+  // TODO(crbug.com/1241097): find a better way to handle long titles, or change
+  // this logic completely (and at the platform-agnostic level) because a title
+  // that long does not make any sense.
+  //
+  // A long title may exceed the maximum size of the Wayland event sent below
+  // upon calling xdg_toplevel_set_title(), which results in a fatal Wayland
+  // communication error and termination of the process.  4096 bytes is the
+  // limit for the size of the entire message; here we set 4000 as the maximum
+  // length of the string so it would fit the message with some margin.
+  const size_t kMaxLengh = 4080;
+  auto short_title = base::UTF16ToUTF8(title);
+  if (short_title.size() > kMaxLengh)
+    short_title.resize(kMaxLengh);
+  xdg_toplevel_set_title(xdg_toplevel_.get(), short_title.c_str());
 }
 
 void XDGToplevelWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
