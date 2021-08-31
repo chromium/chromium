@@ -11,8 +11,6 @@ static_library("safe_browsing") {
     "chrome_controller_client.h",
     "chrome_safe_browsing_tab_observer_delegate.cc",
     "chrome_safe_browsing_tab_observer_delegate.h",
-    "safe_browsing_tab_observer.cc",
-    "safe_browsing_tab_observer.h",
     "url_checker_delegate_impl.cc",
     "url_checker_delegate_impl.h",
   ]

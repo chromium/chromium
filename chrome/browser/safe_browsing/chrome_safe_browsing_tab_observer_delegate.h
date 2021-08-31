@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_TAB_OBSERVER_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_TAB_OBSERVER_DELEGATE_H_
 
-#include "chrome/browser/safe_browsing/safe_browsing_tab_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 
 namespace safe_browsing {
 

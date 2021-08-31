@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/safe_browsing_tab_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 
 #include "base/bind.h"
 #include "components/prefs/pref_service.h"
@@ -22,7 +22,7 @@ namespace safe_browsing {
 // has a concrete destructor to call. This is necessary because it is used
 // as a member of SafeBrowsingTabObserver, even if it only ever contains NULL.
 // TODO(shess): This is weird, why not just guard the instance variable?
-class ClientSideDetectionHost { };
+class ClientSideDetectionHost {};
 #endif
 
 SafeBrowsingTabObserver::SafeBrowsingTabObserver(
@@ -53,8 +53,7 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
 #endif
 }
 
-SafeBrowsingTabObserver::~SafeBrowsingTabObserver() {
-}
+SafeBrowsingTabObserver::~SafeBrowsingTabObserver() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helpers
