@@ -41,11 +41,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/revamped_incognito_ntp_does_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/incognito_ntp_does_and_doesnt_top_spacing">
+                android:layout_marginTop="@dimen/incognito_ntp_does_and_doesnt_top_spacing"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/revamped_incognito_ntp_does_header"
@@ -53,36 +54,22 @@
                     android:layout_height="wrap_content"
                     android:text="@string/revamped_incognito_ntp_does_header"
                     android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"
-                    android:layout_marginEnd="@dimen/incognito_ntp_space_between_header_and_icon"/>
-
-                <ImageView
-                    android:id="@+id/revamped_incognito_ntp_does_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/revamped_incognito_ntp_does_header"
-                    android:layout_alignBottom="@id/revamped_incognito_ntp_does_header"
-                    android:layout_alignTop="@id/revamped_incognito_ntp_does_header"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_check"/>
+                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"/>
 
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:id="@+id/revamped_incognito_ntp_does_description_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-                    android:layout_below="@id/revamped_incognito_ntp_does_header"
-                    android:layout_alignParentStart="true"
                     app:leading="@dimen/text_size_medium_leading"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/revamped_incognito_ntp_does_not_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/revamped_incognito_ntp_does_not_header"
@@ -90,31 +77,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/revamped_incognito_ntp_does_not_header"
                     android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"
-                    android:layout_marginEnd="@dimen/incognito_ntp_space_between_header_and_icon"/>
-
-                <ImageView
-                    android:id="@+id/revamped_incognito_ntp_does_not_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/revamped_incognito_ntp_does_not_header"
-                    android:layout_alignTop="@id/revamped_incognito_ntp_does_not_header"
-                    android:layout_alignBottom="@id/revamped_incognito_ntp_does_not_header"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_cross"/>
+                    android:layout_marginBottom="@dimen/incognito_ntp_space_between_header_and_description"/>
 
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:id="@+id/revamped_incognito_ntp_does_not_description_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-                    android:layout_below="@id/revamped_incognito_ntp_does_not_header"
-                    android:layout_alignParentStart="true"
                     app:leading="@dimen/text_size_medium_leading"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

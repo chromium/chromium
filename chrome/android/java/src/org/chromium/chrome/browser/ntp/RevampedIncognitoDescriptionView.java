@@ -45,9 +45,9 @@ public class RevampedIncognitoDescriptionView
     private LinearLayout mContainer;
     private LinearLayout mContent;
     private LinearLayout mDescriptionTextContainer;
-    private RelativeLayout mDoesLayout;
+    private LinearLayout mDoesLayout;
+    private LinearLayout mDoesNotLayout;
     private TextView mLearnMore;
-    private RelativeLayout mDoesNotLayout;
     private RelativeLayout mCookieControlsCard;
     private SwitchCompat mCookieControlsToggle;
     private ImageView mCookieControlsManagedIcon;
