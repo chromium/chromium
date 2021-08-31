@@ -334,7 +334,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
-  DCHECK(Intersection(params.to_download, ProxyTypes()).Empty());
+  DCHECK(Difference(params.to_download, ProtocolTypes()).Empty());
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,
@@ -347,7 +347,7 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
 void SyncEngineImpl::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  DCHECK(!IsProxyType(type));
+  DCHECK(ProtocolTypes().Has(type));
   model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 

@@ -49,13 +49,6 @@ TEST_F(ModelTypeTest, IsRealDataType) {
   EXPECT_TRUE(IsRealDataType(READING_LIST));
 }
 
-TEST_F(ModelTypeTest, IsProxyType) {
-  EXPECT_FALSE(IsProxyType(BOOKMARKS));
-  EXPECT_TRUE(IsProxyType(PROXY_TABS));
-  EXPECT_TRUE(IsProxyType(FIRST_PROXY_TYPE));
-  EXPECT_TRUE(IsProxyType(LAST_PROXY_TYPE));
-}
-
 // Make sure we can convert ModelTypes to and from specifics field
 // numbers.
 TEST_F(ModelTypeTest, ModelTypeToFromSpecificsFieldNumber) {
@@ -134,12 +127,9 @@ TEST_F(ModelTypeTest, DefaultFieldValues) {
 }
 
 TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
-  ModelTypeSet all_types = ModelTypeSet::All();
-  for (ModelType model_type : all_types) {
+  for (ModelType model_type : ProtocolTypes()) {
     std::string root_tag = ModelTypeToRootTag(model_type);
-    if (IsProxyType(model_type)) {
-      EXPECT_EQ(root_tag, std::string());
-    } else if (IsRealDataType(model_type)) {
+    if (IsRealDataType(model_type)) {
       EXPECT_TRUE(base::StartsWith(root_tag, "google_chrome_",
                                    base::CompareCase::INSENSITIVE_ASCII));
     } else {

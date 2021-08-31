@@ -567,7 +567,7 @@ DataTypeManagerImpl::PrepareConfigureParams(
 
   ModelTypeSet types_to_download = Difference(active_types, downloaded_types_);
   // Proxy and commit-only types never require downloading.
-  types_to_download.RemoveAll(ProxyTypes());
+  types_to_download.RetainAll(ProtocolTypes());
   types_to_download.RemoveAll(CommitOnlyTypes());
   if (!types_to_download.Empty()) {
     types_to_download.PutAll(ControlTypes());

@@ -65,7 +65,7 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
       service2->GetLastCycleSnapshotForDebugging();
 
   for (syncer::ModelType type : common_types) {
-    if (syncer::IsProxyType(type)) {
+    if (!syncer::ProtocolTypes().Has(type)) {
       continue;
     }
 

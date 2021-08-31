@@ -104,7 +104,7 @@ class MigrationTest : public SyncTest  {
       EXPECT_EQ(other_preferred_data_types, preferred_data_types);
     }
 
-    preferred_data_types.RemoveAll(syncer::ProxyTypes());
+    preferred_data_types.RetainAll(syncer::ProtocolTypes());
 
     // Supervised user data types will be "unready" during this test, so we
     // should not request that they be migrated.

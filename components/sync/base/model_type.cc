@@ -414,7 +414,7 @@ ModelTypeSet EncryptableUserTypes() {
   // Proxy types have no sync representation and are therefore not encrypted.
   // Note however that proxy types map to one or more protocol types, which
   // may or may not be encrypted themselves.
-  encryptable_user_types.RemoveAll(ProxyTypes());
+  encryptable_user_types.RetainAll(ProtocolTypes());
   return encryptable_user_types;
 }
 
@@ -503,10 +503,11 @@ std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {
 // TODO(zea): remove all hardcoded tags in model associators and have them use
 // this instead.
 std::string ModelTypeToRootTag(ModelType type) {
-  if (IsProxyType(type))
-    return std::string();
+  DCHECK(ProtocolTypes().Has(type));
   DCHECK(IsRealDataType(type));
-  return "google_chrome_" + std::string(kModelTypeInfoMap[type].root_tag);
+  const std::string root_tag = std::string(kModelTypeInfoMap[type].root_tag);
+  DCHECK(!root_tag.empty());
+  return "google_chrome_" + root_tag;
 }
 
 const char* GetModelTypeRootTag(ModelType model_type) {
@@ -543,10 +544,6 @@ bool NotificationTypeToRealModelType(const std::string& notification_type,
 bool IsRealDataType(ModelType model_type) {
   return model_type >= FIRST_REAL_MODEL_TYPE &&
          model_type <= LAST_REAL_MODEL_TYPE;
-}
-
-bool IsProxyType(ModelType model_type) {
-  return model_type >= FIRST_PROXY_TYPE && model_type <= LAST_PROXY_TYPE;
 }
 
 bool IsActOnceDataType(ModelType model_type) {

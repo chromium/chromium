@@ -42,7 +42,7 @@ void AddClientConfigParamsToMessage(
     const std::vector<std::string>& fcm_registration_tokens,
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
-  DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
+  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
   for (ModelType type : enabled_types) {
     int field_number = GetSpecificsFieldNumberFromModelType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);

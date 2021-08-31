@@ -407,7 +407,7 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
 
   // Update the enabled types for the bridge and sync manager.
   const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
-  DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
+  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
 
   const ModelTypeSet failed_types =
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
