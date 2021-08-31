@@ -325,7 +325,7 @@
 <translation id="386548886866354912">Paketkan dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="3899991606604168269">Prancis (Kanada) dengan keyboard Multibahasa</translation>
-<translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
+<translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Putar di</translation>
@@ -567,7 +567,7 @@
 <translation id="603895874132768835">Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru</translation>
 <translation id="604001903249547235">Cadangan Awan</translation>
 <translation id="6040143037577758943">Tutup</translation>
-<translation id="6055907707645252013">Jaringan <ph name="NETWORK_TYPE" />, tidak tersambung</translation>
+<translation id="6055907707645252013">Jaringan <ph name="NETWORK_TYPE" />, tidak terhubung</translation>
 <translation id="6074825444536523002">Google Formulir</translation>
 <translation id="6079871810119356840">Hungaria dengan keyboard Qwerty</translation>
 <translation id="6096979789310008754">Teks penelusuran dihapus, menampilkan semua file dan folder.</translation>

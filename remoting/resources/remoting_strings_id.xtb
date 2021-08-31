@@ -51,7 +51,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="3339299787263251426">Mengakses komputer melalui internet dengan aman</translation>
 <translation id="3385242214819933234">Pemilik host tidak valid.</translation>
 <translation id="3423542133075182604">Proses Remote Kunci Keamanan</translation>
-<translation id="3581045510967524389">Tidak dapat tersambung ke jaringan. Periksa bahwa perangkat Anda telah tersambung.</translation>
+<translation id="3581045510967524389">Tidak dapat terhubung ke jaringan. Periksa bahwa perangkat Anda telah terhubung.</translation>
 <translation id="3596628256176442606">Layanan ini mengaktifkan sambungan masuk dari klien Chromoting.</translation>
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Pelajari caranya</translation>
@@ -84,7 +84,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4741792197137897469">Autentikasi gagal. Login ke Chrome lagi.</translation>
 <translation id="4784508858340177375">Server X error atau gagal dimulai.</translation>
 <translation id="4798680868612952294">Opsi mouse</translation>
-<translation id="4804818685124855865">Putuskan</translation>
+<translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4808503597364150972">Masukkan PIN Anda untuk <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Kirim PrtScn</translation>
@@ -140,7 +140,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="7359298090707901886">Browser yang dipilih tidak dapat digunakan untuk membuka URL di perangkat lokal.</translation>
 <translation id="7401733114166276557">Chrome Desktop Jarak Jauh</translation>
 <translation id="7434397035092923453">Akses ditolak untuk klien: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7444276978508498879">Klien tersambung: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="7444276978508498879">Klien terhubung: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Ganti akun</translation>
 <translation id="7628469622942688817">Ingat PIN saya di perangkat ini.</translation>
 <translation id="7649070708921625228">Bantuan</translation>

@@ -2495,7 +2495,7 @@
 <translation id="3637203148990213388">ಹೆಚ್ಚುವರಿ ಖಾತೆಗಳು</translation>
 <translation id="3639220004740062347">ರೀಡರ್ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> ಬಳಕೆದಾರರಿಗೆ "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯನ್ನು ಸೇರಿಸುವುದೇ?</translation>
-<translation id="3640613767643722554">ನಿಮ್ಮ ಅಸಿಸ್ಟೆಂಟ್‌ಗೆ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಗುರುತಿಸಲು ಕಲಿಸಿ</translation>
+<translation id="3640613767643722554">ನಿಮ್ಮ Assistant ಗೆ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಗುರುತಿಸಲು ಕಲಿಸಿ</translation>
 <translation id="3641456520301071208">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="3645372836428131288">ಫಿಂಗರ್‌‌ಪ್ರಿಂಟ್‌‌ನ ಬೇರೊಂದು ಭಾಗವನ್ನು ಸೆರೆಹಿಡಿಯಲು ಬೆರಳನ್ನು ನಿಧಾನವಾಗಿ ಸರಿಸಿ.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
@@ -2666,7 +2666,7 @@
 <translation id="3809280248639369696">ಮೂನ್‌ಬೀಮ್</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" />, ಕೆಳಗಿನ ಫೋಲ್ಡರ್‌ಗಳಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="3810914450553844415">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ Google ಖಾತೆಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
-<translation id="3810973564298564668">ನಿರ್ವಹಿಸು</translation>
+<translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
 <translation id="381202950560906753">ಇನ್ನೊಂದನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3812525830114410218">ತಪ್ಪು ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="3813296892522778813">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು ದೊರೆಯದೇ ಇದ್ದರೆ <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome ಸಹಾಯ<ph name="END_LINK_CHROMIUM" />ಕ್ಕೆ ಹೋಗಿ</translation>

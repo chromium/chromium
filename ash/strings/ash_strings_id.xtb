@@ -276,7 +276,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3153444934357957346">Anda hanya dapat memiliki maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> akun dalam fitur login multipel.</translation>
 <translation id="3154351730702813399">Admin perangkat dapat memantau aktivitas akses internet Anda.</translation>
 <translation id="3181441307743005334">Mulai ulang dapat memerlukan waktu beberapa saat</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Tersambung ke satu perangkat}other{Tersambung ke # perangkat}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Terhubung ke satu perangkat}other{Terhubung ke # perangkat}}</translation>
 <translation id="320207200541803018">Setel timer</translation>
 <translation id="3203405173652969239">Tombol Akses diaktifkan</translation>
 <translation id="3207953481422525583">Setelan Pengguna</translation>
@@ -312,7 +312,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> mnt</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3454224730401036106">Sambungan Anda dialihkan ke jaringan yang lebih aman</translation>
-<translation id="3465223694362104965">Keyboard lain telah tersambung ke perangkat ini sejak terakhir kali Anda login. Pastikan Anda memercayai keyboard ini sebelum menggunakannya.</translation>
+<translation id="3465223694362104965">Keyboard lain telah terhubung ke perangkat ini sejak terakhir kali Anda login. Pastikan Anda memercayai keyboard ini sebelum menggunakannya.</translation>
 <translation id="3465356146291925647">Dikelola oleh Administrator Anda</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
@@ -329,7 +329,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3593646411856133110">Geser ke atas dan tahan untuk melihat aplikasi yang terbuka</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="3604801046548457007">Desktop <ph name="DESK_TITILE" /> dibuat</translation>
-<translation id="3606978283550408104">Penampil Braille tersambung.</translation>
+<translation id="3606978283550408104">Penampil Braille terhubung.</translation>
 <translation id="3615926715408477684">Mengaktifkan data seluler akan mengaktifkan Bluetooth</translation>
 <translation id="3616883743181209306">Menu dipindahkan ke pojok kanan atas layar.</translation>
 <translation id="3621202678540785336">Masukan</translation>
@@ -372,7 +372,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3897533311200664389">Mulai kueri teks</translation>
 <translation id="3899995891769452915">Masukan suara</translation>
 <translation id="3900355044994618856">Sesi akan berakhir dalam <ph name="SESSION_TIME_REMAINING" /></translation>
-<translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
+<translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3923494859158167397">Tidak ada jaringan seluler yang disiapkan</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="394485226368336402">Setelan audio</translation>
@@ -453,7 +453,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4477892968187500306">Perangkat ini dapat memuat aplikasi yang belum diverifikasi oleh Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4481530544597605423">Perangkat tidak tersambung</translation>
+<translation id="4481530544597605423">Perangkat tidak terhubung</translation>
 <translation id="4485060137115666462">Dengan klik kanan atau tekan lama, Asisten akan menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="4505050298327493054">Desktop aktif.</translation>
 <translation id="4513946894732546136">Masukan</translation>
@@ -494,7 +494,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asisten Google tidak tersedia dalam sesi demo.</translation>
 <translation id="479989351350248267">search</translation>
-<translation id="4804818685124855865">Putuskan</translation>
+<translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4814539958450445987">Layar Login</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
 <translation id="4849058404725798627">Sorot objek dengan fokus keyboard</translation>
@@ -906,7 +906,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132487352815776550">Hentikan teks tertutup</translation>
-<translation id="8132793192354020517">Tersambung ke <ph name="NAME" /></translation>
+<translation id="8132793192354020517">Terhubung ke <ph name="NAME" /></translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>
 <translation id="8142699993796781067">Jaringan pribadi</translation>
@@ -959,7 +959,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8563862697512465947">Setelan Notifikasi</translation>
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="8627191004499078455">Tersambung ke <ph name="DEVICE_NAME" /></translation>
+<translation id="8627191004499078455">Terhubung ke <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Setelan Aksesibilitas</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="8639760480004882931">Sisa <ph name="PERCENTAGE" /></translation>

@@ -89,7 +89,7 @@
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
 <translation id="1105572260329131950">Gunakan ikon default untuk koneksi aman</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
-<translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang tersambung</translation>
+<translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang terhubung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
 <translation id="1122089575901325963">Jika kebijakan disetel, diagnostik dan pengontrol telemetri (DTC) <ph name="WILCO_NAME" /> akan dikonfigurasi bila tersedia di perangkat. Ukuran penyiapan tidak boleh lebih dari 1MB (1.000.000 byte) dan harus dalam format JSON. DTC <ph name="WILCO_NAME" /> bertanggung jawab untuk menanganinya. Hash kriptografi memverifikasi integritas download. Konfigurasi didownload dan disimpan di cache. Konfigurasi akan didownload ulang setiap kali URL atau hash berubah.
 
@@ -789,7 +789,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan tidak disetel atau disetel ke atribut yang tidak memiliki kecocokan, artinya printer PDF bawaan dalam keadaan default. Jika tidak ada printer PDF, <ph name="PRODUCT_NAME" /> didefaultkan ke tidak ada.
 
-      Printer yang tersambung ke <ph name="CLOUD_PRINT_NAME" /> dianggap sebagai <ph name="PRINTER_TYPE_CLOUD" />, printer lainnya akan diklasifikasikan sebagai <ph name="PRINTER_TYPE_LOCAL" />.
+      Printer yang terhubung ke <ph name="CLOUD_PRINT_NAME" /> dianggap sebagai <ph name="PRINTER_TYPE_CLOUD" />, printer lainnya akan diklasifikasikan sebagai <ph name="PRINTER_TYPE_LOCAL" />.
 
       Catatan: Menghilangkan kolom berarti semua nilai cocok. Misalnya, tidak menentukan konektivitas menyebabkan Pratinjau Cetak mulai menemukan semua jenis printer, <ph name="PRINTER_TYPE_LOCAL" /> dan <ph name="PRINTER_TYPE_CLOUD" />. Pola ekspresi reguler harus mengikuti sintaksis RegExp JavaScript, dan pencocokan bersifat peka huruf besar/kecil.</translation>
 <translation id="2005506794355327448">Tindakan yang harus diambil saat penutup ditutup.</translation>
@@ -2225,7 +2225,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3756516139200532906">Izinkan pengguna terkelola mengonfigurasi nama host perangkat</translation>
 <translation id="3758089716224084329">Memungkinkan Anda menentukan server proxy yang digunakan oleh <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubah setelan proxy.
 
-      Jika Anda memilih untuk tidak pernah menggunakan server proxy dan selalu tersambung secara langsung, semua opsi lainnya akan diabaikan.
+      Jika Anda memilih untuk tidak pernah menggunakan server proxy dan selalu terhubung secara langsung, semua opsi lainnya akan diabaikan.
 
       Jika Anda memilih untuk mendeteksi server proxy secara otomatis, semua opsi lainnya akan diabaikan..
 
@@ -3262,7 +3262,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
           Kebijakan ini hanya berpengaruh jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan.
 
-          Jika Anda memilih untuk tidak menggunakan server proxy dan selalu tersambung secara langsung, semua opsi lainnya akan diabaikan.
+          Jika Anda memilih untuk tidak menggunakan server proxy dan selalu terhubung secara langsung, semua opsi lainnya akan diabaikan.
 
           Jika Anda memilih untuk menggunakan setelan proxy sistem atau otomatis mendeteksi server proxy, semua opsi lainnya akan diabaikan.
 
@@ -4647,7 +4647,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Kebijakan yang tidak disetel artinya hanya URL yang diteruskan sebagai parameter command line.</translation>
 <translation id="6907778402784621686">Blokir konten tidak aman di situs ini</translation>
 <translation id="6908640907898649429">Mengonfigurasi penyedia penelusuran default. Anda dapat menentukan penyedia penelusuran default yang akan digunakan pengguna atau memilih menonaktifkan penelusuran default.</translation>
-<translation id="6913068954484253496">Izinkan <ph name="PRODUCT_NAME" /> untuk tersambung ke perangkat Cast di semua alamat IP.</translation>
+<translation id="6913068954484253496">Izinkan <ph name="PRODUCT_NAME" /> untuk terhubung ke perangkat Cast di semua alamat IP.</translation>
 <translation id="6922498040906800267">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
 
@@ -4958,7 +4958,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
 <translation id="7199304109870655950">Mengonfigurasi opsi akses jarak jauh di host Chrome Desktop Jarak Jauh.
 
-      Host Chrome Desktop Jarak Jauh adalah layanan native yang berjalan di mesin target, tempat pengguna dapat tersambung untuk menggunakan aplikasi Chrome Desktop Jarak Jauh.  Layanan native ini dikemas dan dijalankan secara terpisah dari browser <ph name="PRODUCT_NAME" />.
+      Host Chrome Desktop Jarak Jauh adalah layanan native yang berjalan di mesin target, tempat pengguna dapat terhubung untuk menggunakan aplikasi Chrome Desktop Jarak Jauh.  Layanan native ini dikemas dan dijalankan secara terpisah dari browser <ph name="PRODUCT_NAME" />.
 
       Kebijakan ini diabaikan kecuali jika host Chrome Desktop Jarak Jauh diinstal.</translation>
 <translation id="7200364929485466022">Waktu saat pemeriksaan update harus dilakukan, disesuaikan dengan zona waktu lokal perangkat.</translation>
@@ -5504,7 +5504,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
-<translation id="7974114691960514888">Kebijakan ini tidak lagi didukung. Mengaktifkan penggunaan STUN dan server relay saat menyambungkan ke klien jarak jauh. Jika setelan ini diaktifkan, maka komputer ini dapat menemukan dan tersambung ke komputer host jarak jauh bahkan jika dipisahkan oleh firewall. Jika setelan ini dinonaktifkan dan sambungan UDP keluar difilter oleh firewall, maka komputer ini hanya dapat tersambung ke komputer host dalam jaringan lokal.</translation>
+<translation id="7974114691960514888">Kebijakan ini tidak lagi didukung. Mengaktifkan penggunaan STUN dan server relay saat menyambungkan ke klien jarak jauh. Jika setelan ini diaktifkan, maka komputer ini dapat menemukan dan terhubung ke komputer host jarak jauh bahkan jika dipisahkan oleh firewall. Jika setelan ini dinonaktifkan dan sambungan UDP keluar difilter oleh firewall, maka komputer ini hanya dapat terhubung ke komputer host dalam jaringan lokal.</translation>
 <translation id="7976157349247117979">Nama tujuan <ph name="PRODUCT_NAME" /></translation>
 <translation id="7980227303582973781">Tidak ada batasan khusus</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
@@ -5526,7 +5526,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8006219716745491366">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> akan menentukan daftar URL alternatif untuk mengekstrak istilah penelusuran dari mesin telusur. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> tidak disetel, tidak ada URL alternatif yang digunakan untuk mengekstrak istilah penelusuran.</translation>
-<translation id="8006921530139404577">Jika kebijakan ini dinonaktifkan, UI terkait koneksi (mis. jendela tidak tersambung) tidak akan ditampilkan untuk koneksi akses jarak jauh tanpa batasan. Sesi akses jarak jauh terbatas dan sesi dukungan jarak jauh tidak terpengaruh oleh kebijakan ini.
+<translation id="8006921530139404577">Jika kebijakan ini dinonaktifkan, UI terkait koneksi (mis. jendela tidak terhubung) tidak akan ditampilkan untuk koneksi akses jarak jauh tanpa batasan. Sesi akses jarak jauh terbatas dan sesi dukungan jarak jauh tidak terpengaruh oleh kebijakan ini.
 
           Kebijakan ini tidak berpengaruh jika disetel ke benar (true), dibiarkan kosong, atau tidak disetel.</translation>
 <translation id="8008421342605619236">Mengonfigurasi kebijakan untuk Pesan Native. Host pesan native yang diblokir tidak akan diizinkan kecuali telah dimasukkan ke dalam daftar yang diizinkan.</translation>
