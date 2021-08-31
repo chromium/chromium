@@ -51,11 +51,6 @@ bool g_save_images = false;
 media::test::VideoTestEnvironment* g_env;
 
 // Files for pixel format conversion test.
-// TODO(crbug.com/944822): Use kI420Image for I420 -> NV12 test case. It is
-// currently disabled because there is currently no way of creating DMABUF I420
-// buffer by NativePixmap.
-// constexpr const base::FilePath::CharType* kI420Image =
-//     FILE_PATH_LITERAL("bear_320x192.i420.yuv");
 const base::FilePath::CharType* kNV12Image =
     FILE_PATH_LITERAL("bear_320x192.nv12.yuv");
 const base::FilePath::CharType* kRGBAImage =
@@ -64,6 +59,12 @@ const base::FilePath::CharType* kBGRAImage =
     FILE_PATH_LITERAL("bear_320x192.bgra");
 const base::FilePath::CharType* kYV12Image =
     FILE_PATH_LITERAL("bear_320x192.yv12.yuv");
+const base::FilePath::CharType* kI420Image =
+    FILE_PATH_LITERAL("bear_320x192.i420.yuv");
+const base::FilePath::CharType* kI422Image =
+    FILE_PATH_LITERAL("bear_320x192.i422.yuv");
+const base::FilePath::CharType* kYUYVImage =
+    FILE_PATH_LITERAL("bear_320x192.yuyv.yuv");
 
 // Files for scaling test.
 const base::FilePath::CharType* kNV12Image720P =
@@ -76,6 +77,14 @@ const base::FilePath::CharType* kNV12Image180P =
     FILE_PATH_LITERAL("puppets-320x180.nv12.yuv");
 const base::FilePath::CharType* kNV12Image360PIn480P =
     FILE_PATH_LITERAL("puppets-640x360_in_640x480.nv12.yuv");
+const base::FilePath::CharType* kI422Image360P =
+    FILE_PATH_LITERAL("puppets-640x360.i422.yuv");
+const base::FilePath::CharType* kYUYVImage360P =
+    FILE_PATH_LITERAL("puppets-640x360.yuyv.yuv");
+const base::FilePath::CharType* kI420Image360P =
+    FILE_PATH_LITERAL("puppets-640x360.i420.yuv");
+const base::FilePath::CharType* kI420Image270P =
+    FILE_PATH_LITERAL("puppets-480x270.i420.yuv");
 
 // Files for rotation test.
 const base::FilePath::CharType* kNV12Image90 =
@@ -84,6 +93,41 @@ const base::FilePath::CharType* kNV12Image180 =
     FILE_PATH_LITERAL("bear_320x192_180.nv12.yuv");
 const base::FilePath::CharType* kNV12Image270 =
     FILE_PATH_LITERAL("bear_192x320_270.nv12.yuv");
+
+enum class YuvSubsampling {
+  kYuv420,
+  kYuv422,
+  kYuv444,
+};
+
+YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_YV12:
+      return YuvSubsampling::kYuv420;
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_YUY2:
+      return YuvSubsampling::kYuv422;
+    default:
+      NOTREACHED() << "Invalid format " << format;
+      return YuvSubsampling::kYuv444;
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_YV12:
+      return true;
+    default:
+      return false;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ImageProcessorParamTest
     : public ::testing::Test,
@@ -152,7 +196,9 @@ class ImageProcessorParamTest
     // Validating processed frames is currently not supported when a format is
     // not YUV or when scaling images.
     if (IsYuvPlanar(input_fourcc.ToVideoPixelFormat()) &&
-        IsYuvPlanar(output_fourcc.ToVideoPixelFormat())) {
+        IsYuvPlanar(output_fourcc.ToVideoPixelFormat()) &&
+        ToYuvSubsampling(input_fourcc.ToVideoPixelFormat()) ==
+            ToYuvSubsampling(output_fourcc.ToVideoPixelFormat())) {
       if (input_image.Size() == output_image->Size()) {
         auto vf_validator = test::MD5VideoFrameValidator::Create(
             {output_image->Checksum()}, output_image->PixelFormat());
@@ -233,6 +279,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   test::Image output_image(std::get<1>(GetParam()));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
+  if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
+    GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
   auto ip_client = CreateImageProcessorClient(
       input_image, {VideoFrame::STORAGE_DMABUFS}, &output_image,
       {VideoFrame::STORAGE_OWNED_MEMORY});
@@ -253,6 +301,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
   test::Image output_image(std::get<1>(GetParam()));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
+  if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
+    GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
+  if (!IsFormatTestedForDmabufAndGbm(output_image.PixelFormat()))
+    GTEST_SKIP() << "Skipping Dmabuf format " << output_image.PixelFormat();
 
   auto ip_client =
       CreateImageProcessorClient(input_image, {VideoFrame::STORAGE_DMABUFS},
@@ -275,6 +327,14 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   test::Image output_image(std::get<1>(GetParam()));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
+  if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat())) {
+    GTEST_SKIP() << "Skipping GpuMemoryBuffer format "
+                 << input_image.PixelFormat();
+  }
+  if (!IsFormatTestedForDmabufAndGbm(output_image.PixelFormat())) {
+    GTEST_SKIP() << "Skipping GpuMemoryBuffer format "
+                 << output_image.PixelFormat();
+  }
 
   auto ip_client = CreateImageProcessorClient(
       input_image, {VideoFrame::STORAGE_GPU_MEMORY_BUFFER}, &output_image,
@@ -289,20 +349,22 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// BGRA -> NV12
-// I420 -> NV12
-// RGBA -> NV12
-// YV12 -> NV12
 INSTANTIATE_TEST_SUITE_P(
     PixelFormatConversionToNV12,
     ImageProcessorParamTest,
     ::testing::Values(std::make_tuple(kBGRAImage, kNV12Image),
-                      // TODO(crbug.com/944822): Add I420 -> NV12 test case.
-                      // There is currently no way of creating DMABUF
-                      // I420 buffer by NativePixmap.
-                      // std::make_tuple(kI420Image, kNV12Image),
+                      std::make_tuple(kI420Image, kNV12Image),
                       std::make_tuple(kRGBAImage, kNV12Image),
-                      std::make_tuple(kYV12Image, kNV12Image)));
+                      std::make_tuple(kYV12Image, kNV12Image),
+                      std::make_tuple(kI422Image, kNV12Image),
+                      std::make_tuple(kYUYVImage, kNV12Image)));
+
+INSTANTIATE_TEST_SUITE_P(
+    PixelFormatConversionToI420,
+    ImageProcessorParamTest,
+    ::testing::Values(std::make_tuple(kI420Image, kI420Image),
+                      std::make_tuple(kI422Image, kI420Image),
+                      std::make_tuple(kYUYVImage, kI420Image)));
 
 INSTANTIATE_TEST_SUITE_P(
     NV12DownScaling,
@@ -312,6 +374,24 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_tuple(kNV12Image720P, kNV12Image180P),
                       std::make_tuple(kNV12Image360P, kNV12Image270P),
                       std::make_tuple(kNV12Image360P, kNV12Image180P)));
+
+INSTANTIATE_TEST_SUITE_P(I420DownScaling,
+                         ImageProcessorParamTest,
+                         ::testing::Values(std::make_tuple(kI420Image360P,
+                                                           kI420Image270P)));
+
+INSTANTIATE_TEST_SUITE_P(
+    DownScalingConversionToNV12,
+    ImageProcessorParamTest,
+    ::testing::Values(std::make_tuple(kI422Image360P, kNV12Image270P),
+                      std::make_tuple(kYUYVImage360P, kNV12Image270P)));
+
+INSTANTIATE_TEST_SUITE_P(
+    DownScalingConversionToI420,
+    ImageProcessorParamTest,
+    ::testing::Values(std::make_tuple(kI420Image360P, kI420Image270P),
+                      std::make_tuple(kI422Image360P, kI420Image270P),
+                      std::make_tuple(kYUYVImage360P, kI420Image270P)));
 
 // Crop 360P frame from 480P.
 INSTANTIATE_TEST_SUITE_P(NV12Cropping,
