@@ -4191,6 +4191,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecurePaymentConfirmationDebugName,
      flag_descriptions::kSecurePaymentConfirmationDebugDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSecurePaymentConfirmationDebug)},
+#if defined(OS_ANDROID)
+    {"enable-secure-payment-confirmation-android",
+     flag_descriptions::kSecurePaymentConfirmationAndroidName,
+     flag_descriptions::kSecurePaymentConfirmationAndroidDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(features::kSecurePaymentConfirmation)},
+#endif
     {"fill-on-account-select", flag_descriptions::kFillOnAccountSelectName,
      flag_descriptions::kFillOnAccountSelectDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kFillOnAccountSelect)},
