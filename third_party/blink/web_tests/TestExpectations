@@ -1282,16 +1282,12 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-br
 crbug.com/1242348 virtual/layout_ng_block_frag/fast/multicol/tall-line-in-short-block.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/composited-relpos-overlapping-will-change.html [ Failure ]
 
+### Tests passing with LayoutNGFlexFragmentation enabled:
+virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Pass ]
+virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Pass ]
+
 ### Tests failing with LayoutNGFlexFragmentation enabled:
-crbug.com/660611 virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-fragmented-with-float-descendant-001.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flexbox-fragmentation-layout-001-crash.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox-starts-at-column-boundary-with-block.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox-starts-at-column-boundary.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox-with-overflow-auto-child-crash.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/nested-with-wrapped-flexbox-crash.html [ Crash Failure ]
-crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/spanner-in-flexbox-in-multicol-in-flexbox-crash.html [ Crash Failure ]
+crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox.html [ Failure ]
 
 ### With LayoutNGPrinting enabled:
 
@@ -3742,6 +3738,8 @@ crbug.com/829028 external/wpt/css/css-break/break-between-avoid-004.html [ Failu
 crbug.com/829028 external/wpt/css/css-break/break-between-avoid-007.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/fieldset-003.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/fieldset-004.html [ Failure ]
+crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Failure ]
+crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/forced-break-at-fragmentainer-start-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-012.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html [ Failure ]

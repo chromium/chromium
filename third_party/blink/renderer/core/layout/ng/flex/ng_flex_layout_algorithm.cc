@@ -858,8 +858,14 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   intrinsic_block_size =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
                               BorderScrollbarPadding(), intrinsic_block_size);
+
+  LayoutUnit previously_consumed_block_size;
+  if (UNLIKELY(BreakToken()))
+    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      ConstraintSpace(), Style(), BorderPadding(),
+      previously_consumed_block_size + intrinsic_block_size,
       container_builder_.InlineSize());
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
@@ -871,6 +877,18 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   bool success = GiveLinesAndItemsFinalPositionAndSize();
   if (!success)
     return nullptr;
+
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+    FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
+                        FragmentainerSpaceAtBfcStart(ConstraintSpace()),
+                        &container_builder_);
+  } else {
+#if DCHECK_IS_ON()
+    // If we're not participating in a fragmentation context, no block
+    // fragmentation related fields should have been set.
+    container_builder_.CheckNoBlockFragmentation();
+#endif
+  }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
   freeze_scrollbars.reset();
@@ -917,8 +935,9 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
 
   LayoutUnit final_content_main_size =
       container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
-  LayoutUnit final_content_cross_size = container_builder_.FragmentBlockSize() -
-                                        BorderScrollbarPadding().BlockSum();
+  LayoutUnit final_content_cross_size =
+      container_builder_.FragmentsTotalBlockSize() -
+      BorderScrollbarPadding().BlockSum();
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
