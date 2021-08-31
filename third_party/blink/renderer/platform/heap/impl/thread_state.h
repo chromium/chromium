@@ -344,8 +344,7 @@ class PLATFORM_EXPORT ThreadState final {
 
   ALWAYS_INLINE bool IsOnStack(Address address) const {
     return reinterpret_cast<Address>(start_of_stack_) >= address &&
-           address >= (reinterpret_cast<Address>(reinterpret_cast<uintptr_t>(
-                          WTF::GetCurrentStackPosition())));
+           address >= reinterpret_cast<Address>(WTF::GetCurrentStackPosition());
   }
 
   MarkingVisitor* CurrentVisitor() const {
