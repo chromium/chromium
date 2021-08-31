@@ -18,6 +18,10 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/metrics/structured/neutrino_logging.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PrefService;
 class PrefRegistrySimple;
 
@@ -226,6 +230,12 @@ class MetricsStateManager final {
   // Reset the client id and low entropy source if the kMetricsResetMetricIDs
   // pref is true.
   void ResetMetricsIDsIfNecessary();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Log to structured metrics when the client id is changed.
+  void LogClientIdChanged(metrics::structured::NeutrinoDevicesLocation location,
+                          std::string previous_client_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Whether an instance of this class exists. Used to enforce that there aren't
   // multiple instances of this class at a given time.

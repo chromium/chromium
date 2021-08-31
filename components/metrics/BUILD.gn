@@ -132,7 +132,10 @@ static_library("metrics") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ ":serialization" ]
+    deps += [
+      ":serialization",
+      "//components/metrics/structured:neutrino_logging",
+    ]
   }
 
   if (is_android) {

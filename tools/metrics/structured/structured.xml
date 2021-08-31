@@ -254,6 +254,130 @@
   </event>
 </project>
 
+<project name="NeutrinoDevices">
+  <owner>pdyson@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <summary>
+    Project for recording events to monitor the creation of Neutrino Devices.
+  </summary>
+
+  <event name="ClientIdChanged">
+    <summary>
+      Records the client id being changed to a new value. This does not include
+      when the client id is cleared (see ClientIdCleared below).
+    </summary>
+    <metric name="InitialClientId" type="hmac-string">
+      <summary>
+        The client id before it is changed.
+      </summary>
+    </metric>
+    <metric name="FinalClientId" type="hmac-string">
+      <summary>
+        The client id after it is changed.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceInstallation" type="int">
+      <summary>
+        The time since installation. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceMetricsEnabled" type="int">
+      <summary>
+        The time since metrics enabled. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+    <metric name="DaysSinceKeyRotation" type="int">
+      <summary>
+        The number of days since the key was rotated.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="ClientIdCleared">
+    <summary>
+      Records when the client id is cleared.
+    </summary>
+    <metric name="InitialClientId" type="hmac-string">
+      <summary>
+        The client id before it is changed.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceInstallation" type="int">
+      <summary>
+        The time since installation. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceMetricsEnabled" type="int">
+      <summary>
+        The time since metrics enabled. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Enrollment">
+    <summary>
+      Records the enrollment status, either managed or unmanaged.
+    </summary>
+    <metric name="ClientId" type="hmac-string">
+      <summary>
+        The client id.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+    <metric name="IsManagedDevice" type="int">
+      <summary>
+        Whether the device is managed. 1: Managed, 0: Unmanaged.
+      </summary>
+    </metric>
+    <metric name="IsManagedPolicy" type="int">
+      <summary>
+        Whether the metrics reporting policy is managed. 1: Managed, 0:
+        Unmanaged.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CodePoint">
+    <summary>
+      Records that execution reached a particular point in the code.
+    </summary>
+    <metric name="ClientId" type="hmac-string">
+      <summary>
+        The client id.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>

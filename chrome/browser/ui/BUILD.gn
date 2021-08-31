@@ -4755,6 +4755,13 @@ static_library("ui") {
       deps += [ "//ui/views/window/vector_icons" ]
     }
 
+    if (is_chromeos_ash) {
+      deps += [
+        "//components/metrics/structured:neutrino_logging",
+        "//components/metrics/structured:neutrino_logging_util",
+      ]
+    }
+
     if (is_chrome_branded) {
       deps += [ "//chrome/browser/ui/media_router/internal/vector_icons" ]
     }

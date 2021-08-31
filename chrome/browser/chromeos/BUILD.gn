@@ -342,6 +342,8 @@ source_set("chromeos") {
     "//components/language/core/common",
     "//components/login",
     "//components/metrics:serialization",
+    "//components/metrics/structured:neutrino_logging",
+    "//components/metrics/structured:neutrino_logging_util",
     "//components/omnibox/browser",
     "//components/onc",
     "//components/ownership",

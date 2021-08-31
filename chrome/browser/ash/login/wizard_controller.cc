@@ -185,6 +185,8 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/metrics/structured/neutrino_logging.h"
+#include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -1237,6 +1239,9 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
 void WizardController::OnEulaAccepted(bool usage_statistics_reporting_enabled) {
   time_eula_accepted_ = base::TimeTicks::Now();
   StartupUtils::MarkEulaAccepted();
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      GetLocalState(),
+      metrics::structured::NeutrinoDevicesLocation::kOnEulaAccepted);
   ChangeMetricsReportingStateWithReply(
       usage_statistics_reporting_enabled,
       base::BindOnce(&WizardController::OnChangedMetricsReportingState,

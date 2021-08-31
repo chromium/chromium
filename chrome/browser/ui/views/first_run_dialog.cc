@@ -31,6 +31,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/metrics/structured/neutrino_logging.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 #if !defined(OS_MAC)
@@ -122,6 +126,10 @@ bool FirstRunDialog::Accept() {
 #if defined(OS_MAC)
   ChangeMetricsReportingState(report_crashes_->GetChecked());
 #else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLog(
+      metrics::structured::NeutrinoDevicesLocation::kFirstRunDialog);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ChangeMetricsReportingStateWithReply(
       report_crashes_->GetChecked(),
       base::BindOnce(&InitCrashReporterIfEnabled));

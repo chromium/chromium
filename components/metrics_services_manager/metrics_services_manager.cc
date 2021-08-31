@@ -19,6 +19,10 @@
 #include "components/variations/service/variations_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/metrics/structured/neutrino_logging.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace metrics_services_manager {
 
 MetricsServicesManager::MetricsServicesManager(
@@ -34,6 +38,10 @@ MetricsServicesManager::~MetricsServicesManager() {}
 
 std::unique_ptr<const base::FieldTrial::EntropyProvider>
 MetricsServicesManager::CreateEntropyProvider() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLog(
+      metrics::structured::NeutrinoDevicesLocation::kCreateEntropyProvider);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return client_->GetMetricsStateManager()->CreateDefaultEntropyProvider();
 }
 

@@ -160,6 +160,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/metrics/structured/neutrino_logging.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace metrics {
 
 namespace {
@@ -315,11 +319,19 @@ void MetricsService::EnableRecording() {
     OpenNewLog();
 
   delegating_provider_.OnRecordingEnabled();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This must be after OnRecordingEnabled() to ensure that the structured
+  // logging has been enabled.
+  metrics::structured::NeutrinoDevicesLogWithClientId(
+      state_manager_->client_id(),
+      metrics::structured::NeutrinoDevicesLocation::kEnableRecording);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Fill in the system profile in the log and persist it (to prefs, .pma and
-  // crashpad). This includes running the providers so that information like
-  // field trials and hardware info is provided. If Chrome crashes before this
-  // log is completed, the .pma file will have this system profile.
+  // Fill in the system profile in the log and persist it (to prefs, .pma
+  // and crashpad). This includes running the providers so that information
+  // like field trials and hardware info is provided. If Chrome crashes
+  // before this log is completed, the .pma file will have this system
+  // profile.
   RecordCurrentEnvironment(log_manager_.current_log(), /*complete=*/false);
 
   base::RemoveActionCallback(action_callback_);

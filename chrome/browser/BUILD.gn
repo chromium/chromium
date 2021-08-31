@@ -4805,6 +4805,8 @@ static_library("browser") {
       "//components/arc/mojom",
       "//components/full_restore",
       "//components/metrics/structured",
+      "//components/metrics/structured:neutrino_logging",
+      "//components/metrics/structured:neutrino_logging_util",
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/font:lib",
       "//components/services/font/public/mojom",

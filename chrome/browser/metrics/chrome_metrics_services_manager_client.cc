@@ -56,6 +56,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "components/metrics/structured/neutrino_logging.h"
+#include "components/metrics/structured/neutrino_logging_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
@@ -114,7 +116,7 @@ void OnCrosMetricsReportingSettingChange() {
   // is deleted when the reporting state is disabled. Long-term this should
   // happen via a call to all MetricsProviders eg. OnClientStateCleared. This is
   // temporarily called here because it is close to the settings UI, and doesn't
-  // affect the logging in crbug.com/1227585.
+  // greatly affect the logging in crbug.com/1227585.
   auto* recorder = metrics::structured::Recorder::GetInstance();
   if (recorder) {
     recorder->OnReportingStateChanged(enable_metrics);
@@ -248,6 +250,11 @@ ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      local_state_,
+      metrics::structured::NeutrinoDevicesLocation::kCreateVariationsService);
+#endif
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
@@ -258,6 +265,11 @@ ChromeMetricsServicesManagerClient::CreateVariationsService() {
 std::unique_ptr<metrics::MetricsServiceClient>
 ChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      local_state_, metrics::structured::NeutrinoDevicesLocation::
+                        kCreateMetricsServiceClient);
+#endif
   return ChromeMetricsServiceClient::Create(GetMetricsStateManager());
 }
 

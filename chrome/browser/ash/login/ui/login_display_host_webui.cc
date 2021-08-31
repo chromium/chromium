@@ -89,6 +89,8 @@
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/metrics/structured/neutrino_logging.h"
+#include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -410,6 +412,13 @@ bool CanPlayStartupSound() {
          device.type != AudioDeviceType::kOther;
 }
 
+// Returns the preferences service.
+PrefService* GetLocalState() {
+  if (g_browser_process && g_browser_process->local_state())
+    return g_browser_process->local_state();
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -458,10 +467,22 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV));
 
   login_display_ = std::make_unique<LoginDisplayWebUI>();
+
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      GetLocalState(),
+      metrics::structured::NeutrinoDevicesLocation::kLoginDisplayHostWebUI);
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   VLOG(4) << "~LoginDisplayWebUI";
+
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  metrics::structured::NeutrinoDevicesLogEnrollmentWithLocalState(
+      GetLocalState(), connector->IsDeviceEnterpriseManaged(),
+      metrics::structured::NeutrinoDevicesLocation::
+          kLoginDisplayHostWebUIDestructor);
+
   if (GetOobeUI())
     GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
 

@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "components/metrics/structured/neutrino_logging.h"
+#include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -85,6 +87,8 @@ void StatsReportingController::SetEnabled(Profile* profile, bool enabled) {
 bool StatsReportingController::IsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool value = false;
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      local_state_, metrics::structured::NeutrinoDevicesLocation::kIsEnabled);
   if (ShouldReadFromPendingValue() && GetPendingValue(&value)) {
     // Return the pending value if it exists.
     return value;
@@ -203,6 +207,9 @@ void StatsReportingController::NotifyObservers() {
   if (current_value != value_notified_to_observers_) {
     VLOG(1) << "Notifying observers";
     value_notified_to_observers_ = current_value;
+    metrics::structured::NeutrinoDevicesLogWithLocalState(
+        local_state_,
+        metrics::structured::NeutrinoDevicesLocation::kNotifyObservers);
     callback_list_.Notify();
   } else {
     VLOG(1) << "Not notifying (already notified)";

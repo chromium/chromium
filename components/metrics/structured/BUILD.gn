@@ -28,6 +28,7 @@ static_library("structured") {
   ]
 
   deps = [
+    ":neutrino_logging",
     ":storage",
     ":structured_events",
     ":structured_metrics_validator",
@@ -65,9 +66,10 @@ source_set("common") {
     "recorder.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":storage",
-    "//base",
     "//components/prefs",
     "//third_party/metrics_proto",
   ]
@@ -151,6 +153,33 @@ static_library("structured_metrics_validator") {
     ":common",
     ":gen_structured_metrics_validator",
     "//base",
+  ]
+}
+
+static_library("neutrino_logging") {
+  sources = [
+    "neutrino_logging.cc",
+    "neutrino_logging.h",
+  ]
+
+  deps = [
+    ":structured_events",
+    "//base",
+  ]
+}
+
+static_library("neutrino_logging_util") {
+  sources = [
+    "neutrino_logging_util.cc",
+    "neutrino_logging_util.h",
+  ]
+
+  deps = [
+    ":neutrino_logging",
+    ":structured_events",
+    "//base",
+    "//components/metrics",
+    "//components/prefs",
   ]
 }
 
