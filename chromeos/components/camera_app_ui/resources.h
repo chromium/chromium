@@ -91,6 +91,7 @@ const struct {
     {"label_video_resolution", IDS_LABEL_VIDEO_RESOLUTION},
     {"migrate_pictures_msg", IDS_MIGRATE_PICTURES_MSG},
     {"msg_document_detected", IDS_MSG_DOCUMENT_DETECTED},
+    {"msg_processing_image", IDS_MSG_PROCESSING_IMAGE},
     {"name", IDS_NAME},
     {"new_control_navigation", IDS_NEW_CONTROL_NAVIGATION},
     {"new_control_toast", IDS_NEW_CONTROL_TOAST},

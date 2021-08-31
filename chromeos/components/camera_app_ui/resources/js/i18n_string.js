@@ -79,6 +79,7 @@ export const I18nString = {
   LABEL_VIDEO_RESOLUTION: 'label_video_resolution',
   MIGRATE_PICTURES_MSG: 'migrate_pictures_msg',
   MSG_DOCUMENT_DETECTED: 'msg_document_detected',
+  MSG_PROCESSING_IMAGE: 'msg_processing_image',
   NAME: 'name',
   NEW_CONTROL_NAVIGATION: 'new_control_navigation',
   NEW_CONTROL_TOAST: 'new_control_toast',

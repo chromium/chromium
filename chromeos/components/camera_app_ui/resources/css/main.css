@@ -1456,11 +1456,6 @@ body.tab-navigation .dialog-buttons button:focus::after {
   z-index: 2;
 }
 
-body.view-flash #view-flash {
-  background: white;
-  transition: opacity var(--moderate2-duration);
-}
-
 body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   visibility: visible;
 }

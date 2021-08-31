@@ -505,6 +505,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message spoken by accessibility tool when document is detected in camera preview." name="IDS_MSG_DOCUMENT_DETECTED">
         Document detected
       </message>
+      <message desc="Message indicating App is busy for processing image." name="IDS_MSG_PROCESSING_IMAGE">
+        Processing image...
+      </message>
       <message desc="Label for button saving result document photo in PDF format" name="IDS_LABEL_SAVE_PDF_DOCUMENT">
         Save as PDF
       </message>

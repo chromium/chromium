@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/button.css">
     <link rel="stylesheet" href="/css/document_mode_dialog.css">
+    <link rel="stylesheet" href="/css/flash.css">
     <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/new_feature_toast.css">
@@ -555,7 +556,12 @@
       </div>
       <div id="spinner" class="centered-overlay"></div>
     </div>
-    <div id="view-flash"></div>
+    <div id="view-flash">
+      <div id="processing-indicator" class="centered-overlay">
+        <div class="icon"></div>
+        <div class="msg" i18n-text="msg_processing_image"></div>
+      </div>
+    </div>
     <div id="view-splash"></div>
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>
