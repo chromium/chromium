@@ -240,12 +240,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     zeroconf_scanners_ = scanners;
   }
 
-  // Handles the result of calling LorgnetteManagerClient::ListScanners().
-  void OnListScannersResponse(
-      GetScannerNamesCallback callback,
-      absl::optional<lorgnette::ListScannersResponse> response) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    RebuildDedupedScanners(response);
+  void SendFinalScannerList(GetScannerNamesCallback callback) {
     std::vector<std::string> scanner_names;
     scanner_names.reserve(deduped_scanners_.size());
     for (const auto& entry : deduped_scanners_)
@@ -254,13 +249,67 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::move(callback).Run(std::move(scanner_names));
   }
 
+  // Removes a scanner name from deduped_scanners_ if it has no capabilities. If
+  // there are remaining scanners to filter, start the recursive loop again with
+  // a call to GetScannerCapabilities with the next scanner in
+  // scanners_to_filter_.
+  void RemoveScannersIfUnusable(
+      GetScannerNamesCallback callback,
+      const std::string& scanner_name,
+      const absl::optional<lorgnette::ScannerCapabilities>& capabilities) {
+    if (!capabilities)
+      deduped_scanners_.erase(scanner_name);
+    scanners_to_filter_.pop_back();
+    if (scanners_to_filter_.empty()) {
+      SendFinalScannerList(std::move(callback));
+    } else {
+      GetScannerCapabilities(
+          scanners_to_filter_.back(),
+          base::BindOnce(&LorgnetteScannerManagerImpl::RemoveScannersIfUnusable,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         scanners_to_filter_.back()));
+    }
+  }
+
+  // Starts a recursive loop of GetScannerCapabilities,
+  // OnScannerCapabilitiesResponse, and RemoveScannersIfUnusable.
+  // GetScannerCapabilities takes a scanner name, then creates a loop with
+  // OnScannerCapabilitiesResponse to check all usable device names for
+  // capabilities, marking them unusable along the way if they return no
+  // capabilities. Once all device names have been checked, or capabilities have
+  // been found, RemoveScannersIfUnusable is called with the scanner name.
+  void FilterScannersAndRespond(GetScannerNamesCallback callback) {
+    if (!scanners_to_filter_.empty()) {
+      // Run GetScannerCapabilities with a callback that removes scanners from
+      // the deduped_scanners_ mapping if none of their names return
+      // capabilities.
+      GetScannerCapabilities(
+          scanners_to_filter_.back(),
+          base::BindOnce(&LorgnetteScannerManagerImpl::RemoveScannersIfUnusable,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         scanners_to_filter_.back()));
+    } else {
+      SendFinalScannerList(std::move(callback));
+    }
+  }
+
+  // Handles the result of calling LorgnetteManagerClient::ListScanners().
+  void OnListScannersResponse(
+      GetScannerNamesCallback callback,
+      absl::optional<lorgnette::ListScannersResponse> response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    RebuildDedupedScanners(response);
+    FilterScannersAndRespond(std::move(callback));
+  }
+
   // Handles the result of calling
   // LorgnetteManagerClient::GetScannerCapabilities(). If getting the scanner
   // capabilities fails, |scanner_name|, |device_name|, and |protocol| are used
-  // to mark the device name that was used as unusable and retry the operation
-  // with the next available device name. This pattern of trying each device
-  // name cannot be used when performing a scan since the backend used to obtain
-  // the capabilities must be the same backend used to perform the scan.
+  // to mark the device name that was used as unusable and retry the
+  // operation with the next available device name. This pattern of trying
+  // each device name cannot be used when performing a scan since the backend
+  // used to obtain the capabilities must be the same backend used to perform
+  // the scan.
   void OnScannerCapabilitiesResponse(
       GetScannerCapabilitiesCallback callback,
       const std::string& scanner_name,
@@ -286,6 +335,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void RebuildDedupedScanners(
       absl::optional<lorgnette::ListScannersResponse> response) {
     ResetDedupedScanners();
+    ResetScannersToFilter();
     if (!response || response->scanners_size() == 0)
       return;
 
@@ -322,6 +372,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       scanner.display_name = display_name;
       scanner.device_names[protocol].emplace(lorgnette_scanner.name());
       deduped_scanners_[display_name] = scanner;
+      scanners_to_filter_.push_back(display_name);
     }
   }
 
@@ -332,6 +383,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     deduped_scanners_.reserve(zeroconf_scanners_.size());
     for (const auto& scanner : zeroconf_scanners_)
       deduped_scanners_[scanner.display_name] = scanner;
+  }
+
+  // Resets |scanners_to_filter| by clearing it and repopulating it with
+  // zeroconf_scanners_ names.
+  void ResetScannersToFilter() {
+    scanners_to_filter_.clear();
+    scanners_to_filter_.reserve(zeroconf_scanners_.size());
+    for (const auto& scanner : zeroconf_scanners_)
+      scanners_to_filter_.push_back(scanner.display_name);
   }
 
   // Returns a map of IP addresses to the display names (lookup keys) of
@@ -422,9 +482,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   std::vector<chromeos::Scanner> zeroconf_scanners_;
 
   // Stores the deduplicated scanners from all sources in a map of display name
-  // to Scanner. Clients are given display names and can use them to interact
-  // with the corresponding scanners.
+  // to Scanner. Clients are given display names and can use them to
+  // interact with the corresponding scanners.
   base::flat_map<std::string, chromeos::Scanner> deduped_scanners_;
+
+  // Stores a list of scanner display names to check while filtering.
+  std::vector<std::string> scanners_to_filter_;
 
   SEQUENCE_CHECKER(sequence_);
 
