@@ -145,7 +145,7 @@ class WaylandWindowTest : public WaylandTest {
  protected:
   void SendConfigureEventPopup(WaylandWindow* menu_window,
                                const gfx::Rect bounds) {
-    auto* popup = GetTextXdgPopupByWindow(menu_window);
+    auto* popup = GetTestXdgPopupByWindow(menu_window);
     ASSERT_TRUE(popup);
     if (GetParam().shell_version == wl::ShellVersion::kV6) {
       zxdg_popup_v6_send_configure(popup->resource(), bounds.x(), bounds.y(),
@@ -219,7 +219,7 @@ class WaylandWindowTest : public WaylandTest {
 
   void VerifyXdgPopupPosition(WaylandWindow* menu_window,
                               const PopupPosition& position) {
-    auto* popup = GetTextXdgPopupByWindow(menu_window);
+    auto* popup = GetTestXdgPopupByWindow(menu_window);
     ASSERT_TRUE(popup);
 
     EXPECT_EQ(popup->anchor_rect(), position.anchor_rect);
@@ -260,7 +260,7 @@ class WaylandWindowTest : public WaylandTest {
       EXPECT_FALSE(window->CanDispatchEvent(&test_key_event));
   }
 
-  wl::TestXdgPopup* GetTextXdgPopupByWindow(WaylandWindow* window) {
+  wl::TestXdgPopup* GetTestXdgPopupByWindow(WaylandWindow* window) {
     wl::MockSurface* mock_surface = server_.GetObject<wl::MockSurface>(
         window->root_surface()->GetSurfaceId());
     if (mock_surface) {
@@ -2711,7 +2711,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
 
   Sync();
 
-  auto* test_popup = GetTextXdgPopupByWindow(popup.get());
+  auto* test_popup = GetTestXdgPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
   EXPECT_NE(test_popup->grab_serial(), button_release_serial);
   EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
@@ -2757,7 +2757,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
 
   Sync();
 
-  auto* test_popup = GetTextXdgPopupByWindow(popup.get());
+  auto* test_popup = GetTestXdgPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
 
   // Touch events are the exception. We can't use the serial that was sent
@@ -2778,7 +2778,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
 
   Sync();
 
-  test_popup = GetTextXdgPopupByWindow(popup.get());
+  test_popup = GetTestXdgPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
 
   EXPECT_EQ(test_popup->grab_serial(), touch_down_serial);
@@ -2834,7 +2834,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupIfNoSeat) {
 
   Sync();
 
-  auto* test_popup = GetTextXdgPopupByWindow(popup.get());
+  auto* test_popup = GetTestXdgPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
   EXPECT_EQ(test_popup->grab_serial(), 0u);
 }
