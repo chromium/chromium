@@ -373,9 +373,8 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onCancelButtonClicked_() {
-    // TODO(gavindodd): This should call abortRma
-    this.errorMessage_ = '';
-    this.loadState_(assert(this.initialState_));
+    this.shimlessRmaService_.abortRma().then(
+        (result) => this.handleError_(result.error));
   }
 };
 
