@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -278,6 +279,10 @@ const absl::optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty())
+    return absl::nullopt;
+
+  const WebApp* web_app = registrar()->GetAppById(app_id);
+  if (web_app && web_app->file_handler_permission_blocked())
     return absl::nullopt;
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);

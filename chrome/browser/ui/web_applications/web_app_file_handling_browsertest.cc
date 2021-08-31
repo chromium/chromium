@@ -199,7 +199,9 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   void SetFileHandlingPermission(ContentSetting setting) {
     auto* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING, setting);
+    map->SetContentSettingDefaultScope(GetSecureAppURL(), GetSecureAppURL(),
+                                       ContentSettingsType::FILE_HANDLING,
+                                       setting);
   }
 
   const AppId& app_id() { return app_id_; }
@@ -278,6 +280,8 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     web_contents_ = LaunchApplication(
         profile(), app_id, expected_launch_url, launch_container,
         apps::mojom::AppLaunchSource::kSourceFileHandler, files);
+    destroyed_watcher_ =
+        std::make_unique<content::WebContentsDestroyedWatcher>(web_contents_);
   }
 
   void VerifyPwaDidReceiveFileLaunchParams(
@@ -308,12 +312,14 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::WebContents* web_contents_ = nullptr;
+  std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+  // The URL used is the normal start URL.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
@@ -333,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_BLOCK);
   base::FilePath test_file_path = NewTestFilePath("txt");
-  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  // The URL used is the normal start URL.
+  LaunchWithFiles(app_id(), GetSecureAppURL(), {test_file_path});
 
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
@@ -392,7 +399,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 // Regression test for crbug.com/1126091
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   // Install an app where the file handling action page redirects.
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url =
@@ -410,6 +416,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+
+  // Note this must be called after the app is installed, as installing an app
+  // with new file handlers resets it.
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
 
   // The redirect points to handle_files.html, so wait till that navigation is
   // finished.
@@ -679,7 +689,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockAlways) {
   InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
                                                       /*accept=*/false);
-  VerifyPwaDidReceiveFileLaunchParams(false);
+  // Verify that the window is closed.
+  destroyed_watcher_->Wait();
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetFileHandlingPermission(GetSecureAppURL()));
 }
@@ -688,7 +699,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockOnce) {
   InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
                                                       /*accept=*/false);
-  VerifyPwaDidReceiveFileLaunchParams(false);
+  // Verify that the window is closed.
+  destroyed_watcher_->Wait();
   EXPECT_EQ(CONTENT_SETTING_ASK, GetFileHandlingPermission(GetSecureAppURL()));
 }
 

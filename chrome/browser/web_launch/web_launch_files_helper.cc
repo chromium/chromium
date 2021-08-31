@@ -200,9 +200,8 @@ void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
       permission_manager->RequestPermission(
           ContentSettingsType::FILE_HANDLING, frame, current_url,
           /*user_gesture=*/true,
-          base::BindOnce(
-              &WebLaunchFilesHelper::MaybeSendLaunchEntriesWithPermission,
-              weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&WebLaunchFilesHelper::OnPermissionRequestResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else if (passed_permission_check_) {
       // If the permission was checked and passed, and then a same-site
       // navigation (e.g. redirect) occurred, set the launch queue again.
@@ -214,14 +213,22 @@ void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
   }
 }
 
-void WebLaunchFilesHelper::MaybeSendLaunchEntriesWithPermission(
-    ContentSetting content_setting) {
-  passed_permission_check_ = content_setting == CONTENT_SETTING_ALLOW;
+void WebLaunchFilesHelper::OnPermissionRequestResponse(ContentSetting setting) {
+  passed_permission_check_ = setting == CONTENT_SETTING_ALLOW;
 
-  if (passed_permission_check_)
+  if (passed_permission_check_) {
     SendLaunchEntries();
-  else
-    web_contents()->RemoveUserData(UserDataKey());
+  } else {
+    // Close the app asynchronously since it deletes the `PermissionManager`.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&WebLaunchFilesHelper::CloseApp,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WebLaunchFilesHelper::CloseApp() {
+  web_contents()->Close();
+  // `this` is deleted.
 }
 
 void WebLaunchFilesHelper::SendLaunchEntries() {

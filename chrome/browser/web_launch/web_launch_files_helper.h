@@ -80,8 +80,10 @@ class WebLaunchFilesHelper
   // renderer is ready to receive them.
   void MaybeSendLaunchEntries();
 
-  // After a permission check, tries to send the launch entries to the renderer.
-  void MaybeSendLaunchEntriesWithPermission(ContentSetting content_setting);
+  void OnPermissionRequestResponse(ContentSetting content_setting);
+
+  // Closes the app window/tab.
+  void CloseApp();
 
   // Send the launch entries to the renderer.
   void SendLaunchEntries();
