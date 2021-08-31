@@ -6548,10 +6548,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kNearbySharingWebRtc)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"app-cache", flag_descriptions::kAppCacheName,
-     flag_descriptions::kAppCacheDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAppCache)},
-
     {"align-font-display-auto-lcp",
      flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalName,
      flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalDescription,
