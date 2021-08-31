@@ -2008,6 +2008,16 @@
     }
   },
   {
+    "pattern": [{ "pathname": "*" }],
+    "inputs": [ "foo", "data:data-urls-cannot-be-base-urls" ],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "*" }],
+    "inputs": [ "foo", "not|a|valid|url" ],
+    "expected_match": null
+  },
+  {
     "pattern": [ "https://foo\\:bar@example.com" ],
     "inputs": [ "https://foo:bar@example.com" ],
     "exactly_empty_components": [ "port", "search", "hash" ],
