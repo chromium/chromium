@@ -264,7 +264,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
             ],
             o);
 
-        // TODO(dmazzoni/dtseng): Replace with a query.
+        // TODO(dtseng): Replace with a query.
         el = el.nextSibling.nextSibling.nextSibling;
         const prevRange = range;
         range = cursors.Range.fromNode(el);

@@ -20,9 +20,8 @@ namespace ash {
 
 namespace {
 
-// The number of pixels the focus ring is outset from the object it outlines,
+// The number of DIPs the focus ring is outset from the object it outlines,
 // which also determines the border radius of the rounded corners.
-// TODO(dmazzoni): take display resolution into account.
 constexpr int kAccessibilityFocusRingMargin = 7;
 
 // Time to transition between one location and the next.

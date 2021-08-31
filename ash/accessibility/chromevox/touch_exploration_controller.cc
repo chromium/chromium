@@ -549,7 +549,6 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     ui::TouchEvent new_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
                              event.time_stamp(),
                              initial_press_->pointer_details(), event.flags());
-    // TODO(dmazzoni): fix for multiple displays. http://crbug.com/616793
     // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
     // screen coordinates.
     gfx::PointF location_f(ConvertDIPToPixels(anchor_point_dip_));

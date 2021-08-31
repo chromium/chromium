@@ -235,8 +235,6 @@ KeySequence = class {
     if (modifierKeyCombo.indexOf(metaKeyName) !== -1) {
       if (metaKeyName === 'Search') {
         this.keys.searchKeyHeld[index] = false;
-        // TODO(dmazzoni): http://crbug.com/404763 Get rid of the code that
-        // tracks the search key and just use meta everywhere.
         this.keys.metaKey[index] = false;
       } else if (metaKeyName === 'Cmd' || metaKeyName === 'Win') {
         this.keys.metaKey[index] = false;
