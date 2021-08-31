@@ -72,7 +72,7 @@ typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
 }
 
 - (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                         addedAcount:(BOOL)addedAccount
+                        addedAccount:(BOOL)addedAccount
                advancedSettingsShown:(BOOL)advancedSettingsShown {
   [super logSigninCompletedWithResult:signinResult
                          addedAccount:addedAccount
