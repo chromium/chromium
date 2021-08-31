@@ -26,8 +26,10 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request);
 // contains a over-length word and we calculate text breaks using
 // |length_limit| directly. The returned vector contains the indexes for the
 // breaks. For example, a [2, 4] vector means we should pass the utterance
-// "hello" as: "hel" and "lo".
-std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
+// "hello" as: "hel" and "lo". The |utterance| must not start with
+// whitespaces, and the caller might need to pre-trim the |utterance| before
+// calling this method.
+std::vector<uint16_t> FindTextBreaks(const std::u16string& utterance,
                                      const int length_limit);
 
 // Generate a response when encountering errors (e.g., server error, unexpected

@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
 #include "components/google/core/common/google_util.h"
@@ -42,7 +44,8 @@ EnhancedNetworkTtsImpl& EnhancedNetworkTtsImpl::GetInstance() {
 
 EnhancedNetworkTtsImpl::EnhancedNetworkTtsImpl()
     : api_key_(kApiKey.Get().empty() ? google_apis::GetReadAloudAPIKey()
-                                     : kApiKey.Get()) {}
+                                     : kApiKey.Get()),
+      char_limit_per_request_(mojom::kEnhancedNetworkTtsMaxCharacterSize) {}
 EnhancedNetworkTtsImpl::~EnhancedNetworkTtsImpl() = default;
 
 void EnhancedNetworkTtsImpl::BindReceiverAndURLFactory(
@@ -80,18 +83,48 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
     return;
   }
 
-  // TODO(crbug.com/1240445): Chop the utterance into text pieces, and queue
-  // them into the |server_requests_|. Currently we send the entire utterance
-  // as a single text piece.
-  std::unique_ptr<network::SimpleURLLoader> url_loader = MakeRequestLoader();
-  url_loader->AttachStringForUpload(FormatJsonRequest(std::move(request)),
-                                    kNetworkRequestUploadType);
-  server_requests_.emplace_back(std::move(url_loader),
-                                0 /* text_piece_start_index */,
-                                true /* is_last_request */);
+  std::u16string utterance_u16string = base::UTF8ToUTF16(request->utterance);
+  // Ignore the whitespaces at start. The ICU break iterator does not work well
+  // with text that has whitespaces at start. We must trim the text before
+  // sending it to |FindTextBreaks|.
+  int start_offset = 0;
+  while (base::IsUnicodeWhitespace(utterance_u16string[start_offset])) {
+    start_offset++;
+  }
+  utterance_u16string = utterance_u16string.substr(start_offset);
+
+  // Chop the utterance into smaller text pieces and queue them into
+  // |server_requests_|.
+  std::vector<uint16_t> text_breaks =
+      FindTextBreaks(utterance_u16string, char_limit_per_request_);
+  uint16_t text_piece_start_index = 0;
+  for (int i = 0; i < text_breaks.size(); i++) {
+    uint16_t text_piece_end_index = text_breaks[i];
+    auto size = text_piece_end_index - text_piece_start_index + 1;
+    const std::string text_piece = base::UTF16ToUTF8(
+        utterance_u16string.substr(text_piece_start_index, size));
+
+    mojom::TtsRequestPtr new_tts_request = mojom::TtsRequest::New(
+        text_piece, request->rate, request->voice, request->lang);
+    std::unique_ptr<network::SimpleURLLoader> url_loader = MakeRequestLoader();
+    const bool last_request = i == text_breaks.size() - 1;
+    url_loader->AttachStringForUpload(
+        FormatJsonRequest(std::move(new_tts_request)),
+        kNetworkRequestUploadType);
+    server_requests_.emplace_back(std::move(url_loader),
+                                  text_piece_start_index + start_offset,
+                                  last_request);
+
+    // Prepare for the next text piece.
+    text_piece_start_index = text_piece_end_index + 1;
+  }
 
   // Kick off the server requests.
   ProcessNextServerRequest();
+}
+
+void EnhancedNetworkTtsImpl::SetCharLimitPerRequestForTesting(int limit) {
+  char_limit_per_request_ = limit;
 }
 
 data_decoder::mojom::JsonParser* EnhancedNetworkTtsImpl::GetJsonParser() {

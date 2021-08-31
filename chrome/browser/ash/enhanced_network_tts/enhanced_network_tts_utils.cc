@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "ui/accessibility/ax_text_utils.h"
 
@@ -93,13 +93,18 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
   return json_request;
 }
 
-std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
+std::vector<uint16_t> FindTextBreaks(const std::u16string& utterance,
                                      const int length_limit) {
   std::vector<uint16_t> breaks;
   DCHECK_GT(length_limit, 0);
 
   if (utterance.empty())
     return breaks;
+
+  // The input utterance must be pre-trimmed so that it does not start with
+  // whitespaces. The ICU break iterator does not work well with text that
+  // has whitespaces at start.
+  DCHECK(!base::IsUnicodeWhitespace(utterance[0]));
 
   const int utterance_length = utterance.length();
   if (utterance_length <= length_limit) {
@@ -113,12 +118,9 @@ std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
     return breaks;
   }
 
-  const std::u16string utterance_u16string = base::UTF8ToUTF16(utterance);
-
-  std::vector<int> sentence_ends =
-      ui::GetSentenceEndOffsets(utterance_u16string);
+  std::vector<int> sentence_ends = ui::GetSentenceEndOffsets(utterance);
   ConvertOffsetsToIndexes(sentence_ends);
-  std::vector<int> word_ends = ui::GetWordEndOffsets(utterance_u16string);
+  std::vector<int> word_ends = ui::GetWordEndOffsets(utterance);
   ConvertOffsetsToIndexes(word_ends);
 
   const int sentence_ends_length = sentence_ends.size();
@@ -231,10 +233,14 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
         timing_info.FindStringPath("location.timeLocation.timeOffset");
     const std::string* timing_info_duration_ptr =
         timing_info.FindStringPath("location.timeLocation.duration");
-    // The first item in the timing_info_list does not have a text offset, we
-    // default that to 0.
-    const absl::optional<int> timing_info_text_offset =
-        i == 0 ? 0 : timing_info.FindIntPath("location.textLocation.offset");
+    // If the first item in the timing_info_list does not have a text offset,
+    // we default that to 0. If the first item starts with whitespaces, the
+    // server will send back the text offset for the item.
+    absl::optional<int> timing_info_text_offset =
+        timing_info.FindIntPath("location.textLocation.offset");
+    if (timing_info_text_offset == absl::nullopt && i == 0) {
+      timing_info_text_offset = 0;
+    }
 
     if (timing_info_text_offset == absl::nullopt || !timing_info_text_ptr ||
         !timing_info_timeoffset_ptr || !timing_info_duration_ptr) {
