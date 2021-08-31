@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -575,6 +576,8 @@ void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
                                               HRESULT hr) {
   DVLOG_FUNC(1) << "status=" << status << ", hr=" << hr;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  base::UmaHistogramSparse("Media.MediaFoundationRenderer.PlaybackError", hr);
 
   if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && cdm_proxy_)
     cdm_proxy_->OnHardwareContextReset();
