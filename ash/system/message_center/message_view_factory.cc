@@ -38,7 +38,6 @@ std::unique_ptr<message_center::MessageView> GetCustomNotificationView(
 // static
 std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
     const message_center::Notification& notification) {
-  std::unique_ptr<message_center::MessageView> notification_view;
   switch (notification.type()) {
     case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
     case message_center::NOTIFICATION_TYPE_IMAGE:
@@ -48,8 +47,7 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
       // Rely on default construction after the switch.
       break;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
-      notification_view = GetCustomNotificationView(notification);
-      break;
+      return GetCustomNotificationView(notification);
     default:
       // If the caller asks for an unrecognized kind of view (entirely possible
       // if an application is running on an older version of this code that
@@ -61,14 +59,10 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
                    << ". Falling back to simple notification type.";
       break;
   }
-  if (!notification_view) {
-    notification_view =
-        ash::features::IsNotificationsRefreshEnabled()
-            ? std::make_unique<AshNotificationView>(notification)
-            : std::make_unique<message_center::NotificationView>(notification);
-  }
-
-  return notification_view;
+  if (ash::features::IsNotificationsRefreshEnabled())
+    return std::make_unique<AshNotificationView>(notification);
+  else
+    return std::make_unique<message_center::NotificationView>(notification);
 }
 
 // static
