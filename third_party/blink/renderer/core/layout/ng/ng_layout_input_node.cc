@@ -200,3 +200,11 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
 }
 
 }  // namespace blink
+
+#if DCHECK_IS_ON()
+
+CORE_EXPORT void showLayoutTree(const blink::NGLayoutInputNode& node) {
+  showLayoutTree(node.GetLayoutBox());
+}
+
+#endif  // DCHECK_IS_ON()
