@@ -231,7 +231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="2021-08-09">
+    enum="ContextualSearchGestureIsTap" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2021-10-10">
+    enum="ContextualSearchGestureIsTap" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -277,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="2021-10-25">
+    enum="ContextualSearchGestureIsTap" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -290,7 +290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
-    enum="BooleanPreviouslyShown" expires_after="2021-12-26">
+    enum="BooleanPreviouslyShown" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -301,7 +301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
-    enum="BooleanOptedIn" expires_after="2021-10-25">
+    enum="BooleanOptedIn" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -808,7 +808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2021-10-04">
+    enum="ContextualSearchQuickActionCategory" expires_after="2022-04-04">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
