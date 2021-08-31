@@ -537,8 +537,21 @@ class AXPosition {
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
         return false;
-      case AXPositionKind::TREE_POSITION:
+      case AXPositionKind::TREE_POSITION: {
+        // Some element that can be exposed as an "object replacement
+        // character", can still have children (e.g. <select> element,
+        // role::kPopupButton). For such "object replacement character" tree
+        // position, we can only have a position before the anchor or at the end
+        // of the anchor. So if the |child_index_| is not BEFORE_TEXT (-1), we
+        // want to treat it as at the end of anchor. This also mirrors the
+        // definition in `CreatePositionAtEndOfAnchor`.
+        if (IsEmptyObjectReplacedByCharacter() && child_index_ != BEFORE_TEXT) {
+          DCHECK_EQ(child_index_, 0);
+          return true;
+        }
+
         return child_index_ == AnchorChildCount();
+      }
       case AXPositionKind::TEXT_POSITION:
         return text_offset_ == MaxTextOffset();
     }

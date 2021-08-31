@@ -5013,6 +5013,225 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
+TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+  // ++root_1
+  // ++++heading_2
+  // ++++++static_text_3 "heading 1"
+  // ++++++++inline_text_4 "heading 1"
+  // ++++popup_button_5 collapsed
+  // ++++++menu_list_popup_6 invisible
+  // ++++++++menu_list_option_7 "option 1"
+  // ++++heading_8
+  // ++++++static_text_9 "heading 2"
+  // ++++++++inline_text_10 "heading 2"
+  // ++++popup_button_11 collapsed
+  // ++++++menu_list_popup_12 invisible
+  // ++++++++menu_list_option_13 "option 2"
+  // ++++popup_button_14 collapsed
+  // ++++++menu_list_popup_15 invisible
+  // ++++++++menu_list_option_16 "option 3"
+  // ++++static_text_17 "more text"
+  // ++++++inline_text_18 "more text"
+
+  AXNodeData root_1;
+  root_1.id = 1;
+  root_1.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData heading_2;
+  heading_2.id = 2;
+  heading_2.role = ax::mojom::Role::kHeading;
+
+  AXNodeData static_text_3;
+  static_text_3.id = 3;
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("heading 1");
+
+  AXNodeData inline_text_4;
+  inline_text_4.id = 4;
+  inline_text_4.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_4.SetName("heading 1");
+
+  AXNodeData popup_button_5;
+  popup_button_5.id = 5;
+  popup_button_5.role = ax::mojom::Role::kPopUpButton;
+  popup_button_5.AddState(ax::mojom::State::kCollapsed);
+  popup_button_5.SetName("option 1");
+
+  AXNodeData menu_list_popup_6;
+  menu_list_popup_6.id = 6;
+  menu_list_popup_6.role = ax::mojom::Role::kMenuListPopup;
+  menu_list_popup_6.AddState(ax::mojom::State::kInvisible);
+
+  AXNodeData menu_list_option_7;
+  menu_list_option_7.id = 7;
+  menu_list_option_7.role = ax::mojom::Role::kMenuListOption;
+  menu_list_option_7.AddState(ax::mojom::State::kInvisible);
+  menu_list_option_7.SetName("option 1");
+
+  AXNodeData heading_8;
+  heading_8.id = 8;
+  heading_8.role = ax::mojom::Role::kHeading;
+
+  AXNodeData static_text_9;
+  static_text_9.id = 9;
+  static_text_9.role = ax::mojom::Role::kStaticText;
+  static_text_9.SetName("heading 2");
+
+  AXNodeData inline_text_10;
+  inline_text_10.id = 10;
+  inline_text_10.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_10.SetName("heading 2");
+
+  AXNodeData popup_button_11;
+  popup_button_11.id = 11;
+  popup_button_11.role = ax::mojom::Role::kPopUpButton;
+  popup_button_11.AddState(ax::mojom::State::kCollapsed);
+  popup_button_11.SetName("option 2");
+
+  AXNodeData menu_list_popup_12;
+  menu_list_popup_12.id = 12;
+  menu_list_popup_12.role = ax::mojom::Role::kMenuListPopup;
+  menu_list_popup_12.AddState(ax::mojom::State::kInvisible);
+
+  AXNodeData menu_list_option_13;
+  menu_list_option_13.id = 13;
+  menu_list_option_13.role = ax::mojom::Role::kMenuListOption;
+  menu_list_option_13.AddState(ax::mojom::State::kInvisible);
+  menu_list_option_13.SetName("option 2");
+
+  AXNodeData popup_button_14;
+  popup_button_14.id = 14;
+  popup_button_14.role = ax::mojom::Role::kPopUpButton;
+  popup_button_14.AddState(ax::mojom::State::kCollapsed);
+  popup_button_14.SetName("option 3");
+
+  AXNodeData menu_list_popup_15;
+  menu_list_popup_15.id = 15;
+  menu_list_popup_15.role = ax::mojom::Role::kMenuListPopup;
+  menu_list_popup_15.AddState(ax::mojom::State::kInvisible);
+
+  AXNodeData menu_list_option_16;
+  menu_list_option_16.id = 16;
+  menu_list_option_16.role = ax::mojom::Role::kMenuListOption;
+  menu_list_option_16.AddState(ax::mojom::State::kInvisible);
+  menu_list_option_16.SetName("option 3");
+
+  AXNodeData static_text_17;
+  static_text_17.id = 17;
+  static_text_17.role = ax::mojom::Role::kStaticText;
+  static_text_17.SetName("more text");
+
+  AXNodeData inline_text_18;
+  inline_text_18.id = 18;
+  inline_text_18.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_18.SetName("more text");
+
+  root_1.child_ids = {heading_2.id,       popup_button_5.id,
+                      heading_8.id,       popup_button_11.id,
+                      popup_button_14.id, static_text_17.id};
+  heading_2.child_ids = {static_text_3.id};
+  static_text_3.child_ids = {inline_text_4.id};
+
+  popup_button_5.child_ids = {menu_list_popup_6.id};
+  menu_list_popup_6.child_ids = {menu_list_option_7.id};
+
+  heading_8.child_ids = {static_text_9.id};
+  static_text_9.child_ids = {inline_text_10.id};
+
+  popup_button_11.child_ids = {menu_list_popup_12.id};
+  menu_list_popup_12.child_ids = {menu_list_option_13.id};
+
+  popup_button_14.child_ids = {menu_list_popup_15.id};
+  menu_list_popup_15.child_ids = {menu_list_option_16.id};
+
+  static_text_17.child_ids = {inline_text_18.id};
+
+  SetTree(CreateAXTree(
+      {root_1, heading_2, static_text_3, inline_text_4, popup_button_5,
+       menu_list_popup_6, menu_list_option_7, heading_8, static_text_9,
+       inline_text_10, popup_button_11, menu_list_popup_12, menu_list_option_13,
+       popup_button_14, menu_list_popup_15, menu_list_option_16, static_text_17,
+       inline_text_18}));
+
+  // Creating initial text position at "<h>eading 1...".
+  TestPositionType text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_text_4.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  // Move position to end of format at "heading 1<>|select, option 1|...", which
+  // is at the end of "heading 1".
+  TestPositionType format_end_position =
+      text_position->CreateNextFormatEndPosition(
+          AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_4.id, format_end_position->anchor_id());
+  EXPECT_EQ(9, format_end_position->text_offset());
+  EXPECT_EQ("heading 1", format_end_position->GetAnchor()->GetStringAttribute(
+                             ax::mojom::StringAttribute::kName));
+
+  // Move position to end of format at "heading 1|select, option 1|<>...", which
+  // is at the end of embedded object <select, option 1> (popup_button_5).
+  format_end_position = format_end_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(popup_button_5.id, format_end_position->anchor_id());
+  EXPECT_EQ(1, format_end_position->text_offset());
+  EXPECT_EQ("option 1", format_end_position->GetAnchor()->GetStringAttribute(
+                            ax::mojom::StringAttribute::kName));
+
+  // Move position to end of format at "...|select, option 1|heading 2<>...",
+  // which is at the end of "heading 2".
+  format_end_position = format_end_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_10.id, format_end_position->anchor_id());
+  EXPECT_EQ(9, format_end_position->text_offset());
+  EXPECT_EQ("heading 2", format_end_position->GetAnchor()->GetStringAttribute(
+                             ax::mojom::StringAttribute::kName));
+
+  // Move position to end of format at
+  // "...heading 2|select, option 2|<>|select, option 3|...", which is at the
+  // end of embedded object <select, option 2> (popup_button_11).
+  format_end_position = format_end_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(popup_button_11.id, format_end_position->anchor_id());
+  EXPECT_EQ(1, format_end_position->text_offset());
+  EXPECT_EQ("option 2", format_end_position->GetAnchor()->GetStringAttribute(
+                            ax::mojom::StringAttribute::kName));
+
+  // Move position to end of format at
+  // "...heading 2|select, option 2||select, option 3|<>...", which is at the
+  // end of embedded object <select, option 3> (popup_button_14).
+  format_end_position = format_end_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(popup_button_14.id, format_end_position->anchor_id());
+  EXPECT_EQ(1, format_end_position->text_offset());
+  EXPECT_EQ("option 3", format_end_position->GetAnchor()->GetStringAttribute(
+                            ax::mojom::StringAttribute::kName));
+
+  // Move position to end of format at "...|select, option 3|more text<>", which
+  // is at the end of "more text".
+  format_end_position = format_end_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::StopAtLastAnchorBoundary);
+  ASSERT_NE(nullptr, format_end_position);
+  EXPECT_TRUE(format_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_18.id, format_end_position->anchor_id());
+  EXPECT_EQ(9, format_end_position->text_offset());
+  EXPECT_EQ("more text", format_end_position->GetAnchor()->GetStringAttribute(
+                             ax::mojom::StringAttribute::kName));
+}
+
 TEST_F(AXPositionTest, CreatePositionAtFormatBoundaryWithTextPosition) {
   // This test updates the tree structure to test a specific edge case -
   // CreatePositionAtFormatBoundary when text lies at the beginning and end
