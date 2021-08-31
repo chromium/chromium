@@ -19,16 +19,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
@@ -148,30 +147,17 @@ public class TabGroupUiViewBinderTest extends DummyUiChromeActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetTint() {
-        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(getActivity(), true);
-        Assert.assertNotEquals(tint, mLeftButton.getImageTintList());
-        Assert.assertNotEquals(tint, mRightButton.getImageTintList());
+    public void testSetIncognito() {
+        mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
+        @ColorInt
+        int lightColor = ((ColorDrawable) mMainContent.getBackground()).getColor();
+        ColorStateList lightRightImageTint = mRightButton.getImageTintList();
+        ColorStateList lightLeftImageTint = mLeftButton.getImageTintList();
 
-        mModel.set(TabGroupUiProperties.TINT, tint);
-
-        Assert.assertEquals(tint, mLeftButton.getImageTintList());
-        Assert.assertEquals(tint, mRightButton.getImageTintList());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testSetPrimaryColor() {
-        int colorGrey = R.color.modern_grey_300;
-        int colorBlue = R.color.modern_blue_300;
-
-        mModel.set(TabGroupUiProperties.PRIMARY_COLOR, colorGrey);
-        int greyDrawableId = ((ColorDrawable) mMainContent.getBackground()).getColor();
-        mModel.set(TabGroupUiProperties.PRIMARY_COLOR, colorBlue);
-        int blueDrawableId = ((ColorDrawable) mMainContent.getBackground()).getColor();
-
-        assertNotEquals(greyDrawableId, blueDrawableId);
+        mModel.set(TabGroupUiProperties.IS_INCOGNITO, true);
+        assertNotEquals(lightColor, ((ColorDrawable) mMainContent.getBackground()).getColor());
+        assertNotEquals(lightRightImageTint, mLeftButton.getImageTintList());
+        assertNotEquals(lightLeftImageTint, mRightButton.getImageTintList());
     }
 
     @Test

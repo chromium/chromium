@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -40,7 +42,6 @@ import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.ReasonToShow;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -106,10 +107,9 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
     private final TabCreatorManager mTabCreatorManager;
     private final BottomControlsCoordinator
             .BottomControlsVisibilityController mVisibilityController;
-    private final ThemeColorProvider mThemeColorProvider;
+    private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabGridDialogMediator.DialogController mTabGridDialogController;
-    private final ThemeColorProvider.ThemeColorObserver mThemeColorObserver;
-    private final ThemeColorProvider.TintObserver mTintObserver;
+    private final IncognitoStateObserver mIncognitoStateObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final SnackbarManager mSnackbarManager;
@@ -133,7 +133,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             ResetHandler resetHandler, PropertyModel model, TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             @Nullable TabGridDialogMediator.DialogController dialogController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SnackbarManager snackbarManager,
@@ -144,7 +144,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
         mVisibilityController = visibilityController;
-        mThemeColorProvider = themeColorProvider;
+        mIncognitoStateProvider = incognitoStateProvider;
         mTabGridDialogController = dialogController;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mSnackbarManager = snackbarManager;
@@ -368,9 +368,9 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
         }
 
-        mThemeColorObserver =
-                (color, shouldAnimate) -> mModel.set(TabGroupUiProperties.PRIMARY_COLOR, color);
-        mTintObserver = (tint, useLight) -> mModel.set(TabGroupUiProperties.TINT, tint);
+        mIncognitoStateObserver = (isIncognito) -> {
+            mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);
+        };
 
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -381,10 +381,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                     mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
                 }));
 
-        mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
-        mThemeColorProvider.addTintObserver(mTintObserver);
-        mModel.set(TabGroupUiProperties.PRIMARY_COLOR, mThemeColorProvider.getThemeColor());
-        mModel.set(TabGroupUiProperties.TINT, mThemeColorProvider.getTint());
+        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
 
         setupToolbarButtons();
         mModel.set(TabGroupUiProperties.IS_MAIN_CONTENT_VISIBLE, true);
@@ -564,8 +561,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         if (mOmniboxFocusObserver != null) {
             mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
         }
-        mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
-        mThemeColorProvider.removeTintObserver(mTintObserver);
+        mIncognitoStateProvider.removeObserver(mIncognitoStateObserver);
     }
 
     private void maybeActivateConditionalTabStrip(@ReasonToShow int reason) {

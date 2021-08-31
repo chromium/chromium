@@ -1174,7 +1174,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void enableBottomControls() {
         View root = ((ViewStub) mActivity.findViewById(R.id.bottom_controls_stub)).inflate();
         mTabGroupUi = TabManagementModuleProvider.getDelegate().createTabGroupUi(mActivity,
-                root.findViewById(R.id.bottom_container_slot), mAppThemeColorProvider,
+                root.findViewById(R.id.bottom_container_slot), mIncognitoStateProvider,
                 mScrimCoordinator, mOmniboxFocusStateSupplier, mBottomSheetController,
                 mActivityLifecycleDispatcher, mIsWarmOnResumeSupplier, mTabModelSelector,
                 mTabContentManager, mCompositorViewHolder,
@@ -1184,7 +1184,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 new BottomControlsCoordinator(mActivity, mWindowAndroid, mLayoutManager,
                         mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,
                         mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root,
-                        mAppThemeColorProvider, mTabGroupUi, mOverlayPanelVisibilitySupplier));
+                        mTabGroupUi, mOverlayPanelVisibilitySupplier));
     }
 
     /**
