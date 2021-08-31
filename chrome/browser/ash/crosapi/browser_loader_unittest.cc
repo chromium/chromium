@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -142,14 +143,27 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
 }
 
 TEST_F(BrowserLoaderTest, OnLoadVersionSelectionStateful) {
+  // Use stateful when a rootfs lacros-chrome version is invalid.
+  bool callback_called = false;
+  fake_upstart_client_.set_start_job_cb(base::BindRepeating(
+      [](bool* b, const std::string& job,
+         const std::vector<std::string>& upstart_env) {
+        *b = true;
+        return true;
+      },
+      &callback_called));
   // Pass in an invalid `base::Version`.
-  browser_loader_->OnLoadVersionSelection({}, {});
+  browser_loader_->OnLoadVersionSelection({}, base::Version());
+  EXPECT_FALSE(callback_called);
 }
 
 TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfs) {
+  std::u16string lacros_component_name =
+      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
-          {kLacrosComponentName, "", {}, base::Version("1.0.0")}}));
+          {kLacrosComponentId, "", lacros_component_name,
+           base::Version("1.0.0")}}));
 
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
@@ -171,9 +185,13 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfs) {
 }
 
 TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
+  // Use stateful when a rootfs lacros-chrome version is older.
+  std::u16string lacros_component_name =
+      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
-          {kLacrosComponentName, "", {}, base::Version("3.0.0")}}));
+          {kLacrosComponentId, "", lacros_component_name,
+           base::Version("3.0.0")}}));
 
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
