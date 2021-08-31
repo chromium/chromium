@@ -81,20 +81,27 @@ void OnIntentPickerClosed(
 // case also when navigation deferred and then resumed
 void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  if (!ShouldCheckAppsForUrl(web_contents)) {
-    return;
-  }
 
 // TODO(crbug.com/824598): Store the apps that is found in
 // intent_picker_tab_helper and update the icon visibility and apps if there is
 // app installed or uninstalled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ShouldCheckAppsForUrl(web_contents))
+    return;
+
   MaybeShowIntentPickerAsh(navigation_handle);
 #else
-  const GURL& url = navigation_handle->GetURL();
+  MaybeShowIntentPicker(web_contents);
+#endif
+}
+
+void MaybeShowIntentPicker(content::WebContents* web_contents) {
+  if (!ShouldCheckAppsForUrl(web_contents))
+    return;
+
+  const GURL& url = web_contents->GetLastCommittedURL();
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
   IntentPickerTabHelper::SetShouldShowIcon(web_contents, !apps.empty());
-#endif
 }
 
 void ShowIntentPickerBubble(content::WebContents* web_contents,
