@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -77,6 +78,9 @@ constexpr double kMinZoom = 0.01;
 // A delay to wait between each accessibility page to keep the system
 // responsive.
 constexpr base::TimeDelta kAccessibilityPageDelay =
+    base::TimeDelta::FromMilliseconds(100);
+
+constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
 
 constexpr char kChromePrintHost[] = "chrome://print/";
@@ -242,6 +246,40 @@ void PdfViewPluginBase::NavigateToDestination(int page,
   if (zoom)
     message.SetDoubleKey("zoom", *zoom);
   SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::UpdateTickMarks(
+    const std::vector<gfx::Rect>& tickmarks) {
+  float inverse_scale = 1.0f / device_scale_;
+  tickmarks_.clear();
+  tickmarks_.reserve(tickmarks.size());
+  std::transform(tickmarks.begin(), tickmarks.end(),
+                 std::back_inserter(tickmarks_),
+                 [inverse_scale](const gfx::Rect& t) -> gfx::Rect {
+                   return gfx::ScaleToEnclosingRect(t, inverse_scale);
+                 });
+}
+
+void PdfViewPluginBase::NotifyNumberOfFindResultsChanged(int total,
+                                                         bool final_result) {
+  // We don't want to spam the renderer with too many updates to the number of
+  // find results. Don't send an update if we sent one too recently. If it's the
+  // final update, we always send it though.
+  if (recently_sent_find_update_ && !final_result)
+    return;
+
+  NotifyFindResultsChanged(total, final_result);
+  NotifyFindTickmarks(tickmarks_);
+
+  if (final_result)
+    return;
+
+  recently_sent_find_update_ = true;
+  ScheduleTaskOnMainThread(
+      FROM_HERE,
+      base::BindOnce(&PdfViewPluginBase::ResetRecentlySentFindUpdate,
+                     GetWeakPtr()),
+      /*result=*/0, kFindResultCooldown);
 }
 
 void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
@@ -940,6 +978,8 @@ void PdfViewPluginBase::SelectFindResult(bool forward) {
 
 void PdfViewPluginBase::StopFind() {
   engine_->StopFind();
+  tickmarks_.clear();
+  NotifyFindTickmarks(tickmarks_);
 }
 
 void PdfViewPluginBase::SetZoom(double scale) {
@@ -1510,6 +1550,11 @@ void PdfViewPluginBase::LoadAccessibility() {
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr()),
       /*result=*/0, kAccessibilityPageDelay);
+}
+
+void PdfViewPluginBase::ResetRecentlySentFindUpdate(
+    int32_t /*unused_but_required*/) {
+  recently_sent_find_update_ = false;
 }
 
 namespace {

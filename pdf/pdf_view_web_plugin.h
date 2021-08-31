@@ -198,8 +198,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
-  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
-  void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
@@ -262,6 +260,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
+  void NotifyFindResultsChanged(int total, bool final_result) override;
+  void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
   void PluginDidStartLoading() override;

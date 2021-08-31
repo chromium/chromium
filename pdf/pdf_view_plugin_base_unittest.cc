@@ -214,6 +214,13 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (const AccessibilityViewportInfo&),
               (override));
 
+  MOCK_METHOD(void, NotifyFindResultsChanged, (int, bool), (override));
+
+  MOCK_METHOD(void,
+              NotifyFindTickmarks,
+              (const std::vector<gfx::Rect>&),
+              (override));
+
   MOCK_METHOD(void, SetContentRestrictions, (int), (override));
 
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));

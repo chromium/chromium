@@ -89,8 +89,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
-  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
-  void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void Alert(const std::string& message) override;
@@ -134,6 +132,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
+  void NotifyFindResultsChanged(int total, bool final_result) override;
+  void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
   void PluginDidStartLoading() override;
@@ -148,10 +148,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:
-  void NotifyFindResultsChanged(int total, bool final_result);
-  void NotifyFindTickmarks();
-  void ResetRecentlySentFindUpdate(int32_t);
-
   bool CanSaveEdits() const;
 
   void FormDidOpen(int32_t result);
@@ -166,13 +162,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // TODO(abodenha@chromium.org) Implement full IME support in the plugin.
   // http://crbug.com/132565
   std::unique_ptr<pp::TextInput_Dev> text_input_;
-
-  // Whether an update to the number of find results found was sent less than
-  // `kFindResultCooldownMs` milliseconds ago.
-  bool recently_sent_find_update_ = false;
-
-  // The tickmarks.
-  std::vector<gfx::Rect> tickmarks_;
 
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };

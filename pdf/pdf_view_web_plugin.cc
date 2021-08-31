@@ -572,8 +572,6 @@ void PdfViewWebPlugin::SelectFindResult(bool forward, int identifier) {
 void PdfViewWebPlugin::StopFind() {
   find_identifier_ = -1;
   PdfViewPluginBase::StopFind();
-  // TODO(crbug.com/1199999): Clear tickmarks on scroller when find is
-  // dismissed.
 }
 
 bool PdfViewWebPlugin::CanRotateView() {
@@ -599,22 +597,6 @@ blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
   set_cursor_type(new_cursor_type);
-}
-
-void PdfViewWebPlugin::UpdateTickMarks(
-    const std::vector<gfx::Rect>& tickmarks) {}
-
-void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
-                                                        bool final_result) {
-  // After stopping search and setting `find_identifier_` to -1 there still may
-  // be a NotifyNumberOfFindResultsChanged notification pending from engine.
-  // Just ignore them.
-  if (find_identifier_ == -1 || !container_wrapper_)
-    return;
-
-  container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
-                                                 final_result);
-  // TODO(crbug.com/1199999): Set tickmarks on scroller.
 }
 
 void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
@@ -806,6 +788,23 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
   if (!pdf_accessibility_data_handler_)
     return;
   pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
+}
+
+void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
+  // After stopping search and setting `find_identifier_` to -1 there still may
+  // be a NotifyNumberOfFindResultsChanged notification pending from engine.
+  // Just ignore them.
+  if (find_identifier_ == -1 || !container_wrapper_)
+    return;
+
+  container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
+                                                 final_result);
+}
+void PdfViewWebPlugin::NotifyFindTickmarks(
+    const std::vector<gfx::Rect>& tickmarks) {
+  // TODO(crbug.com/1199999): Notify the frame about the tickmarks for the
+  // find request.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
