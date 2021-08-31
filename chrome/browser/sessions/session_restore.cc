@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/url_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -188,7 +187,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       // properly. If we don't wait, it's possible that apps are restored in
       // an incoherent state.
       web_app::WebAppProvider* provider =
-          web_app::WebAppProviderFactory::GetForProfile(profile_);
+          web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
       DCHECK(provider);
 
       provider->on_registry_ready().Post(
