@@ -2610,19 +2610,6 @@ static bool LayerNodeMayNeedCompositedScrolling(const PaintLayer* layer) {
 
 bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
-#if DCHECK_IS_ON()
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    DCHECK_EQ(DocumentLifecycle::kInPrePaint,
-              GetDocument()->Lifecycle().GetState());
-  } else {
-    DCHECK(GetDocument()->Lifecycle().GetState() ==
-               DocumentLifecycle::kInCompositingInputsUpdate ||
-           GetDocument()->Lifecycle().GetState() ==
-               DocumentLifecycle::kInCompositingAssignmentsUpdate)
-        << " " << GetDocument()->Lifecycle().ToString();
-  }
-#endif
-
   const auto* box = GetLayoutBox();
   non_composited_main_thread_scrolling_reasons_ = 0;
   auto new_background_paint_location =
@@ -2706,6 +2693,19 @@ bool PaintLayerScrollableArea::UsesCompositedScrolling() const {
 
 void PaintLayerScrollableArea::UpdateNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
+#if DCHECK_IS_ON()
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    DCHECK_EQ(DocumentLifecycle::kInPrePaint,
+              GetDocument()->Lifecycle().GetState());
+  } else {
+    DCHECK(GetDocument()->Lifecycle().GetState() ==
+               DocumentLifecycle::kInCompositingInputsUpdate ||
+           GetDocument()->Lifecycle().GetState() ==
+               DocumentLifecycle::kInCompositingAssignmentsUpdate)
+        << " " << GetDocument()->Lifecycle().ToString();
+  }
+#endif
+
   bool new_needs_composited_scrolling =
       ComputeNeedsCompositedScrolling(force_prefer_compositing_to_lcd_text);
   if (new_needs_composited_scrolling == needs_composited_scrolling_)

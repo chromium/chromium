@@ -491,6 +491,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void UpdateNeedsCompositedScrolling(
       bool force_prefer_compositing_to_lcd_text);
   bool NeedsCompositedScrolling() const { return needs_composited_scrolling_; }
+#if DCHECK_IS_ON()
+  void CheckNeedsCompositedScrollingIsUpToDate(
+      bool force_prefer_compositing_to_lcd_text) {
+    DCHECK_EQ(
+        needs_composited_scrolling_,
+        ComputeNeedsCompositedScrolling(force_prefer_compositing_to_lcd_text));
+  }
+#endif
 
   IntRect ResizerCornerRect(ResizerHitTestType) const;
 

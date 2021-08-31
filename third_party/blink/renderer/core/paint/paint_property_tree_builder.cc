@@ -3889,19 +3889,27 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
 }
 
 PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
-  // This is not inherited from the parent context and we always recalculate it.
+  // These are not inherited from the parent context but calculated here.
   context_.direct_compositing_reasons =
-      CompositingReasonFinder::DirectReasonsForPaintProperties(object_);
-  context_.was_layout_shift_root =
-      IsLayoutShiftRoot(object_, object_.FirstFragment());
+      CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
+          object_);
   context_.was_main_thread_scrolling = false;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      IsA<LayoutBox>(object_)) {
-    if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea()) {
-      context_.was_main_thread_scrolling =
-          scrollable_area->ShouldScrollOnMainThread();
+  if (const auto* box = DynamicTo<LayoutBox>(object_)) {
+    if (auto* scrollable_area = box->GetScrollableArea()) {
+      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+        scrollable_area->UpdateNeedsCompositedScrolling(
+            CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
+                object_, context_.direct_compositing_reasons));
+        context_.was_main_thread_scrolling =
+            scrollable_area->ShouldScrollOnMainThread();
+      }
+      context_.direct_compositing_reasons =
+          CompositingReasonFinder::DirectReasonsForPaintProperties(
+              object_, context_.direct_compositing_reasons);
     }
   }
+  context_.was_layout_shift_root =
+      IsLayoutShiftRoot(object_, object_.FirstFragment());
 
   UpdatePaintingLayer();
 
