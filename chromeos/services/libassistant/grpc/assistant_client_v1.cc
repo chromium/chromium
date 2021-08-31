@@ -13,14 +13,17 @@
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
+#include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/internal_api/display_connection.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
+#include "libassistant/shared/public/media_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -229,6 +232,22 @@ void AssistantClientV1::AddDisplayEventObserver(
     GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
   display_connection_->SetObserver(observer);
   assistant_manager_internal()->SetDisplayConnection(display_connection_.get());
+}
+
+void AssistantClientV1::ResumeCurrentStream() {
+  assistant_manager()->GetMediaManager()->Resume();
+}
+
+void AssistantClientV1::PauseCurrentStream() {
+  assistant_manager()->GetMediaManager()->Pause();
+}
+
+void AssistantClientV1::SetExternalPlaybackState(
+    const MediaStatus& status_proto) {
+  assistant_client::MediaStatus media_status;
+  ConvertMediaStatusToV1FromV2(status_proto, &media_status);
+  assistant_manager()->GetMediaManager()->SetExternalPlaybackState(
+      media_status);
 }
 
 void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(

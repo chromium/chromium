@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantClientObserver
   virtual void OnDestroyingAssistantClient(AssistantClient* assistant_client) {}
 
   // Called when the |AssistantClient| has been destroyed.
-  virtual void OnAssistantManagerDestroyed() {}
+  virtual void OnAssistantClientDestroyed() {}
 };
 
 }  // namespace libassistant

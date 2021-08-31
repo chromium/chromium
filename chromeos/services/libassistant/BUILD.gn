@@ -26,7 +26,10 @@ component("libassistant") {
     "libassistant_service.h",
   ]
 
-  public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/services/libassistant/public/mojom",
+  ]
 
   deps = [
     ":internal",
@@ -215,12 +218,14 @@ source_set("test_support") {
   ]
 
   deps = [
+    ":callback_utils",
     ":internal",
     ":libassistant",
     "//base/test:test_support",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/public",
     "//services/network:test_support",
   ]
 }

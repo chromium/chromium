@@ -4,6 +4,8 @@
 
 source_set("assistant_client") {
   sources = [
+    "./utils/media_status_utils.cc",
+    "./utils/media_status_utils.h",
     "assistant_client.cc",
     "assistant_client.h",
     "assistant_client_impl.cc",

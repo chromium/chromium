@@ -207,7 +207,7 @@ void ServiceController::Stop() {
   device_state_listener_ = nullptr;
 
   for (auto& observer : assistant_client_observers_)
-    observer.OnAssistantManagerDestroyed();
+    observer.OnAssistantClientDestroyed();
 
   DVLOG(1) << "Stopped Libassistant service";
 }

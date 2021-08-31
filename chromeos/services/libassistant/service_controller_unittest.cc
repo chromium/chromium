@@ -92,7 +92,7 @@ class AssistantClientObserverMock : public AssistantClientObserver {
   MOCK_METHOD(void,
               OnDestroyingAssistantClient,
               (AssistantClient * assistant_client));
-  MOCK_METHOD(void, OnAssistantManagerDestroyed, ());
+  MOCK_METHOD(void, OnAssistantClientDestroyed, ());
 };
 
 class SettingsControllerMock : public mojom::SettingsController {
@@ -571,7 +571,7 @@ TEST_F(AssistantServiceControllerTest,
                      service_controller()](AssistantClient* assistant_client) {
         EXPECT_EQ(assistant_client, controller.assistant_client());
       });
-  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
+  EXPECT_CALL(observer, OnAssistantClientDestroyed);
 
   Stop();
 
@@ -587,7 +587,7 @@ TEST_F(AssistantServiceControllerTest,
   EXPECT_NO_CALLS(observer, OnAssistantClientCreated);
   EXPECT_NO_CALLS(observer, OnAssistantClientStarted);
   EXPECT_NO_CALLS(observer, OnDestroyingAssistantClient);
-  EXPECT_NO_CALLS(observer, OnAssistantManagerDestroyed);
+  EXPECT_NO_CALLS(observer, OnAssistantClientDestroyed);
 
   Initialize();
   Start();
@@ -607,7 +607,7 @@ TEST_F(AssistantServiceControllerTest,
   AddAndFireAssistantClientObserver(&observer);
 
   EXPECT_CALL(observer, OnDestroyingAssistantClient);
-  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
+  EXPECT_CALL(observer, OnAssistantClientDestroyed);
   DestroyServiceController();
 }
 

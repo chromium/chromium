@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
@@ -48,6 +49,9 @@ class AssistantClientV1 : public AssistantClient {
   void OnDisplayRequest(const OnDisplayRequestRequest& request) override;
   void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
+  void ResumeCurrentStream() override;
+  void PauseCurrentStream() override;
+  void SetExternalPlaybackState(const MediaStatus& status_proto) override;
 
  private:
   class DisplayConnectionImpl;

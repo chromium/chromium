@@ -5,6 +5,8 @@
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 
 #include "base/callback.h"
+#include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
+#include "libassistant/shared/public/media_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -58,6 +60,22 @@ void FakeAssistantClient::OnDisplayRequest(
 
 void FakeAssistantClient::AddDisplayEventObserver(
     GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {}
+
+void FakeAssistantClient::ResumeCurrentStream() {
+  assistant_manager()->GetMediaManager()->Resume();
+}
+
+void FakeAssistantClient::PauseCurrentStream() {
+  assistant_manager()->GetMediaManager()->Pause();
+}
+
+void FakeAssistantClient::SetExternalPlaybackState(
+    const MediaStatus& status_proto) {
+  assistant_client::MediaStatus media_status;
+  ConvertMediaStatusToV1FromV2(status_proto, &media_status);
+  assistant_manager()->GetMediaManager()->SetExternalPlaybackState(
+      media_status);
+}
 
 }  // namespace libassistant
 }  // namespace chromeos

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 
 namespace assistant {
@@ -53,6 +54,7 @@ class AssistantClient {
       ::assistant::api::events::SpeakerIdEnrollmentEvent;
   using OnSpeakerIdEnrollmentEventRequest =
       ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
+  using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
 
   // Display:
   using OnAssistantDisplayEventRequest =
@@ -105,6 +107,13 @@ class AssistantClient {
   virtual void OnDisplayRequest(const OnDisplayRequestRequest& request) = 0;
   virtual void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) = 0;
+
+  // Media methods.
+  virtual void ResumeCurrentStream() = 0;
+  virtual void PauseCurrentStream() = 0;
+  // Sets the current media status of media playing outside of libassistant.
+  // Setting external state will stop any internally playing media.
+  virtual void SetExternalPlaybackState(const MediaStatus& status_proto) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {
