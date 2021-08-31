@@ -20,12 +20,16 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
                 const NGPhysicalBoxFragment& physical_fragment)
       : NGFragment(writing_direction, physical_fragment) {}
 
+  const NGPhysicalBoxFragment& PhysicalBoxFragment() const {
+    return To<NGPhysicalBoxFragment>(physical_fragment_);
+  }
+
   absl::optional<LayoutUnit> FirstBaseline() const {
     if (writing_direction_.GetWritingMode() !=
         physical_fragment_.Style().GetWritingMode())
       return absl::nullopt;
 
-    return To<NGPhysicalBoxFragment>(physical_fragment_).Baseline();
+    return PhysicalBoxFragment().Baseline();
   }
 
   LayoutUnit FirstBaselineOrSynthesize() const {
@@ -48,11 +52,10 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
         physical_fragment_.Style().GetWritingMode())
       return absl::nullopt;
 
-    if (auto last_baseline =
-            To<NGPhysicalBoxFragment>(physical_fragment_).LastBaseline())
+    if (auto last_baseline = PhysicalBoxFragment().LastBaseline())
       return last_baseline;
 
-    return To<NGPhysicalBoxFragment>(physical_fragment_).Baseline();
+    return PhysicalBoxFragment().Baseline();
   }
 
   LayoutUnit BaselineOrSynthesize() const {
@@ -75,21 +78,17 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   FontHeight BaselineMetrics(const NGLineBoxStrut& margins, FontBaseline) const;
 
   NGBoxStrut Borders() const {
-    const NGPhysicalBoxFragment& physical_box_fragment =
-        To<NGPhysicalBoxFragment>(physical_fragment_);
-    return physical_box_fragment.Borders().ConvertToLogical(writing_direction_);
+    return PhysicalBoxFragment().Borders().ConvertToLogical(writing_direction_);
   }
   NGBoxStrut Padding() const {
-    const NGPhysicalBoxFragment& physical_box_fragment =
-        To<NGPhysicalBoxFragment>(physical_fragment_);
-    return physical_box_fragment.Padding().ConvertToLogical(writing_direction_);
+    return PhysicalBoxFragment().Padding().ConvertToLogical(writing_direction_);
   }
 
   bool HasDescendantsForTablePart() const {
-    const NGPhysicalBoxFragment& box_fragment =
-        To<NGPhysicalBoxFragment>(physical_fragment_);
-    return box_fragment.HasDescendantsForTablePart();
+    return PhysicalBoxFragment().HasDescendantsForTablePart();
   }
+
+  bool HasBlockLayoutOverflow() const;
 };
 
 }  // namespace blink

@@ -861,6 +861,14 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
 
     if (incoming_column_token)
       container_builder_.ClampBreakAppeal(incoming_column_token->BreakAppeal());
+    if (ConstraintSpace().HasBlockFragmentation()) {
+      // If we're nested inside another fragmentation context, try to avoid
+      // creating rows that are too short to hold monolithic content. Better to
+      // retry in the next outer fragmentainer.
+      if (NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
+              .HasBlockLayoutOverflow())
+        container_builder_.ClampBreakAppeal(kBreakAppealLastResort);
+    }
   }
 
   return result;
