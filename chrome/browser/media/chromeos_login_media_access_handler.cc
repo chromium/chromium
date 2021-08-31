@@ -49,14 +49,12 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
     return false;
 
   // The following checks are for SAML logins.
-  const base::Value* const raw_list_value =
+  const base::Value* const list_value =
       settings->GetPref(chromeos::kLoginVideoCaptureAllowedUrls);
-  if (!raw_list_value)
+  if (!list_value)
     return false;
 
-  const base::ListValue* list_value;
-  const bool is_list = raw_list_value->GetAsList(&list_value);
-  DCHECK(is_list);
+  DCHECK(list_value->is_list());
   for (const auto& base_value : list_value->GetList()) {
     const std::string* value = base_value.GetIfString();
     if (value) {

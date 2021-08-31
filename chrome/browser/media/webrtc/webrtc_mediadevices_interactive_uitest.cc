@@ -89,20 +89,26 @@ class WebRtcMediaDevicesInteractiveUITest
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
 
-    base::ListValue* values;
-    ASSERT_TRUE(parsed_json.value->GetAsList(&values));
-    ASSERT_FALSE(values->GetList().empty());
+    base::Value& values = *parsed_json.value;
+    ASSERT_TRUE(values.is_list());
+    ASSERT_FALSE(values.GetList().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& entry : values->GetList()) {
-      const base::DictionaryValue* dict;
+    for (const auto& dict : values.GetList()) {
+      ASSERT_TRUE(dict.is_dict());
       MediaDeviceInfo device;
-      ASSERT_TRUE(entry.GetAsDictionary(&dict));
-      ASSERT_TRUE(dict->GetString("deviceId", &device.device_id));
-      ASSERT_TRUE(dict->GetString("kind", &device.kind));
-      ASSERT_TRUE(dict->GetString("label", &device.label));
-      ASSERT_TRUE(dict->GetString("groupId", &device.group_id));
+      ASSERT_TRUE(dict.FindStringPath("deviceId"));
+      device.device_id = *dict.FindStringPath("deviceId");
+
+      ASSERT_TRUE(dict.FindStringPath("kind"));
+      device.kind = *dict.FindStringPath("kind");
+
+      ASSERT_TRUE(dict.FindStringPath("label"));
+      device.label = *dict.FindStringPath("label");
+
+      ASSERT_TRUE(dict.FindStringPath("groupId"));
+      device.group_id = *dict.FindStringPath("groupId");
 
       // Should be HMAC SHA256.
       if (!media::AudioDeviceDescription::IsDefaultDevice(device.device_id) &&
