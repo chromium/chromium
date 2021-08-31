@@ -657,17 +657,26 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
     if (backend_type != wgpu::BackendType::Null &&
         adapter_type != wgpu::AdapterType::Unknown) {
       // Get the adapter and the device name.
-      auto* device = adapter.CreateDevice();
       std::string gpu_str = GetDawnAdapterTypeString(adapter_type);
       gpu_str += " " + GetDawnBackendTypeString(backend_type);
       gpu_str += " - " + adapter_name;
       dawn_info_list->push_back(gpu_str);
 
-      // Get the list of enabled toggles on the device
-      dawn_info_list->push_back("[Default Toggle Names]");
-      std::vector<const char*> toggle_names =
-          dawn_native::GetTogglesUsed(device);
-      AddTogglesToDawnInfoList(instance.get(), toggle_names, dawn_info_list);
+      // Scope the lifetime of |device| to avoid accidental use after release.
+      {
+        auto* device = adapter.CreateDevice();
+        // CreateDevice can return null if the device has been removed or we've
+        // run out of memory. Ensure we don't crash in these instances.
+        if (device) {
+          // Get the list of enabled toggles on the device
+          dawn_info_list->push_back("[Default Toggle Names]");
+          std::vector<const char*> toggle_names =
+              dawn_native::GetTogglesUsed(device);
+          AddTogglesToDawnInfoList(instance.get(), toggle_names,
+                                   dawn_info_list);
+          procs.deviceRelease(device);
+        }
+      }
 
 #if BUILDFLAG(USE_DAWN)
       // Get the list of forced toggles for WebGPU.
@@ -719,9 +728,6 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       for (const char* name : adapter.GetSupportedExtensions()) {
         dawn_info_list->push_back(name);
       }
-
-      // Release device.
-      procs.deviceRelease(device);
     }
   }
 #endif
