@@ -2712,8 +2712,7 @@ String AXNodeObject::GetValueForControl() const {
     String aria_value_text =
         GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
             .GetString();
-    if (!aria_value_text.IsEmpty())
-      return aria_value_text;
+    return aria_value_text.IsEmpty() ? String() : aria_value_text;
   }
 
   if (GetLayoutObject() && GetLayoutObject()->IsFileUploadControl())

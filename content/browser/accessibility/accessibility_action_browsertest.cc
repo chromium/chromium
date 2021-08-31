@@ -216,6 +216,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_NE(nullptr, target);
   EXPECT_EQ(8.0, target->GetFloatAttribute(
                      ax::mojom::FloatAttribute::kValueForRange));
+  // Ranges shouldn't have String::kValue set unless they use aria-valuetext.
+  EXPECT_FALSE(target->HasStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // Increment, should result in value changing from 8 to 10.
   {

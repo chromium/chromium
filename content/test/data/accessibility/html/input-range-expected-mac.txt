@@ -1,3 +1,7 @@
 AXWebArea
 ++AXGroup
 ++++AXSlider AXValue=5
+++++AXSlider AXValue=3
+++++AXSlider AXValue=5
+++++AXSlider AXValue=6
+++++AXSlider AXValue=0

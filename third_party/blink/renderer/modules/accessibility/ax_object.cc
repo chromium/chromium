@@ -1240,10 +1240,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     return;
   }
 
-  TruncateAndAddStringAttribute(
-      node_data, ax::mojom::blink::StringAttribute::kValue,
-      SlowGetValueForControlIncludingContentEditable().Utf8());
-
   switch (Restriction()) {
     case AXRestriction::kRestrictionReadOnly:
       node_data->SetRestriction(ax::mojom::blink::Restriction::kReadOnly);
@@ -1271,6 +1267,14 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   SerializeSparseAttributes(node_data);
 
   if (Element* element = GetElement()) {
+    String value_text = SlowGetValueForControlIncludingContentEditable();
+    // TODO(nektar) Compute value for richly editable content on browser side.
+    if (HasRichlyEditableStyle(*GetNode()) || !value_text.IsNull()) {
+      TruncateAndAddStringAttribute(node_data,
+                                    ax::mojom::blink::StringAttribute::kValue,
+                                    value_text.Utf8());
+    }
+
     if (IsAtomicTextField()) {
       // Selection offsets are only used for plain text controls, (input of a
       // text field type, and textarea). Rich editable areas, such as

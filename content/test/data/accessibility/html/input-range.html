@@ -3,7 +3,7 @@
 @BLINK-ALLOW:inputType=*
 @BLINK-ALLOW:maximumValue*
 @BLINK-ALLOW:minimumValue*
-@BLINK-ALLOW:valuetext*
+@BLINK-ALLOW:value*
 @WIN-DENY:description*
 @WIN-DENY:name*
 @WIN-ALLOW:currentValue*
@@ -12,7 +12,7 @@
 @WIN-ALLOW:ia2_hypertext=*
 @WIN-ALLOW:valuetext*
 @WIN-ALLOW:xml-roles:*
-@AURALINUX-ALLOW:valuetext*
+@AURALINUX-ALLOW:value*
 @AURALINUX-ALLOW:xml-roles:*
 @AURALINUX-ALLOW:horizontal
 @AURALINUX-ALLOW:vertical
@@ -20,5 +20,9 @@
 <html>
   <body>
     <input type="range" min=1 max=10 value=5>
+    <input type="range" min=1 max=10 value=5 aria-valuenow="3">
+    <input type="range" min=1 max=10 value=5 aria-valuetext="Medium">
+    <input type="range" min=0 max=5 value=2 aria-valuenow="6" aria-valuetext="Friday">
+    <input type="range" min=-1 max=1 value="0.2" step="0.1">
   </body>
 </html>

@@ -57,7 +57,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Range: '
 ++++++++++inlineTextBox name='Range: '
-++++++++slider horizontal name='Range:' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++slider horizontal name='Range:' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++labelText
 ++++++++staticText name='Reset: '
 ++++++++++inlineTextBox name='Reset: '

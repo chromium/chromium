@@ -1418,10 +1418,8 @@ void WebAXObjectProxy::Press() {
 
 bool WebAXObjectProxy::SetValue(const std::string& value) {
   UpdateLayout();
-  if (GetAXNodeData().GetRestriction() != ax::mojom::Restriction::kNone ||
-      accessibility_object_.GetValueForControl().IsEmpty()) {
+  if (!accessibility_object_.CanSetValueAttribute())
     return false;
-  }
 
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kSetValue;

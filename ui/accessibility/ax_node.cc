@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1474,7 +1473,7 @@ std::string AXNode::GetTextForRangeValue() const {
   if (range_value.empty() &&
       GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
                         &numeric_value)) {
-    range_value = base::NumberToString(numeric_value);
+    return base::StringPrintf("%g", numeric_value);
   }
   return range_value;
 }
