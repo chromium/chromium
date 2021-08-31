@@ -112,5 +112,41 @@
     "left": { "pathname": "/foo/{bar}/baz" },
     "right": { "pathname": "/foo/bar/baz" },
     "expected": 0
+  },
+  {
+    "component": "protocol",
+    "left": { "protocol": "a" },
+    "right": { "protocol": "b" },
+    "expected": -1
+  },
+  {
+    "component": "username",
+    "left": { "username": "a" },
+    "right": { "username": "b" },
+    "expected": -1
+  },
+  {
+    "component": "password",
+    "left": { "password": "a" },
+    "right": { "password": "b" },
+    "expected": -1
+  },
+  {
+    "component": "hostname",
+    "left": { "hostname": "a" },
+    "right": { "hostname": "b" },
+    "expected": -1
+  },
+  {
+    "component": "search",
+    "left": { "search": "a" },
+    "right": { "search": "b" },
+    "expected": -1
+  },
+  {
+    "component": "hash",
+    "left": { "hash": "a" },
+    "right": { "hash": "b" },
+    "expected": -1
   }
 ]
