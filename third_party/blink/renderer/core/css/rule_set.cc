@@ -136,11 +136,11 @@ RuleData::RuleData(Type type,
 void RuleSet::AddToRuleSet(const AtomicString& key,
                            PendingRuleMap& map,
                            const RuleData* rule_data) {
-  Member<HeapLinkedQueue<Member<const RuleData>>>& rules =
+  Member<HeapLinkedStack<Member<const RuleData>>>& rules =
       map.insert(key, nullptr).stored_value->value;
   if (!rules)
-    rules = MakeGarbageCollected<HeapLinkedQueue<Member<const RuleData>>>();
-  rules->push_back(rule_data);
+    rules = MakeGarbageCollected<HeapLinkedStack<Member<const RuleData>>>();
+  rules->Push(rule_data);
 }
 
 static void ExtractSelectorValues(const CSSSelector* selector,
@@ -514,7 +514,7 @@ CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
 void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
                                   CompactRuleMap& compact_map) {
   for (auto& item : pending_map) {
-    HeapLinkedQueue<Member<const RuleData>>* pending_rules =
+    HeapLinkedStack<Member<const RuleData>>* pending_rules =
         item.value.Release();
     Member<HeapVector<Member<const RuleData>>>& rules =
         compact_map.insert(item.key, nullptr).stored_value->value;
@@ -525,8 +525,8 @@ void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
       rules->ReserveCapacity(pending_rules->size());
     }
     while (!pending_rules->IsEmpty()) {
-      rules->push_back(pending_rules->front());
-      pending_rules->pop_front();
+      rules->push_back(pending_rules->Peek());
+      pending_rules->Pop();
     }
   }
 }
@@ -555,52 +555,7 @@ void RuleSet::CompactRules() {
   counter_style_rules_.ShrinkToFit();
   scroll_timeline_rules_.ShrinkToFit();
   slotted_pseudo_element_rules_.ShrinkToFit();
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertRuleListsSorted();
-#endif
 }
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-
-namespace {
-
-template <class RuleList>
-bool IsRuleListSorted(const RuleList& rules) {
-  unsigned last_position = 0;
-  bool first_rule = true;
-  for (const auto& rule : rules) {
-    if (!first_rule && rule->GetPosition() <= last_position)
-      return false;
-    first_rule = false;
-    last_position = rule->GetPosition();
-  }
-  return true;
-}
-
-}  // namespace
-
-void RuleSet::AssertRuleListsSorted() const {
-  for (const auto& item : id_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : class_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : tag_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : ua_shadow_pseudo_element_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  DCHECK(IsRuleListSorted(link_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(cue_pseudo_rules_));
-  DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(spatial_navigation_interest_class_rules_));
-  DCHECK(IsRuleListSorted(universal_rules_));
-  DCHECK(IsRuleListSorted(shadow_host_rules_));
-  DCHECK(IsRuleListSorted(part_pseudo_rules_));
-  DCHECK(IsRuleListSorted(visited_dependent_rules_));
-}
-
-#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 bool RuleSet::DidMediaQueryResultsChange(
     const MediaQueryEvaluator& evaluator) const {

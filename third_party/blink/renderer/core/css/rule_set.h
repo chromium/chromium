@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_queue.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -396,7 +396,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   using PendingRuleMap =
       HeapHashMap<AtomicString,
-                  Member<HeapLinkedQueue<Member<const RuleData>>>>;
+                  Member<HeapLinkedStack<Member<const RuleData>>>>;
   using CompactRuleMap =
       HeapHashMap<AtomicString, Member<HeapVector<Member<const RuleData>>>>;
 
@@ -440,10 +440,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       pending_rules_ = MakeGarbageCollected<PendingRuleMaps>();
     return pending_rules_.Get();
   }
-
-#if DCHECK_IS_ON()
-  void AssertRuleListsSorted() const;
-#endif
 
   CascadeLayer* EnsureImplicitOuterLayer() {
     if (!implicit_outer_layer_)
