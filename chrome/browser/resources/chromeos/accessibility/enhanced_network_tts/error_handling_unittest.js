@@ -30,9 +30,12 @@ SYNC_TEST_F(
       const sendTtsAudio = (receivedBuffer) => {
         throw new Error('Assertion failed: does not expect incoming buffer.');
       };
+      const sendError = (error) => {
+        assertEquals(error, 'Error: unable to get mojoPrivate bindings');
+      };
 
-      await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
-          utterance, options, audioStreamOptions, sendTtsAudio);
+      await enhancedNetworkTts.onSpeakWithAudioStreamEvent(
+          utterance, options, audioStreamOptions, sendTtsAudio, sendError);
     });
 
 SYNC_TEST_F(
@@ -55,7 +58,7 @@ SYNC_TEST_F(
         assertEquals(error, 'Error: utterance too long');
       };
 
-      await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
+      await enhancedNetworkTts.onSpeakWithAudioStreamEvent(
           utterance, options, audioStreamOptions, sendTtsAudio, sendError);
     });
 
