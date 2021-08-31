@@ -8,6 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {NamedDestinationMessageData, Point, SaveRequestType} from './constants.js';
+import {UnseasonedPdfPluginElement} from './internal_plugin.js';
 import {PartialPoint, PinchPhase, Viewport} from './viewport.js';
 
 /** @typedef {{type: string, messageId: (string|undefined)}} */
@@ -155,6 +156,9 @@ export class PluginController {
 
     /** @private {!HTMLEmbedElement} */
     this.plugin_;
+
+    /** @private {?UnseasonedPdfPluginElement} */
+    this.unseasonedPlugin_ = null;
 
     /** @private {!Viewport} */
     this.viewport_;
@@ -464,15 +468,28 @@ export class PluginController {
 
   /** @override */
   async load(fileName, data) {
-    const url = URL.createObjectURL(new Blob([data]));
-    this.plugin_.setAttribute('src', url);
+    // Load `data` into the PDF plugin. The unseasoned plugin transfers the data
+    // to be loaded within the inner frame, while the Pepper plugin updates
+    // `src` directly.
+    let url;
+    if (this.unseasonedPlugin_) {
+      assert(this.unseasonedPlugin_ === this.plugin_);
+      this.unseasonedPlugin_.postMessage(
+          {type: 'loadArray', dataToLoad: data}, [data]);
+    } else {
+      url = URL.createObjectURL(new Blob([data]));
+      this.plugin_.setAttribute('src', url);
+    }
+
     this.plugin_.setAttribute('has-edits', '');
     this.plugin_.style.display = 'block';
     try {
       await this.getLoadedCallback_();
       this.isActive = true;
     } finally {
-      URL.revokeObjectURL(url);
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
     }
   }
 
@@ -483,14 +500,17 @@ export class PluginController {
   }
 
   /**
-   * An event handler for handling message events received from the Unseasoned
-   * PDF plugin.
+   * Binds an event handler for messages received from the unseasoned plugin.
+   *
    * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
    * bridge is implemented for the Unseasoned viewer.
-   * @param {!Event} messageEvent a message event.
+   *
+   * @param {!MessagePort} port The message port to bind to.
    */
-  handleMessageForUnseasoned(messageEvent) {
-    this.handlePluginMessage_(messageEvent);
+  bindUnseasonedMessageHandler(port) {
+    port.onmessage = e => this.handlePluginMessage_(e);
+    this.unseasonedPlugin_ =
+        /** @type {!UnseasonedPdfPluginElement} */ (this.plugin_);
   }
 
   /**

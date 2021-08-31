@@ -27,6 +27,7 @@ preprocess_if_expr("preprocess") {
     "constants.js",
     "controller.js",
     "gesture_detector.js",
+    "internal_plugin.js",
     "local_storage_proxy.js",
     "metrics.js",
     "navigator.js",
@@ -268,12 +269,16 @@ js_library("local_storage_proxy") {
 
 js_library("controller") {
   deps = [
+    ":internal_plugin",
     ":viewport",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+}
+
+js_library("internal_plugin") {
 }
 
 js_library("pdf_viewer_base") {

@@ -57,7 +57,16 @@ const channel = new MessageChannel();
 const plugin = document.querySelector('embed');
 
 plugin.addEventListener('message', e => channel.port1.postMessage(e.data));
-channel.port1.onmessage = e => plugin.postMessage(e.data);
+channel.port1.onmessage = e => {
+  if (e.data.type === 'loadArray') {
+    if (plugin.src.startsWith('blob:')) {
+      URL.revokeObjectURL(plugin.src);
+    }
+    plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
+  } else {
+    plugin.postMessage(e.data);
+  }
+};
 
 window.parent.postMessage(
     {type: 'connect', token: plugin.getAttribute('src')}, '$4',

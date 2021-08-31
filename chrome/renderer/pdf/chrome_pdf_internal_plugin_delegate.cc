@@ -22,7 +22,7 @@ bool ChromePdfInternalPluginDelegate::IsAllowedFrame(
   // allowed origin.
   const blink::WebFrame* parent_frame = frame.Parent();
   if (!parent_frame) {
-    // TODO(crbug.com/1225756): Until this is fixed, allow Print Preview to
+    // TODO(crbug.com/1238829): Until this is fixed, allow Print Preview to
     // create the in-process plugin directly within its own frames.
     return frame.GetSecurityOrigin().IsSameOriginWith(
         blink::WebSecurityOrigin::Create(GURL(chrome::kChromeUIPrintURL)));

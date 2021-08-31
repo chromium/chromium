@@ -192,6 +192,7 @@ preprocess_if_expr("preprocess_pdf") {
     "pdf/gesture_detector.js",
     "pdf/index.css",
     "pdf/index_pp.html",
+    "pdf/internal_plugin.js",
     "pdf/main.js",
     "pdf/metrics.js",
     "pdf/open_pdf_params_parser.js",

@@ -299,7 +299,7 @@ export class PDFViewerBaseElement extends PolymerElement {
         this.viewport_.position = this.lastViewportPosition;
       }
       this.paramsParser.getViewportFromUrlParams(this.originalUrl)
-          .then(this.handleURLParams_.bind(this));
+          .then(params => this.handleURLParams_(params));
       this.setLoadState(LoadState.SUCCESS);
       this.sendDocumentLoadedMessage();
       while (this.delayedScriptingMessages_.length > 0) {
@@ -375,8 +375,7 @@ export class PDFViewerBaseElement extends PolymerElement {
       if (token === this.browserApi.getStreamInfo().streamUrl) {
         const port = message.ports[0];
         this.plugin_.postMessage = m => port.postMessage(m);
-        port.onmessage = e =>
-            PluginController.getInstance().handleMessageForUnseasoned(e);
+        PluginController.getInstance().bindUnseasonedMessageHandler(port);
       } else {
         this.dispatchEvent(new CustomEvent('connection-denied-for-testing'));
       }
