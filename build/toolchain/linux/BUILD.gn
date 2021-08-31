@@ -170,6 +170,14 @@ clang_toolchain("clang_x64_v8_riscv64") {
   }
 }
 
+clang_toolchain("clang_x64_v8_loong64") {
+  toolchain_args = {
+    current_cpu = "x64"
+    v8_current_cpu = "loong64"
+    current_os = "linux"
+  }
+}
+
 # In a LaCrOS build, this toolchain is intended to be used as an alternate
 # toolchain to build Ash-Chrome in a subdirectory.
 clang_toolchain("ash_clang_x64") {
@@ -384,6 +392,31 @@ gcc_toolchain("mips64") {
 
     # reclient does not support gcc.
     use_rbe = false
+    is_clang = false
+  }
+}
+
+clang_toolchain("clang_loong64") {
+  toolchain_args = {
+    current_cpu = "loong64"
+    current_os = "linux"
+  }
+}
+
+gcc_toolchain("loong64") {
+  toolprefix = "loongarch64-linux-gnu"
+
+  cc = "${toolprefix}-gcc"
+  cxx = "${toolprefix}-g++"
+
+  readelf = "${toolprefix}-readelf"
+  nm = "${toolprefix}-nm"
+  ar = "${toolprefix}-ar"
+  ld = cxx
+
+  toolchain_args = {
+    current_cpu = "loong64"
+    current_os = "linux"
     is_clang = false
   }
 }
