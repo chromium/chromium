@@ -36,6 +36,8 @@ absl::optional<mojom::LinkRelAttribute> ParseRelAttribute(
     return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
+  if (value == "preconnect")
+    return mojom::LinkRelAttribute::kPreconnect;
   if (value == "preload")
     return mojom::LinkRelAttribute::kPreload;
   else if (value == "modulepreload")
