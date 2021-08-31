@@ -7067,6 +7067,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalAccessibilityLabelsName,
      flag_descriptions::kExperimentalAccessibilityLabelsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityLabels)},
+
+    {"scroll-capture", flag_descriptions::kScrollCaptureName,
+     flag_descriptions::kScrollCaptureDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kScrollCapture)},
 #endif  // defined(OS_ANDROID)
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,

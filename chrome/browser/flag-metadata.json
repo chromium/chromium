@@ -4923,6 +4923,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "scroll-capture",
+    "owners": [ "ckitagawa", "fredmello", "yashard" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "scroll-unification",
     "owners": [ "skobes@chromium.org", "input-dev@chromium.org" ],
     "expiry_milestone": 100

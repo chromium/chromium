@@ -3436,6 +3436,10 @@ const char kSafeBrowsingUseLocalBlacklistsV2Description[] =
     "process to check the Safe Browsing reputation of URLs without calling "
     "into GmsCore for every URL.";
 
+const char kScrollCaptureName[] = "Scroll Capture";
+const char kScrollCaptureDescription[] =
+    "Enables scrolling screenshot capture for web contents.";
+
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =
