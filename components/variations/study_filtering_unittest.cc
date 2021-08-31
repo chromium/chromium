@@ -791,6 +791,33 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBadFilters) {
                                      base::size(versions));
 }
 
+TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBlankStudyName) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("");
+  study->set_default_experiment_name("Default");
+  AddExperiment("A", 100, study);
+  AddExperiment("Default", 0, study);
+
+  study->mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
+
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
+  client_state.locale = "en-CA";
+  client_state.reference_date = base::Time::Now();
+  client_state.version = base::Version("20.0.0.0");
+  client_state.channel = Study::STABLE;
+  client_state.form_factor = Study::PHONE;
+  client_state.platform = Study::PLATFORM_ANDROID;
+
+  base::HistogramTester histogram_tester;
+  std::vector<ProcessedStudy> processed_studies;
+  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
+                           &processed_studies);
+
+  ASSERT_EQ(0U, processed_studies.size());
+  histogram_tester.ExpectUniqueSample("Variations.InvalidStudyReason", 8, 1);
+}
+
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
   const char kSessionCountry[] = "ca";
   const char kPermanentCountry[] = "us";
@@ -899,6 +926,7 @@ TEST(VariationsStudyFilteringTest, IsStudyExpired) {
 
 TEST(VariationsStudyFilteringTest, ValidateStudy) {
   Study study;
+  study.set_name("study");
   study.set_default_experiment_name("def");
   AddExperiment("abc", 100, &study);
   Study::Experiment* default_group = AddExperiment("def", 200, &study);

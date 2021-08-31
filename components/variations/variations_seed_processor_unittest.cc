@@ -388,6 +388,7 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
 
 TEST_F(VariationsSeedProcessorTest, ValidateStudy) {
   Study study;
+  study.set_name("study");
   study.set_default_experiment_name("def");
   AddExperiment("abc", 100, &study);
   Study_Experiment* default_group = AddExperiment("def", 200, &study);
@@ -434,6 +435,7 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudy) {
 
 TEST_F(VariationsSeedProcessorTest, ValidateStudyWithAssociatedFeatures) {
   Study study;
+  study.set_name("study");
   study.set_default_experiment_name("def");
   Study_Experiment* exp1 = AddExperiment("exp1", 100, &study);
   Study_Experiment* exp2 = AddExperiment("exp2", 100, &study);
@@ -487,6 +489,7 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudyWithAssociatedFeatures) {
 
 TEST_F(VariationsSeedProcessorTest, ProcessedStudyAllAssignmentsToOneGroup) {
   Study study;
+  study.set_name("study1");
   study.set_default_experiment_name("def");
   AddExperiment("def", 100, &study);
 
@@ -505,6 +508,7 @@ TEST_F(VariationsSeedProcessorTest, ProcessedStudyAllAssignmentsToOneGroup) {
 
   // Try with default group and first group being at 0.
   Study study2;
+  study2.set_name("study2");
   study2.set_default_experiment_name("def");
   AddExperiment("def", 0, &study2);
   AddExperiment("xyz", 34, &study2);

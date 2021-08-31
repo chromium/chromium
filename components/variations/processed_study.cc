@@ -27,7 +27,8 @@ enum class InvalidStudyReason {
   kRepeatedExperimentName = 5,
   kTotalProbabilityOverflow = 6,
   kMissingDefaultExperimentInList = 7,
-  kMaxValue = kMissingDefaultExperimentInList,
+  kBlankStudyName = 8,
+  kMaxValue = kBlankStudyName,
 };
 
 void LogInvalidReason(InvalidStudyReason reason) {
@@ -41,6 +42,12 @@ bool ValidateStudyAndComputeTotalProbability(
     base::FieldTrial::Probability* total_probability,
     bool* all_assignments_to_one_group,
     std::vector<std::string>* associated_features) {
+  if (study.name().empty()) {
+    LogInvalidReason(InvalidStudyReason::kBlankStudyName);
+    DVLOG(1) << "study with missing study name";
+    return false;
+  }
+
   if (study.filter().has_min_version() &&
       !base::Version::IsValidWildcardString(study.filter().min_version())) {
     LogInvalidReason(InvalidStudyReason::kInvalidMinVersion);
