@@ -405,7 +405,7 @@ int PendingGetCapabilityRequests::Add(
     PrinterProviderAPI::GetCapabilityCallback callback) {
   pending_requests_[++last_request_id_] = std::move(callback);
   // Abort the request after the timeout is exceeded.
-  base::ThreadPool::PostDelayedTask(
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PendingGetCapabilityRequests::Complete,
                      weak_factory_.GetWeakPtr(), last_request_id_,
