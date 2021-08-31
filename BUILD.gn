@@ -1221,7 +1221,9 @@ if (!is_ios) {
 
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md
   script_test("blink_web_tests") {
-    run_under_python2 = true
+    if (is_fuchsia || is_mac) {
+      run_under_python2 = true
+    }
     script = _common_web_test_script
 
     args = _common_web_test_args
