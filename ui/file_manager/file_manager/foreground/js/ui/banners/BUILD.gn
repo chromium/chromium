@@ -24,6 +24,7 @@ html_to_js("web_components") {
     "drive_welcome_banner.js",
     "educational_banner.js",
     "local_disk_low_space_banner.js",
+    "state_banner.js",
     "warning_banner.js",
   ]
 }
@@ -41,6 +42,7 @@ js_type_check("closure_compile_jsmodules") {
     ":drive_welcome_banner",
     ":educational_banner",
     ":local_disk_low_space_banner",
+    ":state_banner",
     ":warning_banner",
   ]
 }
@@ -73,8 +75,23 @@ js_unittest("educational_banner_unittest.m") {
   deps = [
     ":educational_banner",
     "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:mock_util",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_library("state_banner") {
+  deps = [
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_unittest("state_banner_unittest.m") {
+  deps = [
+    ":state_banner",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:mock_util",
   ]
 }
 
@@ -89,13 +106,15 @@ js_unittest("warning_banner_unittest.m") {
   deps = [
     ":warning_banner",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:mock_util",
+    "//ui/file_manager/file_manager/externs:banner",
   ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":educational_banner_unittest.m",
+    ":state_banner_unittest.m",
     ":warning_banner_unittest.m",
   ]
   is_polymer3 = true

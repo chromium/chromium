@@ -3,33 +3,13 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
-import {util} from '../../../../common/js/util.js';
+import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {Banner} from '../../../../externs/banner.js';
 
 import {EducationalBanner} from './educational_banner.js';
 
 /** @type{!EducationalBanner} */
 let educationalBanner;
-
-/**
- * Mock out the util.visitURL method such that the URL passed to the function
- * can be interrogated to ensure it was successfully invoked.
- * @returns {!Object<string, !function()>}
- */
-function mockUtilVisitURL() {
-  const oldVisitURL = util.visitURL;
-  let visitedURL;
-  util.visitURL = function(url) {
-    visitedURL = url;
-  };
-  const getURL = () => {
-    return visitedURL;
-  };
-  const restoreVisitURL = () => {
-    util.visitURL = oldVisitURL;
-  };
-  return {getURL, restoreVisitURL};
-}
 
 export function setUp() {
   const html = `<educational-banner>

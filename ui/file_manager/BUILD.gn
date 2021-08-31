@@ -386,6 +386,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/banners/drive_welcome_banner.js",
     "file_manager/foreground/js/ui/banners/educational_banner.js",
     "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.js",
+    "file_manager/foreground/js/ui/banners/state_banner.js",
     "file_manager/foreground/js/ui/banners/warning_banner.js",
     "file_manager/foreground/js/ui/breadcrumb.js",
   ]
@@ -430,6 +431,7 @@ generate_grd("build_grd") {
 
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
+    "file_manager/images/files/ui/state_banner_icon.svg",
     "file_manager/images/files/ui/warning_banner_icon.svg",
     "file_manager/images/files/ui/menu_ng.svg",
   ]
