@@ -192,11 +192,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    * @param {!PrivacyReviewStep} step
    */
   navigateToCard_(step) {
-    Router.getInstance().navigateTo(
-        routes.PRIVACY_REVIEW,
-        /* opt_dynamicParameters */ new URLSearchParams('step=' + step),
-        /* opt_removeSearch */ false,
-        /* opt_skipHistoryEntry */ true);
+    Router.getInstance().updateRouteParams(new URLSearchParams('step=' + step));
     // TODO(crbug/1215630): Programmatically put the focus to the corresponding
     // element.
   }

@@ -246,17 +246,38 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
     }
 
     /**
+     * Updates the URL parameters of the current route via exchanging the
+     * window history state. This changes the Settings route path, but doesn't
+     * change the route itself, hence does not push a new route history entry.
+     * Notifies routeChangedObservers.
+     * @param {!URLSearchParams} params
+     */
+    updateRouteParams(params) {
+      let url = this.currentRoute.path;
+      const queryString = params.toString();
+      if (queryString) {
+        url += '?' + queryString;
+      }
+      window.history.replaceState(window.history.state, '', url);
+
+      // We can't call |setCurrentRoute()| for the following, as it would also
+      // update |oldRoute| and |currentRoute|, which should not happen when
+      // only the URL parameters are updated.
+      this.currentQueryParameters_ = params;
+      new Set(this.routeObservers_).forEach((observer) => {
+        observer.currentRouteChanged(this.currentRoute, this.currentRoute);
+      });
+    }
+
+    /**
      * Navigates to a canonical route and pushes a new history entry.
      * @param {!Route} route
      * @param {URLSearchParams=} opt_dynamicParameters Navigations to the same
      *     URL parameters in a different order will still push to history.
      * @param {boolean=} opt_removeSearch Whether to strip the 'search' URL
      *     parameter during navigation. Defaults to false.
-     * @param {boolean=} opt_skipHistoryEntry Whether to skip pushing a new
-     * history entry for this navigation. Defaults to false.
      */
-    navigateTo(
-        route, opt_dynamicParameters, opt_removeSearch, opt_skipHistoryEntry) {
+    navigateTo(route, opt_dynamicParameters, opt_removeSearch) {
       // The ADVANCED route only serves as a parent of subpages, and should not
       // be possible to navigate to it directly.
       if (route === this.routes_.ADVANCED) {
@@ -269,8 +290,6 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       const oldSearchParam = this.getQueryParameters().get('search') || '';
       const newSearchParam = params.get('search') || '';
 
-      const skipHistoryEntry = opt_skipHistoryEntry || false;
-
       if (!removeSearch && oldSearchParam && !newSearchParam) {
         params.append('search', oldSearchParam);
       }
@@ -282,11 +301,7 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       }
 
       // History serializes the state, so we don't push the actual route object.
-      if (skipHistoryEntry) {
-        window.history.replaceState(this.currentRoute.path, '', url);
-      } else {
-        window.history.pushState(this.currentRoute.path, '', url);
-      }
+      window.history.pushState(this.currentRoute.path, '', url);
       this.setCurrentRoute(route, params, false);
     }
 
