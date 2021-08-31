@@ -872,16 +872,9 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   // Log crash reports when GL errors are generated.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       enable_angle_validation && feature_info->feature_flags().khr_debug) {
-    static int remaining_gl_error_reports =
-#if defined(OS_ANDROID)
-        // Don't generate crash reports on Android due to errors generated
-        // during video decode.
-        0;
-#else
-        // Limit the total number of gl error crash reports to 1 per GPU
-        // process.
-        1;
-#endif
+    // Limit the total number of gl error crash reports to 1 per GPU
+    // process.
+    static int remaining_gl_error_reports = 1;
     gles2::InitializeGLDebugLogging(false, CrashReportOnGLErrorDebugCallback,
                                     &remaining_gl_error_reports);
   }
