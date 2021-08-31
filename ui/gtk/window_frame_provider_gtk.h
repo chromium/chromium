@@ -21,8 +21,8 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
   ~WindowFrameProviderGtk() override;
 
   // views::WindowFrameProvider:
-  int GetTopCornerRadius() override;
-  gfx::Insets GetFrameThickness() override;
+  int GetTopCornerRadiusDip() override;
+  gfx::Insets GetFrameThicknessDip() override;
   void PaintWindowFrame(gfx::Canvas* canvas,
                         const gfx::Rect& rect,
                         int top_area_height,
@@ -39,8 +39,6 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
     // Whether this record has valid data.
     bool valid = false;
 
-    // TODO(crbug.com/1240905): should the corner radius be DIP?
-    int top_corner_radius_px = 0;
     int frame_size_px = 0;
     gfx::Insets frame_thickness_px;
 
@@ -66,6 +64,7 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
 
   // Scale-independent metric calculated based on the bitmaps.
   gfx::Insets frame_thickness_dip_;
+  int top_corner_radius_dip_ = 0;
 
   // Cached bitmaps and metrics.  The scale is rounded to percent.
   base::flat_map<int, Asset> assets_;

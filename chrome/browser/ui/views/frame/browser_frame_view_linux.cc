@@ -28,15 +28,15 @@ BrowserFrameViewLinux::~BrowserFrameViewLinux() {
 }
 
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
-  gfx::RectF bounds(GetLocalBounds());
+  gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {
     auto border = layout_->MirroredFrameBorderInsets();
-    bounds.Inset(border);
+    bounds_dip.Inset(border);
   }
-  float radius = GetRestoredCornerRadius();
-  SkVector radii[4]{{radius, radius}, {radius, radius}, {}, {}};
+  float radius_dip = GetRestoredCornerRadiusDip();
+  SkVector radii[4]{{radius_dip, radius_dip}, {radius_dip, radius_dip}, {}, {}};
   SkRRect clip;
-  clip.setRectRadii(gfx::RectFToSkRect(bounds), radii);
+  clip.setRectRadii(gfx::RectFToSkRect(bounds_dip), radii);
   return clip;
 }
 
@@ -116,7 +116,7 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
       ->ShouldDrawRestoredFrameShadow();
 }
 
-float BrowserFrameViewLinux::GetRestoredCornerRadius() const {
+float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
   if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported())
     return 0;
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

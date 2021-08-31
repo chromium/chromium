@@ -27,8 +27,8 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
 
 BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
 
-float BrowserFrameViewLinuxNative::GetRestoredCornerRadius() const {
-  return window_frame_provider_->GetTopCornerRadius();
+float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
+  return window_frame_provider_->GetTopCornerRadiusDip();
 }
 
 void BrowserFrameViewLinuxNative::Layout() {

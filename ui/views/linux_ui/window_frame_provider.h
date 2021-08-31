@@ -20,10 +20,10 @@ class WindowFrameProvider {
   // Returns the radius of the top-left and top-right corners in DIPs.  Used
   // only as a hint to the compositor so it knows to redraw the part of the
   // window behind the corners.
-  virtual int GetTopCornerRadius() = 0;
+  virtual int GetTopCornerRadiusDip() = 0;
 
   // Returns the shadow and border drawn around the window in DIPs.
-  virtual gfx::Insets GetFrameThickness() = 0;
+  virtual gfx::Insets GetFrameThicknessDip() = 0;
 
   // Draws a native window border and shadow.  |rect| is the bounds of the
   // window.  The decoration will be drawn outside of that region.

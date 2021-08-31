@@ -102,7 +102,7 @@ SkBitmap PaintHeaderbar(const gfx::Size& size,
   return PaintBitmap(size, tabstrip_bounds_dip, context, scale);
 }
 
-int ComputeTopCornerRadius(float scale) {
+int ComputeTopCornerRadius() {
   // In GTK4, there's no way to directly obtain CSS values for a context, so we
   // need to experimentally determine the corner radius by rendering a sample.
   auto context = HeaderContext(false, false);
@@ -115,8 +115,8 @@ int ComputeTopCornerRadius(float scale) {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
   })");
-  auto bitmap = PaintHeaderbar({kMaxCornerRadiusDip, kMaxCornerRadiusDip},
-                               context, scale);
+  auto bitmap =
+      PaintHeaderbar({kMaxCornerRadiusDip, kMaxCornerRadiusDip}, context, 1);
   DCHECK_EQ(bitmap.width(), bitmap.height());
   for (int i = 0; i < bitmap.width(); ++i) {
     if (SkColorGetA(bitmap.getColor(0, i)) == 255 &&
@@ -155,7 +155,6 @@ void WindowFrameProviderGtk::Asset::CloneFrom(
   if (!valid)
     return;
 
-  top_corner_radius_px = src.top_corner_radius_px;
   frame_size_px = src.frame_size_px;
   frame_thickness_px = src.frame_thickness_px;
   focused_bitmap = src.focused_bitmap;
@@ -167,18 +166,12 @@ WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame)
 
 WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
-int WindowFrameProviderGtk::GetTopCornerRadius() {
-  const auto scale = GetDeviceScaleFactor();
-  MaybeUpdateBitmaps(scale);
-  // TODO(crbug.com/1240905): this looks weird.  Either the corner radius should
-  // be measured in DIP, or we should know the scale that the raduis is queried
-  // for.  The return value of this is used in shaping the corners of the clip
-  // region for the window, so slight mismatch in radii should not cause major
-  // issues, but this should be sorted out at some time.
-  return assets_[ToRoundedScale(scale)].top_corner_radius_px;
+int WindowFrameProviderGtk::GetTopCornerRadiusDip() {
+  MaybeUpdateBitmaps(GetDeviceScaleFactor());
+  return top_corner_radius_dip_;
 }
 
-gfx::Insets WindowFrameProviderGtk::GetFrameThickness() {
+gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
   MaybeUpdateBitmaps(GetDeviceScaleFactor());
   return frame_thickness_dip_;
 }
@@ -281,7 +274,6 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
     return;
 
   asset.frame_size_px = std::ceil(kMaxFrameSizeDip * scale);
-  asset.top_corner_radius_px = ComputeTopCornerRadius(scale);
 
   gfx::Rect frame_bounds_dip(kMaxFrameSizeDip, kMaxFrameSizeDip,
                              2 * kMaxFrameSizeDip, 2 * kMaxFrameSizeDip);
@@ -307,6 +299,9 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
     }
     return 0;
   };
+
+  top_corner_radius_dip_ = ComputeTopCornerRadius();
+
   const auto previous_frame_thickness_dip_ = frame_thickness_dip_;
   frame_thickness_dip_ = gfx::Insets(
       // top

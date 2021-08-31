@@ -130,8 +130,8 @@ class TestFrameProvider : public views::WindowFrameProvider {
   ~TestFrameProvider() override = default;
 
   // views::WindowFrameProvider:
-  int GetTopCornerRadius() override { return 0; }
-  gfx::Insets GetFrameThickness() override { return {}; }
+  int GetTopCornerRadiusDip() override { return 0; }
+  gfx::Insets GetFrameThicknessDip() override { return {}; }
   void PaintWindowFrame(gfx::Canvas* canvas,
                         const gfx::Rect& rect,
                         int top_area_height,

@@ -25,7 +25,7 @@ int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
 
 gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
     const {
-  return window_frame_provider_->GetFrameThickness();
+  return window_frame_provider_->GetFrameThicknessDip();
 }
 
 OpaqueBrowserFrameViewLayout::TopAreaPadding
