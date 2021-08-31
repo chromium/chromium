@@ -102,13 +102,6 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
              this ||
          accessed_node->current_frame_host()->coop_access_report_manager() ==
              this);
-  // The function centralize all the CoopAccessMonitor being added. Checking the
-  // flag here ensures the feature to be properly disabled everywhere.
-  if (!base::FeatureList::IsEnabled(
-          network::features::kCrossOriginOpenerPolicyAccessReporting)) {
-    return;
-  }
-
   if (!coop_reporter_.get())
     return;
 

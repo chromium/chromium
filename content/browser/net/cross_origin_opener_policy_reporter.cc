@@ -233,7 +233,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   const std::string& endpoint = coop_.report_only_reporting_endpoint.value();
 
   DCHECK(base::FeatureList::IsEnabled(
-      network::features::kCrossOriginOpenerPolicyAccessReporting));
+      network::features::kCrossOriginOpenerPolicy));
 
   base::DictionaryValue body;
   body.SetStringPath(kType, network::CoopAccessReportTypeToString(report_type));

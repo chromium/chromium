@@ -313,8 +313,8 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
   if (coop == network::CrossOriginOpenerPolicy())
     return;
 
-  if (!base::FeatureList::IsEnabled(
-          network::features::kCrossOriginOpenerPolicy) ||
+  if (base::FeatureList::IsEnabled(
+          network::features::kCrossOriginOpenerPolicy) &&
       // https://html.spec.whatwg.org/multipage#the-cross-origin-opener-policy-header
       // ```
       // 1. If reservedEnvironment is a non-secure context, then return
@@ -326,52 +326,33 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       // 2. If the result of Is url potentially trustworthy? given environment's
       // top-level creation URL is "Potentially Trustworthy", then return true.
       // ```
-      !network::IsUrlPotentiallyTrustworthy(response_url) ||
+      network::IsUrlPotentiallyTrustworthy(response_url) &&
       // The COOP header must be ignored outside of the top-level context. It is
       // removed as a defensive measure.
-      !frame_tree_node_->IsMainFrame()) {
-    bool has_coop_header =
-        coop.value !=
-            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
-        coop.report_only_value !=
-            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
-        coop.reporting_endpoint || coop.report_only_reporting_endpoint;
-    coop = network::CrossOriginOpenerPolicy();
-
-    if (!network::IsUrlPotentiallyTrustworthy(response_url) &&
-        has_coop_header) {
-      navigation_request_->AddDeferredConsoleMessage(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "The Cross-Origin-Opener-Policy header has been ignored, because "
-          "the URL's origin was untrustworthy. It was defined either in the "
-          "final response or a redirect. Please deliver the response using "
-          "the HTTPS protocol. You can also use the 'localhost' origin "
-          "instead. See "
-          "https://www.w3.org/TR/powerful-features/"
-          "#potentially-trustworthy-origin and "
-          "https://html.spec.whatwg.org/"
-          "#the-cross-origin-opener-policy-header.");
-    }
+      frame_tree_node_->IsMainFrame()) {
     return;
   }
 
-  // The reporting part can be enabled via either a command-line flag or an
-  // origin trial.
-  bool reporting_enabled = base::FeatureList::IsEnabled(
-      network::features::kCrossOriginOpenerPolicyReporting);
+  bool has_coop_header =
+      coop.value != network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
+      coop.report_only_value !=
+          network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
+      coop.reporting_endpoint || coop.report_only_reporting_endpoint;
 
-  reporting_enabled |=
-      base::FeatureList::IsEnabled(
-          network::features::kCrossOriginOpenerPolicyReportingOriginTrial) &&
-      blink::TrialTokenValidator().RequestEnablesFeature(
-          response_url, response_head->headers.get(),
-          "CrossOriginOpenerPolicyReporting", base::Time::Now());
+  coop = network::CrossOriginOpenerPolicy();
 
-  if (!reporting_enabled) {
-    coop.reporting_endpoint = absl::nullopt;
-    coop.report_only_reporting_endpoint = absl::nullopt;
-    coop.report_only_value =
-        network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
+  if (!network::IsUrlPotentiallyTrustworthy(response_url) && has_coop_header) {
+    navigation_request_->AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "The Cross-Origin-Opener-Policy header has been ignored, because "
+        "the URL's origin was untrustworthy. It was defined either in the "
+        "final response or a redirect. Please deliver the response using "
+        "the HTTPS protocol. You can also use the 'localhost' origin "
+        "instead. See "
+        "https://www.w3.org/TR/powerful-features/"
+        "#potentially-trustworthy-origin and "
+        "https://html.spec.whatwg.org/"
+        "#the-cross-origin-opener-policy-header.");
   }
 }
 

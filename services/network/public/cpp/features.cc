@@ -100,22 +100,6 @@ const base::Feature kCrossOriginEmbedderPolicyCredentiallessOriginTrial{
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables Cross-Origin-Opener-Policy reporting API origin trial. It will be
-// used as a kill switch during the experiment.
-const base::Feature kCrossOriginOpenerPolicyReportingOriginTrial{
-    "CrossOriginOpenerPolicyReportingOriginTrial",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin Opener Policy (COOP) reporting.
-// https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-const base::Feature kCrossOriginOpenerPolicyReporting{
-    "CrossOriginOpenerPolicyReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin Opener Policy (COOP) access reporting.
-// https://github.com/camillelamy/explainers/blob/master/coop_reporting.md#report-blocked-accesses-to-other-windows
-const base::Feature kCrossOriginOpenerPolicyAccessReporting{
-    "CrossOriginOpenerPolicyAccessReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Shift's COOP's default from `unsafe-none` to `same-origin-allow-popups`.
 // https://github.com/mikewest/coop-by-default/
 const base::Feature kCrossOriginOpenerPolicyByDefault{
