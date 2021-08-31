@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -37,6 +38,12 @@ namespace web_app {
 namespace {
 
 constexpr int kMaxJumpListItems = 10;
+
+// Testing hook for shell_integration_linux
+web_app::UpdateJumpListForTesting& GetUpdateJumpListForTesting() {
+  static base::NoDestructor<web_app::UpdateJumpListForTesting> instance;
+  return *instance;
+}
 
 base::FilePath GetShortcutsMenuIconsDirectory(
     const base::FilePath& shortcut_data_dir) {
@@ -87,7 +94,29 @@ std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
                                                          profile_path);
 }
 
+bool UpdateJumpList(
+    std::wstring app_user_model_id,
+    const std::vector<scoped_refptr<ShellLinkItem>>& link_items) {
+  if (GetUpdateJumpListForTesting())
+    return std::move(GetUpdateJumpListForTesting())
+        .Run(app_user_model_id, link_items);
+
+  JumpListUpdater jumplist_updater(app_user_model_id);
+  if (!jumplist_updater.BeginUpdate())
+    return false;
+
+  if (!jumplist_updater.AddTasks(link_items))
+    return false;
+
+  return jumplist_updater.CommitUpdate();
+}
+
 }  // namespace
+
+void SetUpdateJumpListForTesting(
+    UpdateJumpListForTesting updateJumpListForTesting) {
+  GetUpdateJumpListForTesting() = std::move(updateJumpListForTesting);
+}
 
 bool ShouldRegisterShortcutsMenuWithOs() {
   return true;
@@ -108,11 +137,6 @@ void RegisterShortcutsMenuWithOsTask(
                                          shortcuts_menu_icon_bitmaps)) {
     return;
   }
-
-  std::wstring app_user_model_id = GenerateAppUserModelId(profile_path, app_id);
-  JumpListUpdater jumplist_updater(app_user_model_id);
-  if (!jumplist_updater.BeginUpdate())
-    return;
 
   ShellLinkItemList shortcut_list;
 
@@ -141,8 +165,7 @@ void RegisterShortcutsMenuWithOsTask(
     shortcut_list.push_back(std::move(shortcut_link));
   }
 
-  if (jumplist_updater.AddTasks(shortcut_list))
-    jumplist_updater.CommitUpdate();
+  UpdateJumpList(GenerateAppUserModelId(profile_path, app_id), shortcut_list);
 }
 
 void RegisterShortcutsMenuWithOs(

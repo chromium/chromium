@@ -7,7 +7,16 @@
 
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
 
+class ShellLinkItem;
+
 namespace web_app {
+
+using UpdateJumpListForTesting = base::RepeatingCallback<
+    bool(std::wstring, const std::vector<scoped_refptr<ShellLinkItem>>&)>;
+
+// Callback when jump list has been registered with Windows.
+void SetUpdateJumpListForTesting(
+    UpdateJumpListForTesting updateJumpListForTesting);
 
 namespace internals {
 

@@ -62,6 +62,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -92,6 +93,8 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/browser/web_applications/components/web_app_shortcuts_menu_win.h"
+#include "chrome/browser/win/jumplist_updater.h"
 #endif
 
 namespace {
@@ -215,6 +218,10 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsTabStrip};
 };
+
+#if defined(OS_WIN)
+using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
+#endif
 
 using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
 
@@ -1021,6 +1028,94 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
                         icon_pixel_color) != expected_pixel_colors.end())
       << "Actual color (RGB) is: "
       << color_utils::SkColorToRgbString(icon_pixel_color);
+}
+#endif
+
+#if defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
+  struct ShortcutsMenuItem {
+   public:
+    ShortcutsMenuItem() : command_line(base::CommandLine::NO_PROGRAM) {}
+
+    // The string to be displayed in a shortcut menu item.
+    std::u16string title;
+
+    // Used for storing and appending command-line arguments.
+    base::CommandLine command_line;
+
+    // The absolute path to an icon to be displayed in a shortcut menu item.
+    base::FilePath icon_path;
+  };
+
+  os_hooks_suppress_.reset();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath application_dir =
+      temp_dir.GetPath().AppendASCII("application_menu");
+  base::FilePath desktop_dir = temp_dir.GetPath().AppendASCII("desktop");
+
+  ShortcutOverrideForTesting shortcut_override;
+  shortcut_override.desktop = desktop_dir;
+  shortcut_override.application_menu = application_dir;
+  SetShortcutOverrideForTesting(shortcut_override);
+  NavigateToURLAndWait(
+      browser(),
+      https_server()->GetURL(
+          "/banners/"
+          "manifest_test_page.html?manifest=manifest_with_shortcuts.json"));
+
+  std::vector<ShortcutsMenuItem> shortcuts_menu_items;
+
+  auto SaveJumpList = base::BindLambdaForTesting(
+      [&](std::wstring,
+          const std::vector<scoped_refptr<ShellLinkItem>>& link_items) -> bool {
+        for (auto& shell_item : link_items) {
+          ShortcutsMenuItem item;
+          item.title = shell_item->title();
+          item.icon_path = shell_item->icon_path();
+          item.command_line = *shell_item->GetCommandLine();
+          shortcuts_menu_items.push_back(item);
+        }
+        return true;
+      });
+
+  SetUpdateJumpListForTesting(SaveJumpList);
+
+  // Wait for OS hooks and installation to complete and the app to launch.
+  base::RunLoop run_loop_install;
+  WebAppTestRegistryObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  const AppId app_id = InstallPwaForCurrentUrl();
+  run_loop_install.Run();
+  app_loaded_observer.Wait();
+
+  EXPECT_EQ(2U, shortcuts_menu_items.size());
+  EXPECT_EQ(u"shortcut1", shortcuts_menu_items[0].title);
+  EXPECT_EQ(u"shortcut2", shortcuts_menu_items[1].title);
+  EXPECT_TRUE(base::PathExists(shortcuts_menu_items[0].icon_path));
+  EXPECT_TRUE(base::PathExists(shortcuts_menu_items[1].icon_path));
+  EXPECT_EQ(app_id, shortcuts_menu_items[0].command_line.GetSwitchValueASCII(
+                        switches::kAppId));
+  EXPECT_EQ(app_id, shortcuts_menu_items[1].command_line.GetSwitchValueASCII(
+                        switches::kAppId));
+  EXPECT_NE(
+      std::string::npos,
+      shortcuts_menu_items[0]
+          .command_line
+          .GetSwitchValueASCII(switches::kAppLaunchUrlForShortcutsMenuItem)
+          .find("/banners/launch_url1"));
+  EXPECT_NE(
+      std::string::npos,
+      shortcuts_menu_items[1]
+          .command_line
+          .GetSwitchValueASCII(switches::kAppLaunchUrlForShortcutsMenuItem)
+          .find("/banners/launch_url2"));
 }
 #endif
 

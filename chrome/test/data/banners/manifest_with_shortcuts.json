@@ -7,15 +7,14 @@
       "type": "image/png"
     }
   ],
-  "start_url": "https://example.org/start",
-  "scope": "/",
+  "start_url": "manifest_test_page.html",
   "display": "standalone",
   "orientation": "landscape",
   "shortcuts": [
     {
       "name": "shortcut1",
       "short_name": "short_name1",
-      "url": "launch_url",
+      "url": "launch_url1",
       "icons": [
         {
           "src": "launcher-icon-1x.png",
@@ -27,7 +26,7 @@
     {
       "name": "shortcut2",
       "short_name": "short_name2",
-      "url": "launch_url",
+      "url": "launch_url2",
       "icons": [
         {
           "src": "launcher-icon-2x.png",
