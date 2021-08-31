@@ -183,9 +183,11 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
       network::SimpleURLLoader::Create(std::move(request),
                                        CreateTrafficAnnotationTag());
 
+  // Fetchers are sometimes cancelled because a network change was detected,
+  // especially at startup and after sign-in on ChromeOS.
+  url_loader->SetRetryOptions(
+      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   url_loader->SetAllowHttpErrorResults(true);
-  // TODO(crbug.com/1113598): do we need to set retry options? (in particular
-  // RETRY_ON_NETWORK_CHANGE).
 
   if (serialized_request_proto_.has_value()) {
     url_loader->AttachStringForUpload(*serialized_request_proto_,

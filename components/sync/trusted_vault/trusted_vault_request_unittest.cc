@@ -35,6 +35,7 @@ using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
 using testing::Ne;
+using testing::NotNull;
 using testing::Pointee;
 
 const char kAccessToken[] = "access_token";
@@ -275,6 +276,29 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleNotFoundStatus) {
               Run(TrustedVaultRequest::HttpStatus::kNotFound, _));
   EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_NOT_FOUND,
                                    /*response_body=*/""));
+}
+
+TEST_F(TrustedVaultRequestTest, ShouldRetryUponNetworkChange) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
+      completion_callback;
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
+      /*request_body=*/absl::nullopt, completion_callback.Get());
+
+  // Mimic network change error for the first request.
+  EXPECT_CALL(completion_callback, Run(_, _)).Times(0);
+  EXPECT_TRUE(RespondToHttpRequest(net::ERR_NETWORK_CHANGED, net::HTTP_OK,
+                                   /*response_body=*/""));
+  testing::Mock::VerifyAndClearExpectations(&completion_callback);
+
+  // Second request should be sent, mimic its success.
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingRequest();
+  EXPECT_THAT(pending_request, NotNull());
+
+  EXPECT_CALL(completion_callback,
+              Run(TrustedVaultRequest::HttpStatus::kSuccess, kResponseBody));
+  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
 }
 
 TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
