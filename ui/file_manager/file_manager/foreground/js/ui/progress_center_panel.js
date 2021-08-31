@@ -192,14 +192,18 @@ export class ProgressCenterPanel {
    */
   generateRemainingTimeMessage(item) {
     const seconds = item.remainingTime;
-    if (seconds == 0 && item.state == 'progressing') {
-      return str('PENDING_LABEL');
+
+    // Return empty string for unsupported operation (which didn't set
+    // remaining time).
+    if (seconds == null) {
+      return '';
     }
 
-    // Return empty string for not supported operation (didn't set
-    // remainingTime) or 0 sec remainingTime in non progressing state.
-    if (!seconds) {
-      return '';
+    // Check if remaining time is valid (ie finite and positive).
+    if (!(isFinite(seconds) && seconds > 0)) {
+      // Return empty string for invalid remaining time in non progressing
+      // state.
+      return item.state == 'progressing' ? str('PENDING_LABEL') : '';
     }
 
     const hours = Math.floor(seconds / 3600);
