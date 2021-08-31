@@ -34,5 +34,5 @@ per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceacc
 per-file VERSION=govind@chromium.org
 per-file VERSION=mmoss@chromium.org
 
-# Fuchsia integration owners:
-per-file *fuchsia*=file://build/fuchsia/OWNERS
+# For Fuchsia-specific changes:
+per-file ...fuchsia*=file://build/fuchsia/OWNERS
