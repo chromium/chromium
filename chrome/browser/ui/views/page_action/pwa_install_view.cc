@@ -7,8 +7,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,19 +33,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace {
-
-const base::Feature kInstallIconExperiment{"InstallIconExperiment",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
-enum class ExperimentIcon { kDownloadToDevice, kDownload };
-
-constexpr base::FeatureParam<ExperimentIcon>::Option kIconParamOptions[] = {
-    {ExperimentIcon::kDownloadToDevice, "downloadToDevice"},
-    {ExperimentIcon::kDownload, "download"}};
-
-constexpr base::FeatureParam<ExperimentIcon> kInstallIconParam{
-    &kInstallIconExperiment, "installIcon", ExperimentIcon::kDownloadToDevice,
-    &kIconParamOptions};
 
 // Site engagement score threshold to show In-Product Help.
 // Add x_ prefix so the IPH feature engagement tracker can ignore this.
@@ -193,16 +178,7 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
-  if (base::FeatureList::IsEnabled(kInstallIconExperiment)) {
-    ExperimentIcon icon = kInstallIconParam.Get();
-    switch (icon) {
-      case ExperimentIcon::kDownloadToDevice:
-        return omnibox::kInstallDesktopIcon;
-      case ExperimentIcon::kDownload:
-        return omnibox::kInstallDownloadIcon;
-    }
-  }
-  return omnibox::kPlusIcon;
+  return omnibox::kInstallDesktopIcon;
 }
 
 std::u16string PwaInstallView::GetTextForTooltipAndAccessibleName() const {
