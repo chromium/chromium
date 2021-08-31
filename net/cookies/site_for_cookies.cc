@@ -4,6 +4,8 @@
 
 #include "net/cookies/site_for_cookies.h"
 
+#include <tuple>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -202,6 +204,11 @@ void SiteForCookies::MarkIfCrossScheme(const SchemefulSite& other) {
 
   // Mark that the two are cross-scheme to each other.
   schemefully_same_ = false;
+}
+
+bool operator<(const SiteForCookies& lhs, const SiteForCookies& rhs) {
+  return std::tie(lhs.site_, lhs.schemefully_same_) <
+         std::tie(rhs.site_, rhs.schemefully_same_);
 }
 
 }  // namespace net

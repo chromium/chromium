@@ -169,6 +169,11 @@ class NET_EXPORT SiteForCookies {
   // this function to return true.
   bool IsNull() const;
 
+  // Allows SiteForCookies to be used as a key in STL (for example, a std::set
+  // or std::map).
+  NET_EXPORT friend bool operator<(const SiteForCookies& lhs,
+                                   const SiteForCookies& rhs);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SiteForCookiesTest, SameScheme);
   FRIEND_TEST_ALL_PREFIXES(SiteForCookiesTest, SameSchemeOpaque);
