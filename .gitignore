@@ -73,6 +73,7 @@ vs-chromium-project.txt
 /_out
 /android_emulator_sdk
 /ash/ash_unittests_run.xml
+/ash/webui/help_app_ui/resources/prod
 /base/base_unittests_run.xml
 # See build/.gitignore for entries covering src/build.
 

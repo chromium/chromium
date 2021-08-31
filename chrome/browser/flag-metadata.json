@@ -3357,22 +3357,22 @@
   },
   {
     "name": "help-app-background-page",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 97
   },
   {
     "name": "help-app-discover-tab",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 97
   },
   {
     "name": "help-app-launcher-search",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 97
   },
   {
     "name": "help-app-search-service-integration",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 94
   },
   {
@@ -4766,7 +4766,7 @@
   },
   {
     "name": "release-notes-notification-all-channels",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     // This is required by test teams to verify functionality on dev/beta
     // channels on devices which have no access to commandline flags.
     "expiry_milestone": -1

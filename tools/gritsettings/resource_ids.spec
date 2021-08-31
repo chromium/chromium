@@ -416,7 +416,7 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [2519],
   },
-  "chromeos/components/help_app_ui/resources/help_app_resources.grd": {
+  "ash/webui/help_app_ui/resources/help_app_resources.grd": {
     "includes": [2520],
   },
   # Both help_app_kids_magazine_bundle_resources.grd and
@@ -424,11 +424,11 @@
   # because only one of them is built depending on if src_internal is available.
   # Lower bound for number of resource ids is the number of files, which is 3 in
   # in this case (HTML, JS and CSS file).
-  "chromeos/components/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd": {
+  "ash/webui/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd": {
     "META": {"sizes": {"includes": [5],}},
     "includes": [2530],
   },
-  "chromeos/components/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd": {
+  "ash/webui/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd": {
     "includes": [2530],
   },
   # Both help_app_bundle_resources.grd and help_app_bundle_mock_resources.grd
@@ -436,11 +436,11 @@
   # src_internal is available. Lower bound is that we bundle ~100 images for
   # offline articles with the app, as well as strings in every language (74),
   # and bundled content in the top 25 languages (25 x 2).
-  "chromeos/components/help_app_ui/resources/prod/help_app_bundle_resources.grd": {
+  "ash/webui/help_app_ui/resources/prod/help_app_bundle_resources.grd": {
     "META": {"sizes": {"includes": [300],}},  # Relies on src-internal.
     "includes": [2540],
   },
-  "chromeos/components/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd": {
+  "ash/webui/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd": {
     "includes": [2540],
   },
   "chromeos/components/media_app_ui/resources/media_app_resources.grd": {

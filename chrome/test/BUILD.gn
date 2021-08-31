@@ -2266,9 +2266,9 @@ if (!is_android && !is_fuchsia) {
       ]
       if (is_chromeos_ash) {
         deps += [
+          "//ash/webui/help_app_ui:browser_tests_js",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
           "//chromeos/components/eche_app_ui:browser_tests_js",
-          "//chromeos/components/help_app_ui:browser_tests_js",
           "//chromeos/components/media_app_ui:browser_tests_js",
           "//chromeos/components/personalization_app:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
@@ -3499,6 +3499,9 @@ if (!is_android && !is_fuchsia) {
         "//ash/public/cpp/external_arc",
         "//ash/webui/diagnostics_ui",
         "//ash/webui/file_manager:constants",
+        "//ash/webui/help_app_ui",
+        "//ash/webui/help_app_ui:buildflags",
+        "//ash/webui/help_app_ui/search:mojo_bindings",
         "//ash/webui/os_feedback_ui:os_feedback_ui",
         "//ash/webui/scanning",
         "//ash/webui/shimless_rma",
@@ -3527,9 +3530,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/attestation",
         "//chromeos/attestation:test_support",
         "//chromeos/components/eche_app_ui",
-        "//chromeos/components/help_app_ui",
-        "//chromeos/components/help_app_ui:buildflags",
-        "//chromeos/components/help_app_ui/search:mojo_bindings",
         "//chromeos/components/media_app_ui",
         "//chromeos/components/media_app_ui:browser_test_support",
         "//chromeos/components/media_app_ui:buildflags",

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/help_app_ui/url_constants.h"
 #include "url/gurl.h"
 
 namespace ash {

@@ -1689,7 +1689,7 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/chromeos/components/help_app_ui/resources/prod': {
+  'src/ash/webui/help_app_ui/resources/prod': {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',

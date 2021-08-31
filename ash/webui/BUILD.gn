@@ -20,6 +20,7 @@ test("ash_webui_unittests") {
     "//ash/webui/common/backend:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
+    "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/scanning:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",
     "//ash/webui/shimless_rma/mojom:unit_tests",
@@ -48,6 +49,7 @@ group("closure_compile") {
   deps = [
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
+    "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/os_feedback_ui:closure_compile",
     "//ash/webui/scanning:closure_compile",
     "//ash/webui/shimless_rma:closure_compile",
