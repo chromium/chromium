@@ -45,12 +45,10 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -451,12 +449,9 @@ public class ChromeProvidedSharingOptionsProvider {
 
                     ShareImageFileUtils.getBitmapFromUriAsync(
                             mActivity, mShareParams.getFileUris().get(0), (bitmap) -> {
-                                ActivityAndroidPermissionDelegate permissionDelegate =
-                                        new ActivityAndroidPermissionDelegate(
-                                                new WeakReference<Activity>(mActivity));
                                 SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(
                                         mActivity, bitmap, R.string.save_image_filename_prefix,
-                                        null, permissionDelegate);
+                                        null, mTabProvider.get().getWindowAndroid());
                                 saveBitmapDelegate.save();
                             });
                 })
