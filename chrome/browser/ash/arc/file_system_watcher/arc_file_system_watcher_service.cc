@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -177,6 +178,21 @@ class ArcFileSystemWatcherServiceFactory
   ~ArcFileSystemWatcherServiceFactory() override = default;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcFileSystemWatcherExceedLimitState" in
+// src/tools/metrics/histograms/enums.xml.
+enum class ArcFileSystemWatcherExceedLimitState {
+  kOnStart = 0,
+  kOnFilePathChanged = 1,
+  kMaxValue = kOnFilePathChanged,
+};
+
+void RecordArcFileSystemWatcherExceedLimit(
+    const ArcFileSystemWatcherExceedLimitState status) {
+  base::UmaHistogramEnumeration("Arc.FileSystemWatcher.ExceedLimit", status);
+}
+
 }  // namespace
 
 // The core part of ArcFileSystemWatcherService to watch for file changes in
@@ -248,6 +264,8 @@ ArcFileSystemWatcherService::FileSystemWatcher::~FileSystemWatcher() {
 void ArcFileSystemWatcherService::FileSystemWatcher::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Count how many times instance of FileSystemWatcher is created.
+  base::UmaHistogramBoolean("Arc.FileSystemWatcher.Created", true);
   // Initialize with the current timestamp map and avoid initial notification.
   // It is not needed since MediaProvider scans whole storage area on boot.
   last_notify_time_ = base::TimeTicks::Now();
@@ -255,18 +273,36 @@ void ArcFileSystemWatcherService::FileSystemWatcher::Start() {
       BuildTimestampMap(cros_dir_, android_dir_);
 
   watcher_ = std::make_unique<base::FilePathWatcher>();
-  // On Linux, base::FilePathWatcher::Watch() always returns true.
-  watcher_->Watch(cros_dir_, base::FilePathWatcher::Type::kRecursive,
-                  base::BindRepeating(&FileSystemWatcher::OnFilePathChanged,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  // Check whether inotify limit is hit in |cros_dir_| in the first place.
+  if (!watcher_->Watch(
+          cros_dir_, base::FilePathWatcher::Type::kRecursive,
+          base::BindRepeating(&FileSystemWatcher::OnFilePathChanged,
+                              weak_ptr_factory_.GetWeakPtr()))) {
+    LOG(WARNING)
+        << "Failed to start FileSystemWatcher for " << cros_dir_
+        << " because the number of required inotify watches exceeded its limit";
+    RecordArcFileSystemWatcherExceedLimit(
+        ArcFileSystemWatcherExceedLimitState::kOnStart);
+  }
 }
 
 void ArcFileSystemWatcherService::FileSystemWatcher::OnFilePathChanged(
     const base::FilePath& path,
     bool error) {
-  // On Linux, |error| is always false. Also, |path| is always the same path
-  // as one given to FilePathWatcher::Watch().
+  // On Linux, |error| indicates whether inotify exceeds its limit during
+  // FileSystemWatcher::OnFilePathChanged(). Also, |path| is always the same
+  // path as one given to FilePathWatcher::Watch().
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Check whether inotify limit is hit.
+  if (error) {
+    LOG(WARNING)
+        << "The watcher won't be notified of subsequent filesystem changes in "
+        << cros_dir_
+        << " because the number of required inotify watches exceeded its limit";
+    RecordArcFileSystemWatcherExceedLimit(
+        ArcFileSystemWatcherExceedLimitState::kOnFilePathChanged);
+    return;
+  }
   if (!outstanding_task_) {
     outstanding_task_ = true;
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(

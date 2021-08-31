@@ -3768,6 +3768,13 @@ Unknown properties are collapsed to zero. -->
   <int value="48" label="tel:// Device selected"/>
 </enum>
 
+<enum name="ArcFileSystemWatcherExceedLimitState">
+  <int value="0"
+      label="inotify exceeds its limit when ArcFileSystemWatcher is started"/>
+  <int value="1"
+      label="inotify exceeds its limit while processing a filesystem change"/>
+</enum>
+
 <enum name="ArchivemountError">
   <int value="0" label="Success">EXIT_SUCCESS</int>
   <int value="1" label="Failure">EXIT_FAILURE</int>
