@@ -34,7 +34,6 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
  * Tests the behavior of the Page Info UI.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
-@DisabledTest(message = "https://crbug.com/1223953")
 public class PageInfoTest {
     private static final String CONNECTION_IS_NOT_SECURE_TEXT = "Connection is not secure";
 
@@ -106,8 +105,8 @@ public class PageInfoTest {
 
     @Test
     @SmallTest
-    public void
-    testPageInfoCookiesSubPage() {
+    @DisabledTest(message = "https://crbug.com/1223953")
+    public void testPageInfoCookiesSubPage() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
