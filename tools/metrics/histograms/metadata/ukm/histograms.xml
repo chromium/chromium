@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-12-26">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-27">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>

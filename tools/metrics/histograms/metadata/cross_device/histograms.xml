@@ -1614,7 +1614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -1859,7 +1859,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
-    enum="MultiDeviceNearbyMessageAction" expires_after="2021-11-30">
+    enum="MultiDeviceNearbyMessageAction" expires_after="2022-02-27">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

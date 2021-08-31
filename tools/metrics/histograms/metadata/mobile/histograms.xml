@@ -901,7 +901,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>

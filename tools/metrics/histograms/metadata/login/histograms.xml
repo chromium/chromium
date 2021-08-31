@@ -226,7 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.SessionExitType" enum="LoginSessionExitType"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>iby@chromium.org</owner>
   <summary>
     Tracks whether a ChromeOS user was logged out because Chrome repeatedly

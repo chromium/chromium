@@ -1384,7 +1384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse.Latency" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -1492,7 +1492,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchResultInternalApp.Show"
-    enum="AppListInternalAppName" expires_after="2021-12-26">
+    enum="AppListInternalAppName" expires_after="2022-02-27">
   <owner>wutao@chromium.org</owner>
   <summary>
     The app list search result of an internal app that was shown to the user.

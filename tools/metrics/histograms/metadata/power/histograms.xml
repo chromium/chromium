@@ -125,7 +125,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2022-02-20">
+    expires_after="2022-02-27">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -953,7 +953,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.Mac.AppleSMCOpened" enum="BooleanSuccess"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>lgrey@chromium.org</owner>
   <summary>
     When metrics collection started, records true if a handle to the System
@@ -1309,7 +1309,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1319,7 +1319,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1329,7 +1329,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1416,7 +1416,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1441,7 +1441,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2021-12-26">
+    enum="PowerMLSmartDimParameterResult" expires_after="2022-02-27">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

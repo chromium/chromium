@@ -103,7 +103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>austinct@chromium.org</owner>
   <summary>
     Time taken for the Chrome OS cros-disks daemon to perform a format

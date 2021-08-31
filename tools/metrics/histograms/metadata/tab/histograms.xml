@@ -446,7 +446,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Screenshot.Action" enum="TabScreenshotAction"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>skare@chromium.org</owner>
   <summary>
     Records actions taken after one or more screenshots of a page were taken.

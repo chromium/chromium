@@ -658,7 +658,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationCloseResult"
-    enum="PlatformNotificationStatus" expires_after="2021-12-26">
+    enum="PlatformNotificationStatus" expires_after="2022-02-27">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>

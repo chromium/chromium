@@ -3601,7 +3601,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.Shown" enum="BooleanPresent"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -7831,7 +7831,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Hwsec.Attestation.Status"
-    enum="HwsecAttestationOpsStatus" expires_after="2021-12-26">
+    enum="HwsecAttestationOpsStatus" expires_after="2022-02-27">
 <!-- Name completed by histogram_suffixes name="AttestationOps" -->
 
   <owner>garryxiao@chromium.org</owner>
@@ -9115,7 +9115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs"
-    units="ms" expires_after="2021-12-26">
+    units="ms" expires_after="2022-02-27">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <summary>
@@ -10714,7 +10714,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>siggi@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -10818,7 +10818,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchFirst" units="units"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>ppi@chromium.org</owner>
   <summary>
     The time it takes to spawn the first child subprocess (including sandbox
@@ -17727,7 +17727,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TouchBar.Default.Metrics" enum="DefaultTouchBarActions"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>Tracks the usage of the default touch bar buttons.</summary>
@@ -19269,7 +19269,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Preinstalled.EnabledCount" units="apps"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -20316,7 +20316,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WrenchMenu.TimeToAction" units="units"
-    expires_after="2021-12-26">
+    expires_after="2022-02-27">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>

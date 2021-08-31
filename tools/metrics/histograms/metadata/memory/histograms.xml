@@ -1267,7 +1267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.Experimental.UserLevelMemoryPressureSignal.RendererPrivateMemoryFootprintBefore"
-    units="MB" expires_after="2021-12-26">
+    units="MB" expires_after="2022-02-27">
   <owner>keishi@chromium.org</owner>
   <owner>tasak@chromium.org</owner>
   <summary>
@@ -2553,7 +2553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count.InitializedAndNotDead"
-    units="processes" expires_after="2021-12-26">
+    units="processes" expires_after="2022-02-27">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
