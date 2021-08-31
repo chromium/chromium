@@ -19804,12 +19804,12 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2021-08-09">
+    enum="WebSiteSettingsAllSitesAction2" expires_after="M99">
   <owner>jarrydg@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
     Tracks actions with the &quot;All Sites&quot; page in website settings
-    starting in M82.
+    starting in M82. No data available for M94, was temporarily expired.
   </summary>
 </histogram>
 
