@@ -152,6 +152,14 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * @param webContents WebContents where a navigation was just completed.
+     * @param profile Profile to which |webContents| belongs.
+     */
+    public static void updateActiveWebContents(WebContents webContents) {
+        SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
+    }
+
+    /**
      * Called by the native code in order to populate the list.
      *
      * @param allInfos List to populate provided by getAllTargetDeviceInfos.
@@ -186,5 +194,7 @@ public class SendTabToSelfAndroidBridge {
                 WebContents webContents, String guid, String url, String targetDeviceSyncCacheGuid);
 
         void getAllTargetDeviceInfos(Profile profile, List<TargetDeviceInfo> guids);
+
+        void updateActiveWebContents(WebContents webContents);
     }
 }

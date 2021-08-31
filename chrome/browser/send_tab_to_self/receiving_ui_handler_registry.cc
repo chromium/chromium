@@ -80,6 +80,22 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
 #endif
 }
 
+AndroidNotificationHandler*
+ReceivingUiHandlerRegistry::GetAndroidNotificationHandlerForProfile(
+    Profile* profile) {
+#if defined(OS_ANDROID)
+  for (const std::unique_ptr<ReceivingUiHandler>& handler :
+       applicable_handlers_) {
+    auto* notification_handler =
+        static_cast<AndroidNotificationHandler*>(handler.get());
+    if (notification_handler && notification_handler->profile() == profile) {
+      return notification_handler;
+    }
+  }
+#endif
+  return nullptr;
+}
+
 const std::vector<std::unique_ptr<ReceivingUiHandler>>&
 ReceivingUiHandlerRegistry::GetHandlers() const {
   return applicable_handlers_;
