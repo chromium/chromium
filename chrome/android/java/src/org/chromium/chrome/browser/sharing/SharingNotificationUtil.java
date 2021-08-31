@@ -57,9 +57,8 @@ public final class SharingNotificationUtil {
         Resources resources = context.getResources();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(/*preferCompat=*/true,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.SHARING,
-                                /*remoteAppPackageName=*/null,
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setContentText(contentText)
@@ -124,9 +123,8 @@ public final class SharingNotificationUtil {
                 resources.getString(R.string.sharing_sending_notification_title, targetName);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(/*preferCompat=*/true,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.SHARING,
-                                /*remoteAppPackageName=*/null,
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setGroup(group)
@@ -161,9 +159,8 @@ public final class SharingNotificationUtil {
         Resources resources = context.getResources();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(/*preferCompat=*/true,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.SHARING,
-                                /*remoteAppPackageName=*/null,
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setGroup(group)

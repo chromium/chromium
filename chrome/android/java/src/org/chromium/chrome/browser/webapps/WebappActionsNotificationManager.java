@@ -116,9 +116,8 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
                 NotificationUmaTracker.SystemNotificationType.WEBAPP_ACTIONS,
                 null /* notificationTag */, NotificationConstants.NOTIFICATION_ID_WEBAPP_ACTIONS);
         return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(true /* prefer compat */,
-                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS,
-                        null /* remoteAppPackageName */, metadata)
+                .createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(webappExtras.shortName)
                 .setContentText(appContext.getString(R.string.webapp_tap_to_copy_url))

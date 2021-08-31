@@ -100,7 +100,7 @@ public class WebApkInstallService {
 
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, channelId, null, metadata);
+                        channelId, metadata);
         notificationBuilder.setContentTitle(shortName)
                 .setContentText(message)
                 .setLargeIcon(icon)
