@@ -1276,8 +1276,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheCount" units="units"
-    expires_after="2021-10-04">
+    expires_after="2022-02-01">
   <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of cached extensions on disk. Reported on Chrome OS during user
@@ -1286,8 +1287,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
-    expires_after="2021-10-04">
+    expires_after="2022-02-01">
   <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total size of .crx files in cache on disk. Reported on Chrome OS during user
