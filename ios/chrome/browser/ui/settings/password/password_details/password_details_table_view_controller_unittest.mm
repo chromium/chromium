@@ -149,12 +149,13 @@ class PasswordDetailsTableViewControllerTest
     reauthentication_module_ = [[MockReauthenticationModule alloc] init];
     reauthentication_module_.expectedResult = ReauthenticationResult::kSuccess;
     snack_bar_ = [[FakeSnackbarImplementation alloc] init];
+    credential_type_ = CredentialTypeRegular;
   }
 
   ChromeTableViewController* InstantiateController() override {
     PasswordDetailsTableViewController* controller =
         [[PasswordDetailsTableViewController alloc]
-            initWithIsAddingNewCredential:NO];
+            initWithCredentialType:credential_type_];
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
@@ -185,6 +186,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetFederatedPassword() {
+    set_credential_type(CredentialTypeFederation);
     auto form = password_manager::PasswordForm();
     form.username_value = u"test@egmail.com";
     form.url = GURL(u"http://www.example.com/");
@@ -199,6 +201,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetBlockedOrigin() {
+    set_credential_type(CredentialTypeBlocked);
     auto form = password_manager::PasswordForm();
     form.url = GURL("http://www.example.com/");
     form.blocked_by_user = true;
@@ -232,12 +235,16 @@ class PasswordDetailsTableViewControllerTest
   FakeSnackbarImplementation* snack_bar() {
     return (FakeSnackbarImplementation*)snack_bar_;
   }
+  void set_credential_type(CredentialType credentialType) {
+    credential_type_ = credentialType;
+  }
 
  private:
   id snack_bar_;
   FakePasswordDetailsHandler* handler_;
   FakePasswordDetailsDelegate* delegate_;
   MockReauthenticationModule* reauthentication_module_;
+  CredentialType credential_type_;
 };
 
 // Tests that password is displayed properly.

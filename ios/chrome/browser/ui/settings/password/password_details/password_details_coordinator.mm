@@ -47,6 +47,10 @@
 // passwords.
 @property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
 
+// Denotes the type of the credential passed to this coordinator. Could be
+// blocked, federated, new or regular.
+@property(nonatomic, assign) CredentialType credentialType;
+
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
@@ -80,6 +84,12 @@
     _password = password;
     _manager = manager;
     _reauthenticationModule = reauthModule;
+    _credentialType = password.blocked_by_user ? CredentialTypeBlocked
+                                               : CredentialTypeRegular;
+    if (_credentialType == CredentialTypeRegular &&
+        !_password.federation_origin.opaque()) {
+      _credentialType = CredentialTypeFederation;
+    }
     _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
   }
@@ -88,7 +98,7 @@
 
 - (void)start {
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithIsAddingNewCredential:NO];
+      initWithCredentialType:_credentialType];
 
   self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_password
                                                passwordCheckManager:_manager];

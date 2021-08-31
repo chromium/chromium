@@ -95,8 +95,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // image icon in the |usernameTextItem| cell.
 @property(nonatomic, weak) UIView* usernameErrorAnchorView;
 
-// Distinguishes between the add and edit password form.
-@property(nonatomic, assign) BOOL isAddingNewCredential;
+// Denotes the type of the credential passed to this coordinator. Could be
+// blocked, federated, new or regular.
+@property(nonatomic, assign) CredentialType credentialType;
 
 @end
 
@@ -104,10 +105,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithIsAddingNewCredential:(BOOL)isAddingNewCredential {
+- (instancetype)initWithCredentialType:(CredentialType)credentialType {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _isAddingNewCredential = isAddingNewCredential;
+    _credentialType = credentialType;
   }
   return self;
 }
@@ -119,7 +120,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
 
-  if (self.isAddingNewCredential) {
+  if (self.credentialType == CredentialTypeNew) {
     // TODO(crbug.com/1226006): Use i18n strings for the buttons.
     self.navigationItem.title = @"Add Password";
 
@@ -155,7 +156,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  if (!self.isAddingNewCredential) {
+  if (self.credentialType != CredentialTypeNew) {
     [self.handler passwordDetailsTableViewControllerDidDisappear];
   }
   [super viewDidDisappear:animated];
@@ -220,34 +221,33 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     [model addItem:self.websiteTextItem
         toSectionWithIdentifier:SectionIdentifierPassword];
   }
-
-  // Blocked password forms have username equal to nil.
-  if (self.password.username != nil || self.isAddingNewCredential) {
+  // Blocked passwords don't have username and password value.
+  if (self.credentialType != CredentialTypeBlocked) {
     self.usernameTextItem = [self usernameItem];
     [model addItem:self.usernameTextItem
         toSectionWithIdentifier:SectionIdentifierPassword];
-  }
 
-  // Federated and blocked password forms don't have password value.
-  if ([self.password.password length] || self.isAddingNewCredential) {
-    self.passwordTextItem = [self passwordItem];
-    [model addItem:self.passwordTextItem
-        toSectionWithIdentifier:SectionIdentifierPassword];
+    if (self.credentialType == CredentialTypeFederation) {
+      // Federated password forms don't have password value.
+      [model addItem:[self federationItem]
+          toSectionWithIdentifier:SectionIdentifierPassword];
+    } else {
+      self.passwordTextItem = [self passwordItem];
+      [model addItem:self.passwordTextItem
+          toSectionWithIdentifier:SectionIdentifierPassword];
 
-    if (self.password.isCompromised) {
-      [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+      if (self.password.isCompromised) {
+        [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
 
-      if (self.password.changePasswordURL.is_valid()) {
-        [model addItem:[self changePasswordItem]
+        if (self.password.changePasswordURL.is_valid()) {
+          [model addItem:[self changePasswordItem]
+              toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+        }
+
+        [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
       }
-
-      [model addItem:[self changePasswordRecommendationItem]
-          toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
-  } else if ([self.password.federation length]) {
-    [model addItem:[self federationItem]
-        toSectionWithIdentifier:SectionIdentifierPassword];
   }
 }
 
@@ -265,7 +265,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldValue = self.password.website;  // Empty for a new form.
   // TODO(crbug.com/1226006): The website field should be editable in the edit
   // mode.
-  item.textFieldEnabled = self.isAddingNewCredential;
+  item.textFieldEnabled = (self.credentialType == CredentialTypeNew);
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.hideIcon = YES;
   if (base::FeatureList::IsEnabled(
@@ -273,7 +273,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     // TODO(crbug.com/1226006): Use i18n string for the placeholder.
     item.textFieldPlaceholder = @"example.com";
   }
-  if (self.isAddingNewCredential) {
+  if (self.credentialType == CredentialTypeNew) {
     item.delegate = self;
   }
   return item;
@@ -287,7 +287,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;  // Empty for a new form.
   // If password is missing (federated credential) don't allow to edit username.
-  if ([self.password.password length] &&
+  if (self.credentialType != CredentialTypeFederation &&
       base::FeatureList::IsEnabled(
           password_manager::features::kEditPasswordsInSettings)) {
     item.textFieldEnabled = self.tableView.editing;
@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     item.textFieldEnabled = NO;
     item.hideIcon = YES;
   }
-  item.textFieldEnabled |= self.isAddingNewCredential;
+  item.textFieldEnabled |= (self.credentialType == CredentialTypeNew);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
     // TODO(crbug.com/1226006): Use i18n string for the placeholder.
@@ -314,13 +314,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
-  if (!self.isAddingNewCredential) {
+  if (self.credentialType != CredentialTypeNew) {
     item.textFieldValue = [self isPasswordShown] || self.tableView.editing
                               ? self.password.password
                               : kMaskedPassword;
   }
-  item.textFieldEnabled = self.isAddingNewCredential || self.tableView.editing;
-  item.hideIcon = self.isAddingNewCredential || !self.tableView.editing;
+  item.textFieldEnabled =
+      (self.credentialType == CredentialTypeNew) || self.tableView.editing;
+  item.hideIcon =
+      (self.credentialType == CredentialTypeNew) || !self.tableView.editing;
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.keyboardType = UIKeyboardTypeURL;
   item.returnKeyType = UIReturnKeyDone;
@@ -380,7 +382,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (self.isAddingNewCredential) {
+  if (self.credentialType == CredentialTypeNew) {
     return;
   }
   TableViewModel* model = self.tableViewModel;
@@ -471,7 +473,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  return !self.editing && !self.isAddingNewCredential;
+  return !self.editing && self.credentialType != CredentialTypeNew;
 }
 
 #pragma mark - UITableViewDataSource
@@ -767,7 +769,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Checks if the username is valid and updates item accordingly.
 - (BOOL)checkIfValidUsername {
-  DCHECK(self.password.username || self.isAddingNewCredential);
+  DCHECK(self.password.username || (self.credentialType == CredentialTypeNew));
   NSString* newUsernameValue = self.usernameTextItem.textFieldValue;
   BOOL usernameChanged =
       ![newUsernameValue isEqualToString:self.password.username];
@@ -783,7 +785,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Checks if the password is valid and updates item accordingly.
 - (BOOL)checkIfValidPassword {
-  DCHECK(self.password.password || self.isAddingNewCredential);
+  DCHECK(self.password.password || (self.credentialType == CredentialTypeNew));
 
   BOOL passwordEmpty = [self.passwordTextItem.textFieldValue length] == 0;
   self.passwordTextItem.hasValidText = !passwordEmpty;

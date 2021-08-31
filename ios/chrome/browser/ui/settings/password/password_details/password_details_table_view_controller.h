@@ -14,12 +14,20 @@
 @protocol PasswordDetailsTableViewControllerDelegate;
 @protocol ReauthenticationProtocol;
 
+// Denotes the credential type that is being displayed by the view controller.
+typedef NS_ENUM(NSInteger, CredentialType) {
+  CredentialTypeRegular = kItemTypeEnumZero,
+  CredentialTypeBlocked,
+  CredentialTypeFederation,
+  CredentialTypeNew,
+};
+
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
     : AutofillEditTableViewController <PasswordDetailsConsumer>
 
 // The designated initializer.
-- (instancetype)initWithIsAddingNewCredential:(BOOL)isAddingNewCredential
+- (instancetype)initWithCredentialType:(CredentialType)credentialType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

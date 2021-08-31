@@ -60,7 +60,7 @@
 
 - (void)start {
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithIsAddingNewCredential:YES];
+      initWithCredentialType:CredentialTypeNew];
 
   self.mediator =
       [[AddPasswordMediator alloc] initWithPasswordCheckManager:_manager];
