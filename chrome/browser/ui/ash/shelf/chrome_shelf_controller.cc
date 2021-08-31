@@ -1472,14 +1472,6 @@ void ChromeShelfController::ReleaseProfile() {
 
 void ChromeShelfController::ShelfItemAdded(int index) {
   ash::ShelfID id = model_->items()[index].id;
-  // Construct a ShelfItemDelegate for the item if one does not yet exist.
-  // The delegate must be set before FetchImage() so that shelf item icon is
-  // set properly when FetchImage() calls OnAppImageUpdated() synchronously.
-  if (!model_->GetShelfItemDelegate(id)) {
-    model_->ReplaceShelfItemDelegate(
-        id, AppShortcutShelfItemController::Create(id));
-  }
-
   // Fetch the app icon, this may synchronously update the item's image.
   AppIconLoader* app_icon_loader = GetAppIconLoaderForApp(id.app_id);
   if (app_icon_loader)

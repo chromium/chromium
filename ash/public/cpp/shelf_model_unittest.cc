@@ -109,7 +109,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
   EXPECT_TRUE(model_->ItemByID(item1.id));
-  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Change to a platform app item.
   item1.type = TYPE_APP;
@@ -135,7 +135,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item2.id));
   EXPECT_TRUE(model_->ItemByID(item2.id));
-  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Change the item type.
   item2.type = TYPE_APP;
@@ -153,7 +153,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   EXPECT_EQ(2, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item3.id));
   EXPECT_TRUE(model_->ItemByID(item3.id));
-  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Move the second to the first.
   model_->Move(1, 0);
@@ -451,7 +451,7 @@ TEST_F(ShelfModelTest, RemoveItemAndTakeShelfItemDelegate) {
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
   EXPECT_TRUE(model_->ItemByID(item1.id));
-  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Set item delegate.
   auto* delegate = new TestShelfItemDelegate(item1.id);

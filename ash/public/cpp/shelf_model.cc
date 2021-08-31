@@ -145,10 +145,10 @@ int ShelfModel::Add(const ShelfItem& item,
 int ShelfModel::AddAt(int index,
                       const ShelfItem& item,
                       std::unique_ptr<ShelfItemDelegate> delegate) {
-  // TODO(https://crbug.com/1238470): Update the delegate first to avoid
-  // constructing it in observer callbacks. This will be unnecessary once
-  // ChromeShelfController::ShelfItemAdded() no longer lazily sets delegates.
-  ReplaceShelfItemDelegate(item.id, std::move(delegate));
+  // Update the delegate map immediately. We don't send a
+  // ShelfItemDelegateChanged() call when adding items to the model.
+  delegate->set_shelf_id(item.id);
+  id_to_item_delegate_map_[item.id] = std::move(delegate);
 
   // Items should have unique non-empty ids to avoid undefined model behavior.
   DCHECK(!item.id.IsNull()) << " The id is null.";
@@ -157,6 +157,7 @@ int ShelfModel::AddAt(int index,
   items_.insert(items_.begin() + index, item);
   for (auto& observer : observers_)
     observer.ShelfItemAdded(index);
+
   return index;
 }
 
@@ -329,11 +330,11 @@ int ShelfModel::FirstRunningAppIndex() const {
 void ShelfModel::ReplaceShelfItemDelegate(
     const ShelfID& shelf_id,
     std::unique_ptr<ShelfItemDelegate> item_delegate) {
+  DCHECK(item_delegate);
   // Create a copy of the id that can be safely accessed if |shelf_id| is backed
   // by a controller that will be deleted in the assignment below.
   const ShelfID safe_shelf_id = shelf_id;
-  if (item_delegate)
-    item_delegate->set_shelf_id(safe_shelf_id);
+  item_delegate->set_shelf_id(safe_shelf_id);
   // This assignment replaces any ShelfItemDelegate already registered for
   // |shelf_id|.
   std::unique_ptr<ShelfItemDelegate> old_item_delegate =
