@@ -1,6 +1,9 @@
     <style include="cr-hidden-style">
       :host {
         --cr-tabs-height: 48px;
+        --cr-tabs-icon-margin-end: var(--cr-icon-size);
+        --cr-tabs-icon-size: var(--cr-icon-size);
+        --cr-tabs-selected-color: var(--google-blue-600);
         cursor: pointer;
         display: flex;
         flex-direction: row;
@@ -10,6 +13,12 @@
         user-select: none;
       }
 
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --cr-tabs-selected-color: var(--google-blue-refresh-300);
+        }
+      }
+
       .tab {
         align-items: center;
         color: var(--cr-secondary-text-color);
@@ -17,6 +26,8 @@
         flex: auto;
         height: 100%;
         justify-content: center;
+        margin-inline-end: var(--cr-tabs-margin-end);
+        margin-inline-start: var(--cr-tabs-margin-start);
         opacity: .8;
         position: relative;
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
@@ -31,18 +42,27 @@
       }
 
       .selected {
-        color: var(--google-blue-600);
+        color: var(--cr-tabs-selected-color);
         opacity: 1;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .selected {
-          color: var(--google-blue-refresh-300);
-        }
       }
 
       .selected:focus {
         font-weight: var(--cr-tabs-selected-tab-focused-font-weight, 700);
+      }
+
+      .tab-icon {
+        -webkit-mask-position: center;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: var(--cr-tabs-icon-size);
+        background-color: var(--cr-secondary-text-color);
+        display: none;
+        height: var(--cr-tabs-icon-size);
+        margin-inline-end: var(--cr-tabs-icon-margin-end);
+        width: var(--cr-tabs-icon-size);
+      }
+
+      .selected .tab-icon {
+        background-color: var(--cr-tabs-selected-color);
       }
 
       .tab-indicator {
@@ -83,6 +103,8 @@
           on-click="onTabClick_"
           aria-selected$="[[getAriaSelected_(index, selected)]]"
           tabindex$="[[getTabindex_(index, selected)]]">
+        <div class="tab-icon" style$="[[getIconStyle_(index)]]">
+        </div>
         [[item]]
         <div class="tab-indicator"></div>
       </div>

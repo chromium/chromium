@@ -20,6 +20,7 @@ suite('cr_tabs_test', function() {
     document.body.innerHTML = '';
     tabs = /** @type {!CrTabsElement} */ (document.createElement('cr-tabs'));
     tabs.tabNames = ['tab1', 'tab2', 'tab3'];
+    tabs.tabIcons = ['chrome://icon1.png'];
     document.body.appendChild(tabs);
     return flushTasks();
   });
@@ -93,6 +94,16 @@ suite('cr_tabs_test', function() {
     assertEquals(1, tab.classList.length);
     assertEquals('false', tab.getAttribute('aria-selected'));
     assertEquals('-1', tab.getAttribute('tabindex'));
+  });
+
+  test('tab icons are optional', () => {
+    const tab0 = getTabElement(0);
+    const tabIcon0 = tab0.querySelector('.tab-icon');
+    assertNotEquals('none', getComputedStyle(tabIcon0).display);
+
+    const tab1 = getTabElement(1);
+    const tabIcon1 = tab1.querySelector('.tab-icon');
+    assertEquals('none', getComputedStyle(tabIcon1).display);
   });
 
   test('right/left pressed, selection changes and event fires', async () => {
