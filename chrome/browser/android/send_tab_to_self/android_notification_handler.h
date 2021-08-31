@@ -40,10 +40,11 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
       const std::vector<const SendTabToSelfEntry*>& new_entries) override;
   void DismissEntries(const std::vector<std::string>& guids) override;
 
-  void OnMessageOpened(GURL url);
+  void OnMessageOpened(GURL url, std::string guid);
   // Called whenever the message is dismissed (e.g. after timeout or because the
   // user already accepted or declined the message).
   void OnMessageDismissed(messages::MessageWrapper* message,
+                          std::string guid,
                           messages::DismissReason dismiss_reason);
 
   // Messages that have not yet been queued due to no active WebContents.

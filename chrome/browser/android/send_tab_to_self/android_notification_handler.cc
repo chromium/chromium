@@ -14,6 +14,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/share/android/jni_headers/NotificationManager_jni.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +22,8 @@
 #include "components/messages/android/message_wrapper.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,12 +74,12 @@ void AndroidNotificationHandler::DisplayNewEntries(
           std::make_unique<messages::MessageWrapper>(
               messages::MessageIdentifier::SEND_TAB_TO_SELF);
 
-      message->SetActionClick(
-          base::BindOnce(&AndroidNotificationHandler::OnMessageOpened,
-                         base::Unretained(this), entry->GetURL()));
-      message->SetDismissCallback(
-          base::BindOnce(&AndroidNotificationHandler::OnMessageDismissed,
-                         base::Unretained(this), message.get()));
+      message->SetActionClick(base::BindOnce(
+          &AndroidNotificationHandler::OnMessageOpened, base::Unretained(this),
+          entry->GetURL(), entry->GetGUID()));
+      message->SetDismissCallback(base::BindOnce(
+          &AndroidNotificationHandler::OnMessageDismissed,
+          base::Unretained(this), message.get(), entry->GetGUID()));
 
       message->SetTitle(l10n_util::GetStringFUTF16(
           IDS_SEND_TAB_TO_SELF_MESSAGE,
@@ -130,21 +133,28 @@ void AndroidNotificationHandler::DismissEntries(
   }
 }
 
-void AndroidNotificationHandler::OnMessageOpened(GURL url) {
+void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
   DCHECK(web_contents_);
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
   web_contents_->OpenURL(params);
+  auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
+                    ->GetSendTabToSelfModel();
+  model->DismissEntry(guid);
 }
 
 void AndroidNotificationHandler::OnMessageDismissed(
     messages::MessageWrapper* message,
+    std::string guid,
     messages::DismissReason dismiss_reason) {
   for (unsigned int i = 0; i < queued_messages_.size(); i++) {
     if (queued_messages_.at(i).get() == message) {
       queued_messages_.erase(queued_messages_.begin() + i);
+      auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
+                        ->GetSendTabToSelfModel();
+      model->DismissEntry(guid);
     }
   }
 }
