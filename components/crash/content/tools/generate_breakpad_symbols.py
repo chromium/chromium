@@ -22,6 +22,7 @@ import six.moves.queue
 import subprocess
 import sys
 import threading
+import traceback
 
 
 CONCURRENT_TASKS=multiprocessing.cpu_count()
@@ -300,73 +301,74 @@ def GenerateSymbols(options, binaries):
   """Dumps the symbols of binary and places them in the given directory."""
 
   queue = six.moves.queue.Queue()
+  exceptions = []
   print_lock = threading.Lock()
+  exceptions_lock = threading.Lock()
 
   def _Worker():
     dump_syms = GetDumpSymsBinary(options.build_dir)
     while True:
-      should_dump_syms = True
-      reason = "no reason"
-      binary = queue.get()
+      try:
+        should_dump_syms = True
+        reason = "no reason"
+        binary = queue.get()
 
-      run_once = True
-      while run_once:
-        run_once = False
+        run_once = True
+        while run_once:
+          run_once = False
 
-        if not dump_syms:
-          should_dump_syms = False
-          reason = "Could not locate dump_syms executable."
-          break
-
-        binary_info = GetBinaryInfoFromHeaderInfo(
-            subprocess.check_output([dump_syms, '-i', binary]).splitlines()[0])
-        if not binary_info:
-          should_dump_syms = False
-          reason = "Could not obtain binary information."
-          break
-
-        # See if the output file already exists.
-        output_dir = os.path.join(options.symbols_dir, binary_info.name,
-                                  binary_info.hash)
-        output_path = os.path.join(output_dir, binary_info.name + '.sym')
-        if os.path.isfile(output_path):
-          should_dump_syms = False
-          reason = "Symbol file already found."
-          break
-
-        # See if there is a symbol file already found next to the binary
-        potential_symbol_files = glob.glob('%s.breakpad*' % binary)
-        for potential_symbol_file in potential_symbol_files:
-          with open(potential_symbol_file, 'rt') as f:
-            symbol_info = GetBinaryInfoFromHeaderInfo(f.readline())
-          if symbol_info == binary_info:
-            CreateSymbolDir(options, output_dir, binary_info.hash)
-            shutil.copyfile(potential_symbol_file, output_path)
+          if not dump_syms:
             should_dump_syms = False
-            reason = "Found local symbol file."
+            reason = "Could not locate dump_syms executable."
             break
 
-      if not should_dump_syms:
+          binary_info = GetBinaryInfoFromHeaderInfo(
+              subprocess.check_output(
+                  [dump_syms, '-i', binary]).splitlines()[0])
+          if not binary_info:
+            should_dump_syms = False
+            reason = "Could not obtain binary information."
+            break
+
+          # See if the output file already exists.
+          output_dir = os.path.join(options.symbols_dir, binary_info.name,
+                                    binary_info.hash)
+          output_path = os.path.join(output_dir, binary_info.name + '.sym')
+          if os.path.isfile(output_path):
+            should_dump_syms = False
+            reason = "Symbol file already found."
+            break
+
+          # See if there is a symbol file already found next to the binary
+          potential_symbol_files = glob.glob('%s.breakpad*' % binary)
+          for potential_symbol_file in potential_symbol_files:
+            with open(potential_symbol_file, 'rt') as f:
+              symbol_info = GetBinaryInfoFromHeaderInfo(f.readline())
+            if symbol_info == binary_info:
+              CreateSymbolDir(options, output_dir, binary_info.hash)
+              shutil.copyfile(potential_symbol_file, output_path)
+              should_dump_syms = False
+              reason = "Found local symbol file."
+              break
+
+        if not should_dump_syms:
+          if options.verbose:
+            with print_lock:
+              print("Skipping %s (%s)" % (binary, reason))
+          continue
+
         if options.verbose:
           with print_lock:
-            print("Skipping %s (%s)" % (binary, reason))
-        queue.task_done()
-        continue
+            print("Generating symbols for %s" % binary)
 
-      if options.verbose:
-        with print_lock:
-          print("Generating symbols for %s" % binary)
-
-      CreateSymbolDir(options, output_dir, binary_info.hash)
-      try:
+        CreateSymbolDir(options, output_dir, binary_info.hash)
         with open(output_path, 'wb') as f:
           subprocess.check_call([dump_syms, '-r', binary], stdout=f)
       except Exception as e:
-        # Not much we can do about this.
-        with print_lock:
-          print(e)
-
-      queue.task_done()
+        with exceptions_lock:
+          exceptions.append(traceback.format_exc())
+      finally:
+        queue.task_done()
 
   for binary in binaries:
     queue.put(binary)
@@ -377,6 +379,11 @@ def GenerateSymbols(options, binaries):
     t.start()
 
   queue.join()
+  if exceptions:
+    exception_str = ('One or more exceptions occurred while generating '
+                     'symbols:\n')
+    exception_str += '\n'.join(exceptions)
+    raise Exception(exception_str)
 
 
 def main():
