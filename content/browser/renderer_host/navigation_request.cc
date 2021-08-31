@@ -3795,7 +3795,6 @@ void NavigationRequest::OnRedirectChecksComplete(
     ParseAndPersistAcceptCHForNavigation(
         commit_params_->redirects.back(),
         commit_params_->redirect_response.back()->parsed_headers,
-        commit_params_->redirect_response.back()->headers.get(),
         browser_context, client_hints_delegate, frame_tree_node_);
     AddNavigationRequestClientHintsHeaders(
         common_params_->url, &client_hints_extra_headers, browser_context,
@@ -4187,9 +4186,8 @@ void NavigationRequest::CommitNavigation() {
         opt_in_hints_from_response;
     if (response()) {
       opt_in_hints_from_response = ParseAndPersistAcceptCHForNavigation(
-          common_params_->url, response()->parsed_headers,
-          response()->headers.get(), browser_context, client_hints_delegate,
-          frame_tree_node_);
+          common_params_->url, response()->parsed_headers, browser_context,
+          client_hints_delegate, frame_tree_node_);
     }
     commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
         common_params_->url, client_hints_delegate, frame_tree_node_);

@@ -31,7 +31,6 @@
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -512,17 +511,6 @@ URLLoaderInterceptor::~URLLoaderInterceptor() {
   }
 }
 
-const net::HttpRequestHeaders& URLLoaderInterceptor::GetLastRequestHeaders() {
-  base::AutoLock lock(last_request_lock_);
-  return last_request_headers_;
-}
-
-void URLLoaderInterceptor::SetLastRequestHeaders(
-    const net::HttpRequestHeaders& headers) {
-  base::AutoLock lock(last_request_lock_);
-  last_request_headers_ = headers;
-}
-
 // static
 std::unique_ptr<URLLoaderInterceptor>
 URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
@@ -550,9 +538,8 @@ URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
           return false;
 
         callback.Run(params->url_request.url);
-        content::URLLoaderInterceptor::WriteResponse(
-            full_path, params->client.get(), /*headers=*/nullptr,
-            /*ssl_info=*/absl::nullopt, /*url=*/params->url_request.url);
+        content::URLLoaderInterceptor::WriteResponse(full_path,
+                                                     params->client.get());
         return true;
       }));
 }
@@ -561,18 +548,13 @@ void URLLoaderInterceptor::WriteResponse(
     base::StringPiece headers,
     base::StringPiece body,
     network::mojom::URLLoaderClient* client,
-    absl::optional<net::SSLInfo> ssl_info,
-    absl::optional<GURL> url) {
+    absl::optional<net::SSLInfo> ssl_info) {
   net::HttpResponseInfo info;
   info.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
   auto response = network::mojom::URLResponseHead::New();
   response->headers = info.headers;
   response->headers->GetMimeType(&response->mime_type);
-  if (url.has_value()) {
-    response->parsed_headers =
-        network::PopulateParsedHeaders(response->headers.get(), *url);
-  }
   response->ssl_info = std::move(ssl_info);
   client->OnReceiveResponse(std::move(response));
 
@@ -583,18 +565,16 @@ void URLLoaderInterceptor::WriteResponse(
     const std::string& relative_path,
     network::mojom::URLLoaderClient* client,
     const std::string* headers,
-    absl::optional<net::SSLInfo> ssl_info,
-    absl::optional<GURL> url) {
+    absl::optional<net::SSLInfo> ssl_info) {
   return WriteResponse(GetDataFilePath(relative_path), client, headers,
-                       std::move(ssl_info), std::move(url));
+                       std::move(ssl_info));
 }
 
 void URLLoaderInterceptor::WriteResponse(
     const base::FilePath& file_path,
     network::mojom::URLLoaderClient* client,
     const std::string* headers,
-    absl::optional<net::SSLInfo> ssl_info,
-    absl::optional<GURL> url) {
+    absl::optional<net::SSLInfo> ssl_info) {
   base::ScopedAllowBlockingForTesting allow_io;
   std::string headers_str;
   if (headers) {
@@ -609,8 +589,7 @@ void URLLoaderInterceptor::WriteResponse(
                     net::test_server::GetContentType(file_path) + "\n\n";
     }
   }
-  WriteResponse(headers_str, ReadFile(file_path), client, std::move(ssl_info),
-                std::move(url));
+  WriteResponse(headers_str, ReadFile(file_path), client, std::move(ssl_info));
 }
 
 MojoResult URLLoaderInterceptor::WriteResponseBody(
@@ -691,12 +670,8 @@ void URLLoaderInterceptor::InterceptNavigationRequestCallback(
 }
 
 bool URLLoaderInterceptor::Intercept(RequestParams* params) {
-  if (callback_.Run(params)) {
-    // Only set the last request headers if the request was actually processed
-    // by the interceptor.
-    SetLastRequestHeaders(params->url_request.headers);
+  if (callback_.Run(params))
     return true;
-  }
 
   // mock.failed.request is a special request whereby the query indicates what
   // error code to respond with.

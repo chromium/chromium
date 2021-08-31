@@ -14,12 +14,10 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -112,14 +110,12 @@ class URLLoaderInterceptor {
       base::RepeatingCallback<void(const GURL&)> callback = base::DoNothing());
 
   // Helper methods for use when intercepting.
-  // Writes the given response body, header, and SSL Info to `client`.
-  // If `url` is present, also computes the ParsedHeaders for the response.
+  // Writes the given response body, header, and SSL Info to |client|.
   static void WriteResponse(
       base::StringPiece headers,
       base::StringPiece body,
       network::mojom::URLLoaderClient* client,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Reads the given path, relative to the root source directory, and writes it
   // to |client|. For headers:
@@ -129,21 +125,18 @@ class URLLoaderInterceptor {
   //   3) otherwise a simple 200 response will be used, with a Content-Type
   //      guessed from the file extension
   // For SSL info, if |ssl_info| is specified, then it is added to the response.
-  // If `url` is present, also computes the ParsedHeaders for the response.
   static void WriteResponse(
       const std::string& relative_path,
       network::mojom::URLLoaderClient* client,
       const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Like above, but uses an absolute file path.
   static void WriteResponse(
       const base::FilePath& file_path,
       network::mojom::URLLoaderClient* client,
       const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Attempts to write |body| to |client| and complete the load with status OK.
   // client->OnReceiveResponse() must have been called prior to this.
@@ -158,15 +151,6 @@ class URLLoaderInterceptor {
       const GURL& url,
       net::Error error,
       base::OnceClosure ready_callback = {});
-
-  // Returns the request headers of the last request processed by this
-  // interceptor.
-  //
-  // Use this function instead of creating a WebContentsObserver to observe
-  // request headers, if you need the last request headers sent in the event of
-  // resends or redirects, as the NavigationHandle::GetRequestHeaders() function
-  // only returns the initial request's request headers.
-  const net::HttpRequestHeaders& GetLastRequestHeaders();
 
  private:
   class BrowserProcessWrapper;
@@ -201,9 +185,6 @@ class URLLoaderInterceptor {
   // Called on IO thread at initialization and shutdown.
   void InitializeOnIOThread(base::OnceClosure closure);
 
-  // Sets the request headers of the last request processed by this interceptor.
-  void SetLastRequestHeaders(const net::HttpRequestHeaders& headers);
-
   bool use_runloop_;
   base::OnceClosure ready_callback_;
   InterceptCallback callback_;
@@ -215,9 +196,6 @@ class URLLoaderInterceptor {
 
   std::set<std::unique_ptr<URLLoaderFactoryNavigationWrapper>>
       navigation_wrappers_;
-
-  base::Lock last_request_lock_;
-  net::HttpRequestHeaders last_request_headers_ GUARDED_BY(last_request_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderInterceptor);
 };
