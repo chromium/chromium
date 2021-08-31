@@ -1,0 +1,66 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './shimless_rma_shared_css.js';
+import './base_page.js';
+import './icons.js';
+
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+
+/**
+ * @fileoverview
+ * 'wrapup-restock-page' is the page that informs the repair technician they
+ * can shut down the device and restock the mainboard or continue to finalize
+ * the repair if the board is being used to repair another device.
+ */
+export class WrapupRestockPageElement extends PolymerElement {
+  static get is() {
+    return 'wrapup-restock-page';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * @private
+       * @type {?ShimlessRmaServiceInterface}
+       */
+      shimlessRmaService_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
+  /** @protected */
+  onShutdownButtonClicked_() {
+    this.shimlessRmaService_.shutdownForRestock().then(
+        (state) => this.dispatchEvent(new CustomEvent(
+            'load-next-state',
+            {bubbles: true, composed: true, detail: state},
+            )));
+  }
+
+  /** @return {!Promise<StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.continueFinalizationAfterRestock();
+  }
+};
+
+customElements.define(WrapupRestockPageElement.is, WrapupRestockPageElement);

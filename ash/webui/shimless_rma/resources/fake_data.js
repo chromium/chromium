@@ -20,6 +20,7 @@ export const fakeStates = [
   {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},
   // TODO(gavindodd): RmaState.kRestock
   {state: RmaState.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
+  {state: RmaState.kRestock, error: RmadErrorCode.kOk},
   {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
   // TODO(gavindodd): RmaState.kSetupCalibration
   // TODO(gavindodd): RmaState.kRunCalibration

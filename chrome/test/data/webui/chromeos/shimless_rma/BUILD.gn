@@ -39,6 +39,7 @@ js_type_check("closure_compile") {
 
     ":shimless_rma_unified_test",
     ":wrapup_repair_complete_page_test",
+    ":wrapup_restock_page_test",
   ]
 }
 
@@ -218,6 +219,15 @@ js_library("wrapup_repair_complete_page_test") {
     "//ash/webui/shimless_rma/resources:wrapup_repair_complete_page",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("wrapup_restock_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shimless_rma/resources:wrapup_restock_page",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

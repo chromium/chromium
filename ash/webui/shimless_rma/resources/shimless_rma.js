@@ -17,6 +17,7 @@ import './reimaging_firmware_update_page.js';
 import './reimaging_provisioning_page.js';
 import './shimless_rma_shared_css.js';
 import './wrapup_repair_complete_page.js';
+import './wrapup_restock_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -116,7 +117,6 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
-  // TODO(gavindodd): kRestock
   [RmaState.kUpdateDeviceInformation]: {
     componentIs: 'reimaging-device-information-page',
     btnNext: ButtonState.VISIBLE,
@@ -138,6 +138,12 @@ const StateComponentMapping = {
     btnBack: ButtonState.VISIBLE,
   },
   // TODO(gavindodd): kWaitForManualWpEnable
+  [RmaState.kRestock]: {
+    componentIs: 'wrapup-restock-page',
+    btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.HIDDEN,
+    btnBack: ButtonState.VISIBLE,
+  },
   [RmaState.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',
     buttonNext: ButtonState.VISIBLE,
