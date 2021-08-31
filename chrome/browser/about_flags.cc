@@ -195,6 +195,7 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/native_theme_features.h"
+#include "ui/ui_features.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/allocator/buildflags.h"
@@ -1362,6 +1363,43 @@ const FeatureEntry::FeatureVariation
          base::size(kOmniboxDynamicMaxAutocomplete101), nullptr},
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          base::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
+
+const FeatureEntry::FeatureParam kTabGroupsSaveUIVariation24Alpha[] = {
+    {features::kTabGroupsSaveUIVariationsParameterName, "1"}};
+const FeatureEntry::FeatureParam
+    kTabGroupsSaveUIVariation24AlphaWith1dpStroke[] = {
+        {features::kTabGroupsSaveUIVariationsParameterName, "2"}};
+const FeatureEntry::FeatureParam kTabGroupsSaveUIVariation48Alpha[] = {
+    {features::kTabGroupsSaveUIVariationsParameterName, "3"}};
+const FeatureEntry::FeatureParam kTabGroupsSaveUIVariation24AlphaWith6dpDot[] =
+    {{features::kTabGroupsSaveUIVariationsParameterName, "4"}};
+const FeatureEntry::FeatureParam
+    kTabGroupsSaveUIVariation24AlphaWith1dpStroke48A[] = {
+        {features::kTabGroupsSaveUIVariationsParameterName, "5"}};
+const FeatureEntry::FeatureParam kTabGroupsSaveUIVariationTabStripColors[] = {
+    {features::kTabGroupsSaveUIVariationsParameterName, "6"}};
+const FeatureEntry::FeatureParam kTabGroupsSaveUIVariationThemeDependant[] = {
+    {features::kTabGroupsSaveUIVariationsParameterName, "7"}};
+
+const FeatureEntry::FeatureVariation kTabGroupsSaveUIVariations[] = {
+    {" - 24% opacity background", kTabGroupsSaveUIVariation24Alpha,
+     base::size(kTabGroupsSaveUIVariation24Alpha), nullptr},
+    {" - 24% opacity background with 1dp stroke",
+     kTabGroupsSaveUIVariation24AlphaWith1dpStroke,
+     base::size(kTabGroupsSaveUIVariation24AlphaWith1dpStroke), nullptr},
+    {" - 48% opacity background", kTabGroupsSaveUIVariation48Alpha,
+     base::size(kTabGroupsSaveUIVariation48Alpha), nullptr},
+    {" - 24% opacity background with 6dp dot",
+     kTabGroupsSaveUIVariation24AlphaWith6dpDot,
+     base::size(kTabGroupsSaveUIVariation24AlphaWith6dpDot), nullptr},
+    {" - 24% opacity background with 1dp stroke at 48% alpha",
+     kTabGroupsSaveUIVariation24AlphaWith1dpStroke48A,
+     base::size(kTabGroupsSaveUIVariation24AlphaWith1dpStroke48A), nullptr},
+    {" - Tab Strip Colors", kTabGroupsSaveUIVariationTabStripColors,
+     base::size(kTabGroupsSaveUIVariationTabStripColors), nullptr},
+    {" - 24% opacity background no theme, tab strip for custom",
+     kTabGroupsSaveUIVariationThemeDependant,
+     base::size(kTabGroupsSaveUIVariationThemeDependant), nullptr}};
 
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {features::kMinimumTabWidthFeatureParameterName, "54"}};
@@ -4727,7 +4765,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
      flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupsSave)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabGroupsSave,
+                                    kTabGroupsSaveUIVariations,
+                                    "TabGroupsSave")},
 
     {"new-tabstrip-animation", flag_descriptions::kNewTabstripAnimationName,
      flag_descriptions::kNewTabstripAnimationDescription, kOsDesktop,

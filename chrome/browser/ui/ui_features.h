@@ -84,6 +84,7 @@ extern const base::Feature kTabGroupsFeedback;
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;
+extern const char kTabGroupsSaveUIVariationsParameterName[];
 
 extern const base::Feature kTabHoverCardImages;
 extern const char kTabHoverCardImagesNotReadyDelayParameterName[];

@@ -33,13 +33,18 @@ using TP = ThemeProperties;
 // unpacked on the filesystem.)
 constexpr char kDefaultThemeGalleryID[] = "hkacjpbfdknhflllbcmjibkdeoafencn";
 
-// Dark mode saved group chip colors are calculated by blending the default dark
-// mode toolbar color with the tab strip group colors at 24% alpha.
-constexpr float kTabGroupChipAlpha = 0.24f;
-
 const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
+  // Depending on UI varition enabled, dark mode saved group chip colors are
+  // calculated by blending the default dark mode toolbar color with the tab
+  // strip group colors at 24% or 48% alpha.
   const SkColor default_dark_toolbar_color =
       TP::GetDefaultColor(TP::COLOR_TOOLBAR, false, true);
+  float tab_group_chip_alpha = 0.24f;
+  int ui_option = base::GetFieldTrialParamByFeatureAsInt(
+      features::kTabGroupsSave,
+      features::kTabGroupsSaveUIVariationsParameterName, 0);
+  if (ui_option == 3)
+    tab_group_chip_alpha = 0.48f;
 
   switch (color_id) {
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE:
@@ -51,7 +56,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleBlue050,
               color_utils::AlphaBlend(gfx::kGoogleBlue600,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_RED:
     case TP::COLOR_TAB_GROUP_DIALOG_RED:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_RED:
@@ -61,7 +66,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleRed050,
               color_utils::AlphaBlend(gfx::kGoogleRed600,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW:
     case TP::COLOR_TAB_GROUP_DIALOG_YELLOW:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_YELLOW:
@@ -71,7 +76,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleYellow100,
               color_utils::AlphaBlend(gfx::kGoogleYellow900,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN:
     case TP::COLOR_TAB_GROUP_DIALOG_GREEN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREEN:
@@ -81,7 +86,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleGreen050,
               color_utils::AlphaBlend(gfx::kGoogleGreen700,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK:
     case TP::COLOR_TAB_GROUP_DIALOG_PINK:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PINK:
@@ -91,7 +96,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGooglePink050,
               color_utils::AlphaBlend(gfx::kGooglePink700,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE:
     case TP::COLOR_TAB_GROUP_DIALOG_PURPLE:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PURPLE:
@@ -101,7 +106,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGooglePurple050,
               color_utils::AlphaBlend(gfx::kGooglePurple600,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN:
     case TP::COLOR_TAB_GROUP_DIALOG_CYAN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_CYAN:
@@ -111,12 +116,12 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
       return {gfx::kGoogleCyan050,
               color_utils::AlphaBlend(gfx::kGoogleCyan900,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREY:
       return {gfx::kGoogleGrey050,
               color_utils::AlphaBlend(gfx::kGoogleGrey700,
                                       default_dark_toolbar_color,
-                                      kTabGroupChipAlpha)};
+                                      tab_group_chip_alpha)};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY:
     case TP::COLOR_TAB_GROUP_DIALOG_GREY:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY:
