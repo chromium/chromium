@@ -28,9 +28,18 @@ class MediaLog;
 // MediaFoundationRenderer living in the MediaFoundationService (utility)
 // process, using `mojo_renderer_` and `renderer_extension_`.
 //
-// It also manages a DCOMPTexture living in the GPU process via
-// `dcomp_texture_wrapper_` and notifies the VideoRendererSink when new frames
-// are available.
+// It also manages a DCOMPTexture (via `dcomp_texture_wrapper_`) living in the
+// GPU process for direct composition support. The initialization of the
+// compositing path is summarized as follows:
+// ```
+// OnVideoNaturalSizeChange() -> CreateVideoFrame(natural_size) ->
+// PaintSingleFrame() -> SwapChainPresenter::PresentDCOMPSurface() ->
+// DCOMPTexture::OnUpdateParentWindowRect() -> DCOMPTexture::SendOutputRect() ->
+// OnOutputRectChange() -> SetOutputRect() -> OnSetOutputRectDone()
+// a) -> UpdateTextureSize(output_size), and
+// b) -> renderer_extension_->GetDCOMPSurface() -> OnDCOMPSurfaceReceived() ->
+//    SetDCOMPSurfaceHandle() -> OnDCOMPSurfaceHandleSet()
+// ```
 class MediaFoundationRendererClient : public Renderer, public RendererClient {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
@@ -75,14 +84,13 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
 
  private:
   void OnRemoteRendererInitialized(PipelineStatus status);
+  void OnOutputRectChange(gfx::Rect output_rect);
+  void OnSetOutputRectDone(const gfx::Size& output_size, bool success);
   void InitializeDCOMPRenderingIfNeeded();
   void OnDCOMPSurfaceReceived(
       const absl::optional<base::UnguessableToken>& token);
   void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
-  void OnCompositionParamsReceived(gfx::Rect output_rect);
-  void OnSetOutputParamsDone(const gfx::Size& size, bool success);
-
   void OnCdmAttached(bool success);
   void OnConnectionError();
 

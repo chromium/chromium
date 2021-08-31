@@ -80,10 +80,9 @@ void DCOMPTextureHost::OnSharedImageMailboxBound(const gpu::Mailbox& mailbox) {
   listener_->OnSharedImageMailboxBound(mailbox);
 }
 
-void DCOMPTextureHost::OnCompositionParamsChanged(
-    const gfx::Rect& output_rect) {
+void DCOMPTextureHost::OnOutputRectChange(const gfx::Rect& output_rect) {
   DVLOG_FUNC(3);
-  listener_->OnCompositionParamsReceived(output_rect);
+  listener_->OnOutputRectChange(output_rect);
 }
 
 }  // namespace content

@@ -389,7 +389,7 @@ interface DCOMPTextureClient {
   OnSharedImageMailboxBound(Mailbox mailbox);
 
   // Informs the client of a change in video composition parameter.
-  OnCompositionParamsChanged(gfx.mojom.Rect output_rect);
+  OnOutputRectChange(gfx.mojom.Rect output_rect);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only

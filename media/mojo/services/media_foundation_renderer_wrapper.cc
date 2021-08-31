@@ -112,10 +112,10 @@ void MediaFoundationRendererWrapper::SetVideoStreamEnabled(bool enabled) {
   renderer_->SetVideoStreamEnabled(enabled);
 }
 
-void MediaFoundationRendererWrapper::SetOutputParams(
+void MediaFoundationRendererWrapper::SetOutputRect(
     const gfx::Rect& output_rect,
-    SetOutputParamsCallback callback) {
-  renderer_->SetOutputParams(output_rect, std::move(callback));
+    SetOutputRectCallback callback) {
+  renderer_->SetOutputRect(output_rect, std::move(callback));
 }
 
 void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {

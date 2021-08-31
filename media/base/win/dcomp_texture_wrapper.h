@@ -24,10 +24,9 @@ class DCOMPTextureWrapper {
   virtual ~DCOMPTextureWrapper() = default;
 
   // Initializes the DCOMPTexture and returns success/failure.
-  using CompositionParamsReceivedCB = base::RepeatingCallback<void(gfx::Rect)>;
-  virtual bool Initialize(
-      const gfx::Size& output_size,
-      CompositionParamsReceivedCB comp_params_received_cb) = 0;
+  using OutputRectChangeCB = base::RepeatingCallback<void(gfx::Rect)>;
+  virtual bool Initialize(const gfx::Size& output_size,
+                          OutputRectChangeCB output_rect_change_cb) = 0;
 
   // Called whenever the video's output size changes.
   virtual void UpdateTextureSize(const gfx::Size& output_size) = 0;

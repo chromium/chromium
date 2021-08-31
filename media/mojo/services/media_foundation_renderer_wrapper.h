@@ -21,8 +21,6 @@
 
 namespace media {
 
-class MojoMediaLog;
-
 // Wrap media::MediaFoundationRenderer to remove its dependence on
 // media::mojom::MediaFoundationRendererExtension interface.
 class MediaFoundationRendererWrapper final
@@ -58,8 +56,8 @@ class MediaFoundationRendererWrapper final
   // mojom::MediaFoundationRendererExtension implementation.
   void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
-  void SetOutputParams(const gfx::Rect& output_rect,
-                       SetOutputParamsCallback callback) override;
+  void SetOutputRect(const gfx::Rect& output_rect,
+                     SetOutputRectCallback callback) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;

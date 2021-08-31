@@ -456,8 +456,8 @@ void MediaFoundationRenderer::SetVideoStreamEnabled(bool enabled) {
   }
 }
 
-void MediaFoundationRenderer::SetOutputParams(const gfx::Rect& output_rect,
-                                              SetOutputParamsCB callback) {
+void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
+                                            SetOutputRectCB callback) {
   DVLOG_FUNC(2);
 
   if (virtual_video_window_ &&

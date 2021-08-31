@@ -231,7 +231,7 @@ void DCOMPTexture::SendOutputRect() {
   output_rect.set_x(window_relative_rect_.x() + parent_window_rect_.x());
   output_rect.set_y(window_relative_rect_.y() + parent_window_rect_.y());
   if (last_output_rect_ != output_rect) {
-    client_->OnCompositionParamsChanged(output_rect);
+    client_->OnOutputRectChange(output_rect);
     last_output_rect_ = output_rect;
   }
 }

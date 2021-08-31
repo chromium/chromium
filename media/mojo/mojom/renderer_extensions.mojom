@@ -70,5 +70,5 @@ interface MediaFoundationRendererExtension {
   // incorrectly (e.g. a smaller video rendered at the corner of the video
   // output area.). In case of failure, caller should not use the `rect` for
   // further operations.
-  SetOutputParams(gfx.mojom.Rect rect) => (bool success);
+  SetOutputRect(gfx.mojom.Rect rect) => (bool success);
 };

@@ -64,8 +64,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // MediaFoundationRendererExtension implementation.
   void GetDCompSurface(GetDCompSurfaceCB callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
-  void SetOutputParams(const gfx::Rect& output_rect,
-                       SetOutputParamsCB callback) override;
+  void SetOutputRect(const gfx::Rect& output_rect,
+                     SetOutputRectCB callback) override;
 
  private:
   HRESULT CreateMediaEngine(MediaResource* media_resource);

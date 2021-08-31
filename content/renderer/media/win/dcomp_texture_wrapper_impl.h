@@ -44,7 +44,7 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
   // Initializes `this` and returns success or failure. All other methods should
   // only be called after a successful initialization.
   bool Initialize(const gfx::Size& output_size,
-                  CompositionParamsReceivedCB comp_params_received_cb) override;
+                  OutputRectChangeCB output_rect_change_cb) override;
 
   // DCOMPTextureWrapper:
   void UpdateTextureSize(const gfx::Size& natural_size) override;
@@ -63,14 +63,14 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   // DCOMPTextureHost::Listener:
   void OnSharedImageMailboxBound(gpu::Mailbox mailbox) override;
-  void OnCompositionParamsReceived(gfx::Rect output_rect) override;
+  void OnOutputRectChange(gfx::Rect output_rect) override;
 
   scoped_refptr<DCOMPTextureFactory> factory_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   gfx::Size natural_size_;  // Size of the video frames.
   gfx::Size output_size_;   // Size of the video output (on-screen size).
-  CompositionParamsReceivedCB comp_params_received_cb_;
+  OutputRectChangeCB output_rect_change_cb_;
 
   std::unique_ptr<DCOMPTextureHost> dcomp_texture_host_;
 

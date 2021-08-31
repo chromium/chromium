@@ -37,7 +37,7 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
   class Listener {
    public:
     virtual void OnSharedImageMailboxBound(gpu::Mailbox mailbox) = 0;
-    virtual void OnCompositionParamsReceived(gfx::Rect output_rect) = 0;
+    virtual void OnOutputRectChange(gfx::Rect output_rect) = 0;
   };
 
   DCOMPTextureHost(
@@ -62,7 +62,7 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
 
   // gpu::mojom::DCOMPTextureClient:
   void OnSharedImageMailboxBound(const gpu::Mailbox& mailbox) override;
-  void OnCompositionParamsChanged(const gfx::Rect& output_rect) override;
+  void OnOutputRectChange(const gfx::Rect& output_rect) override;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   const int32_t route_id_;

@@ -101,7 +101,7 @@ DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
 
 bool DCOMPTextureWrapperImpl::Initialize(
     const gfx::Size& output_size,
-    CompositionParamsReceivedCB comp_params_received_cb) {
+    OutputRectChangeCB output_rect_change_cb) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
@@ -111,7 +111,7 @@ bool DCOMPTextureWrapperImpl::Initialize(
   if (!dcomp_texture_host_)
     return false;
 
-  comp_params_received_cb_ = std::move(comp_params_received_cb);
+  output_rect_change_cb_ = std::move(output_rect_change_cb);
   return true;
 }
 
@@ -197,12 +197,11 @@ void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
   }
 }
 
-void DCOMPTextureWrapperImpl::OnCompositionParamsReceived(
-    gfx::Rect output_rect) {
+void DCOMPTextureWrapperImpl::OnOutputRectChange(gfx::Rect output_rect) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  comp_params_received_cb_.Run(output_rect);
+  output_rect_change_cb_.Run(output_rect);
 }
 
 }  // namespace content
