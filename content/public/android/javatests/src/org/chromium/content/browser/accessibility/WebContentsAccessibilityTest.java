@@ -1697,6 +1697,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testPerformAction_paste() throws Throwable {
         // Build a simple web page with an input field.
         setupTestWithHTML("<input type='text'>");
