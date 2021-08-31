@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wl {
@@ -29,6 +30,7 @@ enum class SerialType {
 struct Serial {
   uint32_t value;
   SerialType type;
+  base::TimeDelta timestamp;
 };
 
 class SerialTracker final {
@@ -45,12 +47,12 @@ class SerialTracker final {
   // Returns the current serial for a given |type|, if any.
   absl::optional<Serial> GetSerial(SerialType type) const;
 
-  // Returns the serial value for any of the given |types|. The lookup
-  // precedence is based on the types vector order, i.e: the first non-null
-  // matching value is returned, if any.
+  // Returns the most recent serial matching the given |types|, if any.
   absl::optional<Serial> GetSerial(const std::vector<SerialType>& types) const;
 
  private:
+  const base::TimeTicks base_time_;
+
   base::fixed_flat_map<SerialType,
                        absl::optional<Serial>,
                        static_cast<size_t>(SerialType::kMaxValue) + 1>
