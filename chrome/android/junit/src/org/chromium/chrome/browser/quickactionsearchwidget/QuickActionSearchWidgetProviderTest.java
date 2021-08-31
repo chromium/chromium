@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
-import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
 
 /**
  * Tests for the (@link QuickActionSearchWidgetProvider}.
@@ -42,16 +41,15 @@ public class QuickActionSearchWidgetProviderTest {
      * A sub class of {@link QuickActionSearchWidgetProvider} for testing, since
      * QuickActionSearchWidgetProvider is abstract.
      */
-    private static class TestProvider extends QuickActionSearchWidgetProvider {
+    private class TestProvider extends QuickActionSearchWidgetProvider {
         @Override
-        protected int getWidgetType() {
-            return QuickActionSearchWidgetType.MEDIUM;
+        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+            return mDelegateMock;
         }
     }
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock
     private Context mContextMock;
     @Mock
@@ -66,8 +64,6 @@ public class QuickActionSearchWidgetProviderTest {
         FirstRunStatus.setFirstRunFlowComplete(true);
 
         mWidgetProvider = Mockito.spy(new TestProvider());
-        mWidgetProvider.setDelegateForTesting(mDelegateMock);
-
         when(mContextMock.getSystemService(Context.APPWIDGET_SERVICE))
                 .thenReturn(mAppWidgetManagerMock);
     }
@@ -83,8 +79,6 @@ public class QuickActionSearchWidgetProviderTest {
         verify(mWidgetProvider, times(1)).onUpdate(mContextMock, mAppWidgetManagerMock, WIDGET_IDS);
         verify(mWidgetProvider, times(1)).onUpdate(any(), any(), any());
 
-        verify(mDelegateMock, times(1))
-                .updateWidgets(mContextMock, mAppWidgetManagerMock, WIDGET_IDS);
-        verify(mDelegateMock, times(1)).updateWidgets(any(), any(), any());
+        verify(mDelegateMock, times(1)).createWidgetRemoteViews(any(), any());
     }
 }

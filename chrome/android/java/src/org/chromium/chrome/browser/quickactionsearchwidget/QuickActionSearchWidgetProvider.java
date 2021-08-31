@@ -8,34 +8,45 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
-import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
 /**
  * {@link AppWidgetProvider} for a widget that provides an entry point for users to quickly perform
  * actions in Chrome.
  */
 public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider {
-    private QuickActionSearchWidgetProviderDelegate mDelegate;
-
     /**
      * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
      * initially has the small layout.
      */
     public static class QuickActionSearchWidgetProviderSmall
             extends QuickActionSearchWidgetProvider {
+        private static QuickActionSearchWidgetProviderDelegate sDelegate;
+
         @Override
-        protected int getWidgetType() {
-            return QuickActionSearchWidgetType.SMALL;
+        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+            if (sDelegate == null) {
+                sDelegate = createDelegate(R.layout.quick_action_search_widget_small_layout);
+            }
+            return sDelegate;
         }
     }
 
@@ -45,9 +56,14 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     public static class QuickActionSearchWidgetProviderMedium
             extends QuickActionSearchWidgetProvider {
+        private static QuickActionSearchWidgetProviderDelegate sDelegate;
+
         @Override
-        protected int getWidgetType() {
-            return QuickActionSearchWidgetType.MEDIUM;
+        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+            if (sDelegate == null) {
+                sDelegate = createDelegate(R.layout.quick_action_search_widget_medium_layout);
+            }
+            return sDelegate;
         }
     }
 
@@ -57,16 +73,60 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     public static class QuickActionSearchWidgetProviderDino
             extends QuickActionSearchWidgetProvider {
+        private static QuickActionSearchWidgetProviderDelegate sDelegate;
+
         @Override
-        protected int getWidgetType() {
-            return QuickActionSearchWidgetType.DINO;
+        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+            if (sDelegate == null) {
+                sDelegate = createDelegate(R.layout.quick_action_search_widget_dino_layout);
+            }
+            return sDelegate;
         }
     }
 
     @Override
-    public void onUpdate(
-            final Context context, final AppWidgetManager manager, final int[] widgetIds) {
-        getDelegate(context).updateWidgets(context, manager, widgetIds);
+    public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager manager,
+            @Nullable int[] widgetIds) {
+        updateWidgets(context, manager, SearchActivityPreferencesManager.getCurrent(), widgetIds);
+    }
+
+    /**
+     * Apply update to widgets, reflecting feature availability on the widget surface.
+     *
+     * @param context Current context.
+     * @param manager Widget manager.
+     * @param preferences Search Activity preferences.
+     * @param widgetIds List of Widget IDs that should be updated.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void updateWidgets(@NonNull Context context, @NonNull AppWidgetManager manager,
+            @NonNull SearchActivityPreferences preferences, @NonNull int[] widgetIds) {
+        if (widgetIds == null) {
+            // Query all widgets associated with this component.
+            widgetIds = manager.getAppWidgetIds(new ComponentName(context, getClass().getName()));
+        }
+        manager.updateAppWidget(
+                widgetIds, getDelegate().createWidgetRemoteViews(context, preferences));
+    }
+
+    /**
+     * Create a new QuickActionSearchWidgetProviderDelegate.
+     *
+     * This method should only be used when a new instance of the ProviderDelegate is needed.
+     * In all other cases, use the getDelegate() method.
+     *
+     * @param widgetType The type of the Widget for which the ProviderDelegate should be built.
+     */
+    protected QuickActionSearchWidgetProviderDelegate createDelegate(@LayoutRes int layout) {
+        Context context = ContextUtils.getApplicationContext();
+        ComponentName widgetReceiverComponent =
+                new ComponentName(context, QuickActionSearchWidgetReceiver.class);
+        ComponentName searchActivityComponent = new ComponentName(context, SearchActivity.class);
+        Intent trustedIncognitoIntent =
+                IntentHandler.createTrustedOpenNewTabIntent(context, /*incognito=*/true);
+
+        return new QuickActionSearchWidgetProviderDelegate(
+                layout, widgetReceiverComponent, searchActivityComponent, trustedIncognitoIntent);
     }
 
     /**
@@ -77,24 +137,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * We don't initialize the delegate in the constructor because creation of the
      * QuickActionSearchWidgetProvider is done by the system.
      */
-    private QuickActionSearchWidgetProviderDelegate getDelegate(final Context context) {
-        if (mDelegate == null) {
-            int widgetType = getWidgetType();
-
-            ComponentName widgetReceiverComponent =
-                    new ComponentName(context, QuickActionSearchWidgetReceiver.class);
-            ComponentName searchActivityComponent =
-                    new ComponentName(context, SearchActivity.class);
-
-            mDelegate = new QuickActionSearchWidgetProviderDelegate(widgetType,
-                    widgetReceiverComponent, searchActivityComponent,
-                    IntentHandler.createTrustedOpenNewTabIntent(context, /*incognito=*/true));
-        }
-        return mDelegate;
-    }
-
-    /** @return The {@link QuickActionSearchWidgetType} for this widget */
-    protected abstract @QuickActionSearchWidgetType int getWidgetType();
+    protected abstract QuickActionSearchWidgetProviderDelegate getDelegate();
 
     /**
      * This function initializes the QuickActionSearchWidgetProvider component. Namely, this
@@ -107,9 +150,28 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * This function is expected to be called exactly once after native libraries are initialized.
      */
     public static void initialize() {
-        setWidgetEnabled(ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET),
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET_DINO_VARIANT));
+        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
+            // Changing the widget enabled state, which is only required during the experimentation
+            // phase, can trigger disk access. This can be removed when the QuickActionSearchWidget
+            // launches.
+            setWidgetEnabled(
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET),
+                    ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET_DINO_VARIANT));
+        });
+
+        QuickActionSearchWidgetProvider dinoWidget = new QuickActionSearchWidgetProviderDino();
+        QuickActionSearchWidgetProvider smallWidget = new QuickActionSearchWidgetProviderSmall();
+        QuickActionSearchWidgetProvider mediumWidget = new QuickActionSearchWidgetProviderMedium();
+
+        SearchActivityPreferencesManager.addObserver(prefs -> {
+            Context context = ContextUtils.getApplicationContext();
+            if (context == null) return;
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            dinoWidget.updateWidgets(context, manager, prefs, null);
+            smallWidget.updateWidgets(context, manager, prefs, null);
+            mediumWidget.updateWidgets(context, manager, prefs, null);
+        });
     }
 
     /**
@@ -141,8 +203,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      *         be enabled or not.
      */
     private static void setWidgetComponentEnabled(
-            final Class<? extends QuickActionSearchWidgetProvider> component,
-            final boolean shouldEnableWidgetComponent) {
+            @NonNull Class<? extends QuickActionSearchWidgetProvider> component,
+            boolean shouldEnableWidgetComponent) {
         // The initialization must be performed on a background thread because the following logic
         // can trigger disk access. The PostTask in ProcessInitializationHandler can be removed once
         // the experimentation phase is over.
@@ -156,11 +218,5 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         ComponentName componentName = new ComponentName(context, component);
         context.getPackageManager().setComponentEnabledSetting(
                 componentName, componentEnabledState, PackageManager.DONT_KILL_APP);
-    }
-
-    /** Sets a QuickActionSearchWidgetProviderDelegate to facilitate tests. */
-    @VisibleForTesting
-    void setDelegateForTesting(QuickActionSearchWidgetProviderDelegate delegate) {
-        mDelegate = delegate;
     }
 }

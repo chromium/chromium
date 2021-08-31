@@ -8,7 +8,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetReceiverDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetType.java",
   ]
   deps = [
     ":java_resources",
@@ -50,6 +49,7 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
     "//url:gurl_java",
   ]
 }
