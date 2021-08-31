@@ -1776,6 +1776,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "enable-desktop-pwas-launch-handler",
+    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-desktop-pwas-link-capturing",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 96

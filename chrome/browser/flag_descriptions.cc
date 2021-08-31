@@ -775,6 +775,12 @@ const char kDesktopPWAsLinkCapturingDescription[] =
     "https://github.com/WICG/sw-launch/blob/master/"
     "declarative_link_capturing.md";
 
+const char kDesktopPWAsLaunchHandlerName[] = "Desktop PWA launch handler";
+const char kDesktopPWAsLaunchHandlerDescription[] =
+    "Enable web app manifests to declare app launch behavior. Prototype "
+    "implementation of: "
+    "https://github.com/WICG/sw-launch/blob/main/launch_handler.md";
+
 const char kDesktopPWAsManifestIdName[] = "Desktop PWA manifest id";
 const char kDesktopPWAsManifestIdDescription[] =
     "Enable web app manifests to declare id. Prototype "

@@ -460,6 +460,9 @@ extern const char kDesktopPWAsFlashAppNameInsteadOfOriginDescription[];
 extern const char kDesktopPWAsNotificationIconAndTitleName[];
 extern const char kDesktopPWAsNotificationIconAndTitleDescription[];
 
+extern const char kDesktopPWAsLaunchHandlerName[];
+extern const char kDesktopPWAsLaunchHandlerDescription[];
+
 extern const char kDesktopPWAsLinkCapturingName[];
 extern const char kDesktopPWAsLinkCapturingDescription[];
 
