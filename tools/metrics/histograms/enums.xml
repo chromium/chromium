@@ -1081,6 +1081,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AccountConsistencyPromoAfterDismissal">
+  <obsolete>
+    Removed 2021-08-23
+  </obsolete>
   <int value="0" label="SignedInOnWebWithDefaultDeviceAccount">
     User signed in with the default device account. This account is the first
     account in the cookies.

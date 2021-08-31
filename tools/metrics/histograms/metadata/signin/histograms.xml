@@ -129,6 +129,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Signin.AccountConsistencyPromoAfterDismissal"
     enum="AccountConsistencyPromoAfterDismissal" expires_after="2022-01-02">
+  <obsolete>
+    Removed 2021-08-23
+  </obsolete>
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>

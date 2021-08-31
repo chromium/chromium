@@ -97,7 +97,6 @@ public class AccountPickerBottomSheetCoordinator {
         SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
         SigninPreferencesManager.getInstance()
                 .incrementAccountPickerBottomSheetActiveDismissalCount();
-        SigninMetricsUtils.logWebSignin();
     }
 
     @VisibleForTesting

@@ -80,7 +80,6 @@ android_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
   deps = [

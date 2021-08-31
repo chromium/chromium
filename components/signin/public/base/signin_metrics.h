@@ -268,22 +268,6 @@ enum class AccountConsistencyPromoAction : int {
 
   MAX = 17,
 };
-
-// This class is used to record web sign-in events within 2 minutes after
-// account picker bottom sheet was dismissed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AccountConsistencyPromoAfterDismissal {
-  // User signed in with the default device account. This account is the first
-  // account in the cookies.
-  kSignedInOnWebWithDefaultDeviceAccount = 0,
-  // User signed in with non-default device account.
-  kSignedInOnWebWithNonDefaultDeviceAccount = 1,
-  // User signed in with an account not present on device.
-  kSignedInOnWebWithOtherAccount = 2,
-
-  kMaxValue = kSignedInOnWebWithOtherAccount,
-};
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 // Enum values which enumerates all reasons to start sign in process.
