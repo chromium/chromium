@@ -1030,8 +1030,6 @@ QuotaManagerImpl::QuotaManagerImpl(
       is_incognito_(is_incognito),
       profile_path_(profile_path),
       proxy_(base::MakeRefCounted<QuotaManagerProxy>(this, io_thread)),
-      db_disabled_(false),
-      eviction_disabled_(false),
       io_thread_(std::move(io_thread)),
       db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

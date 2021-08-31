@@ -665,7 +665,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileDoingTransaction) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -677,9 +677,6 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileDoingTransaction) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -740,7 +737,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileUpgrading) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -752,9 +749,6 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileUpgrading) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -816,7 +810,7 @@ TEST_F(IndexedDBDispatcherHostTest,
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -826,9 +820,6 @@ TEST_F(IndexedDBDispatcherHostTest,
         EXPECT_CALL(
             *connection->open_callbacks,
             MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -891,7 +882,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileDoingTransaction) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -903,9 +894,6 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileDoingTransaction) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -967,7 +955,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileUpgrading) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -979,9 +967,6 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileUpgrading) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 

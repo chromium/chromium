@@ -390,6 +390,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     get_volume_info_fn_ = fn;
   }
 
+  void SetEvictionDisabledForTesting(bool disable) {
+    eviction_disabled_ = disable;
+  }
+
  protected:
   ~QuotaManagerImpl() override;
   void SetQuotaChangeCallbackForTesting(
@@ -601,8 +605,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // points to never changes), and the underlying object is thread-safe.
   const scoped_refptr<QuotaManagerProxy> proxy_;
 
-  bool db_disabled_;
-  bool eviction_disabled_;
+  bool db_disabled_ = false;
+  bool eviction_disabled_ = false;
   absl::optional<blink::StorageKey>
       storage_key_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;

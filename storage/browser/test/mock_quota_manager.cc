@@ -49,7 +49,9 @@ MockQuotaManager::MockQuotaManager(
                    std::move(io_thread),
                    /*quota_change_callback=*/base::DoNothing(),
                    std::move(special_storage_policy),
-                   GetQuotaSettingsFunc()) {}
+                   GetQuotaSettingsFunc()) {
+  QuotaManagerImpl::SetEvictionDisabledForTesting(false);
+}
 
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
                                         StorageType type,
