@@ -495,6 +495,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.AccountStore.EmptyUsernames.CountInDatabase"
     units="units" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -505,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStore.InaccessiblePasswords"
-    units="saved passwords" expires_after="M95">
+    units="saved passwords" expires_after="2022-02-20">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -681,7 +684,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchHttpResponseCode"
-    enum="HttpResponseCode" expires_after="M96">
+    enum="HttpResponseCode" expires_after="M98">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1068,7 +1071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CleanedUpPasswords" units="units"
-    expires_after="M95">
+    expires_after="2021-12-05">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -1480,7 +1483,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ImportedPasswordsPerUserInCSV" units="units"
-    expires_after="M95">
+    expires_after="M98">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -1490,7 +1493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ImportPasswordFromCSVResult"
-    enum="PasswordImportFromCSVResult" expires_after="M95">
+    enum="PasswordImportFromCSVResult" expires_after="M98">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -2114,7 +2117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreInitResult" enum="BooleanSuccess"
-    expires_after="M95">
+    expires_after="M98">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
