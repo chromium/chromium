@@ -258,7 +258,11 @@ bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
         base::BindOnce(&ShareInfoFileHandler::OnFileStreamReadCompleted,
                        weak_ptr_factory_.GetWeakPtr(),
                        isolated_file_system.url.DebugString(),
-                       it_stream_adapter, file_size));
+                       it_stream_adapter, isolated_file_system.handle.id(),
+                       file_size));
+    storage::IsolatedContext::GetInstance()->AddReference(
+        isolated_file_system.handle.id());
+
     (*it_stream_adapter)->StartRunner();
 
     file_config_.paths.push_back(dest_file_path);
@@ -308,18 +312,20 @@ void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(
 void ShareInfoFileHandler::OnFileStreamReadCompleted(
     const std::string& url_str,
     std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it,
+    const std::string& file_system_id,
     const int64_t bytes_read,
     bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_GT(bytes_read, 0);
+
+  storage::IsolatedContext::GetInstance()->RemoveReference(file_system_id);
+  file_stream_adapters_.erase(it);
 
   if (!result) {
     LOG(ERROR) << "Failed to stream file IO data using url: " << url_str;
     NotifyFileSharingCompleted(base::File::FILE_ERROR_IO);
     return;
   }
-
-  file_stream_adapters_.erase(it);
 
   num_bytes_read_ += base::checked_cast<uint64_t>(bytes_read);
   num_files_streamed_++;

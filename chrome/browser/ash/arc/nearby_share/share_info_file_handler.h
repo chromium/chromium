@@ -116,6 +116,7 @@ class ShareInfoFileHandler
   void OnFileStreamReadCompleted(
       const std::string& url_str,
       std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it,
+      const std::string& file_system_id,
       const int64_t bytes_read,
       bool result);
 
