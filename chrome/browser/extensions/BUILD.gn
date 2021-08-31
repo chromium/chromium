@@ -1090,6 +1090,7 @@ static_library("extensions") {
     deps += [
       "//ash",
       "//ash/components/enhanced_network_tts/mojom",
+      "//ash/components/quick_answers/public/cpp:prefs",
       "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",
@@ -1104,7 +1105,6 @@ static_library("extensions") {
       "//chromeos/components/camera_app_ui/resources:chrome_camera_app",
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/proximity_auth",
-      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/cryptohome",
       "//chromeos/dbus",

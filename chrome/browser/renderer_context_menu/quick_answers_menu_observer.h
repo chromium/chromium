@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/quick_answers/quick_answers_client.h"
 #include "base/time/time.h"
-#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/geometry/rect.h"
 

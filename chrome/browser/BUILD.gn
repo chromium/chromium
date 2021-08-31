@@ -2397,6 +2397,7 @@ static_library("browser") {
     ]
     deps += [
       "//ash/components/audio",
+      "//ash/components/quick_answers/public/cpp:prefs",
       "//ash/constants",
       "//ash/webui/diagnostics_ui",
       "//ash/webui/diagnostics_ui/mojom",
@@ -2439,7 +2440,6 @@ static_library("browser") {
       "//chromeos/components/personalization_app/mojom",
       "//chromeos/components/print_management",
       "//chromeos/components/print_management/mojom",
-      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/dbus/attestation",
       "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cros_disks",
@@ -4738,6 +4738,7 @@ static_library("browser") {
     deps += [
       "//ash",
       "//ash/components/account_manager",
+      "//ash/components/quick_answers",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
@@ -4764,7 +4765,6 @@ static_library("browser") {
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",
       "//chromeos/components/feature_usage",
-      "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",

@@ -4,6 +4,7 @@
 
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 
+#include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -15,7 +16,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"

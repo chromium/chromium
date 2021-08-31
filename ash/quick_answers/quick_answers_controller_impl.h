@@ -9,10 +9,10 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/components/quick_answers/quick_answers_client.h"
+#include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "ash/quick_answers/quick_answers_state_controller.h"
-#include "chromeos/components/quick_answers/quick_answers_client.h"
-#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {

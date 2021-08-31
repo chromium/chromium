@@ -12,6 +12,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators.h"
@@ -120,7 +121,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/printing/printer_configuration.h"

@@ -1606,9 +1606,9 @@
       'filepath': 'push_messaging'
     },
     'quick_answers': {
-      'filepath': 'ash/quick_answers/'\
-                  '|chrome/browser/renderer_context_menu/quick_answers.*'\
-                  '|chromeos/components/quick_answers/'
+      'filepath': 'ash/components/quick_answers/'\
+                  '|ash/quick_answers/'\
+                  '|chrome/browser/renderer_context_menu/quick_answers.*'
     },
     'relaunch_notification': {
       'filepath': 'chrome/browser/ui/views/relaunch_notification'

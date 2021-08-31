@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 
 class PrefChangeRegistrar;
 class PrefService;

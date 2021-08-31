@@ -56,7 +56,6 @@ include_rules = [
   "+chromeos/components/multidevice/logging/logging.h",
   "+chromeos/components/phonehub",
   "+chromeos/components/proximity_auth/public/mojom",
-  "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/crosapi/mojom",

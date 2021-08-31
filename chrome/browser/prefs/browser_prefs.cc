@@ -266,6 +266,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics_service.h"
@@ -362,7 +363,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector_chromeos.h"
 #include "chromeos/components/local_search_service/search_metrics_reporter.h"
-#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/fast_transition_observer.h"
