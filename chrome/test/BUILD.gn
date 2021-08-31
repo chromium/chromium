@@ -6885,6 +6885,11 @@ test("unit_tests") {
     }
   }
 
+  if (is_linux && use_dbus) {
+    sources += [ "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc" ]
+    deps += [ "//dbus:test_support" ]
+  }
+
   if (is_android || is_chromeos_ash || is_win) {
     sources += [ "../browser/media/protected_media_identifier_permission_context_unittest.cc" ]
   } else {

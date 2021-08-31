@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
@@ -26,6 +28,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/installer/util/google_update_settings.h"
+#endif
+
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,6 +90,24 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
+
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+void ChromeBrowserMainPartsLinux::PostBrowserStart() {
+  // static_cast is safe because this is the only implementation of
+  // MemoryPressureMonitor.
+  auto* monitor =
+      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
+          base::MemoryPressureMonitor::Get());
+  if (monitor &&
+      base::FeatureList::IsEnabled(features::kLinuxLowMemoryMonitor)) {
+    monitor->SetSystemEvaluator(
+        std::make_unique<DbusMemoryPressureEvaluatorLinux>(
+            monitor->CreateVoter()));
+  }
+
+  ChromeBrowserMainPartsPosix::PostBrowserStart();
+}
+#endif
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

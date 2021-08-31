@@ -392,6 +392,15 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kLinkDoctorDeprecationAndroid;
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kLinuxLowMemoryMonitor;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kLinuxLowMemoryMonitorModerateLevel;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel;
+#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kLiteVideo;
 

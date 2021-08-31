@@ -5487,12 +5487,13 @@ static_library("browser") {
     ]
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
-      if (use_dbus) {
-        deps += [ "//dbus" ]
-      }
     }
     if (use_x11) {
       deps += [ "//ui/gfx/x" ]
+    }
+    if (use_dbus) {
+      deps += [ "//dbus" ]
+      defines += [ "USE_DBUS" ]
     }
 
     # device_info_fetcher uses a "defined(USE_GIO)" macro, so if it's refactored
@@ -5500,6 +5501,15 @@ static_library("browser") {
     if (use_gio) {
       configs += [ "//build/linux:gio_config" ]
     }
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [
+      "dbus_memory_pressure_evaluator_linux.cc",
+      "dbus_memory_pressure_evaluator_linux.h",
+    ]
+
+    deps += [ "//chrome/common:chrome_features" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

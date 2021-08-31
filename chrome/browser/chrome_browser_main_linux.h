@@ -20,6 +20,11 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   // ChromeBrowserMainParts overrides.
   void PreProfileInit() override;
   void PostCreateMainMessageLoop() override;
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+  // Only needed for native Linux, to set up the low-memory-monitor-based memory
+  // monitoring (which depends on D-Bus).
+  void PostBrowserStart() override;
+#endif
   void PostDestroyThreads() override;
 
  private:

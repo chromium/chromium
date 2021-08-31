@@ -597,6 +597,19 @@ const base::Feature kLinkDoctorDeprecationAndroid{
     "LinkDoctorDeprecationAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+const base::Feature kLinuxLowMemoryMonitor{"LinuxLowMemoryMonitor",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// Values taken from the low-memory-monitor documentation and also apply to the
+// portal API:
+// https://hadess.pages.freedesktop.org/low-memory-monitor/gdbus-org.freedesktop.LowMemoryMonitor.html
+constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorModerateLevel{
+    &kLinuxLowMemoryMonitor, "moderate_level", 50};
+constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
+    &kLinuxLowMemoryMonitor, "critical_level", 255};
+#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+
 // Enables LiteVideos, a data-saving optimization that throttles media requests
 // to reduce the bitrate of adaptive media streams. Only for Lite mode users
 // (formerly DataSaver).

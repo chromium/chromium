@@ -363,7 +363,7 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
   std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor> monitor;
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_FUCHSIA) || \
-    defined(OS_CHROMEOS)
+    defined(OS_LINUX) || defined(OS_CHROMEOS)
   monitor =
       std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
 #endif

@@ -570,5 +570,8 @@ specific_include_rules = {
   ],
   "app_controller_mac_browsertest\.mm" : [
     "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
+  ],
+  "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
+    "+dbus",
   ]
 }
