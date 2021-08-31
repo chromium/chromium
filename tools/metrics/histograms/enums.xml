@@ -34364,6 +34364,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3996" label="CredentialManagerCreateFederatedCredential"/>
   <int value="3997" label="CredentialManagerCreatePasswordCredential"/>
   <int value="3998" label="CanvasRenderingContext2DRoundRect"/>
+  <int value="3999"
+      label="NewLayoutOverflowDifferentBlockWithNonEmptyInflowBounds"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
