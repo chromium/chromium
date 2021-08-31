@@ -19,7 +19,6 @@
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
 #include "pdf/document_attachment_info.h"
-#include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -36,7 +35,6 @@ namespace chrome_pdf {
 
 namespace {
 
-using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::SaveArg;
 
@@ -338,6 +336,13 @@ base::Value CreateExpectedNoMetadataResponse() {
   return message;
 }
 
+base::Value CreateExpectedLoadingProgressResponse() {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "loadProgress");
+  message.SetDoubleKey("progress", 100);
+  return message;
+}
+
 base::Value CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType type,
                                      const std::string& token) {
   base::Value message(base::Value::Type::DICTIONARY);
@@ -374,8 +379,8 @@ class PdfViewPluginBaseTest : public testing::Test {
 class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
  public:
   void SetUp() override {
-    auto engine =
-        std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
+    std::unique_ptr<TestPDFiumEngine> engine =
+        std::make_unique<TestPDFiumEngine>(&fake_plugin_);
     fake_plugin_.InitializeEngine(std::move(engine));
   }
 };
@@ -532,7 +537,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.accessibility_state());
 
   // Check all the sent messages.
-  ASSERT_EQ(4u, fake_plugin_.sent_messages().size());
+  ASSERT_EQ(5u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
             fake_plugin_.sent_messages()[0]);
   EXPECT_EQ(CreateExpectedAttachmentsResponse(),
@@ -541,6 +546,8 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
       CreateExpectedBookmarksResponse(fake_plugin_.engine()->GetBookmarks()),
       fake_plugin_.sent_messages()[2]);
   EXPECT_EQ(CreateExpectedMetadataResponse(), fake_plugin_.sent_messages()[3]);
+  EXPECT_EQ(CreateExpectedLoadingProgressResponse(),
+            fake_plugin_.sent_messages()[4]);
 }
 
 TEST_F(PdfViewPluginBaseWithDocInfoTest,
@@ -572,7 +579,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.accessibility_state());
 
   // Check all the sent messages.
-  ASSERT_EQ(4u, fake_plugin_.sent_messages().size());
+  ASSERT_EQ(5u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
             fake_plugin_.sent_messages()[0]);
   EXPECT_EQ(CreateExpectedAttachmentsResponse(),
@@ -581,6 +588,8 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
       CreateExpectedBookmarksResponse(fake_plugin_.engine()->GetBookmarks()),
       fake_plugin_.sent_messages()[2]);
   EXPECT_EQ(CreateExpectedMetadataResponse(), fake_plugin_.sent_messages()[3]);
+  EXPECT_EQ(CreateExpectedLoadingProgressResponse(),
+            fake_plugin_.sent_messages()[4]);
 }
 
 TEST_F(PdfViewPluginBaseWithDocInfoTest,
@@ -604,7 +613,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.document_load_state());
 
   // Check all the sent messages.
-  ASSERT_EQ(4u, fake_plugin_.sent_messages().size());
+  ASSERT_EQ(5u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
             fake_plugin_.sent_messages()[0]);
   EXPECT_EQ(CreateExpectedAttachmentsResponse(),
@@ -613,6 +622,8 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
       CreateExpectedBookmarksResponse(fake_plugin_.engine()->GetBookmarks()),
       fake_plugin_.sent_messages()[2]);
   EXPECT_EQ(CreateExpectedMetadataResponse(), fake_plugin_.sent_messages()[3]);
+  EXPECT_EQ(CreateExpectedLoadingProgressResponse(),
+            fake_plugin_.sent_messages()[4]);
 }
 
 TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
@@ -630,11 +641,13 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
 
   // Check the sent messages when the document doesn't have any metadata,
   // attachments or bookmarks.
-  ASSERT_EQ(2u, fake_plugin_.sent_messages().size());
+  ASSERT_EQ(3u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
             fake_plugin_.sent_messages()[0]);
   EXPECT_EQ(CreateExpectedNoMetadataResponse(),
             fake_plugin_.sent_messages()[1]);
+  EXPECT_EQ(CreateExpectedLoadingProgressResponse(),
+            fake_plugin_.sent_messages()[2]);
 }
 
 TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
@@ -873,66 +886,6 @@ TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
 
   fake_plugin_.HandleMessage(message);
   EXPECT_EQ(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageInitially) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
-
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })"));
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
-    "type": "loadProgress",
-    "progress": 100.0,
-  })")));
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })"));
-  fake_plugin_.clear_sent_messages();
-
-  DocumentLayout::Options two_up_options;
-  two_up_options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
-  EXPECT_CALL(*engine, ApplyDocumentLayout(two_up_options));
-
-  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": true,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })"));
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {
