@@ -382,7 +382,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   gl_surface_->ScheduleOverlayPlane(
       kPlaneZOrder, plane.transform, gl_image,
       ToNearestRect(plane.display_rect), plane.uv_rect, plane.enable_blending,
-      gfx::Rect(plane.resource_size), std::move(fence));
+      gfx::Rect(plane.resource_size), /*opacity=*/1.0f, std::move(fence));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -399,6 +399,7 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
       kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE, gl_image, gfx::Rect(),
       /*crop_rect=*/kUVRect,
       /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
+      /*opacity=*/1.0f,
       /*gpu_fence=*/nullptr);
 }
 
@@ -434,7 +435,7 @@ void OutputPresenterGL::ScheduleOverlays(
           overlay.plane_z_order, overlay.transform, gl_image,
           ToNearestRect(overlay.display_rect), overlay.uv_rect,
           !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
-          TakeGpuFence(accesses[i]->TakeAcquireFences()));
+          overlay.opacity, TakeGpuFence(accesses[i]->TakeAcquireFences()));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

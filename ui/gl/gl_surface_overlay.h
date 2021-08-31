@@ -31,6 +31,7 @@ class GL_EXPORT GLSurfaceOverlay {
                    const gfx::RectF& crop_rect,
                    bool enable_blend,
                    const gfx::Rect& damage_rect,
+                   float opacity,
                    std::unique_ptr<gfx::GpuFence> gpu_fence);
   GLSurfaceOverlay(GLSurfaceOverlay&& other);
   ~GLSurfaceOverlay();
@@ -54,6 +55,7 @@ class GL_EXPORT GLSurfaceOverlay {
   gfx::RectF crop_rect_;
   bool enable_blend_;
   gfx::Rect damage_rect_;
+  float opacity_;
   std::unique_ptr<gfx::GpuFence> gpu_fence_;
 };
 

@@ -242,6 +242,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                     const gfx::RectF& crop_rect,
                                     bool enable_blend,
                                     const gfx::Rect& damage_rect,
+                                    float opacity,
                                     std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   // Schedule a CALayer to be shown at swap time.
@@ -405,6 +406,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
                             const gfx::RectF& crop_rect,
                             bool enable_blend,
                             const gfx::Rect& damage_rect,
+                            float opacity,
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   bool ScheduleDCLayer(
       std::unique_ptr<ui::DCRendererLayerParams> params) override;

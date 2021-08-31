@@ -268,7 +268,7 @@ void SurfacelessGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
         primary_plane_rect_, unity_rect, false,
-        gfx::Rect(buffers_[back_buffer_]->size()),
+        gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
         gl_fence ? gl_fence->GetGpuFence() : nullptr);
   }
 
@@ -278,7 +278,7 @@ void SurfacelessGlRenderer::RenderFrame() {
           1, gfx::OVERLAY_TRANSFORM_NONE,
           overlay_buffers_[i][back_buffer_]->image(), overlay_rect[i],
           unity_rect, false,
-          gfx::Rect(overlay_buffers_[i][back_buffer_]->size()),
+          gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
           /* gpu_fence */ nullptr);
     }
   }

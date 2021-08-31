@@ -45,6 +45,7 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
                             const gfx::RectF& crop_rect,
                             bool enable_blend,
                             const gfx::Rect& damage_rect,
+                            float opacity,
                             std::vector<gfx::GpuFence> acquire_fences,
                             std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;

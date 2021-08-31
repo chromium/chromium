@@ -88,7 +88,7 @@ class FakeGLImageNativePixmap : public gl::GLImageEGL {
       acquire_fences.push_back(std::move(*gpu_fence));
     return pixmap_->ScheduleOverlayPlane(
         widget, z_order, transform, bounds_rect, crop_rect, enable_blend,
-        gfx::Rect(pixmap_->GetBufferSize()), std::move(acquire_fences), {});
+        gfx::Rect(pixmap_->GetBufferSize()), 1.0f, std::move(acquire_fences), {});
   }
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override {
     return pixmap_;
@@ -281,7 +281,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[0].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[0]);
@@ -345,7 +345,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[1].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[1]);
@@ -397,7 +397,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         -1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[2].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -409,7 +409,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[3].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[2]);
@@ -535,7 +535,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[0].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -547,7 +547,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[1].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[0]);
@@ -615,7 +615,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[2].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -627,7 +627,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     gl_surface->ScheduleOverlayPlane(
         1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
         fake_gl_image[3].get(), window_->GetBounds(), {}, false,
-        gfx::Rect(window_->GetBounds().size()), nullptr);
+        gfx::Rect(window_->GetBounds().size()), 1.0f, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[2]);

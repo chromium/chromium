@@ -39,6 +39,7 @@ class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
                             const gfx::RectF& crop_rect,
                             bool enable_blend,
                             const gfx::Rect& damage_rect,
+                            float opacity,
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   EGLConfig GetConfig() override;
   int GetBufferCount() const override;
