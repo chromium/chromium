@@ -195,4 +195,13 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   installer->Register(cus, base::OnceClosure());
 }
 
+// static
+void FirstPartySetsComponentInstallerPolicy::WriteComponentForTesting(
+    const base::FilePath& install_dir,
+    base::StringPiece contents) {
+  CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
+
+  GetConfigPathInstance() = GetInstalledPath(install_dir);
+}
+
 }  // namespace component_updater
