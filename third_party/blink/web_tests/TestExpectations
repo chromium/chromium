@@ -4316,6 +4316,10 @@ crbug.com/889798 external/wpt/service-workers/service-worker/import-scripts-redi
 crbug.com/1052641 external/wpt/service-workers/service-worker/unregister-immediately-before-installed.https.html [ Skip ]
 crbug.com/1052642 external/wpt/service-workers/service-worker/unregister-immediately-during-extendable-events.https.html [ Skip ]
 
+# known bug of SubresourceWebBundles
+crbug.com/1244483 external/wpt/web-bundle/subresource-loading/subresource-loading-non-utf8-query-encoding-encoded-src.https.tentative.html [ Failure ]
+crbug.com/1244483 external/wpt/web-bundle/subresource-loading/subresource-loading-non-utf8-query-encoding.https.tentative.html [ Failure ]
+
 # Sheriff failures 2017-07-03
 crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html [ Pass Skip Timeout ]
 crbug.com/746128 [ Mac ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Failure Pass ]
