@@ -169,9 +169,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                     WebFeedBridge.unfollow(webFeedId,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForUnfollow(
-                                            result.requestStatus
-                                                    == WebFeedSubscriptionRequestStatus.SUCCESS,
-                                            webFeedId, mUrl, mTitle));
+                                            result.requestStatus, webFeedId, mUrl, mTitle));
                     mAppMenuHandler.hideAppMenu();
                 });
     }

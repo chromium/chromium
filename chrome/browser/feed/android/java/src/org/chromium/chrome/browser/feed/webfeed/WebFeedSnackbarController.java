@@ -71,7 +71,11 @@ public class WebFeedSnackbarController {
                 showPostSuccessfulFollowHelp(fallbackTitle, /*isActive=*/false);
             }
         } else {
-            // TODO(crbug/1152592): Add snackbars for specific failures.
+            int failureMessage = R.string.web_feed_follow_generic_failure_snackbar_message;
+            if (results.requestStatus == WebFeedSubscriptionRequestStatus.FAILED_OFFLINE) {
+                failureMessage = R.string.web_feed_offline_failure_snackbar_message;
+            }
+
             // Show follow failure snackbar.
             FollowActionSnackbarController snackbarController =
                     new FollowActionSnackbarController(followId, url, fallbackTitle,
@@ -83,21 +87,19 @@ public class WebFeedSnackbarController {
                     snackbarController.pinToUrl(tab);
                 }
             }
-            showSnackbar(
-                    mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
-                    snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE, actionStringId);
+            showSnackbar(mContext.getString(failureMessage), snackbarController,
+                    Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE, actionStringId);
         }
     }
 
     /**
      * Show appropriate post-unfollow snackbar depending on success/failure.
      */
-    void showSnackbarForUnfollow(
-            boolean successfulUnfollow, byte[] followId, GURL url, String title) {
-        if (successfulUnfollow) {
+    void showSnackbarForUnfollow(int requestStatus, byte[] followId, GURL url, String title) {
+        if (requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             showUnfollowSuccessSnackbar(followId, url, title);
         } else {
-            showUnfollowFailureSnackbar(followId, url, title);
+            showUnfollowFailureSnackbar(requestStatus, followId, url, title);
         }
     }
 
@@ -129,22 +131,25 @@ public class WebFeedSnackbarController {
                 R.string.web_feed_unfollow_success_snackbar_action);
     }
 
-    private void showUnfollowFailureSnackbar(byte[] followId, GURL url, String title) {
+    private void showUnfollowFailureSnackbar(
+            int requestStatus, byte[] followId, GURL url, String title) {
+        int failureMessage = R.string.web_feed_unfollow_generic_failure_snackbar_message;
+        if (requestStatus == WebFeedSubscriptionRequestStatus.FAILED_OFFLINE) {
+            failureMessage = R.string.web_feed_offline_failure_snackbar_message;
+        }
+
         SnackbarController snackbarController = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
                 FeedServiceBridge.reportOtherUserAction(
                         FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
                 WebFeedBridge.unfollow(followId, result -> {
-                    showSnackbarForUnfollow(
-                            result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS,
-                            followId, url, title);
+                    showSnackbarForUnfollow(result.requestStatus, followId, url, title);
                 });
             }
         };
-        showSnackbar(
-                mContext.getString(R.string.web_feed_unfollow_generic_failure_snackbar_message),
-                snackbarController, Snackbar.UMA_WEB_FEED_UNFOLLOW_FAILURE,
+        showSnackbar(mContext.getString(failureMessage), snackbarController,
+                Snackbar.UMA_WEB_FEED_UNFOLLOW_FAILURE,
                 R.string.web_feed_generic_failure_snackbar_action);
     }
 

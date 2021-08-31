@@ -355,8 +355,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_successful() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                true, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.SUCCESS, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -374,8 +374,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_unsuccessful() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                false, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -393,8 +393,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_correctDuration() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                true, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.SUCCESS, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
