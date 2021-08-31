@@ -9,6 +9,8 @@ static_library("safe_browsing") {
   sources = [
     "chrome_controller_client.cc",
     "chrome_controller_client.h",
+    "chrome_safe_browsing_tab_observer_delegate.cc",
+    "chrome_safe_browsing_tab_observer_delegate.h",
     "safe_browsing_tab_observer.cc",
     "safe_browsing_tab_observer.h",
     "url_checker_delegate_impl.cc",

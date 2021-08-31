@@ -56,6 +56,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_tab_observer.h"
@@ -323,7 +324,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
           GetForBrowserContext(profile),
       profile->GetPrefs(), g_browser_process->safe_browsing_service());
-  safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(web_contents);
+  safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
+      web_contents,
+      std::make_unique<safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
   safe_browsing::TriggerCreator::MaybeCreateTriggersForWebContents(
       profile, web_contents);
   ReputationWebContentsObserver::CreateForWebContents(web_contents);
