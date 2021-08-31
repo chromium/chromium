@@ -71,10 +71,6 @@ suite('TimezoneSubpageTests', function() {
   });
 
   test('Deep link to time zone setter on subpage', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     // Resolve timezone by geolocation is on.
     timezoneSubpage.setPrefValue(
         'generated.resolve_timezone_by_geolocation_on_off', true);

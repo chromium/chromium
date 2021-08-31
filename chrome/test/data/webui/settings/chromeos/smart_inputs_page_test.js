@@ -55,7 +55,6 @@ suite('SmartInputsPage', function() {
 
   test('Deep link to emoji suggestion toggle', async () => {
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       allowEmojiSuggestion: true,
     });
     createSmartInputsPage();
@@ -91,7 +90,6 @@ suite('SmartInputsPage', function() {
     const PREDICTIVE_WRITING_SETTING_ID = '1208';
 
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       allowPredictiveWriting: true,
     });
     createSmartInputsPage();

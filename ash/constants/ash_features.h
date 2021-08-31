@@ -305,8 +305,6 @@ extern const base::Feature kOnDeviceSpeechRecognition;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOsFeedback;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsSettingsAppNotificationsPage;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kOsSettingsDeepLinking;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOverviewButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPerDeskShelf;
 COMPONENT_EXPORT(ASH_CONSTANTS)

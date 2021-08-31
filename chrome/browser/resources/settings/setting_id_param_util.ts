@@ -17,12 +17,6 @@ const SETTING_ID_URL_PARAM_NAME: string = 'settingId';
  * setting ID is unavailable.
  */
 export function getSettingIdParameter(): string|null {
-  // This flag must be enabled for the setting ID to be available.
-  if (!loadTimeData.valueExists('isDeepLinkingEnabled') ||
-      !loadTimeData.getBoolean('isDeepLinkingEnabled')) {
-    return null;
-  }
-
   return Router.getInstance().getQueryParameters().get(
       SETTING_ID_URL_PARAM_NAME);
 }

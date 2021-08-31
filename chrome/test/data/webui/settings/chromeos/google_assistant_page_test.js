@@ -197,9 +197,6 @@ suite('GoogleAssistantHandler', function() {
   });
 
   test('Deep link to retrain voice model', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     page.setPrefValue('settings.voice_interaction.enabled', true);
     page.setPrefValue('settings.voice_interaction.hotword.enabled', true);
     page.setPrefValue(

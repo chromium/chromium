@@ -249,7 +249,6 @@ cr.define('settings_people_page_account_manager', function() {
     });
 
     test('Deep link to remove account button', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
       await browserProxy.whenCalled('getAccounts');
       Polymer.dom.flush();
 

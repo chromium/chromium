@@ -26,7 +26,6 @@ suite('LockScreenPage', function() {
   });
 
   test('Deep link to Lock screen', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     const settingId =
         loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled') ? '1109' :
                                                                        '303';

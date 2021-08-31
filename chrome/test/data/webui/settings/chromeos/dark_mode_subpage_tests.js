@@ -121,9 +121,6 @@ suite('DarkModeHandler', function() {
   });
 
   test('Deep link to dark mode toggle button', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     const params = new URLSearchParams;
     params.append('settingId', '505');
     settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
@@ -145,8 +142,6 @@ suite('DarkModeHandler', function() {
     const darkModeThemedRadioGroup =
         darkModePage.$$('#darkModeThemedRadioGroup');
     assertTrue(!!darkModeThemedRadioGroup);
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
 
     const getPrefValue = () => {
       return darkModePage.getPref('ash.dark_mode.color_mode_themed').value;

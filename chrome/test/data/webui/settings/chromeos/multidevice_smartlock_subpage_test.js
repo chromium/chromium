@@ -189,9 +189,6 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to smart lock on/off', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     smartLockSubPage = createSmartLockSubPage();
     setSuiteState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
     setSmartLockFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);

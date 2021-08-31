@@ -132,10 +132,6 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Deep link to verified access', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1101');
     settings.Router.getInstance().navigateTo(
@@ -247,10 +243,6 @@ suite('PrivacePageTest_OfficialBuild', async () => {
   });
 
   test('Deep link to send usage stats', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1103');
     settings.Router.getInstance().navigateTo(

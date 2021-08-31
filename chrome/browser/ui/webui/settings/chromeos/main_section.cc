@@ -164,9 +164,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
   html_source->AddBoolean("isSupervised", profile()->IsSupervised());
 
-  html_source->AddBoolean("isDeepLinkingEnabled",
-                          chromeos::features::IsDeepLinkingEnabled());
-
   html_source->AddBoolean(
       "appManagementIntentSettingsEnabled",
       base::FeatureList::IsEnabled(::features::kAppManagementIntentSettings));

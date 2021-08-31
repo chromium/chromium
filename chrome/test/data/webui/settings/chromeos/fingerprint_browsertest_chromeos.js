@@ -404,9 +404,6 @@ suite('settings-fingerprint-list', function() {
   });
 
   test('Deep link to add fingerprint', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     const settingId =
         fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1111' : '313';
 
@@ -429,9 +426,6 @@ suite('settings-fingerprint-list', function() {
   });
 
   test('Deep link to remove fingerprint', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     const settingId =
         fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1112' : '314';
 

@@ -99,9 +99,6 @@ suite('PersonalizationHandler', function() {
   });
 
   test('Deep link to open wallpaper button', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     const params = new URLSearchParams;
     params.append('settingId', '500');
     settings.Router.getInstance().navigateTo(
@@ -172,9 +169,6 @@ suite('PersonalizationHandler', function() {
 
   suite('PersonalizationTest_ReleaseOnly', function() {
     test('Deep link to change account picture', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
       const params = new URLSearchParams;
       params.append('settingId', '503');
       settings.Router.getInstance().navigateTo(

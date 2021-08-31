@@ -230,8 +230,6 @@ cr.define('settings_kerberos_accounts', function() {
     });
 
     test('Deep link to remove account dropdown', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-
       const params = new URLSearchParams;
       params.append('settingId', '1801');
       settings.Router.getInstance().navigateTo(

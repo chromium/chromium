@@ -165,9 +165,6 @@ suite('CrostiniPageTests', function() {
     });
 
     test('Deep link to setup Crostini', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
       const params = new URLSearchParams;
       params.append('settingId', '800');
       settings.Router.getInstance().navigateTo(
@@ -287,9 +284,6 @@ suite('CrostiniPageTests', function() {
       });
 
       test('Deep link to backup linux', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
         const params = new URLSearchParams;
         params.append('settingId', '802');
         settings.Router.getInstance().navigateTo(
@@ -477,8 +471,6 @@ suite('CrostiniPageTests', function() {
       });
 
       test('Deep link to resize disk', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
         assertTrue(!!subpage.$$('#showDiskResizeButton'));
         await crostiniBrowserProxy.resolvePromises(
             'getCrostiniDiskInfo',
@@ -1111,9 +1103,6 @@ suite('CrostiniPageTests', function() {
     });
 
     test('Deep link to enable adb debugging', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
       const params = new URLSearchParams;
       params.append('settingId', '804');
       settings.Router.getInstance().navigateTo(

@@ -237,7 +237,6 @@ suite('ManageAccessibilityPageTests', function() {
 
   test('Deep link to auto-scan keyboards', async () => {
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       showExperimentalAccessibilitySwitchAccessImprovedTextInput: true,
     });
     const prefs = getDefaultPrefs();

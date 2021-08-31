@@ -255,9 +255,6 @@ suite('Multidevice', function() {
       });
 
   test('Deep link to setup messages', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     setAndroidSmsPairingComplete(false);
     Polymer.dom.flush();
 
@@ -277,9 +274,6 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to messages on/off', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     setAndroidSmsPairingComplete(true);
     Polymer.dom.flush();
 
@@ -300,10 +294,6 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to phone hub on/off', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '209');
     settings.Router.getInstance().navigateTo(

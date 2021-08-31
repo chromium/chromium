@@ -206,9 +206,6 @@ suite('AmbientModeHandler', function() {
   });
 
   test('Deep link to topic sources', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     const params = new URLSearchParams;
     params.append('settingId', '502');
     settings.Router.getInstance().navigateTo(

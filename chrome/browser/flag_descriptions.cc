@@ -1926,11 +1926,6 @@ const char kOsSettingsAppNotificationsPageDescription[] =
     "If enabled, a new App Notifications subpage will appear in the "
     "CrOS Settings Apps section.";
 
-const char kOsSettingsDeepLinkingName[] = "CrOS Settings Deep Linking";
-const char kOsSettingsDeepLinkingDescription[] =
-    "Enables a unique URL for each path in CrOS settings. "
-    "This allows deep linking to individual settings, i.e. in settings search.";
-
 const char kOverlayScrollbarsName[] = "Overlay Scrollbars";
 const char kOverlayScrollbarsDescription[] =
     "Enable the experimental overlay scrollbars implementation. You must also "

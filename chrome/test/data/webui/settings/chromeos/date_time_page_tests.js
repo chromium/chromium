@@ -338,9 +338,6 @@ suite('settings-date-time-page', function() {
   });
 
   test('Deep link to auto set time zone on main page', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     const prefs = getFakePrefs();
     // Set fine grained time zone off so that toggle appears on this page.
     prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;

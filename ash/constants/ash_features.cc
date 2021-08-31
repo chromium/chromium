@@ -808,11 +808,6 @@ const base::Feature kOsFeedback{"OsFeedback",
 const base::Feature kOsSettingsAppNotificationsPage{
     "OsSettingsAppNotificationsPage", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a unique URL for each path in CrOS settings.
-// This allows deep linking to individual settings, i.e. in settings search.
-const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kOverviewButton{"OverviewButton",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1298,10 +1293,6 @@ bool IsCompositingBasedThrottlingEnabled() {
 
 bool IsDarkLightModeEnabled() {
   return base::FeatureList::IsEnabled(kDarkLightMode);
-}
-
-bool IsDeepLinkingEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsDeepLinking);
 }
 
 bool IsDemoModeSWAEnabled() {

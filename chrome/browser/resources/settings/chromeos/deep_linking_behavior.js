@@ -73,8 +73,6 @@ const kDeepLinkFocusId = 'deep-link-focus-id';
    *     ?chromeos.settings.mojom.Setting}>}
    */
   showDeepLink(settingId) {
-    assert(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     return new Promise(resolve => {
       Polymer.RenderStatus.afterNextRender(this, () => {
         const elToFocus = this.$$(`[${kDeepLinkFocusId}~="${settingId}"]`);
@@ -96,8 +94,6 @@ const kDeepLinkFocusId = 'deep-link-focus-id';
    * @param {!Element} elToFocus
    */
   showDeepLinkElement(elToFocus) {
-    assert(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     elToFocus.focus();
   },
 

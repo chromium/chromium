@@ -407,10 +407,6 @@ suite('languages page', () => {
     });
 
     test('Deep link to add language', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       const params = new URLSearchParams;
       params.append('settingId', '1200');
       settings.Router.getInstance().navigateTo(

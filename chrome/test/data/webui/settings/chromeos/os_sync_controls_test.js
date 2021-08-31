@@ -267,7 +267,6 @@ suite('OsSyncControlsTest', function() {
   });
 
   test('Deep link to sync on/off', async function() {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     setupWithFeatureEnabled();
 
     const params = new URLSearchParams;

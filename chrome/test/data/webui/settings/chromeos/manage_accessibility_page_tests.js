@@ -247,7 +247,6 @@ suite('ManageAccessibilityPageTests', function() {
   test('Deep link to switch access', async () => {
     loadTimeData.overrideValues({
       isKioskModeActive: false,
-      isDeepLinkingEnabled: true,
     });
     initPage();
 

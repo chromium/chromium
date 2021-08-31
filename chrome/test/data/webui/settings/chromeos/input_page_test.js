@@ -228,10 +228,6 @@ suite('input page', () => {
 
   suite('input page', () => {
     test('Deep link to spell check', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       const params = new URLSearchParams;
       params.append('settingId', '1207');
       settings.Router.getInstance().navigateTo(

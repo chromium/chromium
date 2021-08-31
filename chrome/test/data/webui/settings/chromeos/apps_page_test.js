@@ -159,10 +159,6 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to On startup dropdown menu', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       Polymer.dom.flush();
 
       const params = new URLSearchParams;
@@ -178,10 +174,6 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to manage android prefs', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       appsPage.havePlayStoreApp = false;
       Polymer.dom.flush();
 
@@ -198,10 +190,6 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to turn on Play Store', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       const params = new URLSearchParams;
       params.append('settingId', '702');
       settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
@@ -336,10 +324,6 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to manage android prefs - subpage', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       subpage.androidAppsInfo = {
         playStoreEnabled: false,
         settingsAppAvailable: true,
@@ -360,10 +344,6 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to remove play store', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       const params = new URLSearchParams;
       params.append('settingId', '701');
       settings.Router.getInstance().navigateTo(

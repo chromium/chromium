@@ -644,9 +644,6 @@ cr.define('device_page_tests', function() {
      */
     async function checkDeepLink(
         route, settingId, deepLinkElement, elementDesc) {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
       const params = new URLSearchParams;
       params.append('settingId', settingId);
       settings.Router.getInstance().navigateTo(route, params);
@@ -1216,9 +1213,6 @@ cr.define('device_page_tests', function() {
       });
 
       test('Deep link to display mirroring', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
         const params = new URLSearchParams;
         params.append('settingId', '428');
         settings.Router.getInstance().navigateTo(
@@ -2171,9 +2165,6 @@ cr.define('device_page_tests', function() {
       });
 
       test('Deep link to preferred app', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
         browserProxy.setNoteTakingApps([
           entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
           entry('n2', 'v2', false, LockScreenSupport.NOT_SUPPORTED)

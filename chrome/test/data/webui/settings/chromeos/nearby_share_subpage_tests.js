@@ -152,10 +152,6 @@ suite('NearbyShare', function() {
       test(
           'Deep link to nearby setting element ' + testData.deepLinkElement,
           async () => {
-            loadTimeData.overrideValues({
-              isDeepLinkingEnabled: true,
-            });
-
             const params = new URLSearchParams;
             params.append('settingId', testData.settingId);
             settings.Router.getInstance().navigateTo(

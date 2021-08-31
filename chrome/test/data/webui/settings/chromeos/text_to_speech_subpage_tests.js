@@ -92,10 +92,6 @@ suite('TextToSpeechSubpageTests', function() {
   });
 
   test('Deep link to text to speech rate', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1503');
     settings.Router.getInstance().navigateTo(
@@ -111,9 +107,6 @@ suite('TextToSpeechSubpageTests', function() {
   });
 
   test('Deep link to text to speech engines', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     ttsPage.extensions = [{
       name: 'extension1',
       extensionId: 'extension1_id',

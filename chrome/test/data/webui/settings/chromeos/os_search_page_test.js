@@ -31,9 +31,6 @@ suite('OSSearchPageTests', function() {
   });
 
   test('Deep link to preferred search engine', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     const params = new URLSearchParams;
     params.append('settingId', '600');
     settings.Router.getInstance().navigateTo(

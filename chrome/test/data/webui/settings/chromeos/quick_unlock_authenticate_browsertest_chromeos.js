@@ -383,8 +383,6 @@ cr.define('settings_people_page_quick_unlock', function() {
       });
 
       test('Deep link to enable lock screen', async () => {
-        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-
         const params = new URLSearchParams;
         params.append('settingId', '303');
         settings.Router.getInstance().navigateTo(

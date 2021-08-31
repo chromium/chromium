@@ -113,7 +113,6 @@ suite('UserPage', () => {
   });
 
   test('Deep link to Guest browsing', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     const settingId = page.isAccountManagementFlowsV2Enabled_ ? '1104' : '305';
 
     const params = new URLSearchParams;
@@ -129,7 +128,6 @@ suite('UserPage', () => {
   });
 
   test('Deep link to Show Usernames And Photos At Signin', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     const settingId = page.isAccountManagementFlowsV2Enabled_ ? '1105' : '306';
 
     const params = new URLSearchParams;
@@ -146,7 +144,6 @@ suite('UserPage', () => {
   });
 
   test('Deep link to Restrict Signin', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     const settingId = page.isAccountManagementFlowsV2Enabled_ ? '1106' : '307';
 
     const params = new URLSearchParams;

@@ -190,7 +190,6 @@ cr.define('settings_people_page', function() {
       loadTimeData.overrideValues({
         // Simulate parental controls.
         showParentalControls: true,
-        isDeepLinkingEnabled: true,
       });
 
       peoplePage = document.createElement('os-settings-people-page');
@@ -212,8 +211,6 @@ cr.define('settings_people_page', function() {
     });
 
     test('Deep link to guest browsing on users page', async () => {
-      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-
       peoplePage = document.createElement('os-settings-people-page');
       document.body.appendChild(peoplePage);
       Polymer.dom.flush();
@@ -239,10 +236,6 @@ cr.define('settings_people_page', function() {
     });
 
     test('Deep link to encryption options on old sync page', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       peoplePage = document.createElement('os-settings-people-page');
       document.body.appendChild(peoplePage);
       Polymer.dom.flush();

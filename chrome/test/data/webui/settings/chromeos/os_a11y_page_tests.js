@@ -30,10 +30,6 @@ suite('A11yPageTests', function() {
   });
 
   test('Deep link to always show a11y settings', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1500');
     settings.Router.getInstance().navigateTo(

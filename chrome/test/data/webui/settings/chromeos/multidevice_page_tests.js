@@ -207,9 +207,6 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to multidevice setup', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
 
     const params = new URLSearchParams;

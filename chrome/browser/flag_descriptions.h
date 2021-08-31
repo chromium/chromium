@@ -1093,9 +1093,6 @@ extern const char kOptimizationGuideModelPushNotificationDescription[];
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];
 
-extern const char kOsSettingsDeepLinkingName[];
-extern const char kOsSettingsDeepLinkingDescription[];
-
 extern const char kOverviewButtonName[];
 extern const char kOverviewButtonDescription[];
 

@@ -623,9 +623,6 @@ suite('CupsSavedPrintersTests', function() {
   });
 
   test('Deep link to saved printers', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     createCupsPrinterPage([
       cups_printer_test_util.createCupsPrinterInfo('google', '4', 'id4'),
       cups_printer_test_util.createCupsPrinterInfo('test1', '1', 'id1'),
