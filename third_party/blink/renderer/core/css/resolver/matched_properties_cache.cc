@@ -145,9 +145,6 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].types_.tree_order !=
         matched_properties_types[i].tree_order)
       return false;
-    if (properties[i].types_.layer_order !=
-        matched_properties_types[i].layer_order)
-      return false;
     if (properties[i].types_.valid_property_filter !=
         matched_properties_types[i].valid_property_filter)
       return false;

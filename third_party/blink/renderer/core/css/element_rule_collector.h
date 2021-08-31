@@ -48,11 +48,9 @@ class MatchedRule {
 
  public:
   MatchedRule(const RuleData* rule_data,
-              unsigned layer_order,
               unsigned style_sheet_index,
               const CSSStyleSheet* parent_style_sheet)
       : rule_data_(rule_data),
-        layer_order_(layer_order),
         parent_style_sheet_(parent_style_sheet) {
     DCHECK(rule_data_);
     static const unsigned kBitsForPositionInRuleData = 18;
@@ -64,7 +62,6 @@ class MatchedRule {
   const RuleData* GetRuleData() const { return rule_data_; }
   uint64_t GetPosition() const { return position_; }
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
-  unsigned LayerOrder() const { return layer_order_; }
   const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_style_sheet_);
@@ -73,7 +70,6 @@ class MatchedRule {
 
  private:
   Member<const RuleData> rule_data_;
-  unsigned layer_order_;
   uint64_t position_;
   Member<const CSSStyleSheet> parent_style_sheet_;
 };
@@ -165,7 +161,6 @@ class CORE_EXPORT ElementRuleCollector {
              const SelectorChecker::SelectorCheckingContext&,
              MatchResult&);
   void DidMatchRule(const RuleData*,
-                    unsigned layer_order,
                     const SelectorChecker::MatchResult&,
                     const MatchRequest&);
 

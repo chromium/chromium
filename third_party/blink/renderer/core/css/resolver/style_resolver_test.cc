@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -48,12 +47,6 @@ class StyleResolverTest : public PageTestBase {
     return ref.GetProperty()
         .CSSValueFromComputedStyle(style, nullptr, false)
         ->CssText();
-  }
-
-  void MatchAllRules(StyleResolverState& state,
-                     ElementRuleCollector& collector) {
-    GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
-        state, collector, false /* include_smil_properties */);
   }
 };
 
@@ -1357,151 +1350,6 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
 
   EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
   EXPECT_FALSE(b->ComputedStyleRef().DependsOnContainerQueries());
-}
-
-TEST_F(StyleResolverTest, NoCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      #a { color: green; }
-      .b { font-size: 16px; }
-    </style>
-    <div id=a class=b></div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
-  SelectorFilter filter;
-  MatchResult match_result;
-  ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
-                                 EInsideLink::kNotInsideLink);
-  MatchAllRules(state, collector);
-  const auto& properties = match_result.GetMatchedProperties();
-  ASSERT_EQ(properties.size(), 3u);
-
-  // div { display: block; }
-  EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
-  EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
-
-  // .b { font-size: 16px; }
-  EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(0u, properties[1].types_.layer_order);
-  EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
-
-  // #a { color: green; }
-  EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(0u, properties[2].types_.layer_order);
-  EXPECT_EQ(properties[2].types_.origin, CascadeOrigin::kAuthor);
-}
-
-TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      @layer foo, bar;
-      @layer bar {
-        .b { color: green; }
-      }
-    </style>
-    <style>
-      @layer foo {
-        #a { font-size: 16px; }
-      }
-    </style>
-    <div id=a class=b style="font-family: custom"></div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
-  SelectorFilter filter;
-  MatchResult match_result;
-  ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
-                                 EInsideLink::kNotInsideLink);
-  MatchAllRules(state, collector);
-  const auto& properties = match_result.GetMatchedProperties();
-  ASSERT_EQ(properties.size(), 4u);
-
-  // div { display: block; }
-  EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
-  EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
-
-  // @layer foo { #a { font-size: 16px } }"
-  EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(1u, properties[1].types_.layer_order);
-  EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
-
-  // @layer bar { .b { color: green } }"
-  EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(2u, properties[2].types_.layer_order);
-  EXPECT_EQ(properties[2].types_.origin, CascadeOrigin::kAuthor);
-
-  // style="font-family: custom"
-  EXPECT_TRUE(
-      properties[3].properties->HasProperty(CSSPropertyID::kFontFamily));
-  EXPECT_EQ(0u, properties[3].types_.layer_order);
-  EXPECT_EQ(properties[3].types_.origin, CascadeOrigin::kAuthor);
-}
-
-TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
-    <style>
-      @layer foo {
-        #host { color: green; }
-      }
-    </style>
-    <div id=host>
-      <template shadowroot=open>
-        <style>
-          @layer bar {
-            :host { font-size: 16px; }
-          }
-        </style>
-      </template>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  StyleResolverState state(GetDocument(),
-                           *GetDocument().getElementById("host"));
-  SelectorFilter filter;
-  MatchResult match_result;
-  ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
-                                 EInsideLink::kNotInsideLink);
-  MatchAllRules(state, collector);
-  const auto& properties = match_result.GetMatchedProperties();
-  ASSERT_EQ(properties.size(), 3u);
-
-  // div { display: block }
-  EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
-  EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
-
-  // @layer bar { :host { font-size: 16px } }
-  EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(1u, properties[1].types_.layer_order);
-  EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
-  EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
-            GetDocument().getElementById("host")->GetShadowRoot());
-
-  // @layer foo { #host { color: green } }
-  EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(1u, properties[2].types_.layer_order);
-  EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[2].types_.tree_order),
-            &GetDocument());
 }
 
 }  // namespace blink

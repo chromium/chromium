@@ -25,7 +25,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
@@ -61,8 +60,6 @@ struct CORE_EXPORT MatchedProperties {
     //
     // https://drafts.csswg.org/css-scoping/#shadow-cascading
     uint16_t tree_order;
-    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
-    uint16_t layer_order;
   };
   Data types_;
 };
@@ -138,8 +135,7 @@ class CORE_EXPORT MatchResult {
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
       unsigned link_match_type = CSSSelector::kMatchAll,
-      ValidPropertyFilter = ValidPropertyFilter::kNoFilter,
-      unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder);
+      ValidPropertyFilter = ValidPropertyFilter::kNoFilter);
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void FinishAddingUARules();
