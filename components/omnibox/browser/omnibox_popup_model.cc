@@ -188,11 +188,6 @@ void OmniboxPopupModel::TryDeletingLine(size_t line) {
   }
 }
 
-bool OmniboxPopupModel::IsStarredMatch(const AutocompleteMatch& match) const {
-  auto* bookmark_model = edit_model_->client()->GetBookmarkModel();
-  return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
-}
-
 bool OmniboxPopupModel::SelectionOnInitialLine() const {
   size_t initial_line =
       result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
@@ -245,46 +240,6 @@ void OmniboxPopupModel::SetRichSuggestionBitmap(int result_index,
   rich_suggestion_bitmaps_[result_index] = bitmap;
   view_->UpdatePopupAppearance();
 }
-
-// Android and iOS have their own platform-specific icon logic.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-gfx::Image OmniboxPopupModel::GetMatchIcon(const AutocompleteMatch& match,
-                                           SkColor vector_icon_color) {
-  gfx::Image extension_icon =
-      edit_model_->client()->GetIconIfExtensionMatch(match);
-  // Extension icons are the correct size for non-touch UI but need to be
-  // adjusted to be the correct size for touch mode.
-  if (!extension_icon.IsEmpty())
-    return edit_model_->client()->GetSizedIcon(extension_icon);
-
-  // Get the favicon for navigational suggestions.
-  if (!AutocompleteMatch::IsSearchType(match.type) &&
-      match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
-    // Because the Views UI code calls GetMatchIcon in both the layout and
-    // painting code, we may generate multiple OnFaviconFetched callbacks,
-    // all run one after another. This seems to be harmless as the callback
-    // just flips a flag to schedule a repaint. However, if it turns out to be
-    // costly, we can optimize away the redundant extra callbacks.
-    gfx::Image favicon = edit_model_->client()->GetFaviconForPageUrl(
-        match.destination_url,
-        base::BindOnce(&OmniboxPopupModel::OnFaviconFetched,
-                       weak_factory_.GetWeakPtr(), match.destination_url));
-
-    // Extension icons are the correct size for non-touch UI but need to be
-    // adjusted to be the correct size for touch mode.
-    if (!favicon.IsEmpty())
-      return edit_model_->client()->GetSizedIcon(favicon);
-  }
-
-  // The below lines are deliberately separate to try to debug
-  // https://crbug.com/1024114.
-  bool is_starred_match = IsStarredMatch(match);
-  const auto& vector_icon_type = match.GetVectorIcon(is_starred_match);
-
-  return edit_model_->client()->GetSizedIcon(vector_icon_type,
-                                             vector_icon_color);
-}
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 std::vector<OmniboxPopupSelection>
 OmniboxPopupModel::GetAllAvailableSelectionsSorted(

@@ -113,7 +113,7 @@ void OmniboxPopupViewIOS::SetSemanticContentAttribute(
 #pragma mark - OmniboxPopupViewControllerDelegate
 
 bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
-  return model()->IsStarredMatch(match);
+  return edit_model_->IsStarredMatch(match);
 }
 
 void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {

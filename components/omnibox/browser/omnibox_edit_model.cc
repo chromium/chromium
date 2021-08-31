@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
@@ -1692,12 +1691,56 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   view_->OnRevertTemporaryText(match.fill_into_edit, match);
 }
 
-PrefService* OmniboxEditModel::GetPrefService() const {
-  return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
-}
-
 bool OmniboxEditModel::ShouldPreventElision() const {
   return controller()->GetLocationBarModel()->ShouldPreventElision();
+}
+
+bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
+  auto* bookmark_model = client()->GetBookmarkModel();
+  return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
+}
+
+// Android and iOS have their own platform-specific icon logic.
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
+                                          SkColor vector_icon_color) {
+  gfx::Image extension_icon = client()->GetIconIfExtensionMatch(match);
+  // Extension icons are the correct size for non-touch UI but need to be
+  // adjusted to be the correct size for touch mode.
+  if (!extension_icon.IsEmpty()) {
+    return client()->GetSizedIcon(extension_icon);
+  }
+
+  // Get the favicon for navigational suggestions.
+  if (!AutocompleteMatch::IsSearchType(match.type) &&
+      match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
+    // Because the Views UI code calls GetMatchIcon in both the layout and
+    // painting code, we may generate multiple OnFaviconFetched callbacks,
+    // all run one after another. This seems to be harmless as the callback
+    // just flips a flag to schedule a repaint. However, if it turns out to be
+    // costly, we can optimize away the redundant extra callbacks.
+    gfx::Image favicon = client()->GetFaviconForPageUrl(
+        match.destination_url,
+        base::BindOnce(&OmniboxPopupModel::OnFaviconFetched,
+                       popup_model()->weak_factory_.GetWeakPtr(),
+                       match.destination_url));
+
+    // Extension icons are the correct size for non-touch UI but need to be
+    // adjusted to be the correct size for touch mode.
+    if (!favicon.IsEmpty()) {
+      return client()->GetSizedIcon(favicon);
+    }
+  }
+
+  bool is_starred_match = IsStarredMatch(match);
+  const auto& vector_icon_type = match.GetVectorIcon(is_starred_match);
+
+  return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+
+PrefService* OmniboxEditModel::GetPrefService() const {
+  return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {

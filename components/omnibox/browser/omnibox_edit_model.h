@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -415,6 +416,15 @@ class OmniboxEditModel {
 
   // Returns whether to prevent elision of the display URL.
   bool ShouldPreventElision() const;
+
+  // Returns true if the destination URL of the match is bookmarked.
+  bool IsStarredMatch(const AutocompleteMatch& match) const;
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // Gets the icon for the given `match`.
+  gfx::Image GetMatchIcon(const AutocompleteMatch& match,
+                          SkColor vector_icon_color);
+#endif
 
  protected:
   // Utility method to get current PrefService; protected instead of private

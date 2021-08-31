@@ -166,9 +166,6 @@ class OmniboxPopupModel {
   // popup.
   void TryDeletingLine(size_t line);
 
-  // Returns true if the destination URL of the match is bookmarked.
-  bool IsStarredMatch(const AutocompleteMatch& match) const;
-
   // Returns true if the selection is on the initial line, which is usually the
   // default match (except in the no-default-match case).
   bool SelectionOnInitialLine() const;
@@ -181,12 +178,6 @@ class OmniboxPopupModel {
   const SkBitmap* RichSuggestionBitmapAt(int result_index) const;
   // Stores the image in a local data member and schedules a repaint.
   void SetRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
-
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-  // Gets the icon for the match index.
-  gfx::Image GetMatchIcon(const AutocompleteMatch& match,
-                          SkColor vector_icon_color);
-#endif
 
   OmniboxEditModel* edit_model() { return edit_model_; }
 
@@ -233,6 +224,11 @@ class OmniboxPopupModel {
       int* label_prefix_length = nullptr);
 
  private:
+  // `OmniboxPopupModel` is an implementation detail of `OmniboxEditModel`, and
+  // may be refactored away entirely. While functionality is being migrated,
+  // allow friend access to avoid expanding the public interface.
+  friend class OmniboxEditModel;
+
   void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon);
 
   std::map<int, SkBitmap> rich_suggestion_bitmaps_;
