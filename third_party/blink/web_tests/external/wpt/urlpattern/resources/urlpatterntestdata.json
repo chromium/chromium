@@ -2175,6 +2175,9 @@
   {
     "pattern": [ "/foo", "" ],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "pathname": "/foo" }, "https://example.com" ],
+    "expected_obj": "error"
   }
-
 ]
