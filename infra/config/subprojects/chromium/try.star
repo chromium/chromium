@@ -2287,6 +2287,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "lacros-amd64-generic-chrome-skylab",
+)
+
+chrome_internal_verifier(
     builder = "lacros-arm-generic-chrome",
 )
 
