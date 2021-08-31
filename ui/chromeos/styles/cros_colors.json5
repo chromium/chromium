@@ -69,6 +69,7 @@
       light: "$google_green_600",
       dark: "$google_green_300",
     },
+    text_color_prominent: "$icon_color_prominent",
     text_color_selection: {
       light: "$google_blue_700",
       dark: "$google_blue_200",
@@ -84,6 +85,10 @@
       light: "$google_grey_500",
       dark: "$google_grey_500",
       debug: "#00ffff",
+    },
+    icon_color_disabled: {
+      light: "rgba($google_grey_700_rgb, $disabled_opacity)",
+      dark: "rgba($google_grey_200_rgb, $disabled_opacity)",
     },
     icon_color_alert: {
       light: "$google_red_600",
@@ -229,6 +234,62 @@
     button_stroke_color_secondary_disabled: {
       light: "$google_grey_100",
       dark: "$google_grey_800",
+    },
+    /* button-icon */
+    button_icon_color_primary: {
+      light: "$google_grey_200",
+      dark: "$google_grey_900",
+    },
+    button_icon_color_primary_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    button_icon_color_secondary: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    button_icon_color_secondary_disabled: {
+      light: "$google_grey_200",
+      dark: "$google_grey_900",
+    },
+
+    /* icon-button */
+    icon_button_background_color: {
+      light: "rgba($black_rgb, 0.05)",
+      dark: "rgba($white_rgb, 0.1)",
+    },
+
+    /* menu */
+    menu_label_color: {
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+    },
+    menu_icon_color: {
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+    },
+    menu_shortcut_color: {
+      light: "$google_grey_700",
+      dark: "$google_grey_500",
+    },
+    menu_item_background_hover: "$ink_ripple_color",
+
+    /* tab */
+    tab_label_color_active: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    tab_label_color_inactive: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    tab_icon_color_active: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    tab_icon_color_inactive: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
     },
 
     /* textfield */
