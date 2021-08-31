@@ -23,14 +23,7 @@ typedef BOOL (^LocationEnabledBlock)(id self);
 
 using OmniboxGeolocationControllerTest = PlatformTest;
 
-// TODO(crbug.com/1238579): Fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_TriggerSystemPromptForNewUser TriggerSystemPromptForNewUser
-#else
-#define MAYBE_TriggerSystemPromptForNewUser \
-  DISABLED_TriggerSystemPromptForNewUser
-#endif
-TEST_F(OmniboxGeolocationControllerTest, MAYBE_TriggerSystemPromptForNewUser) {
+TEST_F(OmniboxGeolocationControllerTest, TriggerSystemPromptForNewUser) {
   OmniboxGeolocationController* controller =
       [OmniboxGeolocationController sharedInstance];
   __block BOOL requested = NO;
@@ -47,7 +40,7 @@ TEST_F(OmniboxGeolocationControllerTest, MAYBE_TriggerSystemPromptForNewUser) {
   };
   auto authorization_swizzler = std::make_unique<ScopedBlockSwizzler>(
       [CLLocationManager class], @selector(authorizationStatus),
-      authorization_swizzler_block, YES);
+      authorization_swizzler_block, NO);
 
   LocationEnabledBlock location_enabled_swizzler_block = ^(id self) {
     return enabled;
