@@ -928,6 +928,20 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   SetAccessibilityViewportInfo(viewport_info);
 }
 
+bool PdfViewPluginBase::StartFind(const std::string& text,
+                                  bool case_sensitive) {
+  engine_->StartFind(text, case_sensitive);
+  return true;
+}
+
+void PdfViewPluginBase::SelectFindResult(bool forward) {
+  engine_->SelectFindResult(forward);
+}
+
+void PdfViewPluginBase::StopFind() {
+  engine_->StopFind();
+}
+
 void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;

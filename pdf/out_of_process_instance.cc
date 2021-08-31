@@ -670,16 +670,15 @@ bool OutOfProcessInstance::IsPrintScalingDisabled() {
 
 bool OutOfProcessInstance::StartFind(const std::string& text,
                                      bool case_sensitive) {
-  engine()->StartFind(text, case_sensitive);
-  return true;
+  return PdfViewPluginBase::StartFind(text, case_sensitive);
 }
 
 void OutOfProcessInstance::SelectFindResult(bool forward) {
-  engine()->SelectFindResult(forward);
+  PdfViewPluginBase::SelectFindResult(forward);
 }
 
 void OutOfProcessInstance::StopFind() {
-  engine()->StopFind();
+  PdfViewPluginBase::StopFind();
   tickmarks_.clear();
   SetTickmarks(tickmarks_);
 }

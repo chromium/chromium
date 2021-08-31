@@ -289,6 +289,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) = 0;
 
+  // Find handlers.
+  bool StartFind(const std::string& text, bool case_sensitive);
+  void SelectFindResult(bool forward);
+  void StopFind();
+
   // Returns the print preset options for the document.
   blink::WebPrintPresetOptions GetPrintPresetOptions();
 

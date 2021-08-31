@@ -561,18 +561,17 @@ bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
                                  int identifier) {
   find_identifier_ = identifier;
-  engine()->StartFind(search_text.Utf8(), case_sensitive);
-  return true;
+  return PdfViewPluginBase::StartFind(search_text.Utf8(), case_sensitive);
 }
 
 void PdfViewWebPlugin::SelectFindResult(bool forward, int identifier) {
   find_identifier_ = identifier;
-  engine()->SelectFindResult(forward);
+  PdfViewPluginBase::SelectFindResult(forward);
 }
 
 void PdfViewWebPlugin::StopFind() {
   find_identifier_ = -1;
-  engine()->StopFind();
+  PdfViewPluginBase::StopFind();
   // TODO(crbug.com/1199999): Clear tickmarks on scroller when find is
   // dismissed.
 }
