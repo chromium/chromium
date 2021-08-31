@@ -26,7 +26,9 @@
 namespace policy {
 
 namespace {
-const char kStartUpURL1[] = "chrome://help/";
+// We should not use "chrome://help/" here, because it will be rewritten into
+// "chrome://settings/help".
+const char kStartUpURL1[] = "chrome://settings/help";
 const char kStartUpURL2[] = "chrome://version/";
 }  // namespace
 
