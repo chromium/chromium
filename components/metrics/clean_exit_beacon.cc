@@ -34,6 +34,8 @@
 namespace metrics {
 namespace {
 
+using ::variations::kControlGroup;
+using ::variations::kDefaultGroup;
 using ::variations::kExtendedSafeModeTrial;
 using ::variations::kSignalAndWriteSynchronouslyViaPrefServiceGroup;
 using ::variations::kSignalAndWriteViaFileUtilGroup;
@@ -116,6 +118,9 @@ bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents,
 // kResetVariationState.
 std::unique_ptr<base::Value> MaybeGetFileContents(
     const base::FilePath& beacon_file_path) {
+  if (beacon_file_path.empty())
+    return nullptr;
+
   JSONFileValueDeserializer deserializer(beacon_file_path);
   std::unique_ptr<base::Value> beacon_file_contents = deserializer.Deserialize(
       /*error_code=*/nullptr, /*error_message=*/nullptr);
@@ -135,11 +140,37 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   return nullptr;
 }
 
+// Sets up the Extended Variations Safe Mode experiment, which is enabled on
+// only some channels. If assigned to an experiment group, returns the name of
+// the group name, e.g. "Control"; otherwise, returns the empty string.
+std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV) {
+    return std::string();
+  }
+
+  int default_group;
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kExtendedSafeModeTrial, 100, kDefaultGroup,
+          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+  trial->AppendGroup(kControlGroup, 25);
+  trial->AppendGroup(kWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
+
+  const int assigned_group = trial->group();
+  DCHECK_NE(assigned_group, default_group);
+  return trial->group_name();
+}
+
 }  // namespace
 
 CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
                                  const base::FilePath& user_data_dir,
-                                 PrefService* local_state)
+                                 PrefService* local_state,
+                                 version_info::Channel channel)
     : local_state_(local_state),
       initial_browser_last_live_timestamp_(
           local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
@@ -147,7 +178,14 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
 
-  if (!user_data_dir.empty())
+  std::string group;
+  if (!user_data_dir.empty()) {
+    // Platforms that pass an empty path do so deliberately. They should not
+    // participate in this experiment.
+    group = SetUpExtendedSafeModeTrial(channel);
+  }
+
+  if (group == kSignalAndWriteViaFileUtilGroup)
     beacon_file_path_ = user_data_dir.Append(variations::kVariationsFilename);
 
   std::unique_ptr<base::Value> beacon_file_contents =
@@ -261,7 +299,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     } else if (group_name == kSignalAndWriteViaFileUtilGroup) {
       SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
           "Variations.ExtendedSafeMode.WritePrefsTime");
-      WriteVariationsSafeModeFile(exited_cleanly);
+      WriteBeaconFile(exited_cleanly);
     }
   } else {
     local_state_->CommitPendingWrite();
@@ -269,7 +307,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
       // Clients in this group also write to the Variations Safe Mode file. This
       // is because the file will be used in the next session, and thus, should
       // be updated whenever kStabilityExitedCleanly is.
-      WriteVariationsSafeModeFile(exited_cleanly);
+      WriteBeaconFile(exited_cleanly);
     }
   }
 
@@ -334,7 +372,7 @@ void CleanExitBeacon::SkipCleanShutdownStepsForTesting() {
   g_skip_clean_shutdown_steps = true;
 }
 
-void CleanExitBeacon::WriteVariationsSafeModeFile(bool exited_cleanly) const {
+void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
   DCHECK_EQ(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
             kSignalAndWriteViaFileUtilGroup);
   base::Value dict(base::Value::Type::DICTIONARY);

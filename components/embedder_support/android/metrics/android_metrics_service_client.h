@@ -18,6 +18,7 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/version_info/android/channel_getter.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -109,8 +110,15 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   //
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // a separate file will not be used for Variations Safe Mode prefs.
-  void Initialize(const base::FilePath& user_data_dir,
-                  PrefService* pref_service);
+  //
+  // TODO(crbug.com/1241702): Remove |channel| at the end of the Extended
+  // Variations Safe Mode experiment. |channel| is used to enable the experiment
+  // on only certain channels. The experiment is always disabled on unknown
+  // channels.
+  void Initialize(
+      const base::FilePath& user_data_dir,
+      PrefService* pref_service,
+      version_info::Channel channel = version_info::Channel::UNKNOWN);
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);

@@ -25,6 +25,7 @@
 #include "chrome/browser/metrics/variations/ui_string_overrider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -34,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -61,8 +63,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
-
 namespace internal {
+
 // Metrics reporting feature. This feature, along with user consent, controls if
 // recording and reporting are enabled. If the feature is enabled, but no
 // consent is given, then there will be no recording or reporting.
@@ -282,7 +284,8 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
+        chrome::GetChannel());
   }
   return metrics_state_manager_.get();
 }

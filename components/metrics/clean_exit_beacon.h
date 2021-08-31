@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/version_info/channel.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -31,9 +32,15 @@ class CleanExitBeacon {
   //
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // a separate file will not be used for Variations Safe Mode prefs.
+  //
+  // TODO(crbug.com/1241702): Remove |channel| at the end of the Extended
+  // Variations Safe Mode experiment. |channel| is used to enable the experiment
+  // on only certain channels. The experiment is always disabled on unknown
+  // channels.
   CleanExitBeacon(const std::wstring& backup_registry_key,
                   const base::FilePath& user_data_dir,
-                  PrefService* local_state);
+                  PrefService* local_state,
+                  version_info::Channel channel);
 
   ~CleanExitBeacon();
 
@@ -97,7 +104,7 @@ class CleanExitBeacon {
  private:
   // Writes |exited_cleanly| and the crash streak to the file located at
   // |beacon_file_path_|.
-  void WriteVariationsSafeModeFile(bool exited_cleanly) const;
+  void WriteBeaconFile(bool exited_cleanly) const;
 
 #if defined(OS_IOS)
   // Checks if the NSUserDefault clean exit beacon value is set.
