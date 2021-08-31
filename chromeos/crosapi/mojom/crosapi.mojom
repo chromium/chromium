@@ -393,6 +393,43 @@ struct DeviceProperties {
   string device_dm_token@0;
 };
 
+// Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
+[Stable, Extensible]
+struct UsbDetachableAllowlist {
+  array<UsbDeviceId> usb_device_ids@0;
+};
+
+// Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
+[Stable, Extensible]
+struct UsbDeviceId {
+  // USB Vendor Identifier (aka idVendor).
+  bool has_vendor_id@0;
+  int32 vendor_id@1;
+  // USB Product Identifier (aka idProduct).
+  bool has_product_id@2;
+  int32 product_id@3;
+};
+
+// All the device settings data that are needed in Lacros should be here.
+[Stable, Extensible]
+struct DeviceSettings {
+  // The value of AttestationForContentProtectionEnabled device setting.
+  OptionalBool attestation_for_content_protection_enabled@0;
+
+  // The value of DeviceSystemWideTracingEnabled device policy.
+  OptionalBool device_system_wide_tracing_enabled@1;
+
+  // The value of UsbDetachableAllowlist device policy.
+  UsbDetachableAllowlist? usb_detachable_allow_list@2;
+
+  [Stable]
+  enum OptionalBool {
+    kUnset,
+    kFalse,
+    kTrue,
+  };
+};
+
 
 [Stable, Extensible]
 enum ExoImeSupport {
@@ -485,8 +522,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 24
-// Next id: 24
+// Next version: 26
+// Next id: 26
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -640,6 +677,10 @@ struct BrowserInitParams {
   // Build flags from ash-chrome that we turn into command line switches to
   // enforce at run-time in lacros-chrome.
   array<BuildFlag>? build_flags@23;
+
+  // The set of device settings Lacros needs to know about.
+  [MinVersion=25]
+  DeviceSettings? device_settings@25;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
