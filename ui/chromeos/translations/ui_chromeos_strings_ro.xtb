@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
 <translation id="1813278315230285598">Servicii</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenție:<ph name="END_BOLD" /> aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Se încarcă informațiile…</translation>
 <translation id="1834290891154666894">intrare nevalidă a potrivirii numelui alternativ al subiectului</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Franceză (Canada)</translation>
 <translation id="3003189754374775221">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="3003633581067744647">Comută la afișarea cu miniaturi</translation>
-<translation id="3016566519832145558">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.</translation>
 <translation id="3029114385395636667">Activează Documente Google Offline pentru a folosi offline Documente, Foi de calcul și Prezentări.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chineză Dayi</translation>
@@ -580,7 +580,6 @@
 <translation id="6146563240635539929">Videoclipuri</translation>
 <translation id="6150853954427645995">Pentru a salva acest fișier pentru utilizare offline, revino online, dă clic dreapta pe fișier și selectează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Fluturi</translation>
-<translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6170470584681422115">Sendviș</translation>
 <translation id="6187719147498869044">Maghiară</translation>
 <translation id="6189412234224385711">Deschide cu <ph name="EXTENSION_NAME" /></translation>

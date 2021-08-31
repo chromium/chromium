@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">Csökkentse akár 60%-kal adatforgalmát, és olvassa el a mai híreket</translation>
 <translation id="1303339473099049190">Ez a jelszó nem található. Ellenőrizze, hogy jól írta-e be.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – A(z) <ph name="DEVICE_NAME" /> eszközről</translation>
+<translation id="130581733275749598">Válasszon sablont a kiemeléshez</translation>
 <translation id="1310482092992808703">Lapok csoportosítása</translation>
 <translation id="1311657260431405215">Ez a QR-kód nem URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6545017243486555795">Összes adat törlése</translation>
 <translation id="6546511553472444032">A fájl kártékony lehet</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_ONE" /> másik lap be lesz zárva}other{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_MANY" /> másik lap be lesz zárva}}</translation>
-<translation id="6560066289487134861">Válasszon sablont a kiemeléshez. Ha vissza szeretne térni a fő párbeszédpanelhez, mutasson először fel, majd le, és ezt követően koppintson a Következő elemre.</translation>
 <translation id="6560414384669816528">Keresés a Sogou használatával</translation>
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>
 <translation id="6565959834589222080">Wi-Fi használata, ha rendelkezésre áll</translation>
@@ -1264,6 +1264,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8683081248374354009">Csoport visszaállítása</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
+<translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8746155870861185046">Kiemelés megosztása</translation>

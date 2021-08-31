@@ -504,7 +504,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6042308850641462728">More</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
-<translation id="6064824697233747382">Your organisation requires you to turn off sync.</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="60829778314739003">Accept and continue</translation>
 <translation id="6084848228346514841">Select tabs</translation>
@@ -735,6 +734,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
+<translation id="8131740175452115882">Confirm</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
 <translation id="8197543752516192074">Translate page</translation>
 <translation id="8205564605687841303">Cancel</translation>

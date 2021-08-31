@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
 <translation id="1303339473099049190">Չհաջողվեց գտնել այդ գաղտնաբառը։ Ստուգեք ուղղագրությունը և նորից փորձեք։</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Ուղարկվել է <ph name="DEVICE_NAME" />-ից</translation>
+<translation id="130581733275749598">Ընտրեք ձևանմուշ ընդգծված տեքստի համար</translation>
 <translation id="1310482092992808703">Խմբավորել ներդիրները</translation>
 <translation id="1311657260431405215">Այս QR կոդը URL չէ՝ <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
 <translation id="6546511553472444032">Ֆայլը կարող է վտանգավոր լինել</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_ONE" /> ներդիր կփակվեն}one{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}other{«<ph name="TAB_TITLE" />» ներդիրն ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր կփակվեն}}</translation>
-<translation id="6560066289487134861">Ընտրեք ձևանմուշ ընդգծված տեքստի համար։ Հիմնական երկխոսության պատուհանին վերադառնալու համար օգտագործեք վերև և ներքև ժեստը, որից հետո հպեք «Առաջ»։</translation>
 <translation id="6560414384669816528">Որոնել Sogou որոնման համակարգով</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>
@@ -1264,6 +1264,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8683081248374354009">Զրոյացնել խմբի կարգավորումները</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8746155870861185046">Կիսվել ընդգծված տեքստով</translation>

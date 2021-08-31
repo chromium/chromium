@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
 <translation id="1303339473099049190">Не ўдалося знайсці гэты пароль. Праверце правільнасць напісання і паўтарыце спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – адпраўлена з прылады <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Выберыце шаблон для вылучанага тэксту</translation>
 <translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1311657260431405215">Гэты QR-код не з'яўляецца URL-адрасам: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
 <translation id="6546511553472444032">Файл можа быць шкодным</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
-<translation id="6560066289487134861">Выберыце шаблон для вылучанага тэксту. Каб вярнуцца ў асноўнае дыялогавае акно, правядзіце пальцам уверх, а затым уніз. Пасля гэтага націсніце "Далей".</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6565959834589222080">Калі сетка Wi-Fi даступная, будзе выкарыстоўвацца яна</translation>
@@ -1264,6 +1264,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8683081248374354009">Скінуць параметры групы</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
+<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8746155870861185046">Абагуліць вылучанае змесціва</translation>

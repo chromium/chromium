@@ -415,6 +415,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
+<translation id="1534690481294492142">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat bertindak sebagai proxy di antara <ph name="CLOUD_PRINT_NAME" /> dan printer lama yang terhubung ke mesin. Dengan Akun Google-nya, pengguna dapat mengaktifkan proxy cloud print melalui autentikasi.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengaktifkan proxy, dan mesin tidak dapat membagikan printernya ke <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
 
       Jika setelan ini dinonaktifkan, pengguna tidak diizinkan memilih untuk menggunakan Berbagi Langsung.
@@ -1049,6 +1052,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan disetel ke salah (false), <ph name="BOREALIS_NAME" /> tidak akan tersedia untuk semua pengguna perangkat. Sebaliknya (jika kebijakan tidak disetel atau disetel ke benar (true)), <ph name="BOREALIS_NAME" /> akan tersedia jika dan hanya jika tidak ada kebijakan atau setelan lain yang menonaktifkannya.</translation>
 <translation id="225340736558643885">Mengaktifkan peringatan untuk formulir tidak aman</translation>
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
+<translation id="2261329877420573811">Jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+
+      Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
 <translation id="2266422599396179941">Izinkan pengguna mengirim masukan</translation>
 <translation id="2269319728625047531">Aktifkan menampilkan Izin Sinkronisasi saat login</translation>
@@ -1134,6 +1140,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2358176879566587521">Kebijakan ini dihapus. Kebijakan ini tidak kompatibel dengan versi <ph name="PRODUCT_NAME" /> ini. Baca selengkapnya di https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Interval waktu peluncuran kembali</translation>
 <translation id="2364639863953745682">Mode pengalaman aktivasi Asisten</translation>
+<translation id="2365764204944230431">Kebijakan ini tidak digunakan lagi. Sebaiknya gunakan BrowserSignin.
+
+      Mengizinkan pengguna untuk login ke <ph name="PRODUCT_NAME" />.
+
+      Jika kebijakan ini disetel, Anda dapat mengonfigurasi apakah pengguna diizinkan untuk login ke <ph name="PRODUCT_NAME" />. Jika kebijakan ini disetel ke 'Salah' (False), aplikasi dan ekstensi yang menggunakan chrome.identity API tidak akan berfungsi. Sebagai gantinya, sebaiknya gunakan <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="2384233438419344179">Jika kebijakan disetel ke Aktif, elemen halaman web yang tidak berasal dari domain di kolom URL browser tidak dapat menyetel cookie. Jika kebijakan disetel ke Nonaktif, elemen tersebut akan dapat menyetel cookie dan pengguna tidak dapat mengubah setelan ini.
 
       Jika tidak disetel, cookie pihak ketiga akan aktif, tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -3700,6 +3711,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5625771176514429288">Aplikasi Chrome akan diizinkan berjalan di platform berikut.</translation>
 <translation id="5630352020869108293">Mengembalikan sesi terakhir</translation>
 <translation id="5633871703004128675">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan</translation>
+<translation id="5636088574608432506">Kebijakan ini mengontrol perilaku login browser. Ini memungkinkan Anda menentukan apakah pengguna dapat login ke <ph name="PRODUCT_NAME" /> dengan akun mereka dan menggunakan layanan terkait akun seperti Sinkronisasi <ph name="PRODUCT_NAME" />.
+
+      Jika kebijakan disetel ke "Nonaktifkan login browser", pengguna tidak akan dapat login ke browser dan menggunakan layanan berbasis akun. Dengan demikian, fitur tingkat browser seperti Sinkronisasi <ph name="PRODUCT_NAME" /> tidak dapat digunakan dan tidak akan tersedia. Di <ph name="IOS_NAME" />, jika pengguna telah login dan kebijakan disetel ke "Nonaktif", pengguna akan segera diminta logout. Di platform lain, pengguna akan diminta logout saat mereka menjalankan <ph name="PRODUCT_NAME" /> pada waktu berikutnya. Di semua platform, data profil lokal mereka seperti bookmark, sandi, dll. akan disimpan dan masih dapat digunakan. Pengguna masih dapat login dan menggunakan layanan web Google seperti Gmail.
+
+      Jika kebijakan disetel ke "Aktifkan login browser", pengguna akan diizinkan untuk login ke browser. Di semua platform kecuali <ph name="IOS_NAME" />, pengguna akan otomatis login ke browser saat login ke layanan web Google seperti Gmail. Login ke browser berarti informasi akun pengguna akan disimpan oleh browser. Namun, ini tidak berarti Sinkronisasi <ph name="PRODUCT_NAME" /> akan diaktifkan secara default; pengguna harus memilih untuk menggunakan fitur ini secara terpisah. Mengaktifkan kebijakan ini akan mencegah pengguna menonaktifkan setelan yang mengizinkan login browser. Untuk mengontrol ketersediaan Sinkronisasi <ph name="PRODUCT_NAME" />, gunakan kebijakan <ph name="SYNC_POLICY_NAME" />.
+
+      Jika kebijakan disetel ke "Paksa login browser", dialog pilihan akun akan ditampilkan dan pengguna harus memilih serta login ke akun untuk menggunakan browser. Tindakan ini memastikan bahwa kebijakan yang dikaitkan dengan akun akan diberlakukan dan diterapkan bagi akun terkelola. Secara default, ini mengaktifkan Sinkronisasi <ph name="PRODUCT_NAME" /> untuk akun, kecuali saat Sinkronisasi <ph name="PRODUCT_NAME" /> dinonaktifkan oleh admin domain atau melalui kebijakan <ph name="SYNC_POLICY_NAME" />. Nilai default <ph name="GUEST_MODE_POLICY_NAME" /> akan disetel ke nonaktif. Perlu diketahui bahwa profil yang ada dan belum ditandatangani akan dikunci dan tidak dapat diakses setelah kebijakan ini diaktifkan. Untuk mengetahui informasi selengkapnya, lihat artikel pusat bantuan: https://support.google.com/chrome/a/answer/7572556. Opsi ini tidak didukung di <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" />, atau <ph name="IOS_NAME" />. Kebijakan akan diganti ke "Aktifkan login browser", jika digunakan.
+
+      Jika kebijakan ini tidak disetel, pengguna dapat menentukan apakah akan mengaktifkan login browser di setelan <ph name="PRODUCT_NAME" /> dan menggunakannya jika dirasa sesuai.</translation>
 <translation id="5641279111657132737">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menentukan server mana yang diizinkan untuk autentikasi terintegrasi. Autentikasi terintegrasi hanya aktif jika <ph name="PRODUCT_NAME" /> mendapat pernyataan autentikasi dari proxy atau dari server yang ada di daftar yang diizinkan.
@@ -5575,6 +5595,9 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika setelan ini diaktifkan atau dinonaktifkan, pengguna tidak dapat mengubah atau menggantinya di <ph name="PRODUCT_NAME" />.
 
       Jika tidak ditetapkan, kebijakan ini akan diaktifkan tetapi pengguna dapat mengubahnya.</translation>
+<translation id="7955263399078148032">Jika <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> disetel ke Aktif, menyetel <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> ke Aktif atau tidak menyetelnya akan mengizinkan klien jarak jauh untuk menggunakan server relai agar terhubung ke perangkat ini saat koneksi langsung tidak tersedia, misalnya karena batasan firewall.
+
+      Jika kebijakan disetel ke Nonaktif, akses jarak jauh tidak akan dinonaktifkan, tetapi koneksi hanya akan diizinkan dari jaringan yang sama (bukan NAT traversal atau relai).</translation>
 <translation id="7956210013490975468">Mengonfigurasi layanan System-proxy untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Sandi harus dimasukkan setiap dua belas jam</translation>
 <translation id="7959035883875301444">Mengontrol penggunaan JIT JavaScript</translation>
@@ -6571,6 +6594,12 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="913195841488580904">Blokir akses ke daftar URL</translation>
 <translation id="9135033364005346124">Mengaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136399279941091445">Interval di luar jam kerja saat kebijakan perangkat yang ditentukan dirilis</translation>
+<translation id="9150385995327221969">"Jika kebijakan disetel ke Aktif, sinkronisasi data akan dinonaktifkan di <ph name="PRODUCT_NAME" /> menggunakan layanan sinkronisasi yang dihosting oleh Google.
+      Untuk sepenuhnya menonaktifkan layanan <ph name="CHROME_SYNC_NAME" />, sebaiknya nonaktifkan layanan di <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan diizinkan memilih apakah akan menggunakan <ph name="CHROME_SYNC_NAME" />.
+
+      Catatan: Jangan aktifkan kebijakan ini jika <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> disetel ke Aktif, karena fitur tersebut berbagi fungsi sisi klien yang sama. Dalam hal ini, sinkronisasi yang dihosting oleh Google akan nonaktif sepenuhnya."</translation>
 <translation id="9150416707757015439">Kebijakan ini sudah tidak digunakan lagi. Gunakan IncognitoModeAvailability sebagai gantinya. Aktifkan mode Samaran di <ph name="PRODUCT_NAME" />. Jika setelan ini diaktifkan atau tidak dikonfigurasi, pengguna dapat membuka halaman web dalam mode samaran. Jika setelan ini dinonaktifkan, pengguna tidak dapat membuka halaman web dalam mode samaran. Jika kebijakan ini dibiarkan tanpa disetel, kebijakan ini akan diaktifkan dan pengguna akan dapat menggunakan mode samaran.</translation>
 <translation id="9152473318295429890">Aktifkan saran kontekstual halaman terkait</translation>
 <translation id="9153446010242995516">Roll back dan tetap menggunakan versi target jika versi OS lebih baru dari. Mencoba untuk menerapkan konfigurasi tingkat perangkat (termasuk kredensial jaringan) melalui proses rollback, jika memungkinkan, tetapi melakukan rollback dengan powerwash penuh meskipun pemulihan data tidak memungkinkan (karena versi target tidak mendukung pemulihan data atau karena perubahan tidak kompatibel untuk dikembalikan).
@@ -6607,6 +6636,9 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan tidak disetel atau disetel ke <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, mode default pengalaman aktivasi Asisten akan digunakan.
       Jika kebijakan disetel ke <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, mode EDU pengalaman aktivasi Asisten akan digunakan.</translation>
 <translation id="9194447412184412480">Mengontrol setelan untuk pengguna yang diautentikasi melalui SAML dengan IdP eksternal</translation>
+<translation id="9194474490249548275">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
+      Menyetel kebijakan akan menentukan daftar ID ekstensi yang dikecualikan dari prosedur pembersihan sesi tamu terkelola yang dibatasi (lihat <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
+      Jika kebijakan tidak disetel, tidak ada ekstensi yang dikecualikan dari prosedur reset.</translation>
 <translation id="9197740283131855199">Persentase yang digunakan untuk menskalakan penundaan layar redup jika pengguna aktif setelah peredupan</translation>
 <translation id="9200828125069750521">Parameter untuk URL gambar yang menggunakan POST</translation>
 <translation id="9204863016826119209">Kunci perusahaan dapat digunakan oleh aplikasi Android yang diinstal dan dicantumkan dalam kebijakan ini.</translation>

@@ -8,6 +8,7 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камера "<ph name="CAMERA" />" адключана.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
+<translation id="1478594628797167447">Сканер</translation>
 <translation id="1545749641540134597">Сканіраваць QR-код</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -23,12 +24,12 @@
 <translation id="2064538373111010176">Камера <ph name="CAMERA" /> актыўная</translation>
 <translation id="2144806332417375165">Карыстальніцкія параметры відэа</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2268107369530950373">Пераключыцца ў рэжым сканера</translation>
 <translation id="229579744168541441">Экспарт на дыск</translation>
 <translation id="2320741269052147773">Зрушыць улева</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Запіс спынены</translation>
 <translation id="2501953888035679275">Здымка камерай фота і відэа.</translation>
-<translation id="2517472476991765520">Пошук</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="2599796128805996109">Задняя камера</translation>
 <translation id="2879583609344924966">Камера "<ph name="CAMERA" />" падключана.</translation>
@@ -44,10 +45,8 @@
 <translation id="3259149966178251584">Раздзяляльнасць камеры</translation>
 <translation id="3260401663013584785">Не ўдалося выявіць дакумент</translation>
 <translation id="3448774564454087943">Відэа не захавана, бо яно занадта кароткае</translation>
-<translation id="346539236881580388">Перазняць</translation>
 <translation id="3517926952904427380">Не ўдалося зрабіць фотапартрэт</translation>
 <translation id="3569311554794739032">Сапраўды выдаліць файл "<ph name="FILE" />"?</translation>
-<translation id="3573890771273113519">Пераключыцца ў рэжым сканіравання</translation>
 <translation id="3810838688059735925">Відэа</translation>
 <translation id="3838931309141338733">Сканіраваць штрыхкод</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
@@ -71,7 +70,6 @@
 <translation id="5268823927180092501">Уключыць рэжым здымкі дакументаў для ўсіх камер</translation>
 <translation id="5444515100983837161">Памясціце ўсе краі дакумента ўнутр рамкі. Якасць сканіравання будзе лепшай, калі дакумент і фон, на якім ён знаходзіцца, маюць розны колер.</translation>
 <translation id="5671277269877808209">Квадрат</translation>
-<translation id="5746169159649715125">Захаваць як PDF</translation>
 <translation id="5753488212459587150">Уключыць экспертны рэжым</translation>
 <translation id="5759254179196327752">Сканіраваць дакумент</translation>
 <translation id="5775960006311140197">Экспертны рэжым</translation>
@@ -108,7 +106,6 @@
 <translation id="8120146556401698679">Зрушыць, нахіліць, змяніць маштаб</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8145038249676204903">Пераключыцца на здымку фота</translation>
-<translation id="8167081290930651932">Захаваць як фота</translation>
 <translation id="8239780215768881278">Зрабіць здымак экрана</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8425673304802773841">Нахіліць уніз</translation>

@@ -8,6 +8,7 @@
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ কৰা হ’ল।</translation>
 <translation id="1473110567575736769">৩ ছেকেণ্ডৰ টাইমাৰ</translation>
+<translation id="1478594628797167447">স্কেনাৰ</translation>
 <translation id="1545749641540134597">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1627744224761163218">৪ x ৪</translation>
@@ -23,12 +24,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> সক্ৰিয় হৈ আছে</translation>
 <translation id="2144806332417375165">কাষ্টম ভিডিঅ’ পেৰামিটাৰ</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
+<translation id="2268107369530950373">স্কেনাৰ ম’ডলৈ সলনি কৰক</translation>
 <translation id="229579744168541441">ডিস্কলৈ ৰপ্তানি কৰক</translation>
 <translation id="2320741269052147773">বাওঁফালে পেন কৰক</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2501853267655415902">ৰেকৰ্ডিং বন্ধ কৰা হ’ল</translation>
 <translation id="2501953888035679275">আপোনাৰ কেমেৰাৰে ফট’ উঠাওক আৰু ভিডিঅ’ ৰেকৰ্ড কৰক।</translation>
-<translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2549985041256363841">ৰেকৰ্ডিং কৰা আৰম্ভ কৰক</translation>
 <translation id="2599796128805996109">পিছফালৰ কেমেৰা</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ ইন কৰা হ’ল।</translation>
@@ -44,10 +45,8 @@
 <translation id="3259149966178251584">কেমেৰা ৰিজ'লিউশ্বন</translation>
 <translation id="3260401663013584785">নথিখন চিনাক্ত কৰিব পৰা নগ'ল</translation>
 <translation id="3448774564454087943">ভিডিঅ’টো অতি চুটি হোৱাৰ কাৰণে সেইটো ছেভ নহ’ল</translation>
-<translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3517926952904427380">প’ৰ্ট্ৰেইট ফট’ ল’ব নোৱাৰিলে</translation>
 <translation id="3569311554794739032">আপুনি সঁচাকৈয়ে <ph name="FILE" /> আঁতৰাবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
-<translation id="3573890771273113519">স্কেন ম’ডলৈ সলনি কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3838931309141338733">বাৰক’ড স্কেন কৰক</translation>
 <translation id="3892148308691398805">পাঠৰ প্ৰতিলিপি কৰক</translation>
@@ -71,7 +70,6 @@
 <translation id="5268823927180092501">আটাইবোৰ কেমেৰাত নথিৰ ম’ডটো সক্ষম কৰক</translation>
 <translation id="5444515100983837161">নথিখনৰ আটাইকেইটা কাষ ফ্ৰে’মটোৰ ভিতৰত ৰাখক। নথিখনৰ সৈতে নেপথ্যৰ ৰঙটো পৃথক হ’লে স্কেন কৰাৰ সুবিধাটোৱে আটাইতকৈ ভালকৈ কৰে।</translation>
 <translation id="5671277269877808209">বৰ্গাকাৰ</translation>
-<translation id="5746169159649715125">PDF হিচাপে ছেভ কৰক</translation>
 <translation id="5753488212459587150">বিশেষজ্ঞ ম’ড সক্ষম কৰক</translation>
 <translation id="5759254179196327752">নথি স্কেন কৰক</translation>
 <translation id="5775960006311140197">বিশেষজ্ঞ ম’ড</translation>
@@ -108,7 +106,6 @@
 <translation id="8120146556401698679">পেন কৰা, হেলনীয়া কৰা, জুম কৰা</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8145038249676204903">ফট' উঠাবলৈ সলনি কৰক</translation>
-<translation id="8167081290930651932">ফট' ছেভ কৰক</translation>
 <translation id="8239780215768881278">ভিডিঅ’ৰ স্নেপশ্বট লওক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8425673304802773841">তললৈ হেলনীয়া কৰক</translation>

@@ -146,7 +146,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
-<translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
@@ -180,6 +179,7 @@
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
 <translation id="4646949265910132906">Аюулгүй Wi-Fi холболт</translation>
+<translation id="4652335678334611408">Харилцан үйлдлийн логийг хадгалах</translation>
 <translation id="4654549501020883054">Өдөр бүр өөрчлөх</translation>
 <translation id="4665014895760275686">Үйлдвэрлэгч</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>

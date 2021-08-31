@@ -91,6 +91,7 @@
 <translation id="1810764548349082891">ಯಾವುದೇ ಪೂರ್ವವೀಕ್ಷಣೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1812302367230252929">ಅಂಹರಿಕ್ ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="1813278315230285598">ಸೇವೆಗಳು</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ಎಚ್ಚರಿಕೆ:<ph name="END_BOLD" />  ಡಿಸ್ಕ್ ಸ್ಥಳವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಈ ಫೈಲ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ ಹಾಗೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸಲಾಗಬಹುದಾಗಿದೆ.  <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ಪೆಂಗ್ವಿನ್</translation>
 <translation id="183183971458492120">ಮಾಹಿತಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1834290891154666894">ಅಮಾನ್ಯವಾದ ವಿಷಯದ ಪರ್ಯಾಯ ಹೆಸರಿನ ಹೊಂದಾಣಿಕೆಯ ನಮೂದು</translation>
@@ -575,7 +576,6 @@
 <translation id="6146563240635539929">ವೀಡಿಯೊಗಳು</translation>
 <translation id="6150853954427645995">ಆಫ್‌ಲೈನ್ ಬಳಕೆಗೆ ಈ ಫೈಲ್ ಉಳಿಸಲು, ಆನ್‌ಲೈನ್‌ಗೆ ಹಿಂತಿರುಗಿ, ಫೈಲ್ ಅನ್ನು ರೈಟ್-ಕ್ಲಿಕ್ ಮಾಡಿ ಹಾಗೂ <ph name="OFFLINE_CHECKBOX_NAME" /> ಆಯ್ಕೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="6164412158936057769">ಚಿಟ್ಟೆಗಳು</translation>
-<translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6170470584681422115">ಸ್ಯಾಂಡ್‌ವಿಚ್</translation>
 <translation id="6187719147498869044">ಹಂಗೇರಿಯನ್</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ಮೂಲಕ ತೆರೆಯಿರಿ</translation>

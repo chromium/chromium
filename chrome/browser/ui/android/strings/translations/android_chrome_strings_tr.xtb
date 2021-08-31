@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">Veriden %60'a varan oranda tasarruf edin, bugünkü haberleri okuyun</translation>
 <translation id="1303339473099049190">Şifre bulunamıyor. Adresi doğru yazıp yazmadığınızı kontrol edip tekrar deneyin.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> cihazından gönderildi</translation>
+<translation id="130581733275749598">Vurgulamanız için bir şablon seçin</translation>
 <translation id="1310482092992808703">Sekmeleri grupla</translation>
 <translation id="1311657260431405215">Bu QR kodu bir URL değil: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6545017243486555795">Tüm Verileri Temizle</translation>
 <translation id="6546511553472444032">Dosya zararlı olabilir</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ve <ph name="TAB_COUNT_ONE" /> sekme daha kapatılacak}other{<ph name="TAB_TITLE" /> ve <ph name="TAB_COUNT_MANY" /> sekme daha kapatılacak}}</translation>
-<translation id="6560066289487134861">Vurgulamanız için bir şablon seçin. Ana iletişim kutusuna dönmek için önce yukarı sonra aşağı hareketini yapıp Sonraki'ye dokunun.</translation>
 <translation id="6560414384669816528">Sogou ile arama</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
 <translation id="6565959834589222080">Mevcut olduğunda kablosuz bağlantı kullanılır</translation>
@@ -1264,6 +1264,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8683081248374354009">Grubu sıfırla</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
+<translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8746155870861185046">Vurgulanan metni paylaş</translation>

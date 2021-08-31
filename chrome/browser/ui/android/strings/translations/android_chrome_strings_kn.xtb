@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="130581733275749598">ನಿಮ್ಮ ಹೈಲೈಟ್‌ಗಾಗಿ ಟೆಂಪ್ಲೇಟ್‌‌ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1310482092992808703">ಟ್ಯಾಬ್‌ ಗುಂಪುಗೂಡಿಸಿ</translation>
 <translation id="1311657260431405215">ಈ QR ಕೋಡ್ URL ಅಲ್ಲ: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -898,7 +899,6 @@
 <translation id="6545017243486555795">ಎಲ್ಲಾ ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="6546511553472444032">ಫೈಲ್ ಹಾನಿಕಾರಕವಾಗಿರಬಹುದು</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="TAB_TITLE" /> ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
-<translation id="6560066289487134861">ನಿಮ್ಮ ಹೈಲೈಟ್‌ಗಾಗಿ ಟೆಂಪ್ಲೇಟ್‌‌ ಆಯ್ಕೆಮಾಡಿ. ಮುಖ್ಯ ಸಂಭಾಷಣೆಗೆ ಹಿಂತಿರುಗಲು, ಮೇಲೆ ಮತ್ತು ಕೆಳಗೆ ಎಂಬ ಗೆಸ್ಚರ್ ಬಳಸಿ, ನಂತರ ಮುಂದಿನದು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="6560414384669816528">Sogou ಜೊತೆಗೆ ಹುಡುಕಿ</translation>
 <translation id="656065428026159829">ಇನ್ನಷ್ಟು ನೋಡಿ</translation>
 <translation id="6565959834589222080">ಲಭ್ಯವಿರುವಾಗ ವೈ-ಫೈ ಅನ್ನು ಬಳಸಲಾಗುತ್ತದೆ</translation>
@@ -1263,6 +1263,7 @@
 <translation id="8683081248374354009">ಗುಂಪನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
+<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>

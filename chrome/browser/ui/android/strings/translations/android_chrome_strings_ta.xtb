@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">60% வரை டேட்டாவைச் சேமிக்கலாம், இன்றைய செய்திகளைப் படிக்கலாம்</translation>
 <translation id="1303339473099049190">கடவுச்சொல்லைக் கண்டறிய முடியவில்லை. எழுத்துப்பிழையைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
+<translation id="130581733275749598">ஹைலைட் செய்வதற்கான டெம்ப்ளேட்டைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="1310482092992808703">தாவல்களைக் குழுவாக்கு</translation>
 <translation id="1311657260431405215">இந்த QR குறியீடு URL இல்லை: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6546511553472444032">ஃபைல் தீங்கிழைப்பதாக இருக்கக்கூடும்</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>
-<translation id="6560066289487134861">ஹைலைட் செய்வதற்கான டெம்ப்ளேட்டைத் தேர்ந்தெடுங்கள். முதன்மை உரையாடலுக்கு மீண்டும் திரும்ப, மேல்நோக்கி ஸ்வைப் செய்துவிட்டு கீழ்நோக்கி ஸ்வைப் செய்யும் சைகையைப் பயன்படுத்திய பிறகு 'அடுத்து' என்பதைத் தட்டவும்.</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6565959834589222080">வைஃபை இணைப்பு கிடைக்கும்போது பயன்படுத்தப்படும்</translation>
@@ -1264,6 +1264,7 @@
 <translation id="8683081248374354009">குழு ஐடியை மீட்டமை</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
+<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8746155870861185046">ஹைலைட் செய்த உரையைப் பகிர்</translation>

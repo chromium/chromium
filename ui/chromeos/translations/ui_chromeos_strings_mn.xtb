@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Урьдчилан харах боломжгүй</translation>
 <translation id="1812302367230252929">Амхар галиг</translation>
 <translation id="1813278315230285598">Үйлчилгээ</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Анхааруулга:<ph name="END_BOLD" /> Эдгээр файлууд нь түр зуурынх бөгөөд дискний зайг чөлөөлөх зорилгоор автоматаар устгагдаж болно. <ph name="BEGIN_LINK" /> Илүү ихийг мэдэж аваарай<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пенгвин</translation>
 <translation id="183183971458492120">Мэдээллийг ачаалж байна...</translation>
 <translation id="1834290891154666894">Субъектийн хоёрдогч нэрийн тохирлын оруулга буруу байна</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Франц (Канад)</translation>
 <translation id="3003189754374775221">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, дохионы хүч<ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="3003633581067744647">Өнгөц зургаар харах горим руу сэлгэх</translation>
-<translation id="3016566519832145558">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.</translation>
 <translation id="3029114385395636667">Докс, Хүснэгт, Үзүүлэнг офлайнаар боломжтой болгохын тулд Google Докс Офлайныг идэвхжүүлнэ үү.</translation>
 <translation id="303198083543495566">Газар зүй</translation>
 <translation id="3047197340186497470">Хятад даи</translation>
@@ -577,7 +577,6 @@
 <translation id="6146563240635539929">Видео</translation>
 <translation id="6150853954427645995">Энэ файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="6164412158936057769">Эрвээхий</translation>
-<translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Унгар</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" />-р нээх</translation>

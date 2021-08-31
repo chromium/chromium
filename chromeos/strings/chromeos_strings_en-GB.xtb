@@ -146,7 +146,6 @@
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
 <translation id="4034824040120875894">Printer</translation>
-<translation id="409427325554347132">Save test details</translation>
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4155551848414053977">Make sure that the scanner is turned on and available via your network or a direct connection</translation>
@@ -180,6 +179,7 @@
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
+<translation id="4652335678334611408">Save session log</translation>
 <translation id="4654549501020883054">Change daily</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>

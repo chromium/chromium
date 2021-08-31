@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">60% ਤੱਕ ਡਾਟਾ ਬਚਾਓ, ਅੱਜ ਦੀਆਂ ਖਬਰਾਂ ਪੜ੍ਹੋ</translation>
 <translation id="1303339473099049190">ਇਹ ਪਾਸਵਰਡ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਭੇਜੀ ਗਈ</translation>
+<translation id="130581733275749598">ਆਪਣੀ ਹਾਈਲਾਈਟ ਲਈ ਕੋਈ ਟੈਮਪਲੇਟ ਚੁਣੋ</translation>
 <translation id="1310482092992808703">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="1311657260431405215">ਇਹ QR Code ਕੋਈ URL ਨਹੀਂ ਹੈ: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -1263,6 +1264,7 @@
 <translation id="8683081248374354009">ਗਰੁੱਪ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
+<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8746155870861185046">ਉਜਾਗਰ ਕੀਤੇ ਲਿਖਤ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>

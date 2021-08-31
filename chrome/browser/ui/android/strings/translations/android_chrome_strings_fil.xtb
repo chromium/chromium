@@ -54,6 +54,7 @@
 <translation id="1298077576058087471">Magtipid ng hanggang 60% data, basahin ang balita ngayong araw</translation>
 <translation id="1303339473099049190">Hindi mahanap ang password na iyon. Tingnan ang iyong spelling at subukan ulit.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Ipinadala mula sa <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Pumili ng template para sa iyong highlight</translation>
 <translation id="1310482092992808703">Igrupo ang mga tab</translation>
 <translation id="1311657260431405215">Hindi URL ang QR Code na ito: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -899,7 +900,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6545017243486555795">I-clear ang Lahat ng Data</translation>
 <translation id="6546511553472444032">Posibleng mapaminsala ang file</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_ONE" /> pang tab}one{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_MANY" /> pang tab}other{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
-<translation id="6560066289487134861">Pumili ng template para sa iyong highlight. Para bumalik sa pangunahing dialog, gumamit ng galaw na pataas pagkatapos ay pababa, pagkatapos ay i-tap ang Susunod.</translation>
 <translation id="6560414384669816528">Maghanap gamit ang Sogou</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6565959834589222080">Ginagamit ang Wi-Fi kapag available</translation>
@@ -1264,6 +1264,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8683081248374354009">I-reset ang grupo</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
+<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8746155870861185046">Ibahagi ang naka-highlight</translation>

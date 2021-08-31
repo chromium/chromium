@@ -146,7 +146,6 @@
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
-<translation id="409427325554347132">Salvează detaliile testului</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
@@ -180,6 +179,7 @@
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>
+<translation id="4652335678334611408">Salvează jurnalul de sesiune</translation>
 <translation id="4654549501020883054">Schimbă zilnic</translation>
 <translation id="4665014895760275686">Producător</translation>
 <translation id="467510802200863975">Parolele nu se potrivesc</translation>

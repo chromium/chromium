@@ -95,6 +95,7 @@
 <translation id="1810764548349082891">Hakuna onyesho la kuchungulia</translation>
 <translation id="1812302367230252929">Unukuzi wa mfumo wa kuandika Kiamhariki</translation>
 <translation id="1813278315230285598">Huduma</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Tahadhari:<ph name="END_BOLD" />  Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili kuacha nafasi kwenye diski. <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Ngwini</translation>
 <translation id="183183971458492120">Inapakia maelezo...</translation>
 <translation id="1834290891154666894">Jina mbadala la kichwa linalolingana si sahihi</translation>
@@ -224,7 +225,6 @@
 <translation id="299638574917407533">Kifaransa (Kanada)</translation>
 <translation id="3003189754374775221">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unganisha</translation>
 <translation id="3003633581067744647">Tumia mwonekano wa kijipicha</translation>
-<translation id="3016566519832145558">Tahadhari: Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili upate nafasi zaidi ya hifadhi kwenye diski.</translation>
 <translation id="3029114385395636667">Washa kipengele cha Hati za Google Nje ya Mtandao ili Hati, Majedwali na Slaidi za Google zipatikane nje ya mtandao.</translation>
 <translation id="303198083543495566">Jiografia</translation>
 <translation id="3047197340186497470">Mbinu ya Dayi ya kuingiza data ya Kichina</translation>
@@ -580,7 +580,6 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Ili kuhifadhi faili hii kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Vipepeo</translation>
-<translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6170470584681422115">Sandiwichi</translation>
 <translation id="6187719147498869044">Kihungari</translation>
 <translation id="6189412234224385711">Fungua ukitumia <ph name="EXTENSION_NAME" /></translation>
