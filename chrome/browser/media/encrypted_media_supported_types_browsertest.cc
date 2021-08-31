@@ -784,6 +784,12 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kClearKey, "SW_SECURE_CRYPTO"));
 }
 
+// TODO(https://crbug.com/1245251): Failing on MAC 11.
+#if defined(OS_MAC)
+#define MAYBE_EncryptionScheme DISABLED_EncryptionScheme
+#else
+#define MAYBE_EncryptionScheme EncryptionScheme
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
                        EncryptionScheme) {
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kClearKey, nullptr));
