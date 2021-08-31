@@ -64,8 +64,15 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 }
 
 - (void)performActivity {
-  [self.handler printTab];
+  // UIActivityViewController and UIPrintInteractionController are UIKit VCs for
+  // which presentation is not fully controlable.
+  // If UIActivityViewController is visible when UIPrintInteractionController
+  // is presented, the print VC will be dismissed when the activity VC is
+  // dismissed (even if UIPrintInteractionControllerDelegate provides another
+  // parent VC.
+  // To avoid this issue, dismiss first and present print after.
   [self activityDidFinish:YES];
+  [self.handler printTab];
 }
 
 @end
