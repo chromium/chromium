@@ -689,8 +689,8 @@
   },
   {
     "name": "clipboard-custom-formats",
-    "owners": ["huangdarwin", "snianu@microsoft.com"],
-    "expiry_milestone": 94
+    "owners": ["mek", "snianu@microsoft.com"],
+    "expiry_milestone": 96
   },
   {
     "name": "closed-tab-cache",
