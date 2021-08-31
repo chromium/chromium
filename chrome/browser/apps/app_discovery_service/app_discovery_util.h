@@ -15,6 +15,7 @@ namespace apps {
 
 enum class ResultType {
   kRecommendedArcApps,
+  kRemoteUrlSearch,
 };
 
 // TODO(crbug.com/1243545): Define an App struct instead of returning

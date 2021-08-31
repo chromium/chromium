@@ -9,7 +9,11 @@
 
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 
+class Profile;
+
 namespace apps {
+
+class RemoteUrlFetcher;
 
 // Interface implemented by app providers.
 class AppFetcher {
@@ -22,7 +26,7 @@ class AppFetcher {
 // Backend for app fetching requests.
 class AppFetcherManager {
  public:
-  AppFetcherManager();
+  explicit AppFetcherManager(Profile* profile);
   ~AppFetcherManager();
   AppFetcherManager(const AppFetcherManager&) = delete;
   AppFetcherManager& operator=(const AppFetcherManager&) = delete;
@@ -31,6 +35,7 @@ class AppFetcherManager {
 
  private:
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
+  std::unique_ptr<RemoteUrlFetcher> remote_url_fetcher_;
 };
 
 }  // namespace apps

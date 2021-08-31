@@ -11,7 +11,7 @@
 namespace apps {
 
 AppDiscoveryService::AppDiscoveryService(Profile* profile)
-    : app_fetcher_manager_(std::make_unique<AppFetcherManager>()) {}
+    : app_fetcher_manager_(std::make_unique<AppFetcherManager>(profile)) {}
 
 AppDiscoveryService::~AppDiscoveryService() = default;
 

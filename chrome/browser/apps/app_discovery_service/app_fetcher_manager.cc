@@ -6,13 +6,16 @@
 
 #include <utility>
 
+#include "chrome/browser/apps/app_discovery_service/app_discovery_features.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/remote_url_search/remote_url_fetcher.h"
 
 namespace apps {
 
-AppFetcherManager::AppFetcherManager()
+AppFetcherManager::AppFetcherManager(Profile* profile)
     : recommended_arc_app_fetcher_(
-          std::make_unique<RecommendedArcAppFetcher>()) {}
+          std::make_unique<RecommendedArcAppFetcher>()),
+      remote_url_fetcher_(std::make_unique<RemoteUrlFetcher>(profile)) {}
 
 AppFetcherManager::~AppFetcherManager() = default;
 
@@ -21,6 +24,9 @@ void AppFetcherManager::GetApps(const ResultType& app_list_type,
   switch (app_list_type) {
     case ResultType::kRecommendedArcApps:
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
+      return;
+    case ResultType::kRemoteUrlSearch:
+      remote_url_fetcher_->GetApps(std::move(callback));
       return;
   }
 }
