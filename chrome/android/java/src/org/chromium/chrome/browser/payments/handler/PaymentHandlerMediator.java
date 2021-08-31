@@ -135,7 +135,7 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement BottomSheetObserver:
     @Override
-    public void onSheetStateChanged(@SheetState int newState) {
+    public void onSheetStateChanged(@SheetState int newState, int reason) {
         switch (newState) {
             case BottomSheetController.SheetState.HIDDEN:
                 mCloseReason = CloseReason.USER;

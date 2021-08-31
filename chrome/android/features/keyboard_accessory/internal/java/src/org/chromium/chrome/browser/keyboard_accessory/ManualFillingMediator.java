@@ -121,7 +121,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
-        public void onSheetStateChanged(@SheetState int newState) {
+        public void onSheetStateChanged(@SheetState int newState, int reason) {
             mModel.set(SUPPRESSED_BY_BOTTOM_SHEET, newState != SheetState.HIDDEN);
         }
     };

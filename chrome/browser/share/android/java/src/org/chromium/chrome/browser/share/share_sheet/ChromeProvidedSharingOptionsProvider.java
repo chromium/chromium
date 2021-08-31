@@ -271,7 +271,7 @@ public class ChromeProvidedSharingOptionsProvider {
      */
     private final BottomSheetObserver mSheetObserver = new EmptyBottomSheetObserver() {
         @Override
-        public void onSheetStateChanged(int newState) {
+        public void onSheetStateChanged(int newState, int reason) {
             if (newState == SheetState.HIDDEN) {
                 assert mScreenshotCoordinator != null;
                 mScreenshotCoordinator.captureScreenshot();

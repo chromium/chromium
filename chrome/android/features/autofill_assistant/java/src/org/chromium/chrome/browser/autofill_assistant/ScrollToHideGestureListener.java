@@ -213,7 +213,7 @@ public class ScrollToHideGestureListener implements GestureStateListenerWithScro
     /** Stop scrolling if the sheet leaves the FULL state during scrolling. */
     private class StateChangeTracker extends EmptyBottomSheetObserver {
         @Override
-        public void onSheetStateChanged(@SheetState int newState) {
+        public void onSheetStateChanged(@SheetState int newState, int reason) {
             if (newState != SheetState.FULL) {
                 resetScrollingState();
             }

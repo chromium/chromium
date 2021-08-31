@@ -40,7 +40,7 @@ public class SecurePaymentConfirmationAuthnController {
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
-        public void onSheetStateChanged(int newState) {
+        public void onSheetStateChanged(int newState, int reason) {
             switch (newState) {
                 case BottomSheetController.SheetState.HIDDEN:
                     onCancel();

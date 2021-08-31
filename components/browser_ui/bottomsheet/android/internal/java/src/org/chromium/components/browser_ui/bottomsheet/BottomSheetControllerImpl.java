@@ -186,7 +186,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             }
 
             @Override
-            public void onSheetStateChanged(@SheetState int state) {
+            public void onSheetStateChanged(@SheetState int state, int reason) {
                 // If hiding request is in progress, destroy the current sheet content being hidden
                 // even when it is in suppressed state. See https://crbug.com/1057966.
                 if (state != SheetState.HIDDEN

@@ -54,7 +54,7 @@ public class PwaBottomSheetController
     /** The observer used to set the bottom sheet content priority. */
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
-        public void onSheetStateChanged(@SheetState int state) {
+        public void onSheetStateChanged(@SheetState int state, int reason) {
             // When our sheet is not fully expanded, lower its priority to make sure
             // other (high-priority) sheets in the queue can be shown.
             int priority = (isBottomSheetVisible() && state == SheetState.FULL)

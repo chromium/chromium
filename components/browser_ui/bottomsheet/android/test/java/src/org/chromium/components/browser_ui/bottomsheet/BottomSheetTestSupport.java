@@ -125,7 +125,7 @@ public class BottomSheetTestSupport {
         CallbackHelper stateChangeHelper = new CallbackHelper();
         BottomSheetObserver observer = new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 if (state == newState) stateChangeHelper.notifyCalled();
             }
         };
