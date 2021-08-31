@@ -4685,5 +4685,43 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   }
 }
 
+// Check that the inactive RFH shouldn't update UserActivation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  // 1. Load initiator page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // 2. Load prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_FALSE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
+
+  // 3. Try to set the user activation bits to the prerendered RFH.
+  prerendered_rfh->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_FALSE(prerendered_rfh->HasTransientUserActivation());
+
+  EXPECT_FALSE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_FALSE(
+      current_frame_host()->frame_tree_node()->HasTransientUserActivation());
+
+  // 4. Set the user activation bits to the primary RFH.
+  current_frame_host()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+
+  EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
+}
+
 }  // namespace
 }  // namespace content
