@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/skia/include/core/SkColor.h"

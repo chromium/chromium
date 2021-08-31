@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"

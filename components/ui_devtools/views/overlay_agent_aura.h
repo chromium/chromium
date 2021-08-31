@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_AURA_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_AURA_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/ui_devtools/views/overlay_agent_views.h"
 
 namespace ui_devtools {

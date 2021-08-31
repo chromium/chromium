@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"

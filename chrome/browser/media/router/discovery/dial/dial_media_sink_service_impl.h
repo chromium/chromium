@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"

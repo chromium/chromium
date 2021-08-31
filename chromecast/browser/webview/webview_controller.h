@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/supports_user_data.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_contents_observer.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FULL_RESTORE_ARC_GHOST_WINDOW_VIEW_H_
 #define CHROME_BROWSER_ASH_FULL_RESTORE_ARC_GHOST_WINDOW_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "ui/views/view.h"

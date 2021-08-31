@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PROXY_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PROXY_CLIENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"

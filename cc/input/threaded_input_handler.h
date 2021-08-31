@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"

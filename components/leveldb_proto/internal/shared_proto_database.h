@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"

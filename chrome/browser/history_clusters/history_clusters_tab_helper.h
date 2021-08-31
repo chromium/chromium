@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"

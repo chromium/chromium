@@ -34,6 +34,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"

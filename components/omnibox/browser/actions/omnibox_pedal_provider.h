@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/values.h"

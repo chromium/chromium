@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
 #include "base/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

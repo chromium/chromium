@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_RENDERER_PER_FRAME_TRANSLATE_AGENT_H_
 #define COMPONENTS_TRANSLATE_CONTENT_RENDERER_PER_FRAME_TRANSLATE_AGENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"

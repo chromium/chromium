@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
 
+#include "base/gtest_prod_util.h"
 #import "base/macros.h"
 #import "base/memory/weak_ptr.h"
 #import "base/timer/elapsed_timer.h"

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_theme_manager.h"

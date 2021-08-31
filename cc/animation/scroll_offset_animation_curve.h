@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

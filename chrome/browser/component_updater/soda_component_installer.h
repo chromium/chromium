@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"

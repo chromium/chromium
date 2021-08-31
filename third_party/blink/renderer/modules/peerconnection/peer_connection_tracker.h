@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"

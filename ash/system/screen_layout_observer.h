@@ -13,6 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/display/manager/managed_display_info.h"
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"

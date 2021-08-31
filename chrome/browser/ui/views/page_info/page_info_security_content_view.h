@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_SECURITY_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_SECURITY_CONTENT_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"

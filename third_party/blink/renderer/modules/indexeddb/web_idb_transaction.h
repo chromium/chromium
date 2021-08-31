@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_TRANSACTION_H_
 
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

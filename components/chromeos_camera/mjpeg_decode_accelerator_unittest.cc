@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/chromeos_camera/mjpeg_decode_accelerator.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -18,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -36,7 +39,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
-#include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/test_data_util.h"

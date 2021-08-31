@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/transport_security_state.h"

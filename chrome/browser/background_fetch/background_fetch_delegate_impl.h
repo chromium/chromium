@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/background_fetch/background_fetch_delegate_base.h"
 #include "components/download/public/background_service/download_params.h"

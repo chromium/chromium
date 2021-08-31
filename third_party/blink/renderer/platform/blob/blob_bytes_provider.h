@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_BLOB_BYTES_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_BLOB_BYTES_PROVIDER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"

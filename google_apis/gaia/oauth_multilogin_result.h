@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cookies/canonical_cookie.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_
 #define CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 #include "extensions/buildflags/buildflags.h"
 

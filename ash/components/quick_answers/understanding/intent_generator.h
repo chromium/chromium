@@ -10,6 +10,7 @@
 
 #include "ash/components/quick_answers/utils/language_detector.h"
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

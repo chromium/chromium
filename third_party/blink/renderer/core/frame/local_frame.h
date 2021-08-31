@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

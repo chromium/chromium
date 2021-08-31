@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/gtest_prod_util.h"
 #include "ui/views/view.h"
 
 namespace views {

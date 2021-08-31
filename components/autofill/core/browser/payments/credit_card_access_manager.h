@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"

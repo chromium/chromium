@@ -14,6 +14,7 @@
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/apdu/apdu_command.h"

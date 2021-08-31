@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "components/media_message_center/media_notification_background.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"

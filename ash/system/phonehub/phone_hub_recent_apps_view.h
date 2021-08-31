@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APPS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"

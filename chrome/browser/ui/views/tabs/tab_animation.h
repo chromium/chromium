@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ANIMATION_H_
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/tab_animation_state.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"

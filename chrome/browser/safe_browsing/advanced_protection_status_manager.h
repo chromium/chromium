@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"

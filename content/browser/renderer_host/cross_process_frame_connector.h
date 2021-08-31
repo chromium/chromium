@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/gtest_prod_util.h"
 #include "cc/input/touch_action.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"

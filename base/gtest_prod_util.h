@@ -5,6 +5,7 @@
 #ifndef BASE_GTEST_PROD_UTIL_H_
 #define BASE_GTEST_PROD_UTIL_H_
 
+#include "base/gtest_prod_util.h"
 #include "testing/gtest/include/gtest/gtest_prod.h"  // nogncheck
 
 // This is a wrapper for gtest's FRIEND_TEST macro that friends

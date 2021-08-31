@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom.h"

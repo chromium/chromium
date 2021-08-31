@@ -16,6 +16,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"

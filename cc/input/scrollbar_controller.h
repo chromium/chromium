@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar.h"

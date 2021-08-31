@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_PAGE_HANDLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"

@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"

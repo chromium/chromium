@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_handle.h"

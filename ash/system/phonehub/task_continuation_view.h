@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_TASK_CONTINUATION_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"

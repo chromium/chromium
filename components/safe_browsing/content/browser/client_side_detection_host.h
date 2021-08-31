@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-
 #include "url/gurl.h"
 
 namespace base {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"

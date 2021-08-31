@@ -6,6 +6,8 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_RECENT_APPS_INTERACTION_HANDLER_H_
 
 #include <stdint.h>
+
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/phonehub/notification.h"

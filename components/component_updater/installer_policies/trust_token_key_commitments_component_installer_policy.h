@@ -6,6 +6,7 @@
 #define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_TRUST_TOKEN_KEY_COMMITMENTS_COMPONENT_INSTALLER_POLICY_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"

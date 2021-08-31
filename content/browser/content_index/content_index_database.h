@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CONTENT_INDEX_CONTENT_INDEX_DATABASE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"

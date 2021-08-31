@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"

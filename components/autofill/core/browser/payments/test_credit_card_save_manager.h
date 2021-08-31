@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
 namespace autofill {

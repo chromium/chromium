@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"

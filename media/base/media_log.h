@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

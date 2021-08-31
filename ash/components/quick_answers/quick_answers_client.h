@@ -10,6 +10,7 @@
 
 #include "ash/components/quick_answers/result_loader.h"
 #include "ash/components/quick_answers/understanding/intent_generator.h"
+#include "base/gtest_prod_util.h"
 
 namespace network {
 namespace mojom {

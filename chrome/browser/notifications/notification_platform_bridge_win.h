@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 
-#include <string>
-
 #include <windows.ui.notifications.h>
 #include <wrl/client.h>
 
+#include <string>
+
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/notifications/notification_operation.h"

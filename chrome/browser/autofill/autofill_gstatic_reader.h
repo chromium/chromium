@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/output_surface.h"

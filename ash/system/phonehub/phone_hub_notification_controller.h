@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/components/phonehub/notification_manager.h"
 #include "chromeos/components/phonehub/tether_controller.h"

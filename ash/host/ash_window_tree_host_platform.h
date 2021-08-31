@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/transformer_helper.h"
+#include "base/gtest_prod_util.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/ozone/public/input_controller.h"
 

@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_SHARE_CORE_SHARE_TARGETS_H_
 #define CHROME_BROWSER_SHARE_CORE_SHARE_TARGETS_H_
 
-#include "chrome/browser/share/proto/share_target.pb.h"
-
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
+#include "chrome/browser/share/proto/share_target.pb.h"
 
 namespace sharing {
 

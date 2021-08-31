@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"

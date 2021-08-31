@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/android_sms/connection_establisher.h"

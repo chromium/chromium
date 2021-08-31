@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
-
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

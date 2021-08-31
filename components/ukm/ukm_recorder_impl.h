@@ -16,6 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "components/ukm/ukm_entry_filter.h"

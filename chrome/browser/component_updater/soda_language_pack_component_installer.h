@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "components/component_updater/component_installer.h"
 #include "components/soda/constants.h"

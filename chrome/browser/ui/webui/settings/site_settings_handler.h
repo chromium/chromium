@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"

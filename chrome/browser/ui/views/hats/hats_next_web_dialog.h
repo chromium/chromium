@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "content/public/browser/web_contents_observer.h"

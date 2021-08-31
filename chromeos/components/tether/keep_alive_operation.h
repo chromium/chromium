@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 #define CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/tether/message_transfer_operation.h"

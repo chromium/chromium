@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_PRIVACY_SANDBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_PRIVACY_SANDBOX_HANDLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace settings {

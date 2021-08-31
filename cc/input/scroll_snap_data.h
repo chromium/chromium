@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

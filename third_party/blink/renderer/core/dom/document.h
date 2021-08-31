@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

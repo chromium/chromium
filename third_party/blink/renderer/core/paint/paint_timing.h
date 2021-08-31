@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"

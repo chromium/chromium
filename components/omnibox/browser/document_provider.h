@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/mru_cache.h"
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"

@@ -12,6 +12,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

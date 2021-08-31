@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/net_export.h"

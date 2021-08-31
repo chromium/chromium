@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"

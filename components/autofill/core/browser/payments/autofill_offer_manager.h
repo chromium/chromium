@@ -6,11 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_OFFER_MANAGER_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <string>
 #include <tuple>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
