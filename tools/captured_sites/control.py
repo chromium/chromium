@@ -59,6 +59,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 
 # Checking for environment variables.
 _HOME_DIR = os.environ['HOME']
@@ -371,6 +372,8 @@ def _handle_signal(sig, _):
 
   # https://tldp.org/LDP/abs/html/exitcodes.html:
   # Exit code 128+n -> Fatal error signal "n".
+  print('Signal to quit received, waiting for potential WPR write to complete')
+  time.sleep(1)
   sys.exit(128 + sig)
 
 
