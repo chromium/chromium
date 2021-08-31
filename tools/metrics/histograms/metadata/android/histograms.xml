@@ -883,8 +883,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DirectAction.Perform" enum="DirectActionId"
-    expires_after="2021-10-10">
-  <owner>szermatt@chromium.org</owner>
+    expires_after="2022-10-10">
+  <owner>arbesser@google.com</owner>
   <owner>autofill_assistant@google.com</owner>
   <summary>
     Counts calls to Activity.onPerformDirectAction made by the system on behalf
