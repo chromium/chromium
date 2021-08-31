@@ -192,6 +192,20 @@ enum class NavigationURLScheme {
   kMaxValue = HTTPS
 };
 
+// Denotes the type of user agent string value sent in the User-Agent request
+// header.
+//
+// Corresponds to the "UserAgentStringType" histogram enumeration type in
+// tools/metrics/histograms/enums.xml.
+//
+// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
+enum class UserAgentStringType {
+  kFullVersion,
+  kReducedVersion,
+  kOverriden,
+  kMaxValue = kOverriden
+};
+
 NavigationURLScheme GetScheme(const GURL& url) {
   static const base::NoDestructor<std::map<std::string, NavigationURLScheme>>
       kSchemeMap({
@@ -295,6 +309,8 @@ bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
 std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
                                   const std::string& user_agent_override) {
   if (!user_agent_override.empty()) {
+    base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
+                                  UserAgentStringType::kOverriden);
     return user_agent_override;
   }
 
@@ -304,9 +320,12 @@ std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
   std::string header = blink::kClientHintsHeaderMapping[static_cast<int>(
       network::mojom::WebClientHintsType::kUAReduced)];
   std::string value;
-  return headers.GetHeader(header, &value) && value == "?1"
-             ? GetContentClient()->browser()->GetReducedUserAgent()
-             : GetContentClient()->browser()->GetUserAgent();
+  const bool reduced = headers.GetHeader(header, &value) && value == "?1";
+  base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
+                                reduced ? UserAgentStringType::kReducedVersion
+                                        : UserAgentStringType::kFullVersion);
+  return reduced ? GetContentClient()->browser()->GetReducedUserAgent()
+                 : GetContentClient()->browser()->GetUserAgent();
 }
 
 // TODO(clamy): This should match what's happening in

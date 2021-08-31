@@ -1263,6 +1263,24 @@ TEST_F(FrameFetchContextMockedLocalFrameClientTest,
   EXPECT_EQ("hi", request.HttpHeaderField(http_names::kUserAgent));
 }
 
+TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
+  HistogramTester histograms;
+
+  ResourceRequest request(KURL("https://localhost/"));
+  // Sets Sec-CH-UA-Reduced, which should result in the reduced User-Agent
+  // string being used.
+  request.SetHttpHeaderField(AtomicString("sec-ch-ua-reduced"),
+                             AtomicString("?1"));
+  WebScopedVirtualTimePauser virtual_time_pauser;
+  ResourceLoaderOptions options(nullptr /* world */);
+  GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
+                                    ResourceType::kRaw);
+
+  // There should be 1 occurrence for when Blink.Fetch.ReducedUserAgent is true.
+  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", true, 1);
+  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", false, 0);
+}
+
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
   scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
       "type", base::TimeTicks() + base::TimeDelta::FromSecondsD(0.3),

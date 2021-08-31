@@ -84203,6 +84203,12 @@ Full version information for the fingerprint enum values:
   <int value="1" label="RequestMobile"/>
 </enum>
 
+<enum name="UserAgentStringType">
+  <int value="0" label="Full user agent string"/>
+  <int value="1" label="Reduced user agent string"/>
+  <int value="2" label="Overridden user agent string"/>
+</enum>
+
 <enum name="UserCertContentDisposition">
   <int value="0" label="No Content-Disposition"/>
   <int value="1" label="Content-Disposition"/>

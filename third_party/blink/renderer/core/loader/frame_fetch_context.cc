@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -373,11 +374,12 @@ void FrameFetchContext::PrepareRequest(
     request.SetTopFrameOrigin(GetTopFrameOrigin());
   }
 
-  const AtomicString& ch_ua_reduced_value = request.HttpHeaderField(
-      blink::kClientHintsHeaderMapping[static_cast<size_t>(
-          network::mojom::blink::WebClientHintsType::kUAReduced)]);
-  String user_agent =
-      (ch_ua_reduced_value == "?1") ? GetReducedUserAgent() : GetUserAgent();
+  const bool ua_reduced =
+      request.HttpHeaderField(
+          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+              network::mojom::blink::WebClientHintsType::kUAReduced)]) == "?1";
+  String user_agent = ua_reduced ? GetReducedUserAgent() : GetUserAgent();
+  base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
   if (GetResourceFetcherProperties().IsDetached())

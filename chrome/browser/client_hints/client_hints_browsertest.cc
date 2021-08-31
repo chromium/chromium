@@ -2713,16 +2713,50 @@ class SameOriginUaReducedOriginTrialBrowserTest
   void NavigateTwiceAndCheckHeader(const GURL& url,
                                    const bool ch_ua_reduced_expected,
                                    const bool critical_ch_ua_reduced_expected) {
+    base::HistogramTester histograms;
+    int reduced_count = 0;
+    int full_count = 0;
+
     // If Critical-CH is set, we expect Sec-CH-UA-Reduced in the first
     // navigation request header.  If Critical-CH is not set, we don't expect
     // Sec-CH-UA-Reduced in the first navigation request.
-    NavigateAndCheckHeaders(
-        url, critical_ch_ua_reduced_expected && ch_ua_reduced_expected);
+    const bool first_navigation_reduced_ua =
+        critical_ch_ua_reduced_expected && ch_ua_reduced_expected;
+    NavigateAndCheckHeaders(url, first_navigation_reduced_ua);
+    if (first_navigation_reduced_ua) {
+      ++reduced_count;
+      if (critical_ch_ua_reduced_expected) {
+        // If Critical-CH was set, there will also be the initial navigation
+        // that does not send the reduced UA string.
+        ++full_count;
+      }
+    } else {
+      ++full_count;
+    }
+    // The UserAgentStringType enum is not accessible in //chrome/browser, so
+    // we just use the enum's integer value.
+    histograms.ExpectBucketCount("Navigation.UserAgentStringType",
+                                 /*NavigationRequest::kFullVersion*/ 0,
+                                 full_count);
+    histograms.ExpectBucketCount("Navigation.UserAgentStringType",
+                                 /*NavigationRequest::kReducedVersion*/ 1,
+                                 reduced_count);
 
     // Regardless of the Critical-CH setting, we expect the Sec-CH-UA-Reduced
     // client hint sent on the second request, if Sec-CH-UA-Reduced is set and
     // the Origin Trial token is valid.
     NavigateAndCheckHeaders(url, ch_ua_reduced_expected);
+    if (ch_ua_reduced_expected) {
+      ++reduced_count;
+    } else {
+      ++full_count;
+    }
+    histograms.ExpectBucketCount("Navigation.UserAgentStringType",
+                                 /*NavigationRequest::kFullVersion*/ 0,
+                                 full_count);
+    histograms.ExpectBucketCount("Navigation.UserAgentStringType",
+                                 /*NavigationRequest::kReducedVersion*/ 1,
+                                 reduced_count);
   }
 
  private:
@@ -2846,6 +2880,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
                        UserAgentOverrideAcceptChUaReduced) {
+  base::HistogramTester histograms;
   const std::string user_agent_override = "foo";
   SetUserAgentOverride(user_agent_override);
 
@@ -2861,6 +2896,11 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   CheckUaReducedClientHint(/*ch_ua_reduced_expected=*/false);
   // Make sure the overridden UA string is the one sent.
   CheckUserAgentString(user_agent_override);
+
+  // The UserAgentStringType enum is not accessible in //chrome/browser, so
+  // we just use the enum's integer value.
+  histograms.ExpectBucketCount("Navigation.UserAgentStringType",
+                               /*NavigationRequest::kOverridden*/ 2, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,

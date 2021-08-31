@@ -1242,6 +1242,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Navigation.UserAgentStringType" enum="UserAgentStringType"
+    expires_after="M100">
+  <owner>abeyad@chromium.org</owner>
+  <owner>aarontag@chromium.org</owner>
+  <summary>
+    The type of the user agent string value sent in the User-Agent header on a
+    navigation request. The reduced user agent string is only sent in the
+    presence of a valid UserAgentReduction origin trial token. This histogram is
+    recorded when a NavigationRequest is constructed, prior to sending the
+    request to the network stack.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.VerifyDidCommitParams"
     enum="VerifyDidCommitParamsDifference" expires_after="2021-12-26">
   <owner>rakina@chromium.org</owner>
