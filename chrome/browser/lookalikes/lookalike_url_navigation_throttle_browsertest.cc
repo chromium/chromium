@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // metrics for the first URL. Regression test for crbug.com/1136296.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_TopDomain_Redirect_Match) {
-  const GURL kNavigatedUrl = GetLongRedirect("google.com-test.com", "site.com",
+  const GURL kNavigatedUrl = GetLongRedirect("google.com-test.com", "site.test",
                                              "youtube.com-test.com");
   // UKM will record the final URL of the redirect:
   const GURL kLastUrl = GetURL("youtube.com-test.com");
@@ -1662,7 +1662,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
   const GURL kSgxCacheUrl = https_server_.GetURL(
       "google-com.test.com", "/sxg/test.example.org_test.sxg");
   const GURL kNavigatedUrl = embedded_test_server()->GetURL(
-      "apple-com.site.com", "/server-redirect?" + kSgxCacheUrl.spec());
+      "apple-com.site.test", "/server-redirect?" + kSgxCacheUrl.spec());
 
   TestInterstitialNotShown(browser(), kNavigatedUrl);
 
