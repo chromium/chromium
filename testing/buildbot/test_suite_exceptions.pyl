@@ -3141,6 +3141,8 @@
       # Not enough capacity. https://crbug.com/982294
       'Mac Pro FYI Release (AMD)',
       'Mac FYI Retina Release (NVIDIA)',
+      # Only run validating on Mac Intel due to capacity http://crbug.com/1236796
+      'Optional Mac Release (Intel)',
     ],
   },
   'webgl2_conformance_gles_passthrough_tests': {
@@ -3167,6 +3169,8 @@
       # The Mac NVIDIA Retina bots don't have the capacity to run
       # this test suite on mac_optional_gpu_tests_rel.
       'Optional Mac Retina Release (NVIDIA)',
+      # Only run passthrough on Mac AMD due to capacity http://crbug.com/1236796
+      'Optional Mac Retina Release (AMD)',
     ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other
