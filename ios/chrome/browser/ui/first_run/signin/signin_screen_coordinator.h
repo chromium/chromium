@@ -12,8 +12,9 @@
 // Coordinator to present sign-in screen.
 @interface SigninScreenCoordinator : ChromeCoordinator
 
-// Initiates a SigninScreenCoordinator with |navigationController| and
-// |browser|.
+// Initiates a SigninScreenCoordinator with |navigationController|,
+// |browser| and |delegate|.
+// The |delegate| parameter is for handling the transfer between screens.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
@@ -22,7 +23,9 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+                                   browser:(Browser*)browser
+
+    NS_UNAVAILABLE;
 
 @end
 

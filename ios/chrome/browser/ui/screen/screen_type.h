@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_TYPE_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_TYPE_H_
+#ifndef IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_TYPE_H_
+#define IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_TYPE_H_
 
-// The types of the first run screens.
-typedef NS_ENUM(NSInteger, FirstRunScreenType) {
+// The types of the start up screens.
+typedef NS_ENUM(NSInteger, ScreenType) {
   kWelcomeAndConsent,
   kSignIn,
   kSync,
   kDefaultBrowserPromo,
   // It isn't a screen, but a signal that no more screen should be
   // presented.
-  kFirstRunCompleted,
+  kStepsCompleted,
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_TYPE_H_
+#endif  // IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_TYPE_H_

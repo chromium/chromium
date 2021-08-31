@@ -14,12 +14,12 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
+#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,7 +28,7 @@
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate>
 
-@property(nonatomic, strong) FirstRunScreenProvider* screenProvider;
+@property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
 // Whether the remaining screens have been skipped.
@@ -48,8 +48,7 @@
                                    browser:(Browser*)browser
                                mainBrowser:(Browser*)mainBrowser
                              syncPresenter:(id<SyncPresenter>)presenter
-                            screenProvider:
-                                (FirstRunScreenProvider*)screenProvider {
+                            screenProvider:(ScreenProvider*)screenProvider {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _presenter = presenter;
@@ -114,10 +113,10 @@
 #pragma mark - Helper
 
 // Presents the screen of certain |type|.
-- (void)presentScreen:(FirstRunScreenType)type {
+- (void)presentScreen:(ScreenType)type {
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
-  if (type == kFirstRunCompleted) {
+  if (type == kStepsCompleted) {
     [self willFinishPresentingScreens];
     return;
   }
@@ -126,8 +125,7 @@
 }
 
 // Creates a screen coordinator according to |type|.
-- (ChromeCoordinator*)createChildCoordinatorWithScreenType:
-    (FirstRunScreenType)type {
+- (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kWelcomeAndConsent:
       return [[WelcomeScreenCoordinator alloc]
@@ -149,8 +147,8 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.mainBrowser
                                   delegate:self];
-    case kFirstRunCompleted:
-      NOTREACHED() << "Reaches kFirstRunCompleted unexpectedly.";
+    case kStepsCompleted:
+      NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
       break;
   }
   return nil;

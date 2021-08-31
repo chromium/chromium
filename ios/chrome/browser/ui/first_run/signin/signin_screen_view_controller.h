@@ -25,6 +25,9 @@
 
 @property(nonatomic, weak) id<SigninScreenViewControllerDelegate> delegate;
 
+// YES if it is in forced signin mode.
+@property(nonatomic, assign) BOOL forcedSignin;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_

@@ -7,15 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
+#import "ios/chrome/browser/ui/screen/screen_provider.h"
 
 // The class that provides a list of first run screens.
-@interface FirstRunScreenProvider : NSObject
+@interface FirstRunScreenProvider : ScreenProvider
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-// Returns the screen type of next screen.
-- (FirstRunScreenType)nextScreenType;
 
 @end
 

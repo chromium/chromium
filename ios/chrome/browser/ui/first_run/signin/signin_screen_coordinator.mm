@@ -67,6 +67,10 @@
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
+// YES if it is in forced signin mode.
+// TODO(crbug.com/1242418): Handle the policy dynamic changes.
+@property(nonatomic, assign) BOOL forcedSignin;
+
 @end
 
 @implementation SigninScreenCoordinator
@@ -114,6 +118,7 @@
 
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
+  self.viewController.forcedSignin = self.forcedSignin;
 
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(

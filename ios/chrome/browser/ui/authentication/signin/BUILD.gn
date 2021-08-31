@@ -139,3 +139,17 @@ source_set("eg2_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("signin_screen_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_screen_provider.h",
+    "signin_screen_provider.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_provider_protected",
+    "//ios/chrome/browser/ui/screen:screen_type",
+  ]
+}

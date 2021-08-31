@@ -28,9 +28,6 @@ source_set("first_run") {
   sources = [
     "first_run_coordinator.h",
     "first_run_coordinator.mm",
-    "first_run_screen_provider.h",
-    "first_run_screen_provider.mm",
-    "first_run_screen_type.h",
     "location_permissions_commands.h",
     "location_permissions_coordinator.h",
     "location_permissions_coordinator.mm",
@@ -46,6 +43,7 @@ source_set("first_run") {
   deps = [
     ":constants",
     ":field_trial",
+    ":first_run_provider",
     ":first_run_ui",
     ":screen_delegate",
     ":static_file_ui",
@@ -84,6 +82,8 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/sync",
     "//ios/chrome/browser/ui/first_run/welcome",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_type",
     "//ios/chrome/browser/ui/settings/resources:enterprise_icon",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/util",
@@ -100,6 +100,20 @@ source_set("first_run") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("first_run_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_screen_provider.h",
+    "first_run_screen_provider.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_provider_protected",
+    "//ios/chrome/browser/ui/screen:screen_type",
+  ]
 }
 
 source_set("utils") {

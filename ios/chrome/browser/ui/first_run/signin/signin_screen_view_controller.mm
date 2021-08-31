@@ -52,8 +52,12 @@ const CGFloat kIdentityTopMargin = 16;
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+
+  // No secondary action button for forced signin mode.
+  if (!self.forcedSignin) {
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+  }
 
   [self.specificContentView addSubview:self.identityControl];
 
