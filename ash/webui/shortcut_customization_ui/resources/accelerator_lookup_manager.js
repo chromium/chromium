@@ -4,6 +4,7 @@
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
+import {fakeActionNames} from './fake_data.js';
 import {AcceleratorConfig, AcceleratorInfo, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
 
 /**
@@ -36,6 +37,14 @@ export class AcceleratorLookupManager {
      * @private
      */
     this.acceleratorLayoutLookup_ = new Map();
+
+    /**
+     * A map with the string key formatted as `${source_id}-${action_id}` and
+     * the value as the string corresponding to the accelerator's name.
+     * @type {!Map<string, string>}
+     * @private
+     */
+    this.acceleratorNameLookup_ = new Map();
   }
 
   /**
@@ -63,6 +72,16 @@ export class AcceleratorLookupManager {
    */
   getSubcategories(category) {
     return this.acceleratorLayoutLookup_.get(category);
+  }
+
+  /**
+   * @param {number} source
+   * @param {number} action
+   * @return {string}
+   */
+  getAcceleratorName(source, action) {
+    const uuid = `${source}-${action}`;
+    return this.acceleratorNameLookup_.get(uuid);
   }
 
   /** @param {!AcceleratorConfig} acceleratorConfig */
@@ -94,6 +113,12 @@ export class AcceleratorLookupManager {
       this.acceleratorLayoutLookup_.get(entry.category)
           .get(entry.sub_category)
           .push(entry);
+
+      // Add the entry to the AcceleratorNameLookup.
+      const uuid = `${entry.source}-${entry.action}`;
+      // TODO(jimmyxgong): Use real name lookup instead of using fake_data.js.
+      this.acceleratorNameLookup_.set(
+          uuid, fakeActionNames.get(entry.description));
     }
   }
 

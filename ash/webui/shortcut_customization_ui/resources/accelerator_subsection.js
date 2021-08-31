@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
-import {fakeActionNames, fakeSubCategories} from './fake_data.js';
+import {fakeSubCategories} from './fake_data.js';
 import {AcceleratorInfo} from './shortcut_types.js';
 
 /**
@@ -86,14 +86,13 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     // subsection's accelerators are kept distinct from each other.
     let tempAccelContainer = [];
     layoutInfos.forEach((value) => {
-      const accelId = `${value.source}-${value.action}`;
       const acceleratorInfos =
           this.lookupManager_.getAccelerators(value.source, value.action);
 
-      // TODO(jimmyxgong): Fetch real string for description once available.
       const accel =
           /**@type {!Object<string, number, Array<!AcceleratorInfo>>}*/ ({
-            description: fakeActionNames.get(value.action),
+            description: this.lookupManager_.getAcceleratorName(
+                value.source, value.action),
             source: value.source,
             acceleratorInfos: acceleratorInfos,
           });

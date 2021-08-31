@@ -85,6 +85,7 @@ js_library("accelerator_edit_view") {
 
 js_library("accelerator_lookup_manager") {
   deps = [
+    ":fake_data",
     ":shortcut_types",
     "//ui/webui/resources/js:cr.m",
   ]

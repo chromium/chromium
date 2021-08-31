@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
 
@@ -14,13 +17,21 @@ export function acceleratorSubsectionTest() {
   /** @type {?AcceleratorSubsectionElement} */
   let sectionElement = null;
 
+  /** @type {?AcceleratorLookupManager} */
+  let manager = null;
+
   setup(() => {
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+
     sectionElement = /** @type {!AcceleratorSubsectionElement} */ (
         document.createElement('accelerator-subsection'));
     document.body.appendChild(sectionElement);
   });
 
   teardown(() => {
+    manager.reset();
     sectionElement.remove();
     sectionElement = null;
   });
@@ -54,5 +65,26 @@ export function acceleratorSubsectionTest() {
     assertEquals(
         title,
         sectionElement.shadowRoot.querySelector('#title').textContent.trim());
+  });
+
+  test('LoadCategoryAndConfirmDescriptions', async () => {
+    const expectedTitle = 'test title';
+    sectionElement.title = expectedTitle;
+    sectionElement.category = /*Chromeos*/ 0;
+    sectionElement.subcategory = /*Window Management*/ 0;
+
+    await flushTasks();
+
+    const rowListElement =
+        sectionElement.shadowRoot.querySelectorAll('accelerator-row');
+
+    // First accelerator-row corresponds to 'Snap Window Left'.
+    assertEquals(
+        manager.getAcceleratorName(/*source=*/ 0, /*action=*/ 0),
+        rowListElement[0].description);
+    // Second accelerator-row corresponds to 'Snap Window Right'.
+    assertEquals(
+        manager.getAcceleratorName(/*source=*/ 0, /*action=*/ 1),
+        rowListElement[1].description);
   });
 }
