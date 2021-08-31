@@ -27,7 +27,6 @@
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -451,14 +450,13 @@ void PushMessagingManager::Core::RegisterOnUI(
       } else {
         RenderFrameHost* render_frame_host =
             RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-        WebContents* web_contents =
-            WebContents::FromRenderFrameHost(render_frame_host);
-        if (web_contents) {
-          web_contents->GetMainFrame()->AddMessageToConsole(
+        if (render_frame_host) {
+          render_frame_host->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kError,
               kIncognitoPushUnsupportedMessage);
 
-          BrowserContext* browser_context = web_contents->GetBrowserContext();
+          BrowserContext* browser_context =
+              render_frame_host->GetBrowserContext();
 
           // Request notifications permission (which will fail, since
           // notifications aren't supported in incognito), so the website can't
