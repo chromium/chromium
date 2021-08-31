@@ -26,6 +26,7 @@ class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
 class AppHistoryReloadOptions;
 class AppHistoryNavigationOptions;
+class AppHistoryTransition;
 class HTMLFormElement;
 class HistoryItem;
 class KURL;
@@ -58,6 +59,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   AppHistoryEntry* current() const;
   HeapVector<Member<AppHistoryEntry>> entries();
   void updateCurrent(AppHistoryUpdateCurrentOptions*, ExceptionState&);
+  AppHistoryTransition* transition() const { return transition_; }
 
   bool canGoBack() const;
   bool canGoForward() const;
@@ -132,6 +134,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
   int current_index_ = -1;
+
+  Member<AppHistoryTransition> transition_;
 
   Member<AppHistoryApiNavigation> ongoing_navigation_;
   HeapHashMap<String, Member<AppHistoryApiNavigation>> upcoming_traversals_;

@@ -10,4 +10,6 @@ blink_core_sources_app_history = [
   "app_history_entry.h",
   "app_history_navigate_event.cc",
   "app_history_navigate_event.h",
+  "app_history_transition.cc",
+  "app_history_transition.h",
 ]

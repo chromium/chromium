@@ -9,6 +9,7 @@ PASS window.cached_appHistory.current is null
 PASS window.cached_appHistory.onnavigate is null
 PASS window.cached_appHistory.onnavigateerror is null
 PASS window.cached_appHistory.onnavigatesuccess is null
+PASS window.cached_appHistory.transition is null
 PASS window.cached_cookieStore.onchange is null
 FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).

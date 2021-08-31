@@ -9,6 +9,7 @@ PASS childWindow.appHistory.current is null
 PASS childWindow.appHistory.onnavigate is null
 PASS childWindow.appHistory.onnavigateerror is null
 PASS childWindow.appHistory.onnavigatesuccess is null
+PASS childWindow.appHistory.transition is null
 PASS childWindow.closed is true
 PASS childWindow.crossOriginIsolated is false
 PASS childWindow.defaultStatus is ''

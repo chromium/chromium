@@ -10,6 +10,7 @@
   readonly attribute AppHistoryEntry? current;
   sequence<AppHistoryEntry> entries();
   [RaisesException] void updateCurrent(AppHistoryUpdateCurrentOptions options);
+  readonly attribute AppHistoryTransition? transition;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;

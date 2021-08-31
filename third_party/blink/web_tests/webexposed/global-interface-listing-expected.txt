@@ -238,6 +238,7 @@ interface AppHistory : EventTarget
     getter onnavigate
     getter onnavigateerror
     getter onnavigatesuccess
+    getter transition
     method back
     method constructor
     method entries
@@ -279,6 +280,11 @@ interface AppHistoryNavigateEvent : Event
     getter userInitiated
     method constructor
     method transitionWhile
+interface AppHistoryTransition
+    attribute @@toStringTag
+    getter from
+    getter navigationType
+    method constructor
 interface Attr : Node
     attribute @@toStringTag
     getter localName

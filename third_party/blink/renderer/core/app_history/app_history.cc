@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_reload_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_transition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_update_current_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
@@ -66,19 +67,23 @@ class NavigateReaction final : public ScriptFunction {
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
+                    AppHistoryTransition* transition,
                     AbortSignal* signal) {
-    promise.Then(
-        CreateFunction(script_state, navigation, signal, ResolveType::kFulfill),
-        CreateFunction(script_state, navigation, signal, ResolveType::kReject));
+    promise.Then(CreateFunction(script_state, navigation, transition, signal,
+                                ResolveType::kFulfill),
+                 CreateFunction(script_state, navigation, transition, signal,
+                                ResolveType::kReject));
   }
 
   NavigateReaction(ScriptState* script_state,
                    AppHistoryApiNavigation* navigation,
+                   AppHistoryTransition* transition,
                    AbortSignal* signal,
                    ResolveType type)
       : ScriptFunction(script_state),
         window_(LocalDOMWindow::From(script_state)),
         navigation_(navigation),
+        transition_(transition),
         signal_(signal),
         type_(type) {}
 
@@ -86,6 +91,7 @@ class NavigateReaction final : public ScriptFunction {
     ScriptFunction::Trace(visitor);
     visitor->Trace(window_);
     visitor->Trace(navigation_);
+    visitor->Trace(transition_);
     visitor->Trace(signal_);
   }
 
@@ -93,10 +99,11 @@ class NavigateReaction final : public ScriptFunction {
   static v8::Local<v8::Function> CreateFunction(
       ScriptState* script_state,
       AppHistoryApiNavigation* navigation,
+      AppHistoryTransition* transition,
       AbortSignal* signal,
       ResolveType type) {
     return MakeGarbageCollected<NavigateReaction>(script_state, navigation,
-                                                  signal, type)
+                                                  transition, signal, type)
         ->BindToV8Function();
   }
 
@@ -120,12 +127,17 @@ class NavigateReaction final : public ScriptFunction {
       app_history->RejectPromiseAndFireNavigateErrorEvent(navigation_, value);
     }
 
+    if (app_history->transition() == transition_) {
+      app_history->transition_ = nullptr;
+    }
+
     window_ = nullptr;
     return ScriptValue();
   }
 
   Member<LocalDOMWindow> window_;
   Member<AppHistoryApiNavigation> navigation_;
+  Member<AppHistoryTransition> transition_;
   Member<AbortSignal> signal_;
   ResolveType type_;
 };
@@ -534,7 +546,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   ScriptState::Scope scope(script_state);
 
   auto* init = AppHistoryNavigateEventInit::Create();
-  init->setNavigationType(DetermineNavigationType(type));
+  const String& navigation_type = DetermineNavigationType(type);
+  init->setNavigationType(navigation_type);
 
   SerializedScriptValue* destination_state = nullptr;
   if (destination_item)
@@ -590,6 +603,9 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   auto promise_list = navigate_event->GetNavigationActionPromisesList();
   if (!promise_list.IsEmpty()) {
+    transition_ =
+        MakeGarbageCollected<AppHistoryTransition>(navigation_type, current());
+
     // The spec says that at this point we should either run the URL and history
     // update steps (for non-traverse cases) or we should do a same-document
     // history traversal. In our implementation it's easier for the caller to do
@@ -605,9 +621,9 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   if (!promise_list.IsEmpty() ||
       event_type != NavigateEventType::kCrossDocument) {
-    NavigateReaction::React(script_state,
-                            ScriptPromise::All(script_state, promise_list),
-                            ongoing_navigation_, navigate_event->signal());
+    NavigateReaction::React(
+        script_state, ScriptPromise::All(script_state, promise_list),
+        ongoing_navigation_, transition_, navigate_event->signal());
   } else if (ongoing_navigation_) {
     ongoing_navigation_->serialized_state.reset();
     // The spec assumes it's ok to leave a promise permanently unresolved, but
@@ -695,6 +711,7 @@ void AppHistory::FinalizeWithAbortedNavigationError(
       ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
                                           DOMExceptionCode::kAbortError,
                                           "Navigation was aborted")));
+  transition_ = nullptr;
 }
 
 int AppHistory::GetIndexFor(AppHistoryEntry* entry) {
@@ -712,6 +729,7 @@ void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(entries_);
+  visitor->Trace(transition_);
   visitor->Trace(ongoing_navigation_);
   visitor->Trace(upcoming_traversals_);
   visitor->Trace(upcoming_non_traversal_navigation_);

@@ -9,6 +9,7 @@ PASS oldChildWindow.appHistory.current is newChildWindow.appHistory.current
 PASS oldChildWindow.appHistory.onnavigate is newChildWindow.appHistory.onnavigate
 PASS oldChildWindow.appHistory.onnavigateerror is newChildWindow.appHistory.onnavigateerror
 PASS oldChildWindow.appHistory.onnavigatesuccess is newChildWindow.appHistory.onnavigatesuccess
+PASS oldChildWindow.appHistory.transition is newChildWindow.appHistory.transition
 PASS oldChildWindow.closed is newChildWindow.closed
 PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
