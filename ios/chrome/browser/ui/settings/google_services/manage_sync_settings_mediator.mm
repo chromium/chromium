@@ -389,6 +389,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)shouldEncryptionItemBeEnabled {
   return self.syncSetupService->CanSyncFeatureStart() &&
          !self.disabledBecauseOfSyncError &&
+         self.syncSetupService->IsFirstSetupComplete() &&
          self.syncSetupService->GetSyncServiceState() !=
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
 }
