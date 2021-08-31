@@ -397,6 +397,12 @@ export let PhysicalLayout = ash.diagnostics.mojom.PhysicalLayout;
 export let MechanicalLayout = ash.diagnostics.mojom.MechanicalLayout;
 
 /**
+ * Type alias for NumberPadPresence.
+ * @typedef {ash.diagnostics.mojom.NumberPadPresence}
+ */
+export let NumberPadPresence = ash.diagnostics.mojom.NumberPadPresence;
+
+/**
  * Type alias for KeyboardInfo.
  * @typedef {ash.diagnostics.mojom.KeyboardInfo}
  */

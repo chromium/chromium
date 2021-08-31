@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -328,8 +330,15 @@ void InputDataProvider::AddKeyboard(int id,
     // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
     // (board names chromeover64 or reven).
     keyboards_[id]->mechanical_layout = GetSystemMechanicalLayout();
+
+    keyboards_[id]->number_pad_present =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            chromeos::switches::kHasNumberPad)
+            ? mojom::NumberPadPresence::kPresent
+            : mojom::NumberPadPresence::kNotPresent;
   } else {
     keyboards_[id]->physical_layout = mojom::PhysicalLayout::kUnknown;
+    keyboards_[id]->number_pad_present = mojom::NumberPadPresence::kUnknown;
     // TODO(crbug.com/1207678): support WWCB keyboards, Chromebase keyboards,
     // and Dell KM713 Chrome keyboard.
   }

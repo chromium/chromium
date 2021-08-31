@@ -577,6 +577,10 @@ const char kHasChromeOSKeyboard[] = "has-chromeos-keyboard";
 // Whether this device has an internal stylus.
 const char kHasInternalStylus[] = "has-internal-stylus";
 
+// If set, the system is a Chromebook with a number pad as part of its internal
+// keyboard.
+const char kHasNumberPad[] = "has-number-pad";
+
 // Defines user homedir. This defaults to primary user homedir.
 const char kHomedir[] = "homedir";
 

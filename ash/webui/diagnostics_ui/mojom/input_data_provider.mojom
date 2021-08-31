@@ -30,6 +30,12 @@ enum MechanicalLayout {
   kJis,
 };
 
+enum NumberPadPresence {
+  kUnknown,
+  kPresent,
+  kNotPresent,
+};
+
 // Describes a connected keyboard.
 struct KeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
@@ -39,6 +45,7 @@ struct KeyboardInfo {
   PhysicalLayout physical_layout;
   MechanicalLayout mechanical_layout;
   bool has_assistant_key;
+  NumberPadPresence number_pad_present;
 };
 
 // Describes the glyphs that appear on a single key.

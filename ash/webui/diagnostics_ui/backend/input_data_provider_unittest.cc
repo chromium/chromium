@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -282,6 +283,8 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
                   builtin_keyboard->physical_layout);
         EXPECT_EQ(mojom::MechanicalLayout::kIso,
                   builtin_keyboard->mechanical_layout);
+        EXPECT_EQ(mojom::NumberPadPresence::kNotPresent,
+                  builtin_keyboard->number_pad_present);
 
         mojom::KeyboardInfoPtr external_keyboard = keyboards[1].Clone();
         EXPECT_EQ(4u, external_keyboard->id);
@@ -289,6 +292,8 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
                   external_keyboard->physical_layout);
         EXPECT_EQ(mojom::MechanicalLayout::kUnknown,
                   external_keyboard->mechanical_layout);
+        EXPECT_EQ(mojom::NumberPadPresence::kUnknown,
+                  external_keyboard->number_pad_present);
 
         mojom::KeyboardInfoPtr dell_internal_keyboard = keyboards[2].Clone();
         EXPECT_EQ(5u, dell_internal_keyboard->id);
@@ -296,6 +301,8 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
                   dell_internal_keyboard->physical_layout);
         EXPECT_EQ(mojom::MechanicalLayout::kIso,
                   dell_internal_keyboard->mechanical_layout);
+        EXPECT_EQ(mojom::NumberPadPresence::kNotPresent,
+                  dell_internal_keyboard->number_pad_present);
 
         run_loop.Quit();
       }));
@@ -326,6 +333,31 @@ TEST_F(InputDataProviderTest, KeyboardAssistantKeyDetection) {
         EXPECT_EQ(6u, eve_keyboard->id);
         EXPECT_TRUE(eve_keyboard->has_assistant_key);
       }));
+}
+
+TEST_F(InputDataProviderTest, KeyboardNumberPadDetection) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--has-number-pad"});
+  base::RunLoop run_loop;
+  ui::DeviceEvent link_event(ui::DeviceEvent::DeviceType::INPUT,
+                             ui::DeviceEvent::ActionType::ADD,
+                             base::FilePath("/dev/input/event0"));
+  provider_->OnDeviceEvent(link_event);
+  task_environment_.RunUntilIdle();
+
+  provider_->GetConnectedDevices(base::BindLambdaForTesting(
+      [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
+          std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
+        ASSERT_EQ(1ul, keyboards.size());
+
+        mojom::KeyboardInfoPtr builtin_keyboard = keyboards[0].Clone();
+        EXPECT_EQ(0u, builtin_keyboard->id);
+        EXPECT_EQ(mojom::NumberPadPresence::kPresent,
+                  builtin_keyboard->number_pad_present);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {
