@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
@@ -87,6 +88,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
@@ -187,6 +189,9 @@ public class SearchActivityTest {
     @Mock
     VoiceRecognitionHandler mHandler;
 
+    @Mock
+    WindowAndroid mMockWindowAndroid;
+
     private TestDelegate mTestDelegate;
 
     @Before
@@ -274,7 +279,8 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(/* isVoiceSearchIntent= */ true, /* optionalText= */ null, mHandler);
+        locationBar.beginQuery(
+                SearchType.VOICE, /* optionalText= */ null, mHandler, mMockWindowAndroid);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
@@ -709,6 +715,30 @@ public class SearchActivityTest {
             locationBarCoordinator.onUrlChangedForTesting();
             Assert.assertTrue(urlBar.getText().toString().isEmpty());
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchTypes_knownValidValues() {
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_TEXT_SEARCH));
+        Assert.assertEquals(SearchType.VOICE,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_VOICE_SEARCH));
+        Assert.assertEquals(SearchType.LENS,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_LENS_SEARCH));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchTypes_invalidValuesFallBackToTextSearch() {
+        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType("Aaaaaaa"));
+        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType(null));
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(
+                        SearchActivityConstants.ACTION_START_VOICE_SEARCH + "x"));
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(
+                        SearchActivityConstants.ACTION_START_LENS_SEARCH + "1"));
     }
 
     private void putAnImageIntoClipboard() {

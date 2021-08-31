@@ -14,6 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -27,7 +31,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.widget.Toast;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
@@ -64,13 +70,12 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Called when the SearchActivity has finished initialization. */
-    void onDeferredStartup(boolean isVoiceSearchIntent,
+    void onDeferredStartup(@SearchType int searchType,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
-            AndroidPermissionDelegate permissionsDelegate) {
+            @NonNull WindowAndroid windowAndroid) {
         getAutocompleteCoordinator().prefetchZeroSuggestResults();
 
-        SearchActivityPreferencesManager.updateFeatureAvailability(
-                getContext(), permissionsDelegate);
+        SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
@@ -82,19 +87,22 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
 
         if (mPendingBeginQuery) {
-            beginQueryInternal(isVoiceSearchIntent, voiceRecognitionHandler);
+            beginQueryInternal(searchType, voiceRecognitionHandler, windowAndroid);
             mPendingBeginQuery = false;
         }
     }
 
     /**
      * Begins a new query.
-     * @param isVoiceSearchIntent Whether this is a voice search.
+     * @param searchType The type of search to invoke.
      * @param optionalText Prepopulate with a query, this may be null.
+     * @param voiceRecognitionHandler Handler responsible for managing voice searches.
+     * @param windowAndroid WindowAndroid context.
      */
     @VisibleForTesting
-    public void beginQuery(boolean isVoiceSearchIntent, @Nullable String optionalText,
-            @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+    public void beginQuery(@SearchType int searchType, @Nullable String optionalText,
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
+            @NonNull WindowAndroid windowAndroid) {
         // Clear the text regardless of the promo decision.  This allows the user to enter text
         // before native has been initialized and have it not be cleared one the delayed beginQuery
         // logic is performed.
@@ -102,25 +110,91 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 UrlBarData.forNonUrlText(optionalText == null ? "" : optionalText),
                 UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
 
-        if (mPendingSearchPromoDecision || (isVoiceSearchIntent && !mNativeInitialized)) {
+        if (mPendingSearchPromoDecision || (searchType != SearchType.TEXT && !mNativeInitialized)) {
             mPendingBeginQuery = true;
             return;
         }
 
-        beginQueryInternal(isVoiceSearchIntent, voiceRecognitionHandler);
+        beginQueryInternal(searchType, voiceRecognitionHandler, windowAndroid);
     }
 
-    private void beginQueryInternal(
-            boolean isVoiceSearchIntent, @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+    private void beginQueryInternal(@SearchType int searchType,
+            @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
+            @NonNull WindowAndroid windowAndroid) {
         assert !mPendingSearchPromoDecision;
-        assert !isVoiceSearchIntent || mNativeInitialized;
 
-        if (isVoiceSearchIntent && voiceRecognitionHandler.isVoiceSearchEnabled()) {
-            voiceRecognitionHandler.startVoiceRecognition(
-                    VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
+        if (searchType == SearchType.VOICE) {
+            runVoiceSearch(voiceRecognitionHandler);
+        } else if (searchType == SearchType.LENS) {
+            runGoogleLens(windowAndroid);
         } else {
             focusTextBox();
         }
+    }
+
+    /**
+     * Begins a new Voice query.
+     *
+     * @param voiceRecognitionHandler Handler responsible for managing voice searches.
+     */
+    private void runVoiceSearch(@NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+        assert mNativeInitialized;
+        // Run Voice before focusing the Omnibox. Voice search may trigger omnibox focus as part of
+        // its own flow in the event where the input is ambiguous. Focusing the Omnibox early may
+        // affect this flow.
+        //
+        // Note that the Voice search will call us back in the event of any failure via
+        // notifyVoiceRecognitionCanceled() call, giving us the opportunity to focus the Omnibox.
+        if (voiceRecognitionHandler.isVoiceSearchEnabled()) {
+            voiceRecognitionHandler.startVoiceRecognition(
+                    VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
+            return;
+        }
+
+        // Voice recognition is not available. Fall back to regular text search.
+        Toast.makeText(getContext(), R.string.quick_action_search_widget_message_no_voice_search,
+                     Toast.LENGTH_LONG)
+                .show();
+        focusTextBox();
+    }
+
+    /**
+     * Begins a new Lens query.
+     *
+     * @param windowAndroid WindowAndroid context.
+     */
+    private void runGoogleLens(@NonNull WindowAndroid windowAndroid) {
+        assert mNativeInitialized;
+
+        // Preemptively focus the Search box to handle fallback to text search for every case where
+        // Lens search could not be performed, including events where Lens is started and canceled
+        // by the User.
+        // Unlike Voice, Lens gives us no feedback about completion and does not interact with the
+        // Omnibox at any point. Focus is relevant here, because otherwise canceled Lens intent
+        // lands the User on a white, unfocused activity with no keyboard and single, empty text
+        // field on top.
+        focusTextBox();
+
+        LensController lensController = LensController.getInstance();
+        LensQueryParams lensParams =
+                new LensQueryParams
+                        .Builder(LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                                mLocationBarDataProvider.isIncognito(),
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()))
+                        .build();
+        if (lensController.isLensEnabled(lensParams)) {
+            lensController.startLens(windowAndroid,
+                    new LensIntentParams
+                            .Builder(LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                                    mLocationBarDataProvider.isIncognito())
+                            .build());
+            return;
+        }
+
+        Toast.makeText(getContext(), R.string.quick_action_search_widget_message_no_google_lens,
+                     Toast.LENGTH_LONG)
+                .show();
+        // No need to focus, because the Text field should already be focused.
     }
 
     // TODO(tedchoc): Investigate focusing regardless of the search promo state and just ensure

@@ -319,8 +319,8 @@ public class SearchActivity extends AsyncInitializationActivity
         CustomTabsConnection.getInstance().warmup(0);
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
-        mSearchBox.onDeferredStartup(
-                isVoiceSearchIntent(), voiceRecognitionHandler, getWindowAndroid());
+        mSearchBox.onDeferredStartup(getSearchType(getIntent().getAction()),
+                voiceRecognitionHandler, getWindowAndroid());
         RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();
@@ -343,9 +343,15 @@ public class SearchActivity extends AsyncInitializationActivity
         return mSnackbarManager;
     }
 
-    private boolean isVoiceSearchIntent() {
-        return TextUtils.equals(
-                getIntent().getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static @SearchType int getSearchType(String action) {
+        if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)) {
+            return SearchType.VOICE;
+        } else if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
+            return SearchType.LENS;
+        } else {
+            return SearchType.TEXT;
+        }
     }
 
     private boolean isFromSearchWidget() {
@@ -358,8 +364,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void beginQuery() {
-        mSearchBox.beginQuery(isVoiceSearchIntent(), getOptionalIntentQuery(),
-                mLocationBarCoordinator.getVoiceRecognitionHandler());
+        mSearchBox.beginQuery(getSearchType(getIntent().getAction()), getOptionalIntentQuery(),
+                mLocationBarCoordinator.getVoiceRecognitionHandler(), getWindowAndroid());
     }
 
     @Override
