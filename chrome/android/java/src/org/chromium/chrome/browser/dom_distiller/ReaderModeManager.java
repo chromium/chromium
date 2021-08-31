@@ -141,6 +141,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     // Hold on to the InterceptNavigationDelegate that the custom tab uses.
     InterceptNavigationDelegate mCustomTabNavigationDelegate;
 
+    /** Whether the messages UI was requested for a navigation. */
+    private boolean mMessageRequestedForNavigation;
+
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
@@ -265,6 +268,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         if (mWebContentsObserver != null) mWebContentsObserver.destroy();
         mDistillationStatus = DistillationStatus.POSSIBLE;
         mIsDismissed = false;
+        mMessageRequestedForNavigation = false;
         mDistillerUrl = null;
         mShowInfoBarRecorded = false;
         mIsViewingReaderModePage = false;
@@ -391,6 +395,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 // Reset closed state of reader mode in this tab once we know a navigation is
                 // happening.
                 mIsDismissed = false;
+                mMessageRequestedForNavigation = false;
 
                 // If the infobar was not shown for the previous navigation, record it now.
                 if (mTab != null && !mTab.isNativePage() && !mTab.isBeingRestored()) {
@@ -433,7 +438,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
         if (messageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
-            showReaderModeMessage(messageDispatcher);
+            if (!mMessageRequestedForNavigation) showReaderModeMessage(messageDispatcher);
+            mMessageRequestedForNavigation = true;
         } else {
             ReaderModeInfoBar.showReaderModeInfoBar(mTab);
         }
