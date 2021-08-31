@@ -149,7 +149,7 @@ void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   // communication error and termination of the process.  4096 bytes is the
   // limit for the size of the entire message; here we set 4000 as the maximum
   // length of the string so it would fit the message with some margin.
-  const size_t kMaxLengh = 4080;
+  const size_t kMaxLengh = 4000;
   auto short_title = base::UTF16ToUTF8(title);
   if (short_title.size() > kMaxLengh)
     short_title.resize(kMaxLengh);
