@@ -59,7 +59,7 @@ base::TimeDelta GetShowDelay(int tab_width) {
   static const int max_width_additiona_delay =
       base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
-          features::kTabHoverCardAdditionalMaxWidthDelay, 0);
+          features::kTabHoverCardAdditionalMaxWidthDelay, 500);
 
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.

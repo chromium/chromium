@@ -975,7 +975,7 @@ std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
 absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   static const double start_percent = base::GetFieldTrialParamByFeatureAsDouble(
       features::kTabHoverCardImages,
-      features::kTabHoverCardImagesCrossfadePreviewAtParameterName, -1.0);
+      features::kTabHoverCardImagesCrossfadePreviewAtParameterName, 0.25);
   return start_percent >= 0.0
              ? absl::make_optional(base::clamp(start_percent, 0.0, 1.0))
              : absl::nullopt;

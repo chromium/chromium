@@ -1462,16 +1462,15 @@ const FeatureEntry::FeatureParam
         {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
         {features::kTabHoverCardAdditionalMaxWidthDelay, "200"}};
 const FeatureEntry::FeatureParam
-    kTabHoverCardImagesLargeAdditionalFullWidthDelay[] = {
+    kTabHoverCardImagesNoAdditionalFullWidthDelay[] = {
         {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
         {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
         {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardAdditionalMaxWidthDelay, "500"}};
+        {features::kTabHoverCardAdditionalMaxWidthDelay, "0"}};
 const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
     {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
     {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-    {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.25"},
     {features::kTabHoverCardAlternateFormat, "1"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
@@ -1491,12 +1490,11 @@ const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
     {" placeholder crossfade on land",
      kTabHoverCardImagesLatePlaceholderCrossfade,
      base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr},
-    {" small full width show delay",
+    {" smaller full width show delay",
      kTabHoverCardImagesSmallAdditionalFullWidthDelay,
      base::size(kTabHoverCardImagesSmallAdditionalFullWidthDelay), nullptr},
-    {" large full width show delay",
-     kTabHoverCardImagesLargeAdditionalFullWidthDelay,
-     base::size(kTabHoverCardImagesLargeAdditionalFullWidthDelay), nullptr},
+    {" no full width show delay", kTabHoverCardImagesNoAdditionalFullWidthDelay,
+     base::size(kTabHoverCardImagesNoAdditionalFullWidthDelay), nullptr},
     {" alternate hover card format", kTabHoverCardImagesAlternateFormat,
      base::size(kTabHoverCardImagesAlternateFormat), nullptr}};
 
