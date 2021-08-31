@@ -70,7 +70,7 @@ void DragDownloadItem(const download::DownloadItem* download,
   NSEvent* dragEvent =
       [NSEvent mouseEventWithType:NSLeftMouseDragged
                          location:current_position
-                    modifierFlags:NSLeftMouseDraggedMask
+                    modifierFlags:0
                         timestamp:[[NSApp currentEvent] timestamp]
                      windowNumber:[[view window] windowNumber]
                           context:nil

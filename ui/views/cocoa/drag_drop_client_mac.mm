@@ -52,7 +52,7 @@ void DragDropClientMac::StartDragAndDrop(
   NSTimeInterval event_time = [[NSApp currentEvent] timestamp];
   NSEvent* event = [NSEvent mouseEventWithType:NSLeftMouseDragged
                                       location:position
-                                 modifierFlags:NSLeftMouseDraggedMask
+                                 modifierFlags:0
                                      timestamp:event_time
                                   windowNumber:[window windowNumber]
                                        context:nil

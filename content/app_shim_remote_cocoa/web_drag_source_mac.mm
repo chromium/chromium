@@ -181,7 +181,7 @@ using content::DropData;
   NSTimeInterval eventTime = [currentEvent timestamp];
   NSEvent* dragEvent = [NSEvent mouseEventWithType:NSLeftMouseDragged
                                           location:position
-                                     modifierFlags:NSLeftMouseDraggedMask
+                                     modifierFlags:0
                                          timestamp:eventTime
                                       windowNumber:[window windowNumber]
                                            context:nil
