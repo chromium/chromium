@@ -55,12 +55,12 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  bool IsInterleaved();
-  uint32_t BytesPerSample();
-
   scoped_refptr<media::AudioBuffer> data_;
 
   absl::optional<V8AudioSampleFormat> format_;
+
+  // Temporary space for converting to float32.
+  std::unique_ptr<media::AudioBus> temp_bus_;
 
   int64_t timestamp_;
 };
