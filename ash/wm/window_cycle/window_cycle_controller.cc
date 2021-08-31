@@ -133,30 +133,6 @@ void WindowCycleController::HandleCycleWindow(
   Step(direction, /*starting_alt_tab_or_switching_mode=*/should_start_alt_tab);
 }
 
-bool WindowCycleController::IsValidKeyboardNavigation(
-    KeyboardNavDirection direction) {
-  // Only allow Left and Right arrow keys if interactive alt-tab mode is not
-  // in use.
-  if (!IsInteractiveAltTabModeAllowed()) {
-    return direction == KeyboardNavDirection::kLeft ||
-           direction == KeyboardNavDirection::kRight;
-  }
-
-  // If the focus is on the window cycle list, the user can navigate up to
-  // focus the mode buttons, or left and right to change the window selection.
-  if (!IsTabSliderFocused())
-    return direction != KeyboardNavDirection::kDown;
-
-  // If the focus is on the tab slider button, the user can navigate down to
-  // focus the non-empty list, determined by non-null target window. The user
-  // can only navigate left while focusing the right button and vice versa.
-  const bool per_desk = IsAltTabPerActiveDesk();
-  return (direction == KeyboardNavDirection::kDown &&
-          window_cycle_list_->GetTargetWindow()) ||
-         (per_desk && direction == KeyboardNavDirection::kLeft) ||
-         (!per_desk && direction == KeyboardNavDirection::kRight);
-}
-
 void WindowCycleController::HandleKeyboardNavigation(
     KeyboardNavDirection direction) {
   if (!CanCycle() || !IsCycling() || !IsValidKeyboardNavigation(direction))
@@ -480,6 +456,30 @@ void WindowCycleController::OnAltTabModePrefChanged() {
   window_cycle_list_->OnModePrefsChanged();
 
   is_switching_mode_ = false;
+}
+
+bool WindowCycleController::IsValidKeyboardNavigation(
+    KeyboardNavDirection direction) {
+  // Only allow Left and Right arrow keys if interactive alt-tab mode is not
+  // in use.
+  if (!IsInteractiveAltTabModeAllowed()) {
+    return direction == KeyboardNavDirection::kLeft ||
+           direction == KeyboardNavDirection::kRight;
+  }
+
+  // If the focus is on the window cycle list, the user can navigate up to
+  // focus the mode buttons, or left and right to change the window selection.
+  if (!IsTabSliderFocused())
+    return direction != KeyboardNavDirection::kDown;
+
+  // If the focus is on the tab slider button, the user can navigate down to
+  // focus the non-empty list, determined by non-null target window. The user
+  // can only navigate left while focusing the right button and vice versa.
+  const bool per_desk = IsAltTabPerActiveDesk();
+  return (direction == KeyboardNavDirection::kDown &&
+          window_cycle_list_->GetTargetWindow()) ||
+         (per_desk && direction == KeyboardNavDirection::kLeft) ||
+         (!per_desk && direction == KeyboardNavDirection::kRight);
 }
 
 }  // namespace ash

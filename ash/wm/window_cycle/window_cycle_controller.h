@@ -74,11 +74,6 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // and announces these changes via ChromeVox.
   void HandleKeyboardNavigation(KeyboardNavDirection direction);
 
-  // Returns true if the direction is valid regarding the component that the
-  // focus is currently on. For example, moving the focus on the top most
-  // component, the tab slider button, further up is invalid.
-  bool IsValidKeyboardNavigation(KeyboardNavDirection direction);
-
   // Drags the cycle view's mirror container |delta_x|.
   void Drag(float delta_x);
 
@@ -185,6 +180,11 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // Triggers alt-tab UI updates when the alt-tab mode is updated in the active
   // user prefs.
   void OnAltTabModePrefChanged();
+
+  // Returns true if the direction is valid regarding the component that the
+  // focus is currently on. For example, moving the focus on the top most
+  // component, the tab slider button, further up is invalid.
+  bool IsValidKeyboardNavigation(KeyboardNavDirection direction);
 
   std::unique_ptr<WindowCycleList> window_cycle_list_;
 
