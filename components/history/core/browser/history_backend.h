@@ -633,7 +633,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool hidden,
       VisitSource visit_source,
       bool should_increment_typed_count,
-      VisitID opener_visit,
+      bool floc_allowed,
       absl::optional<std::u16string> title = absl::nullopt);
 
   // Returns a redirect chain in `redirects` for the VisitID
