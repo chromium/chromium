@@ -124,11 +124,9 @@
       </span>
       <div id="additional-content-container" slot="additional-content"
           class="flex">
-        <div id="selector-and-details-container" tabindex="0">
+        <div id="selector-and-details-container">
           <div id="deviceSelectionContainer" class="flex">
-            <div id="device-selection-header">
-              [[getDeviceSelectionHeader_(devices)]]
-            </div>
+            [[getDeviceSelectionHeader_(devices)]]
             <div id="singleDeviceName"
                 hidden$="[[!doesDeviceListHaveOneElement_(devices)]]">
               [[getFirstDeviceNameInList_(devices)]]
@@ -136,8 +134,7 @@
             <div hidden$="[[!doesDeviceListHaveMultipleElements_(devices)]]">
               <select id="deviceDropdown"
                   class="md-select"
-                  on-change="onDeviceDropdownSelectionChanged_"
-                  aria-labelledby="device-selection-header">
+                  on-change="onDeviceDropdownSelectionChanged_">
                 <template is="dom-repeat" items="[[devices]]">
                   <option
                       class$="[[getDeviceOptionClass_(item.connectivityStatus)]]"
