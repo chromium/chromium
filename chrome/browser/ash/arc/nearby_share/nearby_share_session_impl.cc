@@ -112,21 +112,6 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
     // lost focus, etc.), we will clean up the current session including files.
     OnCleanupSession();
   }
-
-  // The Nearby Share bubble is not visible. Delete the current session object
-  // if |file_handler_| is null and |session_finished_callback_| has not been
-  // invoked yet. |file_handler_| is null if there were no files shared or
-  // |OnCleanupSession| was called.
-  // TODO(alanding): Nearby Share bubble is always visible within this function
-  // after OnCleanupSession(). In this case, IsNearbyShareBubbleVisible() will
-  // return true in OnCleanupSession(). This bug should be fixed in sharesheet
-  // so the bubble is closed by the time OnNearbyShareClosed() callback is run.
-  if (session_finished_callback_ && !file_handler_) {
-    // Delete the current session object using the task ID associated with it.
-    VLOG(1) << "OnNearbyShareClosed: Deleting session with task ID: "
-            << task_id_;
-    std::move(session_finished_callback_).Run(task_id_);
-  }
 }
 
 // Overridden from aura::EnvObserver:
@@ -437,13 +422,15 @@ void NearbyShareSessionImpl::OnCleanupSession() {
 
   // All temp files and directories have been deleted. If the Nearby Share
   // bubble is not visible, delete the session object if it's still valid.
-  if (session_finished_callback_ && !IsNearbyShareBubbleVisible()) {
-    // Delete the current session object using the task ID associated with it.
+  if (session_finished_callback_) {
     VLOG(1) << "OnCleanupSession: Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
 }
 
+// TODO(b/197588898): Currently IsNearbyShareBubbleVisible() does not WAI. It
+// always return true when called from OnNearbyShareClosed() and
+// NearbySharingServiceImpl / NearbyShareAction classes via OnCleanupSession.
 bool NearbyShareSessionImpl::IsNearbyShareBubbleVisible() const {
   DVLOG(1) << __func__;
   aura::Window* const arc_window = GetArcWindow(task_id_);
