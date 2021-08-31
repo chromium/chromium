@@ -6365,6 +6365,21 @@ crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-
 crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
 crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Skip Timeout ]
 
+# TODO(michaelludwig): Remove after Skia roll, see crbug.com/1245262
+crbug.com/1245262 fast/borders/border-radius-background-constrained.html [ Pass Failure ]
+crbug.com/1245262 fast/borders/border-radius-complex-inner-double.html [ Pass Failure ]
+crbug.com/1245262 fast/borders/border-radius-complex-inner.html [ Pass Failure ]
+crbug.com/1245262 fast/borders/border-radius-different-width-001-double.html [ Pass Failure ]
+crbug.com/1245262 fast/borders/border-radius-different-width-001.html [ Pass Failure ]
+crbug.com/1245262 fast/borders/border-styles-split.html [ Pass Failure ]
+crbug.com/1245262 fast/css/background-clip-radius-values.html [ Pass Failure ]
+crbug.com/1245262 fast/forms/select-popup/popup-menu-appearance-custom-scrollbar.html [ Pass Failure ]
+crbug.com/1245262 fast/writing-mode/border-styles-vertical-lr.html [ Pass Failure ]
+crbug.com/1245262 fast/writing-mode/border-styles-vertical-rl.html [ Pass Failure ]
+crbug.com/1245262 ietestcenter/css3/bordersbackgrounds/border-radius-different-width-001.htm [ Pass Failure ]
+crbug.com/1245262 ietestcenter/css3/bordersbackgrounds/border-radius-sum-of-radii-001.htm [ Pass Failure ]
+crbug.com/1245262 ietestcenter/css3/bordersbackgrounds/border-radius-sum-of-radii-002.htm [ Pass Failure ]
+
 # Sheriff 2021-05-17
 crbug.com/1193920 virtual/scroll-unification/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Timeout ]
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
