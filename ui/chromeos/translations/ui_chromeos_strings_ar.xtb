@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />تنبيه:<ph name="END_BOLD" />  هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">بطريق</translation>
 <translation id="183183971458492120">جارٍ تحميل المعلومات...</translation>
+<translation id="1834290891154666894">إدخال غير صالح لمطابقة الاسم البديل الخاص بالموضوع</translation>
 <translation id="1838709767668011582">‏موقع Google</translation>
 <translation id="1844692022597038441">هذا الملف غير متاح بلا إنترنت.</translation>
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">تم تقييد عملية الوصول</translation>
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
 <translation id="6358884629796491903">تنين</translation>
+<translation id="636254897931573416">قيمة غير صالحة لمطابقة لاحقة النطاق</translation>
 <translation id="6367976544441405720">سيارة نقل</translation>
 <translation id="637062427944097960">تم فتح هذا الملف على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليه.</translation>
 <translation id="6394388407447716302">للقراءة فقط</translation>

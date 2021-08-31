@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
 <translation id="4511264077854731334">Portail</translation>
+<translation id="4521826082652183069">Correspondance de l'autre nom de l'objet</translation>
 <translation id="4536864596629708641">Configuration IP</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="455835558791489930">Batterie de <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -363,6 +364,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Nombre de cycles</translation>
 <translation id="7762130827864645708">Votre mot de passe a bien été modifié. Veuillez désormais utiliser le nouveau mot de passe.</translation>
+<translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>

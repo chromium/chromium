@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />எச்சரிக்கை:<ph name="END_BOLD" />  இந்த ஃபைல்கள் தற்காலிகமானவை. மேலும் வட்டில் இடத்தை ஏற்படுத்துவதற்காக தானாகவே அழியக்கூடியது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">பென்குயின்</translation>
 <translation id="183183971458492120">தகவலை ஏற்றுகிறது...</translation>
+<translation id="1834290891154666894">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம் தவறாக உள்ளது</translation>
 <translation id="1838709767668011582">Google தளம்</translation>
 <translation id="1844692022597038441">இந்த ஃபைல் ஆஃப்லைனில் கிடைக்காது.</translation>
 <translation id="1853795129690976061">இந்த ஃபோல்டரானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">அணுகல் கட்டுப்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6356685157277930264">ஃபைல்களின் கருத்துச் சாளரம்</translation>
 <translation id="6358884629796491903">டிராகன்</translation>
+<translation id="636254897931573416">டொமைனின் பிற்பாதிக்கான பொருத்தத்தின் மதிப்பு தவறாக உள்ளது</translation>
 <translation id="6367976544441405720">வேன்</translation>
 <translation id="637062427944097960">இந்த ஃபைல் மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டது. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
 <translation id="6394388407447716302">படிக்க மட்டும்</translation>

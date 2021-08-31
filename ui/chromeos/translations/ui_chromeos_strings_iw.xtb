@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />זהירות:<ph name="END_BOLD" /> קבצים אלה הם זמניים והם עלולים להימחק באופן אוטומטי כדי לפנות נפח דיסק. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">פינגווין</translation>
 <translation id="183183971458492120">טעינת מידע…</translation>
+<translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
 <translation id="1844692022597038441">קובץ זו אינו זמין במצב אופליין.</translation>
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
@@ -604,6 +605,7 @@
 <translation id="6346310558342052870">גישה מוגבלת</translation>
 <translation id="6356685157277930264">חלון משוב לגבי קבצים</translation>
 <translation id="6358884629796491903">דרקון</translation>
+<translation id="636254897931573416">ערך ההתאמה של סיומות האתרים לא תקין</translation>
 <translation id="6367976544441405720">רכב מסחרי</translation>
 <translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
 <translation id="6394388407447716302">לקריאה בלבד</translation>

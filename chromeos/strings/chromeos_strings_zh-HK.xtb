@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4511264077854731334">入口網站</translation>
+<translation id="4521826082652183069">主體替代名稱相符</translation>
 <translation id="4536864596629708641">IP 設定</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">週期數</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
+<translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>

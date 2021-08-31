@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Oprez:<ph name="END_BOLD" />  Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje informacija…</translation>
+<translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva predmeta</translation>
 <translation id="1838709767668011582">Google web lokacija</translation>
 <translation id="1844692022597038441">Ovaj fajl nije dostupan van mreže.</translation>
 <translation id="1853795129690976061">Ovaj folder se dijeli s Linuxom</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Pristup je ograničen</translation>
 <translation id="6356685157277930264">Prozor za povratne informacije za fajlove</translation>
 <translation id="6358884629796491903">Zmaj</translation>
+<translation id="636254897931573416">Nevažeća vrijednost podudaranja sufiksa domene</translation>
 <translation id="6367976544441405720">Kombi</translation>
 <translation id="637062427944097960">Ovaj fajl se otvorio na drugoj radnoj površini. Prebacite na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ga vidite.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>

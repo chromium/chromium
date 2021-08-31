@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attenzione.<ph name="END_BOLD" /> Questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguino</translation>
 <translation id="183183971458492120">Caricamento delle informazioni…</translation>
+<translation id="1834290891154666894">Voce corrispondenza nome alternativo del soggetto non valida</translation>
 <translation id="1838709767668011582">Sito Google</translation>
 <translation id="1844692022597038441">Questo file non è disponibile offline.</translation>
 <translation id="1853795129690976061">Questa cartella è condivisa con Linux</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Accesso limitato</translation>
 <translation id="6356685157277930264">Finestra di feedback dei file</translation>
 <translation id="6358884629796491903">Drago</translation>
+<translation id="636254897931573416">Valore corrispondenza suffisso di dominio non valida</translation>
 <translation id="6367976544441405720">Furgone</translation>
 <translation id="637062427944097960">Questo file è aperto su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarlo.</translation>
 <translation id="6394388407447716302">Sola lettura</translation>

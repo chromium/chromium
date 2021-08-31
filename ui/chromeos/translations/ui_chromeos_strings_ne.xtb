@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />होसियार:<ph name="END_BOLD" />  यी फाइलहरू अस्थायी हुन् र डिस्कमा ठाउँ खालि गर्न स्वचालित रूपमा हटाइन सकिन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
+<translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
 <translation id="1838709767668011582">Google को साइट</translation>
 <translation id="1844692022597038441">यो फाइल अफलाइन उपलब्ध छैन।</translation>
 <translation id="1853795129690976061">यो फोल्डर Linux सँग सेयर गरिएको छ</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">पहुँचलाई सीमित गरिको छ</translation>
 <translation id="6356685157277930264">फाइलहरूसम्बन्धी प्रतिक्रिया दिने विन्डो</translation>
 <translation id="6358884629796491903">ड्रागन</translation>
+<translation id="636254897931573416">डोमेन सफिक्ससँग मिल्दोजुल्दो मान अवैध छ</translation>
 <translation id="6367976544441405720">भ्यान</translation>
 <translation id="637062427944097960">यो फाइल अर्को डेस्कटपमा खोलियो। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) सार्नुहोस्।</translation>
 <translation id="6394388407447716302">रिड गर्न मात्र मिल्छ</translation>

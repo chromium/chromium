@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenção:<ph name="END_BOLD" /> Estes arquivos são temporários e podem ser automaticamente eliminados para libertar espaço em disco. <ph name="BEGIN_LINK" />Saiba Mais<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="183183971458492120">A carregar informações…</translation>
+<translation id="1834290891154666894">Entrada da correspondência do nome alternativo do assunto inválida</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Este ficheiro não está disponível offline.</translation>
 <translation id="1853795129690976061">Esta pasta é partilhada com o Linux.</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Acesso restrito</translation>
 <translation id="6356685157277930264">Janela de comentários dos ficheiros</translation>
 <translation id="6358884629796491903">Dragão</translation>
+<translation id="636254897931573416">Valor da correspondência do sufixo do domínio inválido</translation>
 <translation id="6367976544441405720">Carrinha</translation>
 <translation id="637062427944097960">Este ficheiro foi aberto num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="6394388407447716302">Só de leitura</translation>

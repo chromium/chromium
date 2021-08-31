@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
+<translation id="1834290891154666894">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ ହେଉଥିବା ଏଣ୍ଟ୍ରି ଅବୈଧ ଅଟେ</translation>
 <translation id="1838709767668011582">Google ସାଇଟ୍</translation>
 <translation id="1844692022597038441">ଏହି ଫାଇଲ୍‍ ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="1853795129690976061">ଏହି ଫୋଲ୍ଡରକୁ Linux ସହିତ ସେୟାର୍ କରାଯାଇଛି</translation>
@@ -597,6 +598,7 @@
 <translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
+<translation id="636254897931573416">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ ହେଉଥିବା ମୂଲ୍ୟ ଅବୈଧ ଅଟେ</translation>
 <translation id="6367976544441405720">ଭ୍ୟାନ୍</translation>
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="6394388407447716302">କେବଳ-ପଢ଼ିବା ପାଇଁ</translation>

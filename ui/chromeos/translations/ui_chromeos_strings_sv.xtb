@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varning!<ph name="END_BOLD" />  De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Läser in information …</translation>
+<translation id="1834290891154666894">Ogiltig inmatning för matchning av ämnets andra namn</translation>
 <translation id="1838709767668011582">Google-webbplats</translation>
 <translation id="1844692022597038441">Den här filen är inte tillgänglig offline.</translation>
 <translation id="1853795129690976061">Den här mappen delas med Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Begränsad åtkomst</translation>
 <translation id="6356685157277930264">Feedback för filfönster</translation>
 <translation id="6358884629796491903">Drake</translation>
+<translation id="636254897931573416">Ogiltigt värde för matchning av domänsuffix</translation>
 <translation id="6367976544441405720">Skåpbil</translation>
 <translation id="637062427944097960">Filen öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa den.</translation>
 <translation id="6394388407447716302">Skrivskyddat</translation>

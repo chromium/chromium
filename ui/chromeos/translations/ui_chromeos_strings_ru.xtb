@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание!<ph name="END_BOLD" /> Эти файлы являются временными и могут быть автоматически удалены, чтобы освободить место на диске. <ph name="BEGIN_LINK" />Подробнее...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Загрузка данных…</translation>
+<translation id="1834290891154666894">Недопустимая запись совпадения с альтернативным именем субъекта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1844692022597038441">Этот файл недоступен в автономном режиме.</translation>
 <translation id="1853795129690976061">Доступ к этой папке предоставлен Linux.</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Доступ ограничен</translation>
 <translation id="6356685157277930264">Окно с информацией о файлах</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="636254897931573416">Недопустимое значение совпадения с доменным суффиксом</translation>
 <translation id="6367976544441405720">Грузовик</translation>
 <translation id="637062427944097960">Этот файл открыт на другом рабочем столе. Чтобы увидеть его, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Только чтение</translation>

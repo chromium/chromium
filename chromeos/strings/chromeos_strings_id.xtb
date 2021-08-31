@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
 <translation id="4548483925627140043">Sinyal tidak ditemukan</translation>
 <translation id="455835558791489930">Baterai <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -363,6 +364,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Jumlah siklus</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
+<translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>

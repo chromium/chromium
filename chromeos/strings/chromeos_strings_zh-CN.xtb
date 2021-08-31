@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
 <translation id="4511264077854731334">门户网站</translation>
+<translation id="4521826082652183069">主题备用名称匹配</translation>
 <translation id="4536864596629708641">IP 配置</translation>
 <translation id="4548483925627140043">找不到信号</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 电池</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">循环计数</translation>
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
+<translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>

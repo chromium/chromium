@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4521826082652183069">Совпадение с альтернативным именем субъекта</translation>
 <translation id="4536864596629708641">Конфигурация IP</translation>
 <translation id="4548483925627140043">Отсутствует сигнал Wi-Fi.</translation>
 <translation id="455835558791489930">Батарея <ph name="CHARGE_VALUE" /> мА·ч</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
+<translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>

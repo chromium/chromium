@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага:<ph name="END_BOLD" /> ці файли тимчасові, і можуть автоматично видалятися, щоб звільнити місце на диску. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Завантаження інформації…</translation>
+<translation id="1834290891154666894">Недійсний запис збігу з альтернативною назвою суб’єкта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1844692022597038441">Цей файл не доступний в режимі офлайн.</translation>
 <translation id="1853795129690976061">Linux має доступ до цієї папки</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Доступ обмежено</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="636254897931573416">Недійсне значення збігу із суфіксом домену</translation>
 <translation id="6367976544441405720">Фургон</translation>
 <translation id="637062427944097960">Цей файл відкрито на іншому робочому столі. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути його.</translation>
 <translation id="6394388407447716302">Лише перегляд</translation>

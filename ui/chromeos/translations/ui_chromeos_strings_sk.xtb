@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Upozornenie: <ph name="END_BOLD" /> Tieto súbory sú dočasné a kvôli uvoľneniu miesta na disku môžu byť automaticky odstránené. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučniak</translation>
 <translation id="183183971458492120">Načítavajú sa informácie…</translation>
+<translation id="1834290891154666894">Neplatný vstup zhody alternatívneho názvu subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
 <translation id="1844692022597038441">Tento súbor nie je k dispozícii v režime offline.</translation>
 <translation id="1853795129690976061">Tento priečinok je zdieľaný systémom Linux</translation>
@@ -603,6 +604,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6346310558342052870">Prístup je zakázaný</translation>
 <translation id="6356685157277930264">Okno spätnej väzby týkajúcej sa súborov</translation>
 <translation id="6358884629796491903">Drak</translation>
+<translation id="636254897931573416">Neplatná hodnota zhody prípony domény</translation>
 <translation id="6367976544441405720">Dodávka</translation>
 <translation id="637062427944097960">Tento súbor je otvorený na inej pracovnej ploche. Ak ho chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Iba na čítanie</translation>

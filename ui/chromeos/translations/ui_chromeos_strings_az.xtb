@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Xəbərdarlıq:<ph name="END_BOLD" />  Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.  <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinqvin</translation>
 <translation id="183183971458492120">İnfo yüklənir...</translation>
+<translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1844692022597038441">Bu fayl oflayn olaraq əlçatan deyil.</translation>
 <translation id="1853795129690976061">Bu qovluq Linux ilə paylaşılır</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Giriş məhdudlaşdırılıb</translation>
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
+<translation id="636254897931573416">Domen sonluğunun uyğunluğu dəyəri yanlışdır</translation>
 <translation id="6367976544441405720">Furqon</translation>
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
 <translation id="6394388407447716302">Yalnız oxunan</translation>

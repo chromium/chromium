@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Uzmanību!<ph name="END_BOLD" /> Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvīns</translation>
 <translation id="183183971458492120">Notiek informācijas ielāde...</translation>
+<translation id="1834290891154666894">Nederīgs subjekta alternatīvā nosaukuma atbilstības ieraksts.</translation>
 <translation id="1838709767668011582">Google vietne</translation>
 <translation id="1844692022597038441">Šis fails nav pieejams bezsaistē.</translation>
 <translation id="1853795129690976061">Šī mape ir kopīgota ar Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Piekļuve ierobežota</translation>
 <translation id="6356685157277930264">Failu atsauksmju logs</translation>
 <translation id="6358884629796491903">Pūķis</translation>
+<translation id="636254897931573416">Nederīga domēna sufiksa atbilstības vērtība.</translation>
 <translation id="6367976544441405720">Furgons</translation>
 <translation id="637062427944097960">Šis fails tika atvērts citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Tikai lasāma</translation>

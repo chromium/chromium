@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Wees versigtig:<ph name="END_BOLD" /> Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pikkewyn</translation>
 <translation id="183183971458492120">Laai tans inligting …</translation>
+<translation id="1834290891154666894">Ongeldige passinginskrywing vir onderwerp se alternatiewe naam</translation>
 <translation id="1838709767668011582">Google-werf</translation>
 <translation id="1844692022597038441">Hierdie lêer is nie vanlyn beskikbaar nie.</translation>
 <translation id="1853795129690976061">Hierdie vouer word met Linux gedeel</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Toegang is beperk</translation>
 <translation id="6356685157277930264">Lêersterugvoervenster</translation>
 <translation id="6358884629796491903">Draak</translation>
+<translation id="636254897931573416">Ongeldige passingwaarde vir domein-agtervoegsel</translation>
 <translation id="6367976544441405720">Afleweringvoertuig</translation>
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>

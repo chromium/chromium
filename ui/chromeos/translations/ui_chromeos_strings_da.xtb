@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Advarsel!<ph name="END_BOLD" /> Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Indlæser oplysninger...</translation>
+<translation id="1834290891154666894">Ugyldig indtastning for match af alternativt emnenavn</translation>
 <translation id="1838709767668011582">Google-website</translation>
 <translation id="1844692022597038441">Denne fil er ikke tilgængelig offline.</translation>
 <translation id="1853795129690976061">Denne mappe deles med Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Begrænset adgang</translation>
 <translation id="6356685157277930264">Feedback i vinduet Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
+<translation id="636254897931573416">Ugyldig værdi for match af domænesuffiks</translation>
 <translation id="6367976544441405720">Varevogn</translation>
 <translation id="637062427944097960">Denne fil blev åbnet på en anden computer. Skift til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for at se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>

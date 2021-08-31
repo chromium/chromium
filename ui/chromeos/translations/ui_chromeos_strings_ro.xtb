@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenție:<ph name="END_BOLD" /> aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Se încarcă informațiile…</translation>
+<translation id="1834290891154666894">intrare nevalidă a potrivirii numelui alternativ al subiectului</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Acest fișier nu este disponibil offline.</translation>
 <translation id="1853795129690976061">Linux are acces la acest dosar</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Acces restricționat</translation>
 <translation id="6356685157277930264">Fereastra cu feedback pentru fișiere</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="636254897931573416">Valoare nevalidă a potrivirii sufixului de domeniu</translation>
 <translation id="6367976544441405720">Camionetă</translation>
 <translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Numai în citire</translation>

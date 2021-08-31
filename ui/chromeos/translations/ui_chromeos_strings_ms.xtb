@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Awas:<ph name="END_BOLD" />  Fail ini adalah bersifat sementara dan boleh dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuatkan maklumat...</translation>
+<translation id="1834290891154666894">Entri padanan nama alternatif subjek tidak sah</translation>
 <translation id="1838709767668011582">Tapak Google</translation>
 <translation id="1844692022597038441">Fail ini tidak boleh didapati di luar talian.</translation>
 <translation id="1853795129690976061">Folder ini dikongsi dengan Linux</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">Akses terhad</translation>
 <translation id="6356685157277930264">Tetingkap maklum balas fail</translation>
 <translation id="6358884629796491903">Naga</translation>
+<translation id="636254897931573416">Nilai padanan akhiran domain tidak sah</translation>
 <translation id="6367976544441405720">Van</translation>
 <translation id="637062427944097960">Fail ini dibuka pada desktop yang berbeza. Alihkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihat fail.</translation>
 <translation id="6394388407447716302">Baca sahaja</translation>

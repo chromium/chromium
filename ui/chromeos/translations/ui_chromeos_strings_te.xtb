@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />హెచ్చరిక:<ph name="END_BOLD" /> ఈ ఫైళ్లు తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను పెంచడం కోసం ఆటోమేటిక్‌గా తొలగించబడవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">పెంగ్విన్</translation>
 <translation id="183183971458492120">సమాచారాన్ని లోడ్ చేస్తోంది...</translation>
+<translation id="1834290891154666894">చెల్లని సబ్జెక్ట్ ప్రత్యామ్నాయ పేరుకు సంబంధించిన మ్యాచ్ ఎంటర్ చేయబడింది</translation>
 <translation id="1838709767668011582">Google సైట్</translation>
 <translation id="1844692022597038441">ఈ ఫైల్ ఆఫ్‌లైన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="1853795129690976061">ఈ ఫోల్డర్ Linuxతో షేర్ చేయబడింది</translation>
@@ -603,6 +604,7 @@
 <translation id="6346310558342052870">యాక్సెస్ నియంత్రించబడింది</translation>
 <translation id="6356685157277930264">ఫైల్స్ అభిప్రాయ విండో</translation>
 <translation id="6358884629796491903">డ్రాగన్</translation>
+<translation id="636254897931573416">చెల్లని డొమైన్ సఫిక్స్ మ్యాచ్ విలువ</translation>
 <translation id="6367976544441405720">వ్యాన్</translation>
 <translation id="637062427944097960">ఈ పైల్ వేరే డెస్క్‌టాప్‌లో తెరవబడింది. దీన్ని వీక్షించడానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="6394388407447716302">చదవడానికి మాత్రమే</translation>

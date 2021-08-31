@@ -900,6 +900,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6545017243486555795">Borrar todos os datos</translation>
 <translation id="6546511553472444032">Pode que o ficheiro sexa daniño</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Pecharase <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharase <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
+<translation id="6560066289487134861">Selecciona un modelo para o texto destacado. Para volver ao cadro de diálogo principal, utiliza o xesto de arriba a abaixo e, a continuación, toca Seguinte.</translation>
 <translation id="6560414384669816528">Buscar con Sogou</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6565959834589222080">Úsase a conexión wifi cando está dispoñible</translation>

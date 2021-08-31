@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告<ph name="END_BOLD" />：这些文件是临时文件，系统可能会自动删除这些文件以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鹅</translation>
 <translation id="183183971458492120">正在加载信息…</translation>
+<translation id="1834290891154666894">主题备用名称的匹配条目无效</translation>
 <translation id="1838709767668011582">Google 网站</translation>
 <translation id="1844692022597038441">此文件无法在离线模式下播放。</translation>
 <translation id="1853795129690976061">已与 Linux 共享此文件夹</translation>
@@ -598,6 +599,7 @@
 <translation id="6346310558342052870">访问权限受限</translation>
 <translation id="6356685157277930264">文件反馈窗口</translation>
 <translation id="6358884629796491903">龙</translation>
+<translation id="636254897931573416">域名后缀的匹配值无效</translation>
 <translation id="6367976544441405720">客货车</translation>
 <translation id="637062427944097960">此文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看此文件。</translation>
 <translation id="6394388407447716302">只读</translation>

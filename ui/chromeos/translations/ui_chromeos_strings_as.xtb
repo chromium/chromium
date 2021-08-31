@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />সাৱধানতা:<ph name="END_BOLD" />  এই ফাইলসমূহ অস্থায়ী আৰু ডিস্কত খালী ঠাই উলিয়াবলৈ এইবোৰ স্বয়ংক্ৰিয়ভাৱে মচা হ'ব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">পেংগুইন</translation>
 <translation id="183183971458492120">তথ্য ল’ড কৰি থকা হৈছে...</translation>
+<translation id="1834290891154666894">বিষয়ৰ বিকল্প নামৰ সৈতে মিলা প্ৰবিষ্টি অমান্য</translation>
 <translation id="1838709767668011582">Googleৰ ছাইট</translation>
 <translation id="1844692022597038441">এই ফাইলটো অফলাইনত নাই।</translation>
 <translation id="1853795129690976061">এই ফ’ল্ডাৰটো Linuxৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">এক্সেছ সীমিত কৰা হৈছে</translation>
 <translation id="6356685157277930264">ফাইলসমূহৰ বিষয়ে থকা মতামতৰ ৱিণ্ড’</translation>
 <translation id="6358884629796491903">ড্ৰেগন</translation>
+<translation id="636254897931573416">ডমেইন চাফিক্সৰ সৈতে মিলা মান অমান্য</translation>
 <translation id="6367976544441405720">ভেন</translation>
 <translation id="637062427944097960">এই ফাইলটো বিভিন্ন ডেস্কটেপত খোলা হৈছে। ফাইলটো চাবলৈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) লৈ নিয়ক।</translation>
 <translation id="6394388407447716302">কেৱল পঢ়িব পৰা</translation>

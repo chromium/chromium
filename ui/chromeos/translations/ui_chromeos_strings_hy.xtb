@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Ուշադրություն.<ph name="END_BOLD" /> Այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել սկավառակի վրա տարածք ազատելու համար: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
+<translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1844692022597038441">Այս ֆայլը մատչելի չէ անցանց ռեժիմում:</translation>
 <translation id="1853795129690976061">Այս պանակը հասանելի է Լինուքսին</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Սահմանափակ հասանելիություն</translation>
 <translation id="6356685157277930264">Ֆայլերի մասին տեղեկությունների պատուհան</translation>
 <translation id="6358884629796491903">Վիշապ</translation>
+<translation id="636254897931573416">Տիրույթի վերջածանցի հետ համընկնման սխալ արժեք</translation>
 <translation id="6367976544441405720">Միկրոավտոբուս</translation>
 <translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="6394388407447716302">Միայն կարդալու</translation>

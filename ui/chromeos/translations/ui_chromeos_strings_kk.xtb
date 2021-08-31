@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Абайлаңыз:<ph name="END_BOLD" /> Бұл файлдар уақытша болып, дисктегі орынды босату үшін автоматты түрде жойылуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Ақпарат жүктелуде…</translation>
+<translation id="1834290891154666894">Енгізілген балама атау тақырыбы сәйкестігі жарамсыз.</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бұл файл желіден тыс қолжетімді емес.</translation>
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Пайдалануға тыйым салынған</translation>
 <translation id="6356685157277930264">Файлдар пікірлері терезесі</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
+<translation id="636254897931573416">Домен суффиксі сәйкестігінің мәні жарамсыз.</translation>
 <translation id="6367976544441405720">Фургон</translation>
 <translation id="637062427944097960">Бұл файл басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына өтіңіз.</translation>
 <translation id="6394388407447716302">Тек оқуға арналған</translation>

@@ -170,6 +170,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
+<translation id="4521826082652183069">Համընկնում սուբյեկտի այլընտրանքային անվան հետ</translation>
 <translation id="4536864596629708641">IP-ի կազմաձևում</translation>
 <translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
@@ -363,6 +364,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
+<translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>

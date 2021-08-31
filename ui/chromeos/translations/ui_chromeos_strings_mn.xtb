@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Анхааруулга:<ph name="END_BOLD" /> Эдгээр файлууд нь түр зуурынх бөгөөд дискний зайг чөлөөлөх зорилгоор автоматаар устгагдаж болно. <ph name="BEGIN_LINK" /> Илүү ихийг мэдэж аваарай<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пенгвин</translation>
 <translation id="183183971458492120">Мэдээллийг ачаалж байна...</translation>
+<translation id="1834290891154666894">Субъектийн хоёрдогч нэрийн тохирлын оруулга буруу байна</translation>
 <translation id="1838709767668011582">Google сайт</translation>
 <translation id="1844692022597038441">Энэ файл нь боломжит оффлайн хэлбэртэй биш байна.</translation>
 <translation id="1853795129690976061">Энэ фолдерыг Linux-тай хуваалцсан байна</translation>
@@ -600,6 +601,7 @@
 <translation id="6346310558342052870">Хандалтыг хязгаарласан</translation>
 <translation id="6356685157277930264">Файлын мэдээллийн цонх</translation>
 <translation id="6358884629796491903">Луу</translation>
+<translation id="636254897931573416">Домэйн дагаврын тохирлын утга буруу байна</translation>
 <translation id="6367976544441405720">Битүү ачааны машин</translation>
 <translation id="637062427944097960">Энэ файл нь өөр десктоп дээр нээгдсэн байна. Үүнийг харахын тулд <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) руу шилжинэ үү.</translation>
 <translation id="6394388407447716302">Зєвхєн унших</translation>

@@ -98,6 +98,7 @@
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Upozornění:<ph name="END_BOLD" /> Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučňák</translation>
 <translation id="183183971458492120">Načítání informací...</translation>
+<translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
 <translation id="1844692022597038441">Tento soubor není k dispozici v režimu offline.</translation>
 <translation id="1853795129690976061">Tato složka je sdílena s Linuxem</translation>
@@ -602,6 +603,7 @@
 <translation id="6346310558342052870">Přístup je omezen</translation>
 <translation id="6356685157277930264">Okno zpětné vazby k souborům</translation>
 <translation id="6358884629796491903">Drak</translation>
+<translation id="636254897931573416">Neplatná hodnota shody přípony domény</translation>
 <translation id="6367976544441405720">Dodávka</translation>
 <translation id="637062427944097960">Tento soubor je otevřen na jiné ploše. Chcete-li jej zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Pouze pro čtení</translation>
