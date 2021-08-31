@@ -84,7 +84,7 @@ bool ExtensionInstalledBubbleViewsBrowserTest::VerifyUi() {
 }
 
 void ExtensionInstalledBubbleViewsBrowserTest::WaitForUserDismissal() {
-  views::test::WidgetClosingObserver observer(bubble_widget_);
+  views::test::WidgetDestroyedWaiter observer(bubble_widget_);
   observer.Wait();
 }
 

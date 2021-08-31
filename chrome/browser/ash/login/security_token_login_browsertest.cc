@@ -627,15 +627,12 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
   SimulateSecurityTokenRemoval();
 
   views::Widget* notification = notification_waiter.WaitIfNeededAndGet();
-  views::test::WidgetClosingObserver notification_closing_observer(
+  views::test::WidgetDestroyedWaiter notification_closing_observer(
       notification);
   notification_closing_observer.Wait();
 
   // After the notification expires, the device gets locked.
   chrome_session_observer.WaitForSessionLocked();
-
-  // The notification no longer exists.
-  EXPECT_TRUE(notification_closing_observer.widget_closed());
 }
 
 }  // namespace chromeos

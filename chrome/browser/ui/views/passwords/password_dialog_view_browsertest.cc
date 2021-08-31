@@ -336,10 +336,10 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   EXPECT_TRUE(controller()->current_account_chooser());
   views::BubbleDialogDelegateView* dialog =
       controller()->current_account_chooser();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(form)));
   dialog->Accept();
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
@@ -448,11 +448,11 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
   AutoSigninFirstRunDialogView* dialog =
       controller()->current_autosignin_prompt();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
   EXPECT_CALL(*controller(), OnDialogClosed());
   EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
   content::RunAllPendingInMessageLoop();
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(controller());
@@ -470,10 +470,10 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
   CredentialLeakDialogView* dialog =
       controller()->current_credential_leak_prompt();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
   EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,

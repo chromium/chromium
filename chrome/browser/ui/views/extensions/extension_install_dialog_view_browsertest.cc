@@ -613,12 +613,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
       dialog, nullptr,
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
-  views::test::WidgetClosingObserver dialog_observer(modal_dialog);
+  views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
   modal_dialog->Show();
   EXPECT_FALSE(modal_dialog->IsClosed());
   UninstallExtension(extension->id());
   dialog_observer.Wait();
-  EXPECT_TRUE(dialog_observer.widget_closed());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
       dialog, nullptr,
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
-  views::test::WidgetClosingObserver dialog_observer(modal_dialog);
+  views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
   modal_dialog->Show();
   EXPECT_FALSE(modal_dialog->IsClosed());
   UninstallExtension(other_extension->id());

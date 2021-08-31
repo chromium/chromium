@@ -931,7 +931,7 @@ TEST_P(AppListPresenterTest,
   SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
 
   // Verify that transition to apps page hides the removal confirmation dialog.
-  views::test::WidgetClosingObserver widget_close_waiter(confirmation_dialog);
+  views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
   GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
 
   widget_close_waiter.Wait();
@@ -976,7 +976,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
       search_result_page()->anchored_dialog_for_test()->widget();
   SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
 
-  views::test::WidgetClosingObserver widget_close_waiter(confirmation_dialog);
+  views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
 
   // Go to peeking state, and verify the keyboard is not reshown.
   GetAppListView()->SetState(AppListViewState::kPeeking);

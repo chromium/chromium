@@ -173,7 +173,7 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsWhenRequested) {
   ASSERT_TRUE(bubble);
 
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
-  views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
+  views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_CALL(close_callback, Run()).Times(1);
@@ -221,7 +221,7 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsOnBubbleClosure) {
   ASSERT_TRUE(bubble);
 
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
-  views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
+  views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_CALL(close_callback, Run());
@@ -249,7 +249,7 @@ TEST_F(FeaturePromoControllerViewsTest, ContinuedPromoDefersBackendDismissed) {
   ASSERT_TRUE(bubble);
 
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
-  views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
+  views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   // First check that CloseBubbleAndContinuePromo() actually closes the
   // bubble, but doesn't yet tell the backend the promo finished.
