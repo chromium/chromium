@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 
+#include <set>
 #include <string>
+
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_matcher_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -27,17 +28,14 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   StarterHeuristic(const StarterHeuristic&) = delete;
   StarterHeuristic& operator=(const StarterHeuristic&) = delete;
 
-  // Runs the heuristic against |url| and invokes the callback with the matching
-  // intent or absl::nullopt if there is none. Since we currently do not
-  // support intent disambiguation in cases where more than one intent is
-  // matching for a given URL, this will return the intent of the first matching
-  // condition-set specified in the config.
+  // Runs the heuristic against |url| and invokes the callback with all matching
+  // intents.
   //
   // Note that this method runs on a worker thread, not on the caller's thread.
   // The callback will be invoked on the caller's sequence.
   void RunHeuristicAsync(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<std::string> intent)> callback)
+      base::OnceCallback<void(const std::set<std::string>& intents)> callback)
       const;
 
  private:
@@ -52,9 +50,8 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // instead to prevent the heuristic from being called in the first place.
   void InitFromTrialParams();
 
-  // Runs the heuristic against |url|. Returns the matching intent or
-  // absl::nullopt if there is none.
-  absl::optional<std::string> IsHeuristicMatch(const GURL& url) const;
+  // Runs the heuristic against |url|. Returns all matching intents.
+  std::set<std::string> IsHeuristicMatch(const GURL& url) const;
 
   // The set of denylisted domains that will always return false before
   // considering any of the intent heuristics.

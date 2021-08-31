@@ -114,34 +114,34 @@ void StarterHeuristic::InitFromTrialParams() {
   matcher_id_to_intent_map_ = std::move(mapping);
 }
 
-absl::optional<std::string> StarterHeuristic::IsHeuristicMatch(
+std::set<std::string> StarterHeuristic::IsHeuristicMatch(
     const GURL& url) const {
+  std::set<std::string> matching_intents;
   if (matcher_id_to_intent_map_.empty() || !url.is_valid()) {
-    return absl::nullopt;
+    return matching_intents;
   }
 
   if (denylisted_domains_.count(
           url_utils::GetOrganizationIdentifyingDomain(url)) > 0) {
-    return absl::nullopt;
+    return matching_intents;
   }
 
   std::set<url_matcher::URLMatcherConditionSet::ID> matches =
       url_matcher_.MatchURL(url);
-  if (matches.empty()) {
-    return absl::nullopt;
+  for (const auto& match : matches) {
+    auto intent = matcher_id_to_intent_map_.find(match);
+    if (intent == matcher_id_to_intent_map_.end()) {
+      DCHECK(false);
+      continue;
+    }
+    matching_intents.emplace(intent->second);
   }
-  // Return the first matching intent.
-  auto first_matching_it = matcher_id_to_intent_map_.find(*matches.begin());
-  if (first_matching_it == matcher_id_to_intent_map_.end()) {
-    DCHECK(false);
-    return absl::nullopt;
-  }
-  return first_matching_it->second;
+  return matching_intents;
 }
 
 void StarterHeuristic::RunHeuristicAsync(
     const GURL& url,
-    base::OnceCallback<void(absl::optional<std::string> intent)> callback)
+    base::OnceCallback<void(const std::set<std::string>& intents)> callback)
     const {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},

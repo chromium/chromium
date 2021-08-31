@@ -43,9 +43,11 @@ namespace autofill_assistant {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Pair;
@@ -1945,6 +1947,79 @@ TEST_F(StarterTest, CommandLineScriptParametersAreAddedToImplicitTriggers) {
 
   SimulateNavigateToUrl(GURL("https://example.com/cart"));
   task_environment()->RunUntilIdle();
+}
+
+TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsAllMatchingIntents) {
+  content::BrowserTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  content::TestBrowserContext browser_context;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  FakeStarterPlatformDelegate fake_platform_delegate;
+  MockRuntimeManager mock_runtime_manager;
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      &browser_context, nullptr);
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents.get());
+
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+  auto enable_fake_heuristic =
+      std::make_unique<base::test::ScopedFeatureList>();
+  enable_fake_heuristic->InitAndEnableFeatureWithParameters(
+      features::kAutofillAssistantUrlHeuristics, {{"json_parameters",
+                                                   R"(
+          {
+            "heuristics":[
+              {
+                "intent":"FAKE_INTENT_A",
+                "conditionSet":{
+                  "urlContains":"intent_a"
+                }
+              },
+              {
+                "intent":"FAKE_INTENT_B",
+                "conditionSet":{
+                  "urlContains":"intent_b"
+                }
+              }
+            ]
+          }
+          )"}});
+  Starter starter(web_contents.get(), &fake_platform_delegate, &ukm_recorder,
+                  mock_runtime_manager.GetWeakPtr(),
+                  task_environment.GetMockTickClock());
+  auto service_request_sender =
+      std::make_unique<NiceMock<MockServiceRequestSender>>();
+  auto* service_request_sender_ptr = service_request_sender.get();
+  fake_platform_delegate.trigger_script_request_sender_for_test_ =
+      std::move(service_request_sender);
+
+  EXPECT_CALL(*service_request_sender_ptr,
+              OnSendRequest(
+                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+      .WillOnce(WithArg<1>([&](const std::string& request_body) {
+        GetTriggerScriptsRequestProto request;
+        ASSERT_TRUE(request.ParseFromString(request_body));
+        EXPECT_THAT(request.url(),
+                    Eq(GURL("https://example.com/intent_a/intent_b")));
+        EXPECT_TRUE(request.client_context().is_in_chrome_triggered());
+        const auto& actual_intent_param = std::find_if(
+            request.script_parameters().begin(),
+            request.script_parameters().end(),
+            [&](const auto& param) { return param.name() == "INTENT"; });
+        ASSERT_THAT(actual_intent_param, Ne(request.script_parameters().end()));
+        auto actual_intents =
+            base::SplitString(actual_intent_param->value(), ",",
+                              base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        EXPECT_THAT(actual_intents,
+                    UnorderedElementsAre("FAKE_INTENT_A", "FAKE_INTENT_B"));
+      }));
+
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com/intent_a/intent_b"));
+  task_environment.RunUntilIdle();
 }
 
 }  // namespace autofill_assistant

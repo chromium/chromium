@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -294,8 +295,8 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url,
 
 void Starter::OnHeuristicMatch(const GURL& url,
                                const ukm::SourceId source_id,
-                               absl::optional<std::string> intent) {
-  if (!intent) {
+                               const std::set<std::string>& intents) {
+  if (intents.empty()) {
     Metrics::RecordInChromeTriggerAction(
         ukm_recorder_, source_id,
         Metrics::InChromeTriggerAction::NO_HEURISTIC_MATCH);
@@ -314,8 +315,11 @@ void Starter::OnHeuristicMatch(const GURL& url,
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", url.spec()},
-      {"INTENT", *intent}};
+      {"ORIGINAL_DEEPLINK", url.spec()}};
+  script_parameters.emplace(
+      "INTENT",
+      base::JoinString(std::vector<std::string>(intents.begin(), intents.end()),
+                       ","));
   // Add/overwrite with debug parameters if specified.
   for (const auto& debug_param :
        implicit_triggering_debug_parameters_.additional_script_parameters()) {
