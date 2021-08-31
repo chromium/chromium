@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 // Controls the visibility of IntentPickerView by updating the visibility based
-// on stored state.
+// on stored state. This class is instantiated for both web apps and SWAs.
 class IntentPickerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<IntentPickerTabHelper>,

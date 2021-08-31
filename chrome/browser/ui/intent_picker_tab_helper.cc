@@ -63,7 +63,7 @@ IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
   // Profile might not contain a web app provider. eg. kiosk profile in
   // Chrome OS.
