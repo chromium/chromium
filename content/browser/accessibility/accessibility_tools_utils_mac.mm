@@ -265,6 +265,10 @@ AXUIElementRef FindAXUIElement(const AXUIElementRef node,
 }
 
 std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
+  if (selector.widget) {
+    return {AXUIElementCreateApplication(selector.widget), selector.widget};
+  }
+
   NSArray* windows = static_cast<NSArray*>(CGWindowListCopyWindowInfo(
       kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
       kCGNullWindowID));

@@ -30,28 +30,8 @@ constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
-base::Value BuildTreeForSelector(const AXTreeSelector& selector,
-                                 const AXTreeFormatter* formatter) {
-  return formatter->BuildTreeForSelector(selector);
-}
-
-base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget,
-                               const AXTreeFormatter* formatter) {
-  return formatter->BuildTreeForWindow(widget);
-}
-
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
                            const base::FilePath& filters_path) {
-  Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path);
-}
-
-AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
-                           const base::FilePath& filters_path) {
-  Run(base::BindOnce(&BuildTreeForWindow, widget), filters_path);
-}
-
-void AXTreeServer::Run(BuildTree build_tree,
-                       const base::FilePath& filters_path) {
   std::unique_ptr<AXTreeFormatter> formatter(
       AXInspectFactory::CreatePlatformFormatter());
 
@@ -66,7 +46,7 @@ void AXTreeServer::Run(BuildTree build_tree,
                                 ui::AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
-  base::Value dict = std::move(build_tree).Run(formatter.get());
+  base::Value dict = formatter->BuildTreeForSelector(selector);
   if (dict.DictEmpty()) {
     LOG(ERROR) << "Failed to get accessibility tree";
     return;

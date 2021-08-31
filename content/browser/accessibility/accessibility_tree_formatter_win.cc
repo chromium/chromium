@@ -227,23 +227,6 @@ base::Value AccessibilityTreeFormatterWin::BuildTree(
   return dict;
 }
 
-base::Value AccessibilityTreeFormatterWin::BuildTreeForWindow(
-    gfx::AcceleratedWidget hwnd) const {
-  if (!hwnd)
-    return base::Value(base::Value::Type::DICTIONARY);
-
-  // Get IAccessible* for window
-  Microsoft::WRL::ComPtr<IAccessible> start;
-  HRESULT hr = ::AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CLIENT), IID_PPV_ARGS(&start));
-  if (FAILED(hr))
-    return base::Value(base::Value::Type::DICTIONARY);
-
-  base::Value dict(base::Value::Type::DICTIONARY);
-  RecursiveBuildTree(start, &dict, 0, 0);
-  return dict;
-}
-
 base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   base::Value dict(base::Value::Type::DICTIONARY);

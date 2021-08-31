@@ -87,11 +87,6 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(
   return BuildTree(ToBrowserAccessibilityCocoa(internal_root));
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildTreeForWindow(
-    gfx::AcceleratedWidget widget) const {
-  return BuildTreeForAXUIElement(AXUIElementCreateApplication(widget));
-}
-
 base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   AXUIElementRef node = nil;

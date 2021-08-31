@@ -102,33 +102,6 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildNode(
   return std::move(dict);
 }
 
-base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForWindow(
-    gfx::AcceleratedWidget pid) const {
-  AtspiAccessible* desktop = atspi_get_desktop(0);
-  CHECK(desktop);
-
-  GError* error = nullptr;
-  int child_count = atspi_accessible_get_child_count(desktop, &error);
-  CHECK_ATSPI_ERROR(error)
-
-  for (int i = 0; i < child_count; i++) {
-    AtspiAccessible* child =
-        atspi_accessible_get_child_at_index(desktop, i, &error);
-    CHECK_ATSPI_ERROR(error)
-
-    uint application_pid = atspi_accessible_get_process_id(child, &error);
-    CHECK_ATSPI_ERROR(error)
-
-    if (pid == application_pid) {
-      base::DictionaryValue dictionary_value;
-      RecursiveBuildTree(child, &dictionary_value);
-      return std::move(dictionary_value);
-    }
-  }
-
-  return base::Value(base::Value::Type::DICTIONARY);
-}
-
 AtspiAccessible* AccessibilityTreeFormatterAuraLinux::FindActiveDocument(
     AtspiAccessible* node) const {
   GError* error = nullptr;

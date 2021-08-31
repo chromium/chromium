@@ -245,11 +245,6 @@ base::Value AccessibilityTreeFormatterBlink::BuildTree(
   RecursiveBuildTree(*root_internal, &dict);
   return dict;
 }
-base::Value AccessibilityTreeFormatterBlink::BuildTreeForWindow(
-    gfx::AcceleratedWidget widget) const {
-  NOTREACHED();
-  return base::Value(base::Value::Type::DICTIONARY);
-}
 
 base::Value AccessibilityTreeFormatterBlink::BuildTreeForSelector(
     const AXTreeSelector& selector) const {

@@ -28,7 +28,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
       const base::DictionaryValue& node) const override;
 
   base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 

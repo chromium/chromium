@@ -109,12 +109,6 @@ base::Value AccessibilityTreeFormatterAndroid::BuildTree(
   return std::move(dict);
 }
 
-base::Value AccessibilityTreeFormatterAndroid::BuildTreeForWindow(
-    gfx::AcceleratedWidget widget) const {
-  NOTREACHED();
-  return base::Value(base::Value::Type::DICTIONARY);
-}
-
 base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   NOTREACHED();

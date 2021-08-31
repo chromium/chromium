@@ -59,18 +59,10 @@ int main(int argc, char** argv) {
   absl::optional<AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
 
-  if (selector) {
-    if (selector->widget) {
-      auto server = absl::make_unique<content::AXTreeServer>(selector->widget,
-                                                             filters_path);
-      return 0;
-    }
-
-    if (!selector->empty()) {
-      auto server =
-          absl::make_unique<content::AXTreeServer>(*selector, filters_path);
-      return 0;
-    }
+  if (selector && !selector->empty()) {
+    auto server =
+        absl::make_unique<content::AXTreeServer>(*selector, filters_path);
+    return 0;
   }
 
   LOG(ERROR)

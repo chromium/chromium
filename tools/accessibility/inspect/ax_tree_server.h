@@ -21,17 +21,10 @@ namespace content {
 
 class AXTreeServer final {
  public:
-  AXTreeServer(gfx::AcceleratedWidget widget,
-               const base::FilePath& filters_path);
   AXTreeServer(const ui::AXTreeSelector& selector,
                const base::FilePath& filters_path);
 
  private:
-  using BuildTree = base::OnceCallback<base::Value(const ui::AXTreeFormatter*)>;
-
-  // Builds and formats the accessible tree.
-  void Run(BuildTree build_tree, const base::FilePath& filters_path);
-
   // Generates property filters.
   absl::optional<std::vector<ui::AXPropertyFilter>> GetPropertyFilters(
       const base::FilePath& filters_path);
