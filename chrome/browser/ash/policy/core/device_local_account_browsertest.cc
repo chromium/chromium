@@ -2006,7 +2006,16 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
   VerifyKeyboardLayoutMatchesLocale();
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
+#if defined(OS_CHROMEOS)
+// TODO(https://crbug.com/1245153):
+// DeviceLocalAccountTest.TermsOfServiceWithLocaleSwitch flaky on chrome os.
+#define MAYBE_TermsOfServiceWithLocaleSwitch \
+  DISABLED_TermsOfServiceWithLocaleSwitch
+#else
+#define MAYBE_TermsOfServiceWithLocaleSwitch TermsOfServiceWithLocaleSwitch
+#endif
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
+                       MAYBE_TermsOfServiceWithLocaleSwitch) {
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(
