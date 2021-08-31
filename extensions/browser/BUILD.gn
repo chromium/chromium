@@ -535,7 +535,7 @@ source_set("browser_sources") {
     "//components/prefs",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
-    "//components/sessions",
+    "//components/sessions:session_id",
     "//components/sync",
     "//components/ukm/content",
     "//components/update_client",

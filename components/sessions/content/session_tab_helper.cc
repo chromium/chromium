@@ -14,7 +14,8 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/extension_messages.h"
+#include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #endif
 
 namespace sessions {
@@ -34,8 +35,20 @@ void SessionTabHelper::SetWindowID(const SessionID& id) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Extension code in the renderer holds the ID of the window that hosts it.
   // Notify it that the window ID changed.
-  web_contents()->SendToAllFrames(
-      new ExtensionMsg_UpdateBrowserWindowId(MSG_ROUTING_NONE, id.id()));
+  auto* extension_observer =
+      extensions::ExtensionWebContentsObserver::GetForWebContents(
+          web_contents());
+  if (extension_observer) {
+    web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+        [](int32_t window_id,
+           extensions::ExtensionWebContentsObserver* observer,
+           content::RenderFrameHost* rfh) {
+          auto* local_frame = observer->GetLocalFrame(rfh);
+          if (local_frame)
+            local_frame->UpdateBrowserWindowId(window_id);
+        },
+        id.id(), extension_observer));
+  }
 #endif
 }
 

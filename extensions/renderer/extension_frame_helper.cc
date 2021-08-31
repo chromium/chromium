@@ -405,8 +405,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnExtensionDeliverMessage)
     IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect,
                         OnExtensionDispatchOnDisconnect)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateBrowserWindowId,
-                        OnUpdateBrowserWindowId)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -461,10 +459,6 @@ void ExtensionFrameHelper::SetTabId(int32_t tab_id) {
   CHECK_EQ(tab_id_, -1);
   CHECK_GE(tab_id, 0);
   tab_id_ = tab_id;
-}
-
-void ExtensionFrameHelper::OnUpdateBrowserWindowId(int browser_window_id) {
-  browser_window_id_ = browser_window_id;
 }
 
 void ExtensionFrameHelper::NotifyRenderViewType(mojom::ViewType type) {
@@ -554,6 +548,10 @@ void ExtensionFrameHelper::ExecuteDeclarativeScript(
     extension_dispatcher_->ExecuteDeclarativeScript(
         render_frame(), tab_id, extension_id, script_id, url);
   }
+}
+
+void ExtensionFrameHelper::UpdateBrowserWindowId(int32_t window_id) {
+  browser_window_id_ = window_id;
 }
 
 void ExtensionFrameHelper::OnDestruct() {
