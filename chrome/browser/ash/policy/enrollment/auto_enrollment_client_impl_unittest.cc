@@ -1407,11 +1407,8 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   }
 
   void SetUp() override {
-    // Verify that PSM is enabled by default (i.e. PSM switch
-    // prefs::kEnterpriseEnablePsm is enabled). And the PsmState has value
-    // kEnable.
+    // Verify that PSM is enabled (i.e. PsmState has value kEnable).
     ASSERT_EQ(GetPsmState(), PsmState::kEnabled);
-    EXPECT_TRUE(ash::AutoEnrollmentController::IsPsmEnabled());
 
     // Verify that all PSM prefs have not been set before.
     ASSERT_EQ(local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState),
