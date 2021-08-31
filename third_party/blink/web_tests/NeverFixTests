@@ -1679,9 +1679,6 @@ crbug.com/657646 [ Win7 ] virtual/text-antialias/font-stretch-variant.html [ Ski
 crbug.com/657646 [ Win7 ] virtual/text-antialias/drawBidiText.html [ Skip ]
 crbug.com/657646 [ Win7 ] virtual/text-antialias/font-features/caps-native-synthesis.html [ Skip ]
 
-# We don't plan to support this use-case in the near future.
-crbug.com/940797 external/wpt/signed-exchange/appcache/sxg-served-from-appcache.tentative.https.html [ Skip ]
-
 external/wpt/html/semantics/forms/the-input-element/event-select-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-datatransferitem-interface/getAsString-manual.html [ Skip ]
 external/wpt/payment-request/payment-response/payerdetailschange-updateWith-manual.https.html [ Skip ]
@@ -1746,22 +1743,12 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.win
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html [ Skip ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.https.any.sharedworker.html [ Skip ]
 
-# AppCache tests that need to run only in a virtual test suite
-# But have to live under non-virtual http/ to get http/ behavior
-crbug.com/582750 http/tests/appcache/* [ Skip ]
-virtual/appcache-origin-trial/http/tests/appcache/* [ Pass ]
-
-# AppCache is deprecated, remove these tests once it is removed.
-# These tests all timeout without appcache, so just skip them.
+# AppCache is no longer supported.
+crbug.com/582750 external/wpt/html/browsers/offline/appcache/* [ Skip ]
+crbug.com/940797 external/wpt/signed-exchange/appcache/* [ Skip ]
 crbug.com/582750 external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
 crbug.com/582750 external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
 crbug.com/582750 external/wpt/storage/estimate-usage-details-application-cache.https.tentative.html [ Skip ]
-crbug.com/582750 http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Skip ]
-crbug.com/582750 http/tests/security/cors-rfc1918/addressspace-document-appcache.https.html [ Skip ]
-crbug.com/582750 http/tests/security/cors-rfc1918/addressspace-document-csp-appcache.https.html [ Skip ]
-
-# These appcache tests fail differently in release and debug, so skip them.
-crbug.com/582750 http/tests/devtools/appcache/* [ Skip ]
 
 # WeakRefs are under development and run in a virtual test suite
 crbug.com/1016767 js/weakrefs/* [ Skip ]

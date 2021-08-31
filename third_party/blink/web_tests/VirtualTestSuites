@@ -504,7 +504,6 @@
               "external/wpt/content-security-policy/worker-src",
               "external/wpt/content-security-policy/gen",
               "external/wpt/fetch/",
-              "external/wpt/html/browsers/offline/appcache/workers/",
               "external/wpt/html/cross-origin-embedder-policy",
               "external/wpt/referrer-policy",
               "external/wpt/resource-timing",
@@ -702,12 +701,6 @@
     "args": ["--enable-blink-features=CSSIsolatedAnimationUpdates"]
   },
   {
-    "prefix": "appcache-origin-trial",
-    "bases": ["http/tests/appcache"],
-    "args": ["--enable-features=AppCacheRequireOriginTrial",
-             "--disable-features=AppCacheAlwaysFallbackToNetwork"]
-  },
-  {
     "prefix": "force-eager",
     "bases": ["external/wpt/measure-memory"],
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"]
@@ -716,11 +709,6 @@
     "prefix": "payment-request-mandatory-total",
     "bases": ["http/tests/payments/payment-request-app-store-billing-mandatory-total.html"],
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
-  },
-  {
-    "prefix": "conditional-appcache-delay",
-    "bases": ["http/tests/loading/appcache-delay"],
-    "args": ["--enable-features=VerifyHTMLFetchedFromAppCacheBeforeDelay"]
   },
   {
     "prefix": "json-modules",
