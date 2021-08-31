@@ -217,6 +217,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.TranslationsPerPage"
     units="translations" expires_after="2021-10-10">
+  <obsolete>
+    Removed M95. No longer used.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -82,8 +82,6 @@ public class TranslateCompactInfoBar
     private static final String INFOBAR_HISTOGRAM_NEVER_TRANSLATE_LANGUAGE =
             "Translate.CompactInfobar.Language.NeverTranslate";
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
-    private static final String INFOBAR_HISTOGRAM_TRANSLATION_COUNT =
-            "Translate.CompactInfobar.TranslationsPerPage";
 
     // Need 2 instances of TranslateMenuHelper to prevent a race condition bug which happens when
     // showing language menu after dismissing overflow menu.
@@ -342,7 +340,6 @@ public class TranslateCompactInfoBar
     @CalledByNative
     private boolean onPageTranslated(int errorType) {
         boolean errorUIShown = false;
-        incrementAndRecordTranslationsPerPageCount();
         if (mTabLayout != null) {
             mTabLayout.hideProgressBar();
             if (errorType != 0) {
@@ -433,7 +430,6 @@ public class TranslateCompactInfoBar
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getPosition()) {
             case SOURCE_TAB_INDEX:
-                incrementAndRecordTranslationsPerPageCount();
                 recordInfobarAction(InfobarEvent.INFOBAR_REVERT);
                 mUserInteracted = true;
                 onButtonClicked(ActionType.TRANSLATE_SHOW_ORIGINAL);
@@ -710,11 +706,6 @@ public class TranslateCompactInfoBar
         if (hashCode != null) {
             RecordHistogram.recordSparseHistogram(histogram, hashCode);
         }
-    }
-
-    private void incrementAndRecordTranslationsPerPageCount() {
-        RecordHistogram.recordCountHistogram(
-                INFOBAR_HISTOGRAM_TRANSLATION_COUNT, ++mTotalTranslationCount);
     }
 
     // Return the width of parent in pixels.  Return 0 if there is no parent.
