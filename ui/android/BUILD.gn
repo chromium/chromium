@@ -147,7 +147,6 @@ android_resources("ui_java_resources") {
     "java/res/color/chip_stroke_color.xml",
     "java/res/color/chip_text_color.xml",
     "java/res/color/chip_text_color_secondary.xml",
-    "java/res/color/default_text_color_hint_list.xml",
     "java/res/color/default_text_color_inverse_list.xml",
     "java/res/color/default_text_color_light_list.xml",
     "java/res/color/default_text_color_list_baseline.xml",

@@ -11,7 +11,6 @@
     <!-- Text color used on dark background on light theme, and light background on dark theme. -->
     <color name="default_text_color_inverse">@color/default_text_color_light</color>
     <color name="default_text_color_secondary">@color/default_text_color_secondary_dark</color>
-    <color name="default_text_color_disabled">@color/default_text_color_disabled_dark</color>
     <!-- Text color for non-clickable blue text. -->
     <color name="default_text_color_blue" tools:ignore="UnusedResources">@color/default_text_color_link</color>
     <!-- Text color for clickable text. -->

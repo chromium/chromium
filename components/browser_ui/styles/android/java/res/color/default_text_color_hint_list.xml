@@ -4,6 +4,7 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/default_text_color_disabled" android:state_enabled="false"/>
-    <item android:color="@color/default_text_color_secondary" />
+    <item android:alpha="@dimen/default_disabled_alpha" android:color="?attr/colorOnSurface"
+        android:state_enabled="false"/>
+    <item android:color="?attr/colorOnSurfaceVariant" />
 </selector>

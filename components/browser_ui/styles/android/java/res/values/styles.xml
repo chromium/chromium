@@ -312,4 +312,17 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Disabled text styles -->
+    <style name="TextAppearance.TextLarge.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Disabled">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
 </resources>

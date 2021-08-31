@@ -29,6 +29,8 @@ android_resources("java_resources") {
     "java/res/color/default_icon_color_secondary_light_tint_list.xml",
     "java/res/color/default_icon_color_secondary_tint_list.xml",
     "java/res/color/default_icon_color_tint_list.xml",
+    "java/res/color/default_text_color_disabled_list.xml",
+    "java/res/color/default_text_color_hint_list.xml",
     "java/res/color/default_text_color_list.xml",
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/switch_thumb_tint.xml",

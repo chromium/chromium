@@ -146,25 +146,6 @@
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
-    <!-- Adaptive Text Styles -->
-    <!--
-      Adaptive text styles are dark when the app is in light theme (for display
-      on a light background) and light when the app is in dark theme (for
-      display on a dark background).
-    -->
-
-    <style name="TextAppearance.TextLarge.Disabled">
-        <item name="android:textColor">@color/default_text_color_disabled</item>
-    </style>
-
-    <style name="TextAppearance.TextMedium.Disabled">
-        <item name="android:textColor">@color/default_text_color_disabled</item>
-    </style>
-
-    <style name="TextAppearance.TextSmall.Disabled">
-        <item name="android:textColor">@color/default_text_color_disabled</item>
-    </style>
-
     <!-- Non Adaptive Text Styles -->
     <!--  Light version  -->
     <style name="TextAppearance.Headline.Primary.Baseline.Light" tools:ignore="UnusedResources">
@@ -198,10 +179,12 @@
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Disabled.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.Disabled.Baseline.Light" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_light</item>
     </style>
-    <style name="TextAppearance.TextSmall.Disabled.Light" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextSmall.Disabled.Baseline.Light" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_light</item>
     </style>
 
@@ -246,13 +229,16 @@
         <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Disabled.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.Disabled.Baseline.Dark" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
     </style>
-    <style name="TextAppearance.TextMedium.Disabled.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Disabled.Baseline.Dark" parent="TextAppearance.TextMedium"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
     </style>
-    <style name="TextAppearance.TextSmall.Disabled.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextSmall.Disabled.Baseline.Dark" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
     </style>
 
