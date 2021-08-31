@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
@@ -113,6 +114,8 @@ enum class RequiredOriginType {
   kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
+  // Must be a secure origin with allowed payment permission policy.
+  kSecureWithPaymentPermissionPolicy,
 };
 
 bool IsSameOriginWithAncestors(const Frame* frame) {
@@ -232,6 +235,18 @@ bool CheckSecurityRequirementsBeforeRequest(
         return false;
       }
       break;
+
+    case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kPayment)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "The 'payment' feature is not enabled in this document. "
+            "Permissions Policy may be used to delegate Web Payment "
+            "capabilities to cross-origin child frames."));
+        return false;
+      }
+      break;
   }
 
   return true;
@@ -271,6 +286,11 @@ void AssertSecurityRequirementsBeforeResponse(
           resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
           IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
+      break;
+
+    case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
+      SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kPayment));
       break;
   }
 }
@@ -571,6 +591,15 @@ void OnMakePublicKeyCredentialComplete(
       credential->info->id, raw_id, authenticator_response, extension_outputs));
 }
 
+bool IsForPayment(const CredentialCreationOptions* options,
+                  ExecutionContext* context) {
+  return RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
+         options->hasPublicKey() && options->publicKey()->hasExtensions() &&
+         options->publicKey()->extensions()->hasPayment() &&
+         options->publicKey()->extensions()->payment()->hasIsPayment() &&
+         options->publicKey()->extensions()->payment()->isPayment();
+}
+
 void OnSaveCredentialIdForPaymentExtension(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     MakeCredentialAuthenticatorResponsePtr credential,
@@ -591,7 +620,8 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential) {
   auto* resolver = scoped_resolver->Release();
-  const auto required_origin_type = RequiredOriginType::kSecure;
+  const auto required_origin_type =
+      RequiredOriginType::kSecureWithPaymentPermissionPolicy;
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
@@ -727,16 +757,6 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
 
   const auto* context = resolver->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context));
-
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kPayment)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "The 'payment' feature is not enabled in this document. Permissions "
-        "Policy may be used to delegate Web Payment capabilities to "
-        "cross-origin child frames."));
-    return false;
-  }
 
   if (RuntimeEnabledFeatures::SecurePaymentConfirmationDebugEnabled())
     return true;
@@ -1084,11 +1104,16 @@ ScriptPromise CredentialsContainer::create(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // hasPublicKey() implies that this is a WebAuthn request.
-  auto required_origin_type =
-      options->hasPublicKey() ? RequiredOriginType::kSecureAndSameWithAncestors
-                              : RequiredOriginType::kSecure;
-
+  RequiredOriginType required_origin_type;
+  if (IsForPayment(options, resolver->GetExecutionContext())) {
+    required_origin_type =
+        RequiredOriginType::kSecureWithPaymentPermissionPolicy;
+  } else {
+    // hasPublicKey() implies that this is a WebAuthn request.
+    required_origin_type = options->hasPublicKey()
+                               ? RequiredOriginType::kSecureAndSameWithAncestors
+                               : RequiredOriginType::kSecure;
+  }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;
   }
