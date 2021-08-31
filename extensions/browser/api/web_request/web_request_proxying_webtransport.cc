@@ -59,18 +59,11 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
     // be associated with a DOM element.
     DCHECK(!should_collapse_initiator);
 
-    if (result == net::ERR_BLOCKED_BY_CLIENT) {
-      // TODO(crbug.com/1240935): Implement blocking case. You also should fix
-      // framework.js's flakiness.
-      OnCompleted(net::OK);
-      return;
-    }
-
     if (result == net::ERR_IO_PENDING)
       return;
 
-    DCHECK_EQ(net::OK, result);
-    OnCompleted(net::OK);
+    DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
+    OnCompleted(result);
   }
 
   // TODO(crbug.com/1240935): Implement onBeforeSendHeaders
@@ -81,7 +74,6 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onHeadersReceived
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onResponseStarted
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onCompleted
-  // TODO(crbug.com/1240935): Implement WebRequestAPI::OnErrorOccurred.
 
   void OnCompleted(int error_code) {
     absl::optional<network::mojom::WebTransportErrorPtr> error;
@@ -89,6 +81,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
       error = network::mojom::WebTransportError::New(
           error_code, quic::QUIC_INTERNAL_ERROR, "Blocked by an extension",
           false);
+      ExtensionWebRequestEventRouter::GetInstance()->OnErrorOccurred(
+          browser_context_, &info_, /*started=*/true, error_code);
     }
     std::move(create_callback_)
         .Run(std::move(handshake_client_), std::move(error));
