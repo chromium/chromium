@@ -135,9 +135,11 @@ compiled_action("gen_root_store_inc") {
     "store/certs/fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd.pem",
   ]
   outputs = [ "${target_gen_dir}/chrome-root-store-inc.cc" ]
-  args = [ "--write-cpp=" +
-           rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
-                       root_build_dir) ]
+  args = [
+    "--root-store-dir=" + rebase_path("//net/data/ssl/chrome_root_store/store"),
+    "--write-cpp=" + rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
+                                 root_build_dir),
+  ]
 }
 
 compiled_action("gen_root_store_test_inc") {
@@ -153,7 +155,8 @@ compiled_action("gen_root_store_test_inc") {
   ]
   outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
   args = [
-    "--root-store-dir=net/data/ssl/chrome_root_store/testdata",
+    "--root-store-dir=" +
+        rebase_path("//net/data/ssl/chrome_root_store/testdata"),
     "--write-cpp=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
                     root_build_dir),
