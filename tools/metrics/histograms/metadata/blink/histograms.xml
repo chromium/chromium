@@ -2511,7 +2511,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.CompletionDelay" units="ms"
-    expires_after="2021-10-08">
+    expires_after="2022-08-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2521,7 +2521,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.RedirectDelay" units="ms"
-    expires_after="2021-10-08">
+    expires_after="2022-08-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2531,7 +2531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.ResponseDelay" units="ms"
-    expires_after="2021-10-08">
+    expires_after="2022-08-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2541,7 +2541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.StartDelay" units="ms"
-    expires_after="2021-10-08">
+    expires_after="2022-08-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
