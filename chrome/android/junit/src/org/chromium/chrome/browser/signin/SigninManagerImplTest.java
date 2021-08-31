@@ -141,7 +141,8 @@ public class SigninManagerImplTest {
         mSigninManager.onFirstRunCheckDone();
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signin(ACCOUNT_INFO, callback);
+        mSigninManager.signin(
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());

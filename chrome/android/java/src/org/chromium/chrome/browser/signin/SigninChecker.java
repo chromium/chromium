@@ -26,7 +26,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -132,9 +131,7 @@ public class SigninChecker
                             public void onSignInAborted() {}
                         });
             } else {
-                AccountInfoServiceProvider.get()
-                        .getAccountInfoByEmail(newAccountName)
-                        .then(accountInfo -> { mSigninManager.signin(accountInfo, null); });
+                mSigninManager.signin(AccountUtils.createAccountFromName(newAccountName), null);
             }
         }, false);
     }

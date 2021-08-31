@@ -94,18 +94,19 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
             mWebSigninBridge = mWebSigninBridgeFactory.create(
                     Profile.getLastUsedRegularProfile(), accountInfo, this);
-            mSigninManager.signin(accountInfo, new SigninManager.SignInCallback() {
-                @Override
-                public void onSignInComplete() {
-                    // After the sign-in is finished in Chrome, we still need to wait for
-                    // WebSigninBridge to be called to redirect to the continue url.
-                }
+            mSigninManager.signin(AccountUtils.createAccountFromName(accountEmail),
+                    new SigninManager.SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            // After the sign-in is finished in Chrome, we still need to wait for
+                            // WebSigninBridge to be called to redirect to the continue url.
+                        }
 
-                @Override
-                public void onSignInAborted() {
-                    AccountPickerDelegateImpl.this.destroyWebSigninBridge();
-                }
-            });
+                        @Override
+                        public void onSignInAborted() {
+                            AccountPickerDelegateImpl.this.destroyWebSigninBridge();
+                        }
+                    });
         });
     }
 

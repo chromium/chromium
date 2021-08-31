@@ -49,17 +49,18 @@ public final class SigninTestUtil {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             signinManager.onFirstRunCheckDone(); // Allow sign-in
-            signinManager.signin(coreAccountInfo, new SigninManager.SignInCallback() {
-                @Override
-                public void onSignInComplete() {
-                    callbackHelper.notifyCalled();
-                }
+            signinManager.signin(AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                    new SigninManager.SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            callbackHelper.notifyCalled();
+                        }
 
-                @Override
-                public void onSignInAborted() {
-                    Assert.fail("Sign-in was aborted");
-                }
-            });
+                        @Override
+                        public void onSignInAborted() {
+                            Assert.fail("Sign-in was aborted");
+                        }
+                    });
         });
         try {
             callbackHelper.waitForFirst();

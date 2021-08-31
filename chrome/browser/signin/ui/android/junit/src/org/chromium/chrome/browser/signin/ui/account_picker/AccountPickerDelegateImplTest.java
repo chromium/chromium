@@ -130,7 +130,8 @@ public class AccountPickerDelegateImplTest {
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, mCoreAccountInfo, mDelegate);
-        calledInOrder.verify(mSigninManagerMock).signin(eq(mCoreAccountInfo), any());
+        calledInOrder.verify(mSigninManagerMock)
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
         mDelegate.onSigninSucceeded();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
@@ -145,7 +146,7 @@ public class AccountPickerDelegateImplTest {
             return null;
         })
                 .when(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), any());
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
         mDelegate.signIn(TEST_EMAIL, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }
@@ -165,7 +166,8 @@ public class AccountPickerDelegateImplTest {
         calledInOrder.verify(mSigninManagerMock).signOut(anyInt());
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, mCoreAccountInfo, mDelegate);
-        calledInOrder.verify(mSigninManagerMock).signin(eq(mCoreAccountInfo), any());
+        calledInOrder.verify(mSigninManagerMock)
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
     }
 
     @Test

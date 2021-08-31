@@ -239,13 +239,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      *   - Complete sign-in with the native IdentityManager.
      *   - Call the callback if provided.
      *
-     * @param accountInfo The account to sign in to.
+     * @param account The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
     @Override
-    public void signin(CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
-        mAccountTrackerService.seedAccountsIfNeeded(
-                () -> { signinInternal(SignInState.createForSignin(accountInfo, callback)); });
+    public void signin(Account account, @Nullable SignInCallback callback) {
+        AccountInfoServiceProvider.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
+            signinInternal(SignInState.createForSignin(accountInfo, callback));
+        });
     }
 
     /**
