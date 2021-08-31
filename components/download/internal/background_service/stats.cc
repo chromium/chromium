@@ -235,13 +235,6 @@ void LogFileLifeTime(const base::TimeDelta& file_life_time) {
                              base::TimeDelta::FromDays(8), 100);
 }
 
-void LogFileDirDiskUtilization(int64_t total_disk_space,
-                               int64_t free_disk_space,
-                               int64_t files_size) {
-  UMA_HISTOGRAM_PERCENTAGE("Download.Service.Files.FreeDiskSpace",
-                           (free_disk_space * 100) / total_disk_space);
-}
-
 void LogEntryEvent(DownloadEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Download.Service.Entry.Event", event,
                             DownloadEvent::COUNT);
