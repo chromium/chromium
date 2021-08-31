@@ -7,9 +7,11 @@
 
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -28,7 +30,7 @@ class FastPairDataEncryptor;
 
 // A FastPairPairer instance is responsible for the pairing procedure to a
 // single device.  Pairing begins on instantiation.
-class FastPairPairer {
+class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
  public:
   FastPairPairer(
       scoped_refptr<device::BluetoothAdapter> adapter,
@@ -44,9 +46,21 @@ class FastPairPairer {
   FastPairPairer& operator=(const FastPairPairer&) = delete;
   FastPairPairer(FastPairPairer&&) = delete;
   FastPairPairer& operator=(FastPairPairer&&) = delete;
-  ~FastPairPairer();
+  ~FastPairPairer() override;
 
  private:
+  // device::BluetoothDevice::PairingDelegate
+  void RequestPinCode(device::BluetoothDevice* device) override;
+  void ConfirmPasskey(device::BluetoothDevice* device,
+                      uint32_t passkey) override;
+  void RequestPasskey(device::BluetoothDevice* device) override;
+  void DisplayPinCode(device::BluetoothDevice* device,
+                      const std::string& pincode) override;
+  void DisplayPasskey(device::BluetoothDevice* device,
+                      uint32_t passkey) override;
+  void KeysEntered(device::BluetoothDevice* device, uint32_t entered) override;
+  void AuthorizePairing(device::BluetoothDevice* device) override;
+
   // FastPairGattServiceClientImpl::Factory::Create callback
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
 
@@ -59,6 +73,18 @@ class FastPairPairer {
   // FastPairGattServiceClient::WriteRequest callback
   void OnWriteResponse(std::vector<uint8_t> response_bytes,
                        absl::optional<PairFailure> failure);
+
+  // FastPairDataEncryptor::ParseDecryptedResponse callback
+  void OnParseDecryptedResponse(
+      const absl::optional<DecryptedResponse>& response);
+
+  // device::BluetoothDevice::Pair callback
+  void OnPairConnected(
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
+
+  // device::BluetoothAdapter::ConnectDevice callbacks
+  void OnConnectDevice(device::BluetoothDevice* device);
+  void OnConnectError();
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;

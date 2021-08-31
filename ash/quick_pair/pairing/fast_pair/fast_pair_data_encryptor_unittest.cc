@@ -81,12 +81,12 @@ class FastPairDataEncryptorTest : public testing::Test {
     data_encryptor_ = std::move(fast_pair_data_encryptor);
   }
 
-  std::array<uint8_t, kBlockSizeBytes> EncryptBytes() {
+  const std::array<uint8_t, kBlockSizeBytes> EncryptBytes() {
     return data_encryptor_->EncryptBytes(kResponseBytes);
   }
 
   void ParseDecryptedResponse() {
-    std::array<uint8_t, kBlockSizeBytes> bytes =
+    const std::array<uint8_t, kBlockSizeBytes> bytes =
         data_encryptor_->EncryptBytes(kResponseBytes);
 
     data_encryptor_->ParseDecryptedResponse(
@@ -102,7 +102,7 @@ class FastPairDataEncryptorTest : public testing::Test {
   }
 
   void ParseDecryptedPasskey() {
-    std::array<uint8_t, kBlockSizeBytes> bytes =
+    const std::array<uint8_t, kBlockSizeBytes> bytes =
         data_encryptor_->EncryptBytes(kPasskeyBytes);
 
     data_encryptor_->ParseDecryptedPasskey(

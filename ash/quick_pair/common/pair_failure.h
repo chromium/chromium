@@ -45,16 +45,18 @@ enum class PairFailure {
   kKeyBasedPairingResponseTimeout = 13,
   // Timed out while waiting for the Passkey response.
   kPasskeyResponseTimeout = 14,
+  // Failed to decrypt Key-based response message.
+  kKeybasedPairingResponseDecryptFailure = 15,
   // Incorrect Key-based response message type.
-  kIncorrectKeyBasedPairingResponseType = 15,
+  kIncorrectKeyBasedPairingResponseType = 16,
   // Incorrect Passkey response message type.
-  kIncorrectPasskeyResponseType = 16,
+  kIncorrectPasskeyResponseType = 17,
   // Passkeys did not match.
-  kPasskeyMismatch = 17,
+  kPasskeyMismatch = 18,
   // Failed to bond to discovered device.
-  kPairingConnect = 18,
+  kPairingConnect = 19,
   // Failed to bond to device via public address.
-  kAddressConnect = 19,
+  kAddressConnect = 20,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

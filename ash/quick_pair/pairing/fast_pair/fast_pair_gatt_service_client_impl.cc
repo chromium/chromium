@@ -377,9 +377,20 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
   const std::array<uint8_t, kBlockSizeBytes> data_to_write =
       fast_pair_data_encryptor->EncryptBytes(CreateRequest(
           message_type, flags, provider_address, seekers_address));
+  std::vector<uint8_t> data_to_write_vec(data_to_write.begin(),
+                                         data_to_write.end());
+
+  // Append the public version of the private key to the message so the device
+  // can generate the shared secret to decrypt the message.
+  const absl::optional<std::array<uint8_t, 64>> public_key =
+      fast_pair_data_encryptor->GetPublicKey();
+  const std::vector<uint8_t> public_key_vec = std::vector<uint8_t>(
+      public_key.value().begin(), public_key.value().end());
+  data_to_write_vec.insert(data_to_write_vec.end(), public_key_vec.begin(),
+                           public_key_vec.end());
 
   key_based_characteristic_->WriteRemoteCharacteristic(
-      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
+      data_to_write_vec,
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequest,
                      weak_ptr_factory_.GetWeakPtr()),

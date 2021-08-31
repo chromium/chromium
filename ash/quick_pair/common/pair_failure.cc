@@ -59,6 +59,9 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kPasskeyResponseTimeout:
       stream << "[Timed out while waiting for the Passkey response]";
       break;
+    case PairFailure::kKeybasedPairingResponseDecryptFailure:
+      stream << "[Failed to decrypt Key-based Pairing response]";
+      break;
     case PairFailure::kIncorrectKeyBasedPairingResponseType:
       stream << "[Incorrect Key-based response message type]";
       break;

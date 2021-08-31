@@ -11,8 +11,10 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "base/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace {
 
@@ -45,7 +47,9 @@ FastPairPairer::FastPairPairer(
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-FastPairPairer::~FastPairPairer() = default;
+FastPairPairer::~FastPairPairer() {
+  adapter_->RemovePairingDelegate(this);
+}
 
 void FastPairPairer::OnGattClientInitializedCallback(
     absl::optional<PairFailure> failure) {
@@ -83,8 +87,110 @@ void FastPairPairer::OnDataEncryptorCreateAsync(
 
 void FastPairPairer::OnWriteResponse(std::vector<uint8_t> response_bytes,
                                      absl::optional<PairFailure> failure) {
-  if (failure)
+  if (failure) {
     std::move(pair_failed_callback_).Run(device_, failure.value());
+    return;
+  }
+
+  fast_pair_data_encryptor_->ParseDecryptedResponse(
+      response_bytes, base::BindOnce(&FastPairPairer::OnParseDecryptedResponse,
+                                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairer::OnParseDecryptedResponse(
+    const absl::optional<DecryptedResponse>& response) {
+  if (!response) {
+    QP_LOG(WARNING) << "Missing decrypted response from parse.";
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kKeybasedPairingResponseDecryptFailure);
+    return;
+  }
+
+  if (response->message_type != FastPairMessageType::kKeyBasedPairingResponse) {
+    QP_LOG(WARNING) << "Incorrect message type from decrypted response.";
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kIncorrectKeyBasedPairingResponseType);
+    return;
+  }
+
+  // Now that we have validated the decrypted response, we can attempt to
+  // retrieve the device from the adapter by the address. If we are able to
+  // retrieve the device in this way, we can pair directly. Often, we will not
+  // be able to find the device this way, and we will have to connect via
+  // address and add ourselves as a pairing delegate.
+  std::string device_address =
+      device::CanonicalizeBluetoothAddress(response->address_bytes);
+  device::BluetoothDevice* device = adapter_->GetDevice(device_address);
+  QP_LOG(VERBOSE) << "Key-based pairing changed. Address: " << device_address
+                  << ". Found device: " << ((device != nullptr) ? "Yes" : "No")
+                  << ".";
+  if (device) {
+    device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
+                                      weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    adapter_->AddPairingDelegate(
+        this, device::BluetoothAdapter::PairingDelegatePriority::
+                  PAIRING_DELEGATE_PRIORITY_HIGH);
+
+    adapter_->ConnectDevice(device_address, /*address_type=*/absl::nullopt,
+                            base::BindOnce(&FastPairPairer::OnConnectDevice,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                            base::BindOnce(&FastPairPairer::OnConnectError,
+                                           weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void FastPairPairer::OnPairConnected(
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  if (error) {
+    QP_LOG(WARNING) << "Failed to starting pairing procedure by pairing to "
+                       "device due to error: "
+                    << error.value();
+    std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
+    return;
+  }
+
+  QP_LOG(VERBOSE) << "Pair to device successful.";
+}
+
+void FastPairPairer::OnConnectDevice(device::BluetoothDevice* device) {
+  QP_LOG(VERBOSE) << "Connect device successful.";
+}
+
+void FastPairPairer::OnConnectError() {
+  QP_LOG(WARNING) << "Failed to starting pairing procedure by connecting to "
+                     "device address.";
+  std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
+}
+
+void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
+                                    uint32_t passkey) {}
+
+void FastPairPairer::RequestPinCode(device::BluetoothDevice* device) {
+  NOTREACHED();
+}
+
+void FastPairPairer::RequestPasskey(device::BluetoothDevice* device) {
+  NOTREACHED();
+}
+
+void FastPairPairer::DisplayPinCode(device::BluetoothDevice* device,
+                                    const std::string& pincode) {
+  NOTREACHED();
+}
+
+void FastPairPairer::DisplayPasskey(device::BluetoothDevice* device,
+                                    uint32_t passkey) {
+  NOTREACHED();
+}
+
+void FastPairPairer::KeysEntered(device::BluetoothDevice* device,
+                                 uint32_t entered) {
+  NOTREACHED();
+}
+
+void FastPairPairer::AuthorizePairing(device::BluetoothDevice* device) {
+  NOTREACHED();
 }
 
 }  // namespace quick_pair

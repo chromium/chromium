@@ -16,9 +16,15 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,13 +32,17 @@
 
 namespace {
 
-const std::vector<uint8_t> kResponseBytes = {0xCF, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
+const std::vector<uint8_t> kResponseBytes = {0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
                                              0x32, 0x1D, 0xA0, 0xBA, 0xF0, 0xBB,
                                              0x95, 0x1F, 0xF7, 0xB6};
+std::array<uint8_t, 6> kAddressBytes = {12, 14, 76, 200, 5, 8};
+std::array<uint8_t, 9> kSaltBytes = {0xF0, 0xBB, 0x95, 0x1F, 0xF7,
+                                     0xB6, 0xBA, 0xF0, 0xBB};
 
 constexpr char kMetadataId[] = "test_metadata_id";
 constexpr char kAddress[] = "testad";
 constexpr char kDeviceName[] = "test_device_name";
+constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -44,6 +54,11 @@ class FakeBluetoothAdapter
   FakeBluetoothAdapter& operator=(const FakeBluetoothAdapter&) = delete;
 
   device::BluetoothDevice* GetDevice(const std::string& address) override {
+    // To mock when we have to pair via address.
+    if (get_device_failure_) {
+      return nullptr;
+    }
+
     for (const auto& it : mock_devices_) {
       if (it->GetAddress() == address)
         return it.get();
@@ -56,8 +71,63 @@ class FakeBluetoothAdapter
     device::BluetoothAdapter::NotifyGattDiscoveryComplete(service);
   }
 
+  void SetGetDeviceFalure() { get_device_failure_ = true; }
+
+  void ConnectDevice(
+      const std::string& address,
+      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      base::OnceCallback<void(device::BluetoothDevice*)> callback,
+      base::OnceClosure error_callback) override {
+    if (connect_device_failure_) {
+      std::move(error_callback).Run();
+      return;
+    }
+
+    std::move(callback).Run(GetDevice(address));
+  }
+
+  void SetConnectFailure() { connect_device_failure_ = true; }
+
  protected:
   ~FakeBluetoothAdapter() override = default;
+  bool get_device_failure_ = false;
+  bool connect_device_failure_ = false;
+};
+
+class FakeBluetoothDevice
+    : public testing::NiceMock<device::MockBluetoothDevice> {
+ public:
+  FakeBluetoothDevice(FakeBluetoothAdapter* adapter)
+      : testing::NiceMock<device::MockBluetoothDevice>(
+            adapter,
+            0,
+            kDeviceName,
+            kBluetoothCanonicalizedAddress,
+            /*paired=*/true,
+            /*connected*/ false),
+        fake_adapter_(adapter) {}
+
+  // Move-only class
+  FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;
+  FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
+
+  void Pair(
+      BluetoothDevice::PairingDelegate* pairing_delegate,
+      base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>
+          callback) override {
+    if (pair_failure_) {
+      std::move(callback).Run(ConnectErrorCode::ERROR_FAILED);
+      return;
+    }
+
+    std::move(callback).Run(absl::nullopt);
+  }
+
+  void SetPairFailure() { pair_failure_ = true; }
+
+ protected:
+  FakeBluetoothAdapter* fake_adapter_;
+  bool pair_failure_ = false;
 };
 
 }  // namespace
@@ -65,7 +135,7 @@ class FakeBluetoothAdapter
 namespace ash {
 namespace quick_pair {
 
-class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
+class FastPairFakeDataEncryptor : public FastPairDataEncryptor {
  public:
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override {
@@ -80,25 +150,32 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
   void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
       base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
-          callback) override {}
+          callback) override {
+    std::move(callback).Run(response_);
+  }
 
   void ParseDecryptedPasskey(
       const std::vector<uint8_t>& encrypted_passkey_bytes,
       base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
           callback) override {}
 
-  FakeFastPairDataEncryptor() = default;
-  ~FakeFastPairDataEncryptor() override = default;
+  FastPairFakeDataEncryptor() = default;
+  ~FastPairFakeDataEncryptor() override = default;
 
   void SetEncryptedBytes(std::array<uint8_t, kBlockSizeBytes> encrypted_bytes) {
     encrypted_bytes_ = std::move(encrypted_bytes);
   }
 
+  void SetDecryptedResponse(const absl::optional<DecryptedResponse> response) {
+    response_ = response;
+  }
+
  private:
   std::array<uint8_t, kBlockSizeBytes> encrypted_bytes_ = {};
+  absl::optional<DecryptedResponse> response_ = absl::nullopt;
 };
 
-class FakeFastPairDataEncryptorImplFactory
+class FastPairFakeDataEncryptorImplFactory
     : public FastPairDataEncryptorImpl::Factory {
  public:
   void CreateInstance(
@@ -110,16 +187,19 @@ class FakeFastPairDataEncryptorImplFactory
       return;
     }
 
-    std::unique_ptr<FastPairDataEncryptor> data_encryptor =
-        base::WrapUnique(new FakeFastPairDataEncryptor());
+    auto data_encryptor = base::WrapUnique(new FastPairFakeDataEncryptor());
+    data_encryptor_ = data_encryptor.get();
     std::move(on_get_instance_callback).Run(std::move(data_encryptor));
   }
 
-  ~FakeFastPairDataEncryptorImplFactory() override = default;
+  FastPairFakeDataEncryptor* data_encryptor() { return data_encryptor_; }
+
+  ~FastPairFakeDataEncryptorImplFactory() override = default;
 
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
+  FastPairFakeDataEncryptor* data_encryptor_ = nullptr;
   bool successful_retrieval_ = true;
 };
 
@@ -160,11 +240,10 @@ class FastPairPairerTest : public testing::Test {
     // Need to add a matching mock device to the bluetooth adapter with the
     // same address to mock the relationship between Device and
     // device::BluetoothDevice.
-    mock_device_ =
-        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
-            adapter_.get(), 0, kDeviceName, kAddress, /*paired=*/true,
-            /*connected*/ false);
-    adapter_->AddMockDevice(std::move(mock_device_));
+    fake_bluetooth_device_ =
+        std::make_unique<FakeBluetoothDevice>(adapter_.get());
+    fake_bluetooth_device_ptr_ = fake_bluetooth_device_.get();
+    adapter_->AddMockDevice(std::move(fake_bluetooth_device_));
 
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &fast_pair_gatt_service_factory_);
@@ -181,11 +260,9 @@ class FastPairPairerTest : public testing::Test {
     // Need to add a matching mock device to the bluetooth adapter with the
     // same address to mock the relationship between Device and
     // device::BluetoothDevice.
-    mock_device_ =
-        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
-            adapter_.get(), 0, kDeviceName, kAddress, /*paired=*/true,
-            /*connected*/ false);
-    adapter_->AddMockDevice(std::move(mock_device_));
+    fake_bluetooth_device_ =
+        std::make_unique<FakeBluetoothDevice>(adapter_.get());
+    adapter_->AddMockDevice(std::move(fake_bluetooth_device_));
 
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &fast_pair_gatt_service_factory_);
@@ -202,6 +279,20 @@ class FastPairPairerTest : public testing::Test {
         ->RunOnGattClientInitializedCallback(failure);
   }
 
+  void SetDecryptResponseForIncorrectMessageType() {
+    DecryptedResponse response(FastPairMessageType::kSeekersPasskey,
+                               kAddressBytes, kSaltBytes);
+    fast_pair_data_encryptor_factory.data_encryptor()->SetDecryptedResponse(
+        response);
+  }
+
+  void SetDecryptResponseForSuccess() {
+    DecryptedResponse response(FastPairMessageType::kKeyBasedPairingResponse,
+                               kAddressBytes, kSaltBytes);
+    fast_pair_data_encryptor_factory.data_encryptor()->SetDecryptedResponse(
+        response);
+  }
+
   void RunWriteResponseCallback(
       std::vector<uint8_t> data,
       absl::optional<PairFailure> failure = absl::nullopt) {
@@ -209,52 +300,68 @@ class FastPairPairerTest : public testing::Test {
         ->RunWriteResponseCallback(data, failure);
   }
 
+  void PairFailedCallback(scoped_refptr<Device> device, PairFailure failure) {
+    failure_ = failure;
+  }
+
+  absl::optional<PairFailure> GetPairFailure() { return failure_; }
+
+  void SetPairFailure() { fake_bluetooth_device_ptr_->SetPairFailure(); }
+
+  void SetGetDeviceFailure() { adapter_->SetGetDeviceFalure(); }
+
+  void SetConnectFailure() { adapter_->SetConnectFailure(); }
+
  protected:
   // This is done on-demand to enable setting up mock expectations first.
   void CreatePairer() {
     pairer_ = std::make_unique<FastPairPairer>(
-        adapter_, device_, paired_callback_.Get(), pair_failed_callback_.Get(),
+        adapter_, device_, paired_callback_.Get(),
+        base::BindOnce(&FastPairPairerTest::PairFailedCallback,
+                       weak_ptr_factory_.GetWeakPtr()),
         account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
   }
 
-  std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>> mock_device_;
+  absl::optional<PairFailure> failure_ = absl::nullopt;
+  std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
+  FakeBluetoothDevice* fake_bluetooth_device_ptr_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       paired_callback_;
-  base::MockCallback<
-      base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>>
-      pair_failed_callback_;
   base::MockCallback<
       base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>>
       account_key_failure_callback_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       pairing_procedure_complete_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
-  FakeFastPairDataEncryptorImplFactory fast_pair_data_encryptor_factory;
+  FastPairFakeDataEncryptorImplFactory fast_pair_data_encryptor_factory;
   std::unique_ptr<FastPairPairer> pairer_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::WeakPtrFactory<FastPairPairerTest> weak_ptr_factory_{this};
 };
 
 TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess) {
   SuccessfulDataEncryptorSetUp();
-  EXPECT_CALL(pair_failed_callback_, Run).Times(0);
   CreatePairer();
   RunOnGattClientInitializedCallback();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
 }
 
 TEST_F(FastPairPairerTest, PairFailedCallbackIsInvokedOnGattFailure) {
   SuccessfulDataEncryptorSetUp();
-  EXPECT_CALL(pair_failed_callback_, Run);
   CreatePairer();
   RunOnGattClientInitializedCallback(PairFailure::kCreateGattConnection);
+  EXPECT_EQ(GetPairFailure(), PairFailure::kCreateGattConnection);
 }
 
 TEST_F(FastPairPairerTest, PairFailedCallbackWriteResponseFailed) {
   SuccessfulDataEncryptorSetUp();
   CreatePairer();
   RunOnGattClientInitializedCallback();
-  EXPECT_CALL(pair_failed_callback_, Run);
   RunWriteResponseCallback({}, PairFailure::kKeyBasedPairingResponseTimeout);
+  EXPECT_EQ(GetPairFailure(), PairFailure::kKeyBasedPairingResponseTimeout);
 }
 
 TEST_F(FastPairPairerTest,
@@ -262,8 +369,65 @@ TEST_F(FastPairPairerTest,
   SuccessfulDataEncryptorSetUp();
   CreatePairer();
   RunOnGattClientInitializedCallback();
-  EXPECT_CALL(pair_failed_callback_, Run).Times(0);
   RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(),
+            PairFailure::kKeybasedPairingResponseDecryptFailure);
+}
+
+TEST_F(FastPairPairerTest, PairFailedCallbackIncorrectMessageType) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  SetDecryptResponseForIncorrectMessageType();
+  RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(),
+            PairFailure::kIncorrectKeyBasedPairingResponseType);
+}
+
+TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  SetDecryptResponseForSuccess();
+  SetPairFailure();
+  RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kPairingConnect);
+}
+
+TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  SetDecryptResponseForSuccess();
+  RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+}
+
+TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectFailure) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  SetDecryptResponseForSuccess();
+  SetGetDeviceFailure();
+  SetConnectFailure();
+  RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kAddressConnect);
+}
+
+TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectSuccess) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  SetDecryptResponseForSuccess();
+  SetGetDeviceFailure();
+  RunWriteResponseCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
 }
 
 }  // namespace quick_pair
