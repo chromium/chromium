@@ -100,8 +100,6 @@ public abstract class SyncConsentFragmentBase
 
     private SigninView mView;
     private ConsentTextTracker mConsentTextTracker;
-
-    private boolean mAccountSelectionPending;
     private @Nullable String mRequestedAccountName;
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
@@ -209,9 +207,6 @@ public abstract class SyncConsentFragmentBase
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
-
-        // Don't have a selected account now, onResume will trigger the selection.
-        mAccountSelectionPending = true;
 
         if (savedInstanceState == null) {
             // If this fragment is being recreated from a saved state there's no need to show
@@ -334,8 +329,8 @@ public abstract class SyncConsentFragmentBase
                 && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
         if (mIsSignedInWithoutSync) {
             mSelectedAccountName = primaryAccount.getEmail();
+            mAccountManagerFacade.getAccounts().then(this::updateAccounts);
         }
-        setHasAccounts(true);
     }
 
     /**
@@ -453,7 +448,7 @@ public abstract class SyncConsentFragmentBase
     private boolean areControlsEnabled() {
         // Ignore clicks if the fragment is being removed or the app is being backgrounded.
         if (!isResumed() || isStateSaved()) return false;
-        return !mAccountSelectionPending && !mIsSigninInProgress && mCanUseGooglePlayServices;
+        return !mIsSigninInProgress && mCanUseGooglePlayServices;
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
@@ -520,8 +515,8 @@ public abstract class SyncConsentFragmentBase
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (data == null) return;
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
+                && data != null) {
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             if (addedAccountName == null) return;
 
@@ -530,8 +525,6 @@ public abstract class SyncConsentFragmentBase
                 mAccountPickerDialogCoordinator.dismissDialog();
             }
 
-            // Wait for the account cache to be updated and select newly-added account.
-            mAccountSelectionPending = true;
             mRequestedAccountName = addedAccountName;
         }
     }
@@ -566,21 +559,17 @@ public abstract class SyncConsentFragmentBase
         }
         if (accounts.isEmpty()) {
             mSelectedAccountName = null;
-            mAccountSelectionPending = false;
             setHasAccounts(false);
             return;
         }
         setHasAccounts(true);
+        final String defaultAccount = accounts.get(0).name;
         if (mIsSignedInWithoutSync) {
-            mAccountSelectionPending = false;
+            mIsDefaultAccountSelected = defaultAccount.equals(mSelectedAccountName);
             return;
         }
-        if (mAccountSelectionPending) {
-            String defaultAccount = accounts.get(0).name;
-            String accountToSelect =
-                    mRequestedAccountName != null ? mRequestedAccountName : defaultAccount;
-            selectAccount(accountToSelect, accountToSelect.equals(defaultAccount));
-            mAccountSelectionPending = false;
+        if (mRequestedAccountName != null) {
+            selectAccount(mRequestedAccountName, mRequestedAccountName.equals(defaultAccount));
             mRequestedAccountName = null;
         }
 
@@ -602,7 +591,7 @@ public abstract class SyncConsentFragmentBase
             return;
         }
 
-        selectAccount(accounts.get(0).name, true);
+        selectAccount(defaultAccount, true);
         // Show account picker to user to confirm the account selection
         mAccountPickerDialogCoordinator =
                 new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
