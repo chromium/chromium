@@ -89,7 +89,8 @@ def main():
         wcedir = os.path.join(THIS_DIR, 'win-cross-experiments', toolchain)
         if not os.path.exists(wcedir):
           os.makedirs(wcedir, mode=0o755)
-        for cfg in glob.glob(os.path.join(THIS_DIR, toolchain, '*.cfg')):
+        for cfg in glob.glob(os.path.join(THIS_DIR, toolchain,
+                                          'win-cross-experiments', '*.cfg')):
           fname = os.path.join(wcedir, os.path.basename(cfg))
           if os.path.exists(fname):
             os.remove(fname)
