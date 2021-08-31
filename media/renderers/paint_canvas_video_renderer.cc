@@ -225,35 +225,59 @@ void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
 
 // Update |video_frame|'s release sync token to reflect the work done in |ri|,
 // and ensure that |video_frame| be kept remain alive until |ri|'s commands have
-// been completed. The Interface type can be gpu::gles2::GLES2Interface or
+// been completed. This is implemented for both gpu::gles2::GLES2Interface and
 // gpu::raster::RasterInterface. This function is critical to ensure that
 // |video_frame|'s resources not be returned until they are no longer in use.
 // https://crbug.com/819914 (software video decode frame corruption)
 // https://crbug.com/1237100 (camera capture reuse corruption)
-template <typename Interface>
 void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
-                               Interface* ri,
+                               gpu::raster::RasterInterface* ri,
                                gpu::ContextSupport* context_support) {
-  DCHECK(ri);
   WaitAndReplaceSyncTokenClient client(ri);
   video_frame->UpdateReleaseSyncToken(&client);
+  if (!video_frame->metadata().read_lock_fences_enabled)
+    return;
 
-  if (video_frame->metadata().read_lock_fences_enabled) {
-    // |video_frame| must be kept alive during read operations.
-    DCHECK(context_support);
-    unsigned query_id = 0;
-    ri->GenQueriesEXT(1, &query_id);
-    DCHECK(query_id);
-    ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
-    ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+  unsigned query_id = 0;
+  ri->GenQueriesEXT(1, &query_id);
+  DCHECK(query_id);
+  ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+  ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
-    // |on_query_done_cb| will keep |video_frame| alive.
-    auto on_query_done_cb = base::BindOnce(
-        [](scoped_refptr<VideoFrame> video_frame, Interface* ri,
-           unsigned query_id) { ri->DeleteQueriesEXT(1, &query_id); },
-        video_frame, ri, query_id);
-    context_support->SignalQuery(query_id, std::move(on_query_done_cb));
-  }
+  // |on_query_done_cb| will keep |video_frame| alive.
+  auto on_query_done_cb = base::BindOnce(
+      [](scoped_refptr<VideoFrame> video_frame,
+         gpu::raster::RasterInterface* ri,
+         unsigned query_id) { ri->DeleteQueriesEXT(1, &query_id); },
+      video_frame, ri, query_id);
+  context_support->SignalQuery(query_id, std::move(on_query_done_cb));
+}
+
+void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
+                               gpu::gles2::GLES2Interface* gl,
+                               gpu::ContextSupport* context_support) {
+  WaitAndReplaceSyncTokenClient client(gl);
+  video_frame->UpdateReleaseSyncToken(&client);
+  if (!video_frame->metadata().read_lock_fences_enabled)
+    return;
+
+  unsigned query_id = 0;
+  gl->GenQueriesEXT(1, &query_id);
+  DCHECK(query_id);
+  gl->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+  gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+
+  // |on_query_done_cb| will keep |video_frame| alive.
+  auto on_query_done_cb =
+      base::BindOnce([](scoped_refptr<VideoFrame> video_frame) {}, video_frame);
+  context_support->SignalQuery(query_id, std::move(on_query_done_cb));
+
+  // Delete the query immediately. This will cause |on_query_done_cb| to be
+  // issued prematurely. The alternative, deleting |query_id| within
+  // |on_query_done_cb|, can cause a crash because |gl| may not still exist
+  // at the time of the callback. This is incorrect behavior.
+  // https://crbug.com/1243763
+  gl->DeleteQueriesEXT(1, &query_id);
 }
 
 // TODO(thomasanderson): Remove these and use std::gcd and std::lcm once we're
