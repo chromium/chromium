@@ -16,6 +16,7 @@
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/common/content_export.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace base {
@@ -34,7 +35,8 @@ struct SentReportInfo;
 // which a conversion report is sent is potentially sensitive information.
 // Created and owned by ConversionManager.
 class CONTENT_EXPORT ConversionReporterImpl
-    : public ConversionManagerImpl::ConversionReporter {
+    : public ConversionManagerImpl::ConversionReporter,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // This class is responsible for sending conversion reports to their
   // configured endpoints over the network.
@@ -68,6 +70,15 @@ class CONTENT_EXPORT ConversionReporterImpl
       std::unique_ptr<NetworkSender> network_sender);
 
  private:
+  friend class ConversionReporterImplTest;
+
+  void SetNetworkConnectionTracker(
+      network::NetworkConnectionTracker* network_connection_tracker);
+
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(
+      network::mojom::ConnectionType connection_type) override;
+
   void MaybeScheduleNextReport();
   void SendNextReport();
 
@@ -110,6 +121,12 @@ class CONTENT_EXPORT ConversionReporterImpl
   //
   // Should never be nullptr.
   std::unique_ptr<NetworkSender> network_sender_;
+
+  // Lazily initialized to track network availability.
+  network::NetworkConnectionTracker* network_connection_tracker_ = nullptr;
+
+  // Assume that there is a network connection unless we hear otherwise.
+  bool offline_ = false;
 };
 
 }  // namespace content

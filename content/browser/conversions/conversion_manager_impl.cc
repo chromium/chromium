@@ -250,13 +250,6 @@ void ConversionManagerImpl::GetAndHandleReports(
 void ConversionManagerImpl::GetAndQueueReportsForNextInterval() {
   // Get all the reports that will be reported in the next interval and them to
   // the |reporter_|.
-  //
-  // TODO(https://crbug.com/1054127): Consider integrating a
-  // net::NetworkConnectionTracker to control when reports should be queued.
-  // This should limit the number of failed attempts. Its possible this could
-  // also be implemented in the sender layer to provide finer grained-control.
-  // Note that this will still require delaying reports once a network
-  // connection is available to ensure they are not temporally joinable.
   GetAndHandleReports(base::BindOnce(&ConversionManagerImpl::QueueReports,
                                      weak_factory_.GetWeakPtr()),
                       clock_->Now() + kConversionManagerQueueReportsInterval);

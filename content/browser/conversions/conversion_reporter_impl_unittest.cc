@@ -18,9 +18,11 @@
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -84,6 +86,8 @@ class ConversionReporterImplTest : public testing::Test {
     auto network_sender = std::make_unique<MockNetworkSender>();
     sender_ = network_sender.get();
     reporter_->SetNetworkSenderForTesting(std::move(network_sender));
+    reporter_->SetNetworkConnectionTracker(
+        network::TestNetworkConnectionTracker::GetInstance());
   }
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }
@@ -92,8 +96,15 @@ class ConversionReporterImplTest : public testing::Test {
     return last_sent_report_info_;
   }
 
+  void SetOffline(bool offline) {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        offline ? network::mojom::ConnectionType::CONNECTION_NONE
+                : network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
-  // |task_enviorment_| must be initialized first.
+  // |task_environment_| must be initialized first.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
 
@@ -294,6 +305,52 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
   }
 
   SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
+  SetOffline(true);
+
+  reporter_->AddReportsToQueue({
+      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+                ConversionReport::Id(1)),
+      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(2),
+                ConversionReport::Id(2)),
+  });
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  EXPECT_EQ(0u, sender_->num_reports_sent());
+  EXPECT_EQ(ConversionReport::Id(1),
+            *last_sent_report_info()->report.conversion_id);
+  EXPECT_TRUE(last_sent_report_info()->should_retry);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  EXPECT_EQ(0u, sender_->num_reports_sent());
+  EXPECT_EQ(ConversionReport::Id(2),
+            *last_sent_report_info()->report.conversion_id);
+  EXPECT_TRUE(last_sent_report_info()->should_retry);
+
+  reporter_->AddReportsToQueue({
+      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
+                ConversionReport::Id(1)),
+      GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(2),
+                ConversionReport::Id(2)),
+  });
+
+  SetOffline(false);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  EXPECT_EQ(1u, sender_->num_reports_sent());
+  EXPECT_EQ(ConversionReport::Id(1),
+            *last_sent_report_info()->report.conversion_id);
+  EXPECT_FALSE(last_sent_report_info()->should_retry);
+
+  SetOffline(true);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  EXPECT_EQ(1u, sender_->num_reports_sent());
+  EXPECT_EQ(ConversionReport::Id(2),
+            *last_sent_report_info()->report.conversion_id);
+  EXPECT_TRUE(last_sent_report_info()->should_retry);
 }
 
 }  // namespace content

@@ -14,7 +14,9 @@
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace content {
 
@@ -31,7 +33,10 @@ ConversionReporterImpl::ConversionReporterImpl(
   DCHECK(partition_);
 }
 
-ConversionReporterImpl::~ConversionReporterImpl() = default;
+ConversionReporterImpl::~ConversionReporterImpl() {
+  if (network_connection_tracker_)
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
+}
 
 void ConversionReporterImpl::AddReportsToQueue(
     std::vector<ConversionReport> reports) {
@@ -59,12 +64,24 @@ void ConversionReporterImpl::SetNetworkSenderForTesting(
   network_sender_ = std::move(network_sender);
 }
 
+void ConversionReporterImpl::SetNetworkConnectionTracker(
+    network::NetworkConnectionTracker* network_connection_tracker) {
+  DCHECK(network_connection_tracker);
+  DCHECK(!network_connection_tracker_);
+
+  network_connection_tracker_ = network_connection_tracker;
+  network_connection_tracker_->AddNetworkConnectionObserver(this);
+}
+
+void ConversionReporterImpl::OnConnectionChanged(
+    network::mojom::ConnectionType connection_type) {
+  offline_ = connection_type == network::mojom::ConnectionType::CONNECTION_NONE;
+}
+
 void ConversionReporterImpl::SendNextReport() {
   DCHECK(!report_queue_.empty());
 
-  // Send the next report and remove it from the queue. Bind the conversion id
-  // to the sent callback so we know which conversion report has finished
-  // sending.
+  // Send the next report and remove it from the queue.
   ConversionReport report = report_queue_.top();
   DCHECK(report.conversion_id.has_value());
   report_queue_.pop();
@@ -74,9 +91,23 @@ void ConversionReporterImpl::SendNextReport() {
           &report.impression.impression_origin(),
           &report.impression.conversion_origin(),
           &report.impression.reporting_origin())) {
-    network_sender_->SendReport(
-        std::move(report), base::BindOnce(&ConversionReporterImpl::OnReportSent,
-                                          base::Unretained(this)));
+    if (!network_connection_tracker_)
+      SetNetworkConnectionTracker(content::GetNetworkConnectionTracker());
+
+    // If there's no network connection, drop the report and tell the manager to
+    // retry it later.
+    if (offline_) {
+      OnReportSent(SentReportInfo(std::move(report),
+                                  /*report_url=*/GURL(),
+                                  /*report_body=*/"",
+                                  /*http_response_code=*/0,
+                                  /*should_retry=*/true));
+    } else {
+      network_sender_->SendReport(
+          std::move(report),
+          base::BindOnce(&ConversionReporterImpl::OnReportSent,
+                         base::Unretained(this)));
+    }
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
@@ -86,7 +117,7 @@ void ConversionReporterImpl::SendNextReport() {
                                 /*report_url=*/GURL(),
                                 /*report_body=*/"",
                                 /*http_response_code=*/0,
-                                /*should_retry*/ false));
+                                /*should_retry=*/false));
   }
   MaybeScheduleNextReport();
 }
