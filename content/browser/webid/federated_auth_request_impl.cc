@@ -194,25 +194,29 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
   endpoints_.idp = ResolveUrl(endpoints.idp);
   endpoints_.token = ResolveUrl(endpoints.token);
   endpoints_.accounts = ResolveUrl(endpoints.accounts);
+  endpoints_.client_id_metadata = ResolveUrl(endpoints.client_id_metadata);
 
   switch (mode_) {
     case RequestMode::kMediated: {
-      // For Mediated mode we require both accounts and token endpoints.
-      if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty()) {
+      // For Mediated mode we require accounts, token and client ID endpoints.
+      if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty() ||
+          endpoints_.client_id_metadata.is_empty()) {
         CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
         return;
       }
       // TODO(kenrb): This has to be same-origin with the provider.
       // https://crbug.com/1141125
       if (!IdpUrlIsValid(endpoints_.token) ||
-          !IdpUrlIsValid(endpoints_.accounts)) {
+          !IdpUrlIsValid(endpoints_.accounts) ||
+          !IdpUrlIsValid(endpoints_.client_id_metadata)) {
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
       }
-      network_manager_->SendAccountsRequest(
-          endpoints_.accounts,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr()));
+      network_manager_->FetchClientIdMetadata(
+          endpoints_.client_id_metadata, client_id_,
+          base::BindOnce(
+              &FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived,
+              weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     case RequestMode::kPermission: {
@@ -235,6 +239,15 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       break;
     }
   }
+}
+
+void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
+    IdpNetworkRequestManager::FetchStatus status,
+    IdpNetworkRequestManager::ClientIdMetadata data) {
+  network_manager_->SendAccountsRequest(
+      endpoints_.accounts,
+      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(

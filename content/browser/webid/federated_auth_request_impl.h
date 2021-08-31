@@ -70,6 +70,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
  private:
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           IdpNetworkRequestManager::Endpoints);
+  void OnClientIdMetadataResponseReceived(
+      IdpNetworkRequestManager::FetchStatus status,
+      IdpNetworkRequestManager::ClientIdMetadata data);
 
   void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
   void OnSigninResponseReceived(IdpNetworkRequestManager::SigninResponse status,
@@ -129,6 +132,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     GURL idp;
     GURL token;
     GURL accounts;
+    GURL client_id_metadata;
   } endpoints_;
 
   // The WebContents that is used to load the IDP sign-up page. This is
