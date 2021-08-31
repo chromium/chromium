@@ -10,12 +10,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.HistoryProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.page_info.PageInfoAction;
@@ -41,6 +43,7 @@ public class PageInfoHistoryController
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
+    private final Supplier<Tab> mTabSupplier;
     private final String mTitle;
     private final String mHost;
     private boolean mDataIsStale;
@@ -49,12 +52,13 @@ public class PageInfoHistoryController
     private long mLastVisitedTimestamp;
 
     public PageInfoHistoryController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate) {
+            PageInfoControllerDelegate delegate, Supplier<Tab> tabSupplier) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
         mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
         mHost = mainController.getURL().getHost();
+        mTabSupplier = tabSupplier;
 
         updateLastVisit();
     }
@@ -76,8 +80,7 @@ public class PageInfoHistoryController
                 /* isSeparateActivity */ false,
                 /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, /* tabCreatorManager */ null,
-                /* tabSupplier */ null);
+                /* selectionDelegate */ null, /* tabCreatorManager */ null, mTabSupplier);
         mContentManager.initialize();
         return mContentManager.getRecyclerView();
     }

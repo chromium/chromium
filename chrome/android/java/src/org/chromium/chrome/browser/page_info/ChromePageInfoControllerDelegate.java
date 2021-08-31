@@ -219,7 +219,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public PageInfoSubpageController createHistoryController(
             PageInfoMainController mainController, PageInfoRowView rowView) {
-        return new PageInfoHistoryController(mainController, rowView, this);
+        final Tab tab = TabUtils.fromWebContents(mWebContents);
+        return new PageInfoHistoryController(mainController, rowView, this, () -> { return tab; });
     }
 
     /**
