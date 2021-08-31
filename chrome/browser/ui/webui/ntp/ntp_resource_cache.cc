@@ -266,12 +266,29 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
                                    : IDS_NEW_TAB_OTR_SUBTITLE);
   replacements["incognitoTabHeading"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
-  replacements["incognitoTabWarning"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
-  replacements["learnMore"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
-  replacements["incognitoTabFeatures"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
+
+  bool use_revamped_ui =
+      base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
+  if (use_revamped_ui) {
+    replacements["incognitoDoesHeader"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER);
+    replacements["incognitoDoesDescription"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION);
+    replacements["incognitoDoesNotHeader"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_HEADER);
+    replacements["incognitoDoesNotDescription"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION);
+    replacements["learnMore"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
+  } else {
+    replacements["incognitoTabWarning"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
+    replacements["incognitoTabFeatures"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
+    replacements["learnMore"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
+  }
+
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["title"] = l10n_util::GetStringUTF8(
       base::FeatureList::IsEnabled(
@@ -304,10 +321,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 
-  int incognito_tab_html_resource_id =
-      base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp)
-          ? IDR_REVAMPED_INCOGNITO_TAB_HTML
-          : IDR_INCOGNITO_TAB_HTML;
+  int incognito_tab_html_resource_id = use_revamped_ui
+                                           ? IDR_REVAMPED_INCOGNITO_TAB_HTML
+                                           : IDR_INCOGNITO_TAB_HTML;
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
       incognito_tab_html(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
@@ -402,7 +418,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   substitutions["themeId"] =
       profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
 
-  // Colors.
+  // Colors
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
       GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND));
   substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
