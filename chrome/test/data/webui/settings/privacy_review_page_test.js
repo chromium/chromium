@@ -22,6 +22,13 @@ suite('PrivacyReviewPage', function() {
         (document.createElement('settings-privacy-review-page'));
     document.body.appendChild(page);
 
+    // Simulates the route of the user entering the privacy review from the S&P
+    // settings. This is necessary as tests seem to by default define the
+    // previous route as Settings "/". On a back navigation, "/" matches the
+    // criteria for a valid Settings parent no matter how deep the subpage is in
+    // the Settings tree. This would always navigate to Settings "/" instead of
+    // to the parent of the current subpage.
+    Router.getInstance().navigateTo(routes.PRIVACY);
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
 
     return flushTasks();
@@ -30,6 +37,22 @@ suite('PrivacyReviewPage', function() {
   teardown(function() {
     page.remove();
   });
+
+  /**
+   * Returns a new promise that resolves after a window 'popstate' event.
+   * @return {!Promise}
+   */
+  function whenPopState(causeEvent) {
+    const promise = new Promise(function(resolve) {
+      window.addEventListener('popstate', function callback() {
+        window.removeEventListener('popstate', callback);
+        resolve();
+      });
+    });
+
+    causeEvent();
+    return promise;
+  }
 
   /**
    * Equivalent of the user manually navigating to the corresponding step via
@@ -152,6 +175,14 @@ suite('PrivacyReviewPage', function() {
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
     assertCompletionCardVisible();
+
+    // Back to privacy settings
+    return whenPopState(function() {
+             page.shadowRoot.querySelector('#completeButton').click();
+           })
+        .then(function() {
+          assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+        });
   });
 
   test('testBackNavigation', function() {

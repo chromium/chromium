@@ -140,8 +140,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         PrivacyReviewStep.COMPLETION,
         {
           onNextButtonClick: function() {
-            // TODO(crbug/1215630): Navigate to routes.PRIVACY and focus the
-            // privacy review row.
+            Router.getInstance().navigateToPreviousRoute();
           },
         },
       ],
