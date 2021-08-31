@@ -4,6 +4,8 @@
 
 #include "components/shared_highlighting/core/common/text_fragments_utils.h"
 
+#include <string.h>
+
 #include <sstream>
 
 #include "base/json/json_writer.h"
@@ -53,9 +55,8 @@ bool SplitUrlTextFragmentDirective(const std::string& full_url,
   *webpage_url = GURL(full_url.substr(0, pos - 1));
 
   // We only want to keep what's after the delimiter.
-  *highlight_directive =
-      full_url.substr(pos + std::strlen(kFragmentsUrlDelimiter) +
-                      std::strlen(kFragmentParameterName));
+  *highlight_directive = full_url.substr(pos + strlen(kFragmentsUrlDelimiter) +
+                                         strlen(kFragmentParameterName));
   return true;
 }
 
