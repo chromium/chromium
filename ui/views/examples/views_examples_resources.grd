@@ -9,6 +9,10 @@
   </outputs>
   <release seq="1">
     <messages fallback_to_english="true">
+      <!-- animation example -->
+      <message translateable="false" name="IDS_ABORT_ANIMATION_BUTTON">
+        Abort Animation
+      </message>
        <!-- colored dialog example -->
       <message translateable="false" name="IDS_COLORED_DIALOG_CHOOSER_CHECKBOX">
         Use Dark Theme

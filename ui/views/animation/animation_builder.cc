@@ -11,9 +11,9 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "base/types/pass_key.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -39,6 +39,8 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   void SetOnAborted(base::OnceClosure callback);
   void SetOnScheduled(base::OnceClosure callback);
 
+  void SetAbortHandle(AnimationAbortHandle* abort_handle);
+
   // ui::LayerAnimationObserver:
   void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
@@ -59,6 +61,8 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   base::RepeatingClosure on_will_repeat_;
   base::OnceClosure on_aborted_;
   base::OnceClosure on_scheduled_;
+
+  AnimationAbortHandle* abort_handle_ = nullptr;
 };
 
 AnimationBuilder::Observer::~Observer() {
@@ -98,6 +102,11 @@ void AnimationBuilder::Observer::OnLayerAnimationStarted(
     std::move(on_started_).Run();
 }
 
+void AnimationBuilder::Observer::SetAbortHandle(
+    AnimationAbortHandle* abort_handle) {
+  abort_handle_ = abort_handle;
+}
+
 void AnimationBuilder::Observer::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   const auto running =
@@ -107,6 +116,9 @@ void AnimationBuilder::Observer::OnLayerAnimationEnded(
   if (running <= 1) {
     if (on_ended_)
       std::move(on_ended_).Run();
+    if (abort_handle_ && abort_handle_->animation_state() ==
+                             AnimationAbortHandle::AnimationState::kRunning)
+      abort_handle_->OnAnimationEnded();
   }
 }
 
@@ -133,6 +145,9 @@ void AnimationBuilder::Observer::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   if (on_aborted_)
     std::move(on_aborted_).Run();
+  if (abort_handle_ && abort_handle_->animation_state() ==
+                           AnimationAbortHandle::AnimationState::kRunning)
+    abort_handle_->OnAnimationEnded();
 }
 
 void AnimationBuilder::Observer::OnLayerAnimationScheduled(
@@ -168,6 +183,10 @@ AnimationBuilder::~AnimationBuilder() {
        it != layer_animation_sequences_.end();) {
     auto* const target = it->first;
     auto end_it = layer_animation_sequences_.upper_bound(target);
+
+    if (abort_handle_)
+      abort_handle_->AddLayer(target);
+
     ui::ScopedLayerAnimationSettings settings(target->GetAnimator());
     if (preemption_strategy_)
       settings.SetPreemptionStrategy(preemption_strategy_.value());
@@ -177,6 +196,9 @@ AnimationBuilder::~AnimationBuilder() {
     target->GetAnimator()->StartTogether(std::move(sequences));
     it = end_it;
   }
+
+  if (abort_handle_ && !layer_animation_sequences_.empty())
+    abort_handle_->OnAnimationStarted();
 }
 
 AnimationBuilder& AnimationBuilder::SetPreemptionStrategy(
@@ -270,6 +292,13 @@ void AnimationBuilder::TerminateSequence(
 
   values_.clear();
   animation_observer_.release();
+}
+
+std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
+  DCHECK(!abort_handle_) << "An abort handle is already created.";
+  auto abort_handle = base::WrapUnique(new AnimationAbortHandle());
+  GetObserver()->SetAbortHandle(abort_handle_ = abort_handle.get());
+  return abort_handle;
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {

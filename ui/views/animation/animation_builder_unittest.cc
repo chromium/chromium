@@ -5,6 +5,7 @@
 #include "ui/views/animation/animation_builder.h"
 
 #include "base/bind.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
@@ -740,6 +741,107 @@ TEST_F(AnimationBuilderTest, PreemptionStrategyTest) {
   Step(kStepSize);
   // The animation should be done now.
   EXPECT_FALSE(view->layer()->GetAnimator()->is_animating());
+}
+
+TEST_F(AnimationBuilderTest, AbortHandle) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+  std::unique_ptr<AnimationAbortHandle> abort_handle;
+
+  constexpr auto kStepSize = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = kStepSize * 2;
+
+  {
+    delegate->SetBrightnessFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+    delegate->SetOpacityFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+    {
+      AnimationBuilder b;
+      abort_handle = b.GetAbortHandle();
+      b.Once()
+          .SetDuration(kDuration)
+          .SetOpacity(view, 0.4f)
+          .At(base::TimeDelta())
+          .SetDuration(kDuration)
+          .SetBrightness(view, 0.4f);
+    }
+
+    Step(kStepSize);
+    // Destroy abort handle should stop all animations.
+    abort_handle.reset();
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.7f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.7f);
+    Step(kStepSize);
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.7f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.7f);
+  }
+
+  // The builder crashes if the handle is destroyed before animation starts.
+  {
+    delegate->SetBrightnessFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+    delegate->SetOpacityFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+    {
+      AnimationBuilder b;
+      abort_handle = b.GetAbortHandle();
+      b.Once()
+          .SetDuration(kDuration)
+          .SetOpacity(view, 0.4f)
+          .At(base::TimeDelta())
+          .SetDuration(kDuration)
+          .SetBrightness(view, 0.4f);
+
+      // Early destroy should crash the builder.
+      EXPECT_DCHECK_DEATH(abort_handle.reset());
+    }
+  }
+
+  // The handle shouldn't abort animations subsequent to the builder.
+  {
+    delegate->SetBrightnessFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+    delegate->SetOpacityFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+    {
+      AnimationBuilder b;
+      abort_handle = b.GetAbortHandle();
+      b.Once()
+          .SetDuration(kDuration)
+          .SetOpacity(view, 0.4f)
+          .At(base::TimeDelta())
+          .SetDuration(kDuration)
+          .SetBrightness(view, 0.4f);
+    }
+
+    EXPECT_EQ(abort_handle->animation_state(),
+              AnimationAbortHandle::AnimationState::kRunning);
+    // Step to the end of the animation.
+    Step(kDuration);
+    EXPECT_EQ(abort_handle->animation_state(),
+              AnimationAbortHandle::AnimationState::kEnded);
+
+    {
+      AnimationBuilder b;
+      b.Once()
+          .SetDuration(kDuration)
+          .SetOpacity(view, 0.8f)
+          .At(base::TimeDelta())
+          .SetDuration(kDuration)
+          .SetBrightness(view, 0.8f);
+    }
+
+    // Destroy the handle on the finihsed animation shouldn't affect other
+    // unfinihsed animations.
+    abort_handle.reset();
+    Step(kDuration);
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.8f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.8f);
+  }
 }
 
 }  // namespace views

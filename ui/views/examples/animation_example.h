@@ -5,6 +5,9 @@
 #ifndef UI_VIEWS_EXAMPLES_ANIMATION_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_ANIMATION_EXAMPLE_H_
 
+#include <memory>
+
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -19,6 +22,9 @@ class VIEWS_EXAMPLES_EXPORT AnimationExample : public ExampleBase {
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
+
+ private:
+  std::unique_ptr<AnimationAbortHandle> abort_handle_;
 };
 
 }  // namespace examples

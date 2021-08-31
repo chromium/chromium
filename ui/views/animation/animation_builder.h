@@ -16,6 +16,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/views_export.h"
@@ -41,6 +42,12 @@ class VIEWS_EXPORT AnimationBuilder {
   // Creates a new sequence (that optionally repeats).
   AnimationSequenceBlock Once();
   AnimationSequenceBlock Repeatedly();
+
+  // Returns a handle that can be destroyed later to abort all running
+  // animations.
+  // Caveat: ALL properties will be aborted, including those not initiated
+  // by the builder.
+  std::unique_ptr<AnimationAbortHandle> GetAbortHandle();
 
   // Adds an animation element `element` for `key` at `start` to `values`.
   void AddLayerAnimationElement(
@@ -93,6 +100,8 @@ class VIEWS_EXPORT AnimationBuilder {
   base::TimeDelta end_;
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
+
+  AnimationAbortHandle* abort_handle_ = nullptr;
 
   // Callback used for testing.
   static base::NoDestructor<base::RepeatingClosure> on_observer_deleted_;
