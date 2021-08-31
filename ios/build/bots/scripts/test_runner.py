@@ -20,7 +20,6 @@ import time
 import file_util
 import gtest_utils
 import iossim_util
-import standard_json_util as sju
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors

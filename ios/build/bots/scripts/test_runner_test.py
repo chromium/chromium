@@ -13,6 +13,7 @@ import tempfile
 import unittest
 
 import iossim_util
+import result_sink_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
@@ -56,6 +57,8 @@ class SimulatorTestRunnerTest(TestCase):
   def setUp(self):
     super(SimulatorTestRunnerTest, self).setUp()
     self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
+    self.mock(result_sink_util.ResultSinkClient,
+              'post', lambda *args, **kwargs: None)
 
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
@@ -273,6 +276,8 @@ class DeviceTestRunnerTest(TestCase):
     def install_xcode(build, mac_toolchain_cmd, xcode_app_path):
       return True
 
+    self.mock(result_sink_util.ResultSinkClient,
+              'post', lambda *args, **kwargs: None)
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
     self.mock(test_runner, 'install_xcode', install_xcode)
