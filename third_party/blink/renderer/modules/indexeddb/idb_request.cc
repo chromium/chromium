@@ -206,6 +206,11 @@ const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
 }
 
 const String& IDBRequest::readyState() const {
+  if (!GetExecutionContext()) {
+    DCHECK(ready_state_ == DONE || ready_state_ == kEarlyDeath);
+    return indexed_db_names::kDone;
+  }
+
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
 
   if (ready_state_ == PENDING)
