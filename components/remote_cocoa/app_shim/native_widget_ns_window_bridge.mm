@@ -1518,14 +1518,31 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   // alive (i.e. it has not set the window delegate to nil).
   // TODO(crbug.com/841631): Migrate to `[NSWindow
   // beginSheet:completionHandler:]` instead of this method.
+  auto begin_sheet_closure = base::BindOnce(base::RetainBlock(^{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [NSApp beginSheet:window_
-      modalForWindow:parent_window
-       modalDelegate:window_
-      didEndSelector:@selector(sheetDidEnd:returnCode:contextInfo:)
-         contextInfo:nullptr];
+    [NSApp beginSheet:window_
+        modalForWindow:parent_window
+         modalDelegate:window_
+        didEndSelector:@selector(sheetDidEnd:returnCode:contextInfo:)
+           contextInfo:nullptr];
 #pragma clang diagnostic pop
+  }));
+
+  if (host_helper_->MustPostTaskToRunModalSheetAnimation()) {
+    // This function is called via mojo when using remote cocoa. Inside the
+    // nested run loop, we will wait for a message providing the correctly-sized
+    // frame for the new sheet. This message will not be processed until we
+    // return from handling this message, because it will coming on the same
+    // pipe. Avoid the resulting hang by posting a task to show the modal
+    // sheet (which will be executed on a fresh stack, which will not block
+    // the message).
+    // https://crbug.com/1234509
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(begin_sheet_closure));
+  } else {
+    std::move(begin_sheet_closure).Run();
+  }
 }
 
 }  // namespace remote_cocoa
