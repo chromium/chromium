@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "components/variations/proto/client_variations.pb.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -71,20 +70,6 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
   }
 
   return trial;
-}
-
-int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
-  int default_group;
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kExtendedSafeModeTrial, 100, kDefaultGroup,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-  int active_group = group_name == kDefaultGroup
-                         ? default_group
-                         : trial->AppendGroup(group_name, 100);
-  trial->SetForced();
-  return active_group;
 }
 
 }  // namespace variations

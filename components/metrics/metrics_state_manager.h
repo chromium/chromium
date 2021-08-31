@@ -17,7 +17,6 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
-#include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/metrics/structured/neutrino_logging.h"
@@ -129,19 +128,13 @@ class MetricsStateManager final {
   //
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // a separate file will not be used for Variations Safe Mode prefs.
-  //
-  // TODO(crbug.com/1241702): Remove |channel| at the end of the Extended
-  // Variations Safe Mode experiment. |channel| is used to enable the experiment
-  // on only certain channels. The experiment is always disabled on unknown
-  // channels.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
       StoreClientInfoCallback store_client_info,
-      LoadClientInfoCallback load_client_info,
-      version_info::Channel channel = version_info::Channel::UNKNOWN);
+      LoadClientInfoCallback load_client_info);
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -202,8 +195,7 @@ class MetricsStateManager final {
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
                       StoreClientInfoCallback store_client_info,
-                      LoadClientInfoCallback load_client_info,
-                      version_info::Channel channel);
+                      LoadClientInfoCallback load_client_info);
 
   // Backs up the current client info via |store_client_info_|.
   void BackUpCurrentClientInfo();

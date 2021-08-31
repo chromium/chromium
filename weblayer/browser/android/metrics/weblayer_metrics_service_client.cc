@@ -19,7 +19,6 @@
 #include "components/ukm/ukm_service.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/google_api_keys.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -111,8 +110,7 @@ void WebLayerMetricsServiceClient::RegisterExternalExperiments(
 void WebLayerMetricsServiceClient::Initialize(PrefService* pref_service) {
   base::FilePath user_data_dir;
   base::PathService::Get(DIR_USER_DATA, &user_data_dir);
-  AndroidMetricsServiceClient::Initialize(user_data_dir, pref_service,
-                                          version_info::android::GetChannel());
+  AndroidMetricsServiceClient::Initialize(user_data_dir, pref_service);
 }
 
 int32_t WebLayerMetricsServiceClient::GetProduct() {

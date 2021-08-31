@@ -27,7 +27,6 @@
 #include "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #include "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -98,7 +97,7 @@ IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), std::wstring(),
         user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&LoadMetricsClientInfo), GetChannel());
+        base::BindRepeating(&LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }

@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -23,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -39,7 +41,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_seed_store.h"
-#include "components/variations/variations_test_utils.h"
+#include "components/variations/variations_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,6 +58,8 @@ using testing::Return;
 namespace variations {
 namespace {
 
+// Constants used to create the test seeds.
+const char kTestSeedStudyName[] = "test";
 const char kTestSeedExperimentName[] = "abc";
 const char kTestSafeSeedExperimentName[] = "abc.safe";
 const int kTestSeedExperimentProbability = 100;
@@ -83,8 +87,8 @@ std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
   return nullptr;
 }
 
-// Returns a seed with simple test data. The seed has a single study,
-// "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
+// Populates |seed| with simple test data. The resulting seed will contain one
+// study called "test", which contains one experiment called "abc" with
 // probability weight 100.
 VariationsSeed CreateTestSeed() {
   VariationsSeed seed;
@@ -98,18 +102,24 @@ VariationsSeed CreateTestSeed() {
   return seed;
 }
 
-// Returns a seed with simple test data. The seed has a single study,
-// "UMA-Uniformity-Trial-10-Percent", which has a single experiment,
-// "abc.safe", with probability weight 100.
-//
-// Intended to be used when a "safe" seed is needed so that test expectations
-// can distinguish between a regular and safe seeds.
+// Returns a seed containing simple test data. The resulting seed will contain
+// one study called "test", which contains one experiment called "abc.safe" with
+// probability weight 100. This is intended to be used whenever a "safe" seed is
+// called for, so that test expectations can distinguish between a "safe" seed
+// and a "latest" seed.
 VariationsSeed CreateTestSafeSeed() {
   VariationsSeed seed = CreateTestSeed();
   Study* study = seed.mutable_study(0);
   study->set_default_experiment_name(kTestSafeSeedExperimentName);
   study->mutable_experiment(0)->set_name(kTestSafeSeedExperimentName);
   return seed;
+}
+
+void DisableTestingConfig() {
+  // If the testing config is in use, the seed will not be used to set up field
+  // trials. Disable the testing config to exercise CreateTrialsFromSeed().
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableFieldTrialTestingConfig);
 }
 
 #if defined(OS_ANDROID)
@@ -270,8 +280,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       PrefService* local_state,
       TestVariationsServiceClient* client,
       SafeSeedManager* safe_seed_manager,
-      const base::FilePath user_data_dir = base::FilePath(),
-      version_info::Channel channel = version_info::Channel::UNKNOWN)
+      const base::FilePath user_data_dir = base::FilePath())
       : VariationsFieldTrialCreator(
             client,
             std::make_unique<VariationsSeedStore>(local_state),
@@ -283,7 +292,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state, &enabled_state_provider_, std::wstring(), user_data_dir,
         base::BindRepeating(&NoOpStoreClientInfoBackup),
-        base::BindRepeating(&NoOpLoadClientInfoBackup), channel);
+        base::BindRepeating(&NoOpLoadClientInfoBackup));
   }
 
   ~TestVariationsFieldTrialCreator() override = default;
@@ -785,6 +794,22 @@ class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
     return pref_service_factory.Create(pref_registry);
   }
 
+  // Sets up the extended safe mode experiment such that |group_name| is the
+  // active group. Returns the numeric value that denotes the active group.
+  int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
+    int default_group;
+    scoped_refptr<base::FieldTrial> trial(
+        base::FieldTrialList::FactoryGetFieldTrial(
+            kExtendedSafeModeTrial, 100, kDefaultGroup,
+            base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+    int active_group = group_name == kDefaultGroup
+                           ? default_group
+                           : trial->AppendGroup(group_name, 100);
+    trial->SetForced();
+    return active_group;
+  }
+
   const base::FilePath prefs_file() const { return prefs_file_; }
   const base::FilePath user_data_dir_path() const {
     return temp_dir_.GetPath();
@@ -811,8 +836,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
       .WillByDefault(Return(version_info::Channel::DEV));
 
   TestVariationsFieldTrialCreator field_trial_creator(
-      pref_service.get(), &variations_service_client, &safe_seed_manager,
-      base::FilePath(), version_info::Channel::DEV);
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials(
@@ -847,8 +871,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
         .WillByDefault(Return(channel));
 
     TestVariationsFieldTrialCreator field_trial_creator(
-        pref_service.get(), &variations_service_client, &safe_seed_manager,
-        user_data_dir_path(), channel);
+        pref_service.get(), &variations_service_client, &safe_seed_manager);
 
     base::HistogramTester histogram_tester;
     ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
@@ -869,6 +892,28 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnCanary_DefaultGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::CANARY));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  SetUpExtendedSafeModeExperiment(kDefaultGroup);
+  // The experiment has four experiment groups of equal weight. Verify that
+  // there's a DCHECK if a client is assigned to the default group.
+  EXPECT_DCHECK_DEATH(field_trial_creator.SetupFieldTrials());
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
        EnableExperimentOnCanary_ControlGroup) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
@@ -881,13 +926,10 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  // Assign the client to a specific experiment group before creating the
-  // TestVariationsFieldTrialCreator so that the CleanExitBeacon ctor uses the
-  // desired group.
-  int active_group = SetUpExtendedSafeModeExperiment(kControlGroup);
   TestVariationsFieldTrialCreator field_trial_creator(
-      pref_service.get(), &variations_service_client, &safe_seed_manager,
-      user_data_dir_path(), version_info::Channel::CANARY);
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  int active_group = SetUpExtendedSafeModeExperiment(kControlGroup);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
@@ -924,14 +966,12 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  // Assign the client to a specific experiment group before creating the
-  // TestVariationsFieldTrialCreator so that the CleanExitBeacon ctor uses the
-  // desired group.
-  int active_group =
-      SetUpExtendedSafeModeExperiment(kWriteSynchronouslyViaPrefServiceGroup);
   TestVariationsFieldTrialCreator field_trial_creator(
       pref_service.get(), &variations_service_client, &safe_seed_manager,
-      user_data_dir_path(), version_info::Channel::DEV);
+      user_data_dir_path());
+
+  int active_group =
+      SetUpExtendedSafeModeExperiment(kWriteSynchronouslyViaPrefServiceGroup);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
@@ -969,14 +1009,12 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  // Assign the client to a specific experiment group before creating the
-  // TestVariationsFieldTrialCreator so that the CleanExitBeacon ctor uses the
-  // desired group.
-  int active_group = SetUpExtendedSafeModeExperiment(
-      kSignalAndWriteSynchronouslyViaPrefServiceGroup);
   TestVariationsFieldTrialCreator field_trial_creator(
       pref_service.get(), &variations_service_client, &safe_seed_manager,
-      user_data_dir_path(), version_info::Channel::DEV);
+      user_data_dir_path());
+
+  int active_group = SetUpExtendedSafeModeExperiment(
+      kSignalAndWriteSynchronouslyViaPrefServiceGroup);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
@@ -1013,16 +1051,12 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  // Assign the client to a specific experiment group before creating the
-  // TestVariationsFieldTrialCreator so that the CleanExitBeacon ctor uses the
-  // desired group.
-  int active_group =
-      SetUpExtendedSafeModeExperiment(kSignalAndWriteViaFileUtilGroup);
-  ASSERT_EQ(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
-            kSignalAndWriteViaFileUtilGroup);
   TestVariationsFieldTrialCreator field_trial_creator(
       pref_service.get(), &variations_service_client, &safe_seed_manager,
-      user_data_dir_path(), version_info::Channel::DEV);
+      user_data_dir_path());
+
+  int active_group =
+      SetUpExtendedSafeModeExperiment(kSignalAndWriteViaFileUtilGroup);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials());

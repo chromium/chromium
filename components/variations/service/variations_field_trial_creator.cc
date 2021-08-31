@@ -139,30 +139,6 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
   return Study::X86_64;
 }
 
-// If the client is in an Extended Variations Safe Mode experiment group,
-// applies group-specific behavior. Does nothing if the client is not in the
-// experiment. See the CleanExitBeacon ctor for group assignment details.
-#if !defined(OS_ANDROID)
-void MaybeExtendVariationsSafeMode(
-    metrics::MetricsStateManager* metrics_state_manager) {
-  const std::string group_name =
-      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
-  if (group_name.empty() || group_name == kControlGroup)
-    return;
-
-  // For clients in the SignalAndWrite* groups, the beacon is updated and a
-  // synchronous write is performed. Conversely, for clients in the
-  // WriteSynchronouslyViaPrefService group, prefs are written synchronously
-  // without updating the beacon, i.e. without signaling that Chrome should
-  // start watching for crashes.
-  bool update_beacon = group_name != kWriteSynchronouslyViaPrefServiceGroup;
-
-  metrics_state_manager->LogHasSessionShutdownCleanly(
-      /*has_session_shutdown_cleanly=*/false, /*write_synchronously=*/true,
-      update_beacon);
-}
-#endif  // !defined(OS_ANDROID)
-
 }  // namespace
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
@@ -613,5 +589,44 @@ Study::Platform VariationsFieldTrialCreator::GetPlatform() {
     return platform_override_;
   return ClientFilterableState::GetCurrentPlatform();
 }
+
+#if !defined(OS_ANDROID)
+void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
+    metrics::MetricsStateManager* metrics_state_manager) const {
+  version_info::Channel channel = client_->GetChannelForVariations();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV) {
+    return;
+  }
+
+  int default_group;
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kExtendedSafeModeTrial, 100, kDefaultGroup,
+          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+  const int control_group = trial->AppendGroup(kControlGroup, 25);
+  const int write_only_group =
+      trial->AppendGroup(kWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
+  const int assigned_group = trial->group();
+
+  DCHECK_NE(assigned_group, default_group);
+  if (assigned_group == control_group)
+    return;
+
+  // For clients in the SignalAndWrite* groups, the beacon is updated and a
+  // synchronous write is performed. Conversely, for clients in
+  // |write_only_group|, i.e. the WriteSynchronouslyViaPrefService group, prefs
+  // are written synchronously without updating the beacon, i.e. without
+  // signaling that Chrome should start watching for crashes.
+  bool update_beacon = assigned_group != write_only_group;
+
+  metrics_state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/false, /*write_synchronously=*/true,
+      update_beacon);
+}
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

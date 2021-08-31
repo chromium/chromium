@@ -242,8 +242,7 @@ void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void AndroidMetricsServiceClient::Initialize(
     const base::FilePath& user_data_dir,
-    PrefService* pref_service,
-    version_info::Channel channel) {
+    PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!init_finished_);
 
@@ -252,7 +251,7 @@ void AndroidMetricsServiceClient::Initialize(
   metrics_state_manager_ = MetricsStateManager::Create(
       pref_service_, this, std::wstring(), user_data_dir,
       base::BindRepeating(&StoreClientInfo),
-      base::BindRepeating(&LoadClientInfo), channel);
+      base::BindRepeating(&LoadClientInfo));
 
   init_finished_ = true;
 

@@ -188,7 +188,6 @@ static_library("test_support") {
     "field_trial_config:field_trial_config",
     "proto",
     "//base/test:test_support",
-    "//components/variations/service:constants",
     "//third_party/zlib/google:compression_utils",
   ]
 }

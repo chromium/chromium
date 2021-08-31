@@ -477,7 +477,6 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//components/sync/driver:test_support",
     "//components/variations",
-    "//components/variations:test_support",
     "//components/variations/service:constants",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",

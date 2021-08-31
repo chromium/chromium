@@ -41,10 +41,6 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     IDCollectionKey key,
     VariationID id);
 
-// Sets up the extended safe mode experiment such that |group_name| is the
-// active group. Returns the numeric value that denotes the active group.
-int SetUpExtendedSafeModeExperiment(const std::string& group_name);
-
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_VARIATIONS_TEST_UTILS_H_
