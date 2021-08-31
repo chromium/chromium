@@ -55,11 +55,12 @@ public class DangerousDownloadDialog {
      */
     public void show(Context context, ModalDialogManager modalDialogManager, String fileName,
             long totalBytes, int iconId, Callback<Boolean> callback) {
-        String message =
-                context.getResources().getString(R.string.dangerous_download_dialog_text, fileName);
-        if (totalBytes > 0) {
-            message += "\n\n(" + DownloadUtils.getStringForBytes(context, totalBytes) + ")";
-        }
+        String message = totalBytes > 0
+                ? context.getResources().getString(
+                        R.string.dangerous_download_dialog_text, fileName)
+                : context.getResources().getString(
+                        R.string.dangerous_download_dialog_text_with_size, fileName,
+                        DownloadUtils.getStringForBytes(context, totalBytes));
 
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
