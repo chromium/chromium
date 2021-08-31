@@ -2549,21 +2549,6 @@
             ]
         }
     ],
-    "CredentialEditAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EditPasswordsInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "CriticalCLientHint": [
         {
             "platforms": [
