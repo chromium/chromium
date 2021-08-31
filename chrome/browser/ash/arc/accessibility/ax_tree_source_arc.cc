@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/dcheck_is_on.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -32,8 +33,10 @@ using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
+// TODO(hirokisato): Enable AXTreeArcSerializer's |crash_on_error| once
+// Android becomes able to send reliable trees.
 AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate, aura::Window* window)
-    : current_tree_serializer_(new AXTreeArcSerializer(this)),
+    : current_tree_serializer_(new AXTreeArcSerializer(this, DCHECK_IS_ON())),
       is_notification_(false),
       is_input_method_window_(false),
       window_(window),

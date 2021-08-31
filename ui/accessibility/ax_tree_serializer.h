@@ -67,7 +67,8 @@ struct ClientTreeNode;
 template <typename AXSourceNode>
 class AXTreeSerializer {
  public:
-  explicit AXTreeSerializer(AXTreeSource<AXSourceNode>* tree);
+  explicit AXTreeSerializer(AXTreeSource<AXSourceNode>* tree,
+                            bool crash_on_error = true);
   ~AXTreeSerializer();
 
   // Throw out the internal state that keeps track of the nodes the client
@@ -231,6 +232,9 @@ class AXTreeSerializer {
   // explicitly set node_id_to_clear to ensure that the next serialized
   // tree is treated as a completely new tree and not a partial update.
   bool did_reset_ = false;
+
+  // Whether to crash the process on serialization error or not.
+  const bool crash_on_error_;
 };
 
 // In order to keep track of what nodes the client knows about, we keep a
@@ -248,8 +252,9 @@ struct AX_EXPORT ClientTreeNode {
 
 template <typename AXSourceNode>
 AXTreeSerializer<AXSourceNode>::AXTreeSerializer(
-    AXTreeSource<AXSourceNode>* tree)
-    : tree_(tree) {}
+    AXTreeSource<AXSourceNode>* tree,
+    bool crash_on_error)
+    : tree_(tree), crash_on_error_(crash_on_error) {}
 
 template <typename AXSourceNode>
 AXTreeSerializer<AXSourceNode>::~AXTreeSerializer() {
@@ -423,7 +428,13 @@ ClientTreeNode* AXTreeSerializer<AXSourceNode>::GetClientTreeNodeParent(
         "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(missing_parent_err,
                                    error.str().substr(0, 230));
-    CHECK(false) << error.str();
+    if (crash_on_error_) {
+      CHECK(false) << error.str();
+    } else {
+      LOG(ERROR) << error.str();
+      // Different from other errors, not calling Reset() here to avoid breaking
+      // the internal state of this class.
+    }
   }
   return parent;
 }
@@ -641,7 +652,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       static auto* reparent_err = base::debug::AllocateCrashKeyString(
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
-      CHECK(false) << error.str();
+      if (crash_on_error_) {
+        CHECK(false) << error.str();
+      } else {
+        LOG(ERROR) << error.str();
+        Reset();
+      }
       return false;
     }
   }
@@ -734,7 +750,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
         base::debug::SetCrashKeyString(dupe_id_err, error.str().substr(0, 230));
-        CHECK(false) << error.str();
+        if (crash_on_error_) {
+          CHECK(false) << error.str();
+        } else {
+          LOG(ERROR) << error.str();
+          Reset();
+        }
         return false;
       }
       client_id_map_[child_id] = new_child;
