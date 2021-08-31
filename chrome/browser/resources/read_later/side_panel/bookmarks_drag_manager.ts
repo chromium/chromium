@@ -139,6 +139,12 @@ export class BookmarksDragManager {
     this.eventTracker_.add(this.delegate_, 'dragend', () => this.cancelDrag_());
     this.eventTracker_.add(
         this.delegate_, 'drop', e => this.onDrop_(e as DragEvent));
+
+    chrome.bookmarkManagerPrivate.onDragEnter.addListener(
+        (dragData: chrome.bookmarkManagerPrivate.DragData) =>
+            this.onChromeDragEnter_(dragData));
+    chrome.bookmarkManagerPrivate.onDragLeave.addListener(
+        () => this.cancelDrag_());
   }
 
   stopObserving() {
@@ -151,6 +157,15 @@ export class BookmarksDragManager {
     }
     this.dragSession_.cancel();
     this.dragSession_ = null;
+  }
+
+  private onChromeDragEnter_(dragData: chrome.bookmarkManagerPrivate.DragData) {
+    if (this.dragSession_) {
+      // A drag session is already in flight.
+      return;
+    }
+
+    this.dragSession_ = new DragSession(this.delegate_, dragData);
   }
 
   private onDragStart_(e: DragEvent) {
