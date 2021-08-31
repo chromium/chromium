@@ -553,9 +553,9 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   lv->AppendInteger(2);
   lv->AppendInteger(1);
   lv->AppendInteger(3);
-  lv->AppendString("4-4");
-  lv->AppendString("4-");
-  lv->AppendString("-5");
+  lv->Append("4-4");
+  lv->Append("4-");
+  lv->Append("-5");
   params.SetList("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
@@ -583,11 +583,11 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
 
   // ExecutePrint delegates invalid string checks to CDP
   lv = std::make_unique<base::ListValue>();
-  lv->AppendString("-");
-  lv->AppendString("");
-  lv->AppendString("  ");
-  lv->AppendString(" 1-3 ");
-  lv->AppendString("Invalid");
+  lv->Append("-");
+  lv->Append("");
+  lv->Append("  ");
+  lv->Append(" 1-3 ");
+  lv->Append("Invalid");
   params.SetList("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();

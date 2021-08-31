@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesMigrated) {
 // Checks that preferences are not migrated when they shouldn't be.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
   base::ListValue dictionaries;
-  dictionaries.AppendString("en-US");
+  dictionaries.Append("en-US");
   GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
   GetPrefs()->SetString(spellcheck::prefs::kSpellCheckDictionary, "fr");
 
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                        SpellcheckingDisabledPreferenceMigration) {
   base::ListValue dictionaries;
-  dictionaries.AppendString("en-US");
+  dictionaries.Append("en-US");
   GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
   GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
 
@@ -628,8 +628,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                        MultilingualPreferenceNotMigrated) {
   base::ListValue dictionaries;
-  dictionaries.AppendString("en-US");
-  dictionaries.AppendString("fr");
+  dictionaries.Append("en-US");
+  dictionaries.Append("fr");
   GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
   GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
 

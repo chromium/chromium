@@ -742,7 +742,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
 
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kURLsToRestoreOnStartup);
-    update->AppendString("http://example.com");
+    update->Append("http://example.com");
   }
 
   void AttackPreferencesOnDisk(
@@ -759,7 +759,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
         selected_prefs->GetList(prefs::kURLsToRestoreOnStartup, &startup_urls));
     EXPECT_TRUE(startup_urls);
     EXPECT_EQ(1U, startup_urls->GetSize());
-    startup_urls->AppendString("http://example.org");
+    startup_urls->Append("http://example.org");
   }
 
   void VerifyReactionToPrefAttack() override {

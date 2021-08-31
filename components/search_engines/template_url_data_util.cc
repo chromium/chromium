@@ -172,14 +172,14 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
 
   base::ListValue alternate_urls;
   for (const auto& alternate_url : data.alternate_urls)
-    alternate_urls.AppendString(alternate_url);
+    alternate_urls.Append(alternate_url);
 
   url_dict->SetKey(DefaultSearchManager::kAlternateURLs,
                    std::move(alternate_urls));
 
   base::ListValue encodings;
   for (const auto& input_encoding : data.input_encodings)
-    encodings.AppendString(input_encoding);
+    encodings.Append(input_encoding);
   url_dict->SetKey(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
   url_dict->SetBoolean(DefaultSearchManager::kCreatedByPolicy,
@@ -196,7 +196,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
   base::ListValue alternate_urls;
   if (engine.alternate_urls) {
     for (size_t i = 0; i < engine.alternate_urls_size; ++i)
-      alternate_urls.AppendString(std::string(engine.alternate_urls[i]));
+      alternate_urls.Append(std::string(engine.alternate_urls[i]));
   }
 
   return std::make_unique<TemplateURLData>(

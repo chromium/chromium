@@ -187,7 +187,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   ListValue type_list;
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list.AppendString(ModelTypeToString(type));
+    type_list.Append(ModelTypeToString(type));
   }
   event_details.SetKey(syncer::sync_ui_util::kTypes, std::move(type_list));
   FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,

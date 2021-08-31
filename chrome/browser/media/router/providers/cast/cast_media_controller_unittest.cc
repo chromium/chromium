@@ -65,13 +65,13 @@ Value GetSupportedMediaCommandsValue(const mojom::MediaStatus& status) {
   // |can_set_volume| and |can_mute| are not used, because the receiver volume
   // is used instead.
   if (status.can_play_pause)
-    commands.AppendString("pause");
+    commands.Append("pause");
   if (status.can_seek)
-    commands.AppendString("seek");
+    commands.Append("seek");
   if (status.can_skip_to_next_track)
-    commands.AppendString("queue_next");
+    commands.Append("queue_next");
   if (status.can_skip_to_previous_track)
-    commands.AppendString("queue_next");
+    commands.Append("queue_next");
   return std::move(commands);
 }
 

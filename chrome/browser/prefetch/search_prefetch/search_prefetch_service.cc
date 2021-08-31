@@ -605,7 +605,7 @@ void SearchPrefetchService::SaveToPrefs() const {
     auto time =
         std::make_unique<base::Value>(base::TimeToValue(element.second.second));
     base::ListValue value;
-    value.AppendString(prefetch_url);
+    value.Append(prefetch_url);
     value.Append(std::move(time));
     dictionary.SetKey(std::move(navigation_url), std::move(value));
   }

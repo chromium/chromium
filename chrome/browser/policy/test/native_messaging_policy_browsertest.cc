@@ -31,7 +31,7 @@ extensions::MessagingDelegate::PolicyPermission IsNativeMessagingHostAllowed(
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
   base::ListValue blacklist;
-  blacklist.AppendString("host.name");
+  blacklist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
   base::ListValue blacklist;
-  blacklist.AppendString("*");
+  blacklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
@@ -63,9 +63,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
   base::ListValue blacklist;
-  blacklist.AppendString("*");
+  blacklist.Append("*");
   base::ListValue allowlist;
-  allowlist.AppendString("host.name");
+  allowlist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),

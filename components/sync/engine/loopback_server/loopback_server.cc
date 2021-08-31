@@ -770,7 +770,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification
     // is checking the correctness of the bookmark hierarchy.
-    list_value->AppendString(entity.GetName());
+    list_value->Append(entity.GetName());
   }
 
   return dictionary;

@@ -88,12 +88,12 @@ TEST_F(SafeBrowsingPrefsTest, MAYBE_VerifyMatchesPasswordProtectionLoginURL) {
   EXPECT_FALSE(MatchesPasswordProtectionLoginURL(url, prefs_));
 
   base::ListValue login_urls;
-  login_urls.AppendString("https://otherdomain.com/login.html");
+  login_urls.Append("https://otherdomain.com/login.html");
   prefs_.Set(prefs::kPasswordProtectionLoginURLs, login_urls);
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_FALSE(MatchesPasswordProtectionLoginURL(url, prefs_));
 
-  login_urls.AppendString("https://mydomain.com/login.html");
+  login_urls.Append("https://mydomain.com/login.html");
   prefs_.Set(prefs::kPasswordProtectionLoginURLs, login_urls);
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_TRUE(MatchesPasswordProtectionLoginURL(url, prefs_));
@@ -172,7 +172,7 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
 
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
   base::ListValue allowlisted_domains;
-  allowlisted_domains.AppendString("foo.com");
+  allowlisted_domains.Append("foo.com");
   prefs_.Set(prefs::kSafeBrowsingAllowlistDomains, allowlisted_domains);
   StringListPrefMember string_list_pref;
   string_list_pref.Init(prefs::kSafeBrowsingAllowlistDomains, &prefs_);

@@ -68,8 +68,8 @@ class CryptoTokenPrivateApiTest : public extensions::ExtensionApiUnittest {
     function->set_has_callback(true);
 
     auto args = std::make_unique<base::ListValue>();
-    args->AppendString(origin);
-    args->AppendString(app_id);
+    args->Append(origin);
+    args->Append(app_id);
 
     if (!extension_function_test_utils::RunFunction(
             function.get(), std::move(args), browser(), api_test_utils::NONE)) {

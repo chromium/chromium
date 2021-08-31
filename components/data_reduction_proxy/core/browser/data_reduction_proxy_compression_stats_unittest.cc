@@ -168,7 +168,7 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
 
     received_daily_content_length_list->ClearList();
     for (size_t i = 0; i < kNumDaysInHistory / 2; ++i) {
-      received_daily_content_length_list->AppendString(base::NumberToString(i));
+      received_daily_content_length_list->Append(base::NumberToString(i));
     }
   }
 

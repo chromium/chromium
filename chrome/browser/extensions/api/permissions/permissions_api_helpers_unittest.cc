@@ -67,9 +67,9 @@ TEST(ExtensionPermissionsAPIHelpers, Pack) {
 // into PermissionSets.
 TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   std::unique_ptr<base::ListValue> apis(new base::ListValue());
-  apis->AppendString("tabs");
+  apis->Append("tabs");
   std::unique_ptr<base::ListValue> origins(new base::ListValue());
-  origins->AppendString("http://a.com/*");
+  origins->Append("http://a.com/*");
 
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
   std::unique_ptr<const PermissionSet> permissions;

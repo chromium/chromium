@@ -616,7 +616,7 @@ class DownloadProtectionServiceTestBase
   void AddDomainToEnterpriseAllowlist(const std::string& domain) {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kSafeBrowsingAllowlistDomains);
-    update.Get()->AppendString(domain);
+    update.Get()->Append(domain);
   }
 
   // Helper function to simulate a user gesture, then a link click.

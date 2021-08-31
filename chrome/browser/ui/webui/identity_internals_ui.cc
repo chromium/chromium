@@ -179,7 +179,7 @@ std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
   auto scopes_value = std::make_unique<base::ListValue>();
   for (const auto& scope : token_cache_value.granted_scopes()) {
-    scopes_value->AppendString(scope);
+    scopes_value->Append(scope);
   }
   return scopes_value;
 }

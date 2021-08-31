@@ -300,8 +300,8 @@ TEST(ParseCapabilities, ManualProxy) {
   proxy.SetString("socksProxy", "localhost:12345");
   proxy.SetInteger("socksVersion", 5);
   std::unique_ptr<base::ListValue> bypass = std::make_unique<base::ListValue>();
-  bypass->AppendString("google.com");
-  bypass->AppendString("youtube.com");
+  bypass->Append("google.com");
+  bypass->Append("youtube.com");
   proxy.SetList("noProxy", std::move(bypass));
   base::DictionaryValue caps;
   caps.SetKey("proxy", std::move(proxy));

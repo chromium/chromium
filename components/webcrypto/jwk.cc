@@ -102,7 +102,7 @@ std::unique_ptr<base::ListValue> CreateJwkKeyOpsFromWebCryptoUsages(
   std::unique_ptr<base::ListValue> jwk_key_ops(new base::ListValue());
   for (size_t i = 0; i < base::size(kJwkWebCryptoUsageMap); ++i) {
     if (usages & kJwkWebCryptoUsageMap[i].webcrypto_usage)
-      jwk_key_ops->AppendString(kJwkWebCryptoUsageMap[i].jwk_key_op);
+      jwk_key_ops->Append(kJwkWebCryptoUsageMap[i].jwk_key_op);
   }
   return jwk_key_ops;
 }

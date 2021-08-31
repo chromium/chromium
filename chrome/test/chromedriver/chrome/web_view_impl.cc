@@ -494,7 +494,7 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
                                        const base::TimeDelta& timeout,
                                        std::unique_ptr<base::Value>* result) {
   base::ListValue sync_args;
-  sync_args.AppendString(script);
+  sync_args.Append(script);
   // Clone needed since Append only accepts Value as an rvalue.
   sync_args.Append(args.Clone());
   return CallFunctionWithTimeout(frame, kExecuteScriptScript, sync_args,
@@ -759,7 +759,7 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
       }
 
       std::unique_ptr<base::ListValue> command_list(new base::ListValue);
-      command_list->AppendString(command);
+      command_list->Append(command);
       params.SetList("commands", std::move(command_list));
     }
 
@@ -794,7 +794,7 @@ Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
 
   if (browser_info_->browser_name != "webview") {
     base::ListValue url_list;
-    url_list.AppendString(current_page_url);
+    url_list.Append(current_page_url);
     params.SetKey("urls", url_list.Clone());
     Status status =
         client_->SendCommandAndGetResult("Network.getCookies", params, &result);
@@ -1069,7 +1069,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
         std::string fullPath;
         if (!getFileInfoResult->GetString("path", &fullPath))
           return Status(kUnknownError, "DevTools didn't return path");
-        file_list.AppendString(fullPath);
+        file_list.Append(fullPath);
       }
     }
   }
@@ -1084,7 +1084,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
       return Status(kUnknownError,
                     "path is not canonical: " + files[i].AsUTF8Unsafe());
     }
-    file_list.AppendString(files[i].AsUTF8Unsafe());
+    file_list.Append(files[i].AsUTF8Unsafe());
   }
 
   base::DictionaryValue setFilesParams;
@@ -1183,7 +1183,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   base::ListValue async_args;
-  async_args.AppendString("return (" + function + ").apply(null, arguments);");
+  async_args.Append("return (" + function + ").apply(null, arguments);");
   async_args.Append(args.Clone());
   async_args.AppendBoolean(is_user_supplied);
   std::unique_ptr<base::Value> tmp;

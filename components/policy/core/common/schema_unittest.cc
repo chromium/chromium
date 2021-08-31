@@ -701,8 +701,8 @@ TEST(SchemaTest, Validate) {
 
   {
     base::ListValue list;
-    list.AppendString("a string");
-    list.AppendString("another string");
+    list.Append("a string");
+    list.Append("another string");
     bundle.SetKey("Array", std::move(list));
   }
 
@@ -718,8 +718,8 @@ TEST(SchemaTest, Validate) {
 
   {
     base::ListValue list;
-    list.AppendString("a string");
-    list.AppendString("another string");
+    list.Append("a string");
+    list.Append("another string");
     base::ListValue listlist;
     listlist.Append(list.Clone());
     listlist.Append(std::move(list));
@@ -874,7 +874,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
 
     // Invalid list item.
-    list_value->AppendString("blabla");
+    list_value->Append("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -894,7 +894,7 @@ TEST(SchemaTest, Validate) {
     root.Append(std::move(dict_value));
 
     // Test that there are not errors here.
-    list_value->AppendString("blabla");
+    list_value->Append("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,

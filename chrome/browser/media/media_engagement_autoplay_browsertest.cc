@@ -148,7 +148,7 @@ class MediaEngagementAutoplayBrowserTest
 
     // Write JSON file with the server origin in it.
     base::ListValue list;
-    list.AppendString(origin.Serialize());
+    list.Append(origin.Serialize());
     std::string json_data;
     base::JSONWriter::Write(list, &json_data);
     EXPECT_TRUE(base::WriteFile(input_path, json_data));

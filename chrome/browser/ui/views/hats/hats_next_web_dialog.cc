@@ -241,7 +241,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // only the application locale is provided here to ensure that the survey
   // matches the native UI language.
   base::ListValue language_list;
-  language_list.AppendString(g_browser_process->GetApplicationLocale());
+  language_list.Append(g_browser_process->GetApplicationLocale());
 
   std::string language_list_json;
   base::JSONWriter::Write(language_list, &language_list_json);

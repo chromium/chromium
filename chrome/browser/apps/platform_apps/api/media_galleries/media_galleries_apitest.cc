@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
 
   base::ListValue custom_args;
   custom_args.AppendInteger(num_galleries() + 1);
-  custom_args.AppendString(kDeviceName);
+  custom_args.Append(kDeviceName);
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("access_attached", custom_args))
       << message_;
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, ToURL) {
 
   base::ListValue custom_args;
   custom_args.AppendInteger(base::checked_cast<int>(pref_id));
-  custom_args.AppendString(browser()->profile()->GetBaseName().MaybeAsASCII());
+  custom_args.Append(browser()->profile()->GetBaseName().MaybeAsASCII());
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("tourl", custom_args)) << message_;
 }

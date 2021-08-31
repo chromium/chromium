@@ -145,7 +145,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
         spellcheck::prefs::kSpellCheckUseSpellingService, true);
     // Force a non-empty and non-"en" locale so SUGGEST is available.
     base::ListValue dictionary;
-    dictionary.AppendString("fr");
+    dictionary.Append("fr");
     menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                             dictionary);
 
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 
   // Force a non-empty locale so SPELLCHECK is available.
   base::ListValue dictionary;
-  dictionary.AppendString("en");
+  dictionary.Append("en");
   menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                           dictionary);
 
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 
   // Force a non-empty locale so SUGGEST normally would be available.
   base::ListValue dictionary;
-  dictionary.AppendString("en");
+  dictionary.Append("en");
   menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                           dictionary);
 

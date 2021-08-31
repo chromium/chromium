@@ -93,7 +93,7 @@ static scoped_refptr<Extension> CreateExtension(
   manifest.SetString(extensions::manifest_keys::kName, name);
   base::ListValue permissions;
   if (background_permission) {
-    permissions.AppendString("background");
+    permissions.Append("background");
   }
   manifest.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));

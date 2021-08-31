@@ -253,7 +253,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
     for (int i = 0;
          i < days_since_last_update && i < static_cast<int>(kNumDaysInHistory);
          ++i) {
-      update_->AppendString(base::NumberToString(0));
+      update_->Append(base::NumberToString(0));
     }
 
     // Entries for new days may have been appended. Maintain the invariant that
@@ -467,8 +467,8 @@ void DataReductionProxyCompressionStats::ResetStatistics() {
   original_update->ClearList();
   received_update->ClearList();
   for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-    original_update->AppendString(base::NumberToString(0));
-    received_update->AppendString(base::NumberToString(0));
+    original_update->Append(base::NumberToString(0));
+    received_update->Append(base::NumberToString(0));
   }
 }
 

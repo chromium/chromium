@@ -59,7 +59,7 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
     std::unique_ptr<base::ListValue> list_copy(new base::ListValue());
     for (const base::Value& child : value->GetList()) {
       if (list_copy->GetSize() >= kMaxChildren - 1) {
-        list_copy->AppendString("...");
+        list_copy->Append("...");
         break;
       }
       list_copy->Append(SmartDeepCopy(&child));

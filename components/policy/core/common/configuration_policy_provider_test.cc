@@ -274,8 +274,8 @@ TEST_P(ConfigurationPolicyProviderTest, IntegerValue) {
 
 TEST_P(ConfigurationPolicyProviderTest, StringListValue) {
   base::ListValue expected_value;
-  expected_value.AppendString("first");
-  expected_value.AppendString("second");
+  expected_value.Append("first");
+  expected_value.Append("second");
   CheckValue(test_keys::kKeyStringList, expected_value,
              base::BindOnce(&PolicyProviderTestHarness::InstallStringListPolicy,
                             base::Unretained(test_harness_.get()),

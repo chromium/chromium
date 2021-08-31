@@ -111,7 +111,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->AppendString("a");
+  values->Append("a");
   values->Append(
       std::make_unique<base::Value>(base::Value::BlobStorage({1, 2, 3})));
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
@@ -126,7 +126,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->AppendString("b");
+  values->Append("b");
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -146,7 +146,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> set_values =
       std::make_unique<base::ListValue>();
-  set_values->AppendString("a/b");
+  set_values->Append("a/b");
   set_values->Append(
       std::make_unique<base::Value>(base::Value::BlobStorage({1, 2, 3})));
   extension_function_test_utils::RunFunction(set_function.get(),
@@ -158,7 +158,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->AppendString("a");
+  values->Append("a");
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -172,7 +172,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> set_values =
       std::make_unique<base::ListValue>();
-  set_values->AppendString("c");
+  set_values->Append("c");
   set_values->Append(
       std::make_unique<base::Value>(base::Value::BlobStorage({1, 2, 3})));
   extension_function_test_utils::RunFunction(set_function.get(),
@@ -183,7 +183,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   auto get_function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->AppendString("c");
+  values->Append("c");
   extension_function_test_utils::RunFunction(get_function.get(),
                                              std::move(values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -200,7 +200,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> reset_values =
       std::make_unique<base::ListValue>();
-  reset_values->AppendString("c");
+  reset_values->Append("c");
   extension_function_test_utils::RunFunction(set_function2.get(),
                                              std::move(reset_values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -210,7 +210,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   std::unique_ptr<base::ListValue> values2 =
       std::make_unique<base::ListValue>();
-  values2->AppendString("c");
+  values2->Append("c");
   extension_function_test_utils::RunFunction(get_function2.get(),
                                              std::move(values2), browser(),
                                              extensions::api_test_utils::NONE);

@@ -1198,7 +1198,7 @@ Status ExecuteGetAvailableLogTypes(Session* session,
   for (std::vector<WebDriverLog*>::const_iterator log = logs.begin();
        log != logs.end();
        ++log) {
-    types->AppendString((*log)->type());
+    types->Append((*log)->type());
   }
   *value = std::move(types);
   return Status(kOk);

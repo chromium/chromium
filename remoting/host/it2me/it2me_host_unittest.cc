@@ -392,7 +392,7 @@ base::ListValue It2MeHostTest::MakeList(
     std::initializer_list<base::StringPiece> values) {
   base::ListValue result;
   for (const auto& value : values) {
-    result.AppendString(value);
+    result.Append(value);
   }
   return result;
 }

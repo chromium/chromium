@@ -54,7 +54,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
                      const std::set<std::string>& categorySet) {
   base::ListValue category_list;
   for (auto it = categorySet.begin(); it != categorySet.end(); it++) {
-    category_list.AppendString(*it);
+    category_list.Append(*it);
   }
 
   scoped_refptr<base::RefCountedString> res(new base::RefCountedString());

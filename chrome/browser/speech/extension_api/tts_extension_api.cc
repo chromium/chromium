@@ -379,7 +379,7 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
     base::ListValue event_types;
     for (auto& event : voice.events) {
       const char* event_name_constant = TtsEventTypeToString(event);
-      event_types.AppendString(event_name_constant);
+      event_types.Append(event_name_constant);
     }
     result_voice->SetKey(constants::kEventTypesKey, std::move(event_types));
 

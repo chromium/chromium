@@ -152,7 +152,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     request_info->SetInteger(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
-    parameters->AppendString(
+    parameters->Append(
         web_contents()->GetLastCommittedURL().GetOrigin().spec());
   }
 
@@ -295,7 +295,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StoreLog(const std::string& log_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStoreFunction>(params);
@@ -310,7 +310,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool UploadStoredLog(const std::string& log_id, std::string* report_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateUploadStoredFunction>(params);
@@ -365,7 +365,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(session_id);
+    params.Append(session_id);
     params.AppendInteger(max_log_size_bytes);
     params.AppendInteger(output_period_ms);
     params.AppendInteger(web_app_id);
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopRtpDump) {
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStoreWithoutLog) {
   base::ListValue parameters;
   AppendTabIdAndUrl(&parameters);
-  parameters.AppendString("MyLogId");
+  parameters.Append("MyLogId");
   scoped_refptr<WebrtcLoggingPrivateStoreFunction> store(
       CreateFunction<WebrtcLoggingPrivateStoreFunction>());
   const std::string error = utils::RunFunctionAndReturnError(

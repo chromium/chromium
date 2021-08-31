@@ -288,9 +288,9 @@ TEST(GetOptionalValue, DictionaryNoConversion) {
 
 TEST(GetOptionalValue, ListNoConversion) {
   base::ListValue lv1;
-  lv1.AppendString("1");
+  lv1.Append("1");
   base::ListValue lv2;
-  lv2.AppendString("2");
+  lv2.Append("2");
 
   base::Value params = lv1.Clone();
 

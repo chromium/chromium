@@ -44,7 +44,7 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
   entry->SetInteger("id", 1001);
   entry->SetString("suggest_url", "http://foo.com/suggest?q={searchTerms}");
   base::ListValue alternate_urls;
-  alternate_urls.AppendString("http://foo.com/alternate?q={searchTerms}");
+  alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
   entry->SetKey("alternate_urls", std::move(alternate_urls));
   overrides->Append(std::move(entry));
 

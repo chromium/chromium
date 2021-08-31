@@ -2577,7 +2577,7 @@ class DevToolsPolicyTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlackListedDevTools) {
   base::ListValue blacklist;
-  blacklist.AppendString("devtools://*");
+  blacklist.Append("devtools://*");
   policy::PolicyMap policies;
   policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

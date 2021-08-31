@@ -136,7 +136,7 @@ class UrlHandlersHandlerTest : public testing::Test {
       const std::string& expected_enabled_handlers = "",
       const std::string& expected_disabled_handlers = "") {
     base::ListValue list_args;
-    list_args.AppendString(kTestCallbackId);
+    list_args.Append(kTestCallbackId);
     web_ui()->HandleReceivedMessage("getUrlHandlers", &list_args);
 
     ASSERT_EQ(1u, web_ui()->call_data().size());
@@ -292,10 +292,10 @@ TEST_F(UrlHandlersHandlerTest, HandleResetUrlHandlerSavedChoice) {
   // Trigger resetUrlHandlerSavedChoice event directly. That should result
   // in local state prefs being updated and then update to WebUI.
   base::ListValue list_args;
-  list_args.AppendString("https://target-1.com");  // origin
+  list_args.Append("https://target-1.com");        // origin
   list_args.Append(false);                         // has_origin_wildcard
-  list_args.AppendString("/*");                    // url_path
-  list_args.AppendString(web_app->app_id());       // app_id
+  list_args.Append("/*");                          // url_path
+  list_args.Append(web_app->app_id());             // app_id
   web_ui()->HandleReceivedMessage("resetUrlHandlerSavedChoice", &list_args);
   ExpectUpdateUrlHandlers(kEmptyList, kEmptyList);
 }

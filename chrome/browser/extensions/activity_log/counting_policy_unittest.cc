@@ -314,7 +314,7 @@ class CountingPolicyTest : public testing::Test {
     scoped_refptr<Action> action = new Action(
         "punky1", mock_clock_.Now() - base::TimeDelta::FromMinutes(40),
         Action::ACTION_DOM_ACCESS, "lets1");
-    action->mutable_args()->AppendString("vamoose1");
+    action->mutable_args()->Append("vamoose1");
     action->set_page_url(GURL("http://www.google1.com"));
     action->set_page_title("Google1");
     action->set_arg_url(GURL("http://www.args-url1.com"));
@@ -326,7 +326,7 @@ class CountingPolicyTest : public testing::Test {
     action = new Action("punky2",
                         mock_clock_.Now() - base::TimeDelta::FromMinutes(30),
                         Action::ACTION_API_CALL, "lets2");
-    action->mutable_args()->AppendString("vamoose2");
+    action->mutable_args()->Append("vamoose2");
     action->set_page_url(GURL("http://www.google2.com"));
     action->set_page_title("Google2");
     action->set_arg_url(GURL("http://www.args-url2.com"));
@@ -463,31 +463,31 @@ TEST_F(CountingPolicyTest, GetTodaysActions) {
   scoped_refptr<Action> action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(40),
                  Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("woof");
+  action->mutable_args()->Append("woof");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(30),
                  Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("meow");
+  action->mutable_args()->Append("meow");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(20),
                  Action::ACTION_API_CALL, "extension.sendMessage");
-  action->mutable_args()->AppendString("not");
-  action->mutable_args()->AppendString("stripped");
+  action->mutable_args()->Append("not");
+  action->mutable_args()->Append("stripped");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
   action = new Action("scoobydoo", mock_clock_.Now(), Action::ACTION_DOM_ACCESS,
                       "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
@@ -515,24 +515,24 @@ TEST_F(CountingPolicyTest, GetOlderActions) {
                  mock_clock_.Now() - base::TimeDelta::FromDays(3) -
                      base::TimeDelta::FromMinutes(40),
                  Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("woof");
+  action->mutable_args()->Append("woof");
   policy->ProcessAction(action);
 
   action = new Action("punky", mock_clock_.Now() - base::TimeDelta::FromDays(3),
                       Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("too new");
+  action->mutable_args()->Append("too new");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
   action = new Action("punky", mock_clock_.Now() - base::TimeDelta::FromDays(7),
                       Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("too old");
+  action->mutable_args()->Append("too old");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
@@ -857,7 +857,7 @@ TEST_F(CountingPolicyTest, RemoveAllURLs) {
   // Record some actions
   scoped_refptr<Action> action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.args-url.com"));
@@ -866,7 +866,7 @@ TEST_F(CountingPolicyTest, RemoveAllURLs) {
   mock_clock_.Advance(base::TimeDelta::FromSeconds(1));
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google2.com"));
   action->set_page_title("Google");
   // Deliberately no arg url set to make sure it stills works if there is no arg
@@ -896,7 +896,7 @@ TEST_F(CountingPolicyTest, RemoveSpecificURLs) {
   // This should have the page url and args url cleared.
   scoped_refptr<Action> action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google1.com"));
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.google1.com"));
@@ -906,7 +906,7 @@ TEST_F(CountingPolicyTest, RemoveSpecificURLs) {
   mock_clock_.Advance(base::TimeDelta::FromSeconds(1));
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google1.com"));
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.google.com"));
@@ -917,7 +917,7 @@ TEST_F(CountingPolicyTest, RemoveSpecificURLs) {
   mock_clock_.Advance(base::TimeDelta::FromSeconds(1));
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google2.com"));
   action->set_page_title("Google");
   policy->ProcessAction(action);
@@ -926,7 +926,7 @@ TEST_F(CountingPolicyTest, RemoveSpecificURLs) {
   mock_clock_.Advance(base::TimeDelta::FromSeconds(1));
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.google1.com"));
@@ -936,7 +936,7 @@ TEST_F(CountingPolicyTest, RemoveSpecificURLs) {
   mock_clock_.Advance(base::TimeDelta::FromSeconds(1));
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.args-url.com"));
@@ -969,7 +969,7 @@ TEST_F(CountingPolicyTest, RemoveExtensionData) {
   scoped_refptr<Action> action =
       new Action("deleteextensiondata", mock_clock_.Now(),
                  Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
@@ -978,7 +978,7 @@ TEST_F(CountingPolicyTest, RemoveExtensionData) {
 
   scoped_refptr<Action> action2 = new Action("dontdelete", mock_clock_.Now(),
                                              Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_title("Google");
   action->set_arg_url(GURL("http://www.google.com"));
   policy->ProcessAction(action2);
@@ -1018,31 +1018,31 @@ TEST_F(CountingPolicyTest, DeleteDatabase) {
   scoped_refptr<Action> action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(40),
                  Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("woof");
+  action->mutable_args()->Append("woof");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(30),
                  Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("meow");
+  action->mutable_args()->Append("meow");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now() - base::TimeDelta::FromMinutes(20),
                  Action::ACTION_API_CALL, "extension.sendMessage");
-  action->mutable_args()->AppendString("not");
-  action->mutable_args()->AppendString("stripped");
+  action->mutable_args()->Append("not");
+  action->mutable_args()->Append("stripped");
   policy->ProcessAction(action);
 
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
   action = new Action("scoobydoo", mock_clock_.Now(), Action::ACTION_DOM_ACCESS,
                       "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 
@@ -1062,7 +1062,7 @@ TEST_F(CountingPolicyTest, DeleteDatabase) {
   // https://code.google.com/p/chromium/issues/detail?id=341674.
   action =
       new Action("punky", mock_clock_.Now(), Action::ACTION_DOM_ACCESS, "lets");
-  action->mutable_args()->AppendString("vamoose");
+  action->mutable_args()->Append("vamoose");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 

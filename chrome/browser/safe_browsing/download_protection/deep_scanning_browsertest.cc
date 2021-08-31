@@ -992,7 +992,7 @@ class AllowlistedUrlDeepScanningBrowserTest
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
 
     base::ListValue domain_list;
-    domain_list.AppendString(embedded_test_server()->base_url().host_piece());
+    domain_list.Append(embedded_test_server()->base_url().host_piece());
     browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                           domain_list);
   }

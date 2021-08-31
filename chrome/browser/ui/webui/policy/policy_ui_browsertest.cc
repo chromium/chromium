@@ -408,9 +408,9 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   SetChromeMetaData(&expected_values);
 
   base::ListValue popups_blocked_for_urls;
-  popups_blocked_for_urls.AppendString("aaa");
-  popups_blocked_for_urls.AppendString("bbb");
-  popups_blocked_for_urls.AppendString("ccc");
+  popups_blocked_for_urls.Append("aaa");
+  popups_blocked_for_urls.Append("bbb");
+  popups_blocked_for_urls.Append("ccc");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   expected_values.RemovePath(std::string("chromePolicies.") +
                              std::string(policy::key::kDefaultImagesSetting));
 
-  popups_blocked_for_urls.AppendString("ddd");
+  popups_blocked_for_urls.Append("ddd");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   values.Set(policy::key::kAllowFileSelectionDialogs,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
              policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
-  popups_blocked_for_urls.AppendString("eeeeee");
+  popups_blocked_for_urls.Append("eeeeee");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);

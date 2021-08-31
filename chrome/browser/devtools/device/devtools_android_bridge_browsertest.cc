@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
 
   int invocations = called;
   base::ListValue list;
-  list.AppendString("somehost:2000");
+  list.Append("somehost:2000");
 
   service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
 
@@ -82,11 +82,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
   EXPECT_EQ(nullptr, provider);
   invocations = called;
 
-  list.AppendString("b:1");
-  list.AppendString("c:2");
-  list.AppendString("<not really a good address.");
-  list.AppendString("d:3");
-  list.AppendString("c:2");
+  list.Append("b:1");
+  list.Append("c:2");
+  list.Append("<not really a good address.");
+  list.Append("d:3");
+  list.Append("c:2");
   service->Set(prefs::kDevToolsTCPDiscoveryConfig, list);
 
   EXPECT_LT(invocations, called);

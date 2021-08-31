@@ -125,7 +125,7 @@ void GcmRegisterFunction::CompleteFunctionWithResult(
     const std::string& registration_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(registration_id);
+  result->Append(registration_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded
@@ -183,7 +183,7 @@ void GcmSendFunction::CompleteFunctionWithResult(
     const std::string& message_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(message_id);
+  result->Append(message_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded

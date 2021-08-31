@@ -704,8 +704,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   GURL url = https_test_server.GetURL("/webrequest/simulate_click.html");
 
   base::ListValue custom_args;
-  custom_args.AppendString(url.spec());
-  custom_args.AppendString(insecure_destination.spec());
+  custom_args.Append(url.spec());
+  custom_args.Append(insecure_destination.spec());
 
   std::string config_string;
   base::JSONWriter::Write(custom_args, &config_string);

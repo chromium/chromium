@@ -195,7 +195,7 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
 #endif
   ExpectString("name", "dummy");
   base::ListValue expected_list;
-  expected_list.AppendString(media::VideoCaptureFormat::ToString(format_hd));
+  expected_list.Append(media::VideoCaptureFormat::ToString(format_hd));
   ExpectListOfStrings("formats", expected_list);
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ExpectString("captureApi", "V4L2 SPLANE");

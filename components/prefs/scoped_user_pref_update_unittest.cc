@@ -91,7 +91,7 @@ TEST_F(ScopedUserPrefUpdateTest, UpdatingListPrefWithDefaults) {
   EXPECT_EQ(2u, prefs_.GetList(pref_name)->GetList().size());
 
   ListPrefUpdate update(&prefs_, pref_name);
-  update->AppendString("thirdvalue");
+  update->Append("thirdvalue");
   EXPECT_EQ(3u, prefs_.GetList(pref_name)->GetList().size());
 }
 

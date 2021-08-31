@@ -2896,11 +2896,11 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
-  allowlist.AppendString(initial_url.host());
-  allowlist.AppendString(multi_frame_test_url.host());
-  allowlist.AppendString(iframe_url.host());
-  allowlist.AppendString(iframe_retargeting_url.host());
-  allowlist.AppendString(download_url.host());
+  allowlist.Append(initial_url.host());
+  allowlist.Append(multi_frame_test_url.host());
+  allowlist.Append(iframe_url.host());
+  allowlist.Append(iframe_retargeting_url.host());
+  allowlist.Append(download_url.host());
   browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                         allowlist);
 
@@ -2970,9 +2970,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
-  allowlist.AppendString(initial_url.host());
-  allowlist.AppendString(download_url.host());
-  allowlist.AppendString(request_url.host());
+  allowlist.Append(initial_url.host());
+  allowlist.Append(download_url.host());
+  allowlist.Append(request_url.host());
   browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                         allowlist);
 
@@ -3004,8 +3004,8 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
-  allowlist.AppendString(initial_url.host());
-  allowlist.AppendString(download_url.host());
+  allowlist.Append(initial_url.host());
+  allowlist.Append(download_url.host());
   browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                         allowlist);
 

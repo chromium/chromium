@@ -130,7 +130,7 @@ void SetExtensionIdSet(base::DictionaryValue* dictionary,
                        const ExtensionIdSet& ids) {
   auto id_list = std::make_unique<base::ListValue>();
   for (auto i = ids.begin(); i != ids.end(); ++i)
-    id_list->AppendString(*i);
+    id_list->Append(*i);
   dictionary->Set(key, std::move(id_list));
 }
 
@@ -348,7 +348,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   dictionary.SetString(kHashKey, hash_base64);
   std::unique_ptr<base::ListValue> id_list(new base::ListValue);
   for (auto i = ids_.begin(); i != ids_.end(); ++i) {
-    id_list->AppendString(*i);
+    id_list->Append(*i);
   }
   dictionary.Set(kIdsKey, std::move(id_list));
   std::string json;

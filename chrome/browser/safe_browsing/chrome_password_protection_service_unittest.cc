@@ -598,8 +598,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // Verify if match enterprise allowlist.
   base::ListValue allowlist;
-  allowlist.AppendString("mydomain.com");
-  allowlist.AppendString("mydomain.net");
+  allowlist.Append("mydomain.com");
+  allowlist.Append("mydomain.net");
   profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
@@ -620,7 +620,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
   base::ListValue login_urls;
-  login_urls.AppendString("https://mydomain.com/login.html");
+  login_urls.Append("https://mydomain.com/login.html");
   profile()->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs, login_urls);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
@@ -1489,7 +1489,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
 
   // Add |trigger_url| to enterprise allowlist.
   base::ListValue allowlisted_domains;
-  allowlisted_domains.AppendString(trigger_url.host());
+  allowlisted_domains.Append(trigger_url.host());
   profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                              allowlisted_domains);
   reused_password_type.set_account_type(
@@ -1557,8 +1557,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PHISHING_REUSE);
     base::ListValue allowlist;
-    allowlist.AppendString("mydomain.com");
-    allowlist.AppendString("mydomain.net");
+    allowlist.Append("mydomain.com");
+    allowlist.Append("mydomain.net");
     profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
     EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(

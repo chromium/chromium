@@ -20,9 +20,8 @@ class DefaultSearchPolicyHandlerTest
     : public ConfigurationPolicyPrefStoreTest {
  public:
   DefaultSearchPolicyHandlerTest() {
-    default_alternate_urls_.AppendString(
-        "http://www.google.com/#q={searchTerms}");
-    default_alternate_urls_.AppendString(
+    default_alternate_urls_.Append("http://www.google.com/#q={searchTerms}");
+    default_alternate_urls_.Append(
         "http://www.google.com/search#q={searchTerms}");
   }
 
@@ -215,8 +214,8 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
   EXPECT_EQ(kIconURL, value);
 
   base::ListValue encodings;
-  encodings.AppendString("UTF-16");
-  encodings.AppendString("UTF-8");
+  encodings.Append("UTF-16");
+  encodings.Append("UTF-8");
 
   EXPECT_TRUE(
       dictionary->GetList(DefaultSearchManager::kInputEncodings, &list_value));

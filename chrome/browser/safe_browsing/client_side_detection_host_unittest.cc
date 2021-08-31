@@ -1103,7 +1103,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
   // Configures enterprise allowlist.
   ListPrefUpdate update(profile()->GetPrefs(),
                         prefs::kSafeBrowsingAllowlistDomains);
-  update->AppendString("example.com");
+  update->Append("example.com");
 
   EXPECT_CALL(*csd_service_, GetModelStr())
       .WillRepeatedly(ReturnRef(model_str_));

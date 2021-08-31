@@ -38,7 +38,7 @@ std::unique_ptr<base::ListValue> CreateBaseEventArgs(
       scoped_notification_id.substr(index_of_separator);
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(unscoped_notification_id);
+  args->Append(unscoped_notification_id);
   return args;
 }
 

@@ -354,7 +354,7 @@ scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
       source.Set(extensions::manifest_keys::kPlatformAppBackground,
                  std::make_unique<base::DictionaryValue>());
       auto scripts = std::make_unique<base::ListValue>();
-      scripts->AppendString("main.js");
+      scripts->Append("main.js");
       source.Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
                  std::move(scripts));
       break;

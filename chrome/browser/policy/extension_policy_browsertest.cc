@@ -288,9 +288,8 @@ class ExtensionPolicyTest : public PolicyTest {
     // Setting the forcelist extension should install extension with ExtensionId
     // equal to id.
     base::ListValue forcelist;
-    forcelist.AppendString(
-        base::StringPrintf(update_url.is_empty() ? "%s" : "%s;%s", id.c_str(),
-                           update_url.spec().c_str()));
+    forcelist.Append(base::StringPrintf(update_url.is_empty() ? "%s" : "%s;%s",
+                                        id.c_str(), update_url.spec().c_str()));
     policies->Set(key::kExtensionInstallForcelist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(forcelist),
                   nullptr);
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   ASSERT_FALSE(registry->GetExtensionById(
       kSimpleWithIconCrxId, extensions::ExtensionRegistry::EVERYTHING));
   base::ListValue blocklist;
-  blocklist.AppendString(kGoodCrxId);
+  blocklist.Append(kGoodCrxId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
@@ -449,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kSimpleWithIconCrxId));
   base::ListValue blocklist;
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
@@ -513,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // Blocklist "*" but force-install the importer extension. The shared module
   // should be automatically installed too.
   base::ListValue blocklist;
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   PolicyMap policies;
   AddExtensionToForceList(&policies, kImporterId, update_xml_url);
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
@@ -560,9 +559,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallAllowlist) {
   ASSERT_FALSE(registry->GetExtensionById(
       kSimpleWithIconCrxId, extensions::ExtensionRegistry::EVERYTHING));
   base::ListValue blocklist;
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   base::ListValue allowlist;
-  allowlist.AppendString(kGoodCrxId);
+  allowlist.Append(kGoodCrxId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
@@ -1937,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
       kHostedAppCrxId, extensions::ExtensionRegistry::EVERYTHING));
 
   base::ListValue allowed_types;
-  allowed_types.AppendString("hosted_app");
+  allowed_types.Append("hosted_app");
   PolicyMap policies;
   policies.Set(key::kExtensionAllowedTypes, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, allowed_types.Clone(),
@@ -1993,8 +1992,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, MAYBE_ExtensionInstallSources) {
 
   // Install the policy and trigger another download.
   base::ListValue install_sources;
-  install_sources.AppendString(install_source_url.spec());
-  install_sources.AppendString(referrer_url.spec());
+  install_sources.Append(install_source_url.spec());
+  install_sources.Append(referrer_url.spec());
   PolicyMap policies;
   policies.Set(key::kExtensionInstallSources, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, install_sources.Clone(),

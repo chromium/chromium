@@ -336,7 +336,7 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
       voice.events.find(content::TTS_EVENT_END) != voice.events.end();
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(utterance->GetText());
+  args->Append(utterance->GetText());
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.

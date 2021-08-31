@@ -92,7 +92,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
     }
     base::ListValue endpoints;
     for (auto endpoint : addresses)
-      endpoints.AppendString(endpoint.ToStringWithoutPort());
+      endpoints.Append(endpoint.ToStringWithoutPort());
     std::string json;
     CHECK(base::JSONWriter::Write(endpoints, &json));
     VLOG(0) << "resolved " << url_.HostNoBracketsPiece() << " to " << json;

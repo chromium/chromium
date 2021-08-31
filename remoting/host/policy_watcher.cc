@@ -268,7 +268,7 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
       dict->GetString(policy::key::kRemoteAccessHostDomain, &domain);
       if (!domain.empty()) {
         auto list = std::make_unique<base::ListValue>();
-        list->AppendString(domain);
+        list->Append(domain);
         dict->Set(policy::key::kRemoteAccessHostDomainList, std::move(list));
       }
     }
@@ -282,7 +282,7 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
       dict->GetString(policy::key::kRemoteAccessHostClientDomain, &domain);
       if (!domain.empty()) {
         auto list = std::make_unique<base::ListValue>();
-        list->AppendString(domain);
+        list->Append(domain);
         dict->Set(policy::key::kRemoteAccessHostClientDomainList,
                   std::move(list));
       }

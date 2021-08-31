@@ -106,13 +106,13 @@ void WebAuthFlow::Start() {
 
   // identityPrivate.onWebFlowRequest(app_window_key, provider_url_, mode_)
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(app_window_key_);
-  args->AppendString(provider_url_.spec());
+  args->Append(app_window_key_);
+  args->Append(provider_url_.spec());
   if (mode_ == WebAuthFlow::INTERACTIVE)
-    args->AppendString("interactive");
+    args->Append("interactive");
   else
-    args->AppendString("silent");
-  args->AppendString(GetPartitionName(partition_));
+    args->Append("silent");
+  args->Append(GetPartitionName(partition_));
 
   auto event =
       std::make_unique<Event>(events::IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST,

@@ -143,7 +143,7 @@ TEST(URLMatcherFactoryTest, UpperCase) {
 
   // {"scheme": ["HTTP"]}
   auto scheme_list = std::make_unique<base::ListValue>();
-  scheme_list->AppendString("HTTP");
+  scheme_list->Append("HTTP");
   base::DictionaryValue invalid_condition5;
   invalid_condition5.Set(keys::kSchemesKey, std::move(scheme_list));
 
@@ -236,7 +236,7 @@ void UrlConditionCaseTest::CheckCondition(
   base::DictionaryValue condition;
   if (use_list_of_strings_) {
     auto list = std::make_unique<base::ListValue>();
-    list->AppendString(value);
+    list->Append(value);
     condition.SetKey(condition_key_,
                      base::Value::FromUniquePtrValue(std::move(list)));
   } else {

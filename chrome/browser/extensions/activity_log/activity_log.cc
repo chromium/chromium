@@ -691,7 +691,7 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
           no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
         action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-        action->mutable_args()->AppendString(*it2);
+        action->mutable_args()->Append(*it2);
       }
       LogAction(action);
     }

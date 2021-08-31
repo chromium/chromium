@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   base::ListValue blacklist;
-  blacklist.AppendString("test.example.org");
+  blacklist.Append("test.example.org");
   policy::PolicyMap policies;
   policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

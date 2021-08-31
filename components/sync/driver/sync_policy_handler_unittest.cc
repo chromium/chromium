@@ -72,9 +72,9 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   // Create a policy that disables some types.
   policy::PolicyMap policy;
   base::ListValue disabled_types;
-  disabled_types.AppendString("bookmarks");
-  disabled_types.AppendString("readingList");
-  disabled_types.AppendString("preferences");
+  disabled_types.Append("bookmarks");
+  disabled_types.Append("readingList");
+  disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);

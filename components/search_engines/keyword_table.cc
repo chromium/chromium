@@ -126,7 +126,7 @@ void BindURLToStatement(const TemplateURLData& data,
   // See: crbug.com/153520
   base::ListValue alternate_urls_value;
   for (size_t i = 0; i < data.alternate_urls.size(); ++i)
-    alternate_urls_value.AppendString(data.alternate_urls[i]);
+    alternate_urls_value.Append(data.alternate_urls[i]);
   std::string alternate_urls;
   base::JSONWriter::Write(alternate_urls_value, &alternate_urls);
 

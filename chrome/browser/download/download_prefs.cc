@@ -676,7 +676,7 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
     // Since we only want to auto-open for the specified urls, block everything
     // else.
     auto blocked = std::make_unique<base::ListValue>();
-    blocked->AppendString("*");
+    blocked->Append("*");
     allowed_urls->Block(blocked.get());
   }
 

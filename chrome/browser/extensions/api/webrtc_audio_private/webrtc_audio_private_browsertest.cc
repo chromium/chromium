@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
         raw_device_id);
 
     base::ListValue parameters;
-    parameters.AppendString(origin.spec());
-    parameters.AppendString(source_id_in_origin);
+    parameters.Append(origin.spec());
+    parameters.Append(source_id_in_origin);
     std::string parameter_string;
     JSONWriter::Write(parameters, &parameter_string);
 

@@ -218,7 +218,7 @@ TEST_F(OriginTrialsComponentInstallerTest, DisabledFeaturesSetWhenListExists) {
 
   auto manifest = std::make_unique<base::DictionaryValue>();
   base::ListValue disabled_feature_list;
-  disabled_feature_list.AppendString(kNewDisabledFeature1);
+  disabled_feature_list.Append(kNewDisabledFeature1);
   manifest->SetPath(kManifestDisabledFeaturesPath,
                     std::move(disabled_feature_list));
 
@@ -299,7 +299,7 @@ TEST_F(OriginTrialsComponentInstallerTest, DisabledTokensSetWhenListExists) {
 
   auto manifest = std::make_unique<base::DictionaryValue>();
   base::ListValue disabled_token_list;
-  disabled_token_list.AppendString(kNewDisabledToken1);
+  disabled_token_list.Append(kNewDisabledToken1);
   manifest->SetPath(kManifestDisabledTokenSignaturesPath,
                     std::move(disabled_token_list));
 

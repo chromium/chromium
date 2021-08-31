@@ -193,7 +193,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicy) {
   TestingProfile profile;
   ListPrefUpdate update(profile.GetPrefs(),
                         prefs::kDownloadExtensionsToOpenByPolicy);
-  update->AppendString("txt");
+  update->Append("txt");
   DownloadPrefs prefs(&profile);
 
   EXPECT_TRUE(prefs.IsAutoOpenEnabled(kURL, kBasicFilePath));
@@ -211,7 +211,7 @@ TEST(DownloadPrefsTest, IsAutoOpenByPolicy) {
   TestingProfile profile;
   ListPrefUpdate update(profile.GetPrefs(),
                         prefs::kDownloadExtensionsToOpenByPolicy);
-  update->AppendString("exe");
+  update->Append("exe");
   DownloadPrefs prefs(&profile);
   EXPECT_TRUE(prefs.EnableAutoOpenByUserBasedOnExtension(kFilePathType1));
 
@@ -230,7 +230,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyDangerousType) {
   TestingProfile profile;
   ListPrefUpdate update(profile.GetPrefs(),
                         prefs::kDownloadExtensionsToOpenByPolicy);
-  update->AppendString("swf");
+  update->Append("swf");
   DownloadPrefs prefs(&profile);
 
   // Verifies that the user can't set this file type to auto-open, but it can
@@ -279,10 +279,10 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLs) {
   TestingProfile profile;
   ListPrefUpdate update_type(profile.GetPrefs(),
                              prefs::kDownloadExtensionsToOpenByPolicy);
-  update_type->AppendString("txt");
+  update_type->Append("txt");
   ListPrefUpdate update_url(profile.GetPrefs(),
                             prefs::kDownloadAllowedURLsForOpenByPolicy);
-  update_url->AppendString("basic.com");
+  update_url->Append("basic.com");
   DownloadPrefs prefs(&profile);
 
   // Verifies that the file only opens for the allowed url.
@@ -299,7 +299,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
   TestingProfile profile;
   ListPrefUpdate update_type(profile.GetPrefs(),
                              prefs::kDownloadExtensionsToOpenByPolicy);
-  update_type->AppendString("txt");
+  update_type->Append("txt");
   DownloadPrefs prefs(&profile);
 
   // Ensure both urls work when no restrictions are present.
@@ -310,7 +310,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
   {
     ListPrefUpdate update_url(profile.GetPrefs(),
                               prefs::kDownloadAllowedURLsForOpenByPolicy);
-    update_url->AppendString("basic.com");
+    update_url->Append("basic.com");
   }
 
   EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kAllowedURL, kFilePath));
@@ -340,7 +340,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
   TestingProfile profile;
   ListPrefUpdate update_type(profile.GetPrefs(),
                              prefs::kDownloadExtensionsToOpenByPolicy);
-  update_type->AppendString("txt");
+  update_type->Append("txt");
   DownloadPrefs prefs(&profile);
 
   // Ensure both urls work in either form when no URL restrictions are present.
@@ -353,7 +353,7 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
   {
     ListPrefUpdate update_url(profile.GetPrefs(),
                               prefs::kDownloadAllowedURLsForOpenByPolicy);
-    update_url->AppendString("basic.com");
+    update_url->Append("basic.com");
   }
 
   // Ensure |kAllowedURL| continutes to work and |kDisallowedURL| is blocked,

@@ -90,7 +90,7 @@ TEST(IPCMessageTest, Bitmap) {
 TEST(IPCMessageTest, ListValue) {
   base::ListValue input;
   input.Append(42.42);
-  input.AppendString("forty");
+  input.Append("forty");
   input.Append(std::make_unique<base::Value>());
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -121,8 +121,8 @@ TEST(IPCMessageTest, DictionaryValue) {
 
   base::ListValue sublist;
   sublist.Append(42.42);
-  sublist.AppendString("forty");
-  sublist.AppendString("two");
+  sublist.Append("forty");
+  sublist.Append("two");
   subdict.SetKey("list", std::move(sublist));
 
   input.SetKey("dict", std::move(subdict));

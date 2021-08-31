@@ -215,9 +215,9 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
         permission_info->CreateAPIPermission());
     {
       std::unique_ptr<base::ListValue> value(new base::ListValue());
-      value->AppendString("tcp-connect:*.example.com:80");
-      value->AppendString("udp-bind::8080");
-      value->AppendString("udp-send-to::8888");
+      value->Append("tcp-connect:*.example.com:80");
+      value->Append("udp-bind::8080");
+      value->Append("udp-send-to::8888");
       ASSERT_TRUE(permission->FromValue(value.get(), NULL, NULL));
     }
     api_perm_set1_.insert(std::move(permission));
@@ -621,7 +621,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     manifest.SetString(manifest_keys::kVersion, "0.2");
     manifest.SetInteger(manifest_keys::kManifestVersion, 2);
     std::unique_ptr<base::ListValue> scripts(new base::ListValue);
-    scripts->AppendString("test.js");
+    scripts->Append("test.js");
     manifest.Set(manifest_keys::kBackgroundScripts, std::move(scripts));
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII("test_0.2");
@@ -1409,7 +1409,7 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
   prefs.prefs()->SetDictionaryPref(extension_id, kTestDictPref,
                                    std::move(dict));
   auto list = base::ListValue();
-  list.AppendString("list_val");
+  list.Append("list_val");
   prefs.prefs()->SetListPref(extension_id, kTestListPref, std::move(list));
   base::Time time = base::Time::Now();
   prefs.prefs()->SetTimePref(extension_id, kTestTimePref, time);

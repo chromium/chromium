@@ -412,9 +412,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
         if (ui::IsNodeIdIntListAttribute(attr)) {
           BrowserAccessibility* target = node.manager()->GetFromID(values[i]);
           if (target)
-            value_list.AppendString(ui::ToString(target->GetData().role));
+            value_list.Append(ui::ToString(target->GetData().role));
           else
-            value_list.AppendString("null");
+            value_list.Append("null");
         } else {
           value_list.AppendInteger(values[i]);
         }
@@ -562,9 +562,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
                                    ->GetNodeFromTree(tree_id, node.id());
 
           if (target)
-            value_list.AppendString(ui::ToString(target->data().role));
+            value_list.Append(ui::ToString(target->data().role));
           else
-            value_list.AppendString("null");
+            value_list.Append("null");
         } else {
           value_list.AppendInteger(value);
         }

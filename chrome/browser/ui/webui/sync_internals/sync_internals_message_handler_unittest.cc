@@ -247,14 +247,14 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   ListValue args;
-  args.AppendString("getAllNodes_0");
+  args.Append("getAllNodes_0");
   handler()->HandleGetAllNodes(&args);
   test_sync_service()->get_all_nodes_callback().Run(
       std::make_unique<ListValue>());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
   ListValue args2;
-  args2.AppendString("getAllNodes_1");
+  args2.Append("getAllNodes_1");
   handler()->HandleGetAllNodes(&args2);
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
@@ -264,7 +264,7 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
   ListValue args3;
-  args3.AppendString("getAllNodes_2");
+  args3.Append("getAllNodes_2");
   handler()->HandleGetAllNodes(&args3);
   test_sync_service()->get_all_nodes_callback().Run(
       std::make_unique<ListValue>());
@@ -293,8 +293,8 @@ TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfoSyncDisabled) {
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
   ListValue args;
-  args.AppendString("1000000000000000000");
-  args.AppendString("-1");
+  args.Append("1000000000000000000");
+  args.Append("-1");
   handler()->HandleWriteUserEvent(&args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
@@ -307,8 +307,8 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
   ListValue args;
-  args.AppendString("123abc");
-  args.AppendString("abcdefghijklmnopqrstuvwxyz");
+  args.Append("123abc");
+  args.Append("abcdefghijklmnopqrstuvwxyz");
   handler()->HandleWriteUserEvent(&args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
@@ -321,8 +321,8 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
   ListValue args;
-  args.AppendString("");
-  args.AppendString("");
+  args.Append("");
+  args.Append("");
   handler()->HandleWriteUserEvent(&args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
@@ -338,8 +338,8 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
   ListValue args;
-  args.AppendString("0");
-  args.AppendString("0");
+  args.Append("0");
+  args.Append("0");
   handler()->HandleWriteUserEvent(&args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());

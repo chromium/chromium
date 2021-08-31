@@ -142,7 +142,7 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
   for (const std::string& cur :
        base::SplitString(values, ",", base::KEEP_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY))
-    list_value.AppendString(cur);
+    list_value.Append(cur);
   return ExtraInfoSpec::InitFromValue(browser_context, list_value, result);
 }
 

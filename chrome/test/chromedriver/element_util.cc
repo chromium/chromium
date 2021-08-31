@@ -200,7 +200,7 @@ Status GetElementEffectiveStyle(
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendString(property);
+  args.Append(property);
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
       frame, webdriver::atoms::asString(webdriver::atoms::GET_EFFECTIVE_STYLE),
@@ -477,7 +477,7 @@ Status GetElementAttribute(Session* session,
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendString(attribute_name);
+  args.Append(attribute_name);
   return CallAtomsJs(
       session->GetCurrentFrameId(), web_view, webdriver::atoms::GET_ATTRIBUTE,
       args, value);
@@ -837,9 +837,8 @@ Status ScrollElementRegionIntoView(
   for (auto rit = session->frames.rbegin(); rit != session->frames.rend();
        ++rit) {
     base::ListValue args;
-    args.AppendString(
-        base::StringPrintf("//*[@cd_frame_id_ = '%s']",
-                           rit->chromedriver_frame_id.c_str()));
+    args.Append(base::StringPrintf("//*[@cd_frame_id_ = '%s']",
+                                   rit->chromedriver_frame_id.c_str()));
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(
         rit->parent_frame_id, kFindSubFrameScript, args, &result);
@@ -892,8 +891,8 @@ Status GetElementLocationInViewCenter(Session* session,
   for (auto rit = session->frames.rbegin(); rit != session->frames.rend();
        ++rit) {
     base::ListValue args;
-    args.AppendString(base::StringPrintf("//*[@cd_frame_id_ = '%s']",
-                                         rit->chromedriver_frame_id.c_str()));
+    args.Append(base::StringPrintf("//*[@cd_frame_id_ = '%s']",
+                                   rit->chromedriver_frame_id.c_str()));
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(rit->parent_frame_id, kFindSubFrameScript,
                                     args, &result);

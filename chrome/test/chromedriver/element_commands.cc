@@ -562,7 +562,7 @@ Status ExecuteSendKeysToElement(Session* session,
     DCHECK(text != nullptr);
     base::ListValue args;
     args.Append(CreateElement(element_id));
-    args.AppendString(text->GetString());
+    args.Append(text->GetString());
     std::unique_ptr<base::Value> result;
     // Set value to text as given by user; if this does not match the defined
     // format for the input type, results are not defined
@@ -720,7 +720,7 @@ Status ExecuteGetElementProperty(Session* session,
   std::string name;
   if (!params.GetString("name", &name))
     return Status(kInvalidArgument, "missing 'name'");
-  args.AppendString(name);
+  args.Append(name);
 
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -993,7 +993,7 @@ Status ExecuteGetElementAttribute(Session* session,
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendString(attribute_name);
+  args.Append(attribute_name);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       booleanAttributes.count(base::ToLowerASCII(attribute_name))

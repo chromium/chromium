@@ -76,7 +76,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     // Verifies that policy can set the startup pages to a list of URLs.
     base::ListValue urls;
     for (const auto* url : kRestoredURLs) {
-      urls.AppendString(url);
+      urls.Append(url);
       expected_urls_.push_back(GURL(url));
     }
     PolicyMap policies;
