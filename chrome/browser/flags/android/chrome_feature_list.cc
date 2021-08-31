@@ -133,6 +133,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHSnooze,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feed::kFeedImageMemoryCacheSizePercentage,
+    &feed::kFeedBackToTop,
     &feed::kFeedInteractiveRefresh,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedSpinnerAlwaysAnimate,

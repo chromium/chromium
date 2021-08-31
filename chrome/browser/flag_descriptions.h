@@ -1770,6 +1770,9 @@ extern const char kEnableUseAaudioDriverDescription[];
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 
+extern const char kFeedBackToTopName[];
+extern const char kFeedBackToTopDescription[];
+
 extern const char kFeedInteractiveRefreshName[];
 extern const char kFeedInteractiveRefreshDescription[];
 

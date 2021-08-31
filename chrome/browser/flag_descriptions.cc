@@ -3089,6 +3089,11 @@ const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";
 
+const char kFeedBackToTopName[] = "Back to top of the feeds";
+const char kFeedBackToTopDescription[] =
+    "Enables showing a callout to help users return to the top of the feeds "
+    "quickly.";
+
 const char kFeedInteractiveRefreshName[] = "Refresh feeds";
 const char kFeedInteractiveRefreshDescription[] =
     "Enables refreshing feeds triggered by the users.";

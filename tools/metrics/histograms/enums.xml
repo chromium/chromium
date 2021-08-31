@@ -47251,6 +47251,7 @@ from previous Chrome versions.
       label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
   <int value="-1920912991" label="PermissionChip:disabled"/>
+  <int value="-1920004248" label="FeedBackToTop:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
@@ -48313,6 +48314,7 @@ from previous Chrome versions.
   <int value="-1117894706" label="DarkLightMode:enabled"/>
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
+  <int value="-1115681358" label="FeedBackToTop:enabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
