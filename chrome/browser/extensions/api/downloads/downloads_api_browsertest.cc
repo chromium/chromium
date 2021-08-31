@@ -1717,8 +1717,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that we can start a download from an incognito context, and that the
 // download knows that it's incognito.
+#if defined(OS_WIN)
+// TODO(https://crbug.com/1245173) Flaky on Win7
+#define MAYBE_DownloadExtensionTest_Download_Incognito \
+  DISABLED_DownloadExtensionTest_Download_Incognito
+#else
+#define MAYBE_DownloadExtensionTest_Download_Incognito \
+  DownloadExtensionTest_Download_Incognito
+#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_Incognito) {
+                       MAYBE_DownloadExtensionTest_Download_Incognito) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   GoOffTheRecord();
@@ -2120,8 +2128,17 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // conflictAction may be specified without filename.
+#if defined(OS_WIN)
+// TODO(https://crbug.com/1245173) Flaky on Win7
+#define MAYBE_DownloadExtensionTest_Download_ConflictAction \
+  DISABLED_DownloadExtensionTest_Download_ConflictAction
+#else
+#define MAYBE_DownloadExtensionTest_Download_ConflictAction \
+  DownloadExtensionTest_Download_ConflictAction
+#endif
+
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_ConflictAction) {
+                       MAYBE_DownloadExtensionTest_Download_ConflictAction) {
   static char kFilename[] = "download.txt";
   LoadExtension("downloads_split");
   std::string download_url = "data:text/plain,hello";
@@ -2493,8 +2510,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that DownloadsDownloadFunction propagates the |method| and |body|
 // parameters to the URLRequest.
+#if defined(OS_WIN)
+// TODO(https://crbug.com/1245173) Flaky on Win7
+#define MAYBE_DownloadExtensionTest_Download_Post \
+  DISABLED_DownloadExtensionTest_Download_Post
+#else
+#define MAYBE_DownloadExtensionTest_Download_Post \
+  DownloadExtensionTest_Download_Post
+#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_Post) {
+                       MAYBE_DownloadExtensionTest_Download_Post) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()

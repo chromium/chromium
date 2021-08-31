@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace memory {
@@ -23,7 +24,13 @@ class MemoryAblationStudyTest : public testing::Test {
 };
 
 // Tests basic functionality of the MemoryAblationStudy class.
-TEST_F(MemoryAblationStudyTest, Basic) {
+#if defined(OS_WIN)
+// TODO(https://crbug.com/1245173) Flaky on Win7
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST_F(MemoryAblationStudyTest, MAYBE_Basic) {
   // Ablate 137MB.
   base::FieldTrialParams params;
   params["ablation-size-mb"] = "137";
