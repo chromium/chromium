@@ -22,22 +22,21 @@ BrowserCloudManagementStatusProvider::BrowserCloudManagementStatusProvider() =
 BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
-bool BrowserCloudManagementStatusProvider::IsManaged() {
+EnterpriseManagementAuthority
+BrowserCloudManagementStatusProvider::GetAuthority() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
+  return EnterpriseManagementAuthority::NONE;
 #elif !defined(OS_ANDROID)
   // A machine level user cloud policy manager is only created if the browser is
   // managed by CBCM.
-  return g_browser_process->browser_policy_connector()
-             ->machine_level_user_cloud_policy_manager() != nullptr;
+  if (g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager() != nullptr) {
+    return EnterpriseManagementAuthority::CLOUD_DOMAIN;
+  }
+  return EnterpriseManagementAuthority::NONE;
 #else
-  return false;
+  return EnterpriseManagementAuthority::NONE;
 #endif
-}
-
-EnterpriseManagementAuthority
-BrowserCloudManagementStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::CLOUD_DOMAIN;
 }
 
 LocalBrowserManagementStatusProvider::LocalBrowserManagementStatusProvider() =
@@ -46,18 +45,19 @@ LocalBrowserManagementStatusProvider::LocalBrowserManagementStatusProvider() =
 LocalBrowserManagementStatusProvider::~LocalBrowserManagementStatusProvider() =
     default;
 
-bool LocalBrowserManagementStatusProvider::IsManaged() {
-  return g_browser_process->browser_policy_connector()
-      ->HasMachineLevelPolicies();
-}
-
 EnterpriseManagementAuthority
 LocalBrowserManagementStatusProvider::GetAuthority() {
+  EnterpriseManagementAuthority result = EnterpriseManagementAuthority::NONE;
 #if defined(OS_WIN)
-  if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain())
-    return EnterpriseManagementAuthority::DOMAIN_LOCAL;
+  if (!g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
+    return result;
+  if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain()) {
+    result = policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain()
+                 ? EnterpriseManagementAuthority::DOMAIN_LOCAL
+                 : EnterpriseManagementAuthority::COMPUTER_LOCAL;
+  }
 #endif
-  return EnterpriseManagementAuthority::COMPUTER_LOCAL;
+  return result;
 }
 
 ProfileCloudManagementStatusProvider::ProfileCloudManagementStatusProvider(
@@ -67,11 +67,10 @@ ProfileCloudManagementStatusProvider::ProfileCloudManagementStatusProvider(
 ProfileCloudManagementStatusProvider::~ProfileCloudManagementStatusProvider() =
     default;
 
-bool ProfileCloudManagementStatusProvider::IsManaged() {
-  return profile_->GetProfilePolicyConnector()->IsManaged();
-}
-
 EnterpriseManagementAuthority
 ProfileCloudManagementStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::CLOUD;
+  return profile_ && profile_->GetProfilePolicyConnector() &&
+                 profile_->GetProfilePolicyConnector()->IsManaged()
+             ? EnterpriseManagementAuthority::CLOUD
+             : EnterpriseManagementAuthority::NONE;
 }

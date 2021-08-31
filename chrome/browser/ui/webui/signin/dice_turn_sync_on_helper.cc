@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
@@ -520,25 +519,21 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // dialog is shown to check whether sync was disabled by admin. Only wait
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
-    auto management_authorities =
-        policy::ManagementServiceFactory::GetForProfile(profile_)
-            ->GetManagementAuthorities();
-    auto platform_management_authorities =
-        policy::ManagementServiceFactory::GetForPlatform()
-            ->GetManagementAuthorities();
-    management_authorities.insert(platform_management_authorities.begin(),
-                                  platform_management_authorities.end());
-    bool is_enterprise_user =
-        !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-            account_info_.email);
     bool may_have_cloud_policies =
-        is_enterprise_user ||
-        management_authorities.find(
-            policy::EnterpriseManagementAuthority::CLOUD) !=
-            management_authorities.end() ||
-        management_authorities.find(
-            policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) !=
-            management_authorities.end();
+        !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+            account_info_.email) ||
+        policy::ManagementServiceFactory::GetForProfile(profile_)
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD) ||
+        policy::ManagementServiceFactory::GetForProfile(profile_)
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) ||
+        policy::ManagementServiceFactory::GetForPlatform()
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD) ||
+        policy::ManagementServiceFactory::GetForPlatform()
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
     if (may_have_cloud_policies &&
         SyncStartupTracker::GetSyncServiceState(sync_service) ==

@@ -19,7 +19,6 @@ class POLICY_EXPORT DomainEnrollmentStatusProvider final
   ~DomainEnrollmentStatusProvider() override;
 
   // ManagementStatusProvider impl
-  bool IsManaged() override;
   EnterpriseManagementAuthority GetAuthority() override;
 
   static bool IsEnrolledToDomain();
@@ -33,7 +32,6 @@ class POLICY_EXPORT EnterpriseMDMManagementStatusProvider final
   ~EnterpriseMDMManagementStatusProvider() override;
 
   // ManagementStatusProvider impl
-  bool IsManaged() override;
   EnterpriseManagementAuthority GetAuthority() override;
 
   static bool IsEnrolledToDomain();

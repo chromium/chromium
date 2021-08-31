@@ -26,8 +26,7 @@ GetManagementStatusProviders(Profile* profile) {
 }  // namespace
 
 BrowserManagementService::BrowserManagementService(Profile* profile)
-    : ManagementService(ManagementTarget::BROWSER,
-                        GetManagementStatusProviders(profile)) {}
+    : ManagementService(GetManagementStatusProviders(profile)) {}
 
 BrowserManagementService::~BrowserManagementService() = default;
 

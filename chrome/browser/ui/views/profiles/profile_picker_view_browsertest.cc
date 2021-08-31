@@ -51,8 +51,6 @@
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -377,22 +375,6 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  private:
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
-
-  // The sync service and waits for policies to load before starting for
-  // enterprise users, managed devices and browsers. This means that services
-  // depending on it might have to wait too. By setting the management
-  // authorities to none by default, we assume that the default test is on an
-  // unmanaged device and browser thus we avoid unnecessarily waiting for
-  // policies to load. Tests expecting either an enterprise user, a managed
-  // device or browser should add the appropriate management authorities.
-  policy::ScopedManagementServiceOverrideForTesting browser_management_ =
-      policy::ScopedManagementServiceOverrideForTesting(
-          policy::ManagementTarget::BROWSER,
-          base::flat_set<policy::EnterpriseManagementAuthority>());
-  policy::ScopedManagementServiceOverrideForTesting platform_management_ =
-      policy::ScopedManagementServiceOverrideForTesting(
-          policy::ManagementTarget::PLATFORM,
-          base::flat_set<policy::EnterpriseManagementAuthority>());
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {

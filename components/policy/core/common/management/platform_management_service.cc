@@ -28,8 +28,7 @@ GetPlatformManagementSatusProviders() {
 }  // namespace
 
 PlatformManagementService::PlatformManagementService()
-    : ManagementService(ManagementTarget::PLATFORM,
-                        GetPlatformManagementSatusProviders()) {}
+    : ManagementService(GetPlatformManagementSatusProviders()) {}
 
 PlatformManagementService::~PlatformManagementService() = default;
 

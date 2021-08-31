@@ -513,11 +513,9 @@ bool HasEnterpriseBrandCode() {
 // Returns whether the instance is domain joined. This doesn't include CBCM
 // (EnterpriseManagementAuthority::DOMAIN_LOCAL).
 bool IsDomainJoined() {
-  auto enterprise_management_authorities =
-      policy::ManagementServiceFactory::GetForPlatform()
-          ->GetManagementAuthorities();
-  return enterprise_management_authorities.contains(
-      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+  return policy::ManagementServiceFactory::GetForPlatform()
+      ->HasManagementAuthority(
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 }
 #endif  // !defined(OS_ANDROID)
 

@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -98,8 +99,8 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
 using ManagedUiTestCros = policy::DevicePolicyCrosBrowserTest;
 IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementTarget::PLATFORM,
-      {policy::EnterpriseManagementAuthority::DOMAIN_LOCAL});
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 
   EXPECT_EQ(
       u"Your <a target=\"_blank\" "

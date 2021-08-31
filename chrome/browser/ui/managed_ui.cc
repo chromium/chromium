@@ -144,10 +144,7 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
 }
 
 absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
-  // TODO(crbug.com/1188594): Replace the check with
-  // !policy::BrowserManagementService(profile).IsManaged() once this bug is
-  // fixed (it still needs a lot of test fixture changes).
-  if (!profile->GetProfilePolicyConnector()->IsManaged())
+  if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())
     return absl::nullopt;
 
   const std::string managed_by =

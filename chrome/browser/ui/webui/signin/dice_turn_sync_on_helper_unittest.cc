@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -223,21 +224,6 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
  public:
   DiceTurnSyncOnHelperTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-    // The sync service and waits for policies to load before starting for
-    // enterprise users, managed devices and browsers. This means that services
-    // depending on it might have to wait too. By setting the management
-    // authorities to none by default, we assume that the default test is on an
-    // unmanaged device and browser thus we avoid unnecessarily waiting for
-    // policies to load. Tests expecting either an enterprise user, a managed
-    // device or browser should add the appropriate management authorities.
-    browser_management_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementTarget::BROWSER,
-            base::flat_set<policy::EnterpriseManagementAuthority>());
-    platform_management_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementTarget::PLATFORM,
-            base::flat_set<policy::EnterpriseManagementAuthority>());
   }
 
   void SetUp() override {
@@ -460,22 +446,6 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
   void OnDelegateDestroyed() { ++delegate_destroyed_; }
-
-  void SetBrowserManagementAuthorities(
-      base::flat_set<policy::EnterpriseManagementAuthority> authorities) {
-    browser_management_.reset();
-    browser_management_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementTarget::BROWSER, std::move(authorities));
-  }
-
-  void SetPlatformManagementAuthorities(
-      base::flat_set<policy::EnterpriseManagementAuthority> authorities) {
-    platform_management_.reset();
-    platform_management_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementTarget::PLATFORM, std::move(authorities));
-  }
 
  protected:
   // Type of sync disabled confirmation shown.
@@ -985,9 +955,9 @@ TEST_F(DiceTurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
 TEST_F(DiceTurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupCompletedForCloudManagedDevices) {
   // Simulate a managed browser.
-  SetBrowserManagementAuthorities(
-      base::flat_set<policy::EnterpriseManagementAuthority>(
-          {policy::EnterpriseManagementAuthority::CLOUD_DOMAIN}));
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   // Set expectations.
   expected_sync_confirmation_shown_ = false;
@@ -1095,9 +1065,9 @@ TEST_F(DiceTurnSyncOnHelperTest,
 TEST_F(DiceTurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupFailedForCloudManagedDevices) {
   // Simulate a managed platform.
-  SetPlatformManagementAuthorities(
-      base::flat_set<policy::EnterpriseManagementAuthority>(
-          {policy::EnterpriseManagementAuthority::CLOUD_DOMAIN}));
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   // Set expectations.
   expected_sync_confirmation_shown_ = false;
