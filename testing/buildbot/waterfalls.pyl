@@ -2560,6 +2560,15 @@
           'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
         },
       },
+      # TODO(crbug.com/1244441): remove this after the migration.
+      'Mac Builder (reclient)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'chromium_mac_scripts',
+        }
+      },
       'Mac Builder Next': {
         'additional_compile_targets': [
           'all',

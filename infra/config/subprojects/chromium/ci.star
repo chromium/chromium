@@ -4243,6 +4243,20 @@ ci.fyi_windows_builder(
     os = os.WINDOWS_DEFAULT,
 )
 
+ci.fyi_mac_builder(
+    name = "Mac Builder (reclient)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "re",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    description_html = "experiment reclient on mac. removed after the migration. crbug.com/1244441",
+)
+
 ci.fyi_builder(
     name = "chromeos-amd64-generic-rel (goma cache silo)",
     console_view_entry = consoles.console_view_entry(

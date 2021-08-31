@@ -290,6 +290,8 @@
       'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot',
       'linux-lacros-dbg-tests-fyi': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
+      # TODO(crbug.com/1244441): remove this after the migration.
+      'Mac Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',

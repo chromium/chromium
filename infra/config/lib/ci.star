@@ -481,10 +481,11 @@ def fyi_mac_builder(
         cores = 4,
         os = builders.os.MAC_DEFAULT,
         **kwargs):
+    if not "goma_backend" in kwargs:
+        kwargs["goma_backend"] = builders.goma.backend.RBE_PROD
     return fyi_builder(
         name = name,
         cores = cores,
-        goma_backend = builders.goma.backend.RBE_PROD,
         os = os,
         **kwargs
     )
