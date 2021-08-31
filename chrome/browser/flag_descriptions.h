@@ -2561,6 +2561,9 @@ extern const char kEnableSuggestedFilesDescription[];
 extern const char kEnableSuggestedDriveFilesName[];
 extern const char kEnableSuggestedDriveFilesDescription[];
 
+extern const char kEnableWireGuardName[];
+extern const char kEnableWireGuardDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

@@ -48402,6 +48402,7 @@ from previous Chrome versions.
   <int value="-1027124889" label="NtlmV2Enabled:enabled"/>
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
+  <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
   <int value="-1022165708" label="BreakingNewsPush:disabled"/>
@@ -49526,6 +49527,7 @@ from previous Chrome versions.
   <int value="-89690053" label="MaterialDesignUserManager:enabled"/>
   <int value="-89567017" label="ChromeColorsCustomColorPicker:enabled"/>
   <int value="-89434839" label="SystemTrayMicGainSetting:enabled"/>
+  <int value="-89286848" label="EnableWireGuard:enabled"/>
   <int value="-88822940" label="ssl-version-min"/>
   <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>

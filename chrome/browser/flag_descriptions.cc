@@ -4461,6 +4461,11 @@ const char kEnableSuggestedDriveFilesDescription[] =
     "Drive file suggestions in the suggestion chips when the launcher is "
     "opened.";
 
+const char kEnableWireGuardName[] = "Enable WireGuard VPN";
+const char kEnableWireGuardDescription[] =
+    "Enable the support of WireGuard VPN as a native VPN option. Requires a "
+    "kernel version that support it.";
+
 const char kESimPolicyName[] = "Enable ESim Policy";
 const char kESimPolicyDescription[] =
     "Enable the support for policy controlled provisioning and configuration "

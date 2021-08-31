@@ -453,6 +453,10 @@ const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
 const base::Feature kEnableSamlReauthenticationOnLockscreen{
     "EnableSamlReauthenticationOnLockScreen", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables WireGuard VPN, if running a compatible kernel.
+const base::Feature kEnableWireGuard{"EnableWireGuard",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

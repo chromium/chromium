@@ -178,6 +178,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableSamlReauthenticationOnLockscreen;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableWireGuard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kESimPolicy;
