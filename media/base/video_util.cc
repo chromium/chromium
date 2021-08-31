@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -554,6 +555,28 @@ gfx::Size ScaleSizeToFitWithinTarget(const gfx::Size& size,
 gfx::Size ScaleSizeToEncompassTarget(const gfx::Size& size,
                                      const gfx::Size& target) {
   return ScaleSizeToTarget(size, target, false);
+}
+
+gfx::Rect CropSizeForScalingToTarget(const gfx::Size& size,
+                                     const gfx::Size& target,
+                                     size_t alignment) {
+  DCHECK_GT(alignment, 0u);
+  if (size.IsEmpty() || target.IsEmpty())
+    return gfx::Rect();
+
+  gfx::Rect crop(ScaleSizeToFitWithinTarget(target, size));
+  crop.set_width(base::checked_cast<int>(base::bits::AlignDown(
+      base::checked_cast<size_t>(crop.width()), alignment)));
+  crop.set_height(base::checked_cast<int>(base::bits::AlignDown(
+      base::checked_cast<size_t>(crop.height()), alignment)));
+  crop.set_x(base::checked_cast<int>(base::bits::AlignDown(
+      base::checked_cast<size_t>((size.width() - crop.width()) / 2),
+      alignment)));
+  crop.set_y(base::checked_cast<int>(base::bits::AlignDown(
+      base::checked_cast<size_t>((size.height() - crop.height()) / 2),
+      alignment)));
+  DCHECK(gfx::Rect(size).Contains(crop));
+  return crop;
 }
 
 gfx::Size GetRectSizeFromOrigin(const gfx::Rect& rect) {

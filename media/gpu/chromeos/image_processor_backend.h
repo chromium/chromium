@@ -54,6 +54,13 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
         const std::vector<VideoFrame::StorageType>& preferred_storage_types);
     ~PortConfig();
 
+    bool operator==(const PortConfig& other) const {
+      return fourcc == other.fourcc && size == other.size &&
+             planes == other.planes && visible_rect == other.visible_rect &&
+             preferred_storage_types == other.preferred_storage_types;
+    }
+    bool operator!=(const PortConfig& other) const { return !(*this == other); }
+
     // Get the first |preferred_storage_types|.
     // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.
     VideoFrame::StorageType storage_type() const {

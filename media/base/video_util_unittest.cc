@@ -430,6 +430,44 @@ TEST_F(VideoUtilTest, ScaleSizeToEncompassTarget) {
       gfx::Size(0, 0), gfx::Size(2000000000, 2000000000)).IsEmpty());
 }
 
+TEST_F(VideoUtilTest, CropSizeForScalingToTarget) {
+  // Test same aspect ratios.
+  EXPECT_EQ(gfx::Rect(0, 0, 640, 360),
+            CropSizeForScalingToTarget(gfx::Size(640, 360), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 0, 320, 240),
+            CropSizeForScalingToTarget(gfx::Size(320, 240), gfx::Size(4, 3)));
+  EXPECT_EQ(
+      gfx::Rect(0, 0, 320, 240),
+      CropSizeForScalingToTarget(gfx::Size(321, 241), gfx::Size(4, 3), 2));
+
+  // Test cropping 4:3 from 16:9.
+  EXPECT_EQ(gfx::Rect(80, 0, 480, 360),
+            CropSizeForScalingToTarget(gfx::Size(640, 360), gfx::Size(4, 3)));
+  EXPECT_EQ(gfx::Rect(53, 0, 320, 240),
+            CropSizeForScalingToTarget(gfx::Size(426, 240), gfx::Size(4, 3)));
+  EXPECT_EQ(
+      gfx::Rect(52, 0, 320, 240),
+      CropSizeForScalingToTarget(gfx::Size(426, 240), gfx::Size(4, 3), 2));
+
+  // Test cropping 16:9 from 4:3.
+  EXPECT_EQ(gfx::Rect(0, 30, 320, 180),
+            CropSizeForScalingToTarget(gfx::Size(320, 240), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 9, 96, 54),
+            CropSizeForScalingToTarget(gfx::Size(96, 72), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 8, 96, 54),
+            CropSizeForScalingToTarget(gfx::Size(96, 72), gfx::Size(16, 9), 2));
+
+  // Test abnormal inputs.
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(0, 1), gfx::Size(1, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 0), gfx::Size(1, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 1), gfx::Size(0, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 1), gfx::Size(1, 0)));
+}
+
 TEST_F(VideoUtilTest, PadToMatchAspectRatio) {
   EXPECT_EQ(gfx::Size(640, 480),
             PadToMatchAspectRatio(gfx::Size(640, 480), gfx::Size(640, 480)));
