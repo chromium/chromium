@@ -111,9 +111,6 @@ void CrostiniStartupStatus::ShowProgressAtInterval() {
 
 void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
   stage_index_ = static_cast<int>(stage) + 1;
-  if (!verbose_) {
-    return;
-  }
   static base::NoDestructor<base::flat_map<InstallerState, std::string>>
       kStartStrings({
           {InstallerState::kStart,
@@ -139,7 +136,8 @@ void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER)},
       });
-  const std::string& stage_string = (*kStartStrings)[stage];
+  const std::string& stage_string =
+      verbose_ ? (*kStartStrings)[stage] : std::string();
   PrintStage(kColor3Yellow, stage_string);
 }
 
