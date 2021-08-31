@@ -22,12 +22,9 @@
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): Remove when namespace moved to ash.
-namespace health = ::ash::health;
 
 std::unique_ptr<content::WebUIDataSource>
 CreateTrustedTelemetryExtensionDataSource() {
@@ -100,4 +97,4 @@ void TelemetryExtensionUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TelemetryExtensionUI)
 
-}  // namespace chromeos
+}  // namespace ash

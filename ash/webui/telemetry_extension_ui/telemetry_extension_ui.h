@@ -9,7 +9,7 @@
 #error Telemetry Extension should only be included in unofficial builds.
 #endif
 
-#include "memory"
+#include <memory>
 
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom-forward.h"
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 // The WebUI for chrome://telemetry-extension/.
 class TelemetryExtensionUI : public ui::MojoWebUIController {
@@ -28,24 +28,23 @@ class TelemetryExtensionUI : public ui::MojoWebUIController {
   ~TelemetryExtensionUI() override;
 
   void BindInterface(
-      mojo::PendingReceiver<ash::health::mojom::DiagnosticsService> receiver);
+      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<ash::health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<ash::health::mojom::SystemEventsService> receiver);
+      mojo::PendingReceiver<health::mojom::SystemEventsService> receiver);
 
  private:
   // Replaced when |BindInterface| is called.
-  std::unique_ptr<ash::health::mojom::DiagnosticsService> diagnostics_service_;
-  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_;
-  std::unique_ptr<ash::health::mojom::SystemEventsService>
-      system_events_service_;
+  std::unique_ptr<health::mojom::DiagnosticsService> diagnostics_service_;
+  std::unique_ptr<health::mojom::ProbeService> probe_service_;
+  std::unique_ptr<health::mojom::SystemEventsService> system_events_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_TELEMETRY_EXTENSION_UI_H_

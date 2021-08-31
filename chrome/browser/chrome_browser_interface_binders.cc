@@ -947,13 +947,12 @@ void PopulateChromeWebUIFrameBinders(
 
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
     RegisterWebUIControllerInterfaceBinder<
-        ash::health::mojom::DiagnosticsService, chromeos::TelemetryExtensionUI>(
-        map);
+        ash::health::mojom::DiagnosticsService, ash::TelemetryExtensionUI>(map);
     RegisterWebUIControllerInterfaceBinder<ash::health::mojom::ProbeService,
-                                           chromeos::TelemetryExtensionUI>(map);
+                                           ash::TelemetryExtensionUI>(map);
     RegisterWebUIControllerInterfaceBinder<
-        ash::health::mojom::SystemEventsService,
-        chromeos::TelemetryExtensionUI>(map);
+        ash::health::mojom::SystemEventsService, ash::TelemetryExtensionUI>(
+        map);
   }
 #endif
 

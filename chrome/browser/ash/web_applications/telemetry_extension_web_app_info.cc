@@ -16,8 +16,8 @@
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTelemetryExtension() {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUITelemetryExtensionURL);
-  info->scope = GURL(chromeos::kChromeUITelemetryExtensionURL);
+  info->start_url = GURL(ash::kChromeUITelemetryExtensionURL);
+  info->scope = GURL(ash::kChromeUITelemetryExtensionURL);
   info->title = u"Telemetry Extension";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,

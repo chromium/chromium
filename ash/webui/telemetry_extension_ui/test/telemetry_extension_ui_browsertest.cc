@@ -40,12 +40,11 @@ constexpr base::FilePath::CharType kUntrustedTestCases[] = FILE_PATH_LITERAL(
 }  // namespace
 
 TelemetryExtensionUiBrowserTest::TelemetryExtensionUiBrowserTest()
-    : SandboxedWebUiAppTestBase(
-          chromeos::kChromeUITelemetryExtensionURL,
-          chromeos::kChromeUIUntrustedTelemetryExtensionURL,
-          {base::FilePath(kUntrustedTestHandlers),
-           base::FilePath(kUntrustedTestUtils),
-           base::FilePath(kUntrustedTestCases)}) {}
+    : SandboxedWebUiAppTestBase(ash::kChromeUITelemetryExtensionURL,
+                                ash::kChromeUIUntrustedTelemetryExtensionURL,
+                                {base::FilePath(kUntrustedTestHandlers),
+                                 base::FilePath(kUntrustedTestUtils),
+                                 base::FilePath(kUntrustedTestCases)}) {}
 
 TelemetryExtensionUiBrowserTest::~TelemetryExtensionUiBrowserTest() = default;
 
@@ -55,9 +54,8 @@ void TelemetryExtensionUiBrowserTest::SetUpCommandLine(
   base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root);
   base::FilePath file_path(kUntrustedAppResources);
 
-  command_line->AppendSwitchASCII(
-      chromeos::switches::kTelemetryExtensionDirectory,
-      source_root.Append(file_path).value());
+  command_line->AppendSwitchASCII(ash::switches::kTelemetryExtensionDirectory,
+                                  source_root.Append(file_path).value());
 
   SandboxedWebUiAppTestBase::SetUpCommandLine(command_line);
 }

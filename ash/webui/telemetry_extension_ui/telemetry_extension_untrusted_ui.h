@@ -17,7 +17,7 @@
 #include "ui/webui/webui_config.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class TelemetryExtensionUntrustedUIConfig : public ui::WebUIConfig {
  public:
@@ -37,6 +37,6 @@ class TelemetryExtensionUntrustedUI : public ui::UntrustedWebUIController {
   ~TelemetryExtensionUntrustedUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_TELEMETRY_EXTENSION_UNTRUSTED_UI_H_

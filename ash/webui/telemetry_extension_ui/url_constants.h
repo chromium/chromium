@@ -5,12 +5,12 @@
 #ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_URL_CONSTANTS_H_
 #define ASH_WEBUI_TELEMETRY_EXTENSION_UI_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUITelemetryExtensionHost[];
 extern const char kChromeUITelemetryExtensionURL[];
 extern const char kChromeUIUntrustedTelemetryExtensionURL[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_URL_CONSTANTS_H_

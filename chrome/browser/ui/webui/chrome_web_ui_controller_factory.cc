@@ -931,9 +931,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == ash::kChromeUISampleSystemWebAppHost)
     return &NewWebUI<ash::SampleSystemWebAppUI>;
-  if (url.host_piece() == chromeos::kChromeUITelemetryExtensionHost) {
-    if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
-      return &NewWebUI<chromeos::TelemetryExtensionUI>;
+  if (url.host_piece() == ash::kChromeUITelemetryExtensionHost) {
+    if (base::FeatureList::IsEnabled(ash::features::kTelemetryExtension)) {
+      return &NewWebUI<ash::TelemetryExtensionUI>;
     }
   }
 #endif  // !defined(OFFICIAL_BUILD)

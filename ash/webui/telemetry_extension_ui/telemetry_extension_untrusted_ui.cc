@@ -23,7 +23,7 @@
 #include "net/base/mime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -32,7 +32,7 @@ constexpr char kDefaultMime[] = "text/html";
 base::FilePath GetTelemetryDirectory() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool has_switch =
-      command_line->HasSwitch(chromeos::switches::kTelemetryExtensionDirectory);
+      command_line->HasSwitch(switches::kTelemetryExtensionDirectory);
 
   if (!has_switch) {
     LOG(WARNING) << "Switch value '--telemetry-extension-dir' is not "
@@ -41,7 +41,7 @@ base::FilePath GetTelemetryDirectory() {
   }
 
   return base::FilePath(command_line->GetSwitchValueASCII(
-      chromeos::switches::kTelemetryExtensionDirectory));
+      switches::kTelemetryExtensionDirectory));
 }
 
 void ReadFile(const base::FilePath& path,
@@ -63,7 +63,7 @@ void ReadFile(const base::FilePath& path,
 // There are two types of resources:
 // 1. GRIT resourse if the resource path exist in |path_to_idr_map_|; otherwise,
 // 2. Resource from the directory specified by
-// |chromeos::switches::kTelemetryExtensionDirectory| command line switch.
+// |ash::switches::kTelemetryExtensionDirectory| command line switch.
 class TelemetryExtensionUntrustedSource : public content::URLDataSource {
  public:
   explicit TelemetryExtensionUntrustedSource(const std::string& source);
@@ -184,7 +184,7 @@ absl::optional<int> TelemetryExtensionUntrustedSource::PathToIdr(
 
 TelemetryExtensionUntrustedUIConfig::TelemetryExtensionUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chromeos::kChromeUITelemetryExtensionHost) {}
+                  kChromeUITelemetryExtensionHost) {}
 
 TelemetryExtensionUntrustedUIConfig::~TelemetryExtensionUntrustedUIConfig() =
     default;
@@ -199,14 +199,13 @@ TelemetryExtensionUntrustedUI::TelemetryExtensionUntrustedUI(
     content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
   auto untrusted_source = std::make_unique<TelemetryExtensionUntrustedSource>(
-      chromeos::kChromeUIUntrustedTelemetryExtensionURL);
+      kChromeUIUntrustedTelemetryExtensionURL);
 
   untrusted_source->AddResourcePath("dpsl.js", IDR_TELEMETRY_EXTENSION_DPSL_JS);
 
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameAncestors,
-      std::string("frame-ancestors ") +
-          chromeos::kChromeUITelemetryExtensionURL + ";");
+      std::string("frame-ancestors ") + kChromeUITelemetryExtensionURL + ";");
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
   untrusted_source->OverrideContentSecurityPolicy(
@@ -219,4 +218,4 @@ TelemetryExtensionUntrustedUI::TelemetryExtensionUntrustedUI(
 
 TelemetryExtensionUntrustedUI::~TelemetryExtensionUntrustedUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

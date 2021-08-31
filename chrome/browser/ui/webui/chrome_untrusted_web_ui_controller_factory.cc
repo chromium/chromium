@@ -73,8 +73,7 @@ WebUIConfigList CreateConfigs() {
   if (ash::features::IsProjectorEnabled())
     register_config(std::make_unique<chromeos::UntrustedProjectorUIConfig>());
 #if !defined(OFFICIAL_BUILD)
-  register_config(
-      std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());
+  register_config(std::make_unique<ash::TelemetryExtensionUntrustedUIConfig>());
   register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

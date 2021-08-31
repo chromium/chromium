@@ -4,11 +4,11 @@
 
 #include "ash/webui/telemetry_extension_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUITelemetryExtensionHost[] = "telemetry-extension";
 const char kChromeUITelemetryExtensionURL[] = "chrome://telemetry-extension";
 const char kChromeUIUntrustedTelemetryExtensionURL[] =
     "chrome-untrusted://telemetry-extension/";
 
-}  // namespace chromeos
+}  // namespace ash
