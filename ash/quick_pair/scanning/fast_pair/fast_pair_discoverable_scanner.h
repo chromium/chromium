@@ -10,7 +10,6 @@
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -50,23 +49,17 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   void OnDeviceLost(device::BluetoothDevice* device) override;
 
  private:
-  void OnModelIdRetrieved(device::BluetoothDevice* device,
-                          const absl::optional<std::string>& model_id);
-  void NotifyDeviceFound(const std::string model_id,
-                         device::BluetoothDevice* device);
+  absl::optional<std::string> GetModelIdForDevice(
+      device::BluetoothDevice* device);
+  void NotifyDeviceFound(device::BluetoothDevice* device);
   void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
-                                 const std::string model_id,
                                  DeviceMetadata* device_metadata);
-  void OnProcessStopped(
-      device::BluetoothDevice* device,
-      QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;
   std::unique_ptr<RangeTracker> range_tracker_;
   DeviceCallback found_callback_;
   DeviceCallback lost_callback_;
   base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;
-  base::flat_map<std::string, int> model_id_parse_attempts_;
   base::ScopedObservation<FastPairScanner, FastPairScanner::Observer>
       observation_{this};
   base::WeakPtrFactory<FastPairDiscoverableScanner> weak_pointer_factory_{this};
