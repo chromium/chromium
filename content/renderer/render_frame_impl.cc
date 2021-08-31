@@ -3636,7 +3636,9 @@ blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
   blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
 
-  GetFrameHost()->CreateFencedFrame(std::move(receiver));
+  GetFrameHost()->CreateFencedFrame(std::move(receiver), &proxy_routing_id,
+                                    &initial_replicated_state, &frame_token,
+                                    &devtools_frame_token);
 
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
       agent_scheduling_group_, this, proxy_routing_id, frame_token,

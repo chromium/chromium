@@ -1732,9 +1732,9 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
 void NavigationRequest::BeginNavigationImpl() {
   SetState(WILL_START_NAVIGATION);
 
-  // if this is a fenced frame with a urn:uuid then convert it to a url before
+  // If this is a fenced frame with a urn:uuid then convert it to a url before
   // starting the request.
-  if (frame_tree_node_->IsFencedFrame() && common_params_->url.is_valid() &&
+  if (frame_tree_node_->IsFencedFrameRoot() && common_params_->url.is_valid() &&
       common_params_->url.scheme() == url::kUrnScheme) {
     // TODO(crbug.com/1123606): With MPArch, make sure that the mapping is
     // retrieved from the primary root instead of this tree's root.

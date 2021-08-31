@@ -273,12 +273,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
-  // Returns if this document is directly hosted by a fenced frame.
+  // Returns true if this document is the root of a fenced frame tree.
   //
-  // In particular, this always returns false for document loaded inside an
-  // <iframe>, even if the <iframe> is part of a document loaded inside a fenced
-  // iframe.
-  virtual bool HostedByFencedFrame() = 0;
+  // In particular, this always returns false for frames loaded inside a
+  // <fencedframe> element, if the frame is not the top-level <fencedframe>
+  // itself. That is, this will return false for all <iframes> nested under a
+  // <fencedframe>.
+  virtual bool IsFencedFrameRoot() = 0;
 
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees, in breadth-first

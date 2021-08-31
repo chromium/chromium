@@ -42,7 +42,7 @@ namespace {
 // and FrameData::parent_form) from its parent form. This is already guaranteed
 // because FormData::child_frames does not contain fenced frames. However,
 // UpdateTreeOfRendererForm() would still invoke TriggerReparse() to detect the
-// parent form. HostedByFencedFrame() should be implemented to suppress this.
+// parent form. IsFencedFrameRoot() should be implemented to suppress this.
 //
 // We also do not want to fill across iframes with the disallowdocumentaccess
 // attribute (https://crbug.com/961448). Since disallowdocumentaccess is
@@ -51,8 +51,8 @@ namespace {
 // FrameData::parent_form for frames that disallow document access, there is no
 // immediate need to support it. See https://crrev.com/c/3055422 for a draft
 // implementation.
-bool HostedByFencedFrame(content::RenderFrameHost* rfh) {
-  return rfh->HostedByFencedFrame();
+bool IsFencedFrameRoot(content::RenderFrameHost* rfh) {
+  return rfh->IsFencedFrameRoot();
 }
 
 }  // namespace
@@ -423,7 +423,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // UpdateTreeOfRendererForm() will be called for the parent form, whose
   // FormData::child_frames now include |frame|.
   content::RenderFrameHost* parent_rfh = rfh->GetParent();
-  if (!frame->parent_form && parent_rfh && !HostedByFencedFrame(rfh)) {
+  if (!frame->parent_form && parent_rfh && !IsFencedFrameRoot(rfh)) {
     LocalFrameToken parent_frame_token(
         LocalFrameToken(parent_rfh->GetFrameToken().value()));
     FrameData* parent_frame = GetFrameData(parent_frame_token);

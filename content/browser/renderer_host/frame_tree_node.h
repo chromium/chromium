@@ -493,7 +493,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // implementation this only returns true if |this| is the actual
   // root node of the inner FrameTree and not the proxy FrameTreeNode in the
   // outer FrameTree.
-  bool IsFencedFrame() const;
+  bool IsFencedFrameRoot() const;
 
   // Returns false if fenced frames are disabled. Returns true if the
   // feature is enabled and if |this| or any of its ancestor nodes is a

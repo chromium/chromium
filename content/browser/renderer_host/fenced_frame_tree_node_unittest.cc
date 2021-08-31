@@ -10,30 +10,17 @@
 
 namespace content {
 
-class FencedFrameTreeNodeTest
-    : public RenderViewHostImplTestHarness,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+class FencedFrameTreeNodeTest : public RenderViewHostImplTestHarness {
  public:
-  // Provides meaningful param names instead of /0 and /1.
-  static std::string DescribeParams(
-      const ::testing::TestParamInfo<ParamType>& info) {
-    switch (info.param) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        return "ShadowDOM";
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        return "MPArch";
-    }
-  }
-
   FencedFrameTreeNodeTest() {
+    // Note that we only run these tests for the ShadowDOM implementation of
+    // fenced frames, due to how they add subframes in a way that is very
+    // specific to the ShadowDOM implementation, and not suitable for the MPArch
+    // implementation. We test the MPArch implementation in
+    // `FencedFrameBrowserTest`.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames,
-        {{"implementation_type",
-          GetParam() ==
-                  blink::features::FencedFramesImplementationType::kShadowDOM
-              ? "shadow_dom"
-              : "mparch"}});
+        {{"implementation_type", "shadow_dom"}});
   }
 
   FrameTreeNode* AddFrame(FrameTree* frame_tree,
@@ -56,7 +43,7 @@ class FencedFrameTreeNodeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(FencedFrameTreeNodeTest, IsFencedFrame) {
+TEST_F(FencedFrameTreeNodeTest, IsFencedFrameHelpers) {
   main_test_rfh()->InitializeRenderFrameIfNeeded();
   FrameTree* frame_tree = contents()->GetFrameTree();
   FrameTreeNode* root = frame_tree->root();
@@ -66,7 +53,7 @@ TEST_P(FencedFrameTreeNodeTest, IsFencedFrame) {
   constexpr auto kOwnerType = blink::mojom::FrameOwnerElementType::kIframe;
   AddFrame(frame_tree, root->current_frame_host(), process_id, 14,
            blink::FramePolicy(), kOwnerType);
-  EXPECT_FALSE(root->child_at(0)->IsFencedFrame());
+  EXPECT_FALSE(root->child_at(0)->IsFencedFrameRoot());
   EXPECT_FALSE(root->child_at(0)->IsInFencedFrameTree());
 
   // Add a fenced frame.
@@ -77,49 +64,29 @@ TEST_P(FencedFrameTreeNodeTest, IsFencedFrame) {
   policy.is_fenced = true;
   AddFrame(frame_tree, root->current_frame_host(), process_id, 15, policy,
            kFencedframeOwnerType);
-  // TODO(crbug.com/1123606): Simulate the tree to be fenced frame tree until
-  // the MPArch supporting code lands.
-  if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
-      blink::features::FencedFramesImplementationType::kMPArch) {
-    root->child_at(1)->frame_tree()->SetFencedFrameTreeForTesting();
-  }
-  // TODO(crbug.com/1123606): Once the MPArch code lands, the FrameTreeNode that
-  // we call these methods on should be either `root->child_at(1)`, or the inner
-  // main FrameTreeNode that this node points to if one exists.
-  EXPECT_TRUE(root->child_at(1)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(1)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(1)->IsInFencedFrameTree());
 
   // Add a nested iframe in the fenced frame.
   // main-frame -> fenced-frame -> iframe.
   AddFrame(frame_tree, root->child_at(1)->current_frame_host(), process_id, 16,
            blink::FramePolicy(), kOwnerType);
-  EXPECT_FALSE(root->child_at(1)->child_at(0)->IsFencedFrame());
+  EXPECT_FALSE(root->child_at(1)->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(1)->child_at(0)->IsInFencedFrameTree());
 
   // Add a nested fenced frame inside the existing fenced frame.
   // main-frame -> fenced-frame -> fenced-frame.
   AddFrame(frame_tree, root->child_at(1)->current_frame_host(), process_id, 17,
            policy, kFencedframeOwnerType);
-  // TODO(crbug.com/1123606): Once the MPArch code lands, the FrameTreeNode that
-  // we call these methods on should be either `root->child_at(1)`, or the inner
-  // main FrameTreeNode that this node points to if one exists.
-  EXPECT_TRUE(root->child_at(1)->child_at(1)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(1)->child_at(1)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(1)->child_at(1)->IsInFencedFrameTree());
 
   // Add a nested fenced frame inside the iframe added above.
   // main-frame -> iframe -> fenced-frame.
   AddFrame(frame_tree, root->child_at(0)->current_frame_host(), process_id, 18,
            policy, kFencedframeOwnerType);
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(0)->child_at(0)->IsInFencedFrameTree());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FencedFrameTreeNodeTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &FencedFrameTreeNodeTest::DescribeParams);
 
 }  // namespace content

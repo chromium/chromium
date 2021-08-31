@@ -41,8 +41,10 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
 }
 
 bool PageImpl::IsPrimary() {
-  // TODO(https://crbug.com/1222722): Query RenderFrameHost::IsInFencedFrame()
-  // when it is available.
+  // TODO(1244137): Check for portals as well, once they are migrated to MPArch.
+  if (main_document_.IsFencedFrameRoot())
+    return false;
+
   return main_document_.lifecycle_state() ==
          RenderFrameHostImpl::LifecycleStateImpl::kActive;
 }

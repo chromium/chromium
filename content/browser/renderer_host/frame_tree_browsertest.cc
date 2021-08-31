@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   }
   EXPECT_EQ(1U, root->child_count());
 
-  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
 
   GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckFencedFrameNoCookies) {
 
   FrameTreeNode* fenced_frame = root_rfh->child_at(0);
 
-  EXPECT_TRUE(fenced_frame->IsFencedFrame());
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
   EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
 
   GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckFencedFrameNoCookies) {
                      "var f1 = document.createElement('iframe');"
                      "document.body.appendChild(f1);"));
   EXPECT_EQ(1U, fenced_frame->child_count());
-  EXPECT_FALSE(fenced_frame->child_at(0)->IsFencedFrame());
+  EXPECT_FALSE(fenced_frame->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(fenced_frame->child_at(0)->IsInFencedFrameTree());
   std::string navigate_script = JsReplace("f1.src = $1;", main_url.spec());
 
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
                      "var f = document.createElement('fencedframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root->child_count());
-  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
 
   // Add an iframe.
@@ -1041,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
                      "var f = document.createElement('iframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(2U, root->child_count());
-  EXPECT_FALSE(root->child_at(1)->IsFencedFrame());
+  EXPECT_FALSE(root->child_at(1)->IsFencedFrameRoot());
   EXPECT_FALSE(root->child_at(1)->IsInFencedFrameTree());
 
   // Add a nested iframe inside the fenced frame.
@@ -1049,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
                      "var f = document.createElement('iframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root->child_at(0)->child_count());
-  EXPECT_FALSE(root->child_at(0)->child_at(0)->IsFencedFrame());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(0)->child_at(0)->IsInFencedFrameTree());
 
   // Add a nested fenced frame.
@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
                      "var f = document.createElement('fencedframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(2U, root->child_at(0)->child_count());
-  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsFencedFrameRoot());
   EXPECT_TRUE(root->child_at(0)->child_at(1)->IsInFencedFrameTree());
 }
 

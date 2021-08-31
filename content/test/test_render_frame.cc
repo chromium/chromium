@@ -162,8 +162,8 @@ class MockFrameHost : public mojom::FrameHost {
   }
 
   void CreateFencedFrame(
-      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>)
-      override {
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>,
+      CreateFencedFrameCallback) override {
     NOTREACHED() << "At the moment, content::FencedFrame is not used in any "
                     "unit tests, so this path should not be hit";
   }

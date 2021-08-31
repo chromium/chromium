@@ -33,6 +33,9 @@ void FencedFrameMPArchDelegate::DidGetInserted() {
   DCHECK_EQ(remote_frame, GetElement().ContentFrame());
 }
 
-void FencedFrameMPArchDelegate::Navigate(const KURL& url) {}
+void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
+  DCHECK(remote_);
+  remote_->Navigate(url);
+}
 
 }  // namespace blink

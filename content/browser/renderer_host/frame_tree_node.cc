@@ -823,21 +823,14 @@ bool FrameTreeNode::HasNavigation() {
   return false;
 }
 
-bool FrameTreeNode::IsFencedFrame() const {
+bool FrameTreeNode::IsFencedFrameRoot() const {
   if (!blink::features::IsFencedFramesEnabled())
     return false;
 
   switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
     case blink::features::FencedFramesImplementationType::kMPArch: {
-      // TODO(crbug.com/1123606): Once the MPArch code lands, this can be
-      // simplified to frame_tree()->IsFencedFrameTree() and IsMainFrame()
-      // instead of checking the frame_owner_element_type().
-      if (frame_owner_element_type() ==
-          blink::mojom::FrameOwnerElementType::kFencedframe) {
-        DCHECK(frame_tree()->IsFencedFrameTree());
-        return true;
-      }
-      return false;
+      return IsMainFrame() &&
+             frame_tree()->type() == FrameTree::Type::kFencedFrame;
     }
     case blink::features::FencedFramesImplementationType::kShadowDOM: {
       return effective_frame_policy().is_fenced;
@@ -853,7 +846,7 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
 
   switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
     case blink::features::FencedFramesImplementationType::kMPArch:
-      return frame_tree()->IsFencedFrameTree();
+      return frame_tree()->type() == FrameTree::Type::kFencedFrame;
     case blink::features::FencedFramesImplementationType::kShadowDOM: {
       auto* node = this;
       while (node) {

@@ -317,7 +317,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   PageImpl& GetPage() override;
   std::vector<RenderFrameHost*> GetFramesInSubtree() override;
   bool IsDescendantOf(RenderFrameHost*) override;
-  bool HostedByFencedFrame() override;
+  bool IsFencedFrameRoot() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
@@ -985,11 +985,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // tree).
     //
     // Please note that Prerender2 is an experimental feature behind the flag.
+    //
+    // Note that at the moment, this state is *not* used for RenderFrameHosts in
+    // nested FrameTrees inside prerendered pages. See crbug.com/1232528,
+    // crbug.com/1244274 for more discussion on whether or not we should support
+    // nested FrameTrees inside prerendered pages.
     kPrerendering,
 
     // This state corresponds to when a RenderFrameHost is the current one in
-    // its RenderFrameHostManager and FrameTreeNode for a primary frame tree. In
-    // this state, RenderFrameHost is visible to the user.
+    // its RenderFrameHostManager/FrameTreeNode inside a primary FrameTree or
+    // its descendant FrameTrees. In this state, RenderFrameHost is visible to
+    // the user. TODO(crbug.com/1232528, crbug.com/1244274): At the moment,
+    // prerendered pages implicitly support nested frame trees, whose
+    // RenderFrameHost's are always kActive even though they are not shown to
+    // the user. We need to formally determine if prerenders should support
+    // nested FrameTrees.
     //
     // Transition to kActive state may happen from one of:
     // - kSpeculative -- when a speculative RenderFrameHost commits to make it
@@ -1003,6 +1013,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // RenderFrameHost can also be created in this state for an empty document
     // in a FrameTreeNode (e.g initializing root and child in an empty
     // primary FrameTree).
+    //
+    // Note that this state is also used for nested pages e.g., the
+    // RenderFrameHosts in <fencedframe> and <portal> elements, as these nested
+    // contexts do not get their own lifecycle state. A RenderFrameHost can tell
+    // if it is in a <fencedframe> however, by checking its `FrameTree`'s type.
+    // This will be true for portals as well once they are migrated to MPArch.
     kActive,
 
     // This state corresponds to when RenderFrameHost is stored in
@@ -1892,7 +1908,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void set_inner_tree_main_frame_tree_node_id(int id) {
     inner_tree_main_frame_tree_node_id_ = id;
   }
-  int inner_tree_main_frame_tree_node_id() {
+  int inner_tree_main_frame_tree_node_id() const {
     return inner_tree_main_frame_tree_node_id_;
   }
 
@@ -2506,7 +2522,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                    AdoptPortalCallback callback) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
-          pending_receiver) override;
+          pending_receiver,
+      CreateFencedFrameCallback callback) override;
   void GetKeepAliveHandleFactory(
       mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver)
       override;

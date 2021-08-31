@@ -641,8 +641,26 @@ interface FrameHost {
   // frame tree that will host the contents of the <fencedframe> element.
   // `fenced_frame` - the receiver that the browser will bind to receive
   //                  messages from the renderer.
-  CreateFencedFrame(
-    pending_associated_receiver<blink.mojom.FencedFrameOwnerHost> fenced_frame);
+  // `proxy_routing_id` - the routing ID assigned to the RenderFrameProxy
+  //                      placeholder in the owner process.
+  // `initial_replication_state` - the replicated state associated with the
+  //                               above RenderFrameProxy. This state is
+  //                               default-constructed, and thus has an opaque
+  //                               origin. This ensures that the origin that the
+  //                               proxy host is initialized with in the browser
+  //                               and renderer processes both match. For more
+  //                               info about this parameter see
+  //                               crbug.com/1028269.
+  // `frame_token` - the unique identifier of the RenderFrameProxy
+  // `devtools_frame_token` - the unique identifier of the main FrameTreeNode in
+  //                          the "inner" fenced frame FrameTree
+  [Sync] CreateFencedFrame(
+      pending_associated_receiver<blink.mojom.FencedFrameOwnerHost>
+        fenced_frame)
+      => (int32 proxy_routing_id,
+          blink.mojom.FrameReplicationState initial_replication_state,
+          blink.mojom.RemoteFrameToken frame_token,
+          mojo_base.mojom.UnguessableToken devtools_frame_token);
 
   // Asynchronously creates a child frame. A routing ID must be allocated first
   // by calling RenderMessageFilter::GenerateFrameRoutingID()

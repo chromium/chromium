@@ -157,10 +157,21 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   if (new_host->GetParent()) {
     AssertRenderFrameExists(new_host->GetParent());
     // RenderFrameCreated should be called before RenderFrameHostChanged for all
-    // the subframes except for Portals which do not have a live RenderFrame in
-    // the renderer process.
-    if (new_host->GetFrameOwnerElementType() !=
-        blink::mojom::FrameOwnerElementType::kPortal) {
+    // the subframes except for those which are the outer delegates for:
+    //  - Portals
+    //  - Fenced frames based specifically on MPArch
+    // This is because those special-case frames do not have live RenderFrames
+    // in the renderer process.
+    bool is_render_frame_created_needed_for_child =
+        (new_host->GetFrameOwnerElementType() !=
+             blink::mojom::FrameOwnerElementType::kPortal &&
+         new_host->GetFrameOwnerElementType() !=
+             blink::mojom::FrameOwnerElementType::kFencedframe) ||
+        (new_host->GetFrameOwnerElementType() ==
+             blink::mojom::FrameOwnerElementType::kFencedframe &&
+         blink::features::kFencedFramesImplementationTypeParam.Get() ==
+             blink::features::FencedFramesImplementationType::kShadowDOM);
+    if (is_render_frame_created_needed_for_child) {
       AssertRenderFrameExists(new_host);
     }
     CHECK(current_hosts_.count(GetRoutingPair(new_host->GetParent())))

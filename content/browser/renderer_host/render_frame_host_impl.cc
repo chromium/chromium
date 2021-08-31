@@ -1949,8 +1949,8 @@ bool RenderFrameHostImpl::IsDescendantOf(RenderFrameHost* ancestor) {
   return false;
 }
 
-bool RenderFrameHostImpl::HostedByFencedFrame() {
-  return frame_tree_node_->IsFencedFrame();
+bool RenderFrameHostImpl::IsFencedFrameRoot() {
+  return frame_tree_node_->IsFencedFrameRoot();
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
@@ -6660,7 +6660,7 @@ void RenderFrameHostImpl::CreatePortal(
   RenderFrameProxyHost* proxy_host = (*it)->CreateProxyAndAttachPortal();
 
   // Since the portal is newly created and has yet to commit a navigation, this
-  // state is trivial.
+  // state is default-constructed.
   const blink::mojom::FrameReplicationState& initial_replicated_state =
       proxy_host->frame_tree_node()->current_replication_state();
   DCHECK(initial_replicated_state.origin.opaque());
@@ -6712,10 +6712,27 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
 
 void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
-        pending_receiver) {
-  fenced_frames_.push_back(std::make_unique<FencedFrame>());
+        pending_receiver,
+    CreateFencedFrameCallback callback) {
+  fenced_frames_.push_back(std::make_unique<FencedFrame>(*this));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   fenced_frame->Bind(std::move(pending_receiver));
+
+  RenderFrameProxyHost* proxy_host = fenced_frame->GetProxyToInnerMainFrame();
+
+  // Since the fenced frame is newly created and has yet to commit a navigation,
+  // this state is default-constructed.
+  const blink::mojom::FrameReplicationState& initial_replicated_state =
+      proxy_host->frame_tree_node()->current_replication_state();
+  // Note that a default-constructed `FrameReplicationState` always has an
+  // opaque origin, simply because the frame hasn't had any navigations yet.
+  // Fenced frames (after their first navigation) do not have opaque origins,
+  // and this default-constructed FRS does not impact that.
+  DCHECK(initial_replicated_state.origin.opaque());
+
+  std::move(callback).Run(
+      proxy_host->GetRoutingID(), initial_replicated_state.Clone(),
+      proxy_host->GetFrameToken(), fenced_frame->GetDevToolsFrameToken());
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(
@@ -11882,7 +11899,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {
   if (parent_)
     return parent_;
 
-  // Find the parent in the WebContentsTree (GuestView or Portal).
+  // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
   FrameTreeNode* frame_in_embedder =
       frame_tree_node()->render_manager()->GetOuterDelegateNode();
   if (frame_in_embedder)
