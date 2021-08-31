@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 
 @protocol ApplicationCommands;
-class AudioSessionController;
 class Browser;
 class VoiceSearchController;
 
@@ -29,9 +28,6 @@ class VoiceSearchProvider {
 
   // Returns the list of available voice search languages.
   virtual NSArray* GetAvailableLanguages() const;
-
-  // Returns the singleton audio session controller.
-  virtual AudioSessionController* GetAudioSessionController() const;
 
   // Creates a new VoiceSearchController object.
   virtual scoped_refptr<VoiceSearchController> CreateVoiceSearchController(

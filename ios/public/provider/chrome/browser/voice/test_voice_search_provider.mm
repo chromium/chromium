@@ -25,10 +25,3 @@ NSArray* TestVoiceSearchProvider::GetAvailableLanguages() const {
                                localizationPreference:nil];
   return @[ en ];
 }
-
-AudioSessionController* TestVoiceSearchProvider::GetAudioSessionController()
-    const {
-  // TODO(rohitrao): Return a TestAudioSessionController once the class with the
-  // same name is removed from the internal tree.
-  return nullptr;
-}

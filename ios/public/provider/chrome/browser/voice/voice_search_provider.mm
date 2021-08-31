@@ -18,10 +18,6 @@ NSArray* VoiceSearchProvider::GetAvailableLanguages() const {
   return @[];
 }
 
-AudioSessionController* VoiceSearchProvider::GetAudioSessionController() const {
-  return nullptr;
-}
-
 scoped_refptr<VoiceSearchController>
 VoiceSearchProvider::CreateVoiceSearchController(Browser* browser) const {
   return scoped_refptr<VoiceSearchController>(nullptr);

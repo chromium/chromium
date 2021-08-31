@@ -23,7 +23,6 @@ class TestVoiceSearchProvider : public VoiceSearchProvider {
   // VoiceSearchProvider.
   bool IsVoiceSearchEnabled() const override;
   NSArray* GetAvailableLanguages() const override;
-  AudioSessionController* GetAudioSessionController() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestVoiceSearchProvider);

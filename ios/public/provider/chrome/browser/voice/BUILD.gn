@@ -5,7 +5,6 @@
 source_set("voice") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "audio_session_controller.h",
     "logo_animation_controller.h",
     "voice_search_controller.h",
     "voice_search_controller.mm",
@@ -22,8 +21,6 @@ source_set("voice") {
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "test_audio_session_controller.cc",
-    "test_audio_session_controller.h",
     "test_voice_search_provider.h",
     "test_voice_search_provider.mm",
   ]

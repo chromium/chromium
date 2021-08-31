@@ -59,7 +59,6 @@
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
 #include "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
-#include "ios/public/provider/chrome/browser/voice/audio_session_controller.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/user_agent.h"
