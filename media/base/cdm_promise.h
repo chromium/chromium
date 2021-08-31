@@ -115,10 +115,6 @@ class CdmPromiseTemplate : public CdmPromise {
   virtual void resolve(const T&... result) = 0;
 
   // CdmPromise implementation.
-  virtual void reject(Exception exception_code,
-                      uint32_t system_code,
-                      const std::string& error_message) = 0;
-
   ResolveParameterType GetResolveParameterType() const final;
 
  protected:
