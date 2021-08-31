@@ -112,7 +112,7 @@ export class Camera3DeviceInfo {
     const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
     const supportedFpsRanges =
         await deviceOperator.getSupportedFpsRanges(deviceId);
-    const supportDocumentScan = false;
+    const supportDocumentScan = true;
 
     return new Camera3DeviceInfo(
         deviceInfo, facing, photoResolution, filteredVideoConfigs,
