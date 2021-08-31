@@ -52,7 +52,6 @@ AppRegistryCache::~AppRegistryCache() {
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {
-  CHECK(my_sequence_checker_.CalledOnValidSequence());
   DCHECK(observer);
   observers_.AddObserver(observer);
 
@@ -62,14 +61,13 @@ void AppRegistryCache::AddObserver(Observer* observer) {
 }
 
 void AppRegistryCache::RemoveObserver(Observer* observer) {
-  CHECK(my_sequence_checker_.CalledOnValidSequence());
   observers_.RemoveObserver(observer);
 }
 
 void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                               apps::mojom::AppType app_type,
                               bool should_notify_initialized) {
-  CHECK(my_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   if (should_notify_initialized) {
     DCHECK_NE(apps::mojom::AppType::kUnknown, app_type);
