@@ -156,7 +156,6 @@ class PLATFORM_EXPORT ResourceLoader final
 
   blink::mojom::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);
-  void ClearCachedCode();
 
   void HandleError(const ResourceError&);
 

@@ -389,7 +389,11 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
 
   auto ClearCachedCodeIfPresent = [&]() {
     if (data.size() != 0) {
-      resource_loader->ClearCachedCode();
+      auto cache_type = resource_loader->GetCodeCacheType();
+      // If there is no valid code_cache_loader_, we wouldn't fetch cached code
+      // and hence we shouldn't reach here.
+      DCHECK(code_cache_loader_);
+      code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
     }
   };
 
@@ -934,11 +938,6 @@ blink::mojom::CodeCacheType ResourceLoader::GetCodeCacheType() const {
 
 void ResourceLoader::SendCachedCodeToResource(mojo_base::BigBuffer data) {
   resource_->SetSerializedCachedMetadata(std::move(data));
-}
-
-void ResourceLoader::ClearCachedCode() {
-  auto cache_type = GetCodeCacheType();
-  Platform::Current()->ClearCodeCacheEntry(cache_type, resource_->Url());
 }
 
 void ResourceLoader::DidSendData(uint64_t bytes_sent,
