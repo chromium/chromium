@@ -16,6 +16,7 @@ import './nearby_discovery_page.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyShareSettingsBehavior} from './shared/nearby_share_settings_behavior.m.js';
+import {CloseReason} from './shared/types.m.js';
 
 /** @enum {string} */
 const Page = {
@@ -139,11 +140,13 @@ Polymer({
 
   /**
    * Handler for the close event.
-   * @param {!Event} event
+   * @param {!CustomEvent<!{reason: CloseReason}>} event
    * @private
    */
   onClose_(event) {
-    chrome.send('close');
+    const reason =
+        event.detail.reason == null ? CloseReason.UNKNOWN : event.detail.reason;
+    chrome.send('close', [reason]);
   },
 
   /**

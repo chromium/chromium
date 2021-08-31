@@ -25,6 +25,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager} from './discovery_manager.js';
+import {CloseReason} from './shared/types.m.js';
 
 /** @implements {nearbyShare.mojom.TransferUpdateListenerInterface} */
 class TransferUpdateListener {
@@ -206,8 +207,12 @@ Polymer({
         this.needsConfirmation_ = false;
         break;
       case nearbyShare.mojom.TransferStatus.kInProgress:
+        getDiscoveryManager().stopDiscovery().then(
+            () => this.fire('close', {reason: CloseReason.TRANSFER_STARTED}));
+        break;
       case nearbyShare.mojom.TransferStatus.kComplete:
-        getDiscoveryManager().stopDiscovery().then(() => this.fire('close'));
+        getDiscoveryManager().stopDiscovery().then(
+            () => this.fire('close', {reason: CloseReason.TRANSFER_SUCCEEDED}));
         break;
       case nearbyShare.mojom.TransferStatus.kRejected:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
@@ -269,14 +274,14 @@ Polymer({
   /** @private */
   onReject_() {
     this.confirmationManager.reject().then(result => {
-      this.fire('close');
+      this.fire('close', {reason: CloseReason.REJECTED});
     });
   },
 
   /** @private */
   onCancel_() {
     this.confirmationManager.cancel().then(result => {
-      this.fire('close');
+      this.fire('close', {reason: CloseReason.CANCELLED});
     });
   },
 

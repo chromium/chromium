@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CloseReason} from './types.m.js';
+
 /**
  * @fileoverview The 'nearby-page-template is used as a template for pages. It
  * provide a consistent setup for all pages with title, sub-title, body slot
@@ -116,7 +118,7 @@ Polymer({
 
   /** @private */
   onCloseClick_() {
-    this.fire('close');
+    this.fire('close', {reason: CloseReason.UNKNOWN});
   },
 
   /**
