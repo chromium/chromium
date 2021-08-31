@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
     "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/ShadowedClickableTextBubble.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogContents.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogCoordinator.java",
@@ -54,6 +55,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -65,6 +67,10 @@ android_library("java") {
 android_resources("web_feed_java_resources") {
   sources = [
     "java/res/color/menu_footer_chip_background.xml",
+    "java/res/drawable-hdpi/follow_accelerator_shadow.9.png",
+    "java/res/drawable-mdpi/follow_accelerator_shadow.9.png",
+    "java/res/drawable-xhdpi/follow_accelerator_shadow.9.png",
+    "java/res/drawable-xxhdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable/web_feed_post_follow_illustration.xml",
     "java/res/layout/feed_management_activity.xml",
     "java/res/layout/feed_management_list_item.xml",

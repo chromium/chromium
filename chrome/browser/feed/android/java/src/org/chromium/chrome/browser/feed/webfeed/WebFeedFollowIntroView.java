@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
-import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -47,7 +46,7 @@ class WebFeedFollowIntroView {
     private final Runnable mIntroNotShownCallback;
     private final Runnable mIntroDismissedCallback;
 
-    private ClickableTextBubble mFollowBubble;
+    private ShadowedClickableTextBubble mFollowBubble;
     private final int mShowTimeoutMillis;
 
     /**
@@ -80,9 +79,10 @@ class WebFeedFollowIntroView {
             return;
         }
 
-        mFollowBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
+        mFollowBubble = new ShadowedClickableTextBubble(mActivity, mMenuButtonAnchorView,
                 R.string.menu_follow, R.string.menu_follow, createRectProvider(), R.drawable.ic_add,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled(), onTouchListener);
+                ChromeAccessibilityUtil.get().isAccessibilityEnabled(), onTouchListener,
+                /*inverseColor*/ false);
         mFollowBubble.addOnDismissListener(this::introDismissed);
         // TODO(crbug/1152592): Figure out a way to dismiss on outside taps as well.
         mFollowBubble.setAutoDismissTimeout(mShowTimeoutMillis);
