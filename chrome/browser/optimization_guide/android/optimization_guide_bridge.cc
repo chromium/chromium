@@ -156,6 +156,10 @@ void OptimizationGuideBridge::OnNotificationNotHandledByNative(
       env, ToJavaByteArray(env, encoded_notification));
 }
 
+void OptimizationGuideBridge::OnDeferredStartup(JNIEnv* env) {
+  optimization_guide_keyed_service_->GetHintsManager()->OnDeferredStartup();
+}
+
 static jlong JNI_OptimizationGuideBridge_Init(JNIEnv* env) {
   // TODO(sophiechang): Figure out how to separate factory to avoid circular
   // deps when getting last used profile is no longer allowed.

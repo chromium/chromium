@@ -153,6 +153,11 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // |navigation_redirect_chain| has finished.
   void OnNavigationFinish(const std::vector<GURL>& navigation_redirect_chain);
 
+  // Notifies |this| that deferred startup has occurred. This enables |this|
+  // to execute background tasks while minimizing the risk of regressing
+  // metrics such as jank.
+  void OnDeferredStartup();
+
   // Fetch the hints for the given URLs.
   void FetchHintsForURLs(std::vector<GURL> target_urls);
 
@@ -215,6 +220,9 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // the Component Updater. This is used as a signal during tests.
   void OnComponentHintsUpdated(base::OnceClosure update_closure,
                                bool hints_updated);
+
+  // Initiates fetching of hints - either immediately over via a timer.
+  void InitiateHintsFetchScheduling();
 
   // Returns the URLs that are currently in the active tab model that do not
   // have a hint available in |hint_cache_|.

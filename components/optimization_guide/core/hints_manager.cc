@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/hints_component_util.h"
@@ -558,10 +559,24 @@ void HintsManager::OnComponentHintsUpdated(base::OnceClosure update_closure,
       optimization_guide::kComponentHintsUpdatedResultHistogramString,
       hints_updated);
 
+  bool shouldInitiateFetchScheduling = true;
+#if defined(OS_ANDROID)
+  shouldInitiateFetchScheduling = optimization_guide::switches::
+      DisableFetchHintsForActiveTabsOnDeferredStartup();
+#endif
+  if (shouldInitiateFetchScheduling)
+    InitiateHintsFetchScheduling();
+  MaybeRunUpdateClosure(std::move(update_closure));
+}
+
+void HintsManager::InitiateHintsFetchScheduling() {
   if (optimization_guide::features::
           ShouldBatchUpdateHintsForActiveTabsAndTopHosts()) {
     SetLastHintsFetchAttemptTime(clock_->Now());
-    if (optimization_guide::switches::ShouldOverrideFetchHintsTimer()) {
+
+    if (optimization_guide::switches::ShouldOverrideFetchHintsTimer() ||
+        !optimization_guide::switches::
+            DisableFetchHintsForActiveTabsOnDeferredStartup()) {
       FetchHintsForActiveTabs();
     } else if (!active_tabs_hints_fetch_timer_.IsRunning()) {
       // Batch update hints with a random delay.
@@ -570,8 +585,6 @@ void HintsManager::OnComponentHintsUpdated(base::OnceClosure update_closure,
           &HintsManager::FetchHintsForActiveTabs);
     }
   }
-
-  MaybeRunUpdateClosure(std::move(update_closure));
 }
 
 void HintsManager::ListenForNextUpdateForTesting(
@@ -1288,6 +1301,10 @@ void HintsManager::OnNavigationFinish(
 
     PrepareToInvokeRegisteredCallbacks(url);
   }
+}
+
+void HintsManager::OnDeferredStartup() {
+  InitiateHintsFetchScheduling();
 }
 
 optimization_guide::OptimizationGuideStore* HintsManager::hint_store() {

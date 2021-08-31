@@ -65,6 +65,10 @@ const char kPurgeModelAndFeaturesStore[] = "purge-model-and-features-store";
 const char kDisableFetchingHintsAtNavigationStartForTesting[] =
     "disable-fetching-hints-at-navigation-start";
 
+// Disables fetching hints for active tabs on deferred startup.
+const char kDisableFetchHintsForActiveTabsOnDeferredStartup[] =
+    "optimization-guide-disable-hints-for-active-tabs-on-deferred-startup";
+
 const char kDisableCheckingUserPermissionsForTesting[] =
     "disable-checking-optimization-guide-user-permissions";
 
@@ -128,6 +132,11 @@ bool ShouldOverrideFetchHintsTimer() {
 bool ShouldOverrideFetchModelsAndFeaturesTimer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kFetchModelsAndHostModelFeaturesOverrideTimer);
+}
+
+bool DisableFetchHintsForActiveTabsOnDeferredStartup() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableFetchHintsForActiveTabsOnDeferredStartup);
 }
 
 std::unique_ptr<optimization_guide::proto::Configuration>

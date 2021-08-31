@@ -1006,4 +1006,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                     || decision == OptimizationGuideDecision.UNKNOWN);
                         });
     }
+
+    /**
+     * @return a list of Shopping Hints needed to be registered on deferred startup
+     */
+    public static List<HintsProto.OptimizationType> getShoppingHintsToRegisterOnDeferredStartup() {
+        if (ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
+            return Arrays.asList(HintsProto.OptimizationType.PRICE_TRACKING);
+        }
+        return Arrays.asList();
+    }
 }

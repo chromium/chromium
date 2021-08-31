@@ -280,6 +280,9 @@ class HintsManagerTest
   void SetUp() override {
     optimization_guide::ProtoDatabaseProviderTestBase::SetUp();
     CreateHintsManager(/*top_host_provider=*/nullptr);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableFetchHintsForActiveTabsOnDeferredStartup);
   }
 
   void TearDown() override {
