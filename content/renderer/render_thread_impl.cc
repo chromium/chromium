@@ -1253,14 +1253,7 @@ void RenderThreadImpl::SetRendererProcessType(
 
 blink::WebString RenderThreadImpl::GetUserAgent() {
   DCHECK(!user_agent_.IsNull());
-
   return user_agent_;
-}
-
-blink::WebString RenderThreadImpl::GetReducedUserAgent() {
-  DCHECK(!reduced_user_agent_.IsNull());
-
-  return reduced_user_agent_;
 }
 
 const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
@@ -1668,11 +1661,6 @@ void RenderThreadImpl::SetUserAgent(const std::string& user_agent) {
   DCHECK(user_agent_.IsNull());
   user_agent_ = WebString::FromUTF8(user_agent);
   GetContentClient()->renderer()->DidSetUserAgent(user_agent);
-}
-
-void RenderThreadImpl::SetReducedUserAgent(const std::string& user_agent) {
-  DCHECK(reduced_user_agent_.IsNull());
-  reduced_user_agent_ = WebString::FromUTF8(user_agent);
 }
 
 void RenderThreadImpl::SetUserAgentMetadata(

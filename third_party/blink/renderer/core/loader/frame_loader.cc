@@ -1259,13 +1259,6 @@ String FrameLoader::UserAgent() const {
   return user_agent;
 }
 
-String FrameLoader::ReducedUserAgent() const {
-  String user_agent = Client()->ReducedUserAgent();
-  probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
-                                &user_agent);
-  return user_agent;
-}
-
 absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
     const {
   return Client()->UserAgentMetadata();

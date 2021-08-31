@@ -326,13 +326,7 @@ void LocalDOMWindow::DisableEval(const String& error_message) {
 }
 
 String LocalDOMWindow::UserAgent() const {
-  if (!GetFrame())
-    return String();
-
-  if (RuntimeEnabledFeatures::UserAgentReductionEnabled(this))
-    return GetFrame()->Loader().ReducedUserAgent();
-  else
-    return GetFrame()->Loader().UserAgent();
+  return GetFrame() ? GetFrame()->Loader().UserAgent() : String();
 }
 
 UserAgentMetadata LocalDOMWindow::GetUserAgentMetadata() const {
