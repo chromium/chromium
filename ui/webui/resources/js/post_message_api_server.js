@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RequestHandler} from './post_message_api_request_handler.m.js';
+
 /**
  *  Initialization retry wait in milliseconds (subject to exponential backoff).
  */
@@ -19,9 +21,12 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * over the PostMessageAPI.  This should be subclassed and the
  * methods provided in methodList should be implemented as methods
  * of the subclass.
+ * TODO(b/198194293): Clean up the `methodList` below as it is not used.
  */
-export class PostMessageAPIServer {
+export class PostMessageAPIServer extends RequestHandler {
   constructor(clientElement, methodList, targetURL, messageOriginURLFilter) {
+    super();
+
     /**
      * The Window type element to which this server will listen for messages,
      * probably a <webview>, but also could be an <iframe> or a browser window
@@ -46,11 +51,6 @@ export class PostMessageAPIServer {
      */
     this.messageOriginURLFilter_ = new URL(messageOriginURLFilter);
 
-    /**
-     * Map that stores references to the methods implemented by the API.
-     * @private {!Map<string, function(!Array):?>}
-     */
-    this.apiFns_ = new Map();
 
     /**
      *  The ID of the timeout set before checking whether initialization has
@@ -73,28 +73,19 @@ export class PostMessageAPIServer {
     this.isInitialized_ = false;
 
     if (this.clientElement_.tagName === 'IFRAME') {
-      this.clientElement_.onload = this.onLoad_.bind(this);
+      this.clientElement_.onload = () => {
+        this.onLoad_();
+      };
     } else {
-      this.clientElement_.addEventListener(
-          'contentload', this.onLoad_.bind(this));
+      this.clientElement_.addEventListener('contentload', () => {
+        this.onLoad_();
+      });
     }
 
     // Listen for events.
     window.addEventListener('message', (event) => {
       this.onMessage_(event);
     });
-  }
-
-  /**
-   * Registers the specified method name with the specified
-   * function.
-   *
-   * @param {!string} methodName name of the method to register.
-   * @param {!function(!Array):?} method The function to associate with the
-   *     name.
-   */
-  registerMethod(methodName, method) {
-    this.apiFns_.set(methodName, method);
   }
 
   /**
@@ -165,7 +156,7 @@ export class PostMessageAPIServer {
    * @private
    * @param {Event} event  The postMessage event to handle.
    */
-  onMessage_(event) {
+  async onMessage_(event) {
     if (!this.originMatchesFilter(event.origin)) {
       console.log('Message received from unauthorized origin: ' + event.origin);
       return;
@@ -193,10 +184,11 @@ export class PostMessageAPIServer {
     const fn = event.data.fn;
     const args = event.data.args || [];
 
-    if (!this.apiFns_.has(fn)) {
-      console.error('Unknown function requested: ' + fn);
+    if (!this.canHandle(fn)) {
+      console.log('Unknown function requested: ' + fn);
       return;
     }
+
 
     const sendMessage = (methodId, result) => {
       this.clientElement_.contentWindow.postMessage(
@@ -210,12 +202,7 @@ export class PostMessageAPIServer {
     // Some methods return a promise and some don't. If we have a promise,
     // we resolve it first, otherwise we send the result directly (e.g., for
     // void functions we send 'undefined').
-    const result = this.apiFns_.get(fn)(args);
-    if (result instanceof Promise) {
-      result.then((result) => sendMessage(methodId, result));
-    } else {
-      sendMessage(methodId, result);
-    }
+    sendMessage(methodId, await this.handle(fn, args));
   }
 
   /**

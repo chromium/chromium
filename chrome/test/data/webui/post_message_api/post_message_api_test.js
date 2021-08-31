@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
 import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
-const METHODS = ['setX', 'increment', 'decrement', 'finalize'];
+// Methods exposed by the server to the client.
+const SERVER_METHODS = ['setX', 'increment', 'decrement', 'finalize'];
+
+// Methods exposed by the client to the server.
+const CLIENT_HANDLER_METHODS = ['isTestFinalized'];
+
 const TARGET_URL = 'chrome://test/post_message_api/iframe.html';
 const TARGET_ORIGIN = 'chrome://test/';
 
 class TestPostMessageAPIServer extends PostMessageAPIServer {
   constructor(iframeElement) {
-    super(iframeElement, METHODS, TARGET_URL, TARGET_ORIGIN);
+    super(iframeElement, SERVER_METHODS, TARGET_URL, TARGET_ORIGIN);
     /**
      * Whether the test was successful or not.
      * {boolean}
@@ -84,6 +90,20 @@ class TestPostMessageAPIServer extends PostMessageAPIServer {
   }
 }
 
+class TestClient extends PostMessageAPIClient {
+  constructor(iframeElement) {
+    super(CLIENT_HANDLER_METHODS, TARGET_ORIGIN, iframeElement.contentWindow);
+  }
+
+  /**
+   * Sends request to the iframe element to check if test is finalized.
+   * @return {Promise<boolean>}
+   */
+  isTestFinalized() {
+    return this.callApiFn('isTestFinalized', null);
+  }
+}
+
 suite('PostMessageAPIModuleTest', function() {
   suiteSetup(function() {
     this.innerFrame = document.createElement('iframe');
@@ -94,6 +114,12 @@ suite('PostMessageAPIModuleTest', function() {
   test('PostMessageCommTest', async function() {
     var server = new TestPostMessageAPIServer(this.innerFrame);
     let success = await server.getTestFinalized();
+    assertTrue(success);
+
+    //  Bootstraps a duplex communication channel between this server and the
+    //  client handler in the iframe.
+    var client = new TestClient(this.innerFrame);
+    success = await client.isTestFinalized();
     assertTrue(success);
   });
 });

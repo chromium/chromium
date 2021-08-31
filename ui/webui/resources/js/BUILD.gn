@@ -55,8 +55,9 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data.m.js",
     "plural_string_proxy.js",
     "static_types.js",
-    "post_message_api_server.js",
     "post_message_api_client.js",
+    "post_message_api_request_handler.js",
+    "post_message_api_server.js",
     "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
@@ -108,6 +109,7 @@ preprocess_if_expr("preprocess_generated") {
     "load_time_data.js",
     "parse_html_subset.m.js",
     "post_message_api_server.m.js",
+    "post_message_api_request_handler.m.js",
     "post_message_api_client.m.js",
     "promise_resolver.m.js",
     "util.m.js",
@@ -146,8 +148,6 @@ js_type_check("js_resources") {
     ":list_property_update_behavior",
     ":load_time_data",
     ":parse_html_subset",
-    ":post_message_api_client",
-    ":post_message_api_server",
     ":promise_resolver",
     ":util",
     ":web_ui_listener_behavior",
@@ -205,12 +205,6 @@ js_library("load_time_data") {
 js_library("parse_html_subset") {
 }
 
-js_library("post_message_api_server") {
-}
-
-js_library("post_message_api_client") {
-}
-
 js_library("promise_resolver") {
   deps = [ ":assert" ]
 }
@@ -245,6 +239,7 @@ js_modulizer("modulize_local") {
     "list_property_update_behavior.js",
     "parse_html_subset.js",
     "post_message_api_server.js",
+    "post_message_api_request_handler.js",
     "post_message_api_client.js",
     "promise_resolver.js",
     "util.js",
@@ -282,6 +277,7 @@ js_type_check("js_resources_modules") {
     ":parse_html_subset.m",
     ":plural_string_proxy",
     ":post_message_api_client.m",
+    ":post_message_api_request_handler.m",
     ":post_message_api_server.m",
     ":promise_resolver.m",
     ":search_highlight_utils",
@@ -350,12 +346,21 @@ js_library("plural_string_proxy") {
 js_library("post_message_api_server.m") {
   sources =
       [ "$root_gen_dir/ui/webui/resources/js/post_message_api_server.m.js" ]
+  deps = [ ":post_message_api_request_handler.m" ]
   extra_deps = [ ":modulize_local" ]
 }
 
 js_library("post_message_api_client.m") {
   sources =
       [ "$root_gen_dir/ui/webui/resources/js/post_message_api_client.m.js" ]
+  deps = [ ":post_message_api_request_handler.m" ]
+  extra_deps = [ ":modulize_local" ]
+}
+
+js_library("post_message_api_request_handler.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/js/post_message_api_request_handler.m.js",
+  ]
   extra_deps = [ ":modulize_local" ]
 }
 

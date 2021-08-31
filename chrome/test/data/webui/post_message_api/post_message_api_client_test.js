@@ -3,13 +3,34 @@
 // found in the LICENSE file.
 
 import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
+import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
 
-const METHODS = ['setX', 'increment', 'decrement', 'finalize'];
+const SERVER_METHODS = ['setX', 'increment', 'decrement', 'finalize'];
 const ServerOriginURLFilter = 'chrome://chrome-signin/';
 
-class TestPostMessageAPIClient extends PostMessageAPIClient {
+class TestRequestHandler extends RequestHandler {
   constructor() {
-    super(METHODS, ServerOriginURLFilter);
+    super();
+    this.registerMethod('isTestFinalized', this.isTestFinalized_.bind(this));
+    this.isTestFinalized_ = false;
+  }
+
+  // Called by client when the test cases are satisfied.
+  onTestFinalized() {
+    this.isTestFinalized_ = true;
+  }
+
+  // PostMessageAPIRequest that comes from the server to check if test is
+  // finalized.
+  isTestFinalized_() {
+    return this.isTestFinalized_;
+  }
+}
+
+class TestPostMessageAPIClient extends PostMessageAPIClient {
+  constructor(requestHandler) {
+    super(SERVER_METHODS, ServerOriginURLFilter, null);
+    this.setHandler(requestHandler);
   }
 
   setX(x) {
@@ -63,6 +84,7 @@ class TestPostMessageAPIClient extends PostMessageAPIClient {
           // PostMessageAPIClient. Notify the server that the test is
           // successfully completed.
           this.finalize(true);
+          this.requestHandler_.onTestFinalized();
         });
       });
     });
@@ -72,5 +94,5 @@ class TestPostMessageAPIClient extends PostMessageAPIClient {
 document.addEventListener('DOMContentLoaded', function() {
   // Construct the PostMessageAPIClient so that it can run the tests.
   const post_message_listener =
-      new TestPostMessageAPIClient(METHODS, ServerOriginURLFilter);
+      new TestPostMessageAPIClient(new TestRequestHandler());
 });

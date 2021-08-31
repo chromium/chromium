@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RequestHandler} from './post_message_api_request_handler.m.js';
+
 /**
  * Class that provides the functionality for talking to a PostMessageAPIServer
  * over the postMessage API.  This should be subclassed and the methods in the
  * server that the client needs to access should be provided in methodList.
- *
  */
 export class PostMessageAPIClient {
   /**
@@ -14,8 +15,10 @@ export class PostMessageAPIClient {
    *     client.
    * @param {!string} serverOriginURLFilter  Only messages from this origin
    *     will be accepted.
+   * @param {Window} targetWindow, If the connection is already established,
+   *     then provide the target window.
    */
-  constructor(methodList, serverOriginURLFilter) {
+  constructor(methodList, serverOriginURLFilter, targetWindow) {
     /**
      * @private @const {!string} Filter to use to validate
      * the origin of received messages.  The origin of messages
@@ -23,11 +26,6 @@ export class PostMessageAPIClient {
      */
     this.serverOriginURLFilter_ = serverOriginURLFilter;
 
-    /**
-     * The parent window.
-     * @private {Window}
-     */
-    this.parentWindow_ = null;
     /*
      * @private {number}
      */
@@ -37,15 +35,41 @@ export class PostMessageAPIClient {
      * @private {!Map}
      */
     this.methodsAwaitingResponse_ = new Map;
+
+    /**
+     * The parent window.
+     * @private {Window}
+     */
+    this.targetWindow_ = targetWindow;
+
+    /**
+     * The request handler for the client.
+     * @private {RequestHandler}
+     */
+    this.requestHandler_ = null;
+
     /**
      * Function property that tracks whether client has
      * been initialized by the server.
      * @private {Function}
      */
-    this.boundOnInitialize_ = this.onInitialize_.bind(this);
-
-    // Wait for an init message from the server.
-    window.addEventListener('message', this.boundOnInitialize_);
+    this.boundOnInitialize_ = null;
+    if (this.targetWindow_ === null) {
+      // Wait for an init message from the server.
+      this.boundOnInitialize_ = (event) => {
+        this.onInitialize_(event);
+      };
+      window.addEventListener('message', this.boundOnInitialize_);
+    } else {
+      // When trying to bootstrap a duplex communication channel, the instance
+      // of PostMessageAPIServer may create a PostMessageAPIClient and pass the
+      // window of the element it has already established connection with. In
+      // this case, the new PostMessageAPIClient doesn't need to wait for 'init'
+      // messages and can start sending requests immediately.
+      window.addEventListener('message', (event) => {
+        this.onMessage_(event);
+      });
+    }
   }
 
   /**
@@ -54,6 +78,14 @@ export class PostMessageAPIClient {
    * subclasses which would like to know when initialization is done.
    */
   onInitialized() {}
+
+  /**
+   * Adds a handler object to the client so that it could handle calls received.
+   * @param {RequestHandler} handler
+   */
+  setHandler(handler) {
+    this.requestHandler_ = handler;
+  }
 
   //
   // Private implementation:
@@ -73,11 +105,13 @@ export class PostMessageAPIClient {
           event.origin);
       return;
     }
-    this.parentWindow_ = event.source;
-    this.parentWindow_.postMessage('init', this.serverOriginURLFilter_);
+    this.targetWindow_ = event.source;
+    this.targetWindow_.postMessage('init', this.serverOriginURLFilter_);
     window.removeEventListener('message', this.boundOnInitialize_);
     this.boundOnInitialize_ = null;
-    window.addEventListener('message', this.onMessage_.bind(this));
+    window.addEventListener('message', (incoming_event) => {
+      this.onMessage_(incoming_event);
+    });
     this.onInitialized();
   }
 
@@ -95,26 +129,30 @@ export class PostMessageAPIClient {
    * @param {Event} event  An event received from the server via the postMessage
    *     API.
    */
-  onMessage_(event) {
+  async onMessage_(event) {
     if (!this.originMatchesFilter(event.origin)) {
       console.error(
           'Message received from non-authorized origin: ' + event.origin);
       return;
     }
-    if (event.source !== this.parentWindow_) {
+
+    if (event.source !== this.targetWindow_) {
       console.error('discarding event whose source is not the parent window');
       return;
     }
-    if (!this.methodsAwaitingResponse_.has(event.data.methodId)) {
-      if (event.data === 'init') {
-        console.log('Received init message after initialization is complete.');
-        this.parentWindow_.postMessage('init', this.serverOriginURLFilter_);
-        return;
-      } else {
-        console.error('discarding event method is not waiting for a response');
-        return;
-      }
+
+    if (this.requestHandler_ !== null && event.data.fn !== null &&
+        this.requestHandler_.canHandle(event.data.fn)) {
+      this.sendResponse_(
+          event.data.methodId,
+          await this.requestHandler_.handle(event.data.fn, event.data.args));
     }
+
+    if (!this.methodsAwaitingResponse_.has(event.data.methodId)) {
+      console.log('discarding event method is not waiting for a response');
+      return;
+    }
+
     const method = this.methodsAwaitingResponse_.get(event.data.methodId);
     this.methodsAwaitingResponse_.delete(event.data.methodId);
     method(event.data.result);
@@ -130,10 +168,10 @@ export class PostMessageAPIClient {
   callApiFn(fn, args) {
     const newMethodId = this.nextMethodId_++;
     const promise = new Promise((resolve, reject) => {
-      if (!this.parentWindow_) {
+      if (!this.targetWindow_) {
         reject('No parent window defined');
       }
-      this.parentWindow_.postMessage(
+      this.targetWindow_.postMessage(
           {
             methodId: newMethodId,
             fn: fn,
@@ -144,5 +182,19 @@ export class PostMessageAPIClient {
       this.methodsAwaitingResponse_.set(newMethodId, resolve);
     });
     return promise;
+  }
+
+  /**
+   * Method that returns a response to a request that had been received.
+   * @param {number} methodId, The callback method id provided in the request.
+   * @param {Object} result, The result of the callback.
+   */
+  sendResponse_(methodId, result) {
+    this.targetWindow_.postMessage(
+        {
+          methodId: methodId,
+          result: result,
+        },
+        this.serverOriginURLFilter_);
   }
 }
