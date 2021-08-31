@@ -570,6 +570,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   auto test_filter = GetTestFilter();
 
   for (const auto& policy : test_cases) {
+    SCOPED_TRACE(::testing::Message() << "Policy name: " << policy.first);
     for (const auto& test_case : policy.second) {
       if (test_filter.has_value() &&
           !base::Contains(test_filter.value(), test_case->name())) {
@@ -596,6 +597,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
       for (size_t i = 0; i < test_case->policy_pref_mapping_tests().size();
            ++i) {
         const auto& pref_mapping = test_case->policy_pref_mapping_tests()[i];
+        SCOPED_TRACE(::testing::Message() << "Mapping test index " << i);
 
         EXPECT_FALSE(pref_mapping->prefs().empty())
             << "Test #" << i << " for " << test_case->name()
@@ -608,6 +610,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
         }
 
         for (const auto& pref_case : pref_mapping->prefs()) {
+          SCOPED_TRACE(::testing::Message() << "Pref: " << pref_case->pref());
           PrefService* prefs =
               GetPrefServiceForLocation(pref_case->location(), local_state,
                                         user_prefs, signin_profile_prefs);
