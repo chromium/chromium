@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
@@ -13,6 +14,14 @@
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
+
+namespace {
+
+// The name of the Finch study that turns on the experiment.
+const base::Feature kLacrosChromeApps{"LacrosChromeApps",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
     default;
@@ -36,14 +45,15 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
         monitor->CreateVoter()));
   }
 
-  // Disable chrome apps for now with Lacros since they show up via profile
-  // migration, but are not fully functional.
-  extension_apps_publisher_ = std::make_unique<LacrosExtensionAppsPublisher>();
-  // extension_apps_publisher_->Initialize();
-  extension_apps_controller_ =
-      std::make_unique<LacrosExtensionAppsController>();
-  // extension_apps_controller_->Initialize(
-  //     extension_apps_publisher_->publisher());
+  if (base::FeatureList::IsEnabled(kLacrosChromeApps)) {
+    extension_apps_publisher_ =
+        std::make_unique<LacrosExtensionAppsPublisher>();
+    extension_apps_publisher_->Initialize();
+    extension_apps_controller_ =
+        std::make_unique<LacrosExtensionAppsController>();
+    extension_apps_controller_->Initialize(
+        extension_apps_publisher_->publisher());
+  }
 
   // Start Lacros' drive mount point path caching, since it is available in Ash.
   drivefs_cache_ = std::make_unique<DriveFsCache>();
