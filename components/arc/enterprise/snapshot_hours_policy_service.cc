@@ -94,12 +94,19 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
     return;
 
   const auto* timezone = dict->FindStringKey("timezone");
-  if (!timezone)
-    return;
+  std::string timezone_str = "";
+  if (!timezone || *timezone == "UNSET") {
+    const icu::TimeZone* const zone = icu::TimeZone::detectHostTimeZone();
+    icu::UnicodeString zone_id;
+    zone->getID(zone_id).toUTF8String(timezone_str);
+    VLOG(2) << "Local timezone detected: " << timezone_str;
+  } else {
+    timezone_str = *timezone;
+  }
 
   int offset;
   if (!policy::weekly_time_utils::GetOffsetFromTimezoneToGmt(
-          *timezone, base::DefaultClock::GetInstance(), &offset)) {
+          timezone_str, base::DefaultClock::GetInstance(), &offset)) {
     return;
   }
 
