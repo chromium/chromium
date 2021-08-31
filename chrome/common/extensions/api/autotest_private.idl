@@ -516,6 +516,8 @@ namespace autotestPrivate {
 
   callback GetShelfItemsCallback = void (ShelfItem[] items);
 
+  callback GetDefaultPinnedAppIdsCallback = void (DOMString[] items);
+
   callback GetShelfAutoHideBehaviorCallback = void (DOMString behavior);
 
   callback GetShelfAlignmentCallback = void (ShelfAlignmentType alignment);
@@ -712,6 +714,9 @@ namespace autotestPrivate {
 
     // Waits for system web apps to complete the installation.
     static void waitForSystemWebAppsInstall(VoidCallback callback);
+
+    // Gets all the default pinned shelf app IDs, these may not be installed.
+    static void getDefaultPinnedAppIds(GetDefaultPinnedAppIdsCallback callback);
 
     // Returns the number of system web apps that should be installed.
     static void getRegisteredSystemWebApps(

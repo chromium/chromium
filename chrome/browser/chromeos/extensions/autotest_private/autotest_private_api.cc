@@ -99,6 +99,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/ash/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -3557,6 +3558,27 @@ void AutotestPrivateSetOverviewModeStateFunction::OnOverviewModeChanged(
   } else {
     Respond(std::move(arg));
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetDefaultPinnedAppIdsFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetDefaultPinnedAppIdsFunction::
+    AutotestPrivateGetDefaultPinnedAppIdsFunction() = default;
+
+AutotestPrivateGetDefaultPinnedAppIdsFunction::
+    ~AutotestPrivateGetDefaultPinnedAppIdsFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetDefaultPinnedAppIdsFunction::Run() {
+  std::vector<std::string> default_pinned_app_ids;
+  for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor())
+    default_pinned_app_ids.emplace_back(default_app_id);
+
+  return RespondNow(ArgumentList(
+      api::autotest_private::GetDefaultPinnedAppIds::Results::Create(
+          default_pinned_app_ids)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

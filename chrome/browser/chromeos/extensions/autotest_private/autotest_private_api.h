@@ -914,6 +914,18 @@ class AutotestPrivateWaitForOverviewStateFunction : public ExtensionFunction {
   void Done(bool success);
 };
 
+// Gets the default pinned app IDs for the shelf.
+class AutotestPrivateGetDefaultPinnedAppIdsFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDefaultPinnedAppIdsFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDefaultPinnedAppIds",
+                             AUTOTESTPRIVATE_GETDEFAULTPINNEDAPPIDS)
+
+ private:
+  ~AutotestPrivateGetDefaultPinnedAppIdsFunction() override;
+  ResponseAction Run() override;
+};
+
 // Returns the overview mode state.
 class AutotestPrivateSetOverviewModeStateFunction : public ExtensionFunction {
  public:

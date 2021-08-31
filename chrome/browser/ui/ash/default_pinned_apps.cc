@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/cxx17_backports.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
+
+namespace {
 
 base::span<StaticAppId> GetDefaultPinnedApps() {
   if (!base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2)) {
@@ -86,4 +89,14 @@ base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
   return base::span<StaticAppId>(
       kTabletFormFactorDefaultPinnedApps,
       base::size(kTabletFormFactorDefaultPinnedApps));
+}
+
+}  // namespace
+
+base::span<StaticAppId> GetDefaultPinnedAppsForFormFactor() {
+  if (chromeos::switches::IsTabletFormFactor()) {
+    return GetTabletFormFactorDefaultPinnedApps();
+  }
+
+  return GetDefaultPinnedApps();
 }
