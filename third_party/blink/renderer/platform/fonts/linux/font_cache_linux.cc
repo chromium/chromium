@@ -124,7 +124,9 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   FontDescription description(font_description);
   if (fallback_font.is_bold && description.Weight() < BoldThreshold())
     description.SetWeight(BoldWeightValue());
-  if (!fallback_font.is_bold && description.Weight() >= BoldThreshold()) {
+  if (!fallback_font.is_bold && description.Weight() >= BoldThreshold() &&
+      font_description.GetFontSynthesisWeight() ==
+          FontDescription::kAutoFontSynthesisWeight) {
     should_set_synthetic_bold = true;
     description.SetWeight(NormalWeightValue());
   }

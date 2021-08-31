@@ -103,8 +103,10 @@ scoped_refptr<SimpleFontData> FontCache::FallbackOnStandardFontStyle(
       substitute_platform_data->FontContainsCharacter(character)) {
     FontPlatformData platform_data =
         FontPlatformData(*substitute_platform_data);
-    platform_data.SetSyntheticBold(font_description.Weight() >=
-                                   BoldThreshold());
+    platform_data.SetSyntheticBold(
+        font_description.Weight() >= BoldThreshold() &&
+        font_description.GetFontSynthesisWeight() ==
+            FontDescription::kAutoFontSynthesisWeight);
     platform_data.SetSyntheticItalic(font_description.Style() ==
                                      ItalicSlopeValue());
     return FontDataFromFontPlatformData(&platform_data, kDoNotRetain);
@@ -292,10 +294,12 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   std::unique_ptr<FontPlatformData> font_platform_data =
       std::make_unique<FontPlatformData>(
           typeface, name, font_size,
-          (font_description.Weight() >
-               FontSelectionValue(200) +
-                   FontSelectionValue(typeface->fontStyle().weight()) ||
-           font_description.IsSyntheticBold()),
+          ((font_description.Weight() >
+                FontSelectionValue(200) +
+                    FontSelectionValue(typeface->fontStyle().weight()) ||
+            font_description.IsSyntheticBold()) &&
+           font_description.GetFontSynthesisWeight() ==
+               FontDescription::kAutoFontSynthesisWeight),
           ((font_description.Style() == ItalicSlopeValue()) &&
            !typeface->isItalic()) ||
               font_description.IsSyntheticItalic(),

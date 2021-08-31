@@ -682,7 +682,8 @@ String FontDescription::ToString() const {
       "keyword_size=%u, font_smoothing=%s, text_rendering=%s, "
       "synthetic_bold=%s, synthetic_italic=%s, subpixel_positioning=%s, "
       "subpixel_ascent_descent=%s, variant_numeric=[%s], "
-      "variant_east_asian=[%s], font_optical_sizing=%s",
+      "variant_east_asian=[%s], font_optical_sizing=%s, "
+      "font_synthesis_weight=%s",
       family_list_.ToString().Ascii().c_str(),
       (feature_settings_ ? feature_settings_->ToString().Ascii().c_str() : ""),
       (variation_settings_ ? variation_settings_->ToString().Ascii().c_str()
@@ -711,7 +712,8 @@ String FontDescription::ToString() const {
       ToBooleanString(SubpixelAscentDescent()),
       VariantNumeric().ToString().Ascii().c_str(),
       VariantEastAsian().ToString().Ascii().c_str(),
-      blink::ToString(FontOpticalSizing()).Ascii().c_str());
+      blink::ToString(FontOpticalSizing()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisWeight()).Ascii().c_str());
 }
 
 }  // namespace blink

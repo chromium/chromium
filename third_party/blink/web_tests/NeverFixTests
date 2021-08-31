@@ -1919,3 +1919,10 @@ crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
 wpt_internal/document-transition/* [ Skip ]
 virtual/document-transition/wpt_internal/document-transition/* [ Pass ]
 
+# font-synthesis property has not been implemented in Fuchsia, Mac and Win yet.
+crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-weight-system-linux.html [ Skip ]
+crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-weight-system-linux.html [ Skip ]
+crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-weight-system-linux.html [ Skip ]
+crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-weight-local-linux.html [ Skip ]
+crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-weight-local-linux.html [ Skip ]
+crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-weight-local-linux.html [ Skip ]

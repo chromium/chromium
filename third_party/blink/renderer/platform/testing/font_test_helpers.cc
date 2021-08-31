@@ -39,7 +39,9 @@ class TestFontSelector : public FontSelector {
         {NormalWeightValue(), NormalWeightValue()});
     FontPlatformData platform_data = custom_platform_data_->GetFontPlatformData(
         font_description.EffectiveFontSize(),
-        font_description.IsSyntheticBold(),
+        font_description.IsSyntheticBold() &&
+            font_description.GetFontSynthesisWeight() ==
+                FontDescription::kAutoFontSynthesisWeight,
         font_description.IsSyntheticItalic(),
         font_description.GetFontSelectionRequest(), normal_capabilities,
         font_description.FontOpticalSizing(), font_description.Orientation());

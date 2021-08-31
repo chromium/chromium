@@ -190,7 +190,7 @@ TEST(FontDescriptionTest, ToString) {
       "variant_numeric=[numeric_figure=NormalFigure, "
       "numeric_spacing=NormalSpacing, numeric_fraction=Normal, ordinal=Off, "
       "slashed_zero=Off], variant_east_asian=[form=Normal, width=Normal, "
-      "ruby=false], font_optical_sizing=Auto",
+      "ruby=false], font_optical_sizing=Auto, font_synthesis_weight=Auto",
       description.ToString());
 }
 

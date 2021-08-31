@@ -40,7 +40,9 @@ scoped_refptr<SimpleFontData> BinaryDataFontFaceSource::CreateFontData(
   return SimpleFontData::Create(
       custom_platform_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
-          font_description.IsSyntheticBold(),
+          font_description.IsSyntheticBold() &&
+              font_description.GetFontSynthesisWeight() ==
+                  FontDescription::kAutoFontSynthesisWeight,
           font_description.IsSyntheticItalic(),
           font_description.GetFontSelectionRequest(),
           font_selection_capabilities, font_description.FontOpticalSizing(),
