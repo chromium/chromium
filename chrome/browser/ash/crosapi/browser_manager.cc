@@ -354,9 +354,7 @@ void BrowserManager::NewFullscreenWindow(const GURL& url,
 }
 
 void BrowserManager::NewTab() {
-  // TODO(crbug.com/1236859): Pass URL parameter via BrowserInitParams here
-  // to open the tab in case the browser is not running.
-  auto result = MaybeStart(mojom::InitialBrowserAction::kUseStartupPreference);
+  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
   if (result != MaybeStartResult::kRunning)
     return;
 
