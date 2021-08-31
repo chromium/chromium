@@ -1697,6 +1697,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-dangerous-download-dialog",
+    "owners": [ "qinmin", "chrome-downloads@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "enable-data-reduction-proxy-server-experiment",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.
@@ -1849,6 +1854,11 @@
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
     "expiry_milestone": 102
+  },
+  {
+    "name": "enable-duplicate-download-dialog",
+    "owners": [ "qinmin", "chrome-downloads@google.com" ],
+    "expiry_milestone": 99
   },
   {
     "name": "enable-ephemeral-guest-profiles-on-desktop",

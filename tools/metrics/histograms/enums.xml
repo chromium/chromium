@@ -47523,6 +47523,7 @@ from previous Chrome versions.
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
+  <int value="-1704022650" label="EnableDangerousDownloadDialog:enabled"/>
   <int value="-1703709912" label="enable-new-ntp"/>
   <int value="-1703308540" label="disable-webaudio"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
@@ -48921,6 +48922,7 @@ from previous Chrome versions.
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
+  <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
@@ -51188,6 +51190,7 @@ from previous Chrome versions.
   <int value="1211756417"
       label="SessionRestorePrioritizesBackgroundUseCases:disabled"/>
   <int value="1211803853" label="OmniboxDocumentProviderAso:enabled"/>
+  <int value="1212186655" label="EnableDuplicateDownloadDialog:enabled"/>
   <int value="1212526465" label="MediaAppPdfInInk:disabled"/>
   <int value="1214219155" label="gamepad-polling-interval"/>
   <int value="1214455758" label="VideoRotateToFullscreen:disabled"/>
@@ -51984,6 +51987,7 @@ from previous Chrome versions.
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
+  <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
   <int value="1838990777" label="V8Future:enabled"/>

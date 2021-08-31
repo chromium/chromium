@@ -4928,6 +4928,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadLaterDebugOnWifiName,
      flag_descriptions::kDownloadLaterDebugOnWifiNameDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(download::switches::kDownloadLaterDebugOnWifi)},
+
+    {"enable-dangerous-download-dialog",
+     flag_descriptions::kEnableDangerousDownloadDialogName,
+     flag_descriptions::kEnableDangerousDownloadDialogDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableDangerousDownloadDialog)},
+
+    {"enable-duplicate-download-dialog",
+     flag_descriptions::kEnableDuplicateDownloadDialogName,
+     flag_descriptions::kEnableDuplicateDownloadDialogDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableDuplicateDownloadDialog)},
+
 #endif
 
     {"enable-new-download-backend",

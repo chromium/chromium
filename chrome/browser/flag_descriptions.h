@@ -1764,6 +1764,12 @@ extern const char kEnableAndroidSpellcheckerDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
+extern const char kEnableDangerousDownloadDialogName[];
+extern const char kEnableDangerousDownloadDialogDescription[];
+
+extern const char kEnableDuplicateDownloadDialogName[];
+extern const char kEnableDuplicateDownloadDialogDescription[];
+
 extern const char kEnableUseAaudioDriverName[];
 extern const char kEnableUseAaudioDriverDescription[];
 

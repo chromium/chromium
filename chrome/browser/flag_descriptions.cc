@@ -3081,6 +3081,16 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
+const char kEnableDangerousDownloadDialogName[] =
+    "Enable dangerous download dialog";
+const char kEnableDangerousDownloadDialogDescription[] =
+    "Use dialog instead of infobar for user to confirm dangerous download";
+
+const char kEnableDuplicateDownloadDialogName[] =
+    "Enable duplicate download dialog";
+const char kEnableDuplicateDownloadDialogDescription[] =
+    "Use dialog instead of infobar for user to confirm duplicate download";
+
 const char kEnableUseAaudioDriverName[] = "Use AAudio Driver";
 const char kEnableUseAaudioDriverDescription[] =
     "Enable the use of AAudio, if supported by the current Android version.";
