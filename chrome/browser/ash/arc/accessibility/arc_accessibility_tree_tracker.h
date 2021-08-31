@@ -78,6 +78,8 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   void OnNotificationSurfaceAdded(ash::ArcNotificationSurface* surface);
 
+  void OnNotificationSurfaceRemoved(ash::ArcNotificationSurface* surface);
+
   void OnNotificationStateChanged(
       const std::string& notification_key,
       const arc::mojom::AccessibilityNotificationStateType& state);

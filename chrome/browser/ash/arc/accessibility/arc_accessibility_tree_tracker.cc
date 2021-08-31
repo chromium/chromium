@@ -231,7 +231,9 @@ class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
   }
 
   void OnNotificationSurfaceRemoved(
-      ash::ArcNotificationSurface* surface) override {}
+      ash::ArcNotificationSurface* surface) override {
+    owner_->OnNotificationSurfaceRemoved(surface);
+  }
 
  private:
   base::ScopedObservation<ash::ArcNotificationSurfaceManager,
@@ -410,6 +412,17 @@ void ArcAccessibilityTreeTracker::OnNotificationSurfaceAdded(
     surface->GetAttachedHost()->NotifyAccessibilityEvent(
         ax::mojom::Event::kChildrenChanged, false);
   }
+}
+
+void ArcAccessibilityTreeTracker::OnNotificationSurfaceRemoved(
+    ash::ArcNotificationSurface* surface) {
+  const std::string& notification_key = surface->GetNotificationKey();
+
+  auto* const tree = GetFromKey(KeyForNotification(notification_key));
+  if (!tree)
+    return;
+
+  tree->set_window(nullptr);
 }
 
 void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
