@@ -485,7 +485,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcut) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-            "", false, "");
+            "", false, "", shortcut_info->actions);
 
     base::FilePath desktop_shortcut_path =
         scoped_desktop_path.GetPath().Append(GetTemplateFilename());
@@ -504,7 +504,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcut) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-            "", false, kRunOnOsLoginModeWindowed);
+            "", false, kRunOnOsLoginModeWindowed, shortcut_info->actions);
     base::FilePath autostart_shortcut_path =
         autostart_path.GetPath().Append(GetTemplateFilename());
     ASSERT_TRUE(base::PathExists(autostart_shortcut_path));
@@ -557,7 +557,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithProtocols) {
                   shortcut_info->title, "chrome-test_extension-Profile_1",
                   shortcut_info->profile_path, "",
                   "x-scheme-handler/mailto;x-scheme-handler/web+testing", false,
-                  "");
+                  "", shortcut_info->actions);
 
           base::FilePath application_shortcut_path(argv[5]);
           EXPECT_TRUE(base::PathExists(application_shortcut_path));
@@ -591,7 +591,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithProtocols) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-            "", false, "");
+            "", false, "", shortcut_info->actions);
 
     base::FilePath desktop_shortcut_path =
         scoped_desktop_path.GetPath().Append(GetTemplateFilename());
@@ -610,7 +610,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithProtocols) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-            "", false, kRunOnOsLoginModeWindowed);
+            "", false, kRunOnOsLoginModeWindowed, shortcut_info->actions);
     base::FilePath autostart_shortcut_path =
         autostart_path.GetPath().Append(GetTemplateFilename());
     ASSERT_TRUE(base::PathExists(autostart_shortcut_path));
@@ -665,7 +665,7 @@ TEST_F(WebAppShortcutLinuxTest,
           GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
           shortcut_info->extension_id, shortcut_info->title,
           "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-          "", false, kRunOnOsLoginModeWindowed);
+          "", false, kRunOnOsLoginModeWindowed, shortcut_info->actions);
 
   // |scoped_desktop_path| was deleted earlier, confirm it wasn't recreated.
   EXPECT_FALSE(base::DirectoryExists(desktop_path));
@@ -784,7 +784,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutEmptyExtension) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-https___example.com_", shortcut_info->profile_path, "", "",
-            false, "");
+            false, "", shortcut_info->actions);
 
     base::FilePath desktop_shortcut_path = scoped_desktop_path.GetPath().Append(
         "chrome-https___example.com_.desktop");
@@ -803,7 +803,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutEmptyExtension) {
             GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
             shortcut_info->extension_id, shortcut_info->title,
             "chrome-https___example.com_", shortcut_info->profile_path, "", "",
-            false, kRunOnOsLoginModeWindowed);
+            false, kRunOnOsLoginModeWindowed, shortcut_info->actions);
 
     base::FilePath autostart_shortcut_path =
         autostart_path.GetPath().Append("chrome-https___example.com_.desktop");
@@ -856,7 +856,7 @@ TEST_F(WebAppShortcutLinuxTest, UpdateDesktopShortcuts) {
           GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
           shortcut_info->extension_id, shortcut_info->title,
           "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
-          "", false, "");
+          "", false, "", shortcut_info->actions);
 
   base::FilePath desktop_shortcut_path =
       scoped_desktop_path.GetPath().Append(GetTemplateFilename());
@@ -942,6 +942,117 @@ TEST_F(WebAppShortcutLinuxTest, GetShortcutLocations) {
     EXPECT_EQ(result.size(), 2u);
     EXPECT_EQ(result[0], desktop_shortcut_path);
     EXPECT_EQ(result[1], autostart_shortcut_path);
+  }
+}
+
+// Validates Shortcut Menu actions are only added to the applications folder
+// .desktop file.
+TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithShortcutMenuActions) {
+  ScopedDesktopPath scoped_desktop_path;
+  ScopedApplicationsPath scoped_applications_path;
+  ScopedAutoStartPath autostart_path;
+  base::ScopedPathOverride user_desktop_override(base::DIR_USER_DESKTOP,
+                                                 scoped_desktop_path.GetPath());
+
+  MockEnvironment env;
+  env.Set("XDG_DATA_HOME", scoped_applications_path.GetDataHomePath().value());
+  env.Set(base::nix::kXdgConfigHomeEnvVar,
+          autostart_path.GetConfigHomePath().value());
+
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.in_startup = true;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+
+  // Add actions
+  shortcut_info->actions.emplace("action1", "Action 1",
+                                 GURL("https://example.com/action1"));
+  shortcut_info->actions.emplace("action2", "Action 2",
+                                 GURL("https://example.com/action2"));
+  shortcut_info->actions.emplace("action3", "Action 3",
+                                 GURL("https://example.com/action3"));
+  shortcut_info->actions.emplace("action4", "Action 4",
+                                 GURL("https://example.com/action4"));
+
+  int invoke_count = 0;
+  LaunchXdgUtilityForTesting CreateDesktopShortcutLaunchXdgUtility =
+      base::BindLambdaForTesting([&](const std::vector<std::string>& argv,
+                                     int* exit_code) -> bool {
+        ValidateCreateDesktopShortcutLaunchXdgUtility(
+            argv, exit_code, scoped_applications_path.GetPath(), invoke_count);
+
+        // Validate actions were added to contents correctly
+        if (invoke_count == 2) {
+          std::string expected_contents =
+              shell_integration_linux::GetDesktopFileContents(
+                  shell_integration_linux::internal::GetChromeExePath(),
+                  GenerateApplicationNameFromInfo(*shortcut_info),
+                  shortcut_info->url, shortcut_info->extension_id,
+                  shortcut_info->title, "chrome-test_extension-Profile_1",
+                  shortcut_info->profile_path, "", "", false, "",
+                  shortcut_info->actions);
+
+          base::FilePath application_shortcut_path(argv[5]);
+          EXPECT_TRUE(base::PathExists(application_shortcut_path));
+
+          std::string actual_contents;
+          EXPECT_TRUE(base::ReadFileToString(application_shortcut_path,
+                                             &actual_contents));
+          EXPECT_EQ(expected_contents, actual_contents);
+        }
+        invoke_count++;
+
+        if (invoke_count < 4)
+          SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+
+  EXPECT_TRUE(CreateDesktopShortcut(&env, *shortcut_info, locations));
+  EXPECT_EQ(invoke_count, 4);
+
+  // At this point, we've already validated creation in the Application menu
+  // because of the hook into XdgUtilityForTesting.
+  // Validate the shortcut was created, and the contents are what we expect
+  // them to be.
+
+  {
+    std::string expected_contents =
+        shell_integration_linux::GetDesktopFileContents(
+            shell_integration_linux::internal::GetChromeExePath(),
+            GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+            shortcut_info->extension_id, shortcut_info->title,
+            "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
+            "", false, "", shortcut_info->actions);
+
+    base::FilePath desktop_shortcut_path =
+        scoped_desktop_path.GetPath().Append(GetTemplateFilename());
+    ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
+
+    std::string actual_contents;
+    ASSERT_TRUE(
+        base::ReadFileToString(desktop_shortcut_path, &actual_contents));
+    EXPECT_EQ(expected_contents, actual_contents);
+  }
+
+  {
+    std::string expected_contents =
+        shell_integration_linux::GetDesktopFileContents(
+            shell_integration_linux::internal::GetChromeExePath(),
+            GenerateApplicationNameFromInfo(*shortcut_info), shortcut_info->url,
+            shortcut_info->extension_id, shortcut_info->title,
+            "chrome-test_extension-Profile_1", shortcut_info->profile_path, "",
+            "", false, kRunOnOsLoginModeWindowed, shortcut_info->actions);
+    base::FilePath autostart_shortcut_path =
+        autostart_path.GetPath().Append(GetTemplateFilename());
+    ASSERT_TRUE(base::PathExists(autostart_shortcut_path));
+
+    std::string actual_contents;
+    ASSERT_TRUE(
+        base::ReadFileToString(autostart_shortcut_path, &actual_contents));
+    EXPECT_EQ(expected_contents, actual_contents);
   }
 }
 

@@ -25,6 +25,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/test/browser_task_environment.h"
@@ -465,7 +466,79 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
             GURL(test_cases[i].url), std::string(),
             base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
             base::FilePath(), test_cases[i].categories, test_cases[i].mime_type,
-            test_cases[i].nodisplay, ""));
+            test_cases[i].nodisplay, "", {}));
+  }
+}
+
+TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
+  const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
+  const struct {
+    const char* const url;
+    const char* const title;
+    const char* const icon_name;
+    bool nodisplay;
+    std::set<web_app::DesktopActionInfo> action_info;
+    const char* const expected_output;
+  } test_cases[] = {
+      // Test Shortcut Menu actions.
+      {"https://example.app",
+       "Lawful example",
+       "IconName",
+       false,
+       {
+           web_app::DesktopActionInfo("action1", "Action 1",
+                                      GURL("https://example.com/action1")),
+           web_app::DesktopActionInfo("action2", "Action 2",
+                                      GURL("https://example.com/action2")),
+           web_app::DesktopActionInfo("action3", "Action 3",
+                                      GURL("https://example.com/action3")),
+           web_app::DesktopActionInfo("action4", "Action 4",
+                                      GURL("https://example.com/action4")),
+       },
+
+       "#!/usr/bin/env xdg-open\n"
+       "[Desktop Entry]\n"
+       "Version=1.0\n"
+       "Terminal=false\n"
+       "Type=Application\n"
+       "Name=Lawful example\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId\n"
+       "Icon=IconName\n"
+       "StartupWMClass=example.app\n"
+       "Actions=action1;action2;action3;action4\n\n"
+       "[Desktop Action action1]\n"
+       "Name=Action 1\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action1\n\n"
+       "[Desktop Action action2]\n"
+       "Name=Action 2\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action2\n\n"
+       "[Desktop Action action3]\n"
+       "Name=Action 3\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action3\n\n"
+       "[Desktop Action action4]\n"
+       "Name=Action 4\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action4\n"},
+  };
+
+  for (size_t i = 0; i < base::size(test_cases); i++) {
+    SCOPED_TRACE(i);
+    EXPECT_EQ(
+        test_cases[i].expected_output,
+        GetDesktopFileContents(
+            kChromeExePath,
+            web_app::GenerateApplicationNameFromURL(GURL(test_cases[i].url)),
+            GURL(test_cases[i].url), "TestAppId",
+            base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
+            base::FilePath(), "", "", test_cases[i].nodisplay, "",
+            test_cases[i].action_info));
   }
 }
 

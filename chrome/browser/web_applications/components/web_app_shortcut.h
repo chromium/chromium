@@ -18,6 +18,10 @@
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
+#if defined(OS_LINUX)
+#include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
+#endif  // defined(OS_LINUX)
+
 namespace base {
 class TaskRunner;
 }
@@ -71,6 +75,9 @@ struct ShortcutInfo {
   std::set<std::string> file_handler_extensions;
   std::set<std::string> file_handler_mime_types;
   std::set<std::string> protocol_handlers;
+#if defined(OS_LINUX)
+  std::set<DesktopActionInfo> actions;
+#endif  // defined(OS_LINUX)
 
   // An app is multi-profile if there is a single shortcut and single app shim
   // for all profiles. The app itself has a profile switcher that may be used

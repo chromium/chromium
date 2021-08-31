@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 
+#include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
@@ -13,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
@@ -24,12 +27,18 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 
 namespace web_app {
 
 namespace {
+
+#if defined(OS_LINUX)
+// Aligns with other platform implementations that only support 10 items.
+constexpr int kMaxApplicationDockMenuItems = 10;
+#endif  // defined(OS_LINUX)
 
 // UMA metric name for shortcuts creation result.
 constexpr const char* kCreationResultMetric =
@@ -369,6 +378,26 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
       shortcut_info->protocol_handlers.emplace(protocol_handler.protocol);
     }
   }
+
+#if defined(OS_LINUX)
+  const std::vector<WebApplicationShortcutsMenuItemInfo>&
+      shortcuts_menu_item_infos = app->shortcuts_menu_item_infos();
+  int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
+                             kMaxApplicationDockMenuItems);
+  for (int i = 0; i < num_entries; i++) {
+    const auto& shortcuts_menu_item_info = shortcuts_menu_item_infos[i];
+    if (!shortcuts_menu_item_info.name.empty() &&
+        !shortcuts_menu_item_info.url.is_empty()) {
+      // Generates ID from the name by replacing all characters that are not
+      // numbers, letters, or '-' with '-'.
+      std::string id = base::UTF16ToUTF8(shortcuts_menu_item_info.name);
+      RE2::GlobalReplace(&id, "[^a-zA-Z0-9\\-]", "-");
+      shortcut_info->actions.emplace(
+          id, base::UTF16ToUTF8(shortcuts_menu_item_info.name),
+          shortcuts_menu_item_info.url);
+    }
+  }
+#endif  // defined(OS_LINUX)
 
   return shortcut_info;
 }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "url/gurl.h"
 
 namespace base {
 class FilePath;
@@ -19,6 +20,29 @@ namespace web_app {
 
 struct ShortcutInfo;
 struct ShortcutLocations;
+
+// Represents the info required to create a desktop action for an app.
+// See
+// https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s11.html.
+struct DesktopActionInfo {
+  DesktopActionInfo();
+  DesktopActionInfo(const std::string& id,
+                    const std::string& name,
+                    const GURL& exec_launch_url);
+  DesktopActionInfo(const DesktopActionInfo&);
+  DesktopActionInfo& operator=(const DesktopActionInfo&) = delete;
+  ~DesktopActionInfo();
+
+  // Unique ID for this action. Can only contain characters A-Za-z0-9-.
+  std::string id;
+  // Action name to be displayed in the context menu.
+  std::string name;
+  // The URL to launch the app in for this action.
+  GURL exec_launch_url;
+  // TODO(crbug.com/1069293): Process icons.
+
+  bool operator<(const DesktopActionInfo& other) const;
+};
 
 using LaunchXdgUtilityForTesting =
     base::RepeatingCallback<bool(const std::vector<std::string>&, int*)>;

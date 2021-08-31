@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
 
 #include <fcntl.h>
+#include <algorithm>
 
 #include "base/base_paths.h"
 #include "base/environment.h"
@@ -309,6 +310,29 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
 
 namespace web_app {
 
+DesktopActionInfo::DesktopActionInfo() = default;
+
+DesktopActionInfo::DesktopActionInfo(const std::string& id,
+                                     const std::string& name,
+                                     const GURL& exec_launch_url)
+    : id(id), name(name), exec_launch_url(exec_launch_url) {
+#if DCHECK_IS_ON()
+  // Check that `id` only contains characters A-Za-z0-9-.
+  auto is_character_allowed = [](auto c) {
+    return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
+  };
+  DCHECK(std::all_of(id.begin() + 1, id.end(), is_character_allowed));
+#endif  // DCHECK_IS_ON()
+}
+
+DesktopActionInfo::DesktopActionInfo(const DesktopActionInfo&) = default;
+
+bool DesktopActionInfo::operator<(const DesktopActionInfo& other) const {
+  return this->id < other.id;
+}
+
+DesktopActionInfo::~DesktopActionInfo() = default;
+
 void SetLaunchXdgUtilityForTesting(
     LaunchXdgUtilityForTesting launchXdgUtilityForTesting) {
   GetInstalledLaunchXdgUtilityForTesting() =
@@ -431,7 +455,8 @@ bool CreateDesktopShortcut(base::Environment* env,
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", "", false, "");
+        shortcut_info.profile_path, "", "", false, "",
+        std::move(shortcut_info.actions));
     success = CreateShortcutOnDesktop(shortcut_filename, contents);
   }
 
@@ -440,7 +465,8 @@ bool CreateDesktopShortcut(base::Environment* env,
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", "", false, kRunOnOsLoginModeWindowed);
+        shortcut_info.profile_path, "", "", false, kRunOnOsLoginModeWindowed,
+        std::move(shortcut_info.actions));
     success =
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
@@ -481,7 +507,7 @@ bool CreateDesktopShortcut(base::Environment* env,
       shortcut_info.title, icon_name, shortcut_info.profile_path, "",
       base::JoinString(mime_types, ";"),
       creation_locations.applications_menu_location == APP_MENU_LOCATION_HIDDEN,
-      "");
+      "", std::move(shortcut_info.actions));
   success = CreateShortcutInApplicationsMenu(env, shortcut_filename, contents,
                                              directory_filename,
                                              directory_contents) &&
