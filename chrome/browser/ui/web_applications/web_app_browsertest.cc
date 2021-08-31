@@ -1013,6 +1013,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   shortcut_path = application_dir.AppendASCII(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
   expected_pixel_colors.push_back(SkColorSetRGB(91, 91, 91));
+  expected_pixel_colors.push_back(SkColorSetRGB(90, 90, 90));
 #endif
   SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
   EXPECT_TRUE(std::find(expected_pixel_colors.begin(),
