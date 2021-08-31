@@ -59,6 +59,10 @@ const base::Feature kDisableSearchSuggestChips{
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
     "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, OneGoogleBar will be shown.
+const base::Feature kNtpOneGoogleBar{"NtpOneGoogleBar",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, logo will be shown.
 const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
 

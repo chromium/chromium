@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/buildflags.h"
@@ -98,6 +99,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       base::FeatureList::IsEnabled(
           ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
 
+  source->AddBoolean(
+      "oneGoogleBarEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
   source->AddBoolean("logoEnabled",
@@ -577,8 +581,13 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
           .custom_background_url;
   url::EncodeURIComponent(custom_background_url.spec().c_str(),
                           custom_background_url.spec().size(), &encoded_url);
-  update->SetString("backgroundImageUrl",
-                    std::string(encoded_url.data(), encoded_url.length()));
+  update->SetString(
+      "backgroundImageUrl",
+      encoded_url.length() > 0
+          ? base::StrCat(
+                {"chrome-untrusted://new-tab-page/custom_background_image?url=",
+                 std::string(encoded_url.data(), encoded_url.length())})
+          : "");
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

@@ -24,6 +24,7 @@ extern const base::Feature kNtpRepeatableQueries;
 extern const base::Feature kOneGoogleBarModalOverlays;
 extern const base::Feature kRealboxMatchOmniboxTheme;
 extern const base::Feature kRealboxUseGoogleGIcon;
+extern const base::Feature kNtpOneGoogleBar;
 extern const base::Feature kNtpLogo;
 extern const base::Feature kNtpShortcuts;
 extern const base::Feature kNtpMiddleSlotPromo;

@@ -46,6 +46,9 @@ class NavigationObserver : public content::WebContentsObserver {
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
+      return;
+    }
     navigation_result_ =
         navigation_handle->IsErrorPage() ? ERROR_PAGE : SUCCESS;
     net_error_ = navigation_handle->GetNetErrorCode();

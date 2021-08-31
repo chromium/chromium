@@ -672,8 +672,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 
 // This test verifies that the chrome-untrusted:// scheme is considered local
 // for the purpose of Private Network Access computations.
+// TODO(crbug.com/1244544): The NTP no longer loads a chrome-untrusted://
+// iframe in all cases. Find another way to test the chrome-untrusted:// scheme.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-                       SpecialSchemeChromeUntrusted) {
+                       DISABLED_SpecialSchemeChromeUntrusted) {
   // The only way to have a page with a loaded chrome-untrusted:// url without
   // relying on platform specific or components features, is to use the
   // new-tab-page host. chrome-untrusted://new-tab-page is restricted to iframes

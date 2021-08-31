@@ -192,6 +192,12 @@ class AppElement extends mixinBehaviors
       },
 
       /** @private */
+      oneGoogleBarEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('oneGoogleBarEnabled'),
+      },
+
+      /** @private */
       shortcutsEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('shortcutsEnabled'),
