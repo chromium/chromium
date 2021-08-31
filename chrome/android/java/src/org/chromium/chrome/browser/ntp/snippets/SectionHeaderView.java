@@ -14,7 +14,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -33,7 +32,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -286,7 +284,7 @@ public class SectionHeaderView extends LinearLayout {
     void expandHeader() {
         if (mAnimatePaddingWhenDisabled) {
             int finalHorizontalPadding = 0;
-            setMaterialCardBackground(false);
+            setBackground(false);
 
             if (mTabLayout != null) {
                 // Re-enable indicator to cached indicator.
@@ -307,7 +305,7 @@ public class SectionHeaderView extends LinearLayout {
             animator.setDuration(ANIMATION_DURATION_MS);
             animator.start();
         } else {
-            setMaterialCardBackground(false);
+            setBackground(false);
         }
     }
 
@@ -326,7 +324,7 @@ public class SectionHeaderView extends LinearLayout {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     // Add the card background after animation.
-                    setMaterialCardBackground(true);
+                    setBackground(true);
                     if (mTabLayout != null) {
                         // Don't show the selected tab indicator if feed is off.
                         // We use a TRANSPARENT drawable because setting indicator to null defaults
@@ -346,7 +344,7 @@ public class SectionHeaderView extends LinearLayout {
             animator.setDuration(ANIMATION_DURATION_MS);
             animator.start();
         } else {
-            setMaterialCardBackground(true);
+            setBackground(true);
         }
     }
 
@@ -355,15 +353,9 @@ public class SectionHeaderView extends LinearLayout {
      *
      * @param hasBackground true to set background; false to clear background.
      */
-    private void setMaterialCardBackground(boolean hasBackground) {
-        if (!hasBackground) {
-            mContent.setBackgroundResource(0);
-            return;
-        }
-        mContent.setBackgroundResource(R.drawable.card_with_corners_background);
-        GradientDrawable gradientDrawable = (GradientDrawable) mContent.getBackground();
-        gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
+    private void setBackground(boolean hasBackground) {
+        mContent.setBackgroundResource(
+                hasBackground ? R.drawable.feed_header_border_background : 0);
     }
 
     private void setTextsEnabled(boolean enabled) {

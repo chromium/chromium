@@ -202,6 +202,9 @@
 
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
+    <dimen name="feed_header_icon_margin">15dp</dimen>
+    <dimen name="feed_header_icon_size">20dp</dimen>
+    <dimen name="feed_header_height">44dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
