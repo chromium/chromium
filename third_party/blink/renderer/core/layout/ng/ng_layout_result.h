@@ -528,6 +528,8 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           can_use_out_of_flow_positioned_first_tier_cache(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
+          has_violating_break(false),
+          is_empty_spanner_parent(false),
           is_self_collapsing(is_self_collapsing),
           is_pushed_by_floats(is_pushed_by_floats),
           adjoining_object_types(static_cast<unsigned>(adjoining_object_types)),
