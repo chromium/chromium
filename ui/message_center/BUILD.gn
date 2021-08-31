@@ -107,6 +107,8 @@ component("message_center") {
         "views/notification_header_view.h",
         "views/notification_view.cc",
         "views/notification_view.h",
+        "views/notification_view_base.cc",
+        "views/notification_view_base.h",
         "views/padded_button.cc",
         "views/padded_button.h",
         "views/proportional_image_view.cc",
@@ -206,6 +208,7 @@ if (enable_message_center) {
         "views/message_popup_collection_unittest.cc",
         "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",
+        "views/notification_view_base_unittest.cc",
         "views/notification_view_unittest.cc",
         "views/relative_time_formatter_unittest.cc",
       ]
