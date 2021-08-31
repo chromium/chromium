@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/media_router_feedback_resources.h"
@@ -25,10 +26,13 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace media_router {
@@ -133,6 +137,29 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
   log_data += logger->GetLogsAsJson();
 
   source->AddString("logData", log_data);
+
+  // Determine the category tag to use for the feedback report.  As the name
+  // suggests, this value is used to categorize feedback reports for easier
+  // analysis and triage.
+  const char* categoryTag = nullptr;
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::CANARY:
+      categoryTag = "canary";
+      break;
+    case version_info::Channel::DEV:
+      categoryTag = "dev";
+      break;
+    case version_info::Channel::BETA:
+      categoryTag = "beta";
+      break;
+    case version_info::Channel::STABLE:
+      categoryTag = "stable";
+      break;
+    case version_info::Channel::UNKNOWN:
+      categoryTag = "unknown";
+      break;
+  }
+  source->AddString("categoryTag", categoryTag);
 
   source->AddBoolean("globalMediaControlsCastStartStop",
                      GlobalMediaControlsCastStartStopEnabled());
