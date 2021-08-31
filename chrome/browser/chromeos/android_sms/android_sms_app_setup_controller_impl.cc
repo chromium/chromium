@@ -71,7 +71,8 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
     const web_app::AppId& app_id,
     Profile* profile,
     SuccessCallback callback) {
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  // |provider| will be nullptr if Lacros web apps are enabled.
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider) {
     std::move(callback).Run(false);
     return;
