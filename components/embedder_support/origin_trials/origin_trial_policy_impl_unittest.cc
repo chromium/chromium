@@ -267,6 +267,19 @@ TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUser) {
   EXPECT_TRUE(manager()->IsFeatureDisabledForUser("FrobulateThirdParty"));
 }
 
+TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUserAfterCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
+  // Regression test for https://crbug.com/1244566: This assert is called for
+  // its side effect of registering the address of the base::Feature used here.
+  // If IsFeatureDisabledForUser erroneously makes a copy of the feature, then
+  // that will trigger a DCHECK failure in CheckFeatureIdentity.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      kOriginTrialsSampleAPIThirdPartyAlternativeUsage));
+  EXPECT_FALSE(manager()->IsFeatureDisabledForUser("FrobulateThirdParty"));
+}
+
 // Tests for initialization from command line
 class OriginTrialPolicyImplInitializationTest
     : public OriginTrialPolicyImplTest {
