@@ -738,7 +738,7 @@ def builder(
 
     # TODO(crbug.com/1143122): remove this after migration.
     if "chromium.chromium_tests.use_rbe_cas" not in experiments:
-        experiments["chromium.chromium_tests.use_rbe_cas"] = 20
+        experiments["chromium.chromium_tests.use_rbe_cas"] = 50
     kwargs["experiments"] = experiments
 
     history_options = None
