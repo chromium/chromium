@@ -944,6 +944,7 @@ component("platform") {
     "graphics/filters/spot_light_source.h",
     "graphics/generated_image.cc",
     "graphics/generated_image.h",
+    "graphics/gpu/dawn_callback.h",
     "graphics/gpu/dawn_control_client_holder.cc",
     "graphics/gpu/dawn_control_client_holder.h",
     "graphics/gpu/drawing_buffer.cc",

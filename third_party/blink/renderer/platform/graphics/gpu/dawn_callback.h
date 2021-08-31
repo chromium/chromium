@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_CALLBACK_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_CALLBACK_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
 
 #include <memory>
 
@@ -126,6 +126,13 @@ class DawnRepeatingCallback<R(Args...)>
 template <typename FunctionType, typename... BoundParameters>
 auto BindDawnOnceCallback(FunctionType&& function,
                           BoundParameters&&... bound_parameters) {
+  static constexpr bool is_method =
+      base::internal::MakeFunctorTraits<FunctionType>::is_method;
+  static constexpr bool is_weak_method =
+      base::internal::IsWeakMethod<is_method, BoundParameters...>();
+  static_assert(!is_weak_method,
+                "BindDawnOnceCallback cannot be used with weak methods");
+
   auto cb = WTF::Bind(std::forward<FunctionType>(function),
                       std::forward<BoundParameters>(bound_parameters)...);
   return new DawnOnceCallback<typename decltype(cb)::RunType>(std::move(cb));
@@ -143,4 +150,4 @@ auto BindDawnRepeatingCallback(FunctionType&& function,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_CALLBACK_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
