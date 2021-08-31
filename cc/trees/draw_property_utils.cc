@@ -1134,16 +1134,17 @@ void UpdateElasticOverscroll(
     DCHECK(elastic_overscroll.IsZero());
     return;
   }
-  // The inner viewport container size takes into account the size change as a
-  // result of the top controls, see ScrollTree::container_bounds.
-  gfx::Size scroller_size =
-      property_trees->scroll_tree.container_bounds(inner_viewport->id);
   if (overscroll_elasticity_effect_element_id) {
-    if (elastic_overscroll.IsZero()) {
+    if (elastic_overscroll.IsZero() || !inner_viewport) {
       property_trees->effect_tree.OnFilterAnimated(
           overscroll_elasticity_effect_element_id, FilterOperations());
       return;
     }
+    // The inner viewport container size takes into account the size change as a
+    // result of the top controls, see ScrollTree::container_bounds.
+    gfx::Size scroller_size =
+        property_trees->scroll_tree.container_bounds(inner_viewport->id);
+
     property_trees->effect_tree.OnFilterAnimated(
         overscroll_elasticity_effect_element_id,
         FilterOperations(
@@ -1160,7 +1161,12 @@ void UpdateElasticOverscroll(
   overscroll_elasticity_transform_node->to_screen_is_potentially_animated =
       !elastic_overscroll.IsZero();
 
-  if (!elastic_overscroll.IsZero()) {
+  if (!elastic_overscroll.IsZero() && inner_viewport) {
+    // The inner viewport container size takes into account the size change as a
+    // result of the top controls, see ScrollTree::container_bounds.
+    gfx::Size scroller_size =
+        property_trees->scroll_tree.container_bounds(inner_viewport->id);
+
     overscroll_elasticity_transform_node->local.Scale(
         1.f + std::abs(elastic_overscroll.x()) / scroller_size.width(),
         1.f + std::abs(elastic_overscroll.y()) / scroller_size.height());
