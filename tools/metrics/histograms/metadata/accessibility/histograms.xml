@@ -653,7 +653,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android" enum="BooleanEnabled"
-    expires_after="M95">
+    expires_after="M105">
   <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -664,7 +664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.DialogOption"
-    enum="AccessibilityImageLabelModeAndroid" expires_after="M95">
+    enum="AccessibilityImageLabelModeAndroid" expires_after="M105">
   <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -675,7 +675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.OnlyOnWifi"
-    enum="BooleanEnabled" expires_after="M95">
+    enum="BooleanEnabled" expires_after="M105">
   <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -721,7 +721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
-    units="pixels" expires_after="2021-09-30">
+    units="pixels" expires_after="2021-12-12">
   <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <summary>
@@ -741,7 +741,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Length}"
-    units="characters" expires_after="2021-09-30">
+    units="characters" expires_after="2021-12-12">
   <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <summary>
