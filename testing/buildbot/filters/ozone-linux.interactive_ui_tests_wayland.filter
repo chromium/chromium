@@ -26,6 +26,7 @@
 -BrowserFocusTest.BackgroundBrowserDontStealFocus
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
 -CrossSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
+-CrossSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -CrossSiteSubframe/DragAndDropBrowserTest.DragStartInFrame/0
 -DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
 -DesktopWindowTreeHostLinuxTest.CaptureEventForwarding
@@ -49,6 +50,7 @@
 -PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
 -PopupBlockerBrowserTest.ModalPopUnder
 -SameSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
+-SameSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -SameSiteSubframe/DragAndDropBrowserTest.DragStartInFrame/0
 -SessionRestoreInteractiveTest.RestoreMinimizedWindow
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
