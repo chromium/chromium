@@ -52,9 +52,12 @@ class AssistantClientV1 : public AssistantClient {
   void ResumeCurrentStream() override;
   void PauseCurrentStream() override;
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
+  void AddDeviceStateEventObserver(
+      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
 
  private:
   class DisplayConnectionImpl;
+  class MediaManagerListener;
 
   void OnSpeakerIdEnrollmentUpdate(
       const assistant_client::SpeakerIdEnrollmentUpdate& update);
@@ -63,6 +66,8 @@ class AssistantClientV1 : public AssistantClient {
 
   base::ObserverList<GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
       speaker_event_observer_list_;
+
+  std::unique_ptr<MediaManagerListener> media_manager_listener_;
 
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };

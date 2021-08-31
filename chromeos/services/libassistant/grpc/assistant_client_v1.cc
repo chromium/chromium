@@ -32,7 +32,18 @@ using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
 using ::assistant::api::events::SpeakerIdEnrollmentEvent;
 using assistant_client::SpeakerIdEnrollmentUpdate;
 
+using ::assistant::api::OnDeviceStateEventRequest;
+
 namespace {
+
+// A macro which ensures we are running on the calling sequence.
+#define ENSURE_CALLING_SEQUENCE(method, ...)                                \
+  if (!task_runner_->RunsTasksInCurrentSequence()) {                        \
+    task_runner_->PostTask(                                                 \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
 
 OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
     const ::assistant_client::SpeakerIdEnrollmentUpdate::State& state) {
@@ -80,21 +91,24 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
 class AssistantClientV1::DisplayConnectionImpl
     : public assistant_client::DisplayConnection {
  public:
-  DisplayConnectionImpl() = default;
+  DisplayConnectionImpl()
+      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
   DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
   DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
   ~DisplayConnectionImpl() override = default;
 
   // assistant_client::DisplayConnection overrides:
   void SetDelegate(Delegate* delegate) override {
-    base::AutoLock lock(lock_);
+    ENSURE_CALLING_SEQUENCE(&DisplayConnectionImpl::SetDelegate, delegate);
+
     delegate_ = delegate;
   }
 
   void OnAssistantEvent(const std::string& assistant_event_bytes) override {
-    base::AutoLock lock(lock_);
-    if (!observer_)
-      return;
+    ENSURE_CALLING_SEQUENCE(&DisplayConnectionImpl::OnAssistantEvent,
+                            assistant_event_bytes);
+
+    DCHECK(observer_);
 
     OnAssistantDisplayEventRequest request;
     auto* assistant_display_event = request.mutable_event();
@@ -106,13 +120,11 @@ class AssistantClientV1::DisplayConnectionImpl
 
   void SetObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
-    base::AutoLock lock(lock_);
     DCHECK(!observer_);
     observer_ = observer;
   }
 
   void OnDisplayRequest(const std::string& display_request_bytes) {
-    base::AutoLock lock(lock_);
     if (!delegate_) {
       LOG(ERROR) << "Can't send DisplayRequest before delegate is set.";
       return;
@@ -122,21 +134,59 @@ class AssistantClientV1::DisplayConnectionImpl
   }
 
  private:
-  Delegate* delegate_ GUARDED_BY(lock_) = nullptr;
+  Delegate* delegate_ = nullptr;
 
-  GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer_
-      GUARDED_BY(lock_) = nullptr;
+  GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer_ = nullptr;
 
-  // Both LibAssistant and Chrome threads can access |delegate_| and
-  // |observer_|.
-  base::Lock lock_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<DisplayConnectionImpl> weak_factory_{this};
+};
+
+class AssistantClientV1::MediaManagerListener
+    : public assistant_client::MediaManager::Listener {
+ public:
+  MediaManagerListener()
+      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  MediaManagerListener(const MediaManagerListener&) = delete;
+  MediaManagerListener& operator=(const MediaManagerListener&) = delete;
+  ~MediaManagerListener() override = default;
+
+  // assistant_client::MediaManager::Listener:
+  // Called from the Libassistant thread.
+  void OnPlaybackStateChange(
+      const assistant_client::MediaStatus& media_status) override {
+    ENSURE_CALLING_SEQUENCE(&MediaManagerListener::OnPlaybackStateChange,
+                            media_status);
+
+    DCHECK(observer_);
+
+    OnDeviceStateEventRequest request;
+    auto* status = request.mutable_event()
+                       ->mutable_on_state_changed()
+                       ->mutable_new_state()
+                       ->mutable_media_status();
+    ConvertMediaStatusToV2FromV1(media_status, status);
+    observer_->OnGrpcMessage(request);
+  }
+
+  void SetObserver(GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
+    DCHECK(!observer_);
+    observer_ = observer;
+  }
+
+ private:
+  GrpcServicesObserver<OnDeviceStateEventRequest>* observer_ = nullptr;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<MediaManagerListener> weak_factory_{this};
 };
 
 AssistantClientV1::AssistantClientV1(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal)
     : AssistantClient(std::move(assistant_manager), assistant_manager_internal),
-      display_connection_(std::make_unique<DisplayConnectionImpl>()) {}
+      display_connection_(std::make_unique<DisplayConnectionImpl>()),
+      media_manager_listener_(std::make_unique<MediaManagerListener>()) {}
 
 AssistantClientV1::~AssistantClientV1() = default;
 
@@ -258,5 +308,11 @@ void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
   }
 }
 
+void AssistantClientV1::AddDeviceStateEventObserver(
+    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
+  media_manager_listener_->SetObserver(observer);
+  assistant_manager()->GetMediaManager()->AddListener(
+      media_manager_listener_.get());
+}
 }  // namespace libassistant
 }  // namespace chromeos

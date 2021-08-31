@@ -59,6 +59,8 @@ class FakeAssistantClient : public AssistantClient {
   void ResumeCurrentStream() override;
   void PauseCurrentStream() override;
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
+  void AddDeviceStateEventObserver(
+      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
 };
 
 }  // namespace libassistant

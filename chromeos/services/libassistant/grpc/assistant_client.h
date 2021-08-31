@@ -17,6 +17,7 @@ class CancelSpeakerIdEnrollmentRequest;
 class GetSpeakerIdEnrollmentInfoRequest;
 class Interaction;
 class OnAssistantDisplayEventRequest;
+class OnDeviceStateEventRequest;
 class OnDisplayRequestRequest;
 class OnSpeakerIdEnrollmentEventRequest;
 class StartSpeakerIdEnrollmentRequest;
@@ -54,12 +55,15 @@ class AssistantClient {
       ::assistant::api::events::SpeakerIdEnrollmentEvent;
   using OnSpeakerIdEnrollmentEventRequest =
       ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
-  using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
 
   // Display:
   using OnAssistantDisplayEventRequest =
       ::assistant::api::OnAssistantDisplayEventRequest;
   using OnDisplayRequestRequest = ::assistant::api::OnDisplayRequestRequest;
+
+  // Media:
+  using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
+  using OnDeviceStateEventRequest = ::assistant::api::OnDeviceStateEventRequest;
 
   AssistantClient(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -114,6 +118,8 @@ class AssistantClient {
   // Sets the current media status of media playing outside of libassistant.
   // Setting external state will stop any internally playing media.
   virtual void SetExternalPlaybackState(const MediaStatus& status_proto) = 0;
+  virtual void AddDeviceStateEventObserver(
+      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

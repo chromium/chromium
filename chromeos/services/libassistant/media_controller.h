@@ -36,14 +36,14 @@ class MediaController : public mojom::MediaController,
   void OnAssistantClientDestroyed() override;
 
  private:
-  class LibassistantMediaManagerListener;
+  class DeviceStateObserver;
   class LibassistantMediaHandler;
 
   AssistantClient* assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
   mojo::Remote<mojom::MediaDelegate> delegate_;
-  std::unique_ptr<LibassistantMediaManagerListener> listener_;
+  std::unique_ptr<DeviceStateObserver> device_state_observer_;
   std::unique_ptr<LibassistantMediaHandler> handler_;
 };
 
