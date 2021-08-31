@@ -100,7 +100,7 @@ struct SameSizeAsLayoutText : public LayoutObject {
 ASSERT_SIZE(LayoutText, SameSizeAsLayoutText);
 
 class SecureTextTimer;
-typedef HeapHashMap<WeakMember<LayoutText>, SecureTextTimer*>
+typedef HeapHashMap<WeakMember<LayoutText>, Member<SecureTextTimer>>
     SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
   DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMap>, map,
@@ -108,9 +108,10 @@ static SecureTextTimerMap& GetSecureTextTimers() {
   return *map;
 }
 
-class SecureTextTimer final : public TimerBase {
+class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
+                              public TimerBase {
  public:
-  SecureTextTimer(LayoutText* layout_text)
+  explicit SecureTextTimer(LayoutText* layout_text)
       : TimerBase(layout_text->GetDocument().GetTaskRunner(
             TaskType::kUserInteraction)),
         layout_text_(layout_text),
@@ -127,6 +128,8 @@ class SecureTextTimer final : public TimerBase {
   void Invalidate() { last_typed_character_offset_ = -1; }
   unsigned LastTypedCharacterOffset() { return last_typed_character_offset_; }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_text_); }
+
  private:
   void Fired() override {
     DCHECK(GetSecureTextTimers().Contains(layout_text_));
@@ -134,7 +137,7 @@ class SecureTextTimer final : public TimerBase {
     layout_text_->ForceSetText(layout_text_->GetText().Impl());
   }
 
-  UntracedMember<LayoutText> layout_text_;
+  Member<LayoutText> layout_text_;
   int last_typed_character_offset_;
 };
 
@@ -288,9 +291,8 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
 
 void LayoutText::WillBeDestroyed() {
   NOT_DESTROYED();
-  if (SecureTextTimer* secure_text_timer = GetSecureTextTimers().Take(this))
-    delete secure_text_timer;
 
+  GetSecureTextTimers().Take(this);
   GetSelectionDisplayItemClientMap().erase(this);
 
   if (node_id_ != kInvalidDOMNodeId) {
@@ -2774,7 +2776,7 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
   SecureTextTimer* secure_text_timer =
       it != GetSecureTextTimers().end() ? it->value : nullptr;
   if (!secure_text_timer) {
-    secure_text_timer = new SecureTextTimer(this);
+    secure_text_timer = MakeGarbageCollected<SecureTextTimer>(this);
     GetSecureTextTimers().insert(this, secure_text_timer);
   }
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
