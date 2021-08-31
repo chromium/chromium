@@ -31,7 +31,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1207113853726624428">Penelusuran Baru</translation>
 <translation id="1209206284964581585">Sembunyikan sekarang</translation>
-<translation id="1219674500290482172">Tidak dapat tersambung ke internet.</translation>
+<translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
 <translation id="122699739164161391">Tutup Semua Tab</translation>
 <translation id="1229222343402087523">Telusuri ${searchPhrase} di Chrome</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
@@ -241,7 +241,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3311748811247479259">Nonaktif</translation>
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
-<translation id="3329904751041170572">Tidak dapat tersambung ke server.</translation>
+<translation id="3329904751041170572">Tidak dapat terhubung ke server.</translation>
 <translation id="3335947283844343239">Buka Kembali Tab yang Tertutup</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3393920035788932672">Pop-up Diizinkan</translation>

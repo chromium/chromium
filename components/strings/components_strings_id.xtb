@@ -796,7 +796,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3712624925041724820">Lisensi habis</translation>
 <translation id="3714780639079136834">Aktifkan data seluler atau Wi-Fi</translation>
-<translation id="3715597595485130451">Menyambung ke jaringan Wi-Fi</translation>
+<translation id="3715597595485130451">Menghubungkan ke jaringan Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Periksa proxy, firewall, dan konfigurasi DNS<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Aplikasi yang dapat menyebabkan error ini mencakup antivirus, firewall, dan software proxy atau pemfilteran web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat presentasi Google baru di Slide dengan cepat</translation>
@@ -1595,7 +1595,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6428450836711225518">Verifikasi nomor telepon Anda</translation>
 <translation id="643051589346665201">Ubah sandi Google</translation>
 <translation id="6433490469411711332">Edit info kontak</translation>
-<translation id="6433595998831338502"><ph name="HOST_NAME" /> menolak untuk tersambung.</translation>
+<translation id="6433595998831338502"><ph name="HOST_NAME" /> menolak untuk terhubung.</translation>
 <translation id="6440503408713884761">Diabaikan</translation>
 <translation id="6443406338865242315">Ekstensi dan plugin yang telah Anda instal</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -1869,7 +1869,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7440140511386898319">Jelajahi saat offline</translation>
 <translation id="7441627299479586546">Subjek kebijakan salah</translation>
 <translation id="7442725080345379071">Oranye Muda</translation>
-<translation id="7445762425076701745">Identitas server yang Anda sambungkan tidak dapat divalidasi sepenuhnya. Anda terhubung ke server menggunakan nama yang hanya valid dalam jaringan Anda, yang mana otoritas sertifikat eksternal sama sekali tidak dapat memvalidasi kepemilikannya. Karena sejumlah otoritas sertifikat akan tetap menerbitkan sertifikat untuk nama tersebut, tidak dapat dipastikan apakah Anda akan tersambung ke situs web yang dimaksudkan dan bahwa tidak akan ada penyerang.</translation>
+<translation id="7445762425076701745">Identitas server yang Anda sambungkan tidak dapat divalidasi sepenuhnya. Anda terhubung ke server menggunakan nama yang hanya valid dalam jaringan Anda, yang mana otoritas sertifikat eksternal sama sekali tidak dapat memvalidasi kepemilikannya. Karena sejumlah otoritas sertifikat akan tetap menerbitkan sertifikat untuk nama tersebut, tidak dapat dipastikan apakah Anda akan terhubung ke situs web yang dimaksudkan dan bahwa tidak akan ada penyerang.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="7455133967321480974">Gunakan default global (Cekal)</translation>
 <translation id="7460618730930299168">Penyaringan ini berbeda dengan yang telah Anda pilih. Lanjutkan?</translation>
