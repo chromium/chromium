@@ -71,8 +71,10 @@ class GpuArcVideoEncodeAccelerator
                           uint32_t offset,
                           uint32_t size,
                           UseBitstreamBufferCallback callback) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
                                        uint32_t framerate) override;
+  void RequestEncodingParametersChangeDeprecated(uint32_t bitrate,
+                                                 uint32_t framerate) override;
   void Flush(FlushCallback callback) override;
 
   // Global counter that keeps track of the number of active clients (i.e., how

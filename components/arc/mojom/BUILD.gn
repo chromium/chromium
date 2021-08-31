@@ -370,6 +370,10 @@ if (is_chromeos_ash) {
             mojom = "arc.mojom.VideoEncodeAcceleratorConfig"
             cpp = "::media::VideoEncodeAccelerator::Config"
           },
+          {
+            mojom = "arc.mojom.Bitrate"
+            cpp = "::media::Bitrate"
+          },
         ]
         traits_headers = [ "video_encode_accelerator_mojom_traits.h" ]
         traits_sources = [ "video_encode_accelerator_mojom_traits.cc" ]

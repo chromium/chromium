@@ -267,6 +267,22 @@ void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
 }
 
 void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
+    const media::Bitrate& bitrate,
+    uint32_t framerate) {
+  DVLOGF(2) << bitrate.ToString();
+
+  if (!accelerator_) {
+    DLOG(ERROR) << "Accelerator is not initialized.";
+    return;
+  }
+
+  // Note that dynamic bitrate mode changes are not allowed. Attempting to
+  // change the bitrate mode at runtime will result in the |accelerator_|
+  // reporting an error through NotifyError.
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+}
+
+void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
     uint32_t bitrate,
     uint32_t framerate) {
   DVLOGF(2) << "bitrate=" << bitrate << ", framerate=" << framerate;

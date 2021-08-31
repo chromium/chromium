@@ -8,6 +8,11 @@
 #include "components/arc/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
+
+// Needs to be included after 'video_encode_accelerator.h'.
+#include "components/arc/mojom/video_encode_accelerator.mojom.h"
 
 namespace mojo {
 
@@ -58,6 +63,28 @@ struct StructTraits<arc::mojom::VideoEncodeProfileDataView,
   }
 };
 
+// TODO(b/198127993): Convert directly to media::Bitrate.
+template <>
+struct StructTraits<arc::mojom::ConstantBitrateDataView,
+                    arc::mojom::ConstantBitrate> {
+  static uint32_t target(const arc::mojom::ConstantBitrate& input);
+};
+
+template <>
+struct StructTraits<arc::mojom::VariableBitrateDataView,
+                    arc::mojom::VariableBitrate> {
+  static uint32_t target(const arc::mojom::VariableBitrate& input);
+  static uint32_t peak(const arc::mojom::VariableBitrate& input);
+};
+
+template <>
+struct UnionTraits<arc::mojom::BitrateDataView, media::Bitrate> {
+  static arc::mojom::BitrateDataView::Tag GetTag(const media::Bitrate& input);
+  static arc::mojom::ConstantBitrate constant(const media::Bitrate& input);
+  static arc::mojom::VariableBitrate variable(const media::Bitrate& input);
+  static bool Read(arc::mojom::BitrateDataView input, media::Bitrate* output);
+};
+
 template <>
 struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
                     media::VideoEncodeAccelerator::Config> {
@@ -76,9 +103,7 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.output_profile;
   }
 
-  // TODO(clarissagarvey): update arc Mojo to use the new
-  // VideoEncodeAccelerator::Config API in transport
-  static uint32_t initial_bitrate(
+  static uint32_t initial_bitrate_deprecated(
       const media::VideoEncodeAccelerator::Config& input) {
     return input.bitrate.target();
   }
@@ -123,6 +148,11 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
       case media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer:
         return arc::mojom::VideoFrameStorageType::DMABUF;
     }
+  }
+
+  static const media::Bitrate& bitrate(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.bitrate;
   }
 
   static bool Read(arc::mojom::VideoEncodeAcceleratorConfigDataView input,
