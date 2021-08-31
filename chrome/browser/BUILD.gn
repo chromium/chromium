@@ -4893,8 +4893,6 @@ static_library("browser") {
     sources += [
       "apps/app_service/app_service_proxy_lacros.cc",
       "apps/app_service/app_service_proxy_lacros.h",
-      "apps/app_service/fake_lacros_web_apps_host.cc",
-      "apps/app_service/fake_lacros_web_apps_host.h",
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
       "feedback/show_feedback_page_lacros.cc",

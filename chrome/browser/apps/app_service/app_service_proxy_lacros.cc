@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
-#include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,8 +34,6 @@
 #include "url/url_constants.h"
 
 namespace apps {
-
-const bool kUseFakeWebAppsHost = false;
 
 AppServiceProxyLacros::InnerIconLoader::InnerIconLoader(
     AppServiceProxyLacros* host)
@@ -123,17 +120,9 @@ void AppServiceProxyLacros::Initialize() {
   web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
   extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 
-  if (kUseFakeWebAppsHost) {
-    // Create a fake lacros web app host in the lacros-chrome for testing lacros
-    // web app publishing. This will be removed after the actual lacros web app
-    // host code is created.
-    fake_lacros_web_apps_host_ = std::make_unique<FakeLacrosWebAppsHost>();
-    fake_lacros_web_apps_host_->Init();
-  } else {
-    web_apps_publisher_host_ =
-        std::make_unique<web_app::WebAppsPublisherHost>(profile_);
-    web_apps_publisher_host_->Init();
-  }
+  web_apps_publisher_host_ =
+      std::make_unique<web_app::WebAppsPublisherHost>(profile_);
+  web_apps_publisher_host_->Init();
 
   // Asynchronously add app icon source, so we don't do too much work in the
   // constructor.

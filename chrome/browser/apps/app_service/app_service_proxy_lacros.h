@@ -39,7 +39,6 @@ namespace apps {
 class AppServiceImpl;
 class BrowserAppInstanceTracker;
 class ExtensionApps;
-class FakeLacrosWebAppsHost;
 
 struct IntentLaunchInfo {
   std::string app_id;
@@ -356,7 +355,6 @@ class AppServiceProxyLacros : public KeyedService,
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
 
-  std::unique_ptr<FakeLacrosWebAppsHost> fake_lacros_web_apps_host_;
   std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
 
