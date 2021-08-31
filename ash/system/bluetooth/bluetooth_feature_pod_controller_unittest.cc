@@ -78,7 +78,7 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     const FeaturePodIconButton::Views& children =
         tray_view_->detailed_view()->children();
     EXPECT_EQ(1u, children.size());
-    EXPECT_STREQ("BluetoothDetailedViewLegacy", children.at(0)->GetClassName());
+    EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
   }
 
   void PressIcon() {

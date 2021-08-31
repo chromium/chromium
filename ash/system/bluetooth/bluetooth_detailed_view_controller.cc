@@ -1,0 +1,63 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
+
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
+#include "base/check.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view.h"
+
+namespace ash {
+
+BluetoothDetailedViewController::BluetoothDetailedViewController(
+    UnifiedSystemTrayController* tray_controller)
+    : detailed_view_delegate_(
+          std::make_unique<DetailedViewDelegate>(tray_controller)) {
+  DCHECK(ash::features::IsBluetoothRevampEnabled());
+  GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config_->ObserveSystemProperties(
+      cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+BluetoothDetailedViewController::~BluetoothDetailedViewController() = default;
+
+views::View* BluetoothDetailedViewController::CreateView() {
+  DCHECK(!view_);
+  std::unique_ptr<tray::BluetoothDetailedViewImpl>
+      bluetooth_detailed_view_impl =
+          std::make_unique<tray::BluetoothDetailedViewImpl>(
+              detailed_view_delegate_.get(),
+              /*delegate=*/this);
+  view_ = bluetooth_detailed_view_impl.get();
+  device_list_controller_ = std::make_unique<BluetoothDeviceListController>(
+      bluetooth_detailed_view_impl.get());
+
+  // We are expected to return an unowned pointer that the caller is responsible
+  // for deleting.
+  return bluetooth_detailed_view_impl.release();
+}
+
+std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_BLUETOOTH_SETTINGS_ACCESSIBLE_DESCRIPTION);
+}
+
+void BluetoothDetailedViewController::OnPropertiesUpdated(
+    chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+        properties) {}
+
+void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {}
+
+void BluetoothDetailedViewController::OnPairNewDeviceRequested() {}
+
+void BluetoothDetailedViewController::OnDeviceListItemSelected(
+    const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
+        device) {}
+
+}  // namespace ash

@@ -19,6 +19,7 @@
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller_legacy.h"
 #include "ash/system/bluetooth/unified_bluetooth_detailed_view_controller.h"
@@ -325,8 +326,12 @@ void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
 
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_DETAILED_BLUETOOTH_VIEW);
-  ShowDetailedView(
-      std::make_unique<UnifiedBluetoothDetailedViewController>(this));
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    ShowDetailedView(std::make_unique<BluetoothDetailedViewController>(this));
+  } else {
+    ShowDetailedView(
+        std::make_unique<UnifiedBluetoothDetailedViewController>(this));
+  }
 }
 
 void UnifiedSystemTrayController::ShowCastDetailedView() {
