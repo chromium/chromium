@@ -1208,10 +1208,6 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void OmniboxViewViews::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  views::Textfield::AboutToRequestFocusFromTabTraversal(reverse);
-}
-
 bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
     const ui::KeyEvent& event) {
   if (views::FocusManager::IsTabTraversalKeyEvent(event) &&
