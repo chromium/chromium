@@ -203,14 +203,9 @@ void EventHandlerRegistry::DidMoveOutOfPage(EventTarget& target) {
 
 void EventHandlerRegistry::DidRemoveAllEventHandlers(EventTarget& target) {
   bool handlers_changed[kEventHandlerClassCount];
-  bool target_set_changed[kEventHandlerClassCount];
 
   for (int i = 0; i < kEventHandlerClassCount; ++i) {
     EventHandlerClass handler_class = static_cast<EventHandlerClass>(i);
-
-    EventTargetSet* targets = &targets_[handler_class];
-    target_set_changed[i] = targets->Contains(&target);
-
     handlers_changed[i] =
         UpdateEventHandlerInternal(kRemoveAll, handler_class, &target);
   }
