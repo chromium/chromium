@@ -408,18 +408,24 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
         std::make_pair(&ruleset, host_permissions_access));
   }
 
-  // If the request is blocked/allowed/redirected, no further modifications can
-  // happen. A new request will be created and subsequently evaluated.
-  absl::optional<RequestAction> action =
+  absl::optional<RequestAction> before_request_action =
       GetBeforeRequestAction(rulesets_to_evaluate, request, params);
-  if (action) {
-    actions.push_back(std::move(std::move(*action)));
-    return actions;
+
+  if (before_request_action) {
+    bool is_request_modifying_action =
+        !before_request_action->IsAllowOrAllowAllRequests();
+    actions.push_back(std::move(*before_request_action));
+
+    // If the request is blocked/redirected, no further modifications can
+    // happen.
+    if (is_request_modifying_action)
+      return actions;
   }
 
+  // This returns any matching modifyHeaders rules with priority greater than
+  // matching allow/allowAllRequests rules.
   std::vector<RequestAction> modify_headers_actions =
       GetModifyHeadersActions(rulesets_to_evaluate, request, params);
-
   if (!modify_headers_actions.empty())
     return modify_headers_actions;
 
