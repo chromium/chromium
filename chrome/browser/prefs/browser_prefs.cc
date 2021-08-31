@@ -361,6 +361,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector_chromeos.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chromeos/components/local_search_service/search_metrics_reporter.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
@@ -1642,6 +1643,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 07/2021
   profile_prefs->ClearPref(kUserLanguageProfile);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 2021/08.
+  web_app::ExternallyInstalledWebAppPrefs::RemoveTerminalPWA(profile_prefs);
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

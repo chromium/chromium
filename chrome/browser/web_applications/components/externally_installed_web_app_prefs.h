@@ -43,6 +43,9 @@ class ExternallyInstalledWebAppPrefs {
       const PrefService* pref_service,
       ExternalInstallSource install_source);
 
+  // Removes invalid registration for Terminal System App.
+  static void RemoveTerminalPWA(PrefService* pref_service);
+
   explicit ExternallyInstalledWebAppPrefs(PrefService* pref_service);
   ExternallyInstalledWebAppPrefs(const ExternallyInstalledWebAppPrefs&) =
       delete;
