@@ -148,7 +148,7 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 }
 
-base::UnguessableToken FencedFrame::GetDevToolsFrameToken() const {
+const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {
   DCHECK(frame_tree_);
   return frame_tree_->GetMainFrame()->GetDevToolsFrameToken();
 }

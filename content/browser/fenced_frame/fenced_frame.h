@@ -67,7 +67,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
 
   // Returns the devtools frame token of the fenced frame's inner FrameTree's
   // main frame.
-  base::UnguessableToken GetDevToolsFrameToken() const;
+  const base::UnguessableToken& GetDevToolsFrameToken() const;
 
   // For testing only.
   void WaitForDidStopLoadingForTesting();
