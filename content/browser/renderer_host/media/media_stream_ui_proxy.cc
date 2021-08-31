@@ -76,7 +76,10 @@ class MediaStreamUIProxy::Core {
                        const DesktopMediaID& media_id);
 
 #if !defined(OS_ANDROID)
-  void SetFocus(const DesktopMediaID& media_id, bool focus);
+  void SetFocus(const DesktopMediaID& media_id,
+                bool focus,
+                bool is_from_microtask,
+                bool is_from_timer);
 #endif
 
   void ProcessAccessRequestResponse(
@@ -194,10 +197,12 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
 
 #if !defined(OS_ANDROID)
 void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
-                                        bool focus) {
+                                        bool focus,
+                                        bool is_from_microtask,
+                                        bool is_from_timer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
-    ui_->SetFocus(media_id, focus);
+    ui_->SetFocus(media_id, focus, is_from_microtask, is_from_timer);
   }
 }
 #endif
@@ -357,12 +362,15 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
 }
 
 #if !defined(OS_ANDROID)
-void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id, bool focus) {
+void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
+                                  bool focus,
+                                  bool is_from_microtask,
+                                  bool is_from_timer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::SetFocus, core_->GetWeakPtr(), media_id, focus));
+      FROM_HERE, base::BindOnce(&Core::SetFocus, core_->GetWeakPtr(), media_id,
+                                focus, is_from_microtask, is_from_timer));
 }
 #endif
 

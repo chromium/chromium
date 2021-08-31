@@ -11,6 +11,7 @@
 #error "Unsupported on Android."
 #endif  // defined(OS_ANDROID)
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
@@ -32,7 +33,10 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
   MediaStreamFocusDelegate(const MediaStreamFocusDelegate&) = delete;
   MediaStreamFocusDelegate& operator=(const MediaStreamFocusDelegate&) = delete;
 
-  void SetFocus(const content::DesktopMediaID& media_id, bool focus);
+  void SetFocus(const content::DesktopMediaID& media_id,
+                bool focus,
+                bool is_from_microtask,
+                bool is_from_timer);
 
   // TabStripModelObserver implementation.
   void OnTabStripModelChanged(
@@ -44,6 +48,13 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
   bool IsWidgetFocused() const;
   void FocusTab(const content::DesktopMediaID& media_id);
   void FocusWindow(const content::DesktopMediaID& media_id);
+
+  void UpdateUMA(bool focus, bool is_from_microtask, bool is_from_timer);
+
+  // UMA-related.
+  const base::TimeTicks capture_start_time_;
+  bool microtask_fired_ = false;
+  bool timer_expired_ = false;
 
   // |focus_window_of_opportunity_open_| tracks whether the window of
   // opportunity is open or closed.

@@ -1385,6 +1385,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.ConditionalFocus.Decision"
+    enum="ConditionalFocusDecision" expires_after="2022-08-26">
+  <owner>eladalon@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Records (1) explicit conditional-focus API invocations, (2) microtask-borne
+    decisions and (3) timer-triggered decisions.
+  </summary>
+</histogram>
+
+<histogram name="Media.ConditionalFocus.ExplicitLateCall" units="ms"
+    expires_after="2022-08-26">
+  <owner>eladalon@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Records the delay experienced by late explicit invocations of the focus()
+    API. By &quot;late&quot; we mean those calls which had no effect, on account
+    of arriving after the browser-side timer forced an implicit decision. (Note
+    that post-microtask explicit invocations are not recorded. They're simply an
+    application error.)
+  </summary>
+</histogram>
+
+<histogram name="Media.ConditionalFocus.ExplicitOnTimeCall" units="ms"
+    expires_after="2022-08-26">
+  <owner>eladalon@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Records the delay experienced by on-time explicit invocations of the focus()
+    API. By &quot;on-time&quot; we mean those calls which had an effect, on
+    account of arriving before either the microtask or the browser-side timer
+    forced an implicit decision.
+  </summary>
+</histogram>
+
+<histogram name="Media.ConditionalFocus.MicrotaskDelay" units="ms"
+    expires_after="2022-08-26">
+  <owner>eladalon@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Track the delay distribution of invocations of the microtask. Measure this
+    independently of whether an explicit API call was made, and independently of
+    whether the browser-side timer expired.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.ConfigChangeDecoderSelectionTime" units="ms"
     expires_after="2021-09-25">
   <owner>cassew@google.com</owner>

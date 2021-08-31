@@ -576,7 +576,12 @@ void MediaDevices::CloseFocusWindowOfOpportunity(MediaStream* media_stream) {
     return;
   }
 
-  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    return;  // Note: We're still back by the browser-side timer.
+  }
+
+  LocalDOMWindow* const window = To<LocalDOMWindow>(context);
   if (!window) {
     return;
   }

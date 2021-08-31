@@ -468,6 +468,8 @@ base::TimeDelta GetConditionalFocusWindow() {
     }
   }
 
+  // If this value is changed, some of the histograms associated with
+  // Conditional Focus should also change.
   return base::TimeDelta::FromSeconds(1);
 }
 #endif
@@ -1904,7 +1906,9 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
   GetIOThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamManager::SetCapturedDisplaySurfaceFocus,
-                     base::Unretained(this), label, /*focus=*/true),
+                     base::Unretained(this), label, /*focus=*/true,
+                     /*is_from_microtask=*/false,
+                     /*is_from_timer=*/true),
       conditional_focus_window_);
 #endif
 
@@ -2786,7 +2790,9 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
 #if !defined(OS_ANDROID)
 void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
     const std::string& label,
-    bool focus) {
+    bool focus,
+    bool is_from_microtask,
+    bool is_from_timer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   DeviceRequest* const request = FindRequest(label);
@@ -2815,7 +2821,8 @@ void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
     return;  // Video device not focus-able.
   }
 
-  request->ui_proxy->SetFocus(media_id, focus);
+  request->ui_proxy->SetFocus(media_id, focus, is_from_microtask,
+                              is_from_timer);
 }
 #endif
 

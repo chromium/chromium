@@ -257,8 +257,11 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 
 #if !defined(OS_ANDROID)
-  void SetFocus(const content::DesktopMediaID& media_id, bool focus) override {
-    focus_delegate_.SetFocus(media_id, focus);
+  void SetFocus(const content::DesktopMediaID& media_id,
+                bool focus,
+                bool is_from_microtask,
+                bool is_from_timer) override {
+    focus_delegate_.SetFocus(media_id, focus, is_from_microtask, is_from_timer);
   }
 #endif
 

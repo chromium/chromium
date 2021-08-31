@@ -384,7 +384,16 @@ class CONTENT_EXPORT MediaStreamManager
   // This can be called at most once, and only within the first 1s of the
   // capture session being initiated. If a call with |focus=false| is not
   // executed within this time period, the captured surface *is* focused.
-  void SetCapturedDisplaySurfaceFocus(const std::string& label, bool focus);
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  void SetCapturedDisplaySurfaceFocus(const std::string& label,
+                                      bool focus,
+                                      bool is_from_microtask,
+                                      bool is_from_timer);
 #endif
 
  private:

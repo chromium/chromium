@@ -10,6 +10,10 @@
 #error "Unsupported on Android."
 #endif  // defined(OS_ANDROID)
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,10 +27,23 @@
 #include "modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
-MediaStreamFocusDelegate::MediaStreamFocusDelegate(
-    content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ConditionalFocusDecision {
+  kExplicitFocusCapturedSurface = 0,
+  kExplicitNoFocusChange = 1,
+  kMicrotaskClosedWindow = 2,
+  kBrowserSideTimerClosedWindow = 3,
+  kMaxValue = kBrowserSideTimerClosedWindow
+};
+using Decision = ConditionalFocusDecision;
+}  // namespace
 
+MediaStreamFocusDelegate::MediaStreamFocusDelegate(
+    content::WebContents* web_contents)
+    : capture_start_time_(base::TimeTicks::Now()) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents) {
     return;
   }
@@ -52,8 +69,16 @@ MediaStreamFocusDelegate::~MediaStreamFocusDelegate() {
 }
 
 void MediaStreamFocusDelegate::SetFocus(const content::DesktopMediaID& media_id,
-                                        bool focus) {
+                                        bool focus,
+                                        bool is_from_microtask,
+                                        bool is_from_timer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!capturing_web_contents_) {
+    return;
+  }
+
+  UpdateUMA(focus, is_from_microtask, is_from_timer);
 
   if (!focus_window_of_opportunity_open_) {
     return;  // Too late.
@@ -86,10 +111,7 @@ void MediaStreamFocusDelegate::OnTabStripModelChanged(
 
 bool MediaStreamFocusDelegate::IsWidgetFocused() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!capturing_web_contents_) {
-    return false;
-  }
+  DCHECK(capturing_web_contents_);  // Tested by caller.
 
   content::RenderWidgetHostView* const rwhv =
       capturing_web_contents_->GetRenderWidgetHostView();
@@ -138,5 +160,79 @@ void MediaStreamFocusDelegate::FocusWindow(
           content::desktop_capture::CreateDesktopCaptureOptions());
   if (window_capturer && window_capturer->SelectSource(media_id.id)) {
     window_capturer->FocusOnSelectedSource();
+  }
+}
+
+void MediaStreamFocusDelegate::UpdateUMA(bool focus,
+                                         bool is_from_microtask,
+                                         bool is_from_timer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(capturing_web_contents_);               // Tested by caller.
+  DCHECK(!is_from_microtask || !is_from_timer);  // Can't be both.
+
+  const bool explicit_decision = (!is_from_microtask && !is_from_timer);
+  // Invocations from the microtask/timer focus the captured display surface.
+  DCHECK(explicit_decision || focus);
+
+  // The shape and result of the API invocation is only recorded once,
+  // on the first invocation that has an effect.
+  if (focus_window_of_opportunity_open_) {
+    base::UmaHistogramEnumeration(
+        "Media.ConditionalFocus.Decision",
+        is_from_microtask
+            ? Decision::kMicrotaskClosedWindow
+            : is_from_timer ? Decision::kBrowserSideTimerClosedWindow
+                            : focus ? Decision::kExplicitFocusCapturedSurface
+                                    : Decision::kExplicitNoFocusChange);
+  }
+
+  const base::TimeDelta delay = base::TimeTicks::Now() - capture_start_time_;
+
+  if (explicit_decision) {
+    if (!microtask_fired_ && !timer_expired_) {  // Timely API invocation.
+      // Record the delay of this on-time explicit API invocation.
+      // Note that 1s corresponds to the value GetConditionalFocusWindow()
+      // returns by default.
+      UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.ExplicitOnTimeCall",
+                                 delay, base::TimeDelta::FromMilliseconds(1),
+                                 base::TimeDelta::FromSeconds(1), 100);
+    } else if (timer_expired_) {  // Late (compared to browser-side timer).
+      // Record the delay of this late explicit API invocation.
+      // Note that 1s corresponds to the value GetConditionalFocusWindow()
+      // returns by default.
+      UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.ExplicitLateCall",
+                                 delay, base::TimeDelta::FromSeconds(1),
+                                 base::TimeDelta::FromSeconds(5), 100);
+    } else {  // microtask_fired_
+      // The case of |microtask_fired_| is not currently measured.
+      // It's an error on the Web-application's part and addressable by the app.
+    }
+    // TODO(crbug.com/1215480): Prevent multiple calls to focus() from the
+    // render process; then, here, add |explicit_decision_| and kill the
+    // render process if multiple explicit decions are received.
+  }
+
+  if (is_from_microtask) {
+    if (microtask_fired_) {
+      content::RenderFrameHost* const rfh =
+          capturing_web_contents_->GetMainFrame();
+      if (rfh) {
+        bad_message::ReceivedBadMessage(
+            rfh->GetProcess(),
+            bad_message::BadMessageReason::
+                MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW);
+      }
+    }
+
+    UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.MicrotaskDelay", delay,
+                               base::TimeDelta::FromMilliseconds(1),
+                               base::TimeDelta::FromSeconds(5), 100);
+
+    microtask_fired_ = true;
+  }
+
+  if (is_from_timer) {
+    DCHECK(!timer_expired_);  // The timer can only expire once.
+    timer_expired_ = true;
   }
 }

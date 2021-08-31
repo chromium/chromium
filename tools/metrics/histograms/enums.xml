@@ -7430,6 +7430,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="PMF_INVALID_INITIATOR_ORIGIN"/>
   <int value="3" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
   <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
+  <int value="5" label="MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW"/>
 </enum>
 
 <enum name="BadMessageReasonContent">
@@ -13470,6 +13471,13 @@ Called by update_net_error_codes.py.-->
 <enum name="ConcerningHeaderPresent">
   <int value="0" label="Header not present"/>
   <int value="1" label="Header present"/>
+</enum>
+
+<enum name="ConditionalFocusDecision">
+  <int value="0" label="kExplicitFocusCapturedSurface"/>
+  <int value="1" label="kExplicitNoFocusChange"/>
+  <int value="2" label="kMicrotaskClosedWindow"/>
+  <int value="3" label="kBrowserSideTimerClosedWindow"/>
 </enum>
 
 <enum name="ConfigParsingEvent">

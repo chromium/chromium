@@ -118,7 +118,16 @@ class MediaStreamUI {
 
 #if !defined(OS_ANDROID)
   // Focuses the display surface represented by |media_id|.
-  virtual void SetFocus(const DesktopMediaID& media_id, bool focus) {}
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  virtual void SetFocus(const DesktopMediaID& media_id,
+                        bool focus,
+                        bool is_from_microtask,
+                        bool is_from_timer) {}
 #endif
 };
 

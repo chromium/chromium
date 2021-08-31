@@ -281,7 +281,10 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
 #if !defined(OS_ANDROID)
 void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
     const std::string& label) {
-  media_stream_manager_->SetCapturedDisplaySurfaceFocus(label, /*focus=*/true);
+  media_stream_manager_->SetCapturedDisplaySurfaceFocus(
+      label, /*focus=*/true,
+      /*is_from_microtask=*/true,
+      /*is_from_timer=*/false);
 }
 #endif
 

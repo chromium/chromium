@@ -38,24 +38,31 @@ class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
             tab->GetMainFrame()->GetRoutingID()));
   }
 
+  void SetFocus(const content::DesktopMediaID& media_id,
+                bool focus,
+                bool is_from_microtask = false,
+                bool is_from_timer = false) {
+    delegate_->SetFocus(media_id, focus, is_from_microtask, is_from_timer);
+  }
+
  protected:
   std::unique_ptr<MediaStreamFocusDelegate> delegate_;  // Unit-under-test.
 };
 
 TEST_F(MediaStreamFocusDelegateTest, FirstSetFocusTrueFocusesTab) {
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
-  delegate_->SetFocus(DesktopMediaIDForTabAt(1), true);
+  SetFocus(DesktopMediaIDForTabAt(1), true);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 }
 
 TEST_F(MediaStreamFocusDelegateTest, SecondSetFocusTrueHasNoEffect) {
   // Setup - repeated from FirstSetFocusTrueFocusesTab, but as an assumption.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
-  delegate_->SetFocus(DesktopMediaIDForTabAt(1), true);
+  SetFocus(DesktopMediaIDForTabAt(1), true);
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
   // Test - focus unchanged.
-  delegate_->SetFocus(DesktopMediaIDForTabAt(0), true);
+  SetFocus(DesktopMediaIDForTabAt(0), true);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 }
 
@@ -63,11 +70,11 @@ TEST_F(MediaStreamFocusDelegateTest, SetFocusFalseClosesFocusWindow) {
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
 
   // Calling SetFocus(false) does not change focus.
-  delegate_->SetFocus(DesktopMediaIDForTabAt(1), false);
+  SetFocus(DesktopMediaIDForTabAt(1), false);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
 
   // Focus can no longer change by new calls to SetFocus(true).
-  delegate_->SetFocus(DesktopMediaIDForTabAt(1), true);
+  SetFocus(DesktopMediaIDForTabAt(1), true);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
 }
 
@@ -78,7 +85,7 @@ TEST_F(MediaStreamFocusDelegateTest, ChangeOfTabClosesFocusWindow) {
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 2);
 
   // Test - SetFocus has had no effect.
-  delegate_->SetFocus(DesktopMediaIDForTabAt(1), true);
+  SetFocus(DesktopMediaIDForTabAt(1), true);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
 }
 
