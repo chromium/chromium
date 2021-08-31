@@ -262,24 +262,6 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
   TestMojoToProto(enums);
 }
 
-TEST_F(ShimlessRmaMojoToProtoTest, CalibrationComponentsMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<
-      mojom::CalibrationComponent,
-      rmad::CheckCalibrationState::CalibrationStatus::Component>(
-      {{mojom::CalibrationComponent::kBaseAccelerometer,
-        rmad::CheckCalibrationState::CalibrationStatus::
-            RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER},
-       {mojom::CalibrationComponent::kLidAccelerometer,
-        rmad::CheckCalibrationState::CalibrationStatus::
-            RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER},
-       {mojom::CalibrationComponent::kGyroscope,
-        rmad::CheckCalibrationState::CalibrationStatus::
-            RMAD_CALIBRATION_COMPONENT_GYROSCOPE}});
-
-  TestProtoToMojo(enums);
-  TestMojoToProto(enums);
-}
-
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
   constexpr auto enums =
       base::MakeFixedFlatMap<mojom::ProvisioningStep,

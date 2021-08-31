@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponent, CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -736,17 +736,17 @@ export function fakeShimlessRmaServiceTestSuite() {
     const calibrationObserver = /** @type {!CalibrationObserverRemote} */ ({
       /**
        * Implements CalibrationObserverRemote.onCalibrationUpdated()
-       * @param {!CalibrationComponent} component
+       * @param {!ComponentType} component
        * @param {number} progress
        */
       onCalibrationUpdated(component, progress) {
-        assertEquals(component, CalibrationComponent.kBaseAccelerometer);
+        assertEquals(component, ComponentType.kBaseAccelerometer);
         assertEquals(progress, 0.5);
       }
     });
     service.observeCalibrationProgress(calibrationObserver);
     return service.triggerCalibrationObserver(
-        CalibrationComponent.kBaseAccelerometer, 0.5, 0);
+        ComponentType.kBaseAccelerometer, 0.5, 0);
   });
 
   test('ObserveProvisioningUpdated', () => {

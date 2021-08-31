@@ -7,7 +7,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -551,12 +551,12 @@ export class FakeShimlessRmaService {
     this.observables_.observe(
         'CalibrationObserver_onCalibrationUpdated', (component, progress) => {
           remote.onCalibrationUpdated(
-              /** @type {!CalibrationComponent} */ (component),
+              /** @type {!ComponentType} */ (component),
               /** @type {number} */ (progress));
         });
     if (this.automaticallyTriggerCalibrationObservation_) {
       this.triggerCalibrationObserver(
-          CalibrationComponent.kBaseAccelerometer, 1.0, 1500);
+          ComponentType.kBaseAccelerometer, 1.0, 1500);
     }
   }
 
@@ -661,7 +661,7 @@ export class FakeShimlessRmaService {
 
   /**
    * Causes the calibration observer to fire after a delay.
-   * @param {!CalibrationComponent} component
+   * @param {!ComponentType} component
    * @param {number} progress
    * @param {number} delayMs
    */

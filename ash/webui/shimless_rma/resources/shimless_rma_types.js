@@ -47,11 +47,6 @@ export let ComponentType = ash.shimlessRma.mojom.ComponentType;
 export let ComponentRepairStatus = ash.shimlessRma.mojom.ComponentRepairStatus;
 
 /**
- * @typedef {ash.shimlessRma.mojom.CalibrationComponent}
- */
-export let CalibrationComponent = ash.shimlessRma.mojom.CalibrationComponent;
-
-/**
  * @typedef {ash.shimlessRma.mojom.ProvisioningStep}
  */
 export let ProvisioningStep = ash.shimlessRma.mojom.ProvisioningStep;

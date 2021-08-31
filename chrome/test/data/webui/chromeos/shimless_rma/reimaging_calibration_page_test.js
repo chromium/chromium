@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationPageElement} from 'chrome://shimless-rma/reimaging_calibration_page.js';
-import {CalibrationComponent} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -35,7 +35,7 @@ export function reimagingCalibrationPageTest() {
 
   /**
    * @return {!Promise}
-   * @param {!CalibrationComponent} repairedComponent
+   * @param {!ComponentType} repairedComponent
    */
   function initializeCalibrationPage(repairedComponent) {
     assertFalse(!!component);
@@ -50,7 +50,7 @@ export function reimagingCalibrationPageTest() {
   }
 
   test('Initializes', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kBaseAccelerometer);
+    await initializeCalibrationPage(ComponentType.kBaseAccelerometer);
     const preCalibration =
         component.shadowRoot.querySelector('#preCalibration');
     const Calibration = component.shadowRoot.querySelector('#calibration');
@@ -59,7 +59,7 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('NextButtonTriggersCalibration', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kBaseAccelerometer);
+    await initializeCalibrationPage(ComponentType.kBaseAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
 
     const preCalibration =
@@ -70,12 +70,11 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('CalibrationComplete', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kLidAccelerometer);
+    await initializeCalibrationPage(ComponentType.kLidAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 
-    service.triggerCalibrationObserver(
-        CalibrationComponent.kLidAccelerometer, 100, 0);
+    service.triggerCalibrationObserver(ComponentType.kLidAccelerometer, 100, 0);
     await flushTasks();
 
     let savedResult;
@@ -89,7 +88,7 @@ export function reimagingCalibrationPageTest() {
   });
 
   test('CalibrationInProgress', async () => {
-    await initializeCalibrationPage(CalibrationComponent.kGyroscope);
+    await initializeCalibrationPage(ComponentType.kGyroscope);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 

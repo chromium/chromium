@@ -111,9 +111,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   // RmadClient::Observer interface.
   void Error(rmad::RmadErrorCode error) override;
-  void CalibrationProgress(
-      rmad::CheckCalibrationState::CalibrationStatus::Component component,
-      double progress) override;
+  void CalibrationProgress(rmad::RmadComponent component,
+                           double progress) override;
   void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
                             double progress) override;
   void HardwareWriteProtectionState(bool enabled) override;

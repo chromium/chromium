@@ -259,17 +259,6 @@ struct Component {
   ComponentRepairStatus state;
 };
 
-// This must remain in sync with
-// CalibrateComponentsState::CalibrateComponentsState in
-// //third_party/cros_system_api/dbus/rmad/rmad.proto.
-// See shimless_rma_mojom_traits.cc\h.
-enum CalibrationComponent {
-  kCalibrateUnknown = 0,
-  kGyroscope = 1,
-  kBaseAccelerometer = 2,
-  kLidAccelerometer = 3,
-};
-
 // This must remain in sync with ProvisionDeviceState::ProvisioningStep in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // See shimless_rma_mojom_traits.cc\h.
@@ -301,7 +290,7 @@ interface OsUpdateObserver {
 interface CalibrationObserver {
   // OnCalibrationUpdated is called whenever there is an update in the progress
   // of component calibration.
-  OnCalibrationUpdated(CalibrationComponent component, float progress);
+  OnCalibrationUpdated(ComponentType component, float progress);
 };
 
 // Implemented by clients to track the progress of device provisioning.

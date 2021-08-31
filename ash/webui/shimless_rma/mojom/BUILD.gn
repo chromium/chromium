@@ -13,10 +13,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ash.shimless_rma.mojom.CalibrationComponent"
-          cpp = "::rmad::CheckCalibrationState_CalibrationStatus_Component"
-        },
-        {
           mojom = "ash.shimless_rma.mojom.ComponentRepairStatus"
           cpp =
               "::rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus"

@@ -148,7 +148,7 @@ class RmadClientImpl : public RmadClient {
 void RmadClientImpl::Init(dbus::Bus* bus) {
   rmad_proxy_ = bus->GetObjectProxy(rmad::kRmadServiceName,
                                     dbus::ObjectPath(rmad::kRmadServicePath));
-  // Listen to D-Bus signals emitted by powerd.
+  // Listen to D-Bus signals emitted by rmad.
   typedef void (RmadClientImpl::*SignalMethod)(dbus::Signal*);
   const std::pair<const char*, SignalMethod> kSignalMethods[] = {
       {rmad::kCalibrationProgressSignal,
@@ -168,7 +168,6 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
         base::BindRepeating(p.second, weak_ptr_factory_.GetWeakPtr()),
         on_connected_callback);
   }
-  // rmad_proxy_->O
 }
 
 // Called when a dbus signal is initially connected.
@@ -183,23 +182,15 @@ void RmadClientImpl::SignalConnected(const std::string& interface_name,
 void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kCalibrationProgressSignal);
   dbus::MessageReader reader(signal);
-  uint32_t component;
-  double progress;
-  if (!reader.PopUint32(&component)) {
-    LOG(ERROR) << "Unable to decode component uint32 from "
-               << signal->GetMember() << " signal";
-    return;
-  }
-  if (!reader.PopDouble(&progress)) {
-    LOG(ERROR) << "Unable to decode progress double from "
-               << signal->GetMember() << " signal";
+  // Read proto message
+  rmad::CalibrationComponentStatus signal_proto;
+  if (!reader.PopArrayOfBytesAsProto(&signal_proto)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
   for (auto& observer : observers_) {
-    observer.CalibrationProgress(
-        static_cast<rmad::CheckCalibrationState::CalibrationStatus::Component>(
-            component),
-        progress);
+    observer.CalibrationProgress(signal_proto.component(),
+                                 signal_proto.progress());
   }
 }
 

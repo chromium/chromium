@@ -1770,18 +1770,13 @@ TEST_F(ShimlessRmaServiceTest, ObserveError) {
 
 class FakeCalibrationObserver : public mojom::CalibrationObserver {
  public:
-  void OnCalibrationUpdated(
-      rmad::CheckCalibrationState::CalibrationStatus::Component component,
-      float progress) override {
+  void OnCalibrationUpdated(rmad::RmadComponent component,
+                            float progress) override {
     observations.push_back(
-        std::pair<rmad::CheckCalibrationState::CalibrationStatus::Component,
-                  float>(component, progress));
+        std::pair<rmad::RmadComponent, float>(component, progress));
   }
 
-  std::vector<
-      std::pair<rmad::CheckCalibrationState::CalibrationStatus::Component,
-                float>>
-      observations;
+  std::vector<std::pair<rmad::RmadComponent, float>> observations;
   mojo::Receiver<mojom::CalibrationObserver> receiver{this};
 };
 
@@ -1791,9 +1786,7 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerCalibrationProgressObservation(
-      rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER,
-      0.25);
+      rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER, 0.25);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }

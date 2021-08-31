@@ -32,9 +32,8 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
     virtual void Error(rmad::RmadErrorCode error) {}
 
     // Called when calibration progress is updated.
-    virtual void CalibrationProgress(
-        rmad::CheckCalibrationState::CalibrationStatus::Component component,
-        double progress) {}
+    virtual void CalibrationProgress(rmad::RmadComponent component,
+                                     double progress) {}
 
     // Called when provisioning progress is updated.
     virtual void ProvisioningProgress(

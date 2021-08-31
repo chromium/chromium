@@ -67,8 +67,7 @@ class TestObserver : public RmadClient::Observer {
   int num_error() const { return num_error_; }
   rmad::RmadErrorCode last_error() const { return last_error_; }
   int num_calibration_progress() const { return num_calibration_progress_; }
-  rmad::CheckCalibrationState::CalibrationStatus::Component
-  last_calibration_component() const {
+  rmad::RmadComponent last_calibration_component() const {
     return last_calibration_component_;
   }
   float last_calibration_progress() const { return last_calibration_progress_; }
@@ -96,9 +95,8 @@ class TestObserver : public RmadClient::Observer {
   }
 
   // Called when calibration progress is updated.
-  void CalibrationProgress(
-      rmad::CheckCalibrationState::CalibrationStatus::Component component,
-      double progress) override {
+  void CalibrationProgress(rmad::RmadComponent component,
+                           double progress) override {
     num_calibration_progress_++;
     last_calibration_component_ = component;
     last_calibration_progress_ = progress;
@@ -129,9 +127,8 @@ class TestObserver : public RmadClient::Observer {
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;
-  rmad::CheckCalibrationState::CalibrationStatus::Component
-      last_calibration_component_ = rmad::CheckCalibrationState::
-          CalibrationStatus::RMAD_CALIBRATION_COMPONENT_UNKNOWN;
+  rmad::RmadComponent last_calibration_component_ =
+      rmad::RmadComponent::RMAD_COMPONENT_UNKNOWN;
   float last_calibration_progress_ = 0.0f;
   int num_provisioning_progress_ = 0;
   rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
@@ -149,9 +146,9 @@ rmad::RmadState CreateWelcomeState() {
   return state;
 }
 
-rmad::RmadState CreateSelectNetworkState() {
+rmad::RmadState CreateDeviceDestinationState() {
   rmad::RmadState state;
-  state.set_allocated_select_network(new rmad::SelectNetworkState());
+  state.set_allocated_device_destination(new rmad::DeviceDestinationState());
   return state;
 }
 
@@ -163,11 +160,12 @@ rmad::GetStateReply CreateWelcomeStateReply(rmad::RmadErrorCode error) {
   return reply;
 }
 
-rmad::GetStateReply CreateSelectNetworkStateReply(rmad::RmadErrorCode error) {
+rmad::GetStateReply CreateDeviceDestinationStateReply(
+    rmad::RmadErrorCode error) {
   rmad::GetStateReply reply;
   reply.set_allocated_state(new rmad::RmadState());
-  reply.mutable_state()->set_allocated_select_network(
-      new rmad::SelectNetworkState());
+  reply.mutable_state()->set_allocated_device_destination(
+      new rmad::DeviceDestinationState());
   reply.set_error(error);
   return reply;
 }
@@ -264,8 +262,8 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(
-      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(rmad::GetStateReply(
+      CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   base::RunLoop run_loop;
@@ -276,7 +274,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
             EXPECT_TRUE(response->has_state());
-            EXPECT_TRUE(response->state().has_select_network());
+            EXPECT_TRUE(response->state().has_device_destination());
             run_loop.Quit();
           }));
   run_loop.RunUntilIdle();
@@ -286,13 +284,13 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(
-      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(rmad::GetStateReply(
+      CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   base::RunLoop run_loop;
   client_->TransitionNextState(
-      std::move(CreateSelectNetworkState()),
+      std::move(CreateDeviceDestinationState()),
       base::BindLambdaForTesting(
           [&](absl::optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
@@ -320,8 +318,8 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(
-      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(rmad::GetStateReply(
+      CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
@@ -333,7 +331,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
-              EXPECT_TRUE(response->state().has_select_network());
+              EXPECT_TRUE(response->state().has_device_destination());
               run_loop.Quit();
             }));
     run_loop.RunUntilIdle();
@@ -357,8 +355,8 @@ TEST_F(FakeRmadClientTest,
        TransitionPreviousState_HasPreviousState_StateUpdated) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK));
-  fake_states.push_back(
-      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(rmad::GetStateReply(
+      CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
@@ -378,7 +376,7 @@ TEST_F(FakeRmadClientTest,
   {
     rmad::RmadState current_state = CreateWelcomeState();
     current_state.mutable_welcome()->set_choice(
-        rmad::WelcomeState_FinalizeChoice_RMAD_CHOICE_CANCEL);
+        rmad::WelcomeState_FinalizeChoice_RMAD_CHOICE_FINALIZE_REPAIR);
 
     base::RunLoop run_loop;
     client_->TransitionNextState(
@@ -388,7 +386,7 @@ TEST_F(FakeRmadClientTest,
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
-              EXPECT_TRUE(response->state().has_select_network());
+              EXPECT_TRUE(response->state().has_device_destination());
               run_loop.Quit();
             }));
     run_loop.RunUntilIdle();
@@ -402,8 +400,9 @@ TEST_F(FakeRmadClientTest,
           EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
           EXPECT_TRUE(response->has_state());
           EXPECT_TRUE(response->state().has_welcome());
-          EXPECT_EQ(response->state().welcome().choice(),
-                    rmad::WelcomeState_FinalizeChoice_RMAD_CHOICE_CANCEL);
+          EXPECT_EQ(
+              response->state().welcome().choice(),
+              rmad::WelcomeState_FinalizeChoice_RMAD_CHOICE_FINALIZE_REPAIR);
           run_loop.Quit();
         }));
     run_loop.RunUntilIdle();
@@ -474,12 +473,9 @@ TEST_F(FakeRmadClientTest, CalibrationProgressObservation) {
   TestObserver observer_1(client_);
 
   fake_client_()->TriggerCalibrationProgressObservation(
-      rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
-      0.5);
+      rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER, 0.5);
   EXPECT_EQ(1, observer_1.num_calibration_progress());
-  EXPECT_EQ(rmad::CheckCalibrationState::CalibrationStatus::
-                RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+  EXPECT_EQ(rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER,
             observer_1.last_calibration_component());
   EXPECT_EQ(0.5, observer_1.last_calibration_progress());
 }

@@ -25,11 +25,6 @@ using MojomComponentRepairState =
 using ProtoComponentRepairState =
     rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus;
 
-using MojomCalibrationComponent =
-    ash::shimless_rma::mojom::CalibrationComponent;
-using ProtoCalibrationComponent =
-    rmad::CheckCalibrationState::CalibrationStatus::Component;
-
 using MojomProvisioningStep = ash::shimless_rma::mojom::ProvisioningStep;
 using ProtoProvisioningStep = rmad::ProvisionDeviceState::ProvisioningStep;
 }  // namespace
@@ -490,57 +485,6 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
   NOTREACHED();
   return false;
 }  // namespace mojo
-
-// static
-MojomCalibrationComponent
-EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::ToMojom(
-    ProtoCalibrationComponent component) {
-  switch (component) {
-    case rmad::CheckCalibrationState::CalibrationStatus::
-        RMAD_CALIBRATION_COMPONENT_GYROSCOPE:
-      return MojomCalibrationComponent::kGyroscope;
-    case rmad::CheckCalibrationState::CalibrationStatus::
-        RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER:
-      return MojomCalibrationComponent::kBaseAccelerometer;
-    case rmad::CheckCalibrationState::CalibrationStatus::
-        RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER:
-      return MojomCalibrationComponent::kLidAccelerometer;
-
-    case rmad::CheckCalibrationState::CalibrationStatus::
-        RMAD_CALIBRATION_COMPONENT_UNKNOWN:
-    default:
-      NOTREACHED();
-      return MojomCalibrationComponent::kCalibrateUnknown;
-  }
-  NOTREACHED();
-  return MojomCalibrationComponent::kCalibrateUnknown;
-}
-
-// static
-bool EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::
-    FromMojom(MojomCalibrationComponent component,
-              ProtoCalibrationComponent* out) {
-  switch (component) {
-    case MojomCalibrationComponent::kGyroscope:
-      *out = rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_GYROSCOPE;
-      return true;
-    case MojomCalibrationComponent::kBaseAccelerometer:
-      *out = rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_BASE_ACCELEROMETER;
-      return true;
-    case MojomCalibrationComponent::kLidAccelerometer:
-      *out = rmad::CheckCalibrationState::CalibrationStatus::
-          RMAD_CALIBRATION_COMPONENT_LID_ACCELEROMETER;
-      return true;
-
-    case MojomCalibrationComponent::kCalibrateUnknown:
-      NOTREACHED();
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
 
 // static
 MojomProvisioningStep
