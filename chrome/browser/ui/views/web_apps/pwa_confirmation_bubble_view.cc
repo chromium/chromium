@@ -94,7 +94,7 @@ bool PWAConfirmationBubbleView::IsShowing() {
 }
 
 // static
-PWAConfirmationBubbleView* PWAConfirmationBubbleView::GetBubbleForTesting() {
+PWAConfirmationBubbleView* PWAConfirmationBubbleView::GetBubble() {
   return g_bubble_;
 }
 

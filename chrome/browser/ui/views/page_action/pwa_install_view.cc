@@ -173,7 +173,13 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
-  // TODO(https://907351): Implement.
+  views::BubbleDialogDelegate* bubble = PWAConfirmationBubbleView::GetBubble();
+  // Only return the active bubble if it's anchored to `this`. (This check takes
+  // the more generic approach of verifying that it's the same widget as to
+  // avoid depending too heavily on the exact details of how anchoring works.)
+  if (bubble && (bubble->GetAnchorView()->GetWidget() == GetWidget()))
+    return bubble;
+
   return nullptr;
 }
 

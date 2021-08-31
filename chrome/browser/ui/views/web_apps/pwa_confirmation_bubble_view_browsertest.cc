@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
           }));
 
   PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubbleForTesting();
+      PWAConfirmationBubbleView::GetBubble();
 
   base::HistogramTester histograms;
   bubble_dialog->CancelDialog();
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
       chrome::PwaInProductHelpState::kShown);
 
   PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubbleForTesting();
+      PWAConfirmationBubbleView::GetBubble();
 
   bubble_dialog->CancelDialog();
   loop.Run();
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
       chrome::PwaInProductHelpState::kShown);
 
   PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubbleForTesting();
+      PWAConfirmationBubbleView::GetBubble();
 
   bubble_dialog->AcceptDialog();
   loop.Run();

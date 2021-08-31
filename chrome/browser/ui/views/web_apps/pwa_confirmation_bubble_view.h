@@ -26,7 +26,7 @@ class Tracker;
 class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
  public:
   static bool IsShowing();
-  static PWAConfirmationBubbleView* GetBubbleForTesting();
+  static PWAConfirmationBubbleView* GetBubble();
 
   PWAConfirmationBubbleView(views::View* anchor_view,
                             views::Button* highlight_button,
