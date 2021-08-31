@@ -126,7 +126,7 @@ class OffTheRecordProfileImpl : public Profile {
       override;
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
-  void RecordMainFrameNavigation() override;
+  void RecordPrimaryMainFrameNavigation() override;
 
  protected:
   // Profile implementation.

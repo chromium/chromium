@@ -668,6 +668,6 @@ void OffTheRecordProfileImpl::UpdateDefaultZoomLevel() {
 }
 #endif  // !defined(OS_ANDROID)
 
-void OffTheRecordProfileImpl::RecordMainFrameNavigation() {
+void OffTheRecordProfileImpl::RecordPrimaryMainFrameNavigation() {
   main_frame_navigations_++;
 }

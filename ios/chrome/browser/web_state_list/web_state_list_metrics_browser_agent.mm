@@ -135,7 +135,7 @@ void WebStateListMetricsBrowserAgent::DidFinishNavigation(
 
   web::NavigationItem* item =
       web_state->GetNavigationManager()->GetLastCommittedItem();
-  navigation_metrics::RecordMainFrameNavigation(
+  navigation_metrics::RecordPrimaryMainFrameNavigation(
       item ? item->GetVirtualURL() : GURL::EmptyGURL(),
       navigation_context->IsSameDocument(),
       web_state->GetBrowserState()->IsOffTheRecord(),

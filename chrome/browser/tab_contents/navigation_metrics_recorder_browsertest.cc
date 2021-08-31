@@ -17,7 +17,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -169,6 +171,70 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   histograms.ExpectTotalCount("Security.PasswordEntry.SiteEngagementLevel", 1);
   histograms.ExpectBucketCount("Security.PasswordEntry.SiteEngagementLevel",
                                blink::mojom::EngagementLevel::HIGH, 1);
+}
+
+class NavigationMetricsRecorderPrerenderBrowserTest
+    : public NavigationMetricsRecorderBrowserTest {
+ public:
+  NavigationMetricsRecorderPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &NavigationMetricsRecorderPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~NavigationMetricsRecorderPrerenderBrowserTest() override = default;
+  NavigationMetricsRecorderPrerenderBrowserTest(
+      const NavigationMetricsRecorderPrerenderBrowserTest&) = delete;
+
+  NavigationMetricsRecorderPrerenderBrowserTest& operator=(
+      const NavigationMetricsRecorderPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    NavigationMetricsRecorderBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    NavigationMetricsRecorderBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderPrerenderBrowserTest,
+                       PrerenderingShouldNotRecordSiteEngagementLevelMetric) {
+  NavigationMetricsRecorder* recorder =
+      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
+          GetWebContents());
+  ASSERT_TRUE(recorder);
+
+  base::HistogramTester histograms;
+
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
+
+  // Load a prerender page and prerendering should not increase the total count.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);
 }
 
 }  // namespace

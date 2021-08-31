@@ -74,9 +74,6 @@ void NavigationMetricsRecorder::DidFinishNavigation(
         "OutOfProcessIframesActive", "Enabled");
   }
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
@@ -86,10 +83,10 @@ void NavigationMetricsRecorder::DidFinishNavigation(
 
   const GURL url = last_committed_entry->GetVirtualURL();
   Profile* profile = Profile::FromBrowserContext(context);
-  navigation_metrics::RecordMainFrameNavigation(
+  navigation_metrics::RecordPrimaryMainFrameNavigation(
       url, navigation_handle->IsSameDocument(), profile->IsOffTheRecord(),
       profile_metrics::GetBrowserProfileType(context));
-  profile->RecordMainFrameNavigation();
+  profile->RecordPrimaryMainFrameNavigation();
 
   if (url.SchemeIsHTTPOrHTTPS() && !navigation_handle->IsSameDocument() &&
       !navigation_handle->IsDownload() && !profile->IsOffTheRecord()) {

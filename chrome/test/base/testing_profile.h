@@ -385,7 +385,7 @@ class TestingProfile : public Profile {
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
-  void RecordMainFrameNavigation() override {}
+  void RecordPrimaryMainFrameNavigation() override {}
 
   void set_profile_name(const std::string& profile_name) {
     profile_name_ = profile_name;

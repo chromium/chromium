@@ -512,7 +512,7 @@ class Profile : public content::BrowserContext {
 
   virtual void SetCreationTimeForTesting(base::Time creation_time) = 0;
 
-  virtual void RecordMainFrameNavigation() = 0;
+  virtual void RecordPrimaryMainFrameNavigation() = 0;
 
  protected:
   // Creates an OffTheRecordProfile which points to this Profile.
