@@ -240,7 +240,6 @@ void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
   if (!rfh) {
     return;
   }
-  GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
   PrintPreviewDone();
 }
 
