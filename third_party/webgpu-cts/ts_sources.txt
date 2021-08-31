@@ -115,6 +115,7 @@ src/webgpu/api/operation/adapter/requestDevice.spec.ts
 src/webgpu/api/operation/adapter/requestDevice_limits.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
 src/webgpu/api/operation/buffers/map.spec.ts
+src/webgpu/api/operation/buffers/map_ArrayBuffer.spec.ts
 src/webgpu/api/operation/buffers/map_detach.spec.ts
 src/webgpu/api/operation/buffers/map_oom.spec.ts
 src/webgpu/api/operation/buffers/threading.spec.ts

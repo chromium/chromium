@@ -125,6 +125,9 @@ wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:TextureUsage,count:* [
 ### Platform-independent failures
 ###
 
+# Intentionally hits a CHECK.
+crbug.com/1243842 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_ArrayBuffer:postMessage:transfer=true;* [ Crash ]
+
 # Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
 
