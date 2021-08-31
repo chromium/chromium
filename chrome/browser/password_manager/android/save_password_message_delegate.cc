@@ -122,6 +122,16 @@ void SavePasswordMessageDelegate::CreateMessage(bool update_password) {
       base::BindOnce(&SavePasswordMessageDelegate::HandleMessageDismissed,
                      base::Unretained(this)));
 
+  if (!update_password) {
+    // The message duration experiment is controlled by a parameter, associated
+    // with MessagesForAndroidPasswords feature and thus should only be adjusted
+    // for save password prompt.
+    int message_dismiss_duration_ms =
+        messages::GetSavePasswordMessageDismissDurationMs();
+    if (message_dismiss_duration_ms != 0)
+      message_->SetDuration(message_dismiss_duration_ms);
+  }
+
   const password_manager::PasswordForm& pending_credentials =
       passwords_state_.form_manager()->GetPendingCredentials();
 

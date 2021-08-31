@@ -1827,6 +1827,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.Messages.TimeToAction.Dismiss{MessageIdentifier}"
+    units="ms" expires_after="2022-06-01">
+  <owner>pavely@chromium.org</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the time interval the message was displayed on the screen before the
+    user dismissed it with a gesture. The metric is NOT recorded when the user
+    presses primary or secondary button or when the message is auto-dismissed
+    based on timer. The interval includes both enter and exit animation. The
+    metric can be used to analyze the time threshold for the user to give up
+    waiting for autodismiss timer and dismiss the message explicitly.
+  </summary>
+  <token key="MessageIdentifier" variants="MessageIdentifiers"/>
+</histogram>
+
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
     expires_after="2022-06-01">
   <owner>pavely@chromium.org</owner>

@@ -23,6 +23,11 @@ const base::Feature kMessagesForAndroidInfrastructure{
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
+constexpr base::FeatureParam<int>
+    kMessagesForAndroidPasswords_MessageDismissDurationMs{
+        &kMessagesForAndroidPasswords,
+        "save_password_message_dismiss_duration_ms", 0};
+
 const base::Feature kMessagesForAndroidPermissionUpdate{
     "MessagesForAndroidPermissionUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -87,6 +92,10 @@ bool IsNotificationBlockedMessagesUiEnabled() {
 bool IsPermissionUpdateMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
+}
+
+int GetSavePasswordMessageDismissDurationMs() {
+  return kMessagesForAndroidPasswords_MessageDismissDurationMs.Get();
 }
 
 }  // namespace messages
