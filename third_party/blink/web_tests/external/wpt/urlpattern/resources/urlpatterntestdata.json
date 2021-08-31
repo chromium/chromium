@@ -230,6 +230,13 @@
     }
   },
   {
+    "pattern": [{ "pathname": "/foo/([^\\/]+?)" }],
+    "inputs": [{ "pathname": "/foo/bar" }],
+    "expected_match": {
+      "pathname": { "input": "/foo/bar", "groups": { "0": "bar" } }
+    }
+  },
+  {
     "pattern": [{ "pathname": "/foo/:bar" }],
     "inputs": [{ "pathname": "/foo/index.html" }],
     "expected_match": {

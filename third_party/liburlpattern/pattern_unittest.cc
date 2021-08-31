@@ -254,6 +254,10 @@ TEST(PatternStringTest, NamedGroup) {
   RunPatternStringTest("/foo/:bar", "/foo/:bar");
 }
 
+TEST(PatternStringTest, SegmentWildcardWithoutName) {
+  RunPatternStringTest("/foo/([^\\/#\\?]+?)", "/foo/([^\\/#\\?]+?)");
+}
+
 TEST(PatternStringTest, NamedGroupWithRegexp) {
   RunPatternStringTest("/foo/:bar(baz)", "/foo/:bar(baz)");
 }
