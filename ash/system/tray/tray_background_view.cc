@@ -581,38 +581,38 @@ void TrayBackgroundView::FadeInAnimation() {
 }
 
 void TrayBackgroundView::BounceInAnimation() {
-  std::unique_ptr<ui::InterpolatedTransform> scale =
-      std::make_unique<ui::InterpolatedScale>(
-          gfx::Point3F(kAnimationBounceScaleFactor, kAnimationBounceScaleFactor,
-                       1),
-          gfx::Point3F(1, 1, 1));
-
-  gfx::PointF start_point = gfx::PointF(0, 0);
-  gfx::PointF bounce_up_point;
-  gfx::PointF bounce_down_point;
+  gfx::Vector2dF bounce_up_location;
+  gfx::Vector2dF bounce_down_location;
 
   switch (shelf_->alignment()) {
     case ShelfAlignment::kLeft:
-      bounce_up_point = gfx::PointF(kAnimationBounceUpDistance, 0);
-      bounce_down_point = gfx::PointF(-kAnimationBounceDownDistance, 0);
+      bounce_up_location = gfx::Vector2dF(kAnimationBounceUpDistance, 0);
+      bounce_down_location = gfx::Vector2dF(-kAnimationBounceDownDistance, 0);
       break;
     case ShelfAlignment::kRight:
-      bounce_up_point = gfx::PointF(-kAnimationBounceUpDistance, 0);
-      bounce_down_point = gfx::PointF(kAnimationBounceDownDistance, 0);
+      bounce_up_location = gfx::Vector2dF(-kAnimationBounceUpDistance, 0);
+      bounce_down_location = gfx::Vector2dF(kAnimationBounceDownDistance, 0);
       break;
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
     default:
-      bounce_up_point = gfx::PointF(0, -kAnimationBounceUpDistance);
-      bounce_down_point = gfx::PointF(0, kAnimationBounceDownDistance);
+      bounce_up_location = gfx::Vector2dF(0, -kAnimationBounceUpDistance);
+      bounce_down_location = gfx::Vector2dF(0, kAnimationBounceDownDistance);
   }
 
-  std::unique_ptr<ui::InterpolatedTransform> scale_about_pivot =
-      std::make_unique<ui::InterpolatedTransformAboutPivot>(
-          GetLocalBounds().CenterPoint(), std::move(scale));
+  gfx::Transform initial_scale;
+  initial_scale.Scale3d(kAnimationBounceScaleFactor,
+                        kAnimationBounceScaleFactor, 1);
 
-  scale_about_pivot->SetChild(std::make_unique<ui::InterpolatedTranslation>(
-      start_point, bounce_up_point));
+  gfx::Transform initial_state =
+      gfx::TransformAboutPivot(GetLocalBounds().CenterPoint(), initial_scale);
+
+  gfx::Transform scale_about_pivot = gfx::TransformAboutPivot(
+      GetLocalBounds().CenterPoint(), gfx::Transform());
+  scale_about_pivot.Translate(bounce_up_location);
+
+  gfx::Transform move_down;
+  move_down.Translate(bounce_down_location);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -620,23 +620,17 @@ void TrayBackgroundView::BounceInAnimation() {
       .Once()
       .SetDuration(base::TimeDelta())
       .SetOpacity(this, 1.0)
+      .SetTransform(this, std::move(initial_state))
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(this, std::move(scale_about_pivot),
-                                gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .SetTransform(this, std::move(scale_about_pivot),
+                    gfx::Tween::FAST_OUT_SLOW_IN_3)
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(this,
-                                std::make_unique<ui::InterpolatedTranslation>(
-                                    bounce_up_point, bounce_down_point),
-                                gfx::Tween::EASE_OUT_4)
-
+      .SetTransform(this, std::move(move_down), gfx::Tween::EASE_OUT_4)
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(this,
-                                std::make_unique<ui::InterpolatedTranslation>(
-                                    bounce_down_point, start_point),
-                                gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .SetTransform(this, gfx::Transform(), gfx::Tween::FAST_OUT_SLOW_IN_3)
       .OnAborted(base::BindOnce(&TrayBackgroundView::OnAnimationAborted,
                                 base::Unretained(this)))
       .OnEnded(base::BindOnce(&TrayBackgroundView::OnAnimationEnded,

@@ -133,6 +133,38 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
 }
 
+TEST_F(AnimationBuilderTest, ZeroDurationBlock) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();
+
+  gfx::RoundedCornersF first_corners(6.0f, 6.0f, 6.0f, 6.0f);
+  gfx::RoundedCornersF second_corners(12.0f, 12.0f, 12.0f, 12.0f);
+
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(base::TimeDelta())
+        .SetRoundedCorners(first_animating_view, first_corners)
+        .Then()
+        .SetDuration(kDelay)
+        .SetRoundedCorners(first_animating_view, second_corners)
+        .Then()
+        .SetDuration(base::TimeDelta())
+        .SetRoundedCorners(first_animating_view, first_corners);
+  }
+
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  6.0f);
+  Step(kDelay / 2);
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  9.0f);
+  Step(kDelay / 2);
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  6.0f);
+}
+
 TEST_F(AnimationBuilderTest, CheckTweenType) {
   TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
   gfx::Tween::Type tween_type = gfx::Tween::EASE_IN;

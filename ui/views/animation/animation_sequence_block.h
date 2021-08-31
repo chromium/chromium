@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/transform.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/views_export.h"
 
@@ -26,7 +27,6 @@ class RoundedCornersF;
 }  // namespace gfx
 
 namespace ui {
-class InterpolatedTransform;
 class Layer;
 class LayerOwner;
 }  // namespace ui
@@ -104,13 +104,13 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       ui::LayerOwner* target,
       float opacity,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetInterpolatedTransform(
+  AnimationSequenceBlock& SetTransform(
       ui::Layer* target,
-      std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+      gfx::Transform transform,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetInterpolatedTransform(
+  AnimationSequenceBlock& SetTransform(
       ui::LayerOwner* target,
-      std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+      gfx::Transform transform,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetRoundedCorners(
       ui::Layer* target,
@@ -148,13 +148,12 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock& OnScheduled(base::OnceClosure callback);
 
  private:
-  using AnimationValue =
-      absl::variant<gfx::Rect,
-                    float,
-                    SkColor,
-                    std::unique_ptr<ui::InterpolatedTransform>,
-                    gfx::RoundedCornersF,
-                    bool>;
+  using AnimationValue = absl::variant<gfx::Rect,
+                                       float,
+                                       SkColor,
+                                       gfx::RoundedCornersF,
+                                       bool,
+                                       gfx::Transform>;
 
   // Data for the animation of a given AnimationKey.
   struct Element {

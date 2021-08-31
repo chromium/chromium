@@ -19,7 +19,6 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/interpolated_transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_key.h"
 
@@ -163,20 +162,19 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetOpacity(
   return SetOpacity(target->layer(), opacity, tween_type);
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+AnimationSequenceBlock& AnimationSequenceBlock::SetTransform(
     ui::Layer* target,
-    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Transform transform,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::TRANSFORM},
-                      Element(std::move(interpolated_transform), tween_type));
+                      Element(std::move(transform), tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+AnimationSequenceBlock& AnimationSequenceBlock::SetTransform(
     ui::LayerOwner* target,
-    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Transform transform,
     gfx::Tween::Type tween_type) {
-  return SetInterpolatedTransform(
-      target->layer(), std::move(interpolated_transform), tween_type);
+  return SetTransform(target->layer(), std::move(transform), tween_type);
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
@@ -285,9 +283,8 @@ void AnimationSequenceBlock::TerminateBlock() {
     std::unique_ptr<ui::LayerAnimationElement> element;
     switch (pair.first.property) {
       case ui::LayerAnimationElement::TRANSFORM:
-        element = ui::LayerAnimationElement::CreateInterpolatedTransformElement(
-            absl::get<std::unique_ptr<ui::InterpolatedTransform>>(
-                std::move(pair.second.animation_value_)),
+        element = ui::LayerAnimationElement::CreateTransformElement(
+            absl::get<gfx::Transform>(std::move(pair.second.animation_value_)),
             duration);
         break;
       case ui::LayerAnimationElement::BOUNDS:

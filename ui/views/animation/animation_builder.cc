@@ -172,7 +172,14 @@ struct AnimationBuilder::Value {
   std::unique_ptr<ui::LayerAnimationElement> element;
 
   bool operator<(const Value& key) const {
-    return std::tie(start, element) < std::tie(key.start, key.element);
+    // Animations with zero duration need to be ordered before animations with
+    // nonzero of the same start time to prevent the DCHECK from happening in
+    // TerminateSequence(). These animations don't count as overlapping
+    // properties.
+    base::TimeDelta time = element->duration();
+    base::TimeDelta key_time = key.element->duration();
+    return std::tie(start, time, element) <
+           std::tie(key.start, key_time, key.element);
   }
 };
 
