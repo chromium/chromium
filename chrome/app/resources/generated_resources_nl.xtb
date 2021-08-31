@@ -1381,7 +1381,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2445484935443597917">Een nieuw profiel maken</translation>
 <translation id="244641233057214044">Gerelateerd aan je zoekopdracht</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2448810255793562605">Automatische scan voor 'Toegang via schakelaar'</translation>
+<translation id="2448810255793562605">Automatische scan voor Toegang via schakelaar</translation>
 <translation id="2450223707519584812">Je kunt geen gebruikers toevoegen omdat Google API-sleutels ontbreken. Bekijk <ph name="DETAILS_URL" /> voor details.</translation>
 <translation id="2450849356604136918">Geen actieve weergaven</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -3547,7 +3547,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4809079943450490359">Instructies van de beheerder van je apparaat:</translation>
 <translation id="480990236307250886">Open de homepage</translation>
 <translation id="4809927044794281115">Licht thema</translation>
-<translation id="4811212958317149293">Automatische scan van toetsenbord voor 'Toegang via schakelaar'</translation>
+<translation id="4811212958317149293">Automatische scan van toetsenbord voor Toegang via schakelaar</translation>
 <translation id="4811503964269049987">Geselecteerd tabblad toevoegen aan groep</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
 <translation id="4813512666221746211">Netwerkfout</translation>
@@ -6474,7 +6474,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7987814697832569482">Altijd verbinding maken via dit VPN</translation>
 <translation id="7988355189918024273">Toegankelijkheidsfuncties aanzetten</translation>
 <translation id="7990394755527173834">Als je een Android-telefoon voor het eerst wilt instellen als beveiligingssleutel voor deze computer, open je Chrome op je telefoon en ga je naar Instellingen &gt; Wachtwoorden &gt; Telefoon gebruiken als beveiligingssleutel. Tik daarna op Nieuw apparaat verbinden en scan deze QR-code.</translation>
-<translation id="7991296728590311172">Instellingen 'Toegang via schakelaar'</translation>
+<translation id="7991296728590311172">Instellingen voor Toegang via schakelaar</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
 <translation id="7999229196265990314">De volgende bestanden zijn gemaakt:
 
@@ -7345,7 +7345,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8931076093143205651">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="8931475688782629595">Beheren wat je synchroniseert</translation>
 <translation id="8932654652795262306">Gegevens van instant-tethering</translation>
-<translation id="8932894639908691771">Opties voor 'Toegang via schakelaar'</translation>
+<translation id="8932894639908691771">Opties voor Toegang via schakelaar</translation>
 <translation id="893298445929867520">Winkelwagens zijn verborgen. Ze worden opnieuw getoond als je wijzigingen aanbrengt.</translation>
 <translation id="8933960630081805351">&amp;Toon in Finder</translation>
 <translation id="8934732568177537184">Doorgaan</translation>
