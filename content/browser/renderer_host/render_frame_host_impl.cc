@@ -5662,12 +5662,9 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
 
   if (!in_back_forward_cache) {
     TRACE_EVENT0("navigation", "BackForwardCache_EvictAfterDocumentRestored");
-    // TODO(carlscab): We should no longer get into this branch thanks to
-    // https://crrev.com/c/2563674. Lets keep this old code for now just in case
-    // and replace with a CHECK once we are confident that is the case.
-    SCOPED_CRASH_KEY_NUMBER("BFCache", "EvictAfterRestoreReasons",
-                            can_store.not_stored_reasons().ToEnumBitmask());
-    base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/1163843): We should no longer get into this branch thanks
+    // to https://crrev.com/c/2563674 but we do. We should eventually replace
+    // this with a CHECK.
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
             kByJavaScript);
