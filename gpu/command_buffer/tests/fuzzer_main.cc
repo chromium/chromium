@@ -51,6 +51,14 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if defined(USE_X11) || defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"  // nogncheck
+#endif
+
 namespace gpu {
 namespace {
 
@@ -333,6 +341,10 @@ class CommandBufferSetup {
 #else
     command_line->AppendSwitchASCII(switches::kUseANGLE,
                                     gl::kANGLEImplementationNullName);
+#endif
+#if defined(USE_OZONE)
+    if (features::IsUsingOzonePlatform())
+      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
