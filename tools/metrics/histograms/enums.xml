@@ -7006,7 +7006,7 @@ others/histograms.xml -->
   <int value="6" label="Destination URL scheme is not HTTP(S) (removed)"/>
   <int value="7"
       label="Same site navigation, same-site proactive swap disabled"/>
-  <int value="8" label="Error page"/>
+  <int value="8" label="Error page (removed)"/>
   <int value="9" label="Already has matching browsing instance"/>
   <int value="10" label="Renderer debug URL"/>
   <int value="11" label="Not enabled and not needed for back-forward cache"/>

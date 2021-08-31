@@ -44,8 +44,6 @@ const char* BrowsingInstanceSwapResultToString(
       return "BI not swapped - source URL scheme is not HTTP(S)";
     case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
       return "BI not swapped - same site navigation";
-    case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
-      return "BI not swapped - reloading error page";
     case ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance:
       return "BI not swapped - already has matching BrowsingInstance";
     case ShouldSwapBrowsingInstance::kNo_RendererDebugURL:

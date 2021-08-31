@@ -252,8 +252,6 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
           SHOULD_SWAP_BROWSING_INSTANCE_NO_SOURCE_URL_SCHEME_NOT_HTTP_OR_HTTPS;
     case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
       return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_SITE_NAVIGATION;
-    case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
-      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_RELOADING_ERROR_PAGE;
     case ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_ALREADY_HAS_MATCHING_BROWSING_INSTANCE;
@@ -1529,19 +1527,6 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
 
   if (is_same_document)
     return ShouldSwapBrowsingInstance::kNo_SameDocumentNavigation;
-
-  // If this navigation is reloading an error page, do not swap BrowsingInstance
-  // and keep the error page in a related SiteInstance. If later a reload of
-  // this navigation is successful, it will correctly create a new
-  // BrowsingInstance if needed.
-  // TODO(https://crbug.com/1045524): We want to remove this, but it is kept for
-  // now as a workaround for the fact that autoreload is not working properly
-  // when we are changing RenderFrames. Remove this when autoreload logic is
-  // updated to handle different RenderFrames correctly.
-  if (is_failure && is_reload &&
-      SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame)) {
-    return ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage;
-  }
 
   // If new_entry already has a SiteInstance, assume it is correct.  We only
   // need to force a swap if it is in a different BrowsingInstance.
@@ -2975,9 +2960,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
           ? speculative_render_frame_host_->GetSiteInstance()
           : nullptr;
 
-  // Account for renderer-initiated reload as well.
-  // Needed as a workaround for https://crbug.com/1045524, remove it when it is
-  // fixed.
+  // Accounts for all types of reloads, including renderer-initiated reloads.
   bool is_reload =
       NavigationTypeUtils::IsReload(request->common_params().navigation_type);
 
