@@ -15,12 +15,13 @@ source_set("providers") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ui/ntp:logo",
+    "//ios/chrome/browser/voice:voice_search_language",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/public/provider/chrome/browser/voice",
     "//ui/base",

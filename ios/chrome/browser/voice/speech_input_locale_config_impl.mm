@@ -50,7 +50,7 @@ SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl(
     NSArray<SpeechInputLocaleMatch*>* locale_matches) {
   InitializeAvailableLocales(languages);
   InitializeLocaleMatches(locale_matches);
-  InitializeTextToSpeechLangauges();
+  InitializeTextToSpeechLanguages();
 }
 
 SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl()
@@ -191,7 +191,7 @@ void SpeechInputLocaleConfigImpl::InitializeLocaleMatches(
   }
 }
 
-void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLangauges() {
+void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLanguages() {
   text_to_speech_languages_ = {"de", "en", "es", "fr", "it", "ja", "ko"};
 }
 

@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/ui/ntp/logo_animation_controller.h",
+  "+ios/chrome/browser/voice/voice_search_language.h",
+  "+ios/chrome/browser/voice/voice_search_prefs.h",
+]

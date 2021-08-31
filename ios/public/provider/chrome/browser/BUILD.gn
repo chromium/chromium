@@ -63,11 +63,11 @@ source_set("test_support") {
   deps = [
     ":browser",
     "//base",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/mailto:test_support",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/public/provider/chrome/browser/user_feedback:test_support",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/public/provider/chrome/browser/voice:test_support",

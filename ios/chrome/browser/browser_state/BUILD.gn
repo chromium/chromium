@@ -220,11 +220,11 @@ source_set("test_support") {
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/sync/glue",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/undo",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/web",
     "//net:test_support",
   ]

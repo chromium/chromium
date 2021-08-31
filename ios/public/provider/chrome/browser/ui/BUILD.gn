@@ -1,13 +1,9 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "logo_vendor.h" ]
-  deps = [
-    "//base",
-    "//ios/public/provider/chrome/browser/voice",
-  ]
-  frameworks = [ "CoreGraphics.framework" ]
+  deps = [ "//ios/chrome/browser/ui/ntp:logo" ]
 }

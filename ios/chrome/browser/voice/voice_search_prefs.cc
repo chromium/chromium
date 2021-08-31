@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 
 namespace prefs {
 

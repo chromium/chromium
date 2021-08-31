@@ -18,6 +18,15 @@ source_set("ntp") {
   deps = [ "//ios/chrome/browser/ui/util" ]
 }
 
+source_set("logo") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "logo_animation_controller.h",
+    "logo_vendor.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("constants") {
   sources = [
     "discover_feed_constants.h",
@@ -38,6 +47,7 @@ source_set("coordinator") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":feature_flags",
+    ":logo",
     ":ntp",
     ":ntp_internal",
     "//components/feed/core/v2/public/ios:feed_ios_public",
@@ -68,7 +78,6 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web/public",
   ]
 }
@@ -105,6 +114,7 @@ source_set("ntp_internal") {
     "ntp_tile_saver.mm",
   ]
   deps = [
+    ":logo",
     ":ntp",
     "resources:incognito_icon",
     "resources:ntp_opentabs",
@@ -167,7 +177,6 @@ source_set("ntp_internal") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/third_party/material_components_ios",
     "//ios/web",

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 
-#import "ios/public/provider/chrome/browser/voice/voice_search_language.h"
+#import "ios/chrome/browser/voice/voice_search_language.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

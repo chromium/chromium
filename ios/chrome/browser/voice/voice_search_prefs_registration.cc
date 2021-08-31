@@ -6,7 +6,7 @@
 
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 
 void RegisterVoiceSearchBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
