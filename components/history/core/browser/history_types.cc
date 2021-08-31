@@ -22,13 +22,14 @@ VisitRow::VisitRow(URLID arg_url_id,
                    ui::PageTransition arg_transition,
                    SegmentID arg_segment_id,
                    bool arg_incremented_omnibox_typed_score,
-                   bool floc_allowed)
+                   VisitID arg_opener_visit)
     : url_id(arg_url_id),
       visit_time(arg_visit_time),
       referring_visit(arg_referring_visit),
       transition(arg_transition),
       segment_id(arg_segment_id),
-      incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score) {}
+      incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score),
+      opener_visit(arg_opener_visit) {}
 
 VisitRow::~VisitRow() = default;
 
@@ -239,6 +240,18 @@ TopSitesDelta::TopSitesDelta(const TopSitesDelta& other) = default;
 
 TopSitesDelta::~TopSitesDelta() = default;
 
+// Opener
+// -----------------------------------------------------------------------
+
+Opener::Opener() : Opener(nullptr, 0, GURL()) {}
+
+Opener::Opener(ContextID context_id, int nav_entry_id, const GURL& url)
+    : context_id(context_id), nav_entry_id(nav_entry_id), url(url) {}
+
+Opener::Opener(const Opener& other) = default;
+
+Opener::~Opener() = default;
+
 // HistoryAddPageArgs ---------------------------------------------------------
 
 HistoryAddPageArgs::HistoryAddPageArgs()
@@ -254,6 +267,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          false,
                          true,
                          false,
+                         absl::nullopt,
                          absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
@@ -268,7 +282,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
                                        bool floc_allowed,
-                                       absl::optional<std::u16string> title)
+                                       absl::optional<std::u16string> title,
+                                       absl::optional<Opener> opener)
     : url(url),
       time(time),
       context_id(context_id),
@@ -280,7 +295,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       visit_source(source),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
-      title(title) {}
+      title(title),
+      opener(opener) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;
