@@ -26,7 +26,8 @@ MediaStreamTrack* FocusableMediaStreamTrack::clone(ScriptState* script_state) {
 
 void FocusableMediaStreamTrack::focus(
     ExecutionContext* execution_context,
-    V8CaptureStartFocusBehavior focus_behavior) {
+    V8CaptureStartFocusBehavior focus_behavior,
+    ExceptionState& exception_state) {
 #if !defined(OS_ANDROID)
   UserMediaController* const controller =
       UserMediaController::From(To<LocalDOMWindow>(execution_context));
@@ -40,6 +41,13 @@ void FocusableMediaStreamTrack::focus(
     DLOG(ERROR) << "UserMediaClient missing.";
     return;
   }
+
+  if (called_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Method may only be called once.");
+    return;
+  }
+  called_ = true;
 
   client->FocusCapturedSurface(
       descriptor_id_,

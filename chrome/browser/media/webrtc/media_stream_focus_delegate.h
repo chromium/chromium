@@ -11,7 +11,9 @@
 #error "Unsupported on Android."
 #endif  // defined(OS_ANDROID)
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
@@ -49,12 +51,23 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
   void FocusTab(const content::DesktopMediaID& media_id);
   void FocusWindow(const content::DesktopMediaID& media_id);
 
-  void UpdateUMA(bool focus, bool is_from_microtask, bool is_from_timer);
+  // Returns a bool representing the validity of the call.
+  // If |false|, the call was found to be invalid, the capturer's render
+  // process was killed off, and execution of the focus-delegate logic
+  // should not proceed.
+  bool UpdateUMA(bool focus,
+                 bool is_from_microtask,
+                 bool is_from_timer) WARN_UNUSED_RESULT;
+
+  // Kills off capturer render-process.
+  // Returns |false| to make UpdateUMA()'s code a bit nicer.
+  bool BadMessage(bad_message::BadMessageReason reason) WARN_UNUSED_RESULT;
 
   // UMA-related.
   const base::TimeTicks capture_start_time_;
   bool microtask_fired_ = false;
   bool timer_expired_ = false;
+  bool explicit_decision_ = false;
 
   // |focus_window_of_opportunity_open_| tracks whether the window of
   // opportunity is open or closed.

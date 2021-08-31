@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_FOCUSABLE_MEDIA_STREAM_TRACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_FOCUSABLE_MEDIA_STREAM_TRACK_H_
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
@@ -23,12 +24,18 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
   MediaStreamTrack* clone(ScriptState*) override;
 
   void focus(ExecutionContext* execution_context,
-             V8CaptureStartFocusBehavior focus_behavior);
+             V8CaptureStartFocusBehavior focus_behavior,
+             ExceptionState& exception_state);
 
  private:
   // On the browser-side, this track is associated with this ID.
   // It is known as the "label" in the dispatcher and in MediaStreamManager.
   const String descriptor_id_;
+
+#if !defined(OS_ANDROID)
+  // First call to focus() is allowed. Subsequent calls produce an error.
+  bool called_ = false;
+#endif
 };
 
 }  // namespace blink

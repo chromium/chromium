@@ -49,6 +49,16 @@
       function handleCaptureError(error) {
         window.domAutomationController.send("capture-failure");
       }
+
+      function callFocusAndExpectError() {
+        let [track] = mediaStreamKeepAlive.getVideoTracks();
+        try {
+          track.focus("focus-captured-surface");
+          window.domAutomationController.send("no-error");
+        } catch (error) {
+          window.domAutomationController.send(`${error}`);
+        }
+      }
     </script>
   </head>
   <body>

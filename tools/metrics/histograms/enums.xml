@@ -7431,6 +7431,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
   <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
   <int value="5" label="MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW"/>
+  <int value="6" label="MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS"/>
 </enum>
 
 <enum name="BadMessageReasonContent">

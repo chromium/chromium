@@ -38,6 +38,13 @@ enum class ConditionalFocusDecision {
   kMaxValue = kBrowserSideTimerClosedWindow
 };
 using Decision = ConditionalFocusDecision;
+
+// Readability-enhancing aliases.
+constexpr bad_message::BadMessageReason MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS =
+    bad_message::BadMessageReason::MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS;
+constexpr bad_message::BadMessageReason
+    MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW = bad_message::
+        BadMessageReason::MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW;
 }  // namespace
 
 MediaStreamFocusDelegate::MediaStreamFocusDelegate(
@@ -78,7 +85,9 @@ void MediaStreamFocusDelegate::SetFocus(const content::DesktopMediaID& media_id,
     return;
   }
 
-  UpdateUMA(focus, is_from_microtask, is_from_timer);
+  if (!UpdateUMA(focus, is_from_microtask, is_from_timer)) {
+    return;  // Render process killed off - |capturing_web_contents_| invalid.
+  }
 
   if (!focus_window_of_opportunity_open_) {
     return;  // Too late.
@@ -163,7 +172,7 @@ void MediaStreamFocusDelegate::FocusWindow(
   }
 }
 
-void MediaStreamFocusDelegate::UpdateUMA(bool focus,
+bool MediaStreamFocusDelegate::UpdateUMA(bool focus,
                                          bool is_from_microtask,
                                          bool is_from_timer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -189,6 +198,11 @@ void MediaStreamFocusDelegate::UpdateUMA(bool focus,
   const base::TimeDelta delay = base::TimeTicks::Now() - capture_start_time_;
 
   if (explicit_decision) {
+    if (explicit_decision_) {
+      return BadMessage(MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS);
+    }
+    explicit_decision_ = true;
+
     if (!microtask_fired_ && !timer_expired_) {  // Timely API invocation.
       // Record the delay of this on-time explicit API invocation.
       // Note that 1s corresponds to the value GetConditionalFocusWindow()
@@ -207,21 +221,11 @@ void MediaStreamFocusDelegate::UpdateUMA(bool focus,
       // The case of |microtask_fired_| is not currently measured.
       // It's an error on the Web-application's part and addressable by the app.
     }
-    // TODO(crbug.com/1215480): Prevent multiple calls to focus() from the
-    // render process; then, here, add |explicit_decision_| and kill the
-    // render process if multiple explicit decions are received.
   }
 
   if (is_from_microtask) {
     if (microtask_fired_) {
-      content::RenderFrameHost* const rfh =
-          capturing_web_contents_->GetMainFrame();
-      if (rfh) {
-        bad_message::ReceivedBadMessage(
-            rfh->GetProcess(),
-            bad_message::BadMessageReason::
-                MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW);
-      }
+      return BadMessage(MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW);
     }
 
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.ConditionalFocus.MicrotaskDelay", delay,
@@ -235,4 +239,15 @@ void MediaStreamFocusDelegate::UpdateUMA(bool focus,
     DCHECK(!timer_expired_);  // The timer can only expire once.
     timer_expired_ = true;
   }
+
+  return true;
+}
+
+bool MediaStreamFocusDelegate::BadMessage(
+    bad_message::BadMessageReason reason) {
+  content::RenderFrameHost* const rfh = capturing_web_contents_->GetMainFrame();
+  if (rfh) {
+    bad_message::ReceivedBadMessage(rfh->GetProcess(), reason);
+  }
+  return false;
 }

@@ -144,6 +144,15 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     return (ActiveTab() == Tab::kCapturedTab);
   }
 
+  void CallFocusAndExpectError(const std::string& expected_error) {
+    std::string script_result;
+    // TODO(crbug.com/1243764): Use EvalJs() instead.
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        capturing_tab_->GetMainFrame(), "callFocusAndExpectError();",
+        &script_result));
+    EXPECT_EQ(script_result, expected_error);
+  }
+
  protected:
   WebContents* captured_tab_ = nullptr;
   WebContents* capturing_tab_ = nullptr;
@@ -213,6 +222,19 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   Wait(base::TimeDelta::FromMilliseconds(7500));
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             browser()->tab_strip_model()->GetWebContentsAt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+                       ExceptionRaisedIFCallingFocusMultipleTimes) {
+  // Setup.
+  SetUpTestTabs();
+  Capture(0, FocusEnumValue::kFocusCapturedSurface);
+  ASSERT_TRUE(WaitForFocusSwitchToCapturedTab());  // Verifeid by earlier test.
+
+  // Test.
+  CallFocusAndExpectError(
+      "NotSupportedError: Failed to execute 'focus' on "
+      "'FocusableMediaStreamTrack': Method may only be called once.");
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

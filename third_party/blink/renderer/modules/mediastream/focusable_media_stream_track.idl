@@ -24,6 +24,6 @@ interface FocusableMediaStreamTrack : MediaStreamTrack {
   // to processing delays, the user agent assumes an implicit call with |focus|
   // set to a value decided by the user agent itself.
   // TODO(crbug.com/1215480): Link to WICG spec once produced.
-  [CallWith = ExecutionContext]
+  [CallWith = ExecutionContext, RaisesException]
   void focus(CaptureStartFocusBehavior focus_behavior);
 };
