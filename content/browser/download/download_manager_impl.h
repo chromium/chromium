@@ -170,6 +170,11 @@ class CONTENT_EXPORT DownloadManagerImpl
       int frame_tree_node_id,
       bool from_download_cross_origin_redirect);
 
+  // DownloadItemImplDelegate overrides.
+  download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
+      override;
+  std::string GetApplicationClientIdForFileScanning() const override;
+
  private:
   using DownloadSet = std::set<download::DownloadItem*>;
   using DownloadGuidMap =
@@ -237,7 +242,6 @@ class CONTENT_EXPORT DownloadManagerImpl
   bool ShouldOpenDownload(download::DownloadItemImpl* item,
                           ShouldOpenDownloadCallback callback) override;
   void CheckForFileRemoval(download::DownloadItemImpl* download_item) override;
-  std::string GetApplicationClientIdForFileScanning() const override;
   void ResumeInterruptedDownload(
       std::unique_ptr<download::DownloadUrlParameters> params,
       const GURL& site_url) override;
@@ -249,8 +253,6 @@ class CONTENT_EXPORT DownloadManagerImpl
   void ReportBytesWasted(download::DownloadItemImpl* download) override;
   void BindWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
-  download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
-      override;
   std::unique_ptr<download::DownloadItemRenameHandler>
   GetRenameHandlerForDownload(
       download::DownloadItemImpl* download_item) override;

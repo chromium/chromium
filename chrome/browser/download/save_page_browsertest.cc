@@ -49,6 +49,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
+#include "components/services/quarantine/test_support.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -431,6 +432,10 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveFileURL) {
   EXPECT_TRUE(base::PathExists(full_file_name));
   EXPECT_FALSE(base::PathExists(dir));
   EXPECT_TRUE(base::ContentsEqual(GetTestDirFile("text.txt"), full_file_name));
+#if defined(OS_WIN)
+  // Local file URL will not be quarantined.
+  EXPECT_FALSE(quarantine::IsFileQuarantined(full_file_name, GURL(), GURL()));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
@@ -963,6 +968,25 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
   // canary for detecting whether a website can access restricted resources).
   EXPECT_FALSE(base::PathExists(dir.AppendASCII("should-not-save.jpg")));
 }
+
+#if defined(OS_WIN)
+// Save a file and confirm that the file is correctly quarantined.
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveURLQuarantine) {
+  GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  base::FilePath full_file_name, dir;
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "test", 1, &dir,
+                 &full_file_name);
+  ASSERT_FALSE(HasFailure());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+  EXPECT_TRUE(base::ContentsEqual(GetTestDirFile("text.txt"), full_file_name));
+  EXPECT_TRUE(quarantine::IsFileQuarantined(full_file_name, url, GURL()));
+}
+#endif
 
 // Test suite that allows testing --site-per-process against cross-site frames.
 // See http://dev.chromium.org/developers/design-documents/site-isolation.

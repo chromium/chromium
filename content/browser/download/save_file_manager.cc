@@ -51,6 +51,7 @@ static SaveFileManager* g_save_file_manager = nullptr;
 class SaveFileManager::SimpleURLLoaderHelper
     : public network::SimpleURLLoaderStreamConsumer {
  public:
+  using URLLoaderCompleteCallback = base::OnceCallback<void(bool success)>;
   static std::unique_ptr<SimpleURLLoaderHelper> CreateAndStartDownload(
       std::unique_ptr<network::ResourceRequest> resource_request,
       SaveItemId save_item_id,
@@ -59,11 +60,12 @@ class SaveFileManager::SimpleURLLoaderHelper
       int render_frame_routing_id,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      SaveFileManager* save_file_manager) {
+      SaveFileManager* save_file_manager,
+      URLLoaderCompleteCallback on_complete_cb) {
     return std::unique_ptr<SimpleURLLoaderHelper>(new SimpleURLLoaderHelper(
         std::move(resource_request), save_item_id, save_package_id,
         render_process_id, render_frame_routing_id, annotation_tag,
-        url_loader_factory, save_file_manager));
+        url_loader_factory, save_file_manager, std::move(on_complete_cb)));
   }
 
   ~SimpleURLLoaderHelper() override = default;
@@ -77,10 +79,12 @@ class SaveFileManager::SimpleURLLoaderHelper
       int render_frame_routing_id,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      SaveFileManager* save_file_manager)
+      SaveFileManager* save_file_manager,
+      URLLoaderCompleteCallback on_complete_cb)
       : save_file_manager_(save_file_manager),
         save_item_id_(save_item_id),
-        save_package_id_(save_package_id) {
+        save_package_id_(save_package_id),
+        on_complete_cb_(std::move(on_complete_cb)) {
     GURL url = resource_request->url;
     url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    annotation_tag);
@@ -125,9 +129,7 @@ class SaveFileManager::SimpleURLLoaderHelper
 
   void OnComplete(bool success) override {
     download::GetDownloadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SaveFileManager::SaveFinished, save_file_manager_,
-                       save_item_id_, save_package_id_, success));
+        FROM_HERE, base::BindOnce(std::move(on_complete_cb_), success));
   }
 
   void OnRetry(base::OnceClosure start_retry) override {
@@ -139,6 +141,7 @@ class SaveFileManager::SimpleURLLoaderHelper
   SaveItemId save_item_id_;
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  URLLoaderCompleteCallback on_complete_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderHelper);
 };
@@ -189,17 +192,20 @@ SavePackage* SaveFileManager::LookupPackage(SaveItemId save_item_id) {
 }
 
 // Call from SavePackage for starting a saving job
-void SaveFileManager::SaveURL(SaveItemId save_item_id,
-                              const GURL& url,
-                              const Referrer& referrer,
-                              int render_process_host_id,
-                              int render_view_routing_id,
-                              int render_frame_routing_id,
-                              SaveFileCreateInfo::SaveFileSource save_source,
-                              const base::FilePath& file_full_path,
-                              BrowserContext* context,
-                              StoragePartition* storage_partition,
-                              SavePackage* save_package) {
+void SaveFileManager::SaveURL(
+    SaveItemId save_item_id,
+    const GURL& url,
+    const Referrer& referrer,
+    int render_process_host_id,
+    int render_view_routing_id,
+    int render_frame_routing_id,
+    SaveFileCreateInfo::SaveFileSource save_source,
+    const base::FilePath& file_full_path,
+    BrowserContext* context,
+    StoragePartition* storage_partition,
+    SavePackage* save_package,
+    const std::string& client_guid,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Insert started saving job to tracking list.
@@ -285,11 +291,18 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
       factory = storage_partition->GetURLLoaderFactoryForBrowserProcess().get();
     }
 
+    base::OnceCallback<void(bool /*success*/)> save_finished_cb =
+        base::BindOnce(&SaveFileManager::OnURLLoaderComplete, this,
+                       save_item_id, save_package->id(),
+                       context->IsOffTheRecord() ? GURL() : url,
+                       context->IsOffTheRecord() ? GURL() : referrer.url,
+                       client_guid, std::move(remote_quarantine));
+
     url_loader_helpers_[save_item_id] =
         SimpleURLLoaderHelper::CreateAndStartDownload(
             std::move(request), save_item_id, save_package->id(),
             render_process_host_id, render_frame_routing_id, traffic_annotation,
-            factory, this);
+            factory, this, std::move(save_finished_cb));
   } else {
     // We manually start the save job.
     auto info = std::make_unique<SaveFileCreateInfo>(
@@ -342,6 +355,36 @@ void SaveFileManager::SendCancelRequest(SaveItemId save_item_id) {
   download::GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SaveFileManager::CancelSave, this, save_item_id));
+}
+
+void SaveFileManager::OnURLLoaderComplete(
+    SaveItemId save_item_id,
+    SavePackageId save_package_id,
+    const GURL& url,
+    const GURL& referrer_url,
+    const std::string& client_guid,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+    bool is_success) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  SaveFile* save_file = LookupSaveFile(save_item_id);
+  if (!is_success || !save_file) {
+    SaveFinished(save_item_id, save_package_id, is_success);
+    return;
+  }
+
+  save_file->AnnotateWithSourceInformation(
+      client_guid, url, referrer_url, std::move(remote_quarantine),
+      base::BindOnce(&SaveFileManager::OnQuarantineComplete, this, save_item_id,
+                     save_package_id));
+}
+
+void SaveFileManager::OnQuarantineComplete(
+    SaveItemId save_item_id,
+    SavePackageId save_package_id,
+    download::DownloadInterruptReason result) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  SaveFinished(save_item_id, save_package_id,
+               result == download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
 // Notifications sent from the IO thread and run on the file thread:

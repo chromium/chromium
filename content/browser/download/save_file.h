@@ -34,7 +34,12 @@ class SaveFile {
   void Detach();
   void Cancel();
   void Finish();
-  void AnnotateWithSourceInformation();
+  void AnnotateWithSourceInformation(
+      const std::string& client_guid,
+      const GURL& source_url,
+      const GURL& referrer_url,
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+      download::BaseFile::OnAnnotationDoneCallback on_annotation_done_callback);
   base::FilePath FullPath() const;
   bool InProgress() const;
   int64_t BytesSoFar() const;

@@ -61,6 +61,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/services/quarantine/quarantine.h"
 #include "content/browser/download/save_types.h"
 #include "content/common/content_export.h"
 
@@ -90,17 +92,20 @@ class CONTENT_EXPORT SaveFileManager
 
   // Saves the specified URL |url|. |save_package| must not be deleted before
   // the call to RemoveSaveFile. Should be called on the UI thread,
-  void SaveURL(SaveItemId save_item_id,
-               const GURL& url,
-               const Referrer& referrer,
-               int render_process_host_id,
-               int render_view_routing_id,
-               int render_frame_routing_id,
-               SaveFileCreateInfo::SaveFileSource save_source,
-               const base::FilePath& file_full_path,
-               BrowserContext* context,
-               StoragePartition* storage_partition,
-               SavePackage* save_package);
+  void SaveURL(
+      SaveItemId save_item_id,
+      const GURL& url,
+      const Referrer& referrer,
+      int render_process_host_id,
+      int render_view_routing_id,
+      int render_frame_routing_id,
+      SaveFileCreateInfo::SaveFileSource save_source,
+      const base::FilePath& file_full_path,
+      BrowserContext* context,
+      StoragePartition* storage_partition,
+      SavePackage* save_package,
+      const std::string& client_guid,
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine);
 
   // Notifications sent from the IO thread and run on the file thread:
   void StartSave(std::unique_ptr<SaveFileCreateInfo> info);
@@ -158,6 +163,21 @@ class CONTENT_EXPORT SaveFileManager
 
   // Help function for sending notification of canceling specific request.
   void SendCancelRequest(SaveItemId save_item_id);
+
+  // Called on the file thread when the URLLoader completes saving a SaveItem.
+  void OnURLLoaderComplete(
+      SaveItemId save_item_id,
+      SavePackageId save_package_id,
+      const GURL& url,
+      const GURL& referrer_url,
+      const std::string& client_guid,
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+      bool is_success);
+
+  // Called on the file thread when file quarantine finishes on a SaveItem.
+  void OnQuarantineComplete(SaveItemId save_item_id,
+                            SavePackageId save_package_id,
+                            download::DownloadInterruptReason result);
 
   // Notifications sent from the file thread and run on the UI thread.
 

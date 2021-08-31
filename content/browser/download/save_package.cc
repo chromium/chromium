@@ -856,6 +856,12 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
     RenderFrameHostImpl* requester_frame =
         requester_frame_tree_node->current_frame_host();
 
+    mojo::PendingRemote<quarantine::mojom::Quarantine> quarantine;
+    auto quarantine_callback =
+        download_manager_->GetQuarantineConnectionCallback();
+    if (quarantine_callback)
+      quarantine_callback.Run(quarantine.InitWithNewPipeAndPassReceiver());
+
     file_manager_->SaveURL(
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         requester_frame->GetProcess()->GetID(),
@@ -867,8 +873,8 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
             .GetRenderViewHost()
             ->GetProcess()
             ->GetStoragePartition(),
-        this);
-
+        this, download_manager_->GetApplicationClientIdForFileScanning(),
+        std::move(quarantine));
   } while (process_all_remaining_items && !waiting_item_queue_.empty());
 }
 
