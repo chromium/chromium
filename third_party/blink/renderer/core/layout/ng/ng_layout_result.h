@@ -112,8 +112,16 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() ? rare_data_->column_spanner : NGBlockNode(nullptr);
   }
 
+  // True if this result is the parent of a column spanner and is empty (i.e.
+  // has no children). This is used to determine whether the column spanner
+  // margins should collapse. Note that |is_empty_spanner_parent| may be false
+  // even if this column spanner parent is actually empty. This can happen in
+  // the case where the spanner parent has no children but has not broken
+  // previously - in which case, we shouldn't collapse the spanner margins since
+  // we do not want to collapse margins with a column spanner outside of this
+  // parent.
   bool IsEmptySpannerParent() const {
-    return HasRareData() && rare_data_->is_empty_spanner_parent;
+    return bitfields_.is_empty_spanner_parent;
   }
 
   const NGEarlyBreak* GetEarlyBreak() const {
@@ -219,9 +227,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   // by break-{after,before,inside}:avoid or orphans / widows, or if we had to
   // break at an invalid breakpoint (e.g. before/after the first/last
   // child). This is used for column balancing.
-  bool HasViolatingBreak() const {
-    return HasRareData() && rare_data_->has_violating_break;
-  }
+  bool HasViolatingBreak() const { return bitfields_.has_violating_break; }
 
   SerializedScriptValue* CustomLayoutData() const {
     return HasRareData() ? rare_data_->custom_layout_data.get() : nullptr;
@@ -449,7 +455,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
-          has_violating_break(rare_data.has_violating_break),
           lines_until_clamp(rare_data.lines_until_clamp),
           table_column_count_(rare_data.table_column_count_),
           math_layout_data_(rare_data.math_layout_data_) {
@@ -485,16 +490,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     absl::optional<LayoutUnit> line_box_bfc_block_offset;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-    bool has_violating_break = false;
-    // True if this result is the parent of a column spanner and is empty (i.e.
-    // has no children). This is used to determine whether the column spanner
-    // margins should collapse. Note that |is_empty_spanner_parent| may be false
-    // even if this column spanner parent is actually empty. This can happen in
-    // the case where the spanner parent has no children but has not broken
-    // previously - in which case, we shouldn't collapse the spanner margins
-    // since we do not want to collapse margins with a column spanner outside of
-    // this parent.
-    bool is_empty_spanner_parent = false;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
     std::unique_ptr<const NGGridData> grid_layout_data_;
@@ -551,6 +546,8 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;
+    unsigned has_violating_break : 1;
+    unsigned is_empty_spanner_parent : 1;
 
     unsigned is_self_collapsing : 1;
     unsigned is_pushed_by_floats : 1;

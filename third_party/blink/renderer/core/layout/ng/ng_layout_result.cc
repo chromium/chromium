@@ -84,7 +84,7 @@ NGLayoutResult::NGLayoutResult(
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
-    rare_data->has_violating_break =
+    bitfields_.has_violating_break =
         builder->HasViolatingDescendantBreak() ||
         (builder->DidBreakSelf() &&
          builder->break_appeal_ < kBreakAppealPerfect);
@@ -244,8 +244,7 @@ NGLayoutResult::NGLayoutResult(
 
   if (builder->column_spanner_) {
     EnsureRareData()->column_spanner = builder->column_spanner_;
-    EnsureRareData()->is_empty_spanner_parent =
-        builder->is_empty_spanner_parent_;
+    bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
 
   if (HasRareData()) {
