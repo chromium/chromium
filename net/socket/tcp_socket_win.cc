@@ -850,15 +850,6 @@ int TCPSocketWin::DoConnect() {
   if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
     return ERR_ADDRESS_INVALID;
 
-  // Set option to choose a random port, if the socket is not already bound.
-  // Ignore failures, which may happen if the socket was already bound.
-  // Microsoft's documentation claims this is a uint16, but experimentally, this
-  // fails if passed a 16-bit value.
-  std::uint32_t randomize_port_value = 1;
-  setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
-             reinterpret_cast<const char*>(&randomize_port_value),
-             sizeof(randomize_port_value));
-
   if (!connect(socket_, storage.addr, storage.addr_len)) {
     // Connected without waiting!
     //
