@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 
-#include <memory>
-
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
