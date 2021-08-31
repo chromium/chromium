@@ -233,6 +233,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
                                                 bool is_locally_installed);
   void NotifyWebAppDisabledStateChanged(const AppId& app_id, bool is_disabled);
   void NotifyWebAppsDisabledModeChanged();
+  void NotifyWebAppLastBadgingTimeChanged(const AppId& app_id,
+                                          const base::Time& time);
   void NotifyWebAppLastLaunchTimeChanged(const AppId& app_id,
                                          const base::Time& time);
   void NotifyWebAppInstallTimeChanged(const AppId& app_id,

@@ -11,10 +11,12 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
-#include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
-#include "chrome/browser/web_applications/test/test_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,7 +30,6 @@
 
 using badging::BadgeManager;
 using badging::BadgeManagerDelegate;
-using badging::BadgeManagerFactory;
 
 namespace {
 
@@ -37,27 +38,19 @@ typedef std::pair<GURL, absl::optional<int>> SetBadgeAction;
 constexpr uint64_t kBadgeContents = 1;
 const web_app::AppId kAppId = "1";
 
+class TestBadgeManager : public BadgeManager {
+ public:
+  TestBadgeManager(Profile* profile, web_app::WebAppSyncBridge* sync_bridge)
+      : BadgeManager(profile, sync_bridge) {}
+
+  ~TestBadgeManager() override = default;
+  TestBadgeManager(const TestBadgeManager&) = delete;
+  TestBadgeManager& operator=(const TestBadgeManager&) = delete;
+};
+
 }  // namespace
 
 namespace badging {
-
-class TestBadgingAppRegistryController
-    : public web_app::TestAppRegistryController {
- public:
-  TestBadgingAppRegistryController(Profile* profile,
-                                   std::vector<web_app::AppId>& updated_apps)
-      : web_app::TestAppRegistryController(profile),
-        updated_apps_(updated_apps) {}
-  ~TestBadgingAppRegistryController() override = default;
-
-  void SetAppLastBadgingTime(const web_app::AppId& app_id,
-                             const base::Time& time) override {
-    updated_apps_.push_back(app_id);
-  }
-
- private:
-  std::vector<web_app::AppId>& updated_apps_;
-};
 
 class BadgeManagerUnittest : public ::testing::Test {
  public:
@@ -67,54 +60,47 @@ class BadgeManagerUnittest : public ::testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
 
-    StartTestWebAppProvider(profile(), updated_apps_);
+    test_registry_controller_ =
+        std::make_unique<web_app::TestWebAppRegistryController>();
+    controller().SetUp(profile());
+    controller().Init();
 
-    badge_manager_ =
-        BadgeManagerFactory::GetInstance()->GetForProfile(profile_.get());
+    badge_manager_ = std::make_unique<TestBadgeManager>(
+        profile(), &controller().sync_bridge());
 
     // Delegate lifetime is managed by BadgeManager
     auto owned_delegate = std::make_unique<TestBadgeManagerDelegate>(
-        profile_.get(), badge_manager_);
+        profile_.get(), &badge_manager());
     delegate_ = owned_delegate.get();
-    badge_manager_->SetDelegate(std::move(owned_delegate));
+    badge_manager().SetDelegate(std::move(owned_delegate));
   }
 
   void TearDown() override { profile_.reset(); }
 
-  static void StartTestWebAppProvider(
-      Profile* profile,
-      std::vector<web_app::AppId>& updated_apps) {
-    auto* provider = web_app::TestWebAppProvider::Get(profile);
-    auto test_registry_controller =
-        std::make_unique<TestBadgingAppRegistryController>(profile,
-                                                           updated_apps);
-    provider->SetSyncBridge(std::move(test_registry_controller));
-    provider->Start();
-  }
-
   TestBadgeManagerDelegate* delegate() { return delegate_; }
 
-  BadgeManager* badge_manager() const { return badge_manager_; }
+  BadgeManager& badge_manager() const { return *badge_manager_; }
 
   Profile* profile() const { return profile_.get(); }
 
-  const std::vector<web_app::AppId>& updated_apps() const {
-    return updated_apps_;
+  web_app::TestWebAppRegistryController& controller() {
+    return *test_registry_controller_;
   }
 
  private:
   TestBadgeManagerDelegate* delegate_;
-  BadgeManager* badge_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::vector<web_app::AppId> updated_apps_;
+  std::unique_ptr<BadgeManager> badge_manager_;
+  std::unique_ptr<web_app::TestWebAppRegistryController>
+      test_registry_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(BadgeManagerUnittest);
 };
 
 TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {
   ukm::TestUkmRecorder test_recorder;
-  badge_manager()->SetBadgeForTesting(kAppId, absl::nullopt, &test_recorder);
+  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt, &test_recorder);
 
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
@@ -129,7 +115,7 @@ TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {
 
 TEST_F(BadgeManagerUnittest, SetBadgeForApp) {
   ukm::TestUkmRecorder test_recorder;
-  badge_manager()->SetBadgeForTesting(
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), &test_recorder);
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
@@ -146,11 +132,19 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
   const web_app::AppId kOtherAppId = "2";
   constexpr uint64_t kOtherContents = 2;
 
-  badge_manager()->SetBadgeForTesting(
+  std::vector<web_app::AppId> updated_apps;
+  web_app::WebAppTestRegistryObserverAdapter observer(
+      &controller().registrar());
+  observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
+      [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
+        updated_apps.push_back(app_id);
+      }));
+
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
-  badge_manager()->SetBadgeForTesting(kOtherAppId,
-                                      absl::make_optional(kOtherContents),
-                                      ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kOtherAppId,
+                                     absl::make_optional(kOtherContents),
+                                     ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
 
@@ -160,16 +154,16 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
   EXPECT_EQ(kOtherAppId, delegate()->set_badges()[1].first);
   EXPECT_EQ(kOtherContents, delegate()->set_badges()[1].second);
 
-  EXPECT_EQ(2UL, updated_apps().size());
-  EXPECT_EQ(kAppId, updated_apps()[0]);
-  EXPECT_EQ(kOtherAppId, updated_apps()[1]);
+  EXPECT_EQ(2UL, updated_apps.size());
+  EXPECT_EQ(kAppId, updated_apps[0]);
+  EXPECT_EQ(kOtherAppId, updated_apps[1]);
 }
 
 TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
-  badge_manager()->SetBadgeForTesting(
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
-  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
-  badge_manager()->SetBadgeForTesting(
+  badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
@@ -184,9 +178,9 @@ TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
 TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
   ukm::TestUkmRecorder test_recorder;
 
-  badge_manager()->SetBadgeForTesting(
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
-  badge_manager()->ClearBadgeForTesting(kAppId, &test_recorder);
+  badge_manager().ClearBadgeForTesting(kAppId, &test_recorder);
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
@@ -198,15 +192,34 @@ TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
 
 TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::unique_ptr<Profile> other_profile = std::make_unique<TestingProfile>();
-  std::vector<web_app::AppId> other_updated_apps;
-  StartTestWebAppProvider(other_profile.get(), other_updated_apps);
-  auto* other_badge_manager =
-      BadgeManagerFactory::GetInstance()->GetForProfile(other_profile.get());
+  auto test_registry_controller =
+      std::make_unique<web_app::TestWebAppRegistryController>();
+  test_registry_controller->SetUp(other_profile.get());
+  test_registry_controller->Init();
+  auto other_badge_manager = std::make_unique<TestBadgeManager>(
+      other_profile.get(), &test_registry_controller->sync_bridge());
 
   auto owned_other_delegate = std::make_unique<TestBadgeManagerDelegate>(
-      other_profile.get(), other_badge_manager);
+      other_profile.get(), other_badge_manager.get());
   auto* other_delegate = owned_other_delegate.get();
   other_badge_manager->SetDelegate(std::move(owned_other_delegate));
+
+  std::vector<web_app::AppId> updated_apps;
+  std::vector<web_app::AppId> other_updated_apps;
+  web_app::WebAppTestRegistryObserverAdapter other_observer(
+      &test_registry_controller->registrar());
+  other_observer.SetWebAppLastBadgingTimeChangedDelegate(
+      base::BindLambdaForTesting(
+          [&other_updated_apps](const web_app::AppId& app_id,
+                                const base::Time& time) {
+            other_updated_apps.push_back(app_id);
+          }));
+  web_app::WebAppTestRegistryObserverAdapter observer(
+      &controller().registrar());
+  observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
+      [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
+        updated_apps.push_back(app_id);
+      }));
 
   other_badge_manager->SetBadgeForTesting(kAppId, absl::nullopt,
                                           ukm::TestUkmRecorder::Get());
@@ -217,7 +230,7 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   other_badge_manager->ClearBadgeForTesting(kAppId,
                                             ukm::TestUkmRecorder::Get());
 
-  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
+  badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(3UL, other_delegate->set_badges().size());
   EXPECT_EQ(0UL, delegate()->set_badges().size());
@@ -228,11 +241,9 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   EXPECT_EQ(kAppId, other_delegate->set_badges().back().first);
   EXPECT_EQ(absl::nullopt, other_delegate->set_badges().back().second);
 
-  EXPECT_EQ(1UL, updated_apps().size());
-  EXPECT_EQ(kAppId, updated_apps()[0]);
+  EXPECT_EQ(1UL, updated_apps.size());
+  EXPECT_EQ(kAppId, updated_apps[0]);
 
-  // TestBadgingAppRegistryController neglects to update last badging time, so
-  // every update is recorded.
   EXPECT_FALSE(other_updated_apps.empty());
   EXPECT_EQ(kAppId, other_updated_apps[0]);
 }
@@ -240,13 +251,13 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
 // Tests methods which call into the badge manager delegate do not crash when
 // the delegate is unset.
 TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
-  badge_manager()->SetDelegate(nullptr);
+  badge_manager().SetDelegate(nullptr);
 
-  badge_manager()->SetBadgeForTesting(kAppId, absl::nullopt,
-                                      ukm::TestUkmRecorder::Get());
-  badge_manager()->SetBadgeForTesting(
+  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt,
+                                     ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(
       kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
-  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
+  badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 }
 
 }  // namespace badging

@@ -51,25 +51,20 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
   return clock->Now() < last_badging_time + time_frame;
 }
 
-void UpdateBadgingTime(const base::Clock* clock,
-                       Profile* profile,
-                       const web_app::AppId& app_id) {
-  if (IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
-                              clock, profile)) {
-    return;
-  }
-
-  WebAppProvider::GetForLocalAppsUnchecked(profile)
-      ->sync_bridge()
-      .SetAppLastBadgingTime(app_id, clock->Now());
-}
-
 }  // namespace
 
 namespace badging {
 
 BadgeManager::BadgeManager(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
+    : BadgeManager(
+          profile,
+          &WebAppProvider::GetForLocalAppsUnchecked(profile)->sync_bridge()) {}
+
+BadgeManager::BadgeManager(Profile* profile,
+                           web_app::WebAppSyncBridge* sync_bridge)
+    : profile_(profile),
+      clock_(base::DefaultClock::GetInstance()),
+      sync_bridge_(sync_bridge) {
   // The delegate is also set for Chrome OS but is set from the constructor of
   // web_apps_chromeos.cc.
 #if defined(OS_MAC)
@@ -172,7 +167,10 @@ const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
 
 void BadgeManager::UpdateBadge(const web_app::AppId& app_id,
                                absl::optional<BadgeValue> value) {
-  UpdateBadgingTime(clock_, profile_, app_id);
+  if (!IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
+                               clock_, profile_)) {
+    sync_bridge_->SetAppLastBadgingTime(app_id, clock_->Now());
+  }
 
   if (!value)
     badged_apps_.erase(app_id);

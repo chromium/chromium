@@ -61,6 +61,8 @@ class AppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppDisabledStateChanged(const AppId& app_id,
                                             bool is_disabled) {}
   virtual void OnWebAppsDisabledModeChanged() {}
+  virtual void OnWebAppLastBadgingTimeChanged(const AppId& app_id,
+                                              const base::Time& time) {}
   virtual void OnWebAppLastLaunchTimeChanged(const AppId& app_id,
                                              const base::Time& time) {}
   virtual void OnWebAppInstallTimeChanged(const AppId& app_id,

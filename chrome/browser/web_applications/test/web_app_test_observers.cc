@@ -74,6 +74,11 @@ void WebAppTestRegistryObserverAdapter::SetWebAppManifestUpdateDelegate(
   app_manifest_updated_delegate_ = delegate;
 }
 
+void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
+    WebAppLastBadgingTimeChangedDelegate delegate) {
+  app_last_badging_time_changed_delegate_ = delegate;
+}
+
 void WebAppTestRegistryObserverAdapter::OnWebAppInstalled(const AppId& app_id) {
   if (app_installed_delegate_)
     app_installed_delegate_.Run(app_id);
@@ -114,6 +119,13 @@ void WebAppTestRegistryObserverAdapter::OnWebAppProfileWillBeDeleted(
     const AppId& app_id) {
   if (app_profile_will_be_deleted_delegate_)
     app_profile_will_be_deleted_delegate_.Run(app_id);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
+    const web_app::AppId& app_id,
+    const base::Time& time) {
+  if (app_last_badging_time_changed_delegate_)
+    app_last_badging_time_changed_delegate_.Run(app_id, time);
 }
 
 void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(

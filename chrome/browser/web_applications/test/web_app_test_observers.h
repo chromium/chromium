@@ -66,6 +66,12 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
       base::RepeatingCallback<void(const AppId& app_id)>;
   void SetWebAppManifestUpdateDelegate(WebAppManifestUpdateDelegate delegate);
 
+  using WebAppLastBadgingTimeChangedDelegate =
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   const base::Time& time)>;
+  void SetWebAppLastBadgingTimeChangedDelegate(
+      WebAppLastBadgingTimeChangedDelegate delegate);
+
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
@@ -76,6 +82,8 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
+  void OnWebAppLastBadgingTimeChanged(const web_app::AppId& app_id,
+                                      const base::Time& time) override;
 
  protected:
   // Helper method for subclasses to allow easy waiting on `wait_loop_`.
@@ -97,6 +105,7 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   WebAppWillBeUpdatedFromSyncDelegate app_will_be_updated_from_sync_delegate_;
   WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
+  WebAppLastBadgingTimeChangedDelegate app_last_badging_time_changed_delegate_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
       this};

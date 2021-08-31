@@ -32,7 +32,11 @@ class RenderProcessHost;
 
 namespace ukm {
 class UkmRecorder;
-}
+}  // namespace ukm
+
+namespace web_app {
+class WebAppSyncBridge;
+}  // namespace web_app
 
 namespace badging {
 class BadgeManagerDelegate;
@@ -104,6 +108,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
                             ukm::UkmRecorder* test_recorder);
   const base::Clock* SetClockForTesting(const base::Clock* clock);
 
+ protected:
+  // Protected for tests.
+  BadgeManager(Profile* profile, web_app::WebAppSyncBridge* sync_bridge);
+
  private:
   // The BindingContext of a mojo request. Allows mojo calls to be tied back
   // to the execution context they belong to without trusting the renderer for
@@ -168,6 +176,8 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   Profile* const profile_;
 
   const base::Clock* clock_;
+
+  web_app::WebAppSyncBridge* sync_bridge_;
 
   // All the mojo receivers for the BadgeManager. Keeps track of the
   // render_frame the binding is associated with, so as to not have to rely

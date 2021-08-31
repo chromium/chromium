@@ -126,6 +126,13 @@ void WebAppRegistrar::NotifyWebAppsDisabledModeChanged() {
     observer.OnWebAppsDisabledModeChanged();
 }
 
+void WebAppRegistrar::NotifyWebAppLastBadgingTimeChanged(
+    const AppId& app_id,
+    const base::Time& time) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppLastBadgingTimeChanged(app_id, time);
+}
+
 void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
     const AppId& app_id,
     const base::Time& time) {
