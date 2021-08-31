@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
-#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
@@ -103,7 +103,7 @@
                                   PageInfoCommands,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
-                                  PolicySignoutPromptCommands,
+                                  PolicyChangeCommands,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
@@ -251,7 +251,7 @@
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
-    @protocol(TextZoomCommands), @protocol(PolicySignoutPromptCommands)
+    @protocol(TextZoomCommands), @protocol(PolicyChangeCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -441,23 +441,23 @@
       initWithBaseViewController:self.viewController
                          browser:self.browser];
 
-    self.infobarBannerOverlayContainerCoordinator =
-        [[OverlayContainerCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser
-                              modality:OverlayModality::kInfobarBanner];
-    [self.infobarBannerOverlayContainerCoordinator start];
-    self.viewController.infobarBannerOverlayContainerViewController =
-        self.infobarBannerOverlayContainerCoordinator.viewController;
+  self.infobarBannerOverlayContainerCoordinator =
+      [[OverlayContainerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                            modality:OverlayModality::kInfobarBanner];
+  [self.infobarBannerOverlayContainerCoordinator start];
+  self.viewController.infobarBannerOverlayContainerViewController =
+      self.infobarBannerOverlayContainerCoordinator.viewController;
 
-    self.infobarModalOverlayContainerCoordinator =
-        [[OverlayContainerCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser
-                              modality:OverlayModality::kInfobarModal];
-    [self.infobarModalOverlayContainerCoordinator start];
-    self.viewController.infobarModalOverlayContainerViewController =
-        self.infobarModalOverlayContainerCoordinator.viewController;
+  self.infobarModalOverlayContainerCoordinator =
+      [[OverlayContainerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                            modality:OverlayModality::kInfobarModal];
+  [self.infobarModalOverlayContainerCoordinator start];
+  self.viewController.infobarModalOverlayContainerViewController =
+      self.infobarModalOverlayContainerCoordinator.viewController;
 }
 
 // Stops child coordinators.
@@ -1060,7 +1060,7 @@
   [self.passwordProtectionCoordinator startWithCompletion:completion];
 }
 
-#pragma mark - PolicySignoutPromptCommands
+#pragma mark - PolicyChangeCommands
 
 - (void)showPolicySignoutPrompt {
   if (!self.policySignoutPromptCoordinator) {

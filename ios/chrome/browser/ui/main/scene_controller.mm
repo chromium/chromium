@@ -85,7 +85,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -853,8 +853,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // changes.
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  id<PolicySignoutPromptCommands> handler =
-      HandlerForProtocol(mainCommandDispatcher, PolicySignoutPromptCommands);
+  id<PolicyChangeCommands> handler =
+      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
   policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
   policyWatcherAgent->Initialize(handler);
 
@@ -2719,9 +2719,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (!signin::IsSigninAllowedByPolicy()) {
     completion(/*success=*/NO);
     [self.signinCoordinator stop];
-    id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
+    id<PolicyChangeCommands> handler = HandlerForProtocol(
         self.signinCoordinator.browser->GetCommandDispatcher(),
-        PolicySignoutPromptCommands);
+        PolicyChangeCommands);
     [handler showPolicySignoutPrompt];
     self.signinCoordinator = nil;
   }

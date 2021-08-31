@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@protocol PolicySignoutPromptCommands;
+@protocol PolicyChangeCommands;
 
 // Delegate for the coordinator
 @protocol UserPolicySignoutCoordinatorDelegate

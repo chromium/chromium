@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 
@@ -43,8 +43,7 @@ void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   [handler_ showPolicySignoutPrompt];
 }
 
-void PolicyWatcherBrowserAgent::Initialize(
-    id<PolicySignoutPromptCommands> handler) {
+void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(!handler_);
   DCHECK(handler);
   handler_ = handler;

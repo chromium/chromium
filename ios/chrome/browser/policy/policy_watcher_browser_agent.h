@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/main/browser_user_data.h"
 
 class Browser;
-@protocol PolicySignoutPromptCommands;
+@protocol PolicyChangeCommands;
 class PolicyWatcherBrowserAgentObserver;
 class PrefChangeRegistrar;
 
@@ -36,7 +36,7 @@ class PolicyWatcherBrowserAgent
   // Starts observing the kSigninAllowed pref and trigger a SignOut if the pref
   // has changed before the BrowserAgent start the observation. |handler| is
   // used to send UI commands when the SignOut is done.
-  void Initialize(id<PolicySignoutPromptCommands> handler);
+  void Initialize(id<PolicyChangeCommands> handler);
 
  private:
   explicit PolicyWatcherBrowserAgent(Browser* browser);
@@ -64,7 +64,7 @@ class PolicyWatcherBrowserAgent
   bool sign_out_in_progress_ = false;
 
   // Handler to send commands.
-  id<PolicySignoutPromptCommands> handler_ = nil;
+  id<PolicyChangeCommands> handler_ = nil;
 
   // WeakPtrFactory should be last.
   base::WeakPtrFactory<PolicyWatcherBrowserAgent> weak_factory_{this};

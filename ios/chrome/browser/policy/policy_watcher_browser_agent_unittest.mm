@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -143,7 +143,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
       OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
   PolicyWatcherBrowserAgentObserverBridge bridge(mockObserver);
   agent_->AddObserver(&bridge);
-  id mockHandler = OCMProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
   // Setup the expectation after the Initialize to make sure that the observers
@@ -172,8 +172,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotSignedIn) {
       signin::ConsentLevel::kSignin));
 
   // Strict mock, will fail if a method is called.
-  id mockHandler =
-      OCMStrictProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
@@ -193,7 +192,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
   OCMExpect([mockHandler showPolicySignoutPrompt]);
@@ -223,8 +222,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
       signin::ConsentLevel::kSignin));
 
   // Strict mock, will fail if a method is called.
-  id mockHandler =
-      OCMStrictProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
@@ -273,7 +271,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   OCMExpect([mockHandler showPolicySignoutPrompt]);
   agent->Initialize(mockHandler);
 
@@ -303,8 +301,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
       signin::ConsentLevel::kSignin));
 
   // Strict protocol: method calls will fail until the method is stubbed.
-  id mockHandler =
-      OCMStrictProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
@@ -331,8 +328,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
   SignIn();
 
   // Strict protocol: method calls will fail until the method is stubbed.
-  id mockHandler =
-      OCMStrictProtocolMock(@protocol(PolicySignoutPromptCommands));
+  id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
   OCMExpect([mockHandler showPolicySignoutPrompt]);
 
   agent_->Initialize(mockHandler);
