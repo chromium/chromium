@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "base/bind.h"
+#include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
@@ -19,10 +20,12 @@
 
 int main(int argc, char** argv) {
 #if defined(OS_WIN)
+  std::cerr << "Process priority: " << base::Process::Current().GetPriority()
+            << std::endl;
+  std::cerr << updater::GetUACState() << std::endl;
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
-  std::cerr << updater::GetUACState() << std::endl;
 #endif
   base::TestSuite test_suite(argc, argv);
   chrome::RegisterPathProvider();
