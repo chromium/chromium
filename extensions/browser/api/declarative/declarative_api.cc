@@ -205,14 +205,13 @@ EventsEventAddRulesFunction::EventsEventAddRulesFunction() = default;
 EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
+  ConvertBinaryListElementsToBase64(mutable_args());
   params_ = AddRules::Params::Create(args());
   return params_ != nullptr;
 }
 
 ExtensionFunction::ResponseValue
 EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
-  ConvertBinaryListElementsToBase64(mutable_args());
-
   std::vector<const api::events::Rule*> rules_out;
   std::string error = rules_registry_->AddRules(
       extension_id(), std::move(params_->rules), &rules_out);
