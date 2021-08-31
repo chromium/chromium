@@ -181,6 +181,7 @@ source_set("reading_list_ui") {
     "//base",
     "//base:i18n",
     "//components/prefs",
+    "//components/prefs/ios",
     "//components/reading_list/core",
     "//components/strings",
     "//components/url_formatter",

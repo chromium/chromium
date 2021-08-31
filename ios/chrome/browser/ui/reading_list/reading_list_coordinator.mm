@@ -121,10 +121,12 @@
 
   // Create the table.
   self.tableViewController = [[ReadingListTableViewController alloc] init];
+  // Browser needs to be set before dataSource since the latter triggers a
+  // reloadData call.
+  self.tableViewController.browser = self.browser;
   self.tableViewController.delegate = self;
   self.tableViewController.audience = self;
   self.tableViewController.dataSource = self.mediator;
-  self.tableViewController.browser = self.browser;
 
   if (@available(iOS 13.0, *)) {
     self.tableViewController.menuProvider = self;

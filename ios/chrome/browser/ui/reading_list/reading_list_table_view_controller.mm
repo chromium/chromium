@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -83,9 +85,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 }  // namespace
 
-@interface ReadingListTableViewController () <ReadingListDataSink,
+@interface ReadingListTableViewController () <PrefObserverDelegate,
+                                              ReadingListDataSink,
                                               ReadingListToolbarButtonCommands,
-                                              TableViewURLDragDataSource>
+                                              TableViewURLDragDataSource> {
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+}
 
 // Redefine the model to return ReadingListListItems
 @property(nonatomic, readonly)
@@ -143,6 +151,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 
 - (void)setDataSource:(id<ReadingListDataSource>)dataSource {
+  DCHECK(self.browser);
   if (_dataSource == dataSource)
     return;
   _dataSource.dataSink = nil;
@@ -224,6 +233,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [[NSUserDefaults standardUserDefaults]
         setBool:NO
          forKey:kLastReadingListEntryAddedFromMessages];
+
+    // pref observer listens to the Messages prompt in case two Reading Lists
+    // are shown in multiwindow.
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(self.browser->GetBrowserState()->GetPrefs());
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _prefObserverBridge->ObserveChangesForPreference(
+        kPrefReadingListMessagesNeverShow, _prefChangeRegistrar.get());
   }
 
   self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_READING_LIST);
@@ -323,6 +340,19 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         base::UserMetricsAction(kReadingListMessagesToggleUserActionTurnOn));
   }
   user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, neverShowPrompt);
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  DCHECK(IsReadingListMessagesEnabled());
+  if (preferenceName == kPrefReadingListMessagesNeverShow) {
+    NSIndexPath* indexPath = [self.tableViewModel
+        indexPathForItemType:SwitchItemType
+           sectionIdentifier:SectionIdentifierMessagesSwitch];
+    [self reconfigureCellsForItems:@[ [self.tableViewModel
+                                       itemAtIndexPath:indexPath] ]];
+  }
 }
 
 #pragma mark - UITableViewDelegate
