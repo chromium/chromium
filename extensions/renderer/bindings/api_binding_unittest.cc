@@ -1797,28 +1797,29 @@ TEST_F(APIBindingUnittest, CallbackSignaturesAreAdded) {
   SetFunctions(kFunctionsWithCallbackSignatures);
   InitializeBinding();
 
-  EXPECT_FALSE(
-      type_refs().GetAPIMethodSignature("test.noCallback")->has_async_return());
-  EXPECT_FALSE(type_refs()
-                   .GetAPIMethodSignature("test.noCallback")
-                   ->has_async_return_signature());
+  {
+    const APISignature* signature =
+        type_refs().GetAPIMethodSignature("test.noCallback");
+    ASSERT_TRUE(signature);
+    EXPECT_FALSE(signature->has_async_return());
+    EXPECT_FALSE(signature->has_async_return_signature());
+  }
 
-  const APISignature* int_callback_signature =
-      type_refs().GetAPIMethodSignature("test.intCallback");
-  ASSERT_TRUE(int_callback_signature);
-  EXPECT_TRUE(int_callback_signature->has_async_return());
-  EXPECT_TRUE(int_callback_signature->has_async_return_signature());
-  EXPECT_EQ("integer int",
-            int_callback_signature->GetExpectedResponseSignatureForTesting());
+  {
+    const APISignature* signature =
+        type_refs().GetAPIMethodSignature("test.intCallback");
+    ASSERT_TRUE(signature);
+    EXPECT_TRUE(signature->has_async_return());
+    EXPECT_TRUE(signature->has_async_return_signature());
+  }
 
-  const APISignature* no_param_callback_signature =
-      type_refs().GetAPIMethodSignature("test.noParamCallback");
-  ASSERT_TRUE(no_param_callback_signature);
-  EXPECT_TRUE(no_param_callback_signature->has_async_return());
-  EXPECT_TRUE(no_param_callback_signature->has_async_return_signature());
-  EXPECT_EQ(
-      "",
-      no_param_callback_signature->GetExpectedResponseSignatureForTesting());
+  {
+    const APISignature* signature =
+        type_refs().GetAPIMethodSignature("test.noParamCallback");
+    ASSERT_TRUE(signature);
+    EXPECT_TRUE(signature->has_async_return());
+    EXPECT_TRUE(signature->has_async_return_signature());
+  }
 }
 
 TEST_F(APIBindingUnittest,

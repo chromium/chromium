@@ -642,16 +642,6 @@ std::string APISignature::GetExpectedSignature() const {
   return expected_signature_;
 }
 
-std::string APISignature::GetExpectedResponseSignatureForTesting() const {
-  if (!expected_async_signature_.empty() || !has_async_return_signature())
-    return expected_async_signature_;
-
-  expected_async_signature_ =
-      ArgumentSpecsToString(returns_async_->signature.value());
-
-  return expected_async_signature_;
-}
-
 PromisesAllowed APISignature::CheckPromisesAllowed(
     v8::Local<v8::Context> context) const {
   // Promises are only allowed if both the API supports promises and the context

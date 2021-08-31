@@ -147,9 +147,6 @@ class APISignature {
   // instance, if this signature expects a string 'someStr' and an optional int
   // 'someInt', this would return "string someStr, optional integer someInt".
   std::string GetExpectedSignature() const;
-  // TODO(tjudkins): This should be removed, along with the associated calls in
-  // tests.
-  std::string GetExpectedResponseSignatureForTesting() const;
 
   bool has_async_return() const { return returns_async_ != nullptr; }
   bool has_async_return_signature() const {
@@ -173,9 +170,6 @@ class APISignature {
 
   // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;
-
-  // A developer-readable async return signature string, lazily set.
-  mutable std::string expected_async_signature_;
 
   DISALLOW_COPY_AND_ASSIGN(APISignature);
 };
