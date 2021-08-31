@@ -39,7 +39,7 @@ def CipdInstall(pkg_name, ref, directory):
     if not os.path.exists(os.path.join(directory, '.cipd')):
       subprocess.check_call(['cipd', 'init', '-force'], cwd=directory)
     subprocess.check_call(
-        ['cipd', 'install', pkg_name, ref],
+        ['cipd', 'install', '-force', pkg_name, ref],
         cwd=directory)
 
 def RbeProjectFromEnv():
