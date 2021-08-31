@@ -12,7 +12,6 @@
 #else
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -25,7 +24,7 @@ bool DoesOriginContainAnyInstalledWebApp(
 #if defined(OS_ANDROID)
   return ShortcutHelper::DoesOriginContainAnyInstalledWebApk(origin);
 #else
-  auto* provider = web_app::WebAppProviderFactory::GetForProfile(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   // TODO: Change this method to async, or document that the caller must know
   // that WebAppProvider is started.
