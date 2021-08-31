@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"
@@ -28,6 +29,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -58,6 +62,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -127,6 +132,34 @@ class DragAndDropSimulator {
     return SimulateDragEnter(location, *os_exchange_data_);
   }
 
+  // Simulates notification that |url| was dragged from outside of the browser,
+  // into the specified |location| inside |omnibox|.
+  // |location| is relative to |omnibox|.
+  // Returns true upon success.
+  bool SimulateOmniboxDragEnter(aura::Window* omnibox,
+                                const gfx::Point& location,
+                                const GURL& url) {
+    os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
+    os_exchange_data_->SetURL(url, base::UTF8ToUTF16(url.spec()));
+    if (active_drag_event_) {
+      ADD_FAILURE() << "Cannot start a new drag when old one hasn't ended yet.";
+      return false;
+    }
+
+    aura::client::DragDropDelegate* delegate =
+        GetOmniboxDragDropDelegate(omnibox);
+    if (!delegate)
+      return false;
+
+    active_drag_event_ = base::WrapUnique(new ui::DropTargetEvent(
+        *os_exchange_data_, gfx::PointF(location), gfx::PointF(location),
+        kDefaultSourceOperations));
+
+    delegate->OnDragEntered(*active_drag_event_);
+    delegate->OnDragUpdated(*active_drag_event_);
+    return true;
+  }
+
   // Simulates dropping of the drag-and-dropped item.
   // SimulateDragEnter needs to be called first.
   // Returns true upon success.
@@ -145,6 +178,28 @@ class DragAndDropSimulator {
     CalculateEventLocations(location, &event_location, &event_root_location);
     active_drag_event_->set_location_f(event_location);
     active_drag_event_->set_root_location_f(event_root_location);
+
+    delegate->OnDragUpdated(*active_drag_event_);
+    delegate->OnPerformDrop(*active_drag_event_, std::move(os_exchange_data_));
+    return true;
+  }
+
+  // Simulates dropping of the drag-and-dropped item into |omnibox|.
+  // SimulateDragEnter needs to be called first.
+  // Returns true upon success.
+  bool SimulateOmniboxDrop(aura::Window* omnibox, const gfx::Point& location) {
+    if (!active_drag_event_) {
+      ADD_FAILURE() << "Cannot drop a drag that hasn't started yet.";
+      return false;
+    }
+
+    aura::client::DragDropDelegate* delegate =
+        GetOmniboxDragDropDelegate(omnibox);
+    if (!delegate)
+      return false;
+
+    active_drag_event_->set_location_f(gfx::PointF(location));
+    active_drag_event_->set_root_location_f(gfx::PointF(location));
 
     delegate->OnDragUpdated(*active_drag_event_);
     delegate->OnPerformDrop(*active_drag_event_, std::move(os_exchange_data_));
@@ -179,6 +234,14 @@ class DragAndDropSimulator {
     aura::client::DragDropDelegate* delegate =
         aura::client::GetDragDropDelegate(view);
     EXPECT_TRUE(delegate) << "Expecting WebContents to have DragDropDelegate";
+    return delegate;
+  }
+
+  aura::client::DragDropDelegate* GetOmniboxDragDropDelegate(
+      aura::Window* omnibox) {
+    aura::client::DragDropDelegate* delegate =
+        aura::client::GetDragDropDelegate(omnibox);
+    EXPECT_TRUE(delegate) << "Expecting Omnibox to have DragDropDelegate";
     return delegate;
   }
 
@@ -713,6 +776,32 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     return drag_simulator_->SimulateDrop(kMiddleOfRightFrame);
   }
 
+  bool SimulateDragEnterToOmnibox(const GURL& url) {
+    AssertTestPageIsLoaded();
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    OmniboxViewViews* omnibox_view =
+        browser_view->toolbar()->location_bar()->omnibox_view();
+
+    gfx::Point point;
+    views::View::ConvertPointToScreen(omnibox_view, &point);
+    return drag_simulator_->SimulateOmniboxDragEnter(
+        omnibox_view->GetWidget()->GetNativeView(), point, url);
+  }
+
+  bool SimulateDropInOmnibox() {
+    AssertTestPageIsLoaded();
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    OmniboxViewViews* omnibox_view =
+        browser_view->toolbar()->location_bar()->omnibox_view();
+
+    gfx::Point point;
+    views::View::ConvertPointToScreen(omnibox_view, &point);
+    return drag_simulator_->SimulateOmniboxDrop(
+        omnibox_view->GetWidget()->GetNativeView(), point);
+  }
+
   gfx::Point GetMiddleOfRightFrameInScreenCoords() {
     aura::Window* window = web_contents()->GetNativeView();
     aura::client::ScreenPositionClient* screen_position_client =
@@ -878,6 +967,60 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   // Verify that the focus moved from the omnibox to the tab contents.
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
+// Scenario: drag a URL into the Omnibox.  This is a regression test for
+// https://crbug.com/670123.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
+  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
+  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL initial_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Focus the omnibox.
+  chrome::FocusLocationBar(browser());
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  OmniboxViewViews* omnibox_view =
+      browser_view->toolbar()->location_bar()->omnibox_view();
+  EXPECT_TRUE(omnibox_view->IsSelectAll());
+
+  // Click into Omnibox, so the text will be unselected.
+  base::RunLoop loop1;
+  ui_test_utils::MoveMouseToCenterAndPress(omnibox_view, ui_controls::LEFT,
+                                           ui_controls::DOWN | ui_controls::UP,
+                                           loop1.QuitClosure());
+  loop1.Run();
+  EXPECT_FALSE(omnibox_view->IsSelectAll());
+
+  // Drag a normal URL from outside the browser into the Omnibox.
+  GURL dragged_url = embedded_test_server()->GetURL("d.com", "/title2.html");
+  ASSERT_TRUE(SimulateDragEnterToOmnibox(dragged_url));
+
+  // Drop into the Omnibox.
+  ASSERT_TRUE(SimulateDropInOmnibox());
+  // Verify that no new tab is opened.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Verify that the dropped URL is selected.
+  EXPECT_TRUE(omnibox_view->IsSelectAll());
+
+  // Click into the browser center to unselect the Omnibox text.
+  base::RunLoop loop2;
+  ui_test_utils::MoveMouseToCenterAndPress(browser_view, ui_controls::LEFT,
+                                           ui_controls::DOWN | ui_controls::UP,
+                                           loop2.QuitClosure());
+  loop2.Run();
+
+  // Verify that the dropped URL is no longer selected after the mouse clicks
+  // somewhere else.
+  EXPECT_FALSE(omnibox_view->IsSelectAll());
+  EXPECT_FALSE(omnibox_view->drop_cursor_visible());
 }
 
 // Scenario: drag a file from outside the browser and drop to the right frame

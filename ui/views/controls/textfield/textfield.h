@@ -244,6 +244,8 @@ class VIEWS_EXPORT Textfield : public View,
     force_text_directionality_ = force;
   }
 
+  bool drop_cursor_visible() const { return drop_cursor_visible_; }
+
   // Gets/Sets whether to indicate the textfield has invalid content.
   bool GetInvalid() const;
   void SetInvalid(bool invalid);
@@ -339,6 +341,8 @@ class VIEWS_EXPORT Textfield : public View,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -635,6 +639,10 @@ class VIEWS_EXPORT Textfield : public View,
 
   void OnEnabledChanged();
 
+  // Drops the dragged text.
+  void DropDraggedText(const ui::DropTargetEvent& event,
+                       ui::mojom::DragOperation& output_drag_op);
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 
@@ -775,6 +783,9 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_{this};
+
+  // Used to bind drop callback functions to this object.
+  base::WeakPtrFactory<Textfield> drop_weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)

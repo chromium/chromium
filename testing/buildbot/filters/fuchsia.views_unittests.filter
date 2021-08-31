@@ -12,6 +12,8 @@
 -TextfieldTest.DragAndDrop_InitiateDrag
 -TextfieldTest.DragAndDrop_ToTheLeft
 -TextfieldTest.DragAndDrop_ToTheRight
+-TextfieldTest.DropCallbackRun
+-TextfieldTest.DropCallbackCancelled
 
 # TODO(crbug.com/1231516): This test require handling capture in
 # ui::ScenicWindow

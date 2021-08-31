@@ -1908,8 +1908,10 @@ void OmniboxViewViews::PermitExternalProtocolHandler() {
 
 void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
                                    ui::mojom::DragOperation& output_drag_op) {
-  if (HasTextBeingDragged())
+  if (HasTextBeingDragged()) {
     output_drag_op = DragOperation::kNone;
+    return;
+  }
 
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
@@ -1924,6 +1926,7 @@ void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
     text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
   } else {
     output_drag_op = DragOperation::kNone;
+    return;
   }
 
   SetUserText(text);
