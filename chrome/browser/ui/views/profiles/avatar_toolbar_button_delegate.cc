@@ -42,42 +42,6 @@ ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
       profile->GetPath());
 }
 
-// Returns the avatar image for the current profile. May be called only in
-// "normal" states where the user is guaranteed to have an avatar image (i.e.
-// not kGuestSession and not kIncognitoProfile).
-gfx::Image GetAvatarImage(Profile* profile,
-                          const gfx::Image& user_identity_image,
-                          int preferred_size) {
-  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
-  if (!entry) {  // This can happen if the user deletes the current profile.
-    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
-
-  // TODO(crbug.com/1012179): it should suffice to call entry->GetAvatarIcon().
-  // For this to work well, this class needs to observe ProfileAttributesStorage
-  // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
-  // being up to date (as the storage also observes IdentityManager so there's
-  // no guarantee on the order of notifications).
-  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture())
-    return *entry->GetGAIAPicture();
-
-  // Show |user_identity_image| when the following conditions are satisfied:
-  //  - the user is migrated to Dice
-  //  - the user isn't syncing
-  //  - the profile icon wasn't explicitly changed
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!user_identity_image.IsEmpty() &&
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      entry->IsUsingDefaultAvatar()) {
-    return user_identity_image;
-  }
-
-  return entry->GetAvatarIcon(preferred_size);
-}
-
 }  // namespace
 
 AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
@@ -149,7 +113,34 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
 gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
     gfx::Image gaia_account_image,
     int preferred_size) const {
-  return GetAvatarImage(profile_, gaia_account_image, preferred_size);
+  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
+  if (!entry) {  // This can happen if the user deletes the current profile.
+    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+
+  // TODO(crbug.com/1012179): it should suffice to call entry->GetAvatarIcon().
+  // For this to work well, this class needs to observe ProfileAttributesStorage
+  // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
+  // being up to date (as the storage also observes IdentityManager so there's
+  // no guarantee on the order of notifications).
+  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture())
+    return *entry->GetGAIAPicture();
+
+  // Show |user_identity_image| when the following conditions are satisfied:
+  //  - the user is migrated to Dice
+  //  - the user isn't syncing
+  //  - the profile icon wasn't explicitly changed
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (!gaia_account_image.IsEmpty() &&
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      entry->IsUsingDefaultAvatar()) {
+    return gaia_account_image;
+  }
+
+  return entry->GetAvatarIcon(preferred_size);
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {

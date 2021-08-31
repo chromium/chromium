@@ -33,10 +33,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
   ~AvatarToolbarButtonDelegate() override;
 
-  // Called by the AvatarToolbarButton to get information about the profile.
+  // Methods called by the AvatarToolbarButton to get profile information.
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
   gfx::Image GetGaiaAccountImage() const;
+  // Must only be called in states which have an avatar image (i.e. not
+  // kGuestSession and not kIncognitoProfile).
   gfx::Image GetProfileAvatarImage(gfx::Image gaia_account_image,
                                    int preferred_size) const;
 
