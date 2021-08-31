@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -168,10 +169,6 @@ static const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 // kLayoutTestMaxMessageChunkSize in
 // content/shell/browser/layout_test/devtools_protocol_test_bindings.cc.
 const size_t kMaxMessageChunkSize = IPC::Channel::kMaximumMessageSize / 4;
-
-typedef std::vector<DevToolsUIBindings*> DevToolsUIBindingsList;
-base::LazyInstance<DevToolsUIBindingsList>::Leaky
-    g_devtools_ui_bindings_instances = LAZY_INSTANCE_INITIALIZER;
 
 base::DictionaryValue CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {
@@ -682,11 +679,9 @@ void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
 
 DevToolsUIBindings* DevToolsUIBindings::ForWebContents(
      content::WebContents* web_contents) {
-  if (!g_devtools_ui_bindings_instances.IsCreated())
-    return nullptr;
-  DevToolsUIBindingsList* instances =
-      g_devtools_ui_bindings_instances.Pointer();
-  for (DevToolsUIBindings* binding : *instances) {
+  DevToolsUIBindingsList& instances =
+      DevToolsUIBindings::GetDevToolsUIBindings();
+  for (DevToolsUIBindings* binding : instances) {
     if (binding->web_contents() == web_contents)
       return binding;
   }
@@ -700,7 +695,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
       frontend_loaded_(false) {
-  g_devtools_ui_bindings_instances.Get().push_back(this);
+  DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
 
@@ -727,11 +722,11 @@ DevToolsUIBindings::~DevToolsUIBindings() {
   SetDevicesUpdatesEnabled(false);
 
   // Remove self from global list.
-  DevToolsUIBindingsList* instances =
-      g_devtools_ui_bindings_instances.Pointer();
-  auto it(std::find(instances->begin(), instances->end(), this));
-  DCHECK(it != instances->end());
-  instances->erase(it);
+  DevToolsUIBindingsList& instances =
+      DevToolsUIBindings::GetDevToolsUIBindings();
+  auto it(std::find(instances.begin(), instances.end(), this));
+  DCHECK(it != instances.end());
+  instances.erase(it);
 }
 
 // content::DevToolsFrontendHost::Delegate implementation ---------------------
@@ -1705,4 +1700,11 @@ void DevToolsUIBindings::FrontendLoaded() {
   delegate_->OnLoadCompleted();
 
   AddDevToolsExtensionsToClient();
+}
+
+DevToolsUIBindings::DevToolsUIBindingsList&
+DevToolsUIBindings::GetDevToolsUIBindings() {
+  static base::NoDestructor<DevToolsUIBindings::DevToolsUIBindingsList>
+      bindings;
+  return *bindings;
 }
