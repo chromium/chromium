@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/app_icon_old"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:visibility="gone"
             android:contentDescription="@string/webapp_update_current_icon" />
 
@@ -35,6 +35,7 @@
             android:visibility="gone"
             android:maxLines="5"
             android:ellipsize="end"
+            android:gravity="center"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
 
         <TextView
@@ -44,12 +45,13 @@
             android:visibility="gone"
             android:maxLines="5"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:layout_marginTop="20dp"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_forward_arrow_black_24dp" />
@@ -64,8 +66,8 @@
 
         <ImageView
             android:id="@+id/app_icon_new"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:visibility="gone"
             android:contentDescription="@string/webapp_update_new_icon"/>
 
@@ -76,6 +78,7 @@
             android:visibility="gone"
             android:maxLines="5"
             android:ellipsize="end"
+            android:gravity="center"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
 
         <TextView
@@ -85,6 +88,7 @@
             android:visibility="gone"
             android:maxLines="5"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
     </LinearLayout>
 </org.chromium.chrome.browser.webapps.WebApkIconNameUpdateCustomView>
