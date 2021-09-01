@@ -47,6 +47,7 @@ class AnimationEffectOwner;
 class EffectTiming;
 class ComputedEffectTiming;
 class OptionalEffectTiming;
+class PropertyHandle;
 class WorkletAnimation;
 
 enum TimingUpdateReason {
@@ -82,6 +83,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   virtual bool IsKeyframeEffect() const { return false; }
   virtual bool IsInertEffect() const { return false; }
+
+  virtual bool Affects(const PropertyHandle&) const = 0;
 
   Timing::Phase GetPhase() const { return EnsureCalculated().phase; }
   bool IsCurrent() const { return EnsureCalculated().is_current; }

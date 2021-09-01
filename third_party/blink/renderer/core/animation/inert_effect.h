@@ -55,6 +55,8 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
 
   bool IsInertEffect() const final { return true; }
 
+  bool Affects(const PropertyHandle&) const override;
+
   void Trace(Visitor*) const override;
 
  protected:

@@ -62,6 +62,10 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
                  NormalizedTiming().iteration_duration, result);
 }
 
+bool InertEffect::Affects(const PropertyHandle& property) const {
+  return model_->Affects(property);
+}
+
 AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(
     bool,
     absl::optional<AnimationTimeDelta>,

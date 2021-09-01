@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 
 namespace blink {
 
@@ -63,6 +64,31 @@ TEST(InertEffectTest, IsCurrent) {
     EXPECT_EQ(1u, interpolations.size());
     EXPECT_FALSE(inert_effect->IsCurrent());
   }
+}
+
+TEST(InertEffectTest, Affects) {
+  auto* opacity_model =
+      CreateSimpleKeyframeEffectModelForTest(CSSPropertyID::kOpacity, "0", "1");
+  auto* color_model = CreateSimpleKeyframeEffectModelForTest(
+      CSSPropertyID::kColor, "red", "green");
+
+  Timing timing;
+
+  auto* opacity_effect = MakeGarbageCollected<InertEffect>(
+      opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
+      TimelinePhase::kActive,
+      /* playback_rate */ 1.0);
+
+  auto* color_effect = MakeGarbageCollected<InertEffect>(
+      color_model, timing, /* paused */ false, AnimationTimeDelta(),
+      TimelinePhase::kActive,
+      /* playback_rate */ 1.0);
+
+  EXPECT_TRUE(opacity_effect->Affects(PropertyHandle(GetCSSPropertyOpacity())));
+  EXPECT_FALSE(opacity_effect->Affects(PropertyHandle(GetCSSPropertyColor())));
+
+  EXPECT_TRUE(color_effect->Affects(PropertyHandle(GetCSSPropertyColor())));
+  EXPECT_FALSE(color_effect->Affects(PropertyHandle(GetCSSPropertyOpacity())));
 }
 
 }  // namespace blink

@@ -91,6 +91,7 @@ class TestAnimationEffect : public AnimationEffect {
                                          reason);
   }
 
+  bool Affects(const PropertyHandle&) const override { return false; }
   void UpdateChildrenAndEffects() const override {}
   void WillDetach() {}
   TestAnimationEffectEventDelegate* EventDelegate() {
