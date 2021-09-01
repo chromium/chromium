@@ -390,7 +390,7 @@ bool Pattern::CanDirectMatch() const {
     return false;
   }
 
-  return part_list_.empty() || IsOnlyFullWildcard();
+  return part_list_.empty() || IsOnlyFullWildcard() || IsOnlyFixedText();
 }
 
 bool Pattern::DirectMatch(
@@ -406,6 +406,10 @@ bool Pattern::DirectMatch(
     if (group_list_out)
       group_list_out->emplace_back(part_list_[0].name, input);
     return true;
+  }
+
+  if (IsOnlyFixedText()) {
+    return part_list_[0].value == input;
   }
 
   return false;
@@ -533,6 +537,15 @@ bool Pattern::IsOnlyFullWildcard() const {
   // is functionally equivalent.
   return part.type == PartType::kFullWildcard && part.prefix.empty() &&
          part.suffix.empty();
+}
+
+bool Pattern::IsOnlyFixedText() const {
+  if (part_list_.size() != 1)
+    return false;
+  auto& part = part_list_[0];
+  ABSL_ASSERT(part.prefix.empty());
+  ABSL_ASSERT(part.suffix.empty());
+  return part.type == PartType::kFixed && part.modifier == Modifier::kNone;
 }
 
 }  // namespace liburlpattern
