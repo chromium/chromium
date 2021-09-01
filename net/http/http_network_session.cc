@@ -391,7 +391,6 @@ void HttpNetworkSession::DumpMemoryStats(
     }
     quic_stream_factory_.DumpMemoryStats(
         pmd, http_network_session_dump->absolute_name());
-    ssl_client_session_cache_.DumpMemoryStats(pmd, name);
   }
 
   // Create an empty row under parent's dump so size can be attributed correctly

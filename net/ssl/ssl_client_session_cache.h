@@ -15,7 +15,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -26,9 +25,6 @@
 
 namespace base {
 class Clock;
-namespace trace_event {
-class ProcessMemoryDump;
-}
 }
 
 namespace net {
@@ -89,11 +85,6 @@ class NET_EXPORT SSLClientSessionCache {
   void Flush();
 
   void SetClockForTesting(base::Clock* clock);
-
-  // Dumps memory allocation stats. |pmd| is the ProcessMemoryDump of the
-  // browser process.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
  private:
   struct Entry {
