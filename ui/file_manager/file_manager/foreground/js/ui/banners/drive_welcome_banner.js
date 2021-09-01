@@ -36,7 +36,10 @@ export class DriveWelcomeBanner extends EducationalBanner {
    * @returns {!Array<!Banner.AllowedVolume>}
    */
   allowedVolumes() {
-    return [{type: VolumeManagerCommon.VolumeType.DRIVE}];
+    return [{
+      type: VolumeManagerCommon.VolumeType.DRIVE,
+      root: VolumeManagerCommon.RootType.DRIVE,
+    }];
   }
 }
 
