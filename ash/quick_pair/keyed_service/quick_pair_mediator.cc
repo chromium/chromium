@@ -112,7 +112,8 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 
   switch (action) {
     case DiscoveryAction::kPairToDevice:
-      ui_broker_->ShowPairing(std::move(device));
+      ui_broker_->ShowPairing(device);
+      pairer_broker_->PairDevice(device);
       break;
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:

@@ -18,7 +18,19 @@
 
 namespace {
 
-constexpr int kProviderAddressSize = 6;
+std::string MessageTypeToString(
+    ash::quick_pair::FastPairMessageType message_type) {
+  switch (message_type) {
+    case ash::quick_pair::FastPairMessageType::kKeyBasedPairingRequest:
+      return "Key-Based Pairing Request";
+    case ash::quick_pair::FastPairMessageType::kKeyBasedPairingResponse:
+      return "Key-Based Pairing Response";
+    case ash::quick_pair::FastPairMessageType::kSeekersPasskey:
+      return "Seeker's Passkey";
+    case ash::quick_pair::FastPairMessageType::kProvidersPasskey:
+      return "Providers' Passkey";
+  }
+}
 
 }  // namespace
 
@@ -75,7 +87,6 @@ void FastPairPairer::OnDataEncryptorCreateAsync(
   QP_LOG(VERBOSE) << "Fast Pair GATT service client initialization successful.";
 
   DCHECK(!device_->address.empty());
-  DCHECK(device_->address.size() == kProviderAddressSize);
   fast_pair_gatt_service_client_->WriteRequestAsync(
       /*message_type=*/0x00,
       /*flags=*/0x00,
@@ -149,7 +160,6 @@ void FastPairPairer::OnPairConnected(
     std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
     return;
   }
-
   QP_LOG(VERBOSE) << "Pair to device successful.";
 }
 
@@ -164,7 +174,69 @@ void FastPairPairer::OnConnectError() {
 }
 
 void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
-                                    uint32_t passkey) {}
+                                    uint32_t passkey) {
+  pairing_device_address_ = device->GetAddress();
+  expected_passkey_ = passkey;
+  fast_pair_gatt_service_client_->WritePasskeyAsync(
+      /*message_type=*/0x02, /*passkey=*/expected_passkey_,
+      fast_pair_data_encryptor_.get(),
+      base::BindOnce(&FastPairPairer::OnPasskeyResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairer::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
+                                       absl::optional<PairFailure> failure) {
+  if (failure) {
+    std::move(pair_failed_callback_).Run(device_, failure.value());
+    return;
+  }
+
+  fast_pair_data_encryptor_->ParseDecryptedPasskey(
+      response_bytes, base::BindOnce(&FastPairPairer::OnParseDecryptedPasskey,
+                                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairer::OnParseDecryptedPasskey(
+    const absl::optional<DecryptedPasskey>& passkey) {
+  if (!passkey) {
+    QP_LOG(WARNING) << "Missing decrypted passkey from parse.";
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kPasskeyDecryptFailure);
+    return;
+  }
+
+  if (passkey->message_type != FastPairMessageType::kSeekersPasskey) {
+    QP_LOG(WARNING)
+        << "Incorrect message type from decrypted passkey. Expected: "
+        << MessageTypeToString(FastPairMessageType::kSeekersPasskey)
+        << ". Actual: " << MessageTypeToString(passkey->message_type);
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kIncorrectPasskeyResponseType);
+    return;
+  }
+
+  if (passkey->passkey != expected_passkey_) {
+    QP_LOG(ERROR) << "Passkeys do not match. Expected: " << expected_passkey_
+                  << ". Actual: " << passkey->passkey;
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kPasskeyMismatch);
+    return;
+  }
+
+  device::BluetoothDevice* pairing_device =
+      adapter_->GetDevice(pairing_device_address_);
+
+  if (!pairing_device) {
+    QP_LOG(ERROR) << "Bluetooth pairing device lost during write to passkey.";
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kPairingDeviceLost);
+    return;
+  }
+
+  adapter_->RemovePairingDelegate(this);
+  pairing_device->ConfirmPairing();
+  std::move(paired_callback_).Run(device_);
+}
 
 void FastPairPairer::RequestPinCode(device::BluetoothDevice* device) {
   NOTREACHED();

@@ -7,6 +7,7 @@
 
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,8 +87,17 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
   void OnConnectDevice(device::BluetoothDevice* device);
   void OnConnectError();
 
+  // FastPairGattServiceClient::WritePasskey callback
+  void OnPasskeyResponse(std::vector<uint8_t> response_bytes,
+                         absl::optional<PairFailure> failure);
+
+  // FastPairDataEncryptor::ParseDecryptedPasskey callback
+  void OnParseDecryptedPasskey(const absl::optional<DecryptedPasskey>& passkey);
+
+  uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
+  std::string pairing_device_address_;
   base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
       pair_failed_callback_;

@@ -49,14 +49,18 @@ enum class PairFailure {
   kKeybasedPairingResponseDecryptFailure = 15,
   // Incorrect Key-based response message type.
   kIncorrectKeyBasedPairingResponseType = 16,
+  // Failed to decrypt Passkey response message.
+  kPasskeyDecryptFailure = 17,
   // Incorrect Passkey response message type.
-  kIncorrectPasskeyResponseType = 17,
+  kIncorrectPasskeyResponseType = 18,
   // Passkeys did not match.
-  kPasskeyMismatch = 18,
+  kPasskeyMismatch = 19,
+  // Potential pairing device lost during Passkey exchange.
+  kPairingDeviceLost = 20,
   // Failed to bond to discovered device.
-  kPairingConnect = 19,
+  kPairingConnect = 21,
   // Failed to bond to device via public address.
-  kAddressConnect = 20,
+  kAddressConnect = 22,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

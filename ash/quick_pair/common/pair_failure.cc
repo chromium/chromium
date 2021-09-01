@@ -65,11 +65,17 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kIncorrectKeyBasedPairingResponseType:
       stream << "[Incorrect Key-based response message type]";
       break;
+    case PairFailure::kPasskeyDecryptFailure:
+      stream << "[Failed to decrypt Passkey response]";
+      break;
     case PairFailure::kIncorrectPasskeyResponseType:
       stream << "[Incorrect Passkey response message type]";
       break;
     case PairFailure::kPasskeyMismatch:
       stream << "[Passkeys did not match]";
+      break;
+    case PairFailure::kPairingDeviceLost:
+      stream << "[Potential pairing device lost during Passkey exchange]";
       break;
     case PairFailure::kPairingConnect:
       stream << "[Failed to bond to discovered device]";
