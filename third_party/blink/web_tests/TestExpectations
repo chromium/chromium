@@ -3094,8 +3094,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/focus/focus-already-focused-iframe-de
 crbug.com/626703 [ Mac11.0 ] external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/service-workers/idlharness.https.any.worker.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/service-workers/idlharness.https.any.worker.html [ Failure Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-ui/accent-color-computed.html [ Crash Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-ui/accent-color-computed.html [ Crash Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/focus/focus-already-focused-iframe-different-site.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/focus/focus-already-focused-iframe-different-site.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/focus/focus-already-focused-iframe-different-site.html [ Timeout ]
