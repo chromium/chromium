@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -1117,6 +1118,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 #endif
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
                        MAYBE_KeepAliveRendererProcess_Hung) {
+  // Disable HangWatcher so it doesn't interfere with this test when hangs take
+  // place.
+  base::HangWatcher::StopMonitoringForTesting();
+
   // The test assumes that the render process exits after 1 second. But this
   // will be prevented if the process still hosts a bfcached page. So disable
   // BFCache for this test.
@@ -1169,6 +1174,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 #endif
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
                        MAYBE_FetchKeepAliveRendererProcess_Hung) {
+  // Disable HangWatcher so it doesn't interfere with this test when hangs take
+  // place.
+  base::HangWatcher::StopMonitoringForTesting();
+
   // The test assumes that the render process exits after 1 second. But this
   // will be prevented if the process still hosts a bfcached page. So disable
   // BFCache for this test.
