@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -18,6 +19,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
+class Browser;
+class PageActionIconView;
+
+namespace base {
+class CommandLine;
+}  // namespace base
 
 namespace web_app {
 
@@ -54,7 +63,7 @@ struct BrowserState {
 };
 
 struct AppState {
-  AppState(web_app::AppId app_id,
+  AppState(AppId app_id,
            const std::string app_name,
            const GURL app_scope,
            const blink::mojom::DisplayMode& effective_display_mode,
@@ -64,7 +73,7 @@ struct AppState {
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
 
-  web_app::AppId id;
+  AppId id;
   std::string name;
   GURL scope;
   blink::mojom::DisplayMode effective_display_mode;
@@ -74,13 +83,13 @@ struct AppState {
 
 struct ProfileState {
   ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
-               base::flat_map<web_app::AppId, AppState> app_state);
+               base::flat_map<AppId, AppState> app_state);
   ~ProfileState();
   ProfileState(const ProfileState&);
   bool operator==(const ProfileState& other) const;
 
   base::flat_map<Browser*, BrowserState> browsers;
-  base::flat_map<web_app::AppId, AppState> apps;
+  base::flat_map<AppId, AppState> apps;
 };
 
 struct StateSnapshot {
@@ -128,10 +137,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
 
   static absl::optional<TabState> GetStateForActiveTab(
       BrowserState browser_state);
-  static absl::optional<AppState> GetStateForAppId(
-      StateSnapshot* state_snapshot,
-      Profile* profile,
-      web_app::AppId id);
+  static absl::optional<AppState>
+  GetStateForAppId(StateSnapshot* state_snapshot, Profile* profile, AppId id);
   static absl::optional<BrowserState> GetStateForBrowser(
       StateSnapshot* state_snapshot,
       Profile* profile,
@@ -140,7 +147,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
       StateSnapshot* state_snapshot,
       Profile* profile);
 
-  void SetUp(base::FilePath test_data_dir);
+  void SetUp();
   void SetUpOnMainThread();
   void TearDownOnMainThread();
 
@@ -297,6 +304,40 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       observation_{this};
+};
+
+// Simple base browsertest class usable by all non-sync web app integration
+// tests.
+class WebAppIntegrationBrowserTest
+    : public InProcessBrowserTest,
+      public WebAppIntegrationBrowserTestBase::TestDelegate {
+ public:
+  WebAppIntegrationBrowserTest();
+  ~WebAppIntegrationBrowserTest() override;
+
+  // InProcessBrowserTest:
+  void SetUp() override;
+
+  // BrowserTestBase:
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  // WebAppIntegrationBrowserTestBase::TestDelegate:
+  Browser* CreateBrowser(Profile* profile) override;
+  void AddBlankTabAndShow(Browser* browser) override;
+  net::EmbeddedTestServer* EmbeddedTestServer() override;
+
+  std::vector<Profile*> GetAllProfiles() override;
+
+  bool IsSyncTest() override;
+  void SyncTurnOff() override;
+  void SyncTurnOn() override;
+  void AwaitWebAppQuiescence() override;
+
+ protected:
+  WebAppIntegrationBrowserTestBase helper_;
 };
 
 }  // namespace web_app

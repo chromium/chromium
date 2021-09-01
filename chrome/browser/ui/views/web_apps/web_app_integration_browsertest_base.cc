@@ -7,6 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/strings/pattern.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,10 +54,10 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace web_app {
 
@@ -247,7 +249,7 @@ WebAppIntegrationBrowserTestBase::GetStateForProfile(
              : absl::make_optional<ProfileState>(it->second);
 }
 
-void WebAppIntegrationBrowserTestBase::SetUp(base::FilePath test_data_dir) {
+void WebAppIntegrationBrowserTestBase::SetUp() {
   webapps::TestAppBannerManagerDesktop::SetUp();
 }
 
@@ -973,4 +975,58 @@ PageActionIconView* WebAppIntegrationBrowserTestBase::pwa_install_view() {
   DCHECK(pwa_install_view);
   return pwa_install_view;
 }
+
+WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {}
+WebAppIntegrationBrowserTest::~WebAppIntegrationBrowserTest() = default;
+
+void WebAppIntegrationBrowserTest::SetUp() {
+  helper_.SetUp();
+  InProcessBrowserTest::SetUp();
+}
+
+void WebAppIntegrationBrowserTest::SetUpOnMainThread() {
+  helper_.SetUpOnMainThread();
+}
+void WebAppIntegrationBrowserTest::TearDownOnMainThread() {
+  helper_.TearDownOnMainThread();
+}
+
+void WebAppIntegrationBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  command_line->AppendSwitchASCII(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+      helper_.GetInstallableAppURL("SiteA").GetOrigin().spec());
+}
+
+Browser* WebAppIntegrationBrowserTest::CreateBrowser(Profile* profile) {
+  return InProcessBrowserTest::CreateBrowser(profile);
+}
+
+void WebAppIntegrationBrowserTest::AddBlankTabAndShow(Browser* browser) {
+  InProcessBrowserTest::AddBlankTabAndShow(browser);
+}
+
+net::EmbeddedTestServer* WebAppIntegrationBrowserTest::EmbeddedTestServer() {
+  return embedded_test_server();
+}
+
+std::vector<Profile*> WebAppIntegrationBrowserTest::GetAllProfiles() {
+  return std::vector<Profile*>{browser()->profile()};
+}
+
+bool WebAppIntegrationBrowserTest::IsSyncTest() {
+  return false;
+}
+
+void WebAppIntegrationBrowserTest::SyncTurnOff() {
+  NOTREACHED();
+}
+void WebAppIntegrationBrowserTest::SyncTurnOn() {
+  NOTREACHED();
+}
+void WebAppIntegrationBrowserTest::AwaitWebAppQuiescence() {
+  NOTREACHED();
+}
+
 }  // namespace web_app

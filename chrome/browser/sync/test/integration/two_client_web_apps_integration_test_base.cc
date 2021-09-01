@@ -63,7 +63,7 @@ void TwoClientWebAppsIntegrationTestBase::AwaitWebAppQuiescence() {
 }
 
 void TwoClientWebAppsIntegrationTestBase::SetUp() {
-  helper_.SetUp(GetChromeTestDataDir());
+  helper_.SetUp();
   SyncTest::SetUp();
 }
 

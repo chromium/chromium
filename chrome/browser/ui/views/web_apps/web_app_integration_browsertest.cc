@@ -2,76 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/path_service.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "services/network/public/cpp/network_switches.h"
 
 namespace web_app {
-
-class WebAppIntegrationBrowserTest
-    : public InProcessBrowserTest,
-      public WebAppIntegrationBrowserTestBase::TestDelegate,
-      public testing::WithParamInterface<std::string> {
- public:
-  WebAppIntegrationBrowserTest() : helper_(this) {}
-
-  // InProcessBrowserTest
-  void SetUp() override {
-    helper_.SetUp(GetChromeTestDataDir());
-    InProcessBrowserTest::SetUp();
-  }
-
-  // BrowserTestBase
-  void SetUpOnMainThread() override { helper_.SetUpOnMainThread(); }
-  void TearDownOnMainThread() override { helper_.TearDownOnMainThread(); }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("SiteA").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("SiteB").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("SiteC").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("SiteAFoo").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("SiteABar").GetOrigin().spec());
-  }
-
-  // WebAppIntegrationBrowserTestBase::TestDelegate
-  Browser* CreateBrowser(Profile* profile) override {
-    return InProcessBrowserTest::CreateBrowser(profile);
-  }
-
-  void AddBlankTabAndShow(Browser* browser) override {
-    InProcessBrowserTest::AddBlankTabAndShow(browser);
-  }
-
-  net::EmbeddedTestServer* EmbeddedTestServer() override {
-    return embedded_test_server();
-  }
-
-  std::vector<Profile*> GetAllProfiles() override {
-    return std::vector<Profile*>{browser()->profile()};
-  }
-
-  bool IsSyncTest() override { return false; }
-
-  void SyncTurnOff() override { NOTREACHED(); }
-  void SyncTurnOn() override { NOTREACHED(); }
-  void AwaitWebAppQuiescence() override { NOTREACHED(); }
-
-  WebAppIntegrationBrowserTestBase helper_;
-};
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
