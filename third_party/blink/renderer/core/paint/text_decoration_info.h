@@ -66,6 +66,7 @@ class CORE_EXPORT TextDecorationInfo {
   LayoutUnit Width() const { return width_; }
   float Baseline() const { return baseline_; }
   const ComputedStyle& Style() const { return style_; }
+  float ComputedFontSize() const { return computed_font_size_; }
   const SimpleFontData* FontData() const { return font_data_; }
   ResolvedUnderlinePosition UnderlinePosition() const {
     return underline_position_;
@@ -113,6 +114,7 @@ class CORE_EXPORT TextDecorationInfo {
   const LayoutUnit width_;
   const SimpleFontData* font_data_;
   const float baseline_;
+  const float computed_font_size_;
   ResolvedUnderlinePosition underline_position_;
   FloatPoint local_origin_;
   bool antialias_;

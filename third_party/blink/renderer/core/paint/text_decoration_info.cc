@@ -63,10 +63,9 @@ static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
 
 static float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
-    const ComputedStyle& style,
+    float computed_font_size,
     const SimpleFontData* font_data) {
-  float auto_underline_thickness =
-      std::max(1.f, style.ComputedFontSize() / 10.f);
+  float auto_underline_thickness = std::max(1.f, computed_font_size / 10.f);
 
   if (text_decoration_thickness.IsAuto())
     return auto_underline_thickness;
@@ -168,8 +167,11 @@ TextDecorationInfo::TextDecorationInfo(
       selection_text_decoration_(selection_text_decoration),
       baseline_type_(baseline_type),
       width_(width),
+      // TODO(tkent): font_data_ should be one for scaled font.
       font_data_(style_.GetFont().PrimaryFont()),
       baseline_(font_data_ ? font_data_->GetFontMetrics().FloatAscent() : 0),
+      // TODO(tkent): computed_font_size_ should be the size of scaled font.
+      computed_font_size_(style_.ComputedFontSize()),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
       local_origin_(FloatPoint(local_origin)),
       antialias_(ShouldSetDecorationAntialias(style)),
@@ -239,7 +241,8 @@ float TextDecorationInfo::ComputeUnderlineThickness(
        ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto) ||
       underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
-    thickness = ComputeDecorationThickness(applied_decoration_thickness, style_,
+    thickness = ComputeDecorationThickness(applied_decoration_thickness,
+                                           computed_font_size_,
                                            style_.GetFont().PrimaryFont());
   } else {
     // Compute decorating box. Position and thickness are computed from the
@@ -248,11 +251,13 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     // https:// drafts.csswg.org/css-text-decor-3/#decorating-box
     if (decorating_box_style) {
       thickness = ComputeDecorationThickness(
-          applied_decoration_thickness, *decorating_box_style,
+          applied_decoration_thickness,
+          decorating_box_style->ComputedFontSize(),
           decorating_box_style->GetFont().PrimaryFont());
     } else {
-      thickness = ComputeDecorationThickness(
-          applied_decoration_thickness, style_, style_.GetFont().PrimaryFont());
+      thickness = ComputeDecorationThickness(applied_decoration_thickness,
+                                             computed_font_size_,
+                                             style_.GetFont().PrimaryFont());
     }
   }
   return thickness;
