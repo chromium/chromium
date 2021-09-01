@@ -87,13 +87,6 @@ bool IsAppActive(Browser* browser, content::WebContents* contents) {
          browser->tab_strip_model()->GetActiveWebContents() == contents;
 }
 
-WebContentsId::Generator& GetWebContentsIdGenerator() {
-  // ID generator shared between all |BrowserAppInstanceTracker| instances as
-  // IDs need to be unique within the scope of the process.
-  static WebContentsId::Generator instance;
-  return instance;
-}
-
 }  // namespace
 
 // Helper class to notify BrowserAppInstanceTracker when WebContents navigation
@@ -200,12 +193,11 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
   return app_instances_.GetInstance(contents);
 }
 
-const BrowserAppInstance*
-BrowserAppInstanceTracker::GetAppInstanceByWebContentsId(
-    WebContentsId web_contents_id) const {
+const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstanceById(
+    BrowserAppInstanceId id) const {
   for (const auto& pair : app_instances_) {
     const BrowserAppInstance& instance = *pair.second;
-    if (instance.web_contents_id == web_contents_id) {
+    if (instance.id == id) {
       return &instance;
     }
   }
@@ -528,13 +520,12 @@ void BrowserAppInstanceTracker::CreateAppInstance(
     content::WebContents* contents) {
   app_instances_.AddInstance(
       contents, base::WrapUnique(new BrowserAppInstance{
-                    std::move(app_id),
+                    GenerateId(),
                     (browser->is_type_app() || browser->is_type_app_popup())
                         ? BrowserAppInstance::Type::kAppWindow
                         : BrowserAppInstance::Type::kAppTab,
-                    base::Process::Current().Pid(),
+                    std::move(app_id),
                     browser->window()->GetNativeWindow(),
-                    GetWebContentsIdGenerator().GenerateNextId(),
                     IsBrowserVisible(browser),
                     IsAppActive(browser, contents),
                 }));
@@ -557,11 +548,10 @@ void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
 void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
   chrome_instances_.AddInstance(browser,
                                 base::WrapUnique(new BrowserAppInstance{
-                                    extension_misc::kChromeAppId,
+                                    GenerateId(),
                                     BrowserAppInstance::Type::kChromeWindow,
-                                    base::Process::Current().Pid(),
+                                    extension_misc::kChromeAppId,
                                     browser->window()->GetNativeWindow(),
-                                    WebContentsId(0),
                                     IsBrowserVisible(browser),
                                     IsBrowserActive(browser),
                                 }));
@@ -579,6 +569,10 @@ void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
 
 void BrowserAppInstanceTracker::RemoveChromeInstanceIfExists(Browser* browser) {
   chrome_instances_.PopInstanceIfExists(browser);
+}
+
+BrowserAppInstanceId BrowserAppInstanceTracker::GenerateId() const {
+  return base::UnguessableToken::Create();
 }
 
 bool BrowserAppInstanceTracker::IsBrowserTracked(Browser* browser) const {

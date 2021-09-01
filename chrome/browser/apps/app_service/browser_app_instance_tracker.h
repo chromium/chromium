@@ -76,8 +76,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       content::WebContents* contents) const;
 
   // Get app instance running in a |contents|. Returns null if no app is found.
-  const BrowserAppInstance* GetAppInstanceByWebContentsId(
-      WebContentsId web_contents_id) const;
+  const BrowserAppInstance* GetAppInstanceById(BrowserAppInstanceId id) const;
 
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
@@ -173,11 +172,8 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // Removes the browser instance, if it exists, and notifies observers.
   void RemoveChromeInstanceIfExists(Browser* browser);
 
-  // Updates the instance (app or browser) with the new attributes and notifies
-  // observers, if it was updated.
-  void MaybeUpdateInstance(BrowserAppInstance& instance,
-                           Browser* browser,
-                           content::WebContents* contents);
+  // Virtual to override in tests.
+  virtual BrowserAppInstanceId GenerateId() const;
 
   bool IsBrowserTracked(Browser* browser) const;
   bool IsWindowTracked(aura::Window* window) const;

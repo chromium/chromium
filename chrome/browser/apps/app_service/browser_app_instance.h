@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/process/process_handle.h"
-#include "base/types/id_type.h"
+#include "base/unguessable_token.h"
 
 class Browser;
 
@@ -22,9 +22,7 @@ class WebContents;
 
 namespace apps {
 
-struct WebContentsIdTypeMarker {};
-
-typedef base::IdTypeU32<WebContentsIdTypeMarker> WebContentsId;
+typedef base::UnguessableToken BrowserAppInstanceId;
 
 // An instance of a browser-based app. Can represent either of:
 // - apps running inside Browser->WebContents (in a tab or in a window),
@@ -41,11 +39,10 @@ struct BrowserAppInstance {
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
 
-  std::string app_id;
+  BrowserAppInstanceId id;
   Type type;
-  base::ProcessId process_id;
+  std::string app_id;
   aura::Window* window;
-  WebContentsId web_contents_id;
   bool visible;
   bool active;
 };
