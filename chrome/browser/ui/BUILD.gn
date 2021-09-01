@@ -5236,6 +5236,8 @@ static_library("test_support") {
     sources += [
       "ash/ash_test_util.cc",
       "ash/ash_test_util.h",
+      "ash/shelf/chrome_shelf_controller_test_util.cc",
+      "ash/shelf/chrome_shelf_controller_test_util.h",
       "ash/test_login_screen.cc",
       "ash/test_login_screen.h",
       "ash/test_login_screen_model.cc",

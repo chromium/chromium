@@ -33,7 +33,6 @@ class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeShelfControllerUserSwitchObserver;
 class ChromeShelfItemFactory;
-class GURL;
 class Profile;
 class ShelfControllerHelper;
 class ShelfSpinnerController;
@@ -165,9 +164,6 @@ class ChromeShelfController
   // Returns ShelfID for |app_id|. If |app_id| is empty, or the app is not
   // pinned, returns the id of browser shrotcut.
   ash::ShelfID GetShelfIDForAppId(const std::string& app_id);
-
-  // Limits application refocusing to urls that match |url| for |id|.
-  void SetRefocusURLPatternForTest(const ash::ShelfID& id, const GURL& url);
 
   // Activates a |window|. If |allow_minimize| is true and the system allows
   // it, the the window will get minimized instead.

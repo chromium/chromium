@@ -1497,8 +1497,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, RefocusFilterLaunch) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   ash::ShelfID shortcut_id = CreateShortcut("app1");
-  controller_->SetRefocusURLPatternForTest(
-      shortcut_id, GURL("http://www.example.com/path1/*"));
+  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path1/*"));
 
   // Create new tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1527,8 +1526,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AsyncActivationStateCheck) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   ash::ShelfID shortcut_id = CreateShortcut("app1");
-  controller_->SetRefocusURLPatternForTest(
-      shortcut_id, GURL("http://www.example.com/path1/*"));
+  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path1/*"));
 
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
 
@@ -1677,8 +1675,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   ash::ShelfID shortcut_id = CreateShortcut("app");
-  controller_->SetRefocusURLPatternForTest(
-      shortcut_id, GURL("http://www.example.com/path/*"));
+  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path/*"));
   std::string url = "http://www.example.com/path/bla";
 
   // Create an application handled browser tab.
@@ -2041,8 +2038,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   Browser::CreateParams params = Browser::CreateParams(profile(), true);
   params.initial_show_state = ui::SHOW_STATE_INACTIVE;
   Browser* browser2 = Browser::Create(params);
-  controller_->SetRefocusURLPatternForTest(
-      shortcut_id, GURL("http://www.example.com/path/*"));
+  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path/*"));
   std::string url = "http://www.example.com/path/bla";
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,

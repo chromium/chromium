@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
@@ -3337,7 +3338,7 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuGeneration) {
   const ash::ShelfID gmail_id(web_app::kGmailAppId);
   AddWebApp(web_app::kGmailAppId);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
-  shelf_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
 
   // Check the menu content.
   ash::ShelfItem item_browser;
@@ -3394,7 +3395,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   const ash::ShelfID gmail_id(web_app::kGmailAppId);
   AddWebApp(web_app::kGmailAppId);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
-  shelf_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
 
   // Check the menu content.
   ash::ShelfItem item_browser;
@@ -3830,7 +3831,7 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuExecution) {
   GURL gmail = GURL("https://mail.google.com/mail/u");
   const ash::ShelfID gmail_id(web_app::kGmailAppId);
   AddWebApp(web_app::kGmailAppId);
-  shelf_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
@@ -3879,7 +3880,7 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
   // Add Gmail to the shelf and add two items.
   const ash::ShelfID gmail_id(web_app::kGmailAppId);
   AddWebApp(web_app::kGmailAppId);
-  shelf_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());

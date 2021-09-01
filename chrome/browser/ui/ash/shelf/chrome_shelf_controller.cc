@@ -503,20 +503,6 @@ ash::ShelfID ChromeShelfController::GetShelfIDForAppId(
   return item ? item->id : ash::ShelfID(kChromeAppId);
 }
 
-void ChromeShelfController::SetRefocusURLPatternForTest(const ash::ShelfID& id,
-                                                        const GURL& url) {
-  const ash::ShelfItem* item = GetItem(id);
-  if (item && !IsPlatformApp(id) &&
-      (item->type == ash::TYPE_PINNED_APP || item->type == ash::TYPE_APP)) {
-    ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
-    AppShortcutShelfItemController* item_controller =
-        static_cast<AppShortcutShelfItemController*>(delegate);
-    item_controller->set_refocus_url(url);
-  } else {
-    NOTREACHED() << "Invalid shelf item or type";
-  }
-}
-
 ash::ShelfAction ChromeShelfController::ActivateWindowOrMinimizeIfActive(
     ui::BaseWindow* window,
     bool allow_minimize) {
