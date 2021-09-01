@@ -24,6 +24,7 @@
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -1113,6 +1114,10 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
         base::BindOnce(&CrasAudioHandler::HandleGetDeprioritizeBtWbsMic,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // Sets Floss enabled based on feature flag.
+  CrasAudioClient::Get()->SetFlossEnabled(
+      base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
 
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)
