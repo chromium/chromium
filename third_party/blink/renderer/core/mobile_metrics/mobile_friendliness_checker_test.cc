@@ -837,7 +837,7 @@ TEST_F(MobileFriendlinessCheckerTest, FormTapTargets) {
 
 TEST_F(MobileFriendlinessCheckerTest, InvisibleTapTargetWillBeIgnored) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
-vv  <head>
+  <head>
     <meta name="viewport" content="width=480, initial-scale=1">
   </head>
   <body style="font-size: 18px">
@@ -866,6 +866,41 @@ TEST_F(MobileFriendlinessCheckerTest, BadTapTargetWithPositionAbsolute) {
     </button>
   </body>
 )");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, BadTapTargetBelowFirstOnePager) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <button style="position:absolute; width:50px; height:50px">
+      a
+    </button>
+    <button style="position:relative; width:50px; height:50px">
+      b
+    </button>
+    <!-- below area must be ignored -->
+    <div style="margin-top: 3200px">
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          have
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          enough
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          spans
+        </div>
+      </a>
+    </div>
+  </body>";
+  )");
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
