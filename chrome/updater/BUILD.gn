@@ -21,7 +21,10 @@ group("updater") {
     deps = [ "//chrome/updater/mac" ]
   }
   if (is_win || is_mac) {
-    deps += [ "//chrome/updater/tools:tools" ]
+    deps += [
+      "//chrome/updater/test/qualification_app",
+      "//chrome/updater/tools:tools",
+    ]
   }
 }
 
