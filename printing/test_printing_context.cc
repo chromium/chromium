@@ -83,8 +83,8 @@ PrintingContext::Result TestPrintingContext::UpdatePrinterSettings(
 
 PrintingContext::Result TestPrintingContext::NewDocument(
     const std::u16string& document_name) {
-  NOTIMPLEMENTED();
-  return PrintingContext::Result::FAILED;
+  // No-op.
+  return PrintingContext::Result::OK;
 }
 
 PrintingContext::Result TestPrintingContext::NewPage() {

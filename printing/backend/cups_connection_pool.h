@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsConnectionPool {
   // Add a connection to the pool of available connections.
   void AddConnection(ScopedHttpPtr connection);
 
+  // Check if there are any connections available for use.
+  bool IsConnectionAvailable() const { return !connections_.empty(); }
+
  private:
   CupsConnectionPool();
   ~CupsConnectionPool();

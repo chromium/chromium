@@ -134,6 +134,8 @@ enum ResultCode {
   kFailed,
   // Insufficient permissions to perform the operation.
   kAccessDenied,
+  // Operation was canceled.
+  kCanceled,
 };
 
 // Matches print_preview.PrinterType in

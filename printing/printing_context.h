@@ -94,6 +94,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
       std::unique_ptr<PrintSettings> job_settings);
 #endif
 
+  // Applies the print settings to this context.  Intended to be used only by
+  // the Print Backend service process.
+  void ApplyPrintSettings(const PrintSettings& settings);
+
   // Does platform specific setup of the printer before the printing. Signal the
   // printer that a document is about to be spooled.
   // Warning: This function enters a message loop. That may cause side effects

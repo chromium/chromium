@@ -14,6 +14,8 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,6 +25,11 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/print_job_constants.h"
+#include "printing/print_settings.h"
+#include "printing/printing_context.h"
+#include "printing/printing_context_factory_for_test.h"
+#include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,6 +68,21 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   PrintBackendBrowserTest() = default;
   ~PrintBackendBrowserTest() override = default;
 
+  void SetUp() override {
+    // Do local setup before calling base class, since the base class enters
+    // the main run loop.
+    PrintingContext::SetPrintingContextFactoryForTest(
+        &test_printing_context_factory_);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    // Call base class teardown before local teardown, to be in opposite order
+    // of `SetUp`.
+    InProcessBrowserTest::TearDown();
+    PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+  }
+
   void LaunchUninitialized() {
     print_backend_service_ =
         PrintBackendServiceTestImpl::LaunchUninitialized(remote_);
@@ -94,6 +116,11 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     test_print_backend_->AddAccessDeniedPrinter(kAccessDeniedPrinterName);
   }
 
+  void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
+    test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+        printer_name);
+  }
+
   // Public callbacks used by tests.
   void OnDidEnumeratePrinters(mojom::PrinterListResultPtr& capture_printer_list,
                               mojom::PrinterListResultPtr printer_list) {
@@ -119,6 +146,12 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
       mojom::PrinterCapsAndInfoResultPtr& capture_caps_and_info,
       mojom::PrinterCapsAndInfoResultPtr caps_and_info) {
     capture_caps_and_info = std::move(caps_and_info);
+    CheckForQuit();
+  }
+
+  void OnDidStartPrinting(mojom::ResultCode& capture_result,
+                          mojom::ResultCode result) {
+    capture_result = result;
     CheckForQuit();
   }
 
@@ -149,12 +182,36 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  class PrintBackendPrintingContextFactoryForTest
+      : public PrintingContextFactoryForTest {
+   public:
+    std::unique_ptr<PrintingContext> CreatePrintingContext(
+        PrintingContext::Delegate* delegate) override {
+      auto context = std::make_unique<TestPrintingContext>(delegate);
+
+      auto settings = std::make_unique<PrintSettings>();
+      settings->set_device_name(base::ASCIIToUTF16(printer_name_));
+      context->SetDeviceSettings(printer_name_, std::move(settings));
+
+      return std::move(context);
+    }
+
+    void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
+      printer_name_ = printer_name;
+    }
+
+   private:
+    std::string printer_name_;
+  };
+
   bool received_message_ = false;
   base::OnceClosure quit_callback_;
 
   mojo::Remote<mojom::PrintBackendService> remote_;
   scoped_refptr<TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<TestPrintBackend>();
+  TestPrintingContextDelegate test_printing_context_delegate_;
+  PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 };
 
@@ -317,6 +374,52 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
   WaitUntilCallbackReceived();
   ASSERT_TRUE(caps_and_info->is_result_code());
   EXPECT_EQ(caps_and_info->get_result_code(), mojom::ResultCode::kAccessDenied);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  mojom::ResultCode result;
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(
+      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->StartPrinting(
+      /*document_cookie=*/1, u"document name",
+      mojom::PrintTargetType::kDirectToDevice,
+      /*page_count=*/0, print_settings,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
+                     base::Unretained(this), std::ref(result)));
+  WaitUntilCallbackReceived();
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  mojom::ResultCode result;
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(
+      base::ASCIIToUTF16(base::StringPiece(kInvalidPrinterName)));
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->StartPrinting(
+      /*document_cookie=*/1, u"document name",
+      mojom::PrintTargetType::kDirectToDevice,
+      /*page_count=*/0, print_settings,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
+                     base::Unretained(this), std::ref(result)));
+  WaitUntilCallbackReceived();
+  EXPECT_EQ(result, mojom::ResultCode::kFailed);
 }
 
 }  // namespace printing

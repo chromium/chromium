@@ -178,4 +178,8 @@ PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
 }
 #endif
 
+void PrintingContext::ApplyPrintSettings(const PrintSettings& settings) {
+  *settings_ = settings;
+}
+
 }  // namespace printing

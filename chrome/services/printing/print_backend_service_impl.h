@@ -7,13 +7,20 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
+#include "printing/print_settings.h"
+#include "printing/printed_document.h"
+#include "printing/printing_context.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace crash_keys {
 class ScopedPrinterInfo;
@@ -32,6 +39,25 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
  private:
   friend class PrintBackendServiceTestImpl;
 
+  struct DocumentContainer;
+
+  class PrintingContextDelegate : public PrintingContext::Delegate {
+   public:
+    PrintingContextDelegate();
+    PrintingContextDelegate(const PrintingContextDelegate&) = delete;
+    PrintingContextDelegate& operator=(const PrintingContextDelegate&) = delete;
+    ~PrintingContextDelegate() override;
+
+    // PrintingContext::Delegate overrides:
+    gfx::NativeView GetParentView() override;
+    std::string GetAppLocale() override;
+
+    void SetAppLocale(const std::string& locale);
+
+   private:
+    std::string locale_;
+  };
+
   // mojom::PrintBackendService implementation:
   void Init(const std::string& locale) override;
   void Poke() override;
@@ -47,6 +73,22 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+  void StartPrinting(
+      int document_cookie,
+      const std::u16string& document_name,
+      mojom::PrintTargetType target_type,
+      int page_count,
+      const PrintSettings& settings,
+      mojom::PrintBackendService::StartPrintingCallback callback) override;
+
+  // Helper function that runs on a task runner.
+  mojom::ResultCode StartPrintingReadyDocument(
+      PrintBackendServiceImpl::DocumentContainer& document_container);
+
+  // Callback from helper function.
+  void OnDidStartPrintingReadyDocument(
+      PrintBackendServiceImpl::DocumentContainer& document_container,
+      mojom::ResultCode result);
 
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated by the
@@ -54,6 +96,16 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   scoped_refptr<PrintBackend> print_backend_;
+
+  PrintingContextDelegate context_delegate_;
+
+  // Want all callbacks to be made from common thread, not a thread runner.
+  SEQUENCE_CHECKER(callback_sequence_checker_);
+
+  // Sequence of documents to be printed, in the order received.  Documents
+  // could be removed from the list in any order, depending upon the speed
+  // with which concurrent printing jobs are able to complete.
+  std::vector<std::unique_ptr<DocumentContainer>> documents_;
 
   mojo::Receiver<mojom::PrintBackendService> receiver_;
 };

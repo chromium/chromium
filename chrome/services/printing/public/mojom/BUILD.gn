@@ -39,7 +39,10 @@ mojom("mojom") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "print_backend_service.mojom" ]
-    deps += [ "//printing/backend/mojom" ]
+    public_deps += [
+      "//printing/backend/mojom",
+      "//printing/mojom:printing_context",
+    ]
   }
 
   cpp_typemaps = [
