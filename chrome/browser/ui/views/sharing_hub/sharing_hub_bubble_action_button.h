@@ -30,7 +30,9 @@ class SharingHubBubbleActionButton : public HoverButton {
     return action_name_for_metrics_;
   }
 
+  // views::Button:
   void UpdateBackgroundColor() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   const int action_command_id_;
