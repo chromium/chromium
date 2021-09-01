@@ -570,9 +570,9 @@ ci.android_builder(
     execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
+    # TODO(crbug.com/1143122): remove this after migration.
     experiments = {
-        # TODO(crbug.com/1143122): remove this.
-        "chromium.chromium_tests.use_rbe_cas": 50,
+        "chromium.chromium_tests.use_isolate": 50,
     },
 )
 
@@ -5554,10 +5554,6 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    experiments = {
-        # TODO(crbug.com/1143122): remove this.
-        "chromium.chromium_tests.use_rbe_cas": 20,
-    },
 )
 
 ci.linux_builder(
