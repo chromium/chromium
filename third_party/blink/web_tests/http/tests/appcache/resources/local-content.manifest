@@ -1,0 +1,6 @@
+CACHE MANIFEST
+/appcache/local-content.html
+NETWORK:
+file:/ # Should be ignored due to different URL scheme, but it doesn't hurt to try.
+ORIGIN-TRIAL:
+AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=

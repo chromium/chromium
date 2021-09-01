@@ -1,0 +1,50 @@
+<body onload="test()">
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=33813">bug 33813</a>: Crash when using DOMApplicationCache from a destroyed frame.</p>
+<p>PASS if didn't crash.</p>
+<iframe src="about:blank"></iframe>
+
+<script src="/js-test-resources/js-test.js"></script>
+
+<script>
+
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+var ifrCache;
+
+function test()
+{
+    ifrCache = frames[0].applicationCache;
+    // If the origin trial is required, then about:blank will not have
+    // an applicationCache.  In this case, just early out.
+    if (!ifrCache) {
+        testRunner.notifyDone();
+        return;
+    }
+    document.body.removeChild(document.getElementsByTagName("iframe")[0]);
+    setTimeout(function() {
+        gc();
+        ifrCache.onchecking = function() { }
+        ifrCache.onerror = function() { }
+        ifrCache.onnoupdate = function() { }
+        ifrCache.ondownloading = function() { }
+        ifrCache.onprogress = function() { }
+        ifrCache.onupdateready = function() { }
+        ifrCache.oncached = function() { }
+        ifrCache.onobsolete = function() { }
+        ifrCache.addEventListener("error", function() { }, true);
+
+        var evt = document.createEvent("Event");
+        evt.initEvent("error", true, true);
+        ifrCache.dispatchEvent(evt);
+
+        try { ifrCache.update(); } catch (ex) { }
+        try { ifrCache.swapCache(); } catch (ex) { }
+
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }, 0);
+}
+</script>

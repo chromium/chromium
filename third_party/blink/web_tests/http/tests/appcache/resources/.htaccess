@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteRule ^UNKNOWN_SECTION: simple.txt [L,NS]
+<Files wrong-content-type.manifest>
+ForceType text/plain
+</Files>

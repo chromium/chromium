@@ -1,0 +1,36 @@
+<html manifest="resources/404-resource-cross-origin.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script src="/js-test-resources/js-test.js"></script>
+<script>
+var jsTestIsAsync = true;
+description("Test that a missing cross-origin resource failure doesn't leak details.");
+
+function unexpectedCallback(eventName)
+{
+    testFailed("An unexpected " + eventName + " event was dispatched on window.applicationCache.");
+    finishJSTest();
+}
+
+function test(e)
+{
+    shouldBe("applicationCache.status", "applicationCache.UNCACHED");
+
+    event = e;
+    shouldBeEqualToString("event.reason", "resource");
+    shouldBeEqualToString("event.url", "http://127.0.0.1/does-not-exist.txt");
+    shouldBe("event.status", "0");
+    shouldBeEqualToString("event.message", "");
+
+    finishJSTest();
+}
+
+applicationCache.addEventListener('cached', function() { unexpectedCallback("cached"); }, false);
+applicationCache.addEventListener('noupdate', function() { unexpectedCallback("noupdate"); }, false);
+applicationCache.addEventListener('error', test, false);
+
+</script>
+</html>

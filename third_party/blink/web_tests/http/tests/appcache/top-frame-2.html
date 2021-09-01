@@ -1,0 +1,68 @@
+<html manifest="resources/subframes-2.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that a subframe without manifest gets picked by a relevant application cache that
+contains its resource.</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function debug(message)
+{
+    // If running manually in the browser, print the sequence of events.
+    if (!window.testRunner)
+        log(message);
+}
+
+var receivedExpectedMessage = false;
+var receivedCheckingEvent = false;
+var receivedNoupdateEvent = false;
+
+function checkDone()
+{
+    if (receivedExpectedMessage && receivedCheckingEvent && receivedNoupdateEvent) {
+        log("SUCCESS");
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+}
+
+function test()
+{
+    applicationCache.onnoupdate = null;
+    applicationCache.oncached = null;
+
+    // When a new main resource is associated with the cache, an update should be started.
+    applicationCache.onchecking = function() { debug("checking"); receivedCheckingEvent = true; checkDone();  }
+    applicationCache.onnoupdate = function() { debug("noupdate"); receivedNoupdateEvent = true; checkDone();  }
+
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/subframe-2.html");
+    document.body.appendChild(ifr);
+}
+
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+
+window.addEventListener("message", function() { debug("message"); receivedExpectedMessage = true; checkDone(); }, false);
+
+</script>
+</body>
+</html>

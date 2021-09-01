@@ -1,0 +1,17 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+Test that a manifest that changes during an update fails.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS gotCheckingEvent is true
+PASS gotDownloadingEvent is true
+PASS window.applicationCache.status is applicationCache.UNCACHED
+PASS event.reason is "changed"
+PASS event.url is ""
+PASS event.status is 0
+PASS 'message' in event is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,60 @@
+<html manifest="resources/simple.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function cached()
+{
+    var hadError = false;
+    
+    // Load a resource that does not exist in the cache.
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", "resources/not-in-cache.txt", false);
+        req.send();
+    } catch (e) {
+        if (e.code == DOMException.NETWORK_ERR)
+            hadError = true;
+    }
+
+    if (!hadError) {
+        document.getElementById('result').innerHTML = "FAILURE: Did not get the right exception"
+        return;
+    }
+   
+    // Load a resource that exists in the cache.
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", "resources/simple.txt", false);
+        req.send();
+    } catch (e) {
+        document.getElementById('result').innerHTML = "FAILURE: Could not load data from cache"
+        return;
+    }
+        
+    if (req.responseText != 'Hello, World!') {
+        document.getElementById('result').innerHTML = "FAILURE: Did not get correct data from cached resource"
+        return;
+    }
+    
+    document.getElementById('result').innerHTML = "SUCCESS"
+    
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.addEventListener('cached', cached, false);
+applicationCache.addEventListener('noupdate', cached, false);
+
+</script>
+<div>This tests that the application cache works by first loading a file that does not exist in the cache (to verify that a cache has been associated) and then loads a file that is in the cache</div>
+
+<div id="result">FAILURE</div>
+</html>

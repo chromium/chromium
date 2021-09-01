@@ -1,0 +1,32 @@
+<html>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+function openWindow()
+{
+    window.open('resources/crash-when-navigating-away-then-back.html')   
+}
+
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+    testRunner.setPopupBlockingEnabled(false);
+} else {
+    document.write('<div id="manual-instructions">Click <a href="javascript:openWindow()">this link</a> twice. A window should open and close twice without crashing.</div>')
+}
+
+function closedWindow()
+{
+    if (window.testRunner)
+        setTimeout(openWindow, 100);
+}
+
+</script>
+<body onload="if (window.testRunner) openWindow()">
+<div>This tests that loading a page with a manifest, navigating away from the page, and then back does not cause a crash.</div>
+<div id="result">FAILURE - test not completed</div>
+</html>
+</div>

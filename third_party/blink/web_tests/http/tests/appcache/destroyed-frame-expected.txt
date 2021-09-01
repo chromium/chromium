@@ -1,0 +1,8 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Test for bug 33813: Crash when using DOMApplicationCache from a destroyed frame.
+
+PASS if didn't crash.

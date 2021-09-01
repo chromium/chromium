@@ -1,0 +1,51 @@
+<html manifest="access-via-redirect.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+
+<p>This tests that the start of redirect chain doesn't get into an application cache if the end of the chain has a manifest.</p>
+<p id="result">FAILURE</p>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function canLoad(url)
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", url, false);
+        req.send("");
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function cached()
+{
+    if (canLoad("/appcache/access-via-redirect.php")) {
+        document.getElementById('result').innerHTML = "FAILURE: Start of redirect chain is in cache."
+        return;
+    }
+   
+    if (!canLoad("access-via-redirect.html")) {
+        document.getElementById('result').innerHTML = "FAILURE: Could not load main resource from cache."
+        return;
+    }
+        
+    document.getElementById('result').innerHTML = "SUCCESS"
+    
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.addEventListener('cached', cached, false);
+applicationCache.addEventListener('noupdate', cached, false);
+
+</script>
+</html>

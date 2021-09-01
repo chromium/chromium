@@ -1,0 +1,41 @@
+<html manifest="xhr-foreign-resource-2.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<div id=result></div>
+<script>
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function cached()
+{
+    applicationCache.onnoupdate = null;
+    applicationCache.oncached = null;
+    
+    // simple.txt is only listed s a resource in main frame's manifest, so loading should fail.
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "simple.txt", false);
+        req.send("");
+        log("FAIL");
+        log("applicationCache.status = " + applicationCache.status);
+        parent.postMessage("FAIL", "*");
+    } catch (ex) {
+        log("Frame OK");
+        parent.postMessage("SUCCESS", "*");
+    }
+}
+
+applicationCache.onnoupdate = cached;
+applicationCache.oncached = cached;
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+</script>
+</body>
+</html>

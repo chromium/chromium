@@ -1,0 +1,15 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: line 38: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+Test that non-ASCII URIs work correctly in cache manifests.
+
+Should be a series of PASS messages, followed with DONE.
+
+PASS: resources/intercept/cached-Проверка
+PASS: resources/intercept/cached-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0
+PASS: resources/intercept/cached2-Проверка
+PASS: resources/intercept/cached2-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0
+PASS: resources/intercept/network-Проверка-PASS
+PASS: resources/intercept/network-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0-PASS
+PASS: resources/does-not-exist-Проверка
+DONE
+

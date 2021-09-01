@@ -1,0 +1,17 @@
+CACHE MANIFEST
+counter.php?cached
+
+NETWORK:
+# These are prefixes for requests we test, but they are not same origin, so they will be skipped.
+http://
+http://127
+http://127.0.0.1:8
+
+# This should be ignored, because explicit entries are checked before online allowlist
+counter.php?cached
+
+# This should work normally.
+counter.php?uncached
+
+ORIGIN-TRIAL:
+AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=

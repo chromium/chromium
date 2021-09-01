@@ -1,0 +1,15 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+Test that a redirect makes resource caching fail.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS window.applicationCache.status is window.applicationCache.UNCACHED
+PASS event.reason is "resource"
+PASS event.url is "http://127.0.0.1:8000/appcache/resources/resource-redirect.php"
+PASS event.status is 307
+PASS 'message' in event is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,48 @@
+<html manifest="resources/main-resource-redirect.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that application cache is consulted again after a redirect response.</p>
+<div id="result">Testing...</div>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+function setNetworkEnabled(state, callback)
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", "/resources/network-simulator.php?command=" + (state ? "connect" : "disconnect"));
+    req.send("");
+    req.onload = callback;
+}
+
+function test()
+{
+    applicationCache.oncached = null;
+    applicationCache.onnoupdate = null;
+    setNetworkEnabled(false, () => {
+        var ifr = document.createElement("iframe");
+        ifr.setAttribute("src", "resources/main-resource-redirect-frame.php");
+        document.body.appendChild(ifr);
+    });
+}
+
+function done()
+{
+    if (window.testRunner) {
+        applicationCache.onerror = null;
+        testRunner.notifyDone();
+    }
+    setNetworkEnabled(true);
+}
+
+applicationCache.oncached=test;
+applicationCache.onnoupdate=test;
+applicationCache.onerror = function() { setNetworkEnabled(true, () => { window.location.reload(); }); };
+</script>
+</body>

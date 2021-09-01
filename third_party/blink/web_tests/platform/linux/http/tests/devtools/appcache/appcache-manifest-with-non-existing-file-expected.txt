@@ -1,0 +1,21 @@
+Tests that application cache model keeps track of manifest urls and statuses correctly when there is a non existing file listed in manifest. https://bugs.webkit.org/show_bug.cgi?id=64581
+
+Dumping application cache tree:
+    (empty)
+Dumping application cache model:
+    (empty)
+
+Exception while running: function addRecord(frameId,manifestURL,status){const record={};record.manifestURL=manifestURL;record.status=status;if(!ApplicationTestRunner.applicationCacheStatusesRecords[frameId]){ApplicationTestRunner.applicationCacheStatusesRecords[frameId]=[];}
+ApplicationTestRunner.applicationCacheStatusesRecords[frameId].push(record);if(ApplicationTestRunner.awaitedFrameStatusEventsCount&&ApplicationTestRunner.awaitedFrameStatusEventsCount[frameId]){ApplicationTestRunner.awaitedFrameStatusEventsCount[frameId].count--;if(!ApplicationTestRunner.awaitedFrameStatusEventsCount[frameId].count){ApplicationTestRunner.awaitedFrameStatusEventsCount[frameId].callback();}}}
+ReferenceError: applicationCache is not defined
+    at Object.step2 [as callback] (http://127.0.0.1:8000/devtools/appcache/appcache-manifest-with-non-existing-file.js:32:74)
+    at ApplicationCacheModel.addRecord (http://localhost:8000/inspector-sources/application_test_runner/application_test_runner_module.js:11:397)
+    at ApplicationCacheModel.result (http://localhost:8000/inspector-sources/test_runner/test_runner.js:30:37)
+    at ApplicationCacheModel.receiver.<computed> (http://localhost:8000/inspector-sources/test_runner/test_runner.js:19:58)
+    at ApplicationCacheModel._statusUpdated (http://localhost:8000/inspector-sources/resources/resources.js:17:49)
+    at ApplicationCacheDispatcher.applicationCacheStatusUpdated (http://localhost:8000/inspector-sources/resources/resources.js:21:87)
+    at _DispatcherPrototype.dispatch (http://localhost:8000/inspector-sources/protocol_client/protocol_client.js:125:296)
+    at SessionRouter._onMessage (http://localhost:8000/inspector-sources/protocol_client/protocol_client.js:61:41)
+    at MainConnection._dispatchMessage (http://localhost:8000/inspector-sources/sdk/sdk.js:2199:61)
+    at ObjectWrapper.dispatchEventToListeners (http://localhost:8000/inspector-sources/common/common.js:133:177)
+

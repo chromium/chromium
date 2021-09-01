@@ -1,0 +1,87 @@
+<html manifest="resources/cyrillic-uri.manifest">
+<head>
+<meta charset="koi8-r">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+</head>
+<body>
+<p>Test that non-ASCII URIs work correctly in cache manifests.</p>
+<p>Should be a series of PASS messages, followed with DONE.</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function load(url)
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", url, false);
+    req.send("");
+    return req.responseText;
+}
+
+function canLoad(url)
+{
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", url, false);
+        req.send("");
+        return true;
+    } catch (ex) {
+        return false;
+    }
+}
+
+function shouldBeLoadable(url)
+{
+    log((canLoad(url) ? "PASS: " : "FAIL: ") + url);
+}
+
+function test()
+{
+    // Path is always UTF-8.
+    shouldBeLoadable("resources/intercept/cached-Проверка");
+    shouldBeLoadable("resources/intercept/cached-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0");
+    shouldBeLoadable("resources/intercept/cached2-Проверка");
+    shouldBeLoadable("resources/intercept/cached2-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0");
+    shouldBeLoadable("resources/intercept/network-Проверка-PASS");
+    shouldBeLoadable("resources/intercept/network-%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0-PASS");
+    shouldBeLoadable("resources/does-not-exist-Проверка");
+
+    // To test encodings other than UTF-8, we need to simulate form submission (for XHR, Firefox
+    // always uses UTF-8, even in query part).
+    applicationCache.onnoupdate = null;
+    applicationCache.oncached = null;
+    window.addEventListener("message", frameDone, false);
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/cyrillic-uri-form.html");
+    document.body.appendChild(ifr);
+}
+
+function frameDone(evt)
+{
+    log("DONE");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+
+</script>
+</body>
+</html>

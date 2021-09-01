@@ -1,0 +1,13 @@
+CACHE MANIFEST
+
+# This should succeed. This is another ~15kb and the quota should be 20kb
+# and automatically be increased.
+
+# This should trigger a delegate callback and the spaceNeeded should be
+# large enough for both caches.
+
+CACHE:
+abe.png
+
+ORIGIN-TRIAL:
+AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=

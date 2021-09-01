@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html manifest="resources/video.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<title>Test that "video" can be loaded from the application cache.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video></video>
+<script>
+async_test(function(t) {
+    applicationCache.onupdateready = t.unreached_func();
+    applicationCache.onobsolete = t.unreached_func();
+    applicationCache.onerror = t.unreached_func();
+    applicationCache.oncached = t.step_func(test1);
+    applicationCache.onnoupdate = t.step_func(test1);
+
+    video = document.querySelector("video");
+
+    function test1() {
+        // Setting "src" to file specified in manifest. This file should load.
+        video.ondurationchange = t.step_func(test2);
+        video.onerror = t.unreached_func();
+        video.src = "/media-resources/content/test.ogv";
+    }
+
+    function test2() {
+        // Setting "src" to valid media file not in manifest. This file should fail to load.
+        video.ondurationchange = t.unreached_func();
+        video.onerror = t.step_func(test3);
+        video.src = "/media-resources/content/silence.oga";
+    }
+
+    function test3() {
+        // Setting "src" to non-media file that is in manifest. This file should fail to load.
+        video.src = "/media-resources/media-file.js";
+        video.onerror = t.step_func_done();
+    }
+});
+</script>

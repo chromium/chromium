@@ -1,0 +1,11 @@
+CACHE MANIFEST
+
+# This should succeed. The quota will be reached, but the delegate
+# will fire at the end, allowing an increase, and then successfully
+# cache with the new quota.
+
+CACHE:
+abe.png
+
+ORIGIN-TRIAL:
+AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=

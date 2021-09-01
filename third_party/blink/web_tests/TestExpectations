@@ -1969,6 +1969,8 @@ crbug.com/528062 [ Win ] http/tests/security/contentSecurityPolicy/cached-frame-
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
 # crbug.com/1218726 These tests fail when VerifyHTMLFetchedFromAppCacheBeforeDelay is enabled.
+crbug.com/1218726 http/tests/loading/appcache-delay/link_header_preload_on_commit.php [ Failure ]
+crbug.com/1218726 http/tests/loading/appcache-delay/preload-does-not-jump-the-queue.html [ Failure ]
 crbug.com/1218726 http/tests/mixed-autoupgrade/optionally/image-upgrade-console-message.https.html [ Failure ]
 crbug.com/1218726 http/tests/security/deprecated-subresource-requests.html [ Failure ]
 
@@ -6845,6 +6847,7 @@ crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-p
 crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Failure Pass ]
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pass ]
+crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-21

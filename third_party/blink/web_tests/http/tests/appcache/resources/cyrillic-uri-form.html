@@ -1,0 +1,34 @@
+<html manifest="cyrillic-uri.manifest">
+<head>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+</head>
+<meta charset="koi8-r">
+</head>
+<body>
+<form method=GET action="?">
+<input type=text name=i value="Проверка">
+</form>
+<script>
+document.write(location);
+function test() {
+    if (location.search == "") {
+        document.forms[0].submit();
+    } else if (location.search == "?i=%F0%D2%CF%D7%C5%D2%CB%C1") {
+        document.forms[0].elements[0].value="Проверка-2";
+        document.forms[0].submit();
+    } else if (location.search == "?i=%F0%D2%CF%D7%C5%D2%CB%C1-2") {
+        parent.postMessage("allDone", "*");
+    } else {
+        alert("Unexpected URI: " + location);
+        parent.postMessage("allDone", "*");
+    }
+}
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<html manifest="quota-origin-continued-download.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+// This is expected to succeed when the quota is reached, download completes, the user is prompted, and they increase storage.
+applicationCache.oncached = function() { parent.postMessage("PASS - cached iframe", "*"); };
+applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe, expected this to succeed with the quota increased automatically", "*"); };
+applicationCache.onupdateready = function() { parent.postMessage("FAIL - update ready, all caches should have been deleted before this test", "*"); };
+applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe, all caches should have been deleted before this test", "*"); };
+</script>
+</html>

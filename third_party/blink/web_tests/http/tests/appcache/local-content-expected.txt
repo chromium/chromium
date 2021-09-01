@@ -1,0 +1,9 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE ERROR: line 33: Not allowed to load local resource: stdio.h
+Test that documents loaded from application cache don't get access to local resources accidentally.
+
+Should say SUCCESS:
+
+SUCCESS
+

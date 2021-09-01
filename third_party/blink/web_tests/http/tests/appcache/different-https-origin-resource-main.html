@@ -1,0 +1,19 @@
+<html>
+<body>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+window.addEventListener("message", function(e) {
+    document.getElementById("result").innerHTML = e.data; 
+    if (window.testRunner)
+        testRunner.notifyDone();
+}, false);
+</script>
+<p>Test that a resource from a different https origin is not cached.</p>
+<div id=result></div>
+<iframe src="https://127.0.0.1:8443/appcache/resources/different-https-origin-resource.html"></iframe>
+</body>
+</html>

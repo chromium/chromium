@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html manifest="resources/fail-on-update.php">
+<head>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<title>obsolete-error-events.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+setup({ single_test: true });
+// Test that master list entries receive errors when manifest becomes obsolete.
+
+function setManifestState(state, callback)
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", "resources/fail-on-update.php?command=" + (state));
+    req.send(null);
+    req.onload = callback;
+}
+
+var eventDetailsFromFrame = null;
+function onMessage(e) {
+    eventDetailsFromFrame = e.data;
+    checkEvents();
+};
+
+var eventDetailsFromWindow = null;
+function onObsolete(e) {
+    eventDetailsFromWindow = e;
+    checkEvents();
+}
+
+// Event order is indeterminate, so wait for both to arrive.
+function checkEvents() {
+    if (!eventDetailsFromFrame || !eventDetailsFromWindow)
+        return;
+
+    assert_equals(eventDetailsFromWindow.type, "obsolete");
+
+    assert_equals(eventDetailsFromFrame.type, "error");
+    assert_equals(eventDetailsFromFrame.reason, "manifest");
+    assert_equals(eventDetailsFromFrame.url, "");
+    assert_equals(eventDetailsFromFrame.status, 404);
+
+    done();
+}
+
+function test()
+{
+    applicationCache.onnoupdate = function() { assert_true(false, "Unexpected noupdate event") }
+    applicationCache.oncached = function() { assert_true(false, "Unexpected cached event") }
+
+    setManifestState('delete', () => {
+        // The frame will be associated to a cache, but update will obsolete it.
+        var ifr = document.createElement("iframe");
+        ifr.setAttribute("src", "resources/obsolete-error-events-frame.html");
+        document.body.appendChild(ifr);
+
+        applicationCache.onobsolete = onObsolete;
+        window.onmessage = onMessage;
+    });
+}
+
+function resetManifest()
+{
+    if (applicationCache.status !== applicationCache.UNCACHED && applicationCache.status !== applicationCache.OBSOLETE) {
+        timeoutId = setTimeout(resetManifest, 100);
+        return;
+    }
+
+    setManifestState('reset', () => {
+        location.reload();
+    });
+}
+
+applicationCache.onnoupdate = applicationCache.oncached = function() {
+    clearTimeout(timeoutId);
+    test();
+};
+
+// If the manifest script happened to be in a wrong state, reset it.
+var timeoutId = setTimeout(resetManifest, 100);
+
+setTimeout(done, 2000);
+</script>
+</html>

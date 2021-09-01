@@ -48,6 +48,12 @@ crbug.com/901056 http/tests/devtools/console/console-uncaught-exception.js [ Fai
 # A message comes up in the log as "PROMISE FAILURE: Error: Can't reveal null" (investigation needed)
 crbug.com/901056 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
 
+### http/tests/loading/appcache-delay/
+# New failure (investigation required)
+crbug.com/901056 http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Failure ]
+# Still fails, but for a different reason
+crbug.com/901056 http/tests/loading/appcache-delay/link_header_preload_on_commit.php [ Failure ]
+
 ### http/tests/misc/
 crbug.com/901056 http/tests/misc/image-blocked-src-change.html [ Failure ]
 crbug.com/901056 http/tests/misc/image-blocked-src-no-change.html [ Failure ]
@@ -59,6 +65,12 @@ crbug.com/901056 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-re
 ### paint/invalidation/overflow/
 # Probably a viewport sizing issue (investigation needed).
 crbug.com/901056 paint/invalidation/overflow/resize-child-within-overflow.html [ Failure ]
+
+### virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/
+# WontFix (AppCache will be removed at some point.)
+crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Failure ]
+crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/preload-does-not-jump-the-queue.html [ Failure ]
+
 
 ### These are ok, and just need to be rebaselined once the flag is enabled. The path
 ### names here are > 200 characters, so they can't be landed.

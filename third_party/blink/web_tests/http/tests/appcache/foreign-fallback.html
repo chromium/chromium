@@ -1,0 +1,53 @@
+<html manifest="resources/foreign-fallback.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=44406">bug 44406</a>:
+Application Cache crash when a fallback document has a manifest URL.</p>
+<div id="result">Testing...</div>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+
+applicationCache.addEventListener('cached', test, false);
+applicationCache.addEventListener('noupdate', test, false);
+
+function test()
+{
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/foreign-fallback/does-not-exist.html");
+    document.body.appendChild(ifr);
+
+    // I couldn't find any event that would fire on frame loading failure, so let's poll.
+    setTimeout(frameDone, 100);
+}
+
+function frameDone()
+{
+    try {
+        var frameContent = frames[0].document.documentElement.innerHTML;
+        if (frameContent.match("Not Found"))
+            document.getElementById("result").innerHTML = "PASS";
+        else if (frameContent.match("FAIL"))
+            document.getElementById("result").innerHTML = "FAIL";
+        else
+            throw "Try again";
+
+        if (window.testRunner)
+            testRunner.notifyDone();
+    } catch (ex) {
+        // Not done yet.
+        setTimeout(frameDone, 100);
+    }
+}
+
+</script>
+<p>The frame below should display a Not Found error - the fallback entry is foreign, so it shouldn't be used for main resource.</p>
+</body>
+</html>

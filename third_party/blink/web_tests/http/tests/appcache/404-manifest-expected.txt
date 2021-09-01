@@ -1,0 +1,18 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: line 40: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+Test that subresources can be loaded if manifest is not available.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS gotCheckingEvent is true
+PASS window.applicationCache.status is applicationCache.UNCACHED
+PASS event.reason is "manifest"
+PASS event.url is "http://127.0.0.1:8000/appcache/does-not-exist.manifest"
+PASS event.status is 404
+PASS 'message' in event is true
+PASS req.responseText is "Hello, World!"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

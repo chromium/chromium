@@ -1,0 +1,27 @@
+Test the behavior of DOMApplicationCache methods related to dynamic entries when the context is not associated with any cache.
+
+PASS: applicationCache.items.length is 0
+PASS: applicationCache.items.item(0) is null
+PASS: applicationCache.items.item(1) is null
+PASS: applicationCache.items.item(0xffffffff) is null
+PASS: applicationCache.items.item(0xfffffffe) is null
+PASS: applicationCache.items.item(-1) is null
+PASS: applicationCache.items.item(-2) is null
+PASS: applicationCache.items[0xfffffffe] is undefined
+PASS: applicationCache.items[0xffffffff] is undefined
+PASS: applicationCache.items['0'] is undefined
+PASS: applicationCache.items[''] is undefined
+PASS: applicationCache.items[0] is undefined
+PASS: applicationCache.items[1] is undefined
+PASS: applicationCache.items[-1] is undefined
+PASS: applicationCache.items[-2] is undefined
+PASS: applicationCache.items[100] is undefined
+PASS: applicationCache.items['100'] is undefined
+PASS: applicationCache.items['foo'] is undefined
+PASS: applicationCache.items[0.1] is undefined
+PASS: hasItem raised INVALID_STATE_ERR
+PASS: add raised INVALID_STATE_ERR
+PASS: remove raised INVALID_STATE_ERR
+PASS: applicationCache.items.length is 0
+DONE
+

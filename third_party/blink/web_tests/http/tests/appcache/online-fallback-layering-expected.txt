@@ -1,0 +1,12 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: line 27: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+Test that a network namespace trumps a fallback namespace where they overlap.
+
+Sanity check the presence of the fallback namespace, should get the fallback resource.
+Getting a network namespace resource that exists on the server, should succeed.
+Getting a network namespace resource that does not exist on the server, should get a 404.
+Creating two iframes for an existing and non-existing page, one should say "hello" the other should 404.
+- hello heard
+- 404 detected
+PASS
+

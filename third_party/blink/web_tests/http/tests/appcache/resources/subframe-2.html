@@ -1,0 +1,11 @@
+<script>
+try {
+    var req = new XMLHttpRequest;
+    req.open("GET", "simple.txt", false);
+    req.send(null);
+    alert("FAIL, unexpected response: " + req.responseText);
+} catch (ex) {
+    // Loading should fail, because simple.txt is not in cache manifest.
+    parent.postMessage("allDone", "*");
+}
+</script>

@@ -1,0 +1,56 @@
+<html manifest="resources/local-content.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that documents loaded from application cache don't get access to local resources accidentally.</p>
+<p>Should say SUCCESS:</p>
+<div id="result"></div>
+<script type="text/javascript">
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function noupdate()
+{
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "file:///usr/include/stdio.h");
+    ifr.onload = frameCreated;
+    setTimeout(function() {
+        log("SUCCESS");
+        if (window.testRunner)
+            testRunner.notifyDone();
+        }, 300);
+        
+    document.body.appendChild(ifr);
+}
+
+function frameCreated()
+{
+    log("FAILURE: A local resource was opened in an iframe");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function reload()
+{
+    // Reload to ensure that the main document was loaded from application cache.
+    window.location.reload();
+}
+
+applicationCache.addEventListener('noupdate', noupdate, false);
+
+applicationCache.addEventListener('cached', reload, false);
+applicationCache.addEventListener('error', function() { alert("Unexpected error event") }, false);
+
+</script>
+</body>
+</html>

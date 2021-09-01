@@ -1,0 +1,37 @@
+<html manifest="manifest-for-appcache.manifest">
+<head>
+<script>
+function complete() {
+	document.write('Cache found');
+	cleanup();
+}
+
+function timedOut() {
+	try {
+		applicationCache.update();
+		timer = setTimeout(cleanup, 5000);
+	} catch (e) {
+		document.write('Cache not found');
+		cleanup();
+	}
+}
+
+function cleanup() {
+	clearTimeout(timer);
+	top.postMessage('done', '*');
+}
+
+try {
+	timer = setTimeout(timedOut, 5000);
+	applicationCache.addEventListener('noupdate', complete, false);
+	applicationCache.addEventListener('cached', complete, false);
+} catch (e) {
+	document.write('Cache not found');
+	cleanup();
+}
+</script>
+</head>
+<body>
+<img src="abe.png">
+</body>
+</head>

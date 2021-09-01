@@ -1,0 +1,82 @@
+<html manifest="resources/online-allowlist.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test online allowlist functionality. Should say PASS:</p>
+
+<div id="result"></div>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+var hadError = false;
+
+function canLoad(url)
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", url, false);
+        req.send("");
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function load(url)
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", url, false);
+        req.send("");
+        return req.responseText;
+    } catch (ex) {
+        alert("Unexpected error loading " + url + ": " + ex);
+        hadError = true;
+    }
+}
+
+function test()
+{
+    if (load("resources/counter.php?cached") != load("resources/counter.php?cached")) {
+        log("FAIL: Explicit entry didn't override online allowlist.");
+        hadError = true;
+    }
+
+    if (load("resources/counter.php?uncached") == load("resources/counter.php?uncached")) {
+        log("FAIL: Online allowlist resource wasn't reloaded from network.");
+        hadError = true;
+    }
+
+    if (load("resources/counter.php?uncachedxxx") == load("resources/counter.php?uncachedxxx")) {
+        log("FAIL: Online allowlist resource wasn't reloaded from network (prefix matching).");
+        hadError = true;
+    }
+
+    if (canLoad("resources/counter.php?foobar")) {
+        log("FAIL: Uncached resource was successfully loaded.");
+        hadError = true;
+    }
+
+    log(hadError ? "FAIL" : "PASS");
+
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.addEventListener('cached', test, false);
+applicationCache.addEventListener('noupdate', test, false);
+
+</script>
+</body>
+</html>

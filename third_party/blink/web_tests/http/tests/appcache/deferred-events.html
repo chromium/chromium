@@ -1,0 +1,29 @@
+<html manifest="THIS_FILE_DOES_NOT_EXIST.manifest">
+<head>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+  <script type="text/javascript">
+    var onloadHasBeenCalled = false;
+
+    if (window.testRunner) {
+        testRunner.dumpAsText()
+        testRunner.waitUntilDone();
+    }
+
+    window.applicationCache.onchecking = function() {
+        if (onloadHasBeenCalled)
+            document.getElementById('result').innerHTML = "SUCCESS"
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+  </script>
+  <script src="THIS_FILE_DOES_NOT_EXIST.js" type="text/javascript"></script>
+</head>
+<body onload="onloadHasBeenCalled = true">
+Test that AppicationCache events are deferred until after onload has been fired.
+<div id="result">FAILURE</div>
+</body>
+</html>

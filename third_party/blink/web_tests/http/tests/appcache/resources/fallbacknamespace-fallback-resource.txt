@@ -1,0 +1,1 @@
+This is the fallback resource used for the fallbacknamespace in the online-fallback-layering.html test.

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html manifest="resources/fail-on-update-2.php">
+<head>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<title>fail-on-update-2.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+setup({ single_test: true });
+
+function setManifestDeleted(state, callback)
+{
+    var req = new XMLHttpRequest;
+    req.onreadystatechange = function() {
+        if (req.readyState == 4)
+            callback();
+    }
+    req.open("GET", "resources/fail-on-update.php?command=" + (state ? "delete" : "reset"));
+    req.send(null);
+}
+
+function test()
+{
+    clearTimeout(timeoutId);
+
+    setManifestDeleted(true, afterDelete);
+
+    function afterDelete()
+    {
+        applicationCache.update();
+
+        // Create two subframes at different times to make hitting the race condition more likely.
+        var ifr = document.createElement("iframe");
+        ifr.setAttribute("src", 'resources/fail-on-update-2.html');
+        document.body.appendChild(ifr);
+
+        setTimeout(function() {
+            var ifr = document.createElement("iframe");
+            ifr.setAttribute("src", 'resources/fail-on-update-2.html');
+            document.body.appendChild(ifr);
+        }, 0);
+    }
+}
+
+var subframesLeft = 2;
+function subframeLoaded()
+{
+    if (!--subframesLeft) {
+        document.write('<p>SUCCESS: No crash.</p>');
+        if (window.testRunner)
+            done();
+    }
+}
+
+function resetManifest()
+{
+    if (applicationCache.status != applicationCache.UNCACHED && applicationCache.status != applicationCache.OBSOLETE) {
+        timeoutId = setTimeout(resetManifest, 100);
+        return;
+    }
+
+    setManifestDeleted(false, function() {
+        location.reload();
+    });
+}
+
+applicationCache.addEventListener('noupdate', function() { setTimeout(test, 0) }, false);
+applicationCache.addEventListener('cached', function() { setTimeout(test, 0) }, false);
+
+// If the manifest script happened to be in a wrong state, reset it.
+var timeoutId = setTimeout(resetManifest, 100);
+
+</script>
+</head>
+<body>
+<p>Test for a particular incorrect assertion failure.</p>
+</body>
+</html>

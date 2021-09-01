@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Appcache! Cannot set properties of undefined (setting 'onerror')
+Harness: the test ran to completion.
+

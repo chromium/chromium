@@ -1,0 +1,15 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'http://127.0.0.1:8000/loading/appcache-delay/resources/subresource-loaded.html', http method GET
+frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
+frame "<!--framePath //<!--frame0-->-->" - ReadyToCommitNavigation
+frame "<!--framePath //<!--frame0-->-->" - didCommitLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - didFinishDocumentLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - didHandleOnloadEventsForFrame
+frame "<!--framePath //<!--frame0-->-->" - didFinishLoadForFrame
+PASS

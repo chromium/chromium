@@ -1,0 +1,26 @@
+<html>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+window.onmessage = function() {
+  document.getElementById('result').innerHTML = "SUCCESS";
+  if (window.testRunner)
+    testRunner.notifyDone();
+}
+
+function killChildFrame() {
+  document.body.removeChild(document.getElementsByTagName("iframe")[0]);
+}
+</script>
+<p>Test the destruction of an iframe while deferred events are being raised does not crash the system.</p>
+<div id="result">FAILURE</div>
+<iframe src="resources/deferred-events-delete-while-raising-timer-1.html"></iframe>
+</html>

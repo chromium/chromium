@@ -1,0 +1,74 @@
+<html manifest="../resources/versioned-manifest-with-token.php">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test a simple offline application self-update process. Should print a series of messages followed with DONE:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function modifyManifest()
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", "../resources/versioned-manifest-with-token.php?command=step", false);
+    req.send(false);
+}
+
+function test()
+{
+    modifyManifest();
+
+    applicationCache.oncached = function() { log("FAIL: Unexpected cached event") }
+    applicationCache.onnoupdate = function() { log("FAIL: Unexpected noupdate event") }
+    applicationCache.onupdateready = function() { setTimeout(test2, 0) }
+
+    log("Updating cache group...");
+    setTimeout("applicationCache.update()", 0);
+}
+
+function test2()
+{
+    log((applicationCache.status == applicationCache.UPDATEREADY) ? "Cache status is UPDATEREADY" : ("FAIL: Incorrect cache status, " + applicationCache.status));
+
+    modifyManifest();
+    applicationCache.onupdateready = function() { setTimeout(test3, 0) }
+
+    log("Updating cache group once more...");
+    setTimeout("applicationCache.update()", 0);
+}
+
+function test3()
+{
+    log((applicationCache.status == applicationCache.UPDATEREADY) ? "Cache status is UPDATEREADY" : ("FAIL: Incorrect cache status, " + applicationCache.status));
+
+    log("Associating document with the newest cache version...");
+    applicationCache.swapCache();
+
+    log((applicationCache.status == applicationCache.IDLE) ? "Cache status is IDLE" : ("FAIL: Incorrect cache status, " + applicationCache.status));
+
+    log("DONE");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.oncached = test;
+applicationCache.onnoupdate = test;
+applicationCache.onupdateready = function() { log("FAIL: Unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: Unexpected error event") }
+applicationCache.onobsolete = function() { log("FAIL: Unexpected obsolete event") }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<html>
+<body>
+<p>Test that the API is missing without origin trial token</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+
+if (window.testRunner) {
+    testRunner.dumpAsText();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+if (typeof window.applicationCache === 'undefined') {
+  log('SUCCESS');
+} else {
+  log('FAILURE');
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<html manifest="resources/xhr-foreign-resource.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that a resource marked as foreign can still be loaded via XHR.</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function createFrame1()
+{
+    applicationCache.onnoupdate = function() { log("FAIL: Unexpected noupdate event") }
+    applicationCache.oncached = function() { log("FAIL: Unexpected cached event") }
+    
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/xhr-foreign-resource-frame.html");
+    document.body.appendChild(ifr);
+}
+
+function createFrame2()
+{
+    // A copy that doesn't have its main resource in cache manifest.
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/xhr-foreign-resource-frame.html?");
+    document.body.appendChild(ifr);
+}
+
+applicationCache.onnoupdate = function() { createFrame1() }
+applicationCache.oncached = function() { createFrame1() }
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+
+var hadErrorFromSubframe = false;
+var subframeMessagesReceived = 0;
+function frameMessageReceived(evt)
+{
+    ++subframeMessagesReceived;
+    if (evt.data != "SUCCESS")
+        hadErrorFromSubframe = true;
+    if (subframeMessagesReceived == 1)
+        setTimeout(createFrame2, 0);
+    else if (subframeMessagesReceived == 2)
+        test();
+}
+
+function test(evt)
+{
+    if (!hadErrorFromSubframe) {
+        // The subframe has a different cache, but it is also listed as a resource in main frame's
+        // manifest, so it should be loaded successfully despite being marked as foreign now.
+        try {
+            var req = new XMLHttpRequest;
+            req.open("GET", "resources/xhr-foreign-resource-frame.html", false);
+            req.send("");
+            log("SUCCESS");
+        } catch (ex) {
+            log (ex);
+        }
+    } else 
+        log("FAIL: subframe didn't get a correct cache");
+
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+window.addEventListener("message", frameMessageReceived, false);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<html manifest="resources/progress-counter.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+var expectedTotal = 2
+var eventsReceived = 0;
+
+function done() {
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function progress(event)
+{
+    if (!event.lengthComputable) {
+        document.getElementById('result').innerHTML = "FAILURE: expected progressEvent.lengthComputable to be true";
+        done();
+        return;
+    }
+    if (event.total != expectedTotal) {
+        document.getElementById('result').innerHTML = "FAILURE: expected progressEvent.total to be " + expectedTotal + " but was " + event.total;
+        done();
+        return;
+    }
+    if (event.loaded != eventsReceived) {
+        document.getElementById('result').innerHTML = "FAILURE: expected progressEvent.loaded to be " + eventsReceived + " but was " + event.loaded;
+        done();
+        return;
+    }
+    eventsReceived++;
+}
+
+function cached()
+{
+    if (eventsReceived != 3) {
+        document.getElementById('result').innerHTML = "FAILURE: expected 3 progress events, but got " + eventsReceived;
+        done();
+        return;
+    }
+
+    document.getElementById('result').innerHTML = "SUCCESS";
+    done();
+}
+
+function noupdate()
+{
+    document.getElementById('result').innerHTML = "FAILURE: unable to conduct test since the appcache already exists, please remove the appcache and try again";
+    done();
+}
+
+applicationCache.addEventListener('cached', cached, false);
+applicationCache.addEventListener('noupdate', noupdate, false);
+applicationCache.addEventListener('progress', progress, false);
+
+</script>
+<div>This tests that the lengthComputable / loaded / total properties of the progress event are set correctly.</div>
+
+<div id="result">FAILURE</div>
+</html>

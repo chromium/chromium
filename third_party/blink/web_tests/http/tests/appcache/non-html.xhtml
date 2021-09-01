@@ -1,0 +1,110 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      manifest="/resources/network-simulator.php?path=/appcache/resources/non-html.manifest">
+<head><title/>
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0="/>
+</head>
+<body>
+<p>Test that non-HTML main resources work with application cache correctly.</p>
+<p>Should say SUCCESS:</p>
+<div id="result"></div>
+<script type="text/javascript">
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "&lt;br/>";
+}
+
+function setNetworkEnabled(state, callback)
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", "/resources/network-simulator.php?command=" + (state ? "connect" : "disconnect"));
+    req.send("");
+    req.onload = callback;
+}
+
+function createFrame()
+{
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "/resources/network-simulator.php?path=/appcache/resources/abe.png");
+    ifr.onload = frameCreated;
+    document.body.appendChild(ifr);
+}
+
+function cached()
+{
+    var hadError = false;
+
+    applicationCache.removeEventListener('noupdate', cached, false);
+    applicationCache.removeEventListener('cached', cached, false);
+
+    setNetworkEnabled(false, () => {
+
+        // Load a resource that does not exist in the cache.
+        try {
+            var req = new XMLHttpRequest();
+            req.open("GET", "/resources/network-simulator.php?path=/appcache/resources/not-in-cache.txt", false);
+            req.send();
+        } catch (e) {
+            if (e.code == DOMException.NETWORK_ERR)
+                hadError = true;
+        }
+
+        if (!hadError) {
+            document.getElementById('result').innerHTML = "FAILURE: Did not get the right exception"
+            return;
+        }
+
+        // Load a resource that exists in the cache.
+        try {
+            var req = new XMLHttpRequest();
+            req.open("GET", "/resources/network-simulator.php?path=/appcache/resources/simple.txt", false);
+            req.send();
+        } catch (e) {
+            document.getElementById('result').innerHTML = "FAILURE: Could not load data from cache"
+            return;
+        }
+
+        if (req.responseText != 'Hello, World!') {
+            document.getElementById('result').innerHTML = "FAILURE: Did not get correct data from cached resource"
+            return;
+        }
+
+        createFrame();
+    });
+}
+
+function frameCreated()
+{
+    setNetworkEnabled(true, () => {
+        if (frames[0].document.documentElement.innerHTML.match(/abe\.png/))
+            log("SUCCESS")
+        else
+            log("FAIL: Frame.onload was called, but the image doesn't seem to be loaded.");
+
+        if (window.testRunner) {
+            applicationCache.onerror = null;
+            testRunner.notifyDone();
+        }
+    });
+}
+
+function error()
+{
+    // The simulator was in a wrong state, reset it.
+    setNetworkEnabled(true, () => {
+        window.location.reload();
+    });
+}
+
+applicationCache.addEventListener('cached', cached, false);
+applicationCache.addEventListener('noupdate', cached, false);
+
+applicationCache.onerror = error;
+
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<html>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that offline applications work when there is no network access (simulated).</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function setNetworkEnabled(state)
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", "/resources/network-simulator.php?command=" + (state ? "connect" : "disconnect"), false);
+    req.send("");
+}
+
+function createFrame()
+{
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "/resources/network-simulator.php?path=/appcache/resources/offline-access-frame-origin-trial.html");
+    document.body.appendChild(ifr);
+}
+
+function frameCreated(msg)
+{
+    if (msg.data != "done") {
+        log("FAIL: " + msg.data);
+        if (window.testRunner)
+            testRunner.notifyDone();
+        return;
+    }
+    if (stage == 0) {
+        stage = 1;
+        setNetworkEnabled(false);
+        createFrame();
+    } else if (stage == 1) {
+        stage = 2;
+        setNetworkEnabled(true);
+        createFrame();
+    } else {
+        log("SUCCESS");
+        if (window.testRunner)
+            testRunner.notifyDone()
+    }
+}
+
+window.addEventListener("message", frameCreated, false);
+
+var stage = 0;
+setNetworkEnabled(true);
+createFrame();
+
+</script>
+</body>
+</html>

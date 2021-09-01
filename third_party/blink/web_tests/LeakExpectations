@@ -44,6 +44,7 @@ crbug.com/1151861 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.
 # Flakily leaks
 # -----------------------------------------------------------------
 crbug.com/780386 external/wpt/html/dom/reflection-grouping.html [ Failure Pass ]
+crbug.com/835943 [ Linux ] http/tests/appcache/non-html.xhtml [ Failure Pass ]
 
 crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
 

@@ -1,0 +1,39 @@
+<html manifest="resources/modified-manifest.php">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script src="/js-test-resources/js-test.js"></script>
+<script>
+var jsTestIsAsync = true;
+description("Test that a manifest that changes during an update fails.");
+
+var gotCheckingEvent = false;
+function onChecking() { gotCheckingEvent = true; }
+
+
+var gotDownloadingEvent = false;
+function onDownloading() { gotDownloadingEvent = true; }
+
+function onError(e)
+{
+    shouldBeTrue("gotCheckingEvent");
+    shouldBeTrue("gotDownloadingEvent");
+    shouldBe("window.applicationCache.status", "applicationCache.UNCACHED");
+
+    event = e;
+    shouldBeEqualToString("event.reason", "changed");
+    shouldBeEqualToString("event.url", "");
+    shouldBe("event.status", "0");
+    shouldBeTrue("'message' in event");
+
+    finishJSTest();
+}
+
+applicationCache.addEventListener('checking', onChecking, false);
+applicationCache.addEventListener('downloading', onDownloading, false);
+applicationCache.addEventListener('error', onError, false);
+
+</script>
+</html>

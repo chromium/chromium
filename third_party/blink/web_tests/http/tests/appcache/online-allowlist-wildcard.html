@@ -1,0 +1,34 @@
+<html manifest="resources/online-allowlist-wildcard.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that online allowlist wildcard flag is implemented.</p>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function test()
+{
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "resources/empty.txt", false);
+        req.send();
+        document.body.appendChild(document.createTextNode("SUCCESS"));
+    } catch (ex) {
+        document.body.appendChild(document.createTextNode(ex));
+    }
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.oncached = test;
+applicationCache.onnoupdate = test;
+
+</script>
+</body>
+</html>

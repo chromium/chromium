@@ -1,0 +1,1 @@
+Test that accessing a detached iframe's applicationCache window property doesn't assert. If you don't see an assert, it passed.

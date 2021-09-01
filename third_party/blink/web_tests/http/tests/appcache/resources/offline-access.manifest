@@ -1,0 +1,11 @@
+CACHE MANIFEST
+/resources/network-simulator.php?path=/appcache/resources/offline-access-frame.html
+/resources/network-simulator.php?path=/appcache/resources/offline-access.manifest
+/resources/network-simulator.php?path=/appcache/resources/simple.txt
+/resources/network-simulator.php?path=/appcache/resources/offline-access.js
+
+NETWORK:
+/resources/redirect.php
+
+ORIGIN-TRIAL:
+AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=

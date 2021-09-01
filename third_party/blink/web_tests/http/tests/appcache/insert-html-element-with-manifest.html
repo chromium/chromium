@@ -1,0 +1,36 @@
+<html>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+document.removeChild(document.documentElement);
+var newHTML = document.createElement("html");
+newHTML.setAttribute("manifest", "resources/insert-html-element-with-manifest.manifest");
+document.appendChild(newHTML);
+
+window.onload = function()
+{
+    applicationCache.oncached = function() {
+        alert("FAIL: appcache cached");
+    }
+    applicationCache.onnoupdate = function() {
+        alert("FAIL: appcache noupdate");
+    }
+    applicationCache.onerror = function() {
+        alert("FAIL: appcache error");
+    }
+
+    setTimeout(function() {
+        document.write("DONE. Passed if there were no alerts displayed.");
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }, 100);
+}
+</script>

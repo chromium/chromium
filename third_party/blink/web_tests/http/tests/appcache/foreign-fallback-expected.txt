@@ -1,0 +1,6 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+Test for bug 44406: Application Cache crash when a fallback document has a manifest URL.
+
+PASS
+
+The frame below should display a Not Found error - the fallback entry is foreign, so it shouldn't be used for main resource.

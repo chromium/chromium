@@ -1,0 +1,40 @@
+<html manifest="https://127.0.0.1:8443/appcache/resources/different-https-origin-resource.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py https://127.0.0.1:8443 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AiLmRCfXHl3UQjXZF7fOTiws2+PpdurK7eRm17F/izPG1u0tU9xhE5t013CO5feTWLPUumiMsNg8oGwEsv0tzQkAAABReyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIkFwcENhY2hlIiwgImV4cGlyeSI6IDE3NjQwOTQyNDF9">
+<script>
+var hadError = false;
+var result;
+
+function finish()
+{
+    if (!hadError)
+        result = "PASS";
+    parent.postMessage(result, '*');
+}
+function fail()
+{
+    result = "FAIL: Different https origin resource is getting downloaded to cache.";
+    hadError = true;
+}
+function error()
+{
+    result = "ERROR";
+    hadError = true;
+    finish();
+}
+function progressHandler(e)
+{
+    // The only resource listed in the manifest file is in a different https origin and should be skipped.
+    if (e.loaded != 0 || e.total != 0)
+        fail();
+}
+
+applicationCache.onprogress = progressHandler;
+applicationCache.onnoupdate = function() { finish(); }
+applicationCache.oncached = function() { finish(); }
+applicationCache.onerror = function() { error(); }
+</script>
+</html>

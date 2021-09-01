@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<title>Test that preload based low priority resources don't jump the queue ahead of high priority ones</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel=stylesheet href="resources/dummy.css">
+<link rel=preload as=image href="../resources/preload-test.jpg">
+<body>
+<script>
+const img = new Image();
+img.src = "../resources/preload-test.jpg";
+document.body.appendChild(img);
+
+window.onload = () => {
+    test(() => {
+        const current = window.location.href;
+        const entries = performance.getEntriesByType("resource");
+        assert_equals(entries[2].name, new URL("resources/dummy.css", current).href, "Third resource is not the CSS");
+        assert_equals(entries[3].name, new URL("../resources/preload-test.jpg", current).href, " Fourth resource is not the image");
+    }, "Test that low priority preloads do not jump the queue");
+};
+</script>
+</body>
+</html>
+

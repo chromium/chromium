@@ -1,0 +1,45 @@
+<html>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that the manifest is picked correctly when reloading.</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+var state = 0;
+function receivedMessage(message)
+{
+    log(message);
+
+    if (state == 0) {
+        state = 1;
+        setTimeout("frames[0].location.reload()", 0);
+    } else if (state == 1) {
+        state = 2;
+        setTimeout("frames[0].test()", 0);
+    } else if (state == 2) {
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+}
+
+window.addEventListener("message", function(e) { receivedMessage(e.data) }, false);
+
+</script>
+<iframe src="resources/reload-iframe.html"></iframe>
+</body>
+</html>

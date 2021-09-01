@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/addressspace-test.js"></script>
+<script>
+    window.onload = function () {
+        addressSpaceTest("https://localhost:8443", "document+appcache", "local",
+            // If we request the same resources again, we should load them from the
+            // memory cache with the same properties.
+            function () {
+                addressSpaceTest("https://localhost:8443", "document+appcache", "local", null, " repeat");
+            });
+        addressSpaceTest("https://127.0.0.1:8443", "document+appcache", "local",
+            // If we request the same resources again, we should load them from the
+            // memory cache with the same properties.
+            function () {
+                addressSpaceTest("https://127.0.0.1:8443", "document+appcache", "local", null, " repeat");
+            });
+    };
+</script>

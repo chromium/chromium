@@ -1,0 +1,14 @@
+<html manifest="origin-usage-iframe-1.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+// iframe-1 is expected to succeed.
+applicationCache.oncached = function() { parent.postMessage("PASS - cached iframe-1", "*"); };
+applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe-1, expected this to succeed", "*"); };
+applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe-1, all caches should have been deleted before this test", "*"); };
+
+</script>
+</html>

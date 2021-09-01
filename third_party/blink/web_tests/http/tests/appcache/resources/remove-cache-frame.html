@@ -1,0 +1,70 @@
+<html manifest="fail-on-update.php">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<div id=result></div>
+<script>
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function onObsolete()
+{
+    log("obsolete")
+    log("status=" + applicationCache.status + " (expected 5)");
+    applicationCache.onobsolete = function() { log("obsolete") }
+    applicationCache.onupdateready = function() { log("updateready") }
+    applicationCache.onnoupdate = function() { log("noupdate") }
+    applicationCache.onnoupdate = function() { log("error") }
+
+    // We still have a cache, so loading should fail
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "empty.txt", false);
+        req.setRequestHeader("Cache-control", "no-store");
+        req.send(null);
+        alert("FAIL: XMLHttpRequest for an uncached resource didn't raise an exception");
+    } catch (ex) {
+    }
+    log("There should be no messages below.");
+}
+
+function onError()
+{
+    if (applicationCache.status != applicationCache.UNCACHED && applicationCache.status != applicationCache.OBSOLETE) {
+        timeoutId = setTimeout(onNoManifest, 100);
+        return;
+    }
+
+    log("error");
+    applicationCache.onobsolete = function() { log("obsolete") }
+    applicationCache.onupdateready = function() { log("updateready") }
+    applicationCache.onnoupdate = function() { log("noupdate") }
+    applicationCache.onnoupdate = function() { log("error") }
+
+    // Ensure that we are not associated with a cache.
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "empty.txt", false);
+        req.send(null);
+    } catch (ex) {
+        alert("FAIL: XMLHttpRequest raised an exception, " + ex);
+    }
+    log("There should be no messages below.");
+    parent.postMessage("frameDone - timeout", "*");
+}
+
+applicationCache.onupdateready = function() { log("updateready"); alert("Unexpected updateready event in frame") }
+applicationCache.onnoupdate = function() { log("noupdate") }
+applicationCache.oncached = function() { log("cached"); alert("Unexpected cached event in frame") }
+
+applicationCache.onobsolete = onObsolete;
+applicationCache.onerror = onError;
+
+</script>
+</body>
+</html>

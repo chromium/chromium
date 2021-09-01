@@ -1,0 +1,6 @@
+Test that the API exists with origin trial token
+
+Should say SUCCESS:
+
+SUCCESS
+

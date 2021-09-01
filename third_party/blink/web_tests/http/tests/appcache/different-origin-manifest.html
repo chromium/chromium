@@ -1,0 +1,41 @@
+<html manifest="http://localhost:8000/appcache/resources/empty.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<p>Test that a different origin manifest is completely ignored.</p>
+<div id=result></div>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+var result = document.getElementById("result");
+var originalResult = result.innerHTML;
+
+try {
+    applicationCache.onchecking = function() { result.innerHTML += "FAIL: onchecking called. " }
+    applicationCache.onerror = function() { result.innerHTML += "FAIL: onerror called" }
+    applicationCache.onnoupdate = function() { result.innerHTML += "FAIL: onnoupdate called" }
+    applicationCache.ondownloading = function() { result.innerHTML += "FAIL: ondownloading called" }
+    applicationCache.onprogress = function() { result.innerHTML += "FAIL: onprogress called" }
+    applicationCache.onupdateready = function() { result.innerHTML += "FAIL: onupdateready called" }
+    applicationCache.oncached = function() { result.innerHTML += "FAIL: oncached called" }
+    applicationCache.onobsolete = function() { result.innerHTML += "FAIL: onobsolete called" }
+} catch (ex) {
+    result.innerHTML += "FAIL: " + ex;
+}
+function done()
+{
+    if (result.innerHTML == originalResult)
+        result.innerHTML = applicationCache.status == applicationCache.UNCACHED ? "PASS" : "FAIL: cache status in not UNCACHED";
+
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+setTimeout(done, 100);
+</script>
+</html>

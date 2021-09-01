@@ -1,0 +1,3 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+This tests that navigating away while a cache is loading does not crash.
+SUCCESS - did not crash

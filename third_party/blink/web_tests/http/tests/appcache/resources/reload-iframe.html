@@ -1,0 +1,26 @@
+<html manifest="reload-iframe.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<script>
+function test()
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", "resources/not-in-cache.txt", false);
+        req.send("");
+        parent.postMessage("FAIL: Loading an uncached resource didn't raise an exception", "*");
+    } catch (e) {
+        parent.postMessage("SUCCESS", "*");
+    }
+}
+
+applicationCache.onnoupdate = function() { parent.postMessage("Frame loaded", "*") }
+applicationCache.oncached = function() { parent.postMessage("Frame loaded", "*") }
+
+</script>
+</body>
+</html>

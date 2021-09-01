@@ -1,0 +1,28 @@
+<html>
+<head>
+<script>
+var frames = 2;
+function runTest()
+{
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.dumpChildFrames();
+        testRunner.waitUntilDone();
+    }
+    window.onmessage = function(message) {
+        --frames;
+        if (frames <= 0 && window.testRunner)
+            testRunner.notifyDone();
+    }
+    document.getElementById('frame1').src = "http://localhost:8000/security/resources/cross-origin-iframe-for-appcache-allowed.html";
+    document.getElementById('frame2').src = "http://127.0.0.1:8000/security/resources/cross-origin-iframe-for-appcache-allowed.html";
+}
+</script>
+</head>
+<body onload="runTest()">
+<p>This iframe should have a cache:</p>
+<iframe id="frame1"></iframe>
+<p>This iframe should have a cache:</p>
+<iframe id="frame2"></iframe>
+</body>
+</html>

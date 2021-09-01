@@ -1,0 +1,71 @@
+<html manifest="resources/manifest-parsing.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test application cache manifest parsing.</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function canLoad(url)
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", url, false);
+        req.send();
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function test()
+{
+    var hadError = false;
+    
+    // Check that section name wasn't misparsed as resource URL.
+    if (canLoad("resources/UNKNOWN:")) {
+        log("Loaded 'UNKNOWN:'");
+        hadError = true;
+    }
+
+    // Load a resource that was in UNKNOWN section - in other words, that is not in cache.
+    if (canLoad("resources/not-in-cache.txt")) {
+        log("Loaded 'not-in-cache.txt'");
+        hadError = true;
+    }
+
+    // Load resources were specified with tricky whitespace.
+    if (!canLoad("resources/empty.txt")) {
+        log("Could not load 'empty.txt'");
+        hadError = true;
+    }
+    if (!canLoad("resources/simple.txt")) {
+        log("Could not load 'simple.txt'");
+        hadError = true;
+    }
+
+    log(hadError ? "FAILURE" : "SUCCESS");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+
+applicationCache.onerror = function() { log("error") }
+</script>
+</body>
+</html>

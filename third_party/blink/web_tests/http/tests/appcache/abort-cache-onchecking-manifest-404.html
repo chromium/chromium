@@ -1,0 +1,59 @@
+<html manifest="resources/abort-cache-onchecking-manifest-404.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function log(message) {
+    document.getElementById("result").innerHTML += message + "\n";
+}
+
+function onchecking() {
+    applicationCache.abort(); 
+}
+
+function onnoupdate() {
+    log("FAILURE");
+    log("noupdate");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function oncached() {
+    log("FAILURE");
+    log("CACHED");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function onupdateready() {
+    log("FAILURE");
+    log("UPDATEREADY");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function onerror() {
+    log("SUCCESS");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.addEventListener('checking', onchecking, false);
+applicationCache.addEventListener('noupdate', onnoupdate, false);
+applicationCache.addEventListener('cached', oncached, false);
+applicationCache.addEventListener('error', onerror, false);
+applicationCache.addEventListener('updateready', onupdateready, false);
+
+</script>
+
+<div>This tests that download process was aborted after checking event and before update failed.</div>
+<div id="result"></div>
+</html>
+

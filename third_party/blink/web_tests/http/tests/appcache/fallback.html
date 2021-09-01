@@ -1,0 +1,169 @@
+<html manifest="resources/root-scope-fallback-manifest.php">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test application cache fallback entries.</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+var hadError = false;
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function setNetworkEnabled(state)
+{
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "/resources/network-simulator.php?command=" + (state ? "connect" : "disconnect"), false);
+        req.send("");
+    } catch (ex) {
+        log("Cannot access network simulator URL");
+        hadError = true;
+    }
+}
+
+function load(url)
+{
+    try {
+        var req = new XMLHttpRequest();
+        req.open("GET", url, false);
+        req.send("");
+        return req.responseText;
+    } catch (ex) {
+        log("FAIL: Cannot load " + url + ", ex = " + ex);
+        hadError = true;
+        return ""; // This value should not be expected as the responseText for a url presented to this function.
+    }
+}
+
+var testURL = "/resources/network-simulator.php?path=/appcache/resources/not-in-cache.txt";
+var nonexistentURL = "resources/does-not-exist";
+var redirectURL = "resources/fallback-redirect.php";
+
+function test()
+{
+    applicationCache.onnoupdate = function() { log("FAIL: received unexpected noupdate event") }
+    applicationCache.oncached = function() { log("FAIL: received unexpected cached event") }
+    
+    setNetworkEnabled(true);
+
+    if (!/not in the cache/.test(load(testURL))) {
+        log("FAIL: Cannot load an URL from fallback namespace when network is enabled");
+        hadError = true;
+    }
+
+    if (load(nonexistentURL) != "Hello, World!") {
+        log("FAIL: Fallback resource wasn't used for a 404 response");
+        hadError = true;
+    }
+
+    if (load(redirectURL) != "Hello, World!") {
+        log("FAIL: Fallback resource wasn't used for a redirect to a resource with another origin");
+        hadError = true;
+    }
+
+    test2();
+}
+
+function test2()
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", nonexistentURL);
+    req.onerror = function() {
+        log("FAIL: Fallback resource wasn't used for a 404 response (async)");
+        hadError = true;
+        test3();
+    }
+    req.onload = function() {
+        if (req.responseText != "Hello, World!") {
+            log("FAIL: Unexpected result for a 404 response (async)");
+            hadError = true;
+        }
+        test3();
+    }
+
+    req.send("");
+}
+
+function test3()
+{
+    var req = new XMLHttpRequest;
+    req.open("GET", redirectURL);
+    req.onerror = function() {
+        log("FAIL: Fallback resource wasn't used for a redirect to a resource with another origin (async)");
+        hadError = true;
+        test4();
+    }
+    req.onload = function() {
+        if (req.responseText != "Hello, World!") {
+            log("FAIL: Unexpected result for a redirect response (async)");
+            hadError = true;
+        }
+        test4();
+    }
+
+    req.send("");
+}
+
+function test4()
+{
+    // Try loading a fallback resource as main one.
+
+    applicationCache.onnoupdate = test5;
+
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", nonexistentURL);
+    ifr.setAttribute("onload", "test5()");
+    document.body.appendChild(ifr);
+}
+
+var test5_calls = 0;
+
+function test5()
+{
+    test5_calls++;
+    if (test5_calls == 1) {
+        return;
+    }
+    if (!/Hello, World/.test(window.frames[0].document.documentElement.innerHTML)) {
+        log("FAIL: Fallback URL was not honored for main resource");
+        hadError = true;
+    }
+    test6();
+}
+
+function test6()
+{
+    setNetworkEnabled(false);
+
+    if (load(testURL) != load("resources/simple.txt")) {
+        log("FAIL: Loading an URL from fallback namespace when network is disabled returned unexpected response");
+        hadError = true;
+    }
+
+    log(hadError ? "FAILURE" : "SUCCESS");
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<html manifest="resources/subframes-4.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<body>
+<p>Test that a subframe with manifest that matches top frame manifest works correctly.</p>
+<p>In this case, the subframe resource is listed in manifest explicitly.</p>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+function debug(message)
+{
+    // If running manually in the browser, print the sequence of events.
+    if (!window.testRunner)
+        log(message);
+}
+
+var receivedExpectedMessage = false;
+var receivedCheckingEventsCounter = 0;
+var receivedNoupdateEventsCounter = 0;
+
+function checkDone()
+{
+    if (receivedExpectedMessage && receivedCheckingEventsCounter == 2 && receivedNoupdateEventsCounter == 2) {
+        log("SUCCESS");
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+}
+
+function test()
+{
+    applicationCache.onnoupdate = null;
+    applicationCache.oncached = null;
+
+    // When a new main resource is associated with the cache, an update should be started.
+    applicationCache.onchecking = function() { debug("checking"); receivedCheckingEventsCounter++; checkDone() }
+    applicationCache.onnoupdate = function() { debug("noupdate"); receivedNoupdateEventsCounter++; checkDone();  }
+
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/subframe-4.html");
+    document.body.appendChild(ifr);
+}
+
+function test2()
+{
+    window.removeEventListener("message", test2, false);
+    window.addEventListener("message", test3, false);
+
+    // Add an identical frame, to test that loading its resources from appcache works.
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "resources/subframe-4.html");
+    document.body.appendChild(ifr);
+}
+
+function test3()
+{
+    debug("message");
+    receivedExpectedMessage = true;
+    checkDone();
+}
+
+applicationCache.onnoupdate = function() { test() }
+applicationCache.oncached = function() { test() }
+
+applicationCache.onupdateready = function() { log("FAIL: received unexpected updateready event") }
+applicationCache.onerror = function() { log("FAIL: received unexpected error event") }
+
+window.addEventListener("message", test2, false);
+
+</script>
+</body>
+</html>

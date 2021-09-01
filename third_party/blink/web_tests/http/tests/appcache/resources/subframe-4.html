@@ -1,0 +1,31 @@
+<html manifest="subframes-4.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+function test()
+{
+    applicationCache.onnoupdate = null;
+
+    try {
+        var req = new XMLHttpRequest;
+        req.open("GET", "simple.txt", false);
+        req.send(null);
+        alert("FAIL, unexpected response: " + req.responseText);
+    } catch (ex) {
+        // Loading should fail, because simple.txt is not in cache manifest.
+        parent.postMessage("allDone", "*");
+    }
+}
+
+// The cache has been fully created before the iframe was inserted, and the manifest didn't change.
+applicationCache.onnoupdate = test;
+
+applicationCache.onupdateready = function() { alert("Unexpected updateready event") }
+applicationCache.oncached = function() { alert("Unexpected cached event") }
+applicationCache.onerror = function() { alert("Unexpected error event") }
+
+</script>
+</html>

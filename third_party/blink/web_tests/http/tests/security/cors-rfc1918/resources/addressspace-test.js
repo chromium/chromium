@@ -4,6 +4,10 @@ function createIFrame(origin, type) {
         file = "post-addressspace-to-parent.php";
     } else if (type == "document+csp") {
         file = "post-addressspace-to-parent.php?csp";
+    } else if (type == "document+appcache") {
+        file = "post-addressspace-to-parent-with-appcache.php";
+    } else if (type == "document+appcache+csp") {
+        file = "post-addressspace-to-parent-with-appcache.php?csp";
     } else if (type == "worker") {
         file = "post-addressspace-from-worker.html";
     } else if (type == "module-worker") {

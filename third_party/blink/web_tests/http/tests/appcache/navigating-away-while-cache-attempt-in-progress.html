@@ -1,0 +1,26 @@
+<html manifest="resources/navigating-away-while-cache-attempt-in-progress.manifest">
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+function navigateAway() {
+    if (window.testRunner)
+        testRunner.notifyDone();
+    else
+        window.location.href = "about:blank"
+}
+
+setTimeout(navigateAway, 1000);
+
+</script>
+<div>This tests that navigating away while a cache is loading does not crash.</div>
+<div>SUCCESS - did not crash</div>
+</html>

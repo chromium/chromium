@@ -1,0 +1,15 @@
+CONSOLE WARNING: line 1: Application Cache API manifest selection is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M85, around August 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+Test that a missing cross-origin resource failure doesn't leak details.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS applicationCache.status is applicationCache.UNCACHED
+PASS event.reason is "resource"
+PASS event.url is "http://127.0.0.1/does-not-exist.txt"
+PASS event.status is 0
+PASS event.message is ""
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

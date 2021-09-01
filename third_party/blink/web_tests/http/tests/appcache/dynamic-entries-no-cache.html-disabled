@@ -1,0 +1,119 @@
+<body>
+<p>Test the behavior of DOMApplicationCache methods related to dynamic entries when the context
+is not associated with any cache.</p>
+<div id="result"></div>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+function log(message)
+{
+    document.getElementById("result").innerHTML += message + "<br>";
+}
+
+
+function isResultCorrect(_actual, _expected)
+{
+    if (_expected === 0)
+        return _actual === _expected && (1/_actual) === (1/_expected);
+    if (_actual === _expected)
+        return true;
+    if (typeof(_expected) == "number" && isNaN(_expected))
+        return typeof(_actual) == "number" && isNaN(_actual);
+    if (Object.prototype.toString.call(_expected) == Object.prototype.toString.call([])) {
+        log("Array comparison is not supported");
+        return false;
+    }
+    return false;
+}
+
+function shouldBe(_a, _b)
+{
+  if (typeof _a != "string" || typeof _b != "string")
+    log("WARN: shouldBe() expects string arguments");
+  var exception;
+  var _av;
+  try {
+     _av = eval(_a);
+  } catch (e) {
+     exception = e;
+  }
+  var _bv = eval(_b);
+
+  if (exception)
+    log("FAIL: " + _a + " should be " + _bv + ". Threw exception " + exception);
+  else if (isResultCorrect(_av, _bv))
+    log("PASS: " + _a + " is " + _b);
+  else if (typeof(_av) == typeof(_bv))
+    log("FAIL: " + _a + " should be " + _bv + ". Was " + stringify(_av) + ".");
+  else
+    log("FAIL: " + _a + " should be " + _bv + " (of type " + typeof _bv + "). Was " + _av + " (of type " + typeof _av + ").");
+}
+
+
+shouldBe("applicationCache.items.length", "0");
+shouldBe("applicationCache.items.item(0)", "null");
+shouldBe("applicationCache.items.item(1)", "null");
+shouldBe("applicationCache.items.item(0xffffffff)", "null");
+shouldBe("applicationCache.items.item(0xfffffffe)", "null");
+shouldBe("applicationCache.items.item(-1)", "null");
+shouldBe("applicationCache.items.item(-2)", "null");
+
+shouldBe("applicationCache.items[0xfffffffe]", "undefined");
+shouldBe("applicationCache.items[0xffffffff]", "undefined");
+
+// The below index access tests give different results in WebKit and Firefox 3.1b2 (undefined vs. empty string).
+shouldBe("applicationCache.items['0']", "undefined");
+shouldBe("applicationCache.items['']", "undefined");
+shouldBe("applicationCache.items[0]", "undefined");
+shouldBe("applicationCache.items[1]", "undefined");
+shouldBe("applicationCache.items[-1]", "undefined");
+shouldBe("applicationCache.items[-2]", "undefined");
+applicationCache.items[100] = "foobar";
+applicationCache.items['100'] = "foobar";
+applicationCache.items['foo'] = "bar";
+shouldBe("applicationCache.items[100]", "undefined");
+shouldBe("applicationCache.items['100']", "undefined");
+
+shouldBe("applicationCache.items['foo']", "undefined");
+shouldBe("applicationCache.items[0.1]", "undefined");
+
+try {
+    applicationCache.hasItem('foo');
+    log("FAIL: hasItem didn't raise an exception");
+} catch (ex) {
+    if (ex.code == 11)
+        log("PASS: hasItem raised INVALID_STATE_ERR");
+    else
+        log("FAIL: hasItem raised unexpected exception " + ex);
+}
+
+try {
+    applicationCache.add('foo');
+    log("FAIL: add didn't raise an exception");
+} catch (ex) {
+    if (ex.code == 11)
+        log("PASS: add raised INVALID_STATE_ERR");
+    else
+        log("FAIL: add raised unexpected exception " + ex);
+}
+
+try {
+    applicationCache.remove('bar');
+    log("FAIL: remove didn't raise an exception");
+} catch (ex) {
+    if (ex.code == 11)
+        log("PASS: remove raised INVALID_STATE_ERR");
+    else
+        log("FAIL: remove raised unexpected exception " + ex);
+}
+
+shouldBe("applicationCache.items.length", "0");
+
+
+
+log("DONE");
+
+</script>
+</head>
+</body>

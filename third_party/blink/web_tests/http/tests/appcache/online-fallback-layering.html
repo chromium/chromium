@@ -1,0 +1,102 @@
+<html manifest=resources/online-fallback-layering.manifest>
+<head>
+<!--
+Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AppCache --expire-days=2000
+-->
+<meta http-equiv="origin-trial" content="AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=">
+<script>
+
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function log(message) {
+    document.getElementById("log").innerHTML += message + "<br>";
+}
+
+function testComplete(result) {
+    log(result);
+    if (window.testRunner)
+       testRunner.notifyDone();
+}
+
+function syncGet(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, false);
+    xhr.send();
+    if (xhr.status == 200)
+        return xhr.responseText;
+    if (xhr.status == 404)
+        return "404 not found";
+    log ("unexpected status code");
+    return "";
+}
+
+applicationCache.oncached = function() { setTimeout(startTest, 0); }
+applicationCache.onnoupdate = function() { setTimeout(startTest, 0); }
+applicationCache.onupdateready = function() { log('onupdateready'); location.reload(); }
+applicationCache.onerror = function() { testComplete('FAIL - onerror'); }
+applicationCache.onobsolete = function() { testComplete('FAIL - onobsolete'); }
+
+function startTest() {
+    applicationCache.oncached = null;
+    applicationCache.onnoupdate = null;
+
+    var response;
+
+    log('Sanity check the presence of the fallback namespace, should get the fallback resource.');
+    response = syncGet('resources/fallbacknamespace-nonexisting-resource');
+    if (!response.match('fallback resource'))
+        return testComplete('FAIL - did not get the fallback resource');
+
+    log('Getting a network namespace resource that exists on the server, should succeed.');
+    response = syncGet('resources/fallbacknamespace-networknamespace-existing-resource.html');
+    if (!response.match('hello'))
+        return testComplete('FAIL - did not get the existing resource');
+
+    log('Getting a network namespace resource that does not exist on the server, should get a 404.');
+    response = syncGet('resources/fallbacknamespace-networknamespace-nonexisting-resource');
+    if (response != "404 not found")
+        return testComplete('FAIL - did not get a 404 for the nonexisting resource');
+
+    log('Creating two iframes for an existing and non-existing page, one should say "hello" the other should 404.');
+    createFrame('resources/fallbacknamespace-networknamespace-existing-resource.html');
+    createFrame('resources/fallbacknamespace-networknamespace-nonexisting-resource');
+}
+
+function createFrame(src) {
+    var frame = document.createElement("iframe");
+    frame.setAttribute("src", src);
+    document.body.appendChild(frame);
+}
+ 
+function frameCreated() {
+    log('- hello heard');
+    setTimeout(waitFor404, 0);
+}
+
+function waitFor404() {
+  try {
+      var frameContent = frames[1].document.documentElement.innerHTML;
+      if (frameContent.match("Not Found")) {
+          log('- 404 detected');
+          testComplete('PASS');
+      } else if (frameContent.match("fallback resource"))
+          testComplete('FAIL - subframe was loaded with the fallback resource.');
+      else
+          throw "Try again";
+  } catch (ex) {
+      setTimeout(waitFor404, 100);
+  }
+}
+
+</script>
+</head>
+
+<body>
+<p>Test that a network namespace trumps a fallback namespace where they overlap.</p>
+<div id=log></div> 
+</body>
+</html>
