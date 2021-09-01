@@ -203,6 +203,25 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
   EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteApp) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("DeleteApp");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that app is deleted.
+  EXPECT_FALSE(GetAppListItem(kId1));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteAppInFolder) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("DeleteAppInFolder");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that folder and app are not present.
+  EXPECT_FALSE(GetAppListItem(kId1));
+  EXPECT_FALSE(GetAppListItem(kId2));
+}
+
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("Remote app added",

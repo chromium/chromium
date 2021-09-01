@@ -75,6 +75,24 @@ const testCases = [
     chrome.test.assertEq('Id 1', actualId);
     chrome.test.succeed();
   },
+  async function DeleteApp() {
+    const result1 = await api.addApp('App 1', '', '');
+    const result2 = await api.deleteApp(result1.appId);
+    chrome.test.assertFalse(!!result2.error);
+
+    const result3 = await api.deleteApp(result1.appId);
+    chrome.test.assertEq('App ID provided does not exist', result3.error);
+
+    chrome.test.succeed();
+  },
+  async function DeleteAppInFolder() {
+    const result1 = await api.addFolder('Folder 1');
+    const result2 = await api.addApp('App 1', result1.folderId, '');
+    const result3 = await api.deleteApp(result2.appId);
+    chrome.test.assertFalse(!!result3.error);
+
+    chrome.test.succeed();
+  },
 ];
 
 chrome.test.getConfig(async (config) => {

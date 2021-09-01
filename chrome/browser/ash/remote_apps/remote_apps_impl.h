@@ -58,8 +58,10 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
               const GURL& icon_url,
               bool add_to_front,
               AddAppCallback callback) override;
+  void DeleteApp(const std::string& app_id,
+                 DeleteAppCallback callback) override;
 
-  void OnAppLaunched(const std::string& id);
+  void OnAppLaunched(const std::string& app_id);
 
  private:
   void OnAppAdded(AddAppCallback callback,

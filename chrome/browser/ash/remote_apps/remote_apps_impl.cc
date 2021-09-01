@@ -25,6 +25,7 @@ namespace {
 
 constexpr char kErrNotReady[] = "Manager for remote apps is not ready";
 constexpr char kErrFolderIdDoesNotExist[] = "Folder ID provided does not exist";
+constexpr char kErrAppIdDoesNotExist[] = "App ID provided does not exist";
 
 static bool g_bypass_checks_for_testing_ = false;
 
@@ -93,15 +94,36 @@ void RemoteAppsImpl::AddApp(const std::string& name,
                      std::move(callback)));
 }
 
-void RemoteAppsImpl::OnAppLaunched(const std::string& id) {
-  if (!base::Contains(app_ids_, id))
+void RemoteAppsImpl::DeleteApp(const std::string& app_id,
+                               DeleteAppCallback callback) {
+  ash::RemoteAppsError error = manager_->DeleteApp(app_id);
+
+  switch (error) {
+    case RemoteAppsError::kNotReady:
+      std::move(callback).Run(kErrNotReady);
+      return;
+    case RemoteAppsError::kNone:
+      app_ids_.erase(app_id);
+      std::move(callback).Run(absl::nullopt);
+      return;
+    case RemoteAppsError::kAppIdDoesNotExist:
+      std::move(callback).Run(kErrAppIdDoesNotExist);
+      return;
+    case RemoteAppsError::kFolderIdDoesNotExist:
+      // Impossible to reach - only occurs for |AddApp()|.
+      DCHECK(false);
+  }
+}
+
+void RemoteAppsImpl::OnAppLaunched(const std::string& app_id) {
+  if (!base::Contains(app_ids_, app_id))
     return;
   for (auto& observer : app_launch_observers_)
-    observer->OnRemoteAppLaunched(id);
+    observer->OnRemoteAppLaunched(app_id);
 }
 
 void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
-                                const std::string& id,
+                                const std::string& app_id,
                                 RemoteAppsError error) {
   switch (error) {
     case RemoteAppsError::kNotReady:
@@ -111,12 +133,11 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
       std::move(callback).Run(absl::nullopt, kErrFolderIdDoesNotExist);
       return;
     case RemoteAppsError::kNone:
-      app_ids_.insert(id);
-      std::move(callback).Run(id, absl::nullopt);
+      app_ids_.insert(app_id);
+      std::move(callback).Run(app_id, absl::nullopt);
       return;
     case RemoteAppsError::kAppIdDoesNotExist:
-      // Only occurs when deleting an app, which is not yet implemented in the
-      // API.
+      // Impossible to reach - only occurs for |DeleteApp()|.
       DCHECK(false);
   }
 }
