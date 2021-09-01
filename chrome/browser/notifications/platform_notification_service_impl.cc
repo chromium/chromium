@@ -239,7 +239,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
   // Posted tasks can request notifications to be added, which would cause a
   // crash (see |ScopedKeepAlive|). We just do nothing here, the user would not
   // see the notification anyway, since we are shutting down.
-  // TODO(knollr): IsShuttingDown check should not be required anymore, but some
+  // Note that the IsShuttingDown() check should not be required here, but some
   // tests try to display a notification during shutdown.
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
