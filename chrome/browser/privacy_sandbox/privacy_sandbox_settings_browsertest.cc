@@ -138,16 +138,20 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest, UserResetFlocID) {
 
   MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
+  EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true)).Times(2);
 
   base::UserActionTester user_action_tester;
   ASSERT_EQ(0, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.ResetFloc"));
 
-  privacy_sandbox_settings()->ResetFlocId();
+  privacy_sandbox_settings()->ResetFlocId(/*user_initiated=*/true);
 
   EXPECT_NE(base::Time(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
+  ASSERT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.ResetFloc"));
+
+  privacy_sandbox_settings()->ResetFlocId(/*user_initiated=*/false);
   ASSERT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.ResetFloc"));
 }

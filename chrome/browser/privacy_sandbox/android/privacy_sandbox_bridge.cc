@@ -55,7 +55,7 @@ static jboolean JNI_PrivacySandboxBridge_IsFlocIdResettable(JNIEnv* env) {
 static void JNI_PrivacySandboxBridge_ResetFlocId(JNIEnv* env) {
   PrivacySandboxSettingsFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
-      ->ResetFlocId();
+      ->ResetFlocId(/*user_initiated=*/true);
 }
 
 static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocStatusString(

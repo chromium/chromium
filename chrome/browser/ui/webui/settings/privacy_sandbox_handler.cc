@@ -72,7 +72,7 @@ void PrivacySandboxHandler::HandleResetFlocId(const base::ListValue* args) {
       Profile::FromWebUI(web_ui()));
   DCHECK(privacy_sandbox_settings);
 
-  privacy_sandbox_settings->ResetFlocId();
+  privacy_sandbox_settings->ResetFlocId(/*user_initiated=*/true);
 
   // The identifier will have been immediately invalidated in response to
   // the clearing action, so synchronously retrieving the FLoC ID will retrieve

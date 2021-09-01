@@ -301,10 +301,12 @@ bool PrivacySandboxSettings::IsFlocIdResettable() const {
   return floc_feature_enabled && IsFlocAllowed();
 }
 
-void PrivacySandboxSettings::ResetFlocId() const {
+void PrivacySandboxSettings::ResetFlocId(bool user_initiated) const {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/true);
-  base::RecordAction(
-      base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
+  if (user_initiated) {
+    base::RecordAction(
+        base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
+  }
 }
 
 bool PrivacySandboxSettings::IsFlocPrefEnabled() const {
@@ -404,7 +406,7 @@ void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
   // transition from FLoC being effectively disabled to effectively enabled,
   // but performing it on every pref change achieves the same user visible
   // behavior, and is much simpler.
-  ResetFlocId();
+  ResetFlocId(/*user_initiated=*/false);
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {

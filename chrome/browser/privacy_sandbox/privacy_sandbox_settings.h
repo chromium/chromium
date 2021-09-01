@@ -112,8 +112,9 @@ class PrivacySandboxSettings : public KeyedService,
   bool IsFlocIdResettable() const;
 
   // Sets the time when history is accessible for FLoC calculation to the
-  // current time and resets the time to the next FLoC id calculation
-  void ResetFlocId() const;
+  // current time and resets the time to the next FLoC id calculation. If
+  // |user_initiated| is true, records the associated User Metrics Action.
+  void ResetFlocId(bool user_initiated) const;
 
   // Returns whether the FLoC preference is enabled. This should only be used
   // for displaying the preference state to the user, and should *not* be used
