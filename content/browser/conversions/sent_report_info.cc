@@ -7,15 +7,11 @@
 namespace content {
 
 SentReportInfo::SentReportInfo(ConversionReport report,
-                               GURL report_url,
-                               std::string report_body,
-                               int http_response_code,
-                               bool should_retry)
+                               Status status,
+                               int http_response_code)
     : report(std::move(report)),
-      report_url(std::move(report_url)),
-      report_body(std::move(report_body)),
-      http_response_code(http_response_code),
-      should_retry(should_retry) {}
+      status(status),
+      http_response_code(http_response_code) {}
 
 SentReportInfo::SentReportInfo(const SentReportInfo& other) = default;
 SentReportInfo& SentReportInfo::operator=(const SentReportInfo& other) =

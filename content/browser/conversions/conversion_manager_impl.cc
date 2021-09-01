@@ -65,7 +65,8 @@ bool ShouldRetryReport(const ConversionPolicy& policy,
                        const SentReportInfo& info) {
   bool past_max_allowed_age =
       (now - info.report.original_report_time) > policy.GetMaxReportAge();
-  return info.should_retry && !past_max_allowed_age;
+  return info.status == SentReportInfo::Status::kShouldRetry &&
+         !past_max_allowed_age;
 }
 
 void RecordCreateReportStatus(ConversionStorage::CreateReportStatus result) {
@@ -336,7 +337,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   }
 
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
-  if (info.report_url.is_empty() || should_retry)
+  if (info.status != SentReportInfo::Status::kSent)
     return;
 
   while (sent_reports_.size() >= max_sent_reports_to_store_)

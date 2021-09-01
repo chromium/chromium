@@ -16,13 +16,12 @@ enum SourceType {
 // Struct containing stored data that will be sent in a future conversion
 // report.
 struct WebUIConversionReport {
-  uint64 impression_data;
-  uint64 conversion_data;
   url.mojom.Origin conversion_origin;
-  url.mojom.Origin reporting_origin;
+  url.mojom.Url report_url;
   double report_time;
-  SourceType source_type;
   int64 priority;
+  string report_body;
+  int32 http_response_code;
 };
 
 // Struct representing a stored impression that will be displayed by WebUI.
@@ -36,15 +35,6 @@ struct WebUIImpression {
   SourceType source_type;
   int64 priority;
   array<int64> dedup_keys;
-};
-
-// Struct containing info for reports sent in this session.
-struct SentReportInfo {
-  url.mojom.Url report_url;
-  // The JSON POSTed to the report URL.
-  string report_body;
-  int32 http_response_code;
-  WebUIConversionReport report;
 };
 
 // Mojo interface for the conversion internals WebUI to communicate with the
@@ -61,10 +51,7 @@ interface ConversionInternalsHandler {
 
   // Returns all reports contained in storage, including those that are actively
   // being sent.
-  GetPendingReports() => (array<WebUIConversionReport> reports);
-
-  // Returns the info for all reports that have been sent in this session.
-  GetSentReports() => (array<SentReportInfo> reports);
+  GetSentAndPendingReports() => (array<WebUIConversionReport> sent_reports, array<WebUIConversionReport> pending_reports);
 
   // Sends all stored reports, ignoring delay, returning when the
   // operation has been completed and all reports have been cleared from

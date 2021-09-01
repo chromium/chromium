@@ -4,6 +4,13 @@
 
 #include "content/browser/conversions/conversion_report.h"
 
+#include "base/check.h"
+#include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+#include "url/gurl.h"
+#include "url/url_canon.h"
+
 namespace content {
 
 ConversionReport::ConversionReport(StorableImpression impression,
@@ -31,5 +38,43 @@ ConversionReport& ConversionReport::operator=(ConversionReport&& other) =
     default;
 
 ConversionReport::~ConversionReport() = default;
+
+GURL ConversionReport::ReportURL() const {
+  url::Replacements<char> replacements;
+  static constexpr char kEndpointPath[] =
+      "/.well-known/attribution-reporting/report-attribution";
+  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
+  return impression.reporting_origin().GetURL().ReplaceComponents(replacements);
+}
+
+std::string ConversionReport::ReportBody(bool pretty_print) const {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  // The API denotes these values as strings; a `uint64_t` cannot be put in
+  // a dict as an integer in order to be opaque to various API configurations.
+  dict.SetStringKey("source_event_id",
+                    base::NumberToString(impression.impression_data()));
+
+  dict.SetStringKey("trigger_data", base::NumberToString(conversion_data));
+
+  const char* source_type = nullptr;
+  switch (impression.source_type()) {
+    case StorableImpression::SourceType::kNavigation:
+      source_type = "navigation";
+      break;
+    case StorableImpression::SourceType::kEvent:
+      source_type = "event";
+      break;
+  }
+  dict.SetStringKey("source_type", source_type);
+
+  // Write the dict to json;
+  std::string output_json;
+  bool success = base::JSONWriter::WriteWithOptions(
+      dict, pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0,
+      &output_json);
+  DCHECK(success);
+  return output_json;
+}
 
 }  // namespace content

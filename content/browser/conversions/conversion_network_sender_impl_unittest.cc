@@ -176,12 +176,10 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_CallbackFired) {
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
-  EXPECT_THAT(
-      sent_reports_,
-      ElementsAre(SentReportInfo(
-          std::move(report), GURL(kReportUrl),
-          R"({"source_event_id":"1","source_type":"navigation","trigger_data":"1"})",
-          /*http_response_code=*/200, /*should_retry=*/false)));
+  EXPECT_THAT(sent_reports_,
+              ElementsAre(SentReportInfo(std::move(report),
+                                         SentReportInfo::Status::kSent,
+                                         /*http_response_code=*/200)));
 }
 
 TEST_F(ConversionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
@@ -207,27 +205,25 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   // Also verify that the sent callback runs if the request times out.
   // TODO(apaseltiner): Should we propagate the timeout via the SentReportInfo
   // instead of just setting |http_response_code = 0|?
-  EXPECT_THAT(
-      sent_reports_,
-      ElementsAre(SentReportInfo(
-          std::move(report), GURL(kReportUrl),
-          R"({"source_event_id":"1","source_type":"navigation","trigger_data":"1"})",
-          /*http_response_code=*/0, /*should_retry=*/true)));
+  EXPECT_THAT(sent_reports_,
+              ElementsAre(SentReportInfo(std::move(report),
+                                         SentReportInfo::Status::kShouldRetry,
+                                         /*http_response_code=*/0)));
 }
 
 TEST_F(ConversionNetworkSenderTest,
        ReportRequestFailsWithTargetedError_ShouldRetrySet) {
   struct {
     int net_error;
-    bool should_retry;
+    SentReportInfo::Status expected_status;
   } kTestCases[] = {
-      {.net_error = net::ERR_INTERNET_DISCONNECTED, .should_retry = true},
-      {.net_error = net::ERR_TIMED_OUT, .should_retry = true},
-      {.net_error = net::ERR_CONNECTION_ABORTED, .should_retry = true},
-      {.net_error = net::ERR_CONNECTION_TIMED_OUT, .should_retry = true},
-      {.net_error = net::ERR_CONNECTION_REFUSED, .should_retry = false},
-      {.net_error = net::ERR_CERT_DATE_INVALID, .should_retry = false},
-      {.net_error = net::OK, .should_retry = false},
+      {net::ERR_INTERNET_DISCONNECTED, SentReportInfo::Status::kShouldRetry},
+      {net::ERR_TIMED_OUT, SentReportInfo::Status::kShouldRetry},
+      {net::ERR_CONNECTION_ABORTED, SentReportInfo::Status::kShouldRetry},
+      {net::ERR_CONNECTION_TIMED_OUT, SentReportInfo::Status::kShouldRetry},
+      {net::ERR_CONNECTION_REFUSED, SentReportInfo::Status::kSent},
+      {net::ERR_CERT_DATE_INVALID, SentReportInfo::Status::kSent},
+      {net::OK, SentReportInfo::Status::kSent},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -241,7 +237,7 @@ TEST_F(ConversionNetworkSenderTest,
         network::URLLoaderCompletionStatus(test_case.net_error),
         network::mojom::URLResponseHead::New(), std::string());
 
-    EXPECT_EQ(test_case.should_retry, sent_reports_.back().should_retry);
+    EXPECT_EQ(test_case.expected_status, sent_reports_.back().status);
   }
 }
 
@@ -265,7 +261,7 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(false, sent_reports_.back().should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kSent, sent_reports_.back().status);
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -278,7 +274,7 @@ TEST_F(ConversionNetworkSenderTest,
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
 
   EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(false, sent_reports_[0].should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kSent, sent_reports_[0].status);
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -349,10 +345,8 @@ TEST_F(ConversionNetworkSenderTest, ReportResultsInHttpError_SentCallbackRuns) {
   EXPECT_THAT(
       sent_reports_,
       ElementsAre(SentReportInfo(
-          std::move(report), GURL(kReportUrl),
-          R"({"source_event_id":"1","source_type":"navigation","trigger_data":"1"})",
-          /*http_response_code=*/net::HttpStatusCode::HTTP_BAD_REQUEST,
-          /*should_retry=*/false)));
+          std::move(report), SentReportInfo::Status::kSent,
+          /*http_response_code=*/net::HttpStatusCode::HTTP_BAD_REQUEST)));
 }
 
 TEST_F(ConversionNetworkSenderTest, ManyReports_AllSentSuccessfully) {

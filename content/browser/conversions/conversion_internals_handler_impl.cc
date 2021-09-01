@@ -58,25 +58,28 @@ void ForwardImpressionsToWebUI(
 }
 
 ::mojom::WebUIConversionReportPtr WebUIConversionReport(
-    const ConversionReport& report) {
+    const ConversionReport& report,
+    int http_response_code) {
   return ::mojom::WebUIConversionReport::New(
-      report.impression.impression_data(), report.conversion_data,
-      report.impression.conversion_origin(),
-      report.impression.reporting_origin(), report.report_time.ToJsTime(),
-      SourceTypeToMojoType(report.impression.source_type()), report.priority);
+      report.impression.conversion_origin(), report.ReportURL(),
+      report.report_time.ToJsTime(), report.priority,
+      report.ReportBody(/*pretty_print=*/true), http_response_code);
 }
 
 void ForwardReportsToWebUI(
-    ::mojom::ConversionInternalsHandler::GetPendingReportsCallback
+    ::mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
         web_ui_callback,
+    std::vector<::mojom::WebUIConversionReportPtr> sent_reports,
     std::vector<ConversionReport> stored_reports) {
   std::vector<::mojom::WebUIConversionReportPtr> web_ui_reports;
   web_ui_reports.reserve(stored_reports.size());
 
   for (const ConversionReport& report : stored_reports) {
-    web_ui_reports.push_back(WebUIConversionReport(report));
+    web_ui_reports.push_back(
+        WebUIConversionReport(report, /*http_response_code=*/0));
   }
-  std::move(web_ui_callback).Run(std::move(web_ui_reports));
+  std::move(web_ui_callback)
+      .Run(std::move(sent_reports), std::move(web_ui_reports));
 }
 
 }  // namespace
@@ -118,35 +121,26 @@ void ConversionInternalsHandlerImpl::GetActiveImpressions(
   }
 }
 
-void ConversionInternalsHandlerImpl::GetPendingReports(
-    ::mojom::ConversionInternalsHandler::GetPendingReportsCallback callback) {
-  if (ConversionManager* manager =
-          manager_provider_->GetManager(web_ui_->GetWebContents())) {
-    manager->GetPendingReportsForWebUI(
-        base::BindOnce(&ForwardReportsToWebUI, std::move(callback)),
-        base::Time::Max());
-  } else {
-    std::move(callback).Run({});
-  }
-}
-
-void ConversionInternalsHandlerImpl::GetSentReports(
-    ::mojom::ConversionInternalsHandler::GetSentReportsCallback callback) {
+void ConversionInternalsHandlerImpl::GetSentAndPendingReports(
+    ::mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
+        callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     const base::circular_deque<SentReportInfo>& sent_reports =
         manager->GetSentReportsForWebUI();
-    std::vector<::mojom::SentReportInfoPtr> web_ui_reports;
-    web_ui_reports.reserve(sent_reports.size());
-
+    std::vector<::mojom::WebUIConversionReportPtr> web_ui_sent_reports;
+    web_ui_sent_reports.reserve(sent_reports.size());
     for (const SentReportInfo& info : sent_reports) {
-      web_ui_reports.push_back(::mojom::SentReportInfo::New(
-          info.report_url, info.report_body, info.http_response_code,
-          WebUIConversionReport(info.report)));
+      web_ui_sent_reports.push_back(
+          WebUIConversionReport(info.report, info.http_response_code));
     }
-    std::move(callback).Run(std::move(web_ui_reports));
+
+    manager->GetPendingReportsForWebUI(
+        base::BindOnce(&ForwardReportsToWebUI, std::move(callback),
+                       std::move(web_ui_sent_reports)),
+        base::Time::Max());
   } else {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, {});
   }
 }
 

@@ -7,11 +7,16 @@
 
 #include <stdint.h>
 
+#include <string>
+
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+class GURL;
 
 namespace content {
 
@@ -33,6 +38,12 @@ struct CONTENT_EXPORT ConversionReport {
   ConversionReport(ConversionReport&& other);
   ConversionReport& operator=(ConversionReport&& other);
   ~ConversionReport();
+
+  // Returns the URL to which the report will be sent.
+  GURL ReportURL() const WARN_UNUSED_RESULT;
+
+  // Returns the JSON for the report body.
+  std::string ReportBody(bool pretty_print = false) const WARN_UNUSED_RESULT;
 
   // Impression associated with this conversion report.
   StorableImpression impression;

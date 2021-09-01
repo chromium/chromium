@@ -98,10 +98,8 @@ void ConversionReporterImpl::SendNextReport() {
     // retry it later.
     if (offline_) {
       OnReportSent(SentReportInfo(std::move(report),
-                                  /*report_url=*/GURL(),
-                                  /*report_body=*/"",
-                                  /*http_response_code=*/0,
-                                  /*should_retry=*/true));
+                                  SentReportInfo::Status::kShouldRetry,
+                                  /*http_response_code=*/0));
     } else {
       network_sender_->SendReport(
           std::move(report),
@@ -114,10 +112,8 @@ void ConversionReporterImpl::SendNextReport() {
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
     OnReportSent(SentReportInfo(std::move(report),
-                                /*report_url=*/GURL(),
-                                /*report_body=*/"",
-                                /*http_response_code=*/0,
-                                /*should_retry=*/false));
+                                SentReportInfo::Status::kDropped,
+                                /*http_response_code=*/0));
   }
   MaybeScheduleNextReport();
 }

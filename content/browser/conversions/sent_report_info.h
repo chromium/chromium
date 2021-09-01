@@ -5,23 +5,27 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 #define CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 
-#include <string>
-
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/common/content_export.h"
-#include "url/gurl.h"
 
 namespace content {
 
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
 struct CONTENT_EXPORT SentReportInfo {
+  enum class Status {
+    kSent,
+    // The report failed without receiving response headers.
+    kShouldRetry,
+    // The report was dropped without ever being sent, e.g. due to embedder
+    // disabling the API.
+    kDropped,
+  };
+
   SentReportInfo(ConversionReport report,
-                 GURL report_url,
-                 std::string report_body,
-                 int http_response_code,
-                 bool should_retry);
+                 Status status,
+                 int http_response_code);
   SentReportInfo(const SentReportInfo& other);
   SentReportInfo& operator=(const SentReportInfo& other);
   SentReportInfo(SentReportInfo&& other);
@@ -30,17 +34,10 @@ struct CONTENT_EXPORT SentReportInfo {
 
   ConversionReport report;
 
-  // Information on the network request that was sent.
-  //
-  // An empty `report_url` indicates that the report was not attempted to be
-  // sent. For example, if the embedder disabled the API.
-  GURL report_url;
-  std::string report_body;
-  int http_response_code;
+  Status status;
 
-  // Whether the report should be retried. Set if the report failed without
-  // receiving response headers.
-  bool should_retry;
+  // Information on the network request that was sent.
+  int http_response_code;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `conversion_test_utils.h` should also be updated.

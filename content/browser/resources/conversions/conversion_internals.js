@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SentReportInfo, SourceType, WebUIConversionReport, WebUIImpression} from './conversion_internals.mojom-webui.js';
+import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIImpression} from './conversion_internals.mojom-webui.js';
 
 /**
  * Reference to the backend providing all the data.
@@ -29,7 +29,7 @@ let reports = [];
 
 /**
  * All sent reports at last update.
- * @type {!Array<!SentReportInfo>}
+ * @type {!Array<!WebUIConversionReport>}
  */
 let sentReports = [];
 
@@ -100,39 +100,28 @@ function createSourceRow(source) {
 /**
  * Creates a single row for the report table.
  * @param {!WebUIConversionReport} report The info to create the row.
+ * @param {boolean} sent Whether the report has been sent yet.
  * @return {!Node}
  */
-function createReportRow(report) {
+function createReportRow(report, sent) {
   const template = $('report-row').cloneNode(true);
   const td = template.content.querySelectorAll('td');
 
-  td[0].textContent = report.impressionData;
-  td[1].textContent = report.conversionData;
-  td[2].textContent = UrlToText(report.conversionOrigin);
-  td[3].textContent = UrlToText(report.reportingOrigin);
-  td[4].textContent = new Date(report.reportTime).toLocaleString();
-  td[5].textContent = SourceTypeToText(report.sourceType);
-  td[6].textContent = report.priority;
-  return document.importNode(template.content, true);
-}
+  td[0].querySelector('code').textContent = report.reportBody;
+  td[1].textContent = UrlToText(report.conversionOrigin);
+  td[2].textContent = report.reportUrl.url;
+  td[3].textContent = new Date(report.reportTime).toLocaleString();
+  td[4].textContent = report.priority;
 
-/**
- * Creates a single row for the sent report table.
- * @param {!SentReportInfo} info The info to create the row.
- * @return {!Node}
- */
-function createSentReportRow(info) {
-  const template = $('sent-report-row').cloneNode(true);
-  const td = template.content.querySelectorAll('td');
-
-  td[0].textContent = info.reportUrl.url;
-  td[1].textContent = info.reportBody;
-  td[2].textContent = info.httpResponseCode;
-  td[3].textContent = new Date(info.report.reportTime).toLocaleString();
-
-  if (info.httpResponseCode < 200 || info.httpResponseCode >= 400) {
-    template.content.querySelector('tr').classList.add('http-error');
+  if (sent) {
+    td[5].textContent = `Sent: HTTP ${report.httpResponseCode}`;
+    if (report.httpResponseCode < 200 || report.httpResponseCode >= 400) {
+      template.content.querySelector('tr').classList.add('http-error');
+    }
+  } else {
+    td[5].textContent = 'Pending';
   }
+
   return document.importNode(template.content, true);
 }
 
@@ -156,41 +145,24 @@ function renderSourceTable() {
 }
 
 /**
- * Regenerates the report table from |reports|.
+ * Regenerates the report table from |sentReports| and |reports|.
  */
 function renderReportTable() {
   const reportTable = $('report-table-body');
   assert(reportTable);
   clearTable(reportTable);
-  reports.forEach(report => reportTable.appendChild(createReportRow(report)));
+  reports.forEach(
+      report =>
+          reportTable.appendChild(createReportRow(report, /*sent=*/ false)));
+  sentReports.forEach(
+      report =>
+          reportTable.appendChild(createReportRow(report, /*sent=*/ true)));
 
   // If there are no reports, add an empty row to indicate the table is
   // purposefully empty.
-  if (!reports.length) {
-    const template = $('report-row').cloneNode(true);
-    const td = template.content.querySelectorAll('td');
-    td[0].textContent = 'No pending reports.';
+  if (!sentReports.length && !reports.length) {
+    const template = $('no-reports-row').cloneNode(true);
     reportTable.appendChild(document.importNode(template.content, true));
-  }
-}
-
-/**
- * Regenerates the sent report table from |sentReports|.
- */
-function renderSentReportTable() {
-  const sentReportTable = $('sent-report-table-body');
-  assert(sentReportTable);
-  clearTable(sentReportTable);
-  sentReports.forEach(
-      report => sentReportTable.appendChild(createSentReportRow(report)));
-
-  // If there are no sent reports, add an empty row to indicate the table is
-  // purposefully empty.
-  if (!sentReports.length) {
-    const template = $('sent-report-row').cloneNode(true);
-    const td = template.content.querySelectorAll('td');
-    td[0].textContent = 'No sent reports.';
-    sentReportTable.appendChild(document.importNode(template.content, true));
   }
 }
 
@@ -219,14 +191,10 @@ function updatePageData() {
     renderSourceTable();
   });
 
-  pageHandler.getPendingReports().then((response) => {
-    reports = response.reports;
+  pageHandler.getSentAndPendingReports().then((response) => {
+    sentReports = response.sentReports;
+    reports = response.pendingReports;
     renderReportTable();
-  });
-
-  pageHandler.getSentReports().then((response) => {
-    sentReports = response.reports;
-    renderSentReportTable();
   });
 }
 

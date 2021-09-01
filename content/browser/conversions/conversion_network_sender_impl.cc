@@ -9,12 +9,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -29,7 +26,6 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
-#include "url/url_canon.h"
 
 namespace content {
 
@@ -69,44 +65,6 @@ void LogMetricsOnReportSend(const ConversionReport& report) {
                             time_from_conversion_to_report_send.InHours());
 }
 
-GURL GetReportUrl(const content::ConversionReport& report) {
-  url::Replacements<char> replacements;
-  static constexpr char kEndpointPath[] =
-      "/.well-known/attribution-reporting/report-attribution";
-  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  return report.impression.reporting_origin().GetURL().ReplaceComponents(
-      replacements);
-}
-
-std::string GetReportPostBody(const content::ConversionReport& report) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-
-  // The API denotes these values as strings; a `uint64_t` cannot be put in
-  // a dict as an integer in order to be opaque to various API configurations.
-  dict.SetStringKey("source_event_id",
-                    base::NumberToString(report.impression.impression_data()));
-
-  dict.SetStringKey("trigger_data",
-                    base::NumberToString(report.conversion_data));
-
-  const char* source_type = nullptr;
-  switch (report.impression.source_type()) {
-    case StorableImpression::SourceType::kNavigation:
-      source_type = "navigation";
-      break;
-    case StorableImpression::SourceType::kEvent:
-      source_type = "event";
-      break;
-  }
-  dict.SetStringKey("source_type", source_type);
-
-  // Write the dict to json;
-  std::string output_json;
-  bool success = base::JSONWriter::Write(dict, &output_json);
-  DCHECK(success);
-  return output_json;
-}
-
 }  // namespace
 
 ConversionNetworkSenderImpl::ConversionNetworkSenderImpl(
@@ -124,10 +82,8 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  GURL report_url = GetReportUrl(report);
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = report_url;
+  resource_request->url = report.ReportURL();
   resource_request->referrer =
       GURL(report.impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -170,7 +126,7 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
 
-  std::string report_body = GetReportPostBody(report);
+  std::string report_body = report.ReportBody();
   simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");
 
   // Retry once on network change. A network change during DNS resolution
@@ -190,7 +146,6 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
       url_loader_factory_.get(),
       base::BindOnce(&ConversionNetworkSenderImpl::OnReportSent,
                      base::Unretained(this), std::move(it), std::move(report),
-                     std::move(report_url), std::move(report_body),
                      std::move(sent_callback)));
 }
 
@@ -202,8 +157,6 @@ void ConversionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
 void ConversionNetworkSenderImpl::OnReportSent(
     UrlLoaderList::iterator it,
     ConversionReport report,
-    GURL report_url,
-    std::string report_body,
     ReportSentCallback sent_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
@@ -246,9 +199,10 @@ void ConversionNetworkSenderImpl::OnReportSent(
                    net_error == net::ERR_CONNECTION_RESET);
 
   std::move(sent_callback)
-      .Run(SentReportInfo(
-          std::move(report), std::move(report_url), std::move(report_body),
-          headers ? headers->response_code() : 0, should_retry));
+      .Run(SentReportInfo(std::move(report),
+                          should_retry ? SentReportInfo::Status::kShouldRetry
+                                       : SentReportInfo::Status::kSent,
+                          headers ? headers->response_code() : 0));
 }
 
 }  // namespace content

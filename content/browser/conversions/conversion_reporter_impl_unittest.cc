@@ -51,9 +51,9 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
                   ReportSentCallback sent_callback) override {
     last_sent_report_id_ = *report.conversion_id;
     num_reports_sent_++;
-    SentReportInfo info = GetBlankSentReportInfo(std::move(report));
-    info.http_response_code = 200;
-    std::move(sent_callback).Run(std::move(info));
+    std::move(sent_callback)
+        .Run(SentReportInfo(std::move(report), SentReportInfo::Status::kSent,
+                            /*http_response_code=*/200));
   }
 
   ConversionReport::Id last_sent_report_id() { return last_sent_report_id_; }
@@ -321,13 +321,15 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(1),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_TRUE(last_sent_report_info()->should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
+            last_sent_report_info()->status);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_TRUE(last_sent_report_info()->should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
+            last_sent_report_info()->status);
 
   reporter_->AddReportsToQueue({
       GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
@@ -342,7 +344,7 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   EXPECT_EQ(1u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(1),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_FALSE(last_sent_report_info()->should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kSent, last_sent_report_info()->status);
 
   SetOffline(true);
 
@@ -350,7 +352,8 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   EXPECT_EQ(1u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_TRUE(last_sent_report_info()->should_retry);
+  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
+            last_sent_report_info()->status);
 }
 
 }  // namespace content
