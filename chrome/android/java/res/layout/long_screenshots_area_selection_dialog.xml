@@ -12,6 +12,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Footer with cancel/accept controls and dialog title. -->
     <LinearLayout
         android:id="@+id/footer"
         android:gravity="center"
@@ -37,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:text="@string/sharing_long_screenshot"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
 
@@ -49,8 +51,8 @@
             android:paddingHorizontal="@dimen/long_screenshots_button_padding"
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarButton" />
+    </LinearLayout> <!-- end footer -->
 
-       </LinearLayout>
     <View
         android:id="@+id/divider"
         android:background="@color/divider_line_bg_color"
@@ -70,59 +72,69 @@
         android:text="@string/sharing_long_screenshot_instructions"
         android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
 
-    <FrameLayout
-        android:id="@+id/bitmap_container"
+    <ScrollView
+        android:id="@+id/long_screenshot_scroll_view"
         android:background="@color/default_scrim_color"
-        android:layout_above="@id/sharing_long_screenshot_dialog_instructions"
-        android:layout_alignParentTop="true"
+        android:layout_above="@id/divider"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/screenshot_image"
+        <!-- The ScrollView must have a single child; this child view contains
+             the entire bitmap, and top/bottom mask selectors to define the region.
+             The framing layouts are defined after the image to be placed above it. -->
+        <RelativeLayout
+            android:id="@+id/bitmap_container_inner"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/modern_white"
-            android:contentDescription="@string/sharing_long_screenshot"
-            android:padding="1dp"/>
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/next_screenshot_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/modern_white"
-            android:contentDescription="@string/sharing_long_screenshot"
-            android:padding="1dp"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/screenshot_image"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/modern_white"
+                android:contentDescription="@string/sharing_long_screenshot"
+                android:padding="1dp"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/down_button"
-            android:src="@drawable/arrow_down"
-            android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_width="@dimen/long_screenshots_button_size"
-            android:layout_marginBottom="10dp"
-            style="@style/ToolbarButton" />
+            <!-- Top draggable mask -->
+            <LinearLayout
+                android:id="@+id/region_selection_top"
+                android:background="@color/modern_grey_800_alpha_38"
+                android:orientation="vertical"
+                android:layout_alignParentTop="true"
+                android:layout_height="150dp"
+                android:layout_width="match_parent"
+                android:gravity="bottom|center_horizontal">
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/up_button"
-            android:src="@drawable/arrow_up"
-            android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_width="@dimen/long_screenshots_button_size"
-            android:layout_marginTop="10dp"
-            style="@style/ToolbarButton" />
+                <org.chromium.ui.widget.ChromeImageButton
+                    android:id="@+id/up_button"
+                    android:src="@drawable/arrow_up"
+                    android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
+                    android:layout_width="@dimen/long_screenshots_button_size"
+                    style="@style/ToolbarButton" />
+            </LinearLayout>
 
-    </FrameLayout>
+            <!-- Bottom draggable mask -->
+            <LinearLayout
+                android:id="@+id/region_selection_bottom"
+                android:background="@color/modern_grey_800_alpha_38"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_height="150dp"
+                android:layout_width="match_parent"
+                android:gravity="top|center_horizontal">
 
+                <org.chromium.ui.widget.ChromeImageButton
+                    android:id="@+id/down_button"
+                    android:src="@drawable/arrow_down"
+                    android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
+                    android:layout_width="@dimen/long_screenshots_button_size"
+                    style="@style/ToolbarButton" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

@@ -20,6 +20,9 @@ import org.chromium.ui.display.DisplayAndroid;
 public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE_ABOVE = 4;
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW = 6;
+    // TODO(skare): Verify these constants with UX.
+    private static final int NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE = 2;
+    private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
     private Tab mTab;
     private Rect mCaptureRect;
@@ -102,6 +105,14 @@ public class ScreenshotBoundsManager {
     }
 
     /**
+     * Gets the bounds of the entire page for single-bitmap mode.
+     * @return the compositing bounds of the full entry.
+     */
+    public Rect getFullEntryBounds() {
+        return calculateFullClipBounds();
+    }
+
+    /**
      * Defines the bounds of the capture and compositing. Only the starting height is needed. The
      * entire width is always captured.
      *
@@ -136,6 +147,16 @@ public class ScreenshotBoundsManager {
         int endYAxis = yAxisRef + mClipHeightScaled;
         endYAxis = endYAxis > mCaptureRect.bottom ? mCaptureRect.bottom : endYAxis;
         return new Rect(0, yAxisRef, 0, endYAxis);
+    }
+
+    public Rect calculateFullClipBounds() {
+        int startYAxis = mCurrYStartPosition
+                - mClipHeightScaled * NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE;
+        startYAxis = Math.max(startYAxis, 0);
+        int endYAxis = mCurrYStartPosition
+                + mClipHeightScaled * (NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE + 1);
+        endYAxis = Math.min(endYAxis, mCaptureRect.bottom);
+        return new Rect(0, startYAxis, 0, endYAxis);
     }
 
     /**
