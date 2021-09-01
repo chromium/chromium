@@ -9,6 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -339,7 +340,19 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
     size_t emergency_counter = 0;
     while (!frontier.empty()) {
-      if (++emergency_counter > 1000) {
+      // Each node |n| is visited `n.form->child_frames.size() + 1` times.
+      // By induction on the tree height, it follows that the overall number of
+      // visits is 2 * N - 1, where N is the number of nodes in the tree:
+      // For a tree with a single vertex, the claim is immediate. For the
+      // induction step, consider a root node with K children. Let N_I be the
+      // number of nodes in the subtree induced by the Ith child. By induction,
+      // the number of visits in each subtree is 2 * N_I - 1. The number of
+      // visits in the whole tree is therefore
+      //     K + 1 + \sum_{i=1}^K (2 * N_i - 1)
+      //   = 1 + \sum_{i=1}^K 2 * N_i
+      //   = 2 * (1 + \sum_{I=1}^K N_I) - 1
+      //   = 2 * N - 1.
+      if (++emergency_counter > kMaxParseableFramesInTree * 2 - 1) {
         AFCHECK(false);
         break;
       }

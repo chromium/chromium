@@ -1410,6 +1410,7 @@ void MatchLabelsAndFields(
 // |field_data_manager| and |extract_mask| are only passed to
 // WebFormControlElementToFormField().
 bool FormOrFieldsetsToFormData(
+    const WebFrame* frame,
     const blink::WebFormElement* form_element,
     const blink::WebFormControlElement* form_control_element,
     const std::vector<blink::WebElement>& fieldsets,
@@ -1548,23 +1549,26 @@ bool FormOrFieldsetsToFormData(
   if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     DCHECK_EQ(form->child_frames.size(), iframe_elements.size());
     for (size_t i = 0; i < iframe_elements.size(); ++i) {
-      const WebElement& iframe_element = iframe_elements[i];
-      WebFrame* frame = WebFrame::FromFrameOwnerElement(iframe_element);
-      if (frame && frame->IsWebLocalFrame()) {
+      WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_elements[i]);
+      if (iframe && iframe->IsWebLocalFrame()) {
         form->child_frames[i].token = LocalFrameToken(
-            frame->ToWebLocalFrame()->GetLocalFrameToken().value());
-      } else if (frame && frame->IsWebRemoteFrame()) {
+            iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
+      } else if (iframe && iframe->IsWebRemoteFrame()) {
         form->child_frames[i].token = RemoteFrameToken(
-            frame->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-      } else {
-        NOTREACHED();
+            iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
       }
     }
+    base::EraseIf(form->child_frames, [](const auto& child_frame) {
+      return absl::visit([](const auto& token) { return token.is_empty(); },
+                         child_frame.token);
+    });
   }
 
+  if (form->child_frames.size() > MaxParseableChildFrames(GetFrameDepth(frame)))
+    form->child_frames.clear();
+
   const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
-                       form->fields.size() < kMaxParseableFields &&
-                       form->child_frames.size() < kMaxParseableFrames;
+                       form->fields.size() < kMaxParseableFields;
   if (!success) {
     form->fields.clear();
     form->child_frames.clear();
@@ -1853,6 +1857,13 @@ bool IsWebElementVisible(const blink::WebElement& element) {
   return element.IsFocusable();
 }
 
+size_t GetFrameDepth(const blink::WebFrame* frame) {
+  size_t depth = 0;
+  while ((frame = frame->Parent()) != nullptr)
+    ++depth;
+  return depth;
+}
+
 std::u16string GetFormIdentifier(const WebFormElement& form) {
   std::u16string identifier = form.GetName().Utf16();
   if (identifier.empty())
@@ -2106,7 +2117,7 @@ bool WebFormElementToFormData(
 
   std::vector<blink::WebElement> dummy_fieldset;
   return FormOrFieldsetsToFormData(
-      &form_element, &form_control_element, dummy_fieldset,
+      frame, &form_element, &form_control_element, dummy_fieldset,
       form_element.GetFormControlElements(), owned_iframes, field_data_manager,
       extract_mask, form, field);
 }
@@ -2205,7 +2216,7 @@ bool UnownedFormElementsAndFieldSetsToFormData(
   form->is_form_tag = false;
 
   return FormOrFieldsetsToFormData(
-      nullptr, element, fieldsets, control_elements, iframe_elements,
+      frame, nullptr, element, fieldsets, control_elements, iframe_elements,
       field_data_manager, extract_mask, form, field);
 }
 

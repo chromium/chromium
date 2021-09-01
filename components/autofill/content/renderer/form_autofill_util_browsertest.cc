@@ -1375,9 +1375,27 @@ INSTANTIATE_TEST_SUITE_P(
       return cases;
     }()));
 
-// Tests that if the number of iframes exceeds |kMaxParseableFrames|, neither
-// fields nor child frames of that form are extracted.
-TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyIframes) {
+// Test that MaxParseableChildFrames() and kMaxParseableFramesInTree match.
+TEST_F(FormAutofillUtilsTest, MaxParseableFrames) {
+  EXPECT_GT(MaxParseableChildFrames(0), 0u);
+  for (size_t depth = 1; depth < 10; ++depth) {
+    EXPECT_GE(MaxParseableChildFrames(depth - 1),
+              MaxParseableChildFrames(depth));
+  }
+  EXPECT_EQ(MaxParseableChildFrames(3), 0u);
+  size_t max_frames_in_tree = 0;
+  for (size_t level = 0; level < 10; ++level) {
+    size_t max_frames_at_level = 1;
+    for (size_t depth = 0; depth <= level; ++depth)
+      max_frames_at_level *= MaxParseableChildFrames(depth);
+    max_frames_in_tree += max_frames_at_level;
+  }
+  EXPECT_EQ(kMaxParseableFramesInTree, max_frames_in_tree);
+}
+
+// Tests that if the number of iframes exceeds MaxParseableChildFrames(),
+// neither fields nor child frames of that form are extracted.
+TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
 
@@ -1390,7 +1408,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyIframes) {
   LoadHTML(R"(<html><body><form id='f'></form>)");
   for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
     CreateFormElement("input");
-  for (size_t i = 0; i < kMaxParseableFrames - 1; ++i)
+  for (size_t i = 0; i < MaxParseableChildFrames(0); ++i)
     CreateFormElement("iframe");
 
   // Ensure that Android runs at default page scale.
@@ -1404,19 +1422,18 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyIframes) {
     ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
                                          EXTRACT_NONE, &form_data, nullptr));
     EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
-    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableFrames - 1);
+    EXPECT_EQ(form_data.child_frames.size(), MaxParseableChildFrames(0));
   }
 
-  // There may be multiple checks (e.g., == kMaxParseableFrames, <=
-  // kMaxParseableFrames, < kMaxParseableFrames), so we test different numbers
-  // of <iframe> elements.
+  // There may be multiple checks (e.g., == MaxParseableChildFrames(depth), <=
+  // MaxParseableChildFrames(depth), < MaxParseableChildFrames(depth)), so we
+  // test different numbers of <iframe> elements.
   for (int i = 0; i < 3; ++i) {
     CreateFormElement("iframe");
     FormData form_data;
-    ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
-                                          nullptr, EXTRACT_NONE, &form_data,
-                                          nullptr));
-    EXPECT_TRUE(form_data.fields.empty());
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_FALSE(form_data.fields.empty());
     EXPECT_TRUE(form_data.child_frames.empty());
   }
 }
@@ -1436,7 +1453,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   LoadHTML(R"(<html><body><form id='f'></form>)");
   for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
     CreateFormElement("input");
-  for (size_t i = 0; i < kMaxParseableFrames - 1; ++i)
+  for (size_t i = 0; i < MaxParseableChildFrames(0); ++i)
     CreateFormElement("iframe");
 
   // Ensure that Android runs at default page scale.
@@ -1450,7 +1467,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
     ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
                                          EXTRACT_NONE, &form_data, nullptr));
     EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
-    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableFrames - 1);
+    EXPECT_EQ(form_data.child_frames.size(), MaxParseableChildFrames(0));
   }
 
   // There may be multiple checks (e.g., == kMaxParseableFields, <=

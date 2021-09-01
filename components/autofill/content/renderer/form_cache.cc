@@ -162,20 +162,23 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
       std::move(parsed_forms_rendererid_);
   parsed_forms_rendererid_.clear();
 
+  size_t frame_depth = form_util::GetFrameDepth(frame_);
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
   std::vector<WebFormControlElement> control_elements;
 
-  // Helper function that stores new autofillable forms. Returns false if the
-  // number of fields or frames would be too much if we extracted the new form.
+  // Helper function that stores new autofillable forms in |forms|. Returns
+  // false iff the total number of fields exceeds the kMaxParseableFields.
+  // Clears |form|'s FormData::child_frames if the total number of frames
+  // exceeds MaxParseableChildFrames().
   auto ProcessForm = [&](FormData form) {
     for (const auto& field : form.fields)
       observed_unique_renderer_ids.insert(field.unique_renderer_id);
 
     num_fields_seen += form.fields.size();
     num_frames_seen += form.child_frames.size();
-    if (num_fields_seen > kMaxParseableFields ||
-        num_frames_seen > kMaxParseableFrames) {
+
+    if (num_fields_seen > kMaxParseableFields) {
       // Restore |parsed_forms_rendererid_|.
       parsed_forms_rendererid_.insert(
           std::make_move_iterator(old_parsed_forms.begin()),
@@ -184,6 +187,9 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
       MaybeUpdateParsedFormsPeak();
       return false;
     }
+
+    if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+      form.child_frames.clear();
 
     size_t num_editable_elements =
         ScanFormControlElements(control_elements, log_deprecation_messages);
@@ -280,6 +286,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
       static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
                                           form_util::EXTRACT_OPTIONS);
 
+  size_t frame_depth = form_util::GetFrameDepth(frame_);
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
   for (const WebFormElement& form_element : document.Forms()) {
@@ -298,12 +305,15 @@ std::vector<FormData> FormCache::ExtractNewForms(
 
     num_fields_seen += form.fields.size();
     num_frames_seen += form.child_frames.size();
-    if (num_fields_seen > kMaxParseableFields ||
-        num_frames_seen > kMaxParseableFrames) {
+
+    if (num_fields_seen > kMaxParseableFields) {
       PruneInitialValueCaches(observed_unique_renderer_ids);
       MaybeUpdateParsedFormsPeak();
       return forms;
     }
+
+    if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+      form.child_frames.clear();
 
     size_t num_editable_elements =
         ScanFormControlElements(control_elements, log_deprecation_messages);
@@ -355,12 +365,14 @@ std::vector<FormData> FormCache::ExtractNewForms(
 
   num_fields_seen += synthetic_form.fields.size();
   num_frames_seen += synthetic_form.child_frames.size();
-  if (num_fields_seen > kMaxParseableFields ||
-      num_frames_seen > kMaxParseableFrames) {
+  if (num_fields_seen > kMaxParseableFields) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     MaybeUpdateParsedFormsPeak();
     return forms;
   }
+
+  if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+    synthetic_form.child_frames.clear();
 
   size_t num_editable_elements =
       ScanFormControlElements(control_elements, log_deprecation_messages);

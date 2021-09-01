@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -642,6 +643,64 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
             GetMainFrame()->GetDocument().Forms().size());
   EXPECT_EQ(kMaxParseableFields,
             FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
+}
+
+// Test that FormCache::ExtractNewForms() limits the number of total fields by
+// skipping any additional forms.
+TEST_P(ParameterizedFormCacheBrowserTest, FieldLimit) {
+  std::string html;
+  for (unsigned int i = 0; i < kMaxParseableFields + 1; i++)
+    html += "<form><input></form>";
+  LoadHTML(html.c_str());
+
+  FormCache form_cache(GetMainFrame());
+  ASSERT_EQ(kMaxParseableFields + 1,
+            GetMainFrame()->GetDocument().Forms().size());
+  EXPECT_EQ(kMaxParseableFields, form_cache.ExtractNewForms(nullptr).size());
+}
+
+// Test that FormCache::ExtractNewForms() limits the number of total frames by
+// clearing their frames and skipping the then-empty forms.
+TEST_P(FormCacheIframeBrowserTest, FrameLimit) {
+  std::string html;
+  for (unsigned int i = 0; i < MaxParseableChildFrames(0) + 1; i++)
+    html += "<form><iframe></iframe></form>";
+  LoadHTML(html.c_str());
+
+  FormCache form_cache(GetMainFrame());
+  ASSERT_EQ(MaxParseableChildFrames(0) + 1,
+            GetMainFrame()->GetDocument().Forms().size());
+  EXPECT_EQ(MaxParseableChildFrames(0),
+            form_cache.ExtractNewForms(nullptr).size());
+}
+
+// Test that FormCache::ExtractNewForms() limits the number of total fields and
+// total frames:
+// - the forms [0, MaxParseableChildFrames(0)) should be unchanged,
+// - the forms [MaxParseableChildFrames(0), kMaxParseableFields) should have
+//   empty FormData::child_frames,
+// - the forms [kMaxParseableFields, end) should be skipped.
+TEST_P(FormCacheIframeBrowserTest, FieldAndFrameLimit) {
+  ASSERT_LE(MaxParseableChildFrames(0), kMaxParseableFields);
+
+  std::string html;
+  for (unsigned int i = 0; i < kMaxParseableFields + 1; i++)
+    html += "<form><input><iframe></iframe></form>";
+  LoadHTML(html.c_str());
+
+  FormCache form_cache(GetMainFrame());
+  std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
+  ASSERT_EQ(kMaxParseableFields + 1,
+            GetMainFrame()->GetDocument().Forms().size());
+  EXPECT_EQ(forms.size(), kMaxParseableFields);
+  EXPECT_TRUE(base::ranges::none_of(forms, &std::vector<FormFieldData>::empty,
+                                    &FormData::fields));
+  EXPECT_TRUE(base::ranges::none_of(
+      base::make_span(forms).subspan(0, MaxParseableChildFrames(0)),
+      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
+  EXPECT_TRUE(base::ranges::all_of(
+      base::make_span(forms).subspan(MaxParseableChildFrames(0)),
+      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

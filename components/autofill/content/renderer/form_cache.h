@@ -36,8 +36,21 @@ class FormCache {
   ~FormCache();
 
   // Scans the DOM in |frame_| extracting and storing forms that have not been
-  // seen before. Returns the extracted forms. Note that modified forms are
-  // considered new forms.
+  // seen before. Returns the extracted forms.
+  //
+  // Note that modified forms are considered new forms.
+  //
+  // To reduce the computational cost, we limit the number of fields and frames
+  // summed over all forms, in addition to the per-form limits in
+  // form_util::FormOrFieldsetsToFormData():
+  // - if the number of fields over all forms exceeds |kMaxParseableFields|,
+  //   only a subset of forms is returned which does not exceed the limit is
+  //   returned;
+  // - if the number of frames over all forms exceeds MaxParseableFrames(), all
+  //   forms are returned but only a subset of them have non-empty
+  //   FormData::child_frames.
+  // In either case, the subset is chosen so that the returned list of forms
+  // does not exceed the limits of fields and frames.
   std::vector<FormData> ExtractNewForms(
       const FieldDataManager* field_data_manager);
 
