@@ -13,6 +13,7 @@
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
@@ -316,13 +317,19 @@ FastPairGattServiceClientImpl::CreateRequest(
   data_to_write[0] = message_type;
   data_to_write[1] = flags;
 
-  std::copy(provider_address.begin(), provider_address.end(),
+  std::array<uint8_t, 6> provider_address_bytes;
+  device::ParseBluetoothAddress(provider_address, provider_address_bytes);
+  std::copy(provider_address_bytes.begin(), provider_address_bytes.end(),
             std::begin(data_to_write) + kProviderAddressStartIndex);
 
   // Seekers address can be empty, in which we would just have the bytes be
   // the salt.
-  std::copy(seekers_address.begin(), seekers_address.end(),
-            std::begin(data_to_write) + kSeekerAddressStartIndex);
+  if (!seekers_address.empty()) {
+    std::array<uint8_t, 6> seeker_address_bytes;
+    device::ParseBluetoothAddress(seekers_address, seeker_address_bytes);
+    std::copy(seeker_address_bytes.begin(), seeker_address_bytes.end(),
+              std::begin(data_to_write) + kSeekerAddressStartIndex);
+  }
 
   return data_to_write;
 }

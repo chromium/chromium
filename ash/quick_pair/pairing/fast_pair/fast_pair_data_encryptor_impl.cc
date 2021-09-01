@@ -10,7 +10,6 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
-#include "base/base64.h"
 #include "base/memory/ptr_util.h"
 
 namespace ash {
@@ -75,10 +74,9 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
 
   const std::string& public_anti_spoofing_key =
       device_metadata->device.anti_spoofing_key_pair().public_key();
-  std::string decoded_key;
-  base::Base64Decode(public_anti_spoofing_key, &decoded_key);
   absl::optional<fast_pair_encryption::KeyPair> key_pair =
-      fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(decoded_key);
+      fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(
+          public_anti_spoofing_key);
 
   if (key_pair) {
     std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =

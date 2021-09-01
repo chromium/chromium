@@ -325,14 +325,14 @@ class FastPairPairerTest : public testing::Test {
   }
 
   void SetDecryptPasskeyForPasskeyMismatch() {
-    DecryptedPasskey passkey(FastPairMessageType::kSeekersPasskey,
+    DecryptedPasskey passkey(FastPairMessageType::kProvidersPasskey,
                              kInvalidPasskey, kPasskeySaltBytes);
     fast_pair_data_encryptor_factory.data_encryptor()->SetDecryptedPasskey(
         passkey);
   }
 
   void SetDecryptPasskeyForSuccess() {
-    DecryptedPasskey passkey(FastPairMessageType::kSeekersPasskey,
+    DecryptedPasskey passkey(FastPairMessageType::kProvidersPasskey,
                              kValidPasskey, kPasskeySaltBytes);
     fast_pair_data_encryptor_factory.data_encryptor()->SetDecryptedPasskey(
         passkey);

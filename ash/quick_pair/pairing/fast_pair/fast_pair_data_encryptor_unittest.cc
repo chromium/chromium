@@ -14,6 +14,7 @@
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
+#include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -65,7 +66,10 @@ class FastPairDataEncryptorTest : public testing::Test {
   void SuccessfulSetUp() {
     repository_ = std::make_unique<FakeFastPairRepository>();
     nearby::fastpair::Device metadata;
-    metadata.mutable_anti_spoofing_key_pair()->set_public_key(kPublicAntiSpoof);
+
+    std::string decoded_key;
+    base::Base64Decode(kPublicAntiSpoof, &decoded_key);
+    metadata.mutable_anti_spoofing_key_pair()->set_public_key(decoded_key);
     repository_->SetFakeMetadata(kValidModelId, metadata);
 
     device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,

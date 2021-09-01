@@ -205,10 +205,10 @@ void FastPairPairer::OnParseDecryptedPasskey(
     return;
   }
 
-  if (passkey->message_type != FastPairMessageType::kSeekersPasskey) {
+  if (passkey->message_type != FastPairMessageType::kProvidersPasskey) {
     QP_LOG(WARNING)
         << "Incorrect message type from decrypted passkey. Expected: "
-        << MessageTypeToString(FastPairMessageType::kSeekersPasskey)
+        << MessageTypeToString(FastPairMessageType::kProvidersPasskey)
         << ". Actual: " << MessageTypeToString(passkey->message_type);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kIncorrectPasskeyResponseType);
@@ -233,9 +233,9 @@ void FastPairPairer::OnParseDecryptedPasskey(
     return;
   }
 
-  adapter_->RemovePairingDelegate(this);
   pairing_device->ConfirmPairing();
   std::move(paired_callback_).Run(device_);
+  adapter_->RemovePairingDelegate(this);
 }
 
 void FastPairPairer::RequestPinCode(device::BluetoothDevice* device) {
