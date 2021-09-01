@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <cstring>
 #include <functional>
-#include <iterator>
 #include <string>
 #include <utility>
 
@@ -96,13 +95,11 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* sub_dict = nullptr;
-      if (!value.GetAsDictionary(&sub_dict))
+      if (!value.is_dict())
         return false;
-      for (base::DictionaryValue::Iterator it(*sub_dict);
-           !it.IsAtEnd(); it.Advance()) {
-        if (!InstallValue(it.value(), hive, path + kPathSep + name,
-                          base::UTF8ToWide(it.key()))) {
+      for (auto key_value : value.DictItems()) {
+        if (!InstallValue(key_value.second, hive, path + kPathSep + name,
+                          base::UTF8ToWide(key_value.first))) {
           return false;
         }
       }
@@ -110,14 +107,11 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::LIST: {
-      const base::ListValue* list = nullptr;
-      if (!value.GetAsList(&list))
+      if (!value.is_list())
         return false;
-      for (size_t i = 0; i < list->GetSize(); ++i) {
-        const base::Value* item;
-        if (!list->Get(i, &item))
-          return false;
-        if (!InstallValue(*item, hive, path + kPathSep + name,
+      const base::Value::ConstListView& list_view = value.GetList();
+      for (size_t i = 0; i < list_view.size(); ++i) {
+        if (!InstallValue(list_view[i], hive, path + kPathSep + name,
                           base::NumberToWString(i + 1))) {
           return false;
         }
@@ -330,12 +324,12 @@ void RegistryTestHarness::InstallStringListPolicy(
   ASSERT_TRUE(key.Valid());
   int index = 1;
   for (const auto& element : policy_value->GetList()) {
-    std::string element_value;
-    if (!element.GetAsString(&element_value))
+    if (!element.is_string())
       continue;
+
     std::string name(base::NumberToString(index++));
     key.WriteValue(base::UTF8ToWide(name).c_str(),
-                   base::UTF8ToWide(element_value).c_str());
+                   base::UTF8ToWide(element.GetString()).c_str());
   }
 }
 
@@ -356,18 +350,16 @@ void RegistryTestHarness::Install3rdPartyPolicy(
   // components to their policy.
   const std::wstring kPathPrefix =
       std::wstring(kTestPolicyKey) + kPathSep + kThirdParty + kPathSep;
-  for (base::DictionaryValue::Iterator domain(*policies);
-       !domain.IsAtEnd(); domain.Advance()) {
-    const base::DictionaryValue* components = nullptr;
-    if (!domain.value().GetAsDictionary(&components)) {
+  for (auto domain : policies->DictItems()) {
+    const base::Value& components = domain.second;
+    if (!components.is_dict()) {
       ADD_FAILURE();
       continue;
     }
-    for (base::DictionaryValue::Iterator component(*components);
-         !component.IsAtEnd(); component.Advance()) {
-      const std::wstring path = kPathPrefix + base::UTF8ToWide(domain.key()) +
-                                kPathSep + base::UTF8ToWide(component.key());
-      InstallValue(component.value(), hive_, path, kMandatory);
+    for (auto component : components.DictItems()) {
+      const std::wstring path = kPathPrefix + base::UTF8ToWide(domain.first) +
+                                kPathSep + base::UTF8ToWide(component.first);
+      InstallValue(component.second, hive_, path, kMandatory);
     }
   }
 }
