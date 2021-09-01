@@ -3195,7 +3195,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
       break;  // Need to add 1 because the root naming node is in the list.
 
     // Don't recurse into children that are explicitly hidden.
-    // Note that we don't call IsInertOrAriaHidden because that would return
+    // Note that we don't call IsInert()/IsAriaHidden because they would return
     // true if any ancestor is hidden, but we need to be able to compute the
     // accessible name of object inside hidden subtrees (for example, if
     // aria-labelledby points to an object that's hidden).

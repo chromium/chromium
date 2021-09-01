@@ -504,7 +504,8 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       last_modification_count_(-1),
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
-      cached_is_inert_or_aria_hidden_(false),
+      cached_is_inert_(false),
+      cached_is_aria_hidden_(false),
       cached_is_descendant_of_disabled_node_(false),
       cached_live_region_root_(nullptr),
       cached_aria_column_index_(0),
@@ -2075,11 +2076,14 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // the entire subtree needs to recompute descendants.
   // In addition, the below computations for is_ignored_but_included_in_tree is
   // dependent on having the correct new cached value.
-  bool is_inert_or_aria_hidden = ComputeIsInertOrAriaHidden();
-  if (cached_is_inert_or_aria_hidden_ != is_inert_or_aria_hidden) {
+  bool is_inert = ComputeIsInert();
+  bool is_aria_hidden = ComputeIsAriaHidden();
+  if (cached_is_inert_ != is_inert ||
+      cached_is_aria_hidden_ != is_aria_hidden) {
     // Update children if not already dirty (e.g. during Init() time.
     SetNeedsToUpdateChildren();
-    cached_is_inert_or_aria_hidden_ = is_inert_or_aria_hidden;
+    cached_is_inert_ = is_inert;
+    cached_is_aria_hidden_ = is_aria_hidden;
   }
   cached_is_descendant_of_disabled_node_ = ComputeIsDescendantOfDisabledNode();
 
@@ -2160,30 +2164,31 @@ bool AXObject::AccessibilityIsIgnoredByDefault(
 
 AXObjectInclusion AXObject::DefaultObjectInclusion(
     IgnoredReasons* ignored_reasons) const {
-  if (IsInertOrAriaHidden()) {
+  if (IsAriaHidden()) {
     // Keep focusable elements that are aria-hidden in tree, so that they can
     // still fire events such as focus and value changes.
     if (!CanSetFocusAttribute()) {
       if (ignored_reasons)
-        ComputeIsInertOrAriaHidden(ignored_reasons);
+        ComputeIsAriaHidden(ignored_reasons);
       return kIgnoreObject;
     }
+  }
+
+  if (IsInert()) {
+    if (ignored_reasons)
+      ComputeIsInert(ignored_reasons);
+    return kIgnoreObject;
   }
 
   return kDefaultBehavior;
 }
 
-bool AXObject::IsInertOrAriaHidden() const {
+bool AXObject::IsInert() const {
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_is_inert_or_aria_hidden_;
+  return cached_is_inert_;
 }
 
-bool AXObject::IsAriaHidden() const {
-  return IsInertOrAriaHidden() && AriaHiddenRoot();
-}
-
-bool AXObject::ComputeIsInertOrAriaHidden(
-    IgnoredReasons* ignored_reasons) const {
+bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
   if (GetNode()) {
     if (GetNode()->IsInert()) {
       if (ignored_reasons) {
@@ -2212,13 +2217,21 @@ bool AXObject::ComputeIsInertOrAriaHidden(
     }
   } else {
     AXObject* parent = ParentObject();
-    if (parent && parent->IsInertOrAriaHidden()) {
+    if (parent && parent->IsInert()) {
       if (ignored_reasons)
-        parent->ComputeIsInertOrAriaHidden(ignored_reasons);
+        parent->ComputeIsInert(ignored_reasons);
       return true;
     }
   }
+  return false;
+}
 
+bool AXObject::IsAriaHidden() const {
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_aria_hidden_;
+}
+
+bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   const AXObject* hidden_root = AriaHiddenRoot();
   if (hidden_root) {
     if (ignored_reasons) {
@@ -2273,7 +2286,9 @@ bool AXObject::IsBlockedByAriaModalDialog(
 }
 
 bool AXObject::IsVisible() const {
-  return !IsInertOrAriaHidden() && !IsHiddenViaStyle();
+  // TODO(accessibility) Consider exposing inert objects as visible, since they
+  // are visible. It should be fine, since the objexcts are ignored.
+  return !IsAriaHidden() && !IsInert() && !IsHiddenViaStyle();
 }
 
 const AXObject* AXObject::AriaHiddenRoot() const {
@@ -5755,15 +5770,15 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       }
     }
     if (cached_values_only) {
-      if (cached_is_inert_or_aria_hidden_ && GetNode() && !GetNode()->IsInert())
+      if (cached_is_aria_hidden_)
         string_builder = string_builder + " ariaHidden";
-    } else {
-      if (const AXObject* aria_hidden_root = AriaHiddenRoot()) {
-        string_builder = string_builder + " ariaHiddenRoot";
-        if (aria_hidden_root != this) {
-          string_builder =
-              string_builder + GetNodeString(aria_hidden_root->GetNode());
-        }
+    } else if (IsAriaHidden()) {
+      const AXObject* aria_hidden_root = AriaHiddenRoot();
+      DCHECK(aria_hidden_root);
+      string_builder = string_builder + " ariaHiddenRoot";
+      if (aria_hidden_root != this) {
+        string_builder =
+            string_builder + GetNodeString(aria_hidden_root->GetNode());
       }
     }
     if (cached_values_only ? cached_is_hidden_via_style : IsHiddenViaStyle())

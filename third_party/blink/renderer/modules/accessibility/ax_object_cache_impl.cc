@@ -2848,9 +2848,7 @@ void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
   if (parent) {
     // If the parent is inert or aria-hidden, then the subtree will be
     // ignored and changing aria-hidden will have no effect.
-    // |IsInertOrAriaHidden| returns true if the element or one of its
-    // ancestors is either inert or within an aria-hidden subtree.
-    if (parent->IsInertOrAriaHidden())
+    if (parent->IsInert() || parent->IsAriaHidden())
       return;
     // If the parent is 'display: none', then the subtree will be ignored and
     // changing aria-hidden will have no effect.
