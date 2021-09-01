@@ -9002,28 +9002,6 @@
             ]
         }
     ],
-    "VerifyHTMLFetchedFromAppCacheBeforeDelay": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "ios",
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VerifyHTMLFetchedFromAppCacheBeforeDelay"
-                    ]
-                }
-            ]
-        }
-    ],
     "VideoTutorialChromeIntroStudy": [
         {
             "platforms": [
