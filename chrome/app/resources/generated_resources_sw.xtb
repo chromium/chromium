@@ -1841,7 +1841,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="2912247081180973411">Funga madirisha</translation>
 <translation id="2913331724188855103">Ruhusu tovuti zihifadhi na kusoma data ya vidakuzi (imependekezwa)</translation>
 <translation id="2915102088417824677">Angalia Kumbukumbu ya shughuli</translation>
-<translation id="2915873080513663243">Kukagua kiotomatiki</translation>
+<translation id="2915873080513663243">Kuchanganua kiotomatiki</translation>
 <translation id="2916073183900451334">Kichupo cha Kubonyeza kwenye ukurasa wavuti kinaangazia viungo, pamoja na nyuga za fomu</translation>
 <translation id="2916745397441987255">Tafuta katika viendelezi</translation>
 <translation id="2918484644467055090">Kifaa hiki hakiwezi kusajiliwa kwenye shirika linalomiliki akaunti yako kwa sababu kimewekwa alama ili kidhibitiwe na shirika tofauti.</translation>
@@ -2970,7 +2970,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4120817667028078560">Kijia ni kirefu mno</translation>
 <translation id="4124823734405044952">Umebadilisha ufunguo wako wa usalama</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
-<translation id="4126916490446791914">Kipengele cha kukagua kiotomatiki kimewashwa</translation>
+<translation id="4126916490446791914">Kipengele cha kuchanganua kiotomatiki kimewashwa</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Kumbukumbu ya Kifaa</translation>
 <translation id="4130207949184424187">Kiendelezi hiki kimebadilisha ukurasa unaoonyeshwa unapotafuta kutoka Sanduku Kuu.</translation>
@@ -4891,7 +4891,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6291949900244949761">Iulize wakati tovuti inataka kufikia vifaa vya USB (inapendekezwa)</translation>
 <translation id="6291953229176937411">Onye&amp;sha katika Kipataji</translation>
 <translation id="6292699686837272722">Ukubwa wa vichupo hupunguzwa ili viwe na upana wa wastani</translation>
-<translation id="6294759976468837022">Kasi ya kipengele cha kukagua kiotomatiki</translation>
+<translation id="6294759976468837022">Kasi ya kipengele cha kuchanganua kiotomatiki</translation>
 <translation id="6295158916970320988">Tovuti zote</translation>
 <translation id="6295855836753816081">Inahifadhi...</translation>
 <translation id="6298962879096096191">Tumia Google Play kusakinisha programu za Android</translation>
@@ -6027,7 +6027,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="754207240458482646">Umesawazishwa na vifaa vingine kwenye akaunti yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Washa vipengele vya kutatua kwenye kifaa hiki cha <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Muulize mzazi wako</translation>
-<translation id="7546012169463147344">Kipengele cha kukagua kiotomatiki kitapitia skrini na kuangazia vipengee vilivyopo. Kipengee kikishaangaziwa, bonyeza kitufe cha "Chagua" ulichokabidhi ili ufungue kipengee hicho.</translation>
+<translation id="7546012169463147344">Kipengele cha kuchanganua kiotomatiki kitapitia skrini na kuangazia vipengee vilivyopo. Kipengee kikishaangaziwa, bonyeza kitufe cha "Chagua" ulichokabidhi ili ufungue kipengee hicho.</translation>
 <translation id="7547317915858803630">Ilani: mipangilio yako ya <ph name="PRODUCT_NAME" /> imeakibishwa kwenye hifadhi ya mtandao. Huenda hii ikasababisha kushuka, mivurugo, au hata upotezaji wa data.</translation>
 <translation id="7548856833046333824">Limau</translation>
 <translation id="7550830279652415241">vialamisho_<ph name="DATESTAMP" />.html</translation>
@@ -6115,7 +6115,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7634566076839829401">Hitilafu fulani imetokea. Tafadhali jaribu tena.</translation>
 <translation id="7635048370253485243">Imebandikwa na Msimamizi wako</translation>
 <translation id="763632859238619983">Usiruhusu tovuti zozote zisakinishe vidhibiti vya malipo</translation>
-<translation id="7636422033092045734">Kwa vile sasa una swichi zaidi za kusogeza, kipengele cha kukagua kiotomatiki kimezimwa. Nenda kwenye kitufe cha "Nimemaliza" kisha ubonyeze swichi ya "Chagua" ili ufunge mwongozo.</translation>
+<translation id="7636422033092045734">Kwa vile sasa una swichi zaidi za kusogeza, kipengele cha kuchanganua kiotomatiki kimezimwa. Nenda kwenye kitufe cha "Nimemaliza" kisha ubonyeze swichi ya "Chagua" ili ufunge mwongozo.</translation>
 <translation id="7636919061354591437">Sakinisha kwenye Kifaa hiki</translation>
 <translation id="7637593984496473097">Nafasi ya hifadhi kwenye diski haitoshi</translation>
 <translation id="7638605456503525968">Milango ya kuingiza</translation>
