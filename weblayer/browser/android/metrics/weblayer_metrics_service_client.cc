@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -26,7 +25,6 @@
 #include "weblayer/browser/java/jni/MetricsServiceClient_jni.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/tab_impl.h"
-#include "weblayer/common/weblayer_paths.h"
 
 namespace weblayer {
 namespace {
@@ -108,9 +106,12 @@ void WebLayerMetricsServiceClient::RegisterExternalExperiments(
 }
 
 void WebLayerMetricsServiceClient::Initialize(PrefService* pref_service) {
-  base::FilePath user_data_dir;
-  base::PathService::Get(DIR_USER_DATA, &user_data_dir);
-  AndroidMetricsServiceClient::Initialize(user_data_dir, pref_service);
+  // Pass an empty file path since the path is for the Extended Variations Safe
+  // Mode experiment and Android WebLayer is temporarily excluded from this
+  // experiment.
+  // TODO(crbug/1245347): Enable the experiment on Android WebLayer.
+  AndroidMetricsServiceClient::Initialize(/*user_data_dir=*/base::FilePath(),
+                                          pref_service);
 }
 
 int32_t WebLayerMetricsServiceClient::GetProduct() {

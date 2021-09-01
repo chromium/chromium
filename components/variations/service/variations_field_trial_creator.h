@@ -99,6 +99,7 @@ class VariationsFieldTrialCreator {
   // participate in the extended variations safe mode field trial. This should
   // be the case for all platforms that use a VariationsSeed with the exception
   // of Android WebView, which has its own safe mode mechanism: crbug/1220131.
+  // TODO(crbug/1245646): Remove |extend_variations_safe_mode| param.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
   // explicit --disable-features and --enable-features from the command line
