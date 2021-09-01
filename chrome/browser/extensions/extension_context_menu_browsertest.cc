@@ -815,16 +815,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TargetURLs) {
                                     std::string("item1")));
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
-// Flakily hangs on Linux/CrOS/Windows/Mac - http://crbug.com/1035062
-#define MAYBE_IncognitoSplit DISABLED_IncognitoSplit
-#else
-#define MAYBE_IncognitoSplit IncognitoSplit
-#endif
+// TODO(http://crbug.com/1035062): This test is flaky only with the event
+// page-based version. Remove this once that's fixed.
+using ExtensionContextMenuSWTest = ExtensionContextMenuLazyTest;
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionContextMenuSWTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 // Tests adding of context menus in incognito mode.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, MAYBE_IncognitoSplit) {
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuSWTest, IncognitoSplit) {
   ExtensionTestMessageListener created("created item regular", false);
   ExtensionTestMessageListener created_incognito("created item incognito",
                                                  false);
