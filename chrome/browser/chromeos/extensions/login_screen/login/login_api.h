@@ -229,6 +229,26 @@ class LoginEndSharedSessionFunction : public ExtensionFunction {
   void OnEndSharedSessionComplete(absl::optional<std::string> error);
 };
 
+class LoginSetDataForNextLoginAttemptFunction : public ExtensionFunction {
+ public:
+  LoginSetDataForNextLoginAttemptFunction();
+
+  LoginSetDataForNextLoginAttemptFunction(
+      const LoginSetDataForNextLoginAttemptFunction&) = delete;
+
+  LoginSetDataForNextLoginAttemptFunction& operator=(
+      const LoginSetDataForNextLoginAttemptFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.setDataForNextLoginAttempt",
+                             LOGIN_SETDATAFORNEXTLOGINATTEMPT)
+
+ protected:
+  ~LoginSetDataForNextLoginAttemptFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_

@@ -3025,6 +3025,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/lock/screen_locker_browsertest.cc",
         "../browser/ash/login/lock/screen_locker_tester.cc",
         "../browser/ash/login/lock/screen_locker_tester.h",
+        "../browser/ash/login/login_api_data_for_next_login_attempt_pref_cleaner_browsertest.cc",
         "../browser/ash/login/login_auth_recorder_browsertest.cc",
         "../browser/ash/login/login_browsertest.cc",
         "../browser/ash/login/login_manager_test.cc",

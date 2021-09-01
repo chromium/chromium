@@ -91,6 +91,7 @@ namespace chromeos {
 class BulkPrintersCalculatorFactory;
 class DebugdNotificationHandler;
 class FastTransitionObserver;
+class LoginApiDataForNextLoginAttemptPrefCleaner;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class NetworkChangeManagerClient;
@@ -218,6 +219,8 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
       login_screen_extensions_lifetime_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
+  std::unique_ptr<LoginApiDataForNextLoginAttemptPrefCleaner>
+      login_api_data_for_next_login_attempt_pref_cleaner_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
   std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;

@@ -26,13 +26,13 @@ namespace login {
     // Exits the current session.
     // |dataForNextLoginAttempt|: If set, stores data which can be read by
     // $(ref:fetchDataForNextLoginAttempt) from the login screen. If unset, any
-    // currently stored data will be cleared.
+    // currently stored data will be cleared. The data is cleared when the
+    // session becomes active.
     static void exitCurrentSession(optional DOMString dataForNextLoginAttempt,
                                    optional VoidCallback callback);
 
     // Reads the $(ref:dataForNextLoginAttempt) set by
-    // $(ref:exitCurrentSession). Clears the previously stored data after
-    // reading so it can only be read once.
+    // $(ref:exitCurrentSession).
     // |callback|: Called with the stored data, or an empty string if there was
     // no previously stored data.
     static void fetchDataForNextLoginAttempt(StringCallback callback);
@@ -105,5 +105,13 @@ namespace login {
     // |callback|: Invoked after cleanup operations have finished and the
     // session is locked.
     static void endSharedSession(optional VoidCallback callback);
+
+    // Sets data for the next login attempt. The data can be retrieved by
+    // calling $(ref:fetchDataForNextLoginAttempt). The data is cleared when
+    // the session becomes active.
+    // |dataForNextLoginAttempt|: The data to be set.
+    static void setDataForNextLoginAttempt(DOMString dataForNextLoginAttempt,
+                                           optional VoidCallback callback);
+
   };
 };

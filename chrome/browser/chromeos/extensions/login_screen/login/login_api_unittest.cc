@@ -302,10 +302,9 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithNoData) {
                     prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
-// Test that calling `login.fetchDataForNextLoginAttempt()` function returns the
-// value stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref and
-// clears the pref.
-TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
+// Test that calling `login.fetchDataForNextLoginAttempt()` returns the value
+// stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref.
+TEST_F(LoginApiUnittest, FetchDataForNextLoginAttempt) {
   const std::string data_for_next_login_attempt = "hello world";
 
   PrefService* local_state = g_browser_process->local_state();
@@ -315,9 +314,21 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   std::unique_ptr<base::Value> value(RunFunctionAndReturnValue(
       new LoginFetchDataForNextLoginAttemptFunction(), "[]"));
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
+}
 
-  ASSERT_EQ("", local_state->GetString(
-                    prefs::kLoginExtensionApiDataForNextLoginAttempt));
+// Test that calling `login.setDataForNextLoginAttempt()` sets the
+// value stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref.
+TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
+  const std::string data_for_next_login_attempt = "hello world";
+
+  std::unique_ptr<base::Value> value(
+      RunFunctionAndReturnValue(new LoginSetDataForNextLoginAttemptFunction(),
+                                "[\"" + data_for_next_login_attempt + "\"]"));
+
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_EQ(
+      data_for_next_login_attempt,
+      local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSession) {
@@ -562,6 +573,8 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 // extension ID and session secret in the `UserContext` passed to
 // `ExistingUserController`, and sets user hash and salt.
 TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
+  base::TimeTicks now_ = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now_);
   SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   chromeos::UserContext user_context;
@@ -580,6 +593,9 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
   EXPECT_NE("", session_secret);
   EXPECT_NE("", handler->GetUserSecretHashForTesting());
   EXPECT_NE("", handler->GetUserSecretSaltForTesting());
+
+  // Test that user activity is triggered.
+  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.launchSharedManagedGuestSession()` returns an error
@@ -637,7 +653,13 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSession) {
 
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
 
+  base::TimeTicks now_ = base::TimeTicks::Now();
+  ui::UserActivityDetector::Get()->set_now_for_test(now_);
+
   RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
+
+  // Test that user activity is triggered.
+  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when the
@@ -798,12 +820,18 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
 
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
 
+  base::TimeTicks now_ = base::TimeTicks::Now();
+
+  ui::UserActivityDetector::Get()->set_now_for_test(now_);
   RunFunction(new LoginEnterSharedSessionFunction(), "[\"bar\"]");
 
   chromeos::SharedSessionHandler* handler =
       chromeos::SharedSessionHandler::Get();
   EXPECT_NE("", handler->GetUserSecretHashForTesting());
   EXPECT_NE("", handler->GetUserSecretSaltForTesting());
+
+  // Test that user activity is triggered.
+  EXPECT_EQ(now_, ui::UserActivityDetector::Get()->last_activity_time());
 }
 
 // Test that calling `login.enterSharedSession()` returns an error when the

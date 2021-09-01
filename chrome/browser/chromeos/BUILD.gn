@@ -1673,6 +1673,8 @@ source_set("chromeos") {
     "../ash/login/lock/views_screen_locker.h",
     "../ash/login/lock_screen_utils.cc",
     "../ash/login/lock_screen_utils.h",
+    "../ash/login/login_api_data_for_next_login_attempt_pref_cleaner.cc",
+    "../ash/login/login_api_data_for_next_login_attempt_pref_cleaner.h",
     "../ash/login/login_auth_recorder.cc",
     "../ash/login/login_auth_recorder.h",
     "../ash/login/login_client_cert_usage_observer.cc",

@@ -87,6 +87,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/login_api_data_for_next_login_attempt_pref_cleaner.h"
 #include "chrome/browser/ash/login/login_screen_extensions_lifetime_manager.h"
 #include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -1085,6 +1086,9 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
       std::make_unique<LoginScreenExtensionsLifetimeManager>();
   login_screen_extensions_storage_cleaner_ =
       std::make_unique<LoginScreenExtensionsStorageCleaner>();
+
+  login_api_data_for_next_login_attempt_pref_cleaner_ =
+      std::make_unique<LoginApiDataForNextLoginAttemptPrefCleaner>();
 
   ChromeBrowserMainPartsLinux::PostProfileInit();
 }

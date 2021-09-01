@@ -154,7 +154,6 @@ LoginFetchDataForNextLoginAttemptFunction::Run() {
   DCHECK(local_state);
   std::string data_for_next_login_attempt =
       local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt);
-  local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
 
   return RespondNow(OneArgument(base::Value(data_for_next_login_attempt)));
 }
@@ -244,6 +243,8 @@ LoginLaunchSharedManagedGuestSessionFunction::
 
 ExtensionFunction::ResponseAction
 LoginLaunchSharedManagedGuestSessionFunction::Run() {
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+
   auto parameters =
       api::login::LaunchSharedManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
@@ -262,6 +263,8 @@ LoginEnterSharedSessionFunction::LoginEnterSharedSessionFunction() = default;
 LoginEnterSharedSessionFunction::~LoginEnterSharedSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+
   auto parameters = api::login::EnterSharedSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
@@ -288,6 +291,8 @@ LoginUnlockSharedSessionFunction::LoginUnlockSharedSessionFunction() = default;
 LoginUnlockSharedSessionFunction::~LoginUnlockSharedSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+
   auto parameters = api::login::UnlockSharedSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
@@ -335,6 +340,25 @@ void LoginEndSharedSessionFunction::OnEndSharedSessionComplete(
   }
 
   Respond(NoArguments());
+}
+
+LoginSetDataForNextLoginAttemptFunction::
+    LoginSetDataForNextLoginAttemptFunction() = default;
+LoginSetDataForNextLoginAttemptFunction::
+    ~LoginSetDataForNextLoginAttemptFunction() = default;
+
+ExtensionFunction::ResponseAction
+LoginSetDataForNextLoginAttemptFunction::Run() {
+  auto parameters =
+      api::login::SetDataForNextLoginAttempt::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
+                         parameters->data_for_next_login_attempt);
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
