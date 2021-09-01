@@ -327,7 +327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOnStartup"
-    enum="PasswordAccountStoreClearedOnStartup" expires_after="M95">
+    enum="PasswordAccountStoreClearedOnStartup" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -337,7 +337,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOptInForAllAccounts"
-    units="accounts" expires_after="M95">
+    units="accounts" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -349,9 +349,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted"
-    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="M95">
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     When the user accepts to move a password from the profile store to the
     account store, this records what user action caused the moving flow to be
@@ -361,9 +362,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered"
-    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="M95">
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     When the user is offered to move a password from the profile store to the
     account store, this records what user action caused the moving flow to be
@@ -373,7 +375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount"
-    units="credentials" expires_after="M95">
+    units="credentials" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -385,7 +387,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
-    units="accounts" expires_after="2022-02-13">
+    units="accounts" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -396,7 +398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
-    units="accounts" expires_after="M95">
+    units="accounts" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -408,9 +410,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut"
-    enum="Boolean" expires_after="2021-12-12">
+    enum="Boolean" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     Records whether a signed-in account was still found by the time Chrome
     attempted to opt out the user of passwords account storage and clear the
@@ -423,9 +426,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
-    units="passwords" expires_after="2022-02-13">
+    units="passwords" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     Records how many passwords in the account store were unsynced when the user
     signed out of their Google Account. Recorded only in Win/Mac/Linux when a
@@ -434,7 +438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountStorageUserStateDuration"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-05-31">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
 
   <owner>mamir@chromium.org</owner>
@@ -519,7 +523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountStore.TimesPasswordUsed"
-    units="PasswordUses" expires_after="M95">
+    units="PasswordUses" expires_after="2022-05-31">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -534,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PasswordManager.AccountStore.TotalAccountsHiRes.ByType" units="units"
-    expires_after="2021-12-12">
+    expires_after="2022-05-31">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -549,7 +553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme"
-    units="accounts" expires_after="M95">
+    units="accounts" expires_after="2022-05-31">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -564,7 +568,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
-    units="credentials" expires_after="M95">
+    units="credentials" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -574,7 +578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreCredentialsAfterOptIn"
-    units="credentials" expires_after="M95">
+    units="credentials" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -615,7 +619,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore2.{DifferenceType}"
-    units="accounts" expires_after="M95">
+    units="accounts" expires_after="2022-05-31">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1156,13 +1160,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
-    units="credentials" expires_after="M95">
+    units="credentials" expires_after="2022-05-31">
   <owner>fhorschig@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
-    Records how many credentials from the account store are available to a user
-    right after they unlocked the account store. If a credential is an exact
-    duplicate with a local credential, it still counts into this metric.
+    Recorded after unlocking the account store from the password filling flow.
+    Records how many credentials from the account store can be used to fill the
+    current password form. If a credential is an exact duplicate with a local
+    credential, it still counts into this metric.
   </summary>
 </histogram>
 
