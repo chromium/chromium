@@ -10,9 +10,12 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Network.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 
@@ -292,6 +295,97 @@ protocol::Audits::BlockedByResponseReason BlockedByResponseReasonToProtocol(
   }
 }
 
+protocol::Audits::MixedContentResourceType
+RequestContextToMixedContentResourceType(
+    mojom::blink::RequestContextType request_context) {
+  switch (request_context) {
+    case mojom::blink::RequestContextType::AUDIO:
+      return protocol::Audits::MixedContentResourceTypeEnum::Audio;
+    case mojom::blink::RequestContextType::BEACON:
+      return protocol::Audits::MixedContentResourceTypeEnum::Beacon;
+    case mojom::blink::RequestContextType::CSP_REPORT:
+      return protocol::Audits::MixedContentResourceTypeEnum::CSPReport;
+    case mojom::blink::RequestContextType::DOWNLOAD:
+      return protocol::Audits::MixedContentResourceTypeEnum::Download;
+    case mojom::blink::RequestContextType::EMBED:
+      return protocol::Audits::MixedContentResourceTypeEnum::PluginResource;
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+      return protocol::Audits::MixedContentResourceTypeEnum::EventSource;
+    case mojom::blink::RequestContextType::FAVICON:
+      return protocol::Audits::MixedContentResourceTypeEnum::Favicon;
+    case mojom::blink::RequestContextType::FETCH:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::FONT:
+      return protocol::Audits::MixedContentResourceTypeEnum::Font;
+    case mojom::blink::RequestContextType::FORM:
+      return protocol::Audits::MixedContentResourceTypeEnum::Form;
+    case mojom::blink::RequestContextType::FRAME:
+      return protocol::Audits::MixedContentResourceTypeEnum::Frame;
+    case mojom::blink::RequestContextType::HYPERLINK:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::IFRAME:
+      return protocol::Audits::MixedContentResourceTypeEnum::Frame;
+    case mojom::blink::RequestContextType::IMAGE:
+      return protocol::Audits::MixedContentResourceTypeEnum::Image;
+    case mojom::blink::RequestContextType::IMAGE_SET:
+      return protocol::Audits::MixedContentResourceTypeEnum::Image;
+    case mojom::blink::RequestContextType::INTERNAL:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::LOCATION:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::MANIFEST:
+      return protocol::Audits::MixedContentResourceTypeEnum::Manifest;
+    case mojom::blink::RequestContextType::OBJECT:
+      return protocol::Audits::MixedContentResourceTypeEnum::PluginResource;
+    case mojom::blink::RequestContextType::PING:
+      return protocol::Audits::MixedContentResourceTypeEnum::Ping;
+    case mojom::blink::RequestContextType::PLUGIN:
+      return protocol::Audits::MixedContentResourceTypeEnum::PluginData;
+    case mojom::blink::RequestContextType::PREFETCH:
+      return protocol::Audits::MixedContentResourceTypeEnum::Prefetch;
+    case mojom::blink::RequestContextType::SCRIPT:
+      return protocol::Audits::MixedContentResourceTypeEnum::Script;
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+      return protocol::Audits::MixedContentResourceTypeEnum::ServiceWorker;
+    case mojom::blink::RequestContextType::SHARED_WORKER:
+      return protocol::Audits::MixedContentResourceTypeEnum::SharedWorker;
+    case mojom::blink::RequestContextType::STYLE:
+      return protocol::Audits::MixedContentResourceTypeEnum::Stylesheet;
+    case mojom::blink::RequestContextType::SUBRESOURCE:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::TRACK:
+      return protocol::Audits::MixedContentResourceTypeEnum::Track;
+    case mojom::blink::RequestContextType::UNSPECIFIED:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case mojom::blink::RequestContextType::VIDEO:
+      return protocol::Audits::MixedContentResourceTypeEnum::Video;
+    case mojom::blink::RequestContextType::WORKER:
+      return protocol::Audits::MixedContentResourceTypeEnum::Worker;
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
+      return protocol::Audits::MixedContentResourceTypeEnum::XMLHttpRequest;
+    case mojom::blink::RequestContextType::XSLT:
+      return protocol::Audits::MixedContentResourceTypeEnum::XSLT;
+  }
+}
+
+protocol::Audits::MixedContentResolutionStatus
+MixedContentResolutionStatusToProtocol(
+    MixedContentResolutionStatus resolution_type) {
+  switch (resolution_type) {
+    case MixedContentResolutionStatus::kMixedContentBlocked:
+      return protocol::Audits::MixedContentResolutionStatusEnum::
+          MixedContentBlocked;
+    case MixedContentResolutionStatus::kMixedContentAutomaticallyUpgraded:
+      return protocol::Audits::MixedContentResolutionStatusEnum::
+          MixedContentAutomaticallyUpgraded;
+    case MixedContentResolutionStatus::kMixedContentWarning:
+      return protocol::Audits::MixedContentResolutionStatusEnum::
+          MixedContentWarning;
+  }
+}
+
 }  // namespace
 
 void AuditsIssue::ReportSharedArrayBufferIssue(
@@ -356,4 +450,47 @@ AuditsIssue AuditsIssue::CreateBlockedByResponseIssue(
   return AuditsIssue(std::move(issue));
 }
 
+void AuditsIssue::ReportMixedContentIssue(
+    const KURL& main_resource_url,
+    const KURL& insecure_url,
+    const mojom::blink::RequestContextType request_context,
+    LocalFrame* frame,
+    const MixedContentResolutionStatus resolution_status,
+    const absl::optional<String>& devtools_id) {
+  auto affected_frame =
+      protocol::Audits::AffectedFrame::create()
+          .setFrameId(frame->GetDevToolsFrameToken().ToString().c_str())
+          .build();
+
+  auto mixedContentDetails =
+      protocol::Audits::MixedContentIssueDetails::create()
+          .setResourceType(
+              RequestContextToMixedContentResourceType(request_context))
+          .setResolutionStatus(
+              MixedContentResolutionStatusToProtocol(resolution_status))
+          .setInsecureURL(insecure_url.GetString())
+          .setMainResourceURL(main_resource_url.GetString())
+          .setFrame(std::move(affected_frame))
+          .build();
+
+  if (devtools_id) {
+    auto request = protocol::Audits::AffectedRequest::create()
+                       .setRequestId(*devtools_id)
+                       .setUrl(insecure_url.GetString())
+                       .build();
+    mixedContentDetails->setRequest(std::move(request));
+  }
+
+  auto details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setMixedContentIssueDetails(std::move(mixedContentDetails))
+          .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::MixedContentIssue)
+          .setDetails(std::move(details))
+          .build();
+
+  frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
 }  // namespace blink
