@@ -2579,7 +2579,17 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, AllowCrossOriginAuthPrompt) {
 }
 
 class TermsOfServiceDownloadTest : public DeviceLocalAccountTest,
-                                   public testing::WithParamInterface<bool> {};
+                                   public testing::WithParamInterface<bool> {
+ public:
+  void SetUpOnMainThread() override {
+    DeviceLocalAccountTest::SetUpOnMainThread();
+
+    // Prevent browser start in user session so that we do not need to wait
+    // for its initialization.
+    ash::test::UserSessionManagerTestApi(ash::UserSessionManager::GetInstance())
+        .SetShouldLaunchBrowserInTests(false);
+  }
+};
 
 IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   // Parameterization for using valid and invalid URLs.
