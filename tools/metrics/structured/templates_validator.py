@@ -40,9 +40,11 @@ IMPL_FILE_TEMPLATE = """\
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_validator.h"
 #include "components/metrics/structured/project_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics {{
 namespace structured {{
@@ -90,10 +92,19 @@ class {project.validator} final :
       const std::string& event_name) override;
 
     static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
+    static constexpr IdType kIdType = IdType::{project.id_type};
+    static constexpr IdScope kIdScope = IdScope::{project.id_scope};
+    static constexpr EventType kEventType =
+        StructuredEventProto_EventType_{project.event_type};
 }};
 
 {project.validator}::{project.validator}() :
-  ::metrics::structured::ProjectValidator({project.validator}::kProjectNameHash)
+  ::metrics::structured::ProjectValidator(
+  {project.validator}::kProjectNameHash,
+  {project.validator}::kIdType,
+  {project.validator}::kIdScope,
+  {project.validator}::kEventType
+)
   {{}}
 
 {project.validator}::~{project.validator}() = default;

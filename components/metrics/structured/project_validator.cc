@@ -6,15 +6,19 @@
 
 #include <cstdint>
 
+#include "components/metrics/structured/enums.h"
+
 namespace metrics {
 namespace structured {
 
-ProjectValidator::ProjectValidator(uint64_t project_hash)
-    : project_hash_(project_hash) {}
-
-uint64_t ProjectValidator::project_hash() const {
-  return project_hash_;
-}
+ProjectValidator::ProjectValidator(uint64_t project_hash,
+                                   IdType id_type,
+                                   IdScope id_scope,
+                                   EventType event_type)
+    : project_hash_(project_hash),
+      id_type_(id_type),
+      id_scope_(id_scope),
+      event_type_(event_type) {}
 
 }  // namespace structured
 }  // namespace metrics
