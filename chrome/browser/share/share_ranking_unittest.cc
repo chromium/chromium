@@ -201,14 +201,37 @@ TEST_F(ShareRankingStaticTest, UsedAppNotPresentInRanking) {
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
                                3, &displayed, &persisted);
 
-  // Since length is 3 only 2 actual items show, with the visible one with the lowest usage (bar)
-  // replaced with baz.
+  // Since length is 3 only 2 actual items show, with the visible one with the
+  // lowest usage (bar) replaced with baz. Since baz was new (not in the old
+  // ranking) it should have been stuck at the end of the ranking, then swapped
+  // with bar, leaving bar at the end.
   std::vector<std::string> expected_displayed{"foo", "baz",
                                               ShareRanking::kMoreTarget};
-  std::vector<std::string> expected_persisted{"foo", "baz", "bar", "quxx"};
+  std::vector<std::string> expected_persisted{"foo", "baz", "quxx", "bar"};
 
   ASSERT_EQ(displayed.size(), expected_displayed.size());
   ASSERT_EQ(persisted.size(), expected_persisted.size());
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
+TEST_F(ShareRankingStaticTest, LowestUsageItemSwappedIgnoringDisplayOrder) {
+  std::map<std::string, int> history = {
+      {"bar", 2},
+      {"foo", 3},
+      {"baz", 4},
+      {"quxx", 5},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"bar", "foo", "baz"};
+
+  ShareRanking::ComputeRanking(history, history, current,
+                               {"foo", "bar", "baz", "quxx"}, 3, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"quxx", "foo", "$more"};
+  ShareRanking::Ranking expected_persisted{"quxx", "foo", "baz", "bar"};
   EXPECT_EQ(displayed, expected_displayed);
   EXPECT_EQ(persisted, expected_persisted);
 }
