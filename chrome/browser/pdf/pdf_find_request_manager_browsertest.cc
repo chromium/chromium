@@ -35,15 +35,15 @@
 
 namespace content {
 
-class ChromeFindRequestManagerTest : public base::test::WithFeatureOverride,
-                                     public InProcessBrowserTest {
+class PdfFindRequestManagerTest : public base::test::WithFeatureOverride,
+                                  public InProcessBrowserTest {
  public:
-  ChromeFindRequestManagerTest()
+  PdfFindRequestManagerTest()
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-  ChromeFindRequestManagerTest(const ChromeFindRequestManagerTest&) = delete;
-  ChromeFindRequestManagerTest& operator=(const ChromeFindRequestManagerTest&) =
+  PdfFindRequestManagerTest(const PdfFindRequestManagerTest&) = delete;
+  PdfFindRequestManagerTest& operator=(const PdfFindRequestManagerTest&) =
       delete;
-  ~ChromeFindRequestManagerTest() override = default;
+  ~PdfFindRequestManagerTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -83,9 +83,7 @@ class ChromeFindRequestManagerTest : public base::test::WithFeatureOverride,
     return static_cast<FindTestWebContentsDelegate*>(contents()->GetDelegate());
   }
 
-  int last_request_id() const {
-    return last_request_id_;
-  }
+  int last_request_id() const { return last_request_id_; }
 
  private:
   FindTestWebContentsDelegate test_delegate_;
@@ -95,10 +93,10 @@ class ChromeFindRequestManagerTest : public base::test::WithFeatureOverride,
   int last_request_id_ = 0;
 };
 
-class ChromeFindRequestManagerTestWithPdfPartialLoading
-    : public ChromeFindRequestManagerTest {
+class PdfFindRequestManagerTestWithPdfPartialLoading
+    : public PdfFindRequestManagerTest {
  public:
-  ChromeFindRequestManagerTestWithPdfPartialLoading() {
+  PdfFindRequestManagerTestWithPdfPartialLoading() {
     feature_list_.InitWithFeatures(
         {chrome_pdf::features::kPdfIncrementalLoading,
          chrome_pdf::features::kPdfPartialLoading},
@@ -110,9 +108,9 @@ class ChromeFindRequestManagerTestWithPdfPartialLoading
 };
 
 // TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ChromeFindRequestManagerTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfFindRequestManagerTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ChromeFindRequestManagerTestWithPdfPartialLoading);
+    PdfFindRequestManagerTestWithPdfPartialLoading);
 
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
@@ -121,7 +119,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 #else
 #define MAYBE_FindInPDF FindInPDF
 #endif
-IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest, MAYBE_FindInPDF) {
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, MAYBE_FindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -181,7 +179,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTestWithPdfPartialLoading,
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
                        FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
@@ -278,8 +276,7 @@ IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTestWithPdfPartialLoading,
 // TODO(paulmeyer): Note that this is left disabled for now since
 // EnsurePDFHasLoaded() currently does not work for embedded PDFs. This will be
 // fixed and enabled in a subsequent patch.
-IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest,
-                       DISABLED_FindInEmbeddedPDFs) {
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_embedded_pdf_page.html");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -299,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest,
   EXPECT_EQ(11, results.active_match_ordinal);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest, FindMissingStringInPDF) {
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, FindMissingStringInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -316,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest, FindMissingStringInPDF) {
 
 // Tests searching for a word character-by-character, as would typically be
 // done by a user typing into the find bar.
-IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTest,
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
                        CharacterByCharacterFindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
