@@ -50137,6 +50137,7 @@ from previous Chrome versions.
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
   <int value="358493847" label="BackgroundLoader:disabled"/>
+  <int value="358906344" label="NotificationsRefresh:disabled"/>
   <int value="359601954" label="CrostiniUsbSupport:enabled"/>
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="359918746"
@@ -50719,6 +50720,7 @@ from previous Chrome versions.
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
+  <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>
   <int value="804551127" label="ArcKeyboardShortcutHelperIntegration:disabled"/>
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>

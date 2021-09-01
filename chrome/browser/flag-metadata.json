@@ -2304,6 +2304,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "enable-notifications-revamp",
+    "owners": [ "amehfooz", "newcomer" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-ntp-memory-enhancement",
     "owners": [ "adamta@google.com", "sczs" ],
     "expiry_milestone": 96

@@ -968,6 +968,9 @@ extern const char kNewTabstripAnimationDescription[];
 extern const char kNotificationIndicatorName[];
 extern const char kNotificationIndicatorDescription[];
 
+extern const char kNotificationsRevampName[];
+extern const char kNotificationsRevampDescription[];
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

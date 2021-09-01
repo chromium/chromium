@@ -1669,6 +1669,10 @@ const char kNotificationIndicatorDescription[] =
     "Enable notification indicators, which appear on shelf app icons and "
     "launcher apps when a notification is active.";
 
+const char kNotificationsRevampName[] = "Notifications Revamp";
+const char kNotificationsRevampDescription[] =
+    "Enable notification UI revamp and grouped web notifications.";
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";
