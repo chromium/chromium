@@ -107,9 +107,6 @@ class CORE_EXPORT PreloadRequest {
   }
   const KURL& BaseURL() const { return base_url_; }
   bool IsPreconnect() const { return request_type_ == kRequestTypePreconnect; }
-  bool IsLinkRelPreload() const {
-    return request_type_ == kRequestTypeLinkRelPreload;
-  }
   const ClientHintsPreferences& Preferences() const {
     return client_hints_preferences_;
   }

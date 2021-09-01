@@ -729,24 +729,16 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
     // if AppCache was used to fetch the HTML but was not yet initialized for
     // this document.
     if (pending_csp_meta_token_ ||
-        ((!base::FeatureList::IsEnabled(
-              blink::features::kVerifyHTMLFetchedFromAppCacheBeforeDelay) ||
-          appcache_fetched) &&
-         !appcache_initialized)) {
-      PreloadRequestStream link_rel_preloads;
+        (appcache_fetched && !appcache_initialized)) {
       for (auto& request : chunk->preloads) {
-        // Link rel preloads don't need to wait for AppCache but they
-        // should probably wait for CSP.
-        if (!pending_csp_meta_token_ && request->IsLinkRelPreload())
-          link_rel_preloads.push_back(std::move(request));
-        else
-          queued_preloads_.push_back(std::move(request));
+        queued_preloads_.push_back(std::move(request));
       }
-      preloader_->TakeAndPreload(link_rel_preloads);
     } else {
       // We can safely assume that there are no queued preloads request after
-      // the document element is available, as we empty the queue immediately
-      // after the document element is created in documentElementAvailable().
+      // the document element is available and if there is no pending csp token
+      // in the speculation buffer, as we empty the queue immediately
+      // after the document element is created in DocumentElementAvailable()
+      // or when the csp token has been parsed.
       DCHECK(queued_preloads_.IsEmpty());
       preloader_->TakeAndPreload(chunk->preloads);
     }

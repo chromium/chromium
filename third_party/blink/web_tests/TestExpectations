@@ -1966,12 +1966,6 @@ crbug.com/528062 [ Win ] http/tests/security/contentSecurityPolicy/cached-frame-
 # By about a quarter or less of a pixel.
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
-# crbug.com/1218726 These tests fail when VerifyHTMLFetchedFromAppCacheBeforeDelay is enabled.
-crbug.com/1218726 http/tests/loading/appcache-delay/link_header_preload_on_commit.php [ Failure ]
-crbug.com/1218726 http/tests/loading/appcache-delay/preload-does-not-jump-the-queue.html [ Failure ]
-crbug.com/1218726 http/tests/mixed-autoupgrade/optionally/image-upgrade-console-message.https.html [ Failure ]
-crbug.com/1218726 http/tests/security/deprecated-subresource-requests.html [ Failure ]
-
 crbug.com/574283 [ Mac ] fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
 crbug.com/574283 [ Mac ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/fixed-background-in-iframe.html [ Skip ]
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Skip ]

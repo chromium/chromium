@@ -546,12 +546,6 @@ const base::Feature kBlinkHeapIncrementalMarking{
 const base::Feature kBlinkHeapIncrementalMarkingStress{
     "BlinkHeapIncrementalMarkingStress", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables removing AppCache delays when triggering requests when the HTML was
-// not fetched from AppCache.
-const base::Feature kVerifyHTMLFetchedFromAppCacheBeforeDelay{
-    "VerifyHTMLFetchedFromAppCacheBeforeDelay",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether we use ThreadPriority::DISPLAY for renderer
 // compositor & IO threads.
 const base::Feature kBlinkCompositorUseDisplayThreadPriority {

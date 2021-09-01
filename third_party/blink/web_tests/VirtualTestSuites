@@ -718,11 +718,6 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
-    "prefix": "conditional-appcache-delay",
-    "bases": ["http/tests/loading/appcache-delay"],
-    "args": ["--enable-features=VerifyHTMLFetchedFromAppCacheBeforeDelay"]
-  },
-  {
     "prefix": "json-modules",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
     "args": ["--enable-features=JSONModules", "--js-flags=--harmony-import-assertions"]

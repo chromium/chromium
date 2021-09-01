@@ -175,9 +175,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kBlinkHeapIncrementalMarkingStress;
 
 BLINK_COMMON_EXPORT extern const base::Feature
-    kVerifyHTMLFetchedFromAppCacheBeforeDelay;
-
-BLINK_COMMON_EXPORT extern const base::Feature
     kBlinkCompositorUseDisplayThreadPriority;
 
 BLINK_COMMON_EXPORT extern const base::Feature kTransformInterop;
