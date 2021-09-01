@@ -5,14 +5,6 @@
 import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
 /**
- * The methods to expose to the client.
- */
-const METHOD_LIST = [
-  'logOut', 'getInstalledArcApps', 'requestClose', 'notifySupervisionEnabled',
-  'setCloseOnEscape'
-];
-
-/**
  * Class that implements the server side of the AddSupervision postMessage
  * API.  In the case of this API, the Add Supervision WebUI is the server, and
  * the remote website that calls the API  is the client.  This is the opposite
@@ -29,7 +21,7 @@ export class AddSupervisionAPIServer extends PostMessageAPIServer {
    *     messages via the postMessage API.
    */
   constructor(webviewElement, targetURL, originURLPrefix) {
-    super(webviewElement, METHOD_LIST, targetURL, originURLPrefix);
+    super(webviewElement, targetURL, originURLPrefix);
 
     this.addSupervisionHandler_ =
         addSupervision.mojom.AddSupervisionHandler.getRemote();

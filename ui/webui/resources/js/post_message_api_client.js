@@ -6,19 +6,25 @@ import {RequestHandler} from './post_message_api_request_handler.m.js';
 
 /**
  * Class that provides the functionality for talking to a PostMessageAPIServer
- * over the postMessage API.  This should be subclassed and the methods in the
- * server that the client needs to access should be provided in methodList.
+ * over the postMessage API.  This should be subclassed and the subclass should
+ * expose methods that are implemented by the server. The following is an
+ * example.
+ * class FooClient extends PostMessageAPIClient {
+ *  ...
+ *   doFoo(args) {
+ *    return this.callApiFn('foo', args);
+ *   }
+ * }
+ *
  */
 export class PostMessageAPIClient {
   /**
-   * @param {!Array<string>} methodList The list of methods accessible via the
-   *     client.
    * @param {!string} serverOriginURLFilter  Only messages from this origin
    *     will be accepted.
    * @param {Window} targetWindow, If the connection is already established,
    *     then provide the target window.
    */
-  constructor(methodList, serverOriginURLFilter, targetWindow) {
+  constructor(serverOriginURLFilter, targetWindow) {
     /**
      * @private @const {!string} Filter to use to validate
      * the origin of received messages.  The origin of messages
@@ -78,6 +84,14 @@ export class PostMessageAPIClient {
    * subclasses which would like to know when initialization is done.
    */
   onInitialized() {}
+
+  /**
+   * Returns if the client's connection to its handler is initialized or not.
+   * @return {boolean}
+   */
+  isInitialized() {
+    return this.targetWindow_ !== null;
+  }
 
   /**
    * Adds a handler object to the client so that it could handle calls received.

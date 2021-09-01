@@ -6,19 +6,6 @@ import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_serve
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.m.js';
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
-/**
- * The methods to expose to the hosted content via the PostMessageAPI.
- */
-const METHOD_LIST = [
-  'consentValid',
-  'consentLogged',
-  'requestClose',
-  'saveGuestFlowState',
-  'fetchGuestFlowState',
-  'error',
-  'getTimeDeltaSinceSigninSeconds',
-];
-
 const MILLISECONDS_PER_SECOND = 1000;
 
 /**
@@ -80,7 +67,7 @@ export class EduCoexistenceController extends PostMessageAPIServer {
     const flowURL = constructEduCoexistenceUrl(params);
     const protocol = flowURL.hostname === 'localhost' ? 'http://' : 'https://';
     const originURLPrefix = protocol + flowURL.host;
-    super(webview, METHOD_LIST, originURLPrefix, originURLPrefix);
+    super(webview, originURLPrefix, originURLPrefix);
 
     this.ui = ui;
     this.newOobeLayoutEnabled_ = params.newOobeLayoutEnabled;

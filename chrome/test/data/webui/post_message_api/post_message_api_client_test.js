@@ -5,7 +5,6 @@
 import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
 import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
 
-const SERVER_METHODS = ['setX', 'increment', 'decrement', 'finalize'];
 const ServerOriginURLFilter = 'chrome://chrome-signin/';
 
 class TestRequestHandler extends RequestHandler {
@@ -29,7 +28,7 @@ class TestRequestHandler extends RequestHandler {
 
 class TestPostMessageAPIClient extends PostMessageAPIClient {
   constructor(requestHandler) {
-    super(SERVER_METHODS, ServerOriginURLFilter, null);
+    super(ServerOriginURLFilter, null);
     this.setHandler(requestHandler);
   }
 

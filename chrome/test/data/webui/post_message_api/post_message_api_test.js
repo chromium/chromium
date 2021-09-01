@@ -5,18 +5,12 @@
 import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
 import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
-// Methods exposed by the server to the client.
-const SERVER_METHODS = ['setX', 'increment', 'decrement', 'finalize'];
-
-// Methods exposed by the client to the server.
-const CLIENT_HANDLER_METHODS = ['isTestFinalized'];
-
 const TARGET_URL = 'chrome://test/post_message_api/iframe.html';
 const TARGET_ORIGIN = 'chrome://test/';
 
 class TestPostMessageAPIServer extends PostMessageAPIServer {
   constructor(iframeElement) {
-    super(iframeElement, SERVER_METHODS, TARGET_URL, TARGET_ORIGIN);
+    super(iframeElement, TARGET_URL, TARGET_ORIGIN);
     /**
      * Whether the test was successful or not.
      * {boolean}
@@ -92,7 +86,7 @@ class TestPostMessageAPIServer extends PostMessageAPIServer {
 
 class TestClient extends PostMessageAPIClient {
   constructor(iframeElement) {
-    super(CLIENT_HANDLER_METHODS, TARGET_ORIGIN, iframeElement.contentWindow);
+    super(TARGET_ORIGIN, iframeElement.contentWindow);
   }
 
   /**

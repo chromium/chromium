@@ -18,13 +18,11 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
 
 /**
  * Class that provides the functionality for talking to a client
- * over the PostMessageAPI.  This should be subclassed and the
- * methods provided in methodList should be implemented as methods
- * of the subclass.
- * TODO(b/198194293): Clean up the `methodList` below as it is not used.
+ * over the PostMessageAPI.  This should be subclassed and the subclass should
+ * provide supported methods.
  */
 export class PostMessageAPIServer extends RequestHandler {
-  constructor(clientElement, methodList, targetURL, messageOriginURLFilter) {
+  constructor(clientElement, targetURL, messageOriginURLFilter) {
     super();
 
     /**
@@ -137,6 +135,13 @@ export class PostMessageAPIServer extends RequestHandler {
   onInitializationError(origin) {}
 
   /**
+   * Virtual method to be overridden by implementation of this class to notify
+   * them that communication has successfully been initialized with the client
+   * element.
+   */
+  onInitializationComplete() {}
+
+  /**
    * Determines if the specified origin matches the origin filter.
    * @param {!string} origin The origin URL to match with the filter.
    * @return {boolean}  whether the specified origin matches the filter.
@@ -172,6 +177,7 @@ export class PostMessageAPIServer extends RequestHandler {
       }
 
       this.isInitialized_ = true;
+      this.onInitializationComplete();
       return;
     }
     // If we have gotten this far, we have received a message from a trusted
