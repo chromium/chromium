@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
+#include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -58,11 +60,6 @@ class OptimizationGuideWebContentsObserver
   OptimizationGuideNavigationData* GetOrCreateOptimizationGuideNavigationData(
       content::NavigationHandle* navigation_handle);
 
-  // Clears the state related to hints to be fetched at onload due to navigation
-  // predictions.
-  void ClearHintsToFetchBasedOnPredictions(
-      content::NavigationHandle* navigation_handle);
-
   // content::WebContentsObserver implementation:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -81,27 +78,83 @@ class OptimizationGuideWebContentsObserver
   // Notifies |optimization_guide_keyed_service_| that the navigation has
   // finished.
   void NotifyNavigationFinish(
-      int64_t navigation_id,
+      std::unique_ptr<OptimizationGuideNavigationData> navigation_data,
       const std::vector<GURL>& navigation_redirect_chain);
 
-  // The data related to a given navigation ID.
-  base::flat_map<int64_t, std::unique_ptr<OptimizationGuideNavigationData>>
-      inflight_optimization_guide_navigation_datas_;
+  // Data scoped to a single page. PageData has the same lifetime as the page's
+  // main document.
+  class PageData : public content::PageUserData<PageData> {
+   public:
+    explicit PageData(content::Page& page);
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
+    ~PageData() override;
 
-  // The navigation data for the last completed navigation.
-  std::unique_ptr<OptimizationGuideNavigationData> last_navigation_data_;
+    bool is_sent_batched_hints_request() const {
+      return sent_batched_hints_request_;
+    }
+    void set_sent_batched_hints_request() {
+      sent_batched_hints_request_ = true;
+    }
+    void InsertHintTargetUrls(const std::vector<GURL>& urls);
+    std::vector<GURL> GetHintsTargetUrls();
+
+    void SetNavigationData(
+        std::unique_ptr<OptimizationGuideNavigationData> navigation_data) {
+      navigation_data_ = std::move(navigation_data);
+    }
+
+    PAGE_USER_DATA_KEY_DECL();
+
+   private:
+    // List of predicted URLs to fetch hints for once the page reaches onload.
+    optimization_guide::InsertionOrderedSet<GURL> hints_target_urls_;
+
+    // Whether a hints request for predicted URLs has been fired off for this
+    // page loads. Used to avoid sending more than one predicted URLs hints
+    // request per page load.
+    bool sent_batched_hints_request_ = false;
+
+    // The navigation data for the completed navigation.
+    std::unique_ptr<OptimizationGuideNavigationData> navigation_data_;
+  };
+
+  class NavigationHandleData
+      : public content::NavigationHandleUserData<NavigationHandleData> {
+   public:
+    explicit NavigationHandleData(content::NavigationHandle&);
+    NavigationHandleData(const NavigationHandleData&) = delete;
+    NavigationHandleData& operator=(const NavigationHandleData&) = delete;
+    ~NavigationHandleData() override;
+
+    std::unique_ptr<OptimizationGuideNavigationData>
+    TakeOptimizationGuideNavigationData() {
+      return std::move(optimization_guide_navigation_data_);
+    }
+
+    OptimizationGuideNavigationData* GetOptimizationGuideNavigationData() {
+      return optimization_guide_navigation_data_.get();
+    }
+
+    void SetOptimizationGuideNavigationData(
+        std::unique_ptr<OptimizationGuideNavigationData> navigation_data) {
+      optimization_guide_navigation_data_ = std::move(navigation_data);
+    }
+
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
+   private:
+    // The data related to a given navigation ID.
+    std::unique_ptr<OptimizationGuideNavigationData>
+        optimization_guide_navigation_data_;
+  };
+
+  // Returns the PageData for the specified |page|.
+  PageData& GetPageData(content::Page& page);
 
   // Initialized in constructor. It may be null if the
   // OptimizationGuideKeyedService feature is not enabled.
   OptimizationGuideKeyedService* optimization_guide_keyed_service_ = nullptr;
-
-  // List of predicted URLs to fetch hints for once the page reaches onload.
-  optimization_guide::InsertionOrderedSet<GURL> hints_target_urls_;
-
-  // Whether a hints request for predicted URLs has been fired off for this page
-  // loads. Used to avoid sending more than one predicted URLs hints request per
-  // page load.
-  bool sent_batched_hints_request_ = false;
 
   base::WeakPtrFactory<OptimizationGuideWebContentsObserver> weak_factory_{
       this};
