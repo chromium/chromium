@@ -689,6 +689,7 @@ blink_core_tests_css = [
   "media_query_matcher_test.cc",
   "media_query_set_test.cc",
   "media_values_test.cc",
+  "parser/at_rule_descriptor_parser_test.cc",
   "parser/css_lazy_parsing_test.cc",
   "parser/css_parser_fast_paths_test.cc",
   "parser/css_parser_impl_test.cc",
