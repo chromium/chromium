@@ -1245,7 +1245,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateReportAbuseDialog.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateTask.java",
-  "java/src/org/chromium/chrome/browser/webapps/WebApkVersionManager.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappActionsNotificationManager.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappActiveTabUmaTracker.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappActivity.java",

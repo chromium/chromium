@@ -8,7 +8,6 @@ import("//chrome/android/webapk/shell_apk/request_update_for_version.gni")
 
 android_library("client_java") {
   sources = [
-    "src/org/chromium/webapk/lib/client/DexOptimizer.java",
     "src/org/chromium/webapk/lib/client/WebApkIdentityServiceClient.java",
     "src/org/chromium/webapk/lib/client/WebApkNavigationClient.java",
     "src/org/chromium/webapk/lib/client/WebApkServiceConnectionManager.java",
@@ -25,10 +24,7 @@ android_library("client_java") {
 
 java_cpp_template("runtime_library_version_java") {
   sources = [ "src/org/chromium/webapk/lib/client/WebApkVersion.template" ]
-  defines = [
-    "CURRENT_RUNTIME_DEX_VERSION_VALUE=$runtime_library_version",
-    "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version",
-  ]
+  defines = [ "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version" ]
 }
 
 junit_binary("webapk_client_junit_tests") {

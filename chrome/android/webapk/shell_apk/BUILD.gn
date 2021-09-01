@@ -374,7 +374,6 @@ android_library("shell_apk_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
-  srcjar_deps = [ "javatests/dex_optimizer:dex_optimizer_service_aidl" ]
 }
 
 junit_binary("webapk_shell_apk_junit_tests") {

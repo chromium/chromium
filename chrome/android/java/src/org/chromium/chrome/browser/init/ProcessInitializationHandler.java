@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
-import org.chromium.chrome.browser.webapps.WebApkVersionManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
@@ -479,8 +478,6 @@ public class ProcessInitializationHandler {
                     // This is needed to ensure the right behavior when the process is suddenly
                     // killed.
                     BookmarkWidgetProvider.refreshAllWidgets();
-
-                    WebApkVersionManager.updateWebApksIfNeeded();
 
                     removeSnapshotDatabase();
 
