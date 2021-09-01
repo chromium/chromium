@@ -611,6 +611,15 @@ class NearbySharingServiceImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetIsFastInitiationNotificationEnabled(bool is_enabled) {
+    NearbyShareSettings settings(&prefs_, local_device_data_manager());
+    settings.SetFastInitiationNotificationEnabled(is_enabled);
+
+    // This ensures that the change propagates through mojo and the observers
+    // are called.
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetFakeFastInitiationAdvertiserFactory(bool should_succeed_on_start) {
     fast_initiation_advertiser_factory_ =
         std::make_unique<FakeFastInitiationAdvertiserFactory>(
@@ -4640,6 +4649,24 @@ TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_StartAndStop) {
 
   // Trigger a call to StartFastInitiationScanning().
   SetBluetoothIsPowered(true);
+  EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       FastInitiationScanning_OnFastInitiationNotificationEnabledChanged) {
+  // Fast init notifications are enabled by default so a scanner is created on
+  // initialization of the service.
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  // The existing scanner is destroyed when fast init notifications are turned
+  // off.
+  SetIsFastInitiationNotificationEnabled(false);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  SetIsFastInitiationNotificationEnabled(true);
   EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }
