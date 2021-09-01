@@ -460,36 +460,12 @@ TEST(PatternDirectMatch, EmptyPatternSupported) {
                          });
 }
 
-TEST(PatternDirectMatch, FixedTextSupported) {
-  RunDirectMatchTest("foo", {
-                                {.input = "foo", .expected_groups = {}},
-                                {.input = "fo", .expected_match = false},
-                                {.input = "foobar", .expected_match = false},
-                            });
+TEST(PatternDirectMatch, FixedTextUnsupported) {
+  RunDirectMatchUnsupportedTest("foo");
 }
 
-TEST(PatternDirectMatch, FixedTextInGroupSupported) {
-  RunDirectMatchTest("{foo}", {
-                                  {.input = "foo", .expected_groups = {}},
-                                  {.input = "fo", .expected_match = false},
-                                  {.input = "foobar", .expected_match = false},
-                              });
-}
-
-TEST(PatternDirectMatch, FixedTextInGroupWithOptionalModifierUnsupported) {
+TEST(PatternDirectMatch, FixedTextInGroupUnsupported) {
   RunDirectMatchUnsupportedTest("{foo}?");
-}
-
-TEST(PatternDirectMatch, FixedTextInGroupWithZeroOrMoreModifierUnsupported) {
-  RunDirectMatchUnsupportedTest("{foo}*");
-}
-
-TEST(PatternDirectMatch, FixedTextInGroupWithOneOrMoreModifierUnsupported) {
-  RunDirectMatchUnsupportedTest("{foo}+");
-}
-
-TEST(PatternDirectMatch, FixedTextAndFullWildcardUnsupported) {
-  RunDirectMatchUnsupportedTest("/foo*");
 }
 
 TEST(PatternDirectMatch, NamedGroupUnsupported) {
