@@ -6,8 +6,11 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -121,10 +124,16 @@ void AppServiceAppItem::Activate(int event_flags) {
         }
       });
   if (is_active_app) {
-    ChromeShelfController::instance()->ActivateApp(
-        id(), ash::LAUNCH_FROM_APP_LIST, event_flags,
-        GetController()->GetAppListDisplayId());
-    return;
+    ash::ShelfID shelf_id(id());
+    ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
+    ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(shelf_id);
+    if (delegate) {
+      delegate->ItemSelected(
+          /*event=*/nullptr, GetController()->GetAppListDisplayId(),
+          ash::LAUNCH_FROM_APP_LIST, /*callback=*/base::DoNothing(),
+          /*filter_predicate=*/base::NullCallback());
+      return;
+    }
   }
   Launch(event_flags, apps::mojom::LaunchSource::kFromAppListGrid);
 }

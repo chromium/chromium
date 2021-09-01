@@ -7,8 +7,11 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
@@ -188,12 +191,20 @@ void AppServiceAppResult::Launch(int event_flags,
     ash::ShelfLaunchSource source =
         is_recommendation() ? ash::LAUNCH_FROM_APP_LIST_RECOMMENDATION
                             : ash::LAUNCH_FROM_APP_LIST_SEARCH;
-    ChromeShelfController::instance()->ActivateApp(
-        app_id(), source, event_flags, controller()->GetAppListDisplayId());
-  } else {
-    proxy->Launch(app_id(), event_flags, launch_source,
-                  apps::MakeWindowInfo(controller()->GetAppListDisplayId()));
+    ash::ShelfID shelf_id(app_id());
+    ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
+    ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(shelf_id);
+    if (delegate) {
+      delegate->ItemSelected(/*event=*/nullptr,
+                             controller()->GetAppListDisplayId(), source,
+                             /*callback=*/base::DoNothing(),
+                             /*filter_predicate=*/base::NullCallback());
+      return;
+    }
   }
+
+  proxy->Launch(app_id(), event_flags, launch_source,
+                apps::MakeWindowInfo(controller()->GetAppListDisplayId()));
 }
 
 void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {

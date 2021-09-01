@@ -142,14 +142,6 @@ class ChromeShelfController
                  int event_flags,
                  int64_t display_id);
 
-  // If |app_id| is running, reactivates the app's most recently active window,
-  // otherwise launches and activates the app.
-  // Used by the app-list, and by pinned-app shelf items.
-  void ActivateApp(const std::string& app_id,
-                   ash::ShelfLaunchSource source,
-                   int event_flags,
-                   int64_t display_id);
-
   // Set the image for a specific shelf item (e.g. when set by the app).
   void SetItemImage(const ash::ShelfID& shelf_id, const gfx::ImageSkia& image);
 
