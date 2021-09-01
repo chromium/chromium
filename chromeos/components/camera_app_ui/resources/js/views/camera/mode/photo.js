@@ -132,11 +132,10 @@ export class Photo extends ModeBase {
 
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
     try {
+      const blob = await this.takePhoto_();
       state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {facing: this.facing_});
       this.handler_.playShutterEffect();
-
       state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
-      const blob = await this.takePhoto_();
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
       await this.handler_.handleResultPhoto({resolution, blob}, imageName);
