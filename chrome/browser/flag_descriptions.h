@@ -3048,11 +3048,6 @@ extern const char kWebShareName[];
 extern const char kWebShareDescription[];
 #endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 
-#if defined(OS_LINUX) && defined(USE_OZONE)
-extern const char kUseOzonePlatformName[];
-extern const char kUseOzonePlatformDescription[];
-#endif  // defined(OS_LINUX) && defined(USE_OZONE)
-
 // Feature flags --------------------------------------------------------------
 
 #if defined(DCHECK_IS_CONFIGURABLE)

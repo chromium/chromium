@@ -258,34 +258,14 @@ const base::Feature kResamplingScrollEventsExperimentalPrediction{
     "ResamplingScrollEventsExperimentalPrediction",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(USE_X11) || defined(USE_OZONE)
-const base::Feature kUseOzonePlatform {
-  "UseOzonePlatform",
-#if defined(USE_X11)
-      base::FEATURE_DISABLED_BY_DEFAULT
-};
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-};
-#endif
-
 bool IsUsingOzonePlatform() {
-  // Only allow enabling and disabling the OzonePlatform on USE_X11 && USE_OZONE
-  // builds.
-  static const bool using_ozone_platform =
-#if defined(USE_X11) && defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FeatureList::IsEnabled(kUseOzonePlatform);
-#elif defined(USE_X11) && !defined(USE_OZONE)
-      // This shouldn't be switchable for pure X11 builds.
-      false;
-#else
-      // All the other platforms must use Ozone by default and can't disable
-      // that.
-      true;
-#endif
-  return using_ozone_platform;
-}
+#if defined(USE_X11) && !defined(USE_OZONE)
+
+#error Non-Ozone/X11 builds are no longer supported
+
 #endif  // defined(USE_X11) || defined(USE_OZONE)
+  return true;
+}
 
 const char kPredictorNameLsq[] = "lsq";
 const char kPredictorNameKalman[] = "kalman";

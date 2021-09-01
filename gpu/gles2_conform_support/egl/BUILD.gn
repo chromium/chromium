@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
+
 source_set("egl") {
   output_name = "egl_native"
   sources = [
@@ -39,4 +41,8 @@ source_set("egl") {
     "//ui/gl",
     "//ui/gl/init",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

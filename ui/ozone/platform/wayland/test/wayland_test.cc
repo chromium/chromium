@@ -50,15 +50,7 @@ WaylandTest::WaylandTest()
 WaylandTest::~WaylandTest() {}
 
 void WaylandTest::SetUp() {
-  // TODO(1096425): remove this once Ozone is default on Linux. This is required
-  // to be able to run ozone_unittests locally without passing
-  // --enable-features=UseOzonePlatform explicitly. linux-ozone-rel bot does
-  // that automatically through changes done to "variants", which is also
-  // convenient to have locally so that we don't need to worry about that (it's
-  // the Wayland DragAndDrop that relies on the feature).
-  feature_list_.InitWithFeatures(
-      {features::kUseOzonePlatform, ui::kWaylandOverlayDelegation}, {});
-  ASSERT_TRUE(features::IsUsingOzonePlatform());
+  feature_list_.InitWithFeatures({ui::kWaylandOverlayDelegation}, {});
 
   if (DeviceDataManager::HasInstance()) {
     // Another instance may have already been set before.

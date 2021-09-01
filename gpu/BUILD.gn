@@ -113,6 +113,10 @@ if (!use_static_angle) {
       "//ui/gl/init",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     defines = [
       "COMMAND_BUFFER_GLES_LIB_SUPPORT_ONLY",
       "EGLAPIENTRY=",

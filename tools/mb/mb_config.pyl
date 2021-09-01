@@ -3559,7 +3559,7 @@
     # that exercises angle + ozone (though, it is ozone/drm in reality. We don't support
     # angle on Linux Ozone/X11/Wayland yet).
     'ozone_linux_non_x11': {
-      'gn_args': 'use_x11=false'
+      'gn_args': 'use_x11=false ozone_platform_x11=false'
     },
 
     'paeverywhere': {
