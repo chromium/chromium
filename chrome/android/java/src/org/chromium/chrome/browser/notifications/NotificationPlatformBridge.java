@@ -554,10 +554,10 @@ public class NotificationPlatformBridge {
         NotificationWrapper notification = buildNotificationWrapper(
                 notificationBuilder, notificationType, notificationId, origin, actions, image);
 
-        // Store notification if its origin is suspended.
-        // TODO(knollr): By-pass the NotificationSuspender for non-site notifications.
-        NotificationSuspender.maybeSuspendNotification(notification).then((suspended) -> {
+        Callback<Boolean> suspendedCallback = (suspended) -> {
+            // We will call displayNotification() again after the suspension is over.
             if (suspended) return;
+
             // Display notification as Chrome.
             // Android may throw an exception on INotificationManager.enqueueNotificationWithTag,
             // see crbug.com/1077027.
@@ -571,7 +571,14 @@ public class NotificationPlatformBridge {
                 NotificationUmaTracker.getInstance().onFailedToNotify(
                         NotificationUmaTracker.SystemNotificationType.SITES);
             }
-        });
+        };
+
+        // Temporarily suspend web notifications if the origin is suspended.
+        if (notificationType == NotificationType.WEB_PERSISTENT) {
+            NotificationSuspender.maybeSuspendNotification(notification).then(suspendedCallback);
+        } else {
+            suspendedCallback.onResult(false /* suspended */);
+        }
     }
 
     private NotificationBuilderBase prepareNotificationBuilder(String notificationId,
@@ -652,7 +659,7 @@ public class NotificationPlatformBridge {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
 
-        // TODO(knollr): Generalize the NotificationPlatformBridge sufficiently to not need
+        // TODO(peter): Generalize the NotificationPlatformBridge sufficiently to not need
         // to care about the individual notification types.
         // Set up a pending intent for going to the settings screen for |origin|.
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
