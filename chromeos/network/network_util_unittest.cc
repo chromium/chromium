@@ -116,7 +116,7 @@ TEST_F(NetworkUtilTest, ParseScanResults) {
   EXPECT_TRUE(ParseCellularScanResults(list, &scan_results));
 
   // List contains invalid item.
-  list.AppendInteger(0);
+  list.Append(0);
   EXPECT_FALSE(ParseCellularScanResults(list, &scan_results));
 
   // Scan result has no network id.

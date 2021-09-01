@@ -342,7 +342,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     service_test()->SetServiceProperty(
         kWifi1ServicePath, shill::kStaticIPConfigProperty, static_ipconfig);
     base::ListValue frequencies1;
-    frequencies1.AppendInteger(2400);
+    frequencies1.Append(2400);
     service_test()->SetServiceProperty(
         kWifi1ServicePath, shill::kWifiFrequencyListProperty, frequencies1);
     service_test()->SetServiceProperty(kWifi1ServicePath, shill::kWifiFrequency,
@@ -363,8 +363,8 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
         base::Value(shill::kTetheringNotDetectedState));
 
     base::ListValue frequencies2;
-    frequencies2.AppendInteger(2400);
-    frequencies2.AppendInteger(5000);
+    frequencies2.Append(2400);
+    frequencies2.Append(5000);
     service_test()->SetServiceProperty(
         kWifi2ServicePath, shill::kWifiFrequencyListProperty, frequencies2);
     service_test()->SetServiceProperty(kWifi2ServicePath, shill::kWifiFrequency,

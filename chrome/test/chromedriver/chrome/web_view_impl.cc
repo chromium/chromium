@@ -1185,7 +1185,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   base::ListValue async_args;
   async_args.Append("return (" + function + ").apply(null, arguments);");
   async_args.Append(args.Clone());
-  async_args.AppendBoolean(is_user_supplied);
+  async_args.Append(is_user_supplied);
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);
   Status status = CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript,

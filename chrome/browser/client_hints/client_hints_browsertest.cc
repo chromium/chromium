@@ -1915,7 +1915,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // Add setting for the host.
   std::unique_ptr<base::ListValue> expiration_times_list =
       std::make_unique<base::ListValue>();
-  expiration_times_list->AppendInteger(42 /* client hint value */);
+  expiration_times_list->Append(42 /* client hint value */);
   auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
   expiration_times_dictionary->SetList("client_hints",
                                        std::move(expiration_times_list));

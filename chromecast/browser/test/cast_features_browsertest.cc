@@ -144,7 +144,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
       const std::unordered_set<int32_t>& experiment_ids) {
     base::ListValue list;
     for (auto id : experiment_ids)
-      list.AppendInteger(id);
+      list.Append(id);
     pref_service()->Set(prefs::kActiveDCSExperiments, list);
     pref_service()->CommitPendingWrite();
   }

@@ -2016,7 +2016,7 @@ void SafeBrowsingUIHandler::GetSavedPasswords(const base::ListValue* args) {
   for (const password_manager::PasswordHashData& hash_data :
        hash_manager.RetrieveAllPasswordHashes()) {
     saved_passwords.Append(hash_data.username);
-    saved_passwords.AppendBoolean(hash_data.is_gaia_password);
+    saved_passwords.Append(hash_data.is_gaia_password);
   }
 
   AllowJavascript();

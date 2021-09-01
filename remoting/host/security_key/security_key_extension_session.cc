@@ -199,7 +199,7 @@ void SecurityKeyExtensionSession::SendMessageToClient(
 
   base::ListValue bytes;
   for (auto& byte : data) {
-    bytes.AppendInteger(static_cast<unsigned char>(byte));
+    bytes.Append(static_cast<unsigned char>(byte));
   }
   request.SetKey(kDataPayload, std::move(bytes));
 

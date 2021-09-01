@@ -673,7 +673,7 @@ TEST(SchemaTest, Validate) {
   {
     bundle.Clear();
     base::ListValue list;
-    list.AppendInteger(1);
+    list.Append(1);
     bundle.SetKey("Array", std::move(list));
     TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   }
@@ -867,7 +867,7 @@ TEST(SchemaTest, Validate) {
         root.SetList("List", std::make_unique<base::ListValue>());
 
     // Test that there are not errors here.
-    list_value->AppendInteger(12345);
+    list_value->Append(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
@@ -901,7 +901,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
 
     // Invalid list item.
-    list_value->AppendInteger(12345);
+    list_value->Append(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,

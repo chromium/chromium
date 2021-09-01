@@ -263,8 +263,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartRtpDumpFunction>(params);
@@ -279,8 +279,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StopRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStopRtpDumpFunction>(params);
@@ -328,7 +328,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartAudioDebugRecordings(int seconds) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendInteger(seconds);
+    params.Append(seconds);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartAudioDebugRecordingsFunction>(
@@ -366,9 +366,9 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
     params.Append(session_id);
-    params.AppendInteger(max_log_size_bytes);
-    params.AppendInteger(output_period_ms);
-    params.AppendInteger(web_app_id);
+    params.Append(max_log_size_bytes);
+    params.Append(output_period_ms);
+    params.Append(web_app_id);
 
     if (expect_success) {
       scoped_refptr<WebrtcLoggingPrivateStartEventLoggingFunction> function(

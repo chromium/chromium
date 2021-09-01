@@ -550,9 +550,9 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   lv = std::make_unique<base::ListValue>();
-  lv->AppendInteger(2);
-  lv->AppendInteger(1);
-  lv->AppendInteger(3);
+  lv->Append(2);
+  lv->Append(1);
+  lv->Append(3);
   lv->Append("4-4");
   lv->Append("4-");
   lv->Append("-5");
@@ -564,7 +564,7 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   lv = std::make_unique<base::ListValue>();
-  lv->AppendInteger(-1);
+  lv->Append(-1);
   params.SetList("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
@@ -576,7 +576,7 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   lv = std::make_unique<base::ListValue>();
-  lv->AppendBoolean(true);
+  lv->Append(true);
   params.SetList("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();

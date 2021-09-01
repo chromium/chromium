@@ -831,7 +831,7 @@ TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
   // Check some meaningful value. Policy should be set.
   SetAutoUpdateConnectionTypes(single_value);
   base::ListValue allowed_connections;
-  allowed_connections.AppendInteger(0);
+  allowed_connections.Append(0);
   VerifyPolicyValue(kAllowedConnectionTypesForUpdate, &allowed_connections);
 }
 

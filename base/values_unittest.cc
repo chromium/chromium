@@ -1824,8 +1824,8 @@ TEST(ValuesTest, Comparisons) {
   // Test Non Empty List Values.
   ListValue int_list1;
   ListValue int_list2;
-  int_list1.AppendInteger(1);
-  int_list2.AppendInteger(2);
+  int_list1.Append(1);
+  int_list2.Append(2);
   EXPECT_FALSE(int_list1 == int_list2);
   EXPECT_NE(int_list1, int_list2);
   EXPECT_LT(int_list1, int_list2);

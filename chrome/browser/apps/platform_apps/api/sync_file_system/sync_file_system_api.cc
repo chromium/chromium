@@ -133,7 +133,7 @@ void SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem(
   if (error != base::File::FILE_OK) {
     std::unique_ptr<base::ListValue> error_result =
         std::make_unique<base::ListValue>();
-    error_result->AppendBoolean(false);
+    error_result->Append(false);
     Respond(ErrorWithArguments(
         std::move(error_result),
         ErrorToString(::sync_file_system::FileErrorToSyncStatusCode(error))));

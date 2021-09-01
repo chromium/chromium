@@ -52,7 +52,7 @@ std::unique_ptr<base::DictionaryValue> NetworkProperties::ToValue(
     for (FrequencySet::const_iterator it = this->frequency_set.begin();
          it != this->frequency_set.end();
          ++it) {
-      frequency_list.AppendInteger(*it);
+      frequency_list.Append(*it);
     }
     if (!frequency_list.GetList().empty())
       wifi.SetPath(onc::wifi::kFrequencyList, std::move(frequency_list));

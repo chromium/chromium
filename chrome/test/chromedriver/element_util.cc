@@ -139,7 +139,7 @@ Status ScrollElementRegionIntoViewHelper(
   WebPoint tmp_location = *location;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendBoolean(center);
+  args.Append(center);
   args.Append(CreateValueFrom(region));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
@@ -264,7 +264,7 @@ Status GetElementLocationInViewCenterHelper(const std::string& frame,
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendBoolean(center);
+  args.Append(center);
   std::unique_ptr<base::Value> result;
   status =
       web_view->CallFunction(frame, kGetElementLocationScript, args, &result);
@@ -670,7 +670,7 @@ Status IsElementDisplayed(
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendBoolean(ignore_opacity);
+  args.Append(ignore_opacity);
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
       session->GetCurrentFrameId(), web_view, webdriver::atoms::IS_DISPLAYED,
@@ -760,7 +760,7 @@ Status SetOptionElementSelected(
   // TODO(171034): need to fix throwing error if an alert is triggered.
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendBoolean(selected);
+  args.Append(selected);
   std::unique_ptr<base::Value> result;
   return CallAtomsJs(
       session->GetCurrentFrameId(), web_view, webdriver::atoms::CLICK,

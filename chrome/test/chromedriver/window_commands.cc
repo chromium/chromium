@@ -313,8 +313,8 @@ Status ScrollCoordinateInToView(
     int* offset_y) {
   std::unique_ptr<base::Value> value;
   base::ListValue args;
-  args.AppendInteger(x);
-  args.AppendInteger(y);
+  args.Append(x);
+  args.Append(y);
   Status status = web_view->CallFunction(
       std::string(),
       "function(x, y) {"

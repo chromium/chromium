@@ -111,7 +111,7 @@ class CountingDispatcherDelegate
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsNoObjects) {
   base::ListValue no_objects;
   for (int i = 0; i < 10; ++i) {
-    no_objects.AppendInteger(i);
+    no_objects.Append(i);
   }
 
   scoped_refptr<GinJavaMethodInvocationHelper> helper =
@@ -126,10 +126,10 @@ TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsNoObjects) {
 
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsHaveObjects) {
   base::ListValue objects;
-  objects.AppendInteger(100);
+  objects.Append(100);
   objects.Append(GinJavaBridgeValue::CreateObjectIDValue(1));
   auto sub_list = std::make_unique<base::ListValue>();
-  sub_list->AppendInteger(200);
+  sub_list->Append(200);
   sub_list->Append(GinJavaBridgeValue::CreateObjectIDValue(2));
   objects.Append(std::move(sub_list));
   auto sub_dict = std::make_unique<base::DictionaryValue>();

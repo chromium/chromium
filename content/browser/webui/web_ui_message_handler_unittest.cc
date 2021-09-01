@@ -23,17 +23,17 @@ TEST(WebUIMessageHandlerTest, ExtractIntegerValue) {
   static const char neg_string[] = "-1234";
   static const char pos_string[] = "1234";
 
-  list.AppendInteger(zero_value);
+  list.Append(zero_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, zero_value);
   list.ClearList();
 
-  list.AppendInteger(neg_value);
+  list.Append(neg_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, neg_value);
   list.ClearList();
 
-  list.AppendInteger(pos_value);
+  list.Append(pos_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
   EXPECT_EQ(value, pos_value);
   list.ClearList();

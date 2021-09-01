@@ -462,7 +462,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
       ExtensionCreator::kOverwriteCRX));
 
   // Try to pack again, with the overwrite flag; this should succeed.
-  pack_args.AppendInteger(ExtensionCreator::kOverwriteCRX);
+  pack_args.Append(ExtensionCreator::kOverwriteCRX);
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PACK_STATUS_SUCCESS, 0));
 
@@ -1046,8 +1046,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   // sane value.
   function = new api::DeveloperPrivateGetItemsInfoFunction();
   base::ListValue args;
-  args.AppendBoolean(false);
-  args.AppendBoolean(false);
+  args.Append(false);
+  args.Append(false);
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   results = function->GetResultList();
   results_list = results->GetList();

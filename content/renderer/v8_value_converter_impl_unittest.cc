@@ -660,7 +660,7 @@ TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
 
   // Try again, using an array without the index.
   base::ListValue one_item_list;
-  one_item_list.AppendInteger(123456);
+  one_item_list.Append(123456);
   v8::Local<v8::Array> converted2 =
       converter.ToV8Value(&one_item_list, context).As<v8::Array>();
   EXPECT_FALSE(converted2.IsEmpty());

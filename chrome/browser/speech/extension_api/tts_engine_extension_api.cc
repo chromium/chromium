@@ -380,7 +380,7 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
     options->SetString(constants::kLangKey, voice.lang);
 
   args->Append(std::move(options));
-  args->AppendInteger(utterance->GetId());
+  args->Append(utterance->GetId());
   return args;
 }
 

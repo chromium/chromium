@@ -300,7 +300,7 @@ class QuickUnlockPrivateUnitTest
   void SetLockScreenEnabled(const std::string& token, bool enabled) {
     auto params = std::make_unique<base::ListValue>();
     params->AppendString(token);
-    params->AppendBoolean(enabled);
+    params->Append(enabled);
     RunFunction(new QuickUnlockPrivateSetLockScreenEnabledFunction(),
                 std::move(params));
   }
@@ -309,7 +309,7 @@ class QuickUnlockPrivateUnitTest
   std::string SetLockScreenEnabledWithInvalidToken(bool enabled) {
     auto params = std::make_unique<base::ListValue>();
     params->AppendString(kInvalidToken);
-    params->AppendBoolean(enabled);
+    params->Append(enabled);
     return RunFunctionAndReturnError(
         new QuickUnlockPrivateSetLockScreenEnabledFunction(),
         std::move(params));

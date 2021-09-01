@@ -240,7 +240,7 @@ void FakeShillServiceClient::ClearProperties(
   base::ListValue result;
   for (const auto& name : names) {
     // Note: Shill does not send notifications when properties are cleared.
-    result.AppendBoolean(dict->RemoveKey(name));
+    result.Append(dict->RemoveKey(name));
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));

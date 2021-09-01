@@ -416,7 +416,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
           else
             value_list.Append("null");
         } else {
-          value_list.AppendInteger(values[i]);
+          value_list.Append(values[i]);
         }
       }
       dict->SetKey(ui::ToString(attr), std::move(value_list));
@@ -566,7 +566,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
           else
             value_list.Append("null");
         } else {
-          value_list.AppendInteger(value);
+          value_list.Append(value);
         }
       }
       dict->SetKey(ui::ToString(attr), std::move(value_list));

@@ -427,8 +427,8 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallSources) {
 // handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
   base::ListValue allowed_types_pref;
-  allowed_types_pref.AppendInteger(Manifest::TYPE_THEME);
-  allowed_types_pref.AppendInteger(Manifest::TYPE_USER_SCRIPT);
+  allowed_types_pref.Append(Manifest::TYPE_THEME);
+  allowed_types_pref.Append(Manifest::TYPE_USER_SCRIPT);
 
   SetPref(true, pref_names::kAllowedTypes, allowed_types_pref.Clone());
   const std::vector<Manifest::Type>& allowed_types =
@@ -874,7 +874,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
   // Set the legacy preference, and verifies that it works.
   base::ListValue allowed_types_pref;
-  allowed_types_pref.AppendInteger(Manifest::TYPE_USER_SCRIPT);
+  allowed_types_pref.Append(Manifest::TYPE_USER_SCRIPT);
   SetPref(true, pref_names::kAllowedTypes, allowed_types_pref.Clone());
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
   EXPECT_EQ(ReadGlobalSettings()->allowed_types.size(), 1u);
@@ -1195,7 +1195,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowedTypes) {
   EXPECT_FALSE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
                            extension_.get(), nullptr));
 
-  allowed_types.AppendInteger(Manifest::TYPE_EXTENSION);
+  allowed_types.Append(Manifest::TYPE_EXTENSION);
   EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
                           extension_.get(), nullptr));
 
