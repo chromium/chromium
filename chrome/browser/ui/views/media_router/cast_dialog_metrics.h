@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "components/media_router/browser/media_router_metrics.h"
 
 class Profile;
@@ -53,7 +54,8 @@ class CastDialogMetrics {
   void OnCloseDialog(const base::Time& close_time);
 
   // Records the number of sinks, which may be 0.
-  void OnRecordSinkCount(std::vector<const UIMediaSink*> sinks);
+  void OnRecordSinkCount(
+      const std::vector<CastDialogSinkButton*>& sink_buttons);
 
  private:
   // Records the first user action if it hasn't already been recorded.

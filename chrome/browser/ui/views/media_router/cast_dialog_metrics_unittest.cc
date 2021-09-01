@@ -7,8 +7,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,13 +36,12 @@ const base::Time close_dialog_time =
 
 }  // namespace
 
-class CastDialogMetricsTest : public testing::Test {
+class CastDialogMetricsTest : public ChromeViewsTestBase {
  public:
   CastDialogMetricsTest() = default;
   ~CastDialogMetricsTest() override = default;
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::HistogramTester tester_;
   CastDialogMetrics metrics_{init_time, MediaRouterDialogOpenOrigin::TOOLBAR,
@@ -87,10 +88,13 @@ TEST_F(CastDialogMetricsTest, OnRecordSinkCount) {
   UIMediaSink sink1{mojom::MediaRouteProviderId::CAST};
   UIMediaSink sink2{mojom::MediaRouteProviderId::CAST};
   UIMediaSink sink3{mojom::MediaRouteProviderId::DIAL};
-  std::vector<const UIMediaSink*> sinks{&sink1, &sink2, &sink3};
-  metrics_.OnRecordSinkCount(sinks);
+  CastDialogSinkButton button1{views::Button::PressedCallback(), sink1};
+  CastDialogSinkButton button2{views::Button::PressedCallback(), sink2};
+  CastDialogSinkButton button3{views::Button::PressedCallback(), sink3};
+  std::vector<CastDialogSinkButton*> buttons{&button1, &button2, &button3};
+  metrics_.OnRecordSinkCount(buttons);
   tester_.ExpectUniqueSample(MediaRouterMetrics::kHistogramUiDeviceCount,
-                             sinks.size(), 1);
+                             buttons.size(), 1);
 }
 
 TEST_F(CastDialogMetricsTest, RecordFirstAction) {

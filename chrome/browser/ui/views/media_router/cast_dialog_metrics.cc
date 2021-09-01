@@ -170,17 +170,16 @@ void CastDialogMetrics::OnCloseDialog(const base::Time& close_time) {
 }
 
 void CastDialogMetrics::OnRecordSinkCount(
-    std::vector<const UIMediaSink*> sinks) {
-  media_router::MediaRouterMetrics::RecordDeviceCount(sinks.size());
+    const std::vector<CastDialogSinkButton*>& sink_buttons) {
+  media_router::MediaRouterMetrics::RecordDeviceCount(sink_buttons.size());
 
   std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
       {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
       {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
       {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
-  for (const UIMediaSink* sink : sinks) {
-    if (sink->provider != MediaRouteProviderId::TEST) {
-      counts.at(sink->provider)
-          .at(sink->state != UIMediaSinkState::UNAVAILABLE)++;
+  for (const CastDialogSinkButton* sink_button : sink_buttons) {
+    if (sink_button->sink().provider != MediaRouteProviderId::TEST) {
+      counts.at(sink_button->sink().provider).at(sink_button->GetEnabled())++;
     }
   }
   for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
