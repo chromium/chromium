@@ -17,7 +17,6 @@ source_set("web_applications") {
     "components/app_registrar_observer.h",
     "components/external_install_options.cc",
     "components/external_install_options.h",
-    "components/file_handler_manager.h",
     "components/file_handling_permission_context.cc",
     "components/file_handling_permission_context.h",
     "components/install_bounce_metric.cc",
@@ -95,7 +94,6 @@ source_set("web_applications") {
     "externally_managed_app_manager_impl.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
-    "file_handler_manager.cc",
     "file_handlers_permission_helper.cc",
     "file_handlers_permission_helper.h",
     "file_utils_wrapper.cc",
@@ -462,7 +460,6 @@ source_set("web_applications_unit_tests") {
   testonly = true
 
   sources = [
-    "components/file_handler_manager_unittest.cc",
     "components/preinstalled_app_install_features_unittest.cc",
     "components/protocol_handler_manager_unittest.cc",
     "components/web_app_constants_unittest.cc",
@@ -487,6 +484,7 @@ source_set("web_applications_unit_tests") {
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
     "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",
+    "web_app_file_handler_manager_unittest.cc",
     "web_app_icon_manager_unittest.cc",
     "web_app_install_finalizer_unittest.cc",
     "web_app_install_manager_unittest.cc",

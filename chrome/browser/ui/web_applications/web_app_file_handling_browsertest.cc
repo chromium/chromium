@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -110,7 +110,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
  public:
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  FileHandlerManager& file_handler_manager() {
+  WebAppFileHandlerManager& file_handler_manager() {
     return provider()
         ->os_integration_manager()
         .file_handler_manager_for_testing();
@@ -708,7 +708,7 @@ class WebAppFileHandlingOriginTrialBrowserTest
     : public WebAppFileHandlingTestBase {
  public:
   WebAppFileHandlingOriginTrialBrowserTest() {
-    FileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting();
+    WebAppFileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting();
   }
 
   content::WebContents* web_contents() {
@@ -1165,7 +1165,7 @@ class WebAppFileHandlingIconBrowserTest
     feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI,
                                     blink::features::kFileHandlingIcons},
                                    {});
-    FileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
+    WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
   }
   ~WebAppFileHandlingIconBrowserTest() override = default;
 
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
   ASSERT_TRUE(web_app);
 
   ASSERT_EQ(1U, web_app->file_handlers().size());
-  if (FileHandlerManager::IconsEnabled()) {
+  if (WebAppFileHandlerManager::IconsEnabled()) {
     ASSERT_EQ(1U, web_app->file_handlers()[0].icons.size());
     EXPECT_EQ(20, web_app->file_handlers()[0].icons[0].square_size_px);
   } else {

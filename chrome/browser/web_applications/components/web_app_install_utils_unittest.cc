@@ -11,12 +11,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -768,7 +768,7 @@ class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
     feature_list_.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
-    FileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
+    WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
   }
 
   ~FileHandlersFromManifestTest() override = default;
@@ -844,7 +844,7 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
     EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
               MakeExtension(i));
 
-    if (FileHandlerManager::IconsEnabled()) {
+    if (WebAppFileHandlerManager::IconsEnabled()) {
       ASSERT_EQ(file_handlers[i].icons.size(), 3U);
 
       // The manifest-specified `sizes` are ignored.
@@ -869,7 +869,7 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
 }
 
 TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
-  if (!FileHandlerManager::IconsEnabled())
+  if (!WebAppFileHandlerManager::IconsEnabled())
     return;
 
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =

@@ -8,8 +8,8 @@
 namespace web_app {
 
 TestFileHandlerManager::TestFileHandlerManager(Profile* profile)
-    : FileHandlerManager(profile) {
-  FileHandlerManager::DisableOsIntegrationForTesting();
+    : WebAppFileHandlerManager(profile) {
+  WebAppFileHandlerManager::DisableOsIntegrationForTesting();
 }
 
 TestFileHandlerManager::~TestFileHandlerManager() = default;

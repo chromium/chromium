@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -19,7 +19,8 @@ class Profile;
 namespace web_app {
 
 // A testing implementation of a file handler manager.
-class TestFileHandlerManager : public FileHandlerManager {
+// TODO(crbug.com/1225132): Rename TestFileHandlerManager.
+class TestFileHandlerManager : public WebAppFileHandlerManager {
  public:
   explicit TestFileHandlerManager(Profile* profile);
   TestFileHandlerManager(const TestFileHandlerManager&) = delete;

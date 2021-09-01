@@ -95,7 +95,7 @@ InstallOsHooksOptions& InstallOsHooksOptions::operator=(
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
     std::unique_ptr<WebAppShortcutManager> shortcut_manager,
-    std::unique_ptr<FileHandlerManager> file_handler_manager,
+    std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
     std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
     std::unique_ptr<UrlHandlerManager> url_handler_manager)
     : profile_(profile),
@@ -340,7 +340,8 @@ std::vector<ProtocolHandler> OsIntegrationManager::GetAppProtocolHandlers(
   return protocol_handler_manager_->GetAppProtocolHandlers(app_id);
 }
 
-FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
+WebAppFileHandlerManager&
+OsIntegrationManager::file_handler_manager_for_testing() {
   DCHECK(file_handler_manager_);
   return *file_handler_manager_;
 }

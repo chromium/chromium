@@ -14,7 +14,7 @@
 namespace web_app {
 
 class WebAppShortcutManager;
-class FileHandlerManager;
+class WebAppFileHandlerManager;
 class ProtocolHandlerManager;
 class UrlHandlerManager;
 
@@ -23,7 +23,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   TestOsIntegrationManager(
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
-      std::unique_ptr<FileHandlerManager> file_handler_manager,
+      std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~TestOsIntegrationManager() override;
@@ -82,7 +82,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   void SetNextCreateShortcutsResult(const AppId& app_id, bool success);
 
   void SetFileHandlerManager(
-      std::unique_ptr<FileHandlerManager> file_handler_manager);
+      std::unique_ptr<WebAppFileHandlerManager> file_handler_manager);
 
   void SetProtocolHandlerManager(
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);

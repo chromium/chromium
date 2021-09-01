@@ -13,10 +13,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -258,7 +258,7 @@ void PopulateFileHandlingIcons(WebApplicationInfo* web_app_info,
   // and a purpose, but no size. Replace with structs that copy the URL and
   // purpose and set the size based on what is found in `icons_map`.
   for (auto& file_handler : web_app_info->file_handlers) {
-    if (!FileHandlerManager::IconsEnabled()) {
+    if (!WebAppFileHandlerManager::IconsEnabled()) {
       DCHECK(file_handler.icons.empty());
       continue;
     }
@@ -316,7 +316,7 @@ apps::FileHandlers CreateFileHandlersFromManifest(
       web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
     }
 
-    if (FileHandlerManager::IconsEnabled()) {
+    if (WebAppFileHandlerManager::IconsEnabled()) {
       for (const auto& image_resource : manifest_file_handler->icons) {
         for (const auto manifest_purpose : image_resource.purpose) {
           apps::IconInfo icon_info;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 
 #include <set>
 #include <string>
@@ -107,9 +107,9 @@ TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {
                   "application/foo", "application/foobar", "application/bar"));
 }
 
-class FileHandlerManagerTest : public WebAppTest {
+class WebAppFileHandlerManagerTest : public WebAppTest {
  public:
-  FileHandlerManagerTest() {
+  WebAppFileHandlerManagerTest() {
     // |features_| needs to be initialized before SetUp kicks off tasks that
     // check if a feature is enabled.
     features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
@@ -146,7 +146,7 @@ class FileHandlerManagerTest : public WebAppTest {
   base::test::ScopedFeatureList features_;
 };
 
-TEST_F(FileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
+TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
   const AppId app_id = "app-id";
 
   file_handler_manager().InstallFileHandler(app_id,
@@ -185,7 +185,7 @@ TEST_F(FileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
   }
 }
 
-TEST_F(FileHandlerManagerTest, NoHandlersRegistered) {
+TEST_F(WebAppFileHandlerManagerTest, NoHandlersRegistered) {
   const AppId app_id = "app-id";
 
   // Returns nullopt when no file handlers are registered.
@@ -194,7 +194,7 @@ TEST_F(FileHandlerManagerTest, NoHandlersRegistered) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
-TEST_F(FileHandlerManagerTest, NoLaunchFilesPassed) {
+TEST_F(WebAppFileHandlerManagerTest, NoLaunchFilesPassed) {
   const AppId app_id = "app-id";
 
   file_handler_manager().InstallFileHandler(app_id,
@@ -206,7 +206,8 @@ TEST_F(FileHandlerManagerTest, NoLaunchFilesPassed) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {}));
 }
 
-TEST_F(FileHandlerManagerTest, SingleValidExtensionSingleExtensionHandler) {
+TEST_F(WebAppFileHandlerManagerTest,
+       SingleValidExtensionSingleExtensionHandler) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -219,7 +220,8 @@ TEST_F(FileHandlerManagerTest, SingleValidExtensionSingleExtensionHandler) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
-TEST_F(FileHandlerManagerTest, SingleInvalidExtensionSingleExtensionHandler) {
+TEST_F(WebAppFileHandlerManagerTest,
+       SingleInvalidExtensionSingleExtensionHandler) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -232,7 +234,8 @@ TEST_F(FileHandlerManagerTest, SingleInvalidExtensionSingleExtensionHandler) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
-TEST_F(FileHandlerManagerTest, SingleValidExtensionMultiExtensionHandler) {
+TEST_F(WebAppFileHandlerManagerTest,
+       SingleValidExtensionMultiExtensionHandler) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -246,7 +249,7 @@ TEST_F(FileHandlerManagerTest, SingleValidExtensionMultiExtensionHandler) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
-TEST_F(FileHandlerManagerTest, MultipleValidExtensions) {
+TEST_F(WebAppFileHandlerManagerTest, MultipleValidExtensions) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -261,7 +264,7 @@ TEST_F(FileHandlerManagerTest, MultipleValidExtensions) {
                      app_id, {path1, path2}));
 }
 
-TEST_F(FileHandlerManagerTest, PartialExtensionMatch) {
+TEST_F(WebAppFileHandlerManagerTest, PartialExtensionMatch) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -275,7 +278,7 @@ TEST_F(FileHandlerManagerTest, PartialExtensionMatch) {
                                app_id, {path1, path2}));
 }
 
-TEST_F(FileHandlerManagerTest, SingleFileWithoutExtension) {
+TEST_F(WebAppFileHandlerManagerTest, SingleFileWithoutExtension) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 
@@ -288,7 +291,7 @@ TEST_F(FileHandlerManagerTest, SingleFileWithoutExtension) {
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
-TEST_F(FileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
+TEST_F(WebAppFileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
   const AppId app_id = "app-id";
   const GURL url("https://app.site/handle-foo");
 

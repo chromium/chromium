@@ -208,7 +208,7 @@ installed web apps with.
 This is the tail end of the installation process where we write all our web app
 metadata to [disk](web_app_database.h) and deploy OS integrations (like
 [desktop shortcuts](components/web_app_shortcut.h) and
-[file handlers](components/file_handler_manager.h)) using the
+[file handlers](web_app_file_handler_manager.h)) using the
 [`OsIntegrationManager`](os_integration_manager.h).
 
 This also manages the uninstallation process.

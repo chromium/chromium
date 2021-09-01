@@ -17,10 +17,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -63,7 +63,7 @@ WebAppShortcutManager::ShortcutCallback& GetShortcutUpdateCallbackForTesting() {
 WebAppShortcutManager::WebAppShortcutManager(
     Profile* profile,
     WebAppIconManager* icon_manager,
-    FileHandlerManager* file_handler_manager,
+    WebAppFileHandlerManager* file_handler_manager,
     ProtocolHandlerManager* protocol_handler_manager)
     : profile_(profile),
       icon_manager_(icon_manager),
