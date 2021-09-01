@@ -9,7 +9,7 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
-// #import {createDefaultBluetoothDevice} from './fake_bluetooth_config.m.js';
+// #import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // clang-format on
 
 suite('OsBluetoothDeviceBatteryInfoTest', function() {

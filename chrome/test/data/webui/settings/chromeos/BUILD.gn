@@ -76,7 +76,6 @@ js_modulizer("modulize") {
     "esim_rename_dialog_test.js",
     "fake_bluetooth.js",
     "fake_bluetooth_private.js",
-    "fake_bluetooth_config.js",
     "fake_quick_unlock_private.js",
     "fake_quick_unlock_uma.js",
     "fake_receive_manager.js",

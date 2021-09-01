@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 // TODO(crbug.com/1010321): Use cros_bluetooth_config.mojom-webui.js instead
 // as non-module JS is deprecated.
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';

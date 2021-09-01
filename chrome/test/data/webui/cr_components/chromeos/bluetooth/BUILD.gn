@@ -42,3 +42,7 @@ js_library("bluetooth_pairing_device_selection_page_test") {
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
+
+js_library("fake_bluetooth_config") {
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
+}

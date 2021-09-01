@@ -285,7 +285,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_bluetooth_config.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/add_users_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/ambient_mode_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/ambient_mode_photos_page_test.m.js",
