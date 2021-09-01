@@ -118,6 +118,15 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return false;
 
+  // Don't show the promo if there are no identities. This should be tested
+  // before ForceStartupSigninPromo() to avoid any DCHECK failures if
+  // ForceStartupSigninPromo() returns true.
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  NSArray* identities = account_manager_service->GetAllIdentities();
+  if (identities.count == 0)
+    return false;
+
   // Used for testing purposes only.
   if (signin::ForceStartupSigninPromo())
     return true;
@@ -134,13 +143,6 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
         return false;
     }
   }
-
-  // Don't show the promo if there are no identities.
-  ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
-  NSArray* identities = account_manager_service->GetAllIdentities();
-  if (identities.count == 0)
-    return false;
 
   // The SSO promo should not be disabled if it is force disabled.
   if (signin::ForceDisableExtendedSyncPromos())

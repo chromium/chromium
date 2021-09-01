@@ -6,10 +6,14 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/chrome_switches.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -43,15 +47,12 @@ void VerifySigninPromoSufficientlyVisible() {
              @"Sign-in promo not visible");
 }
 
-AppLaunchConfiguration AppConfigurationForRelaunch() {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(switches::kForceStartupSigninPromo);
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableUpgradeSigninPromo);
-
-  // Relaunch app at each test to rewind the startup state.
-  config.relaunch_policy = ForceRelaunchByKilling;
-  return config;
+NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
+    ios::ChromeIdentityCapabilityResult result) {
+  int intResult = static_cast<int>(result);
+  return @{
+    @(kCanOfferExtendedChromeSyncPromosCapabilityName) : @(intResult),
+  };
 }
 
 }  // namespace
@@ -65,18 +66,30 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
+  // Make sure the new tab is opened to open the upgrade sign-in promo.
+  [ChromeEarlGrey openNewTab];
 }
 
-// Tests that the sign-in promo is visible at start-up.
-- (void)testStartupSigninPromoNoRestrictions {
-  // Create the config to relaunch Chrome.
-  AppLaunchConfiguration config = AppConfigurationForRelaunch();
-  config.features_disabled.push_back(switches::kMinorModeSupport);
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  // Use commandline args to insert fake policy data into NSUserDefaults. To the
+  // app, this policy data will appear under the
+  // "com.apple.configuration.managed" key.
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(switches::kForceStartupSigninPromo);
+  config.additional_args.push_back(std::string("--") +
+                                   switches::kEnableUpgradeSigninPromo);
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+  return config;
+}
 
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+// Tests that the sign-in promo is not visible at start-up with no identity.
+- (void)testNoSigninPromoWithNoIdentity {
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
-  VerifySigninPromoSufficientlyVisible();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that the sign-in promo is not visible at start-up once
@@ -84,18 +97,13 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 - (void)testStartupSigninPromoUserSignedIn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCapabilities:GetCapabilitiesDictionary(
+                          ios::ChromeIdentityCapabilityResult::kTrue)
+          forIdentity:fakeIdentity];
 
-  // Create the config to relaunch Chrome.
-  AppLaunchConfiguration config = AppConfigurationForRelaunch();
-  config.features_disabled.push_back(switches::kMinorModeSupport);
-  // Add the switch to make sure that fakeIdentity1 is known at startup to avoid
-  // automatic sign out.
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
@@ -107,27 +115,32 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCapabilities:@{
-    kCanOfferExtendedChromeSyncPromos : [NSNumber
-        numberWithInt:static_cast<int>(
-                          ios::ChromeIdentityCapabilityResult::kFalse)]
-  }
-                      forIdentity:fakeIdentity];
-
-  // Create the config to relaunch Chrome.
-  AppLaunchConfiguration config = AppConfigurationForRelaunch();
-  config.features_enabled.push_back(switches::kMinorModeSupport);
-  // Sets up FakeChromeIdentityService for use in scene_controller.mm.
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [SigninEarlGrey
+      setCapabilities:GetCapabilitiesDictionary(
+                          ios::ChromeIdentityCapabilityResult::kFalse)
+          forIdentity:fakeIdentity];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the sign-in promo is visible at start-up for regular user.
+- (void)testStartupSigninPromoShownForNoneMinor {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCapabilities:GetCapabilitiesDictionary(
+                          ios::ChromeIdentityCapabilityResult::kTrue)
+          forIdentity:fakeIdentity];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  VerifySigninPromoSufficientlyVisible();
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSkipSigninAccessibilityIdentifier)]
+      performAction:grey_tap()];
 }
 
 @end

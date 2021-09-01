@@ -747,16 +747,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.mainInterface.browser->GetBrowserState());
+  // The sign-in promo should not be presented if there is no identities.
+  ChromeIdentity* defaultIdentity = accountManagerService->GetDefaultIdentity();
+  DCHECK(defaultIdentity);
 
-  if (!signin::ExtendedSyncPromosCapabilityEnabled() ||
-      !accountManagerService->HasIdentities()) {
+  if (!signin::ExtendedSyncPromosCapabilityEnabled()) {
     // Present the sign-in promo synchronously.
     [self presentSigninUpgradePromo];
     return;
   }
-
-  ChromeIdentity* defaultIdentity = accountManagerService->GetDefaultIdentity();
-  DCHECK(defaultIdentity);
 
   __weak SceneController* weakSelf = self;
   ios::ChromeIdentityService* identityService =
@@ -1263,6 +1262,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return NO;
   // Don't show the promo if the window is not active.
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive)
+    return NO;
+  // Don't show the promo if the tab grid is active.
+  if (self.mainCoordinator.isTabGridActive)
     return NO;
   // Don't show the promo if already presented.
   if (self.sceneState.appState.signinUpgradePromoPresentedOnce)
