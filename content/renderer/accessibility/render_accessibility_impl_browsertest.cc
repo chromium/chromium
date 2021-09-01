@@ -46,6 +46,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_target.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -332,11 +333,12 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
   void SetUp() override {
-    RenderViewTest::SetUp();
+    blink::WebTestingSupport::SaveRuntimeFeatures();
     blink::WebRuntimeFeatures::EnableExperimentalFeatures(false);
     blink::WebRuntimeFeatures::EnableTestOnlyFeatures(false);
     blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
+    RenderViewTest::SetUp();
     sink_ = &render_thread_->sink();
 
     // Ensure that a valid RenderAccessibilityImpl object is created and
@@ -347,11 +349,12 @@ class RenderAccessibilityImplTest : public RenderViewTest {
 
   void TearDown() override {
 #if defined(LEAK_SANITIZER)
-     // Do this before shutting down V8 in RenderViewTest::TearDown().
-     // http://crbug.com/328552
-     __lsan_do_leak_check();
+    // Do this before shutting down V8 in RenderViewTest::TearDown().
+    // http://crbug.com/328552
+    __lsan_do_leak_check();
 #endif
-     RenderViewTest::TearDown();
+    RenderViewTest::TearDown();
+    blink::WebTestingSupport::ResetRuntimeFeatures();
   }
 
   void SetMode(ui::AXMode mode) {
