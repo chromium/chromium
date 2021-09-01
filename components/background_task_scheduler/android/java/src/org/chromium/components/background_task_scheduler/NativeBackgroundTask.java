@@ -15,6 +15,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Base class implementing {@link BackgroundTask} that adds native initialization, ensuring that
@@ -47,7 +48,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     private boolean mRunningInMinimalBrowserMode;
 
     /** Make sure that we do not double record task finished metric */
-    private boolean mFinishMetricRecorded;
+    private AtomicBoolean mFinishMetricRecorded = new AtomicBoolean(false);
 
     /** Loads native and handles initialization. */
     private NativeBackgroundTaskDelegate mDelegate;
@@ -235,9 +236,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     }
 
     private void recordTaskFinishedMetric() {
-        ThreadUtils.assertOnUiThread();
-        if (!mFinishMetricRecorded) {
-            mFinishMetricRecorded = true;
+        if (!mFinishMetricRecorded.getAndSet(true)) {
             getUmaReporter().reportNativeTaskFinished(mTaskId, mRunningInMinimalBrowserMode);
         }
     }
