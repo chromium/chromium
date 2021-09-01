@@ -3,8 +3,8 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='Readonly-false input' input_type=1 text_change_added_count=20
 ++android.view.View
 ++++android.widget.EditText clickable disabled editable_text focusable has_non_empty_value name='Readonly-true input' input_type=1 text_change_added_count=19
-++android.view.View focusable name='Readonly-false plain div'
-++android.view.View focusable name='Readonly-true plain div'
+++android.widget.TextView focusable name='Readonly-false plain div'
+++android.widget.TextView focusable name='Readonly-true plain div'
 ++android.widget.EditText clickable editable_text focusable multiline hint='Readonly-false contenteditable div'
 ++android.widget.EditText clickable editable_text focusable multiline hint='Readonly-true contenteditable div'
 ++android.widget.EditText clickable editable_text focusable hint='Readonly-false role unimplemented textbox'

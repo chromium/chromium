@@ -30,6 +30,10 @@ AX_BASE_EXPORT bool HasPresentationalChildren(const ax::mojom::Role role);
 // Returns true if the given role is an alert or alert-dialog type.
 AX_BASE_EXPORT bool IsAlert(const ax::mojom::Role role);
 
+// Returns true if the given role is a candidate to be labeled with a classname
+// of TextView on Android.
+AX_BASE_EXPORT bool IsAndroidTextViewCandidate(const ax::mojom::Role role);
+
 // Returns true if the provided role belongs to a native or an ARIA button.
 AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 

@@ -63,6 +63,17 @@ bool IsAlert(const ax::mojom::Role role) {
   }
 }
 
+bool IsAndroidTextViewCandidate(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kGenericContainer:
+    case ax::mojom::Role::kHeading:
+    case ax::mojom::Role::kParagraph:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsButton(const ax::mojom::Role role) {
   // According to the WAI-ARIA spec, native button or role="button"
   // supports |aria-expanded| and |aria-pressed|.

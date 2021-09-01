@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View name='This is "Chromium Blink" based browser.'
+++android.widget.TextView name='This is "Chromium Blink" based browser.'

@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='log' focusable name='Busy log' live_region_type=1
 ++android.view.View role_description='log' focusable name='Not-busy log' live_region_type=1
-++android.view.View hint='plain div'
+++android.widget.TextView hint='plain div'

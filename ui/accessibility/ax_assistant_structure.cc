@@ -419,6 +419,7 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
       return kAXMenuItemClassname;
+    case ax::mojom::Role::kPre:
     case ax::mojom::Role::kStaticText:
       return kAXTextViewClassname;
     default:
