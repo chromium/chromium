@@ -84,8 +84,6 @@ struct AX_BASE_EXPORT AXTreeUpdate {
 
   // Return a multi-line indented string representation, for logging.
   std::string ToString() const;
-
-  // TODO(dmazzoni): location changes
 };
 
 // Two tree updates can be merged into one if the second one

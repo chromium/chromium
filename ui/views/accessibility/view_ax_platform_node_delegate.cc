@@ -276,9 +276,9 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // View::IsDrawn is true if a View is visible and all of its ancestors are
   // visible too, since invisibility inherits.
   //
-  // TODO(dmazzoni): Maybe consider moving this to ViewAccessibility?
-  // This will require ensuring that Chrome OS invalidates the whole
-  // subtree when a View changes its visibility state.
+  // (We could try to move this logic to ViewAccessibility, but
+  // that would require ensuring that Chrome OS invalidates the whole
+  // subtree when a View changes its visibility state.)
   if (!view()->IsDrawn())
     data_.AddState(ax::mojom::State::kInvisible);
 
@@ -286,7 +286,7 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // focusable parent. All keyboard focusable elements should be leaf nodes.
   // Exceptions to this rule will themselves be accessibility focusable.
   //
-  // TODO(dmazzoni): this code was added to support MacViews acccessibility,
+  // Note: this code was added to support MacViews accessibility,
   // because we needed a way to mark a View as a leaf node in the
   // accessibility tree. We need to replace this with a cross-platform
   // solution that works for ChromeVox, too, and move it to ViewAccessibility.

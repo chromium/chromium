@@ -1260,8 +1260,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accHelpTopic(BSTR* help_file,
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::put_accName(VARIANT var_id, BSTR put_name) {
-  // TODO(dougt): We may want to collect an API histogram here.
-  // Deprecated.
+  // Deprecated by Microsoft and no good use cases; no need to implement.
   return E_NOTIMPL;
 }
 
@@ -2787,7 +2786,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeader(
   COM_OBJECT_VALIDATE_2_ARGS(accessible_table, starting_row_index);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  // TODO(dmazzoni): implement
+  // Currently unimplemented.
   return E_NOTIMPL;
 }
 
@@ -2971,13 +2970,12 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeader(
   COM_OBJECT_VALIDATE_2_ARGS(accessible_table, starting_column_index);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  // TODO(dmazzoni): implement
+  // Currently unimplemented.
   return E_NOTIMPL;
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG cell_index,
                                                LONG* row_index) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(row_index);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -2995,7 +2993,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG cell_index,
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedChildren(LONG max_children,
                                                        LONG** children,
                                                        LONG* n_children) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(children, n_children);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3028,7 +3025,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedChildren(LONG max_children,
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedColumns(LONG max_columns,
                                                       LONG** columns,
                                                       LONG* n_columns) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(columns, n_columns);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3059,7 +3055,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedColumns(LONG max_columns,
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG max_rows,
                                                    LONG** rows,
                                                    LONG* n_rows) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(rows, n_rows);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3088,17 +3083,15 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG max_rows,
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_summary(IUnknown** accessible) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(accessible);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  // TODO(dmazzoni): implement.
+  // Current unimplemented.
   return E_NOTIMPL;
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_isColumnSelected(LONG column,
                                                        boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3122,7 +3115,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_isColumnSelected(LONG column,
 
 IFACEMETHODIMP AXPlatformNodeWin::get_isRowSelected(LONG row,
                                                     boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3147,7 +3139,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_isRowSelected(LONG row,
 IFACEMETHODIMP AXPlatformNodeWin::get_isSelected(LONG row,
                                                  LONG column,
                                                  boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3173,7 +3164,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtentsAtIndex(
     LONG* row_extents,
     LONG* column_extents,
     boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_5_ARGS(row, column, row_extents, column_extents,
                              is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
@@ -3199,7 +3189,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtentsAtIndex(
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::selectRow(LONG row) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
   absl::optional<int> rows = GetTableRowCount();
@@ -3213,7 +3202,6 @@ IFACEMETHODIMP AXPlatformNodeWin::selectRow(LONG row) {
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::selectColumn(LONG column) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
   absl::optional<int> columns = GetTableColumnCount();
@@ -3227,7 +3215,6 @@ IFACEMETHODIMP AXPlatformNodeWin::selectColumn(LONG column) {
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::unselectRow(LONG row) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
   absl::optional<int> rows = GetTableRowCount();
@@ -3241,7 +3228,6 @@ IFACEMETHODIMP AXPlatformNodeWin::unselectRow(LONG row) {
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::unselectColumn(LONG column) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
   absl::optional<int> columns = GetTableColumnCount();
@@ -3251,13 +3237,15 @@ IFACEMETHODIMP AXPlatformNodeWin::unselectColumn(LONG column) {
   if (column < 0 || column >= *columns)
     return E_INVALIDARG;
 
+  // Currently unimplemented.
   return E_NOTIMPL;
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_modelChange(
     IA2TableModelChange* model_change) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(model_change);
+
+  // Currently unimplemented.
   return E_NOTIMPL;
 }
 
@@ -3268,7 +3256,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_modelChange(
 IFACEMETHODIMP AXPlatformNodeWin::get_cellAt(LONG row,
                                              LONG column,
                                              IUnknown** cell) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(cell);
   AXPlatformNode::NotifyAddAXModeFlags(AXMode::kScreenReader);
 
@@ -3281,7 +3268,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_cellAt(LONG row,
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_nSelectedCells(LONG* cell_count) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   // Note that this method does not need to set any ax mode since it
   // calls into get_nSelectedChildren() which does.
   return get_nSelectedChildren(cell_count);
@@ -3289,7 +3275,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nSelectedCells(LONG* cell_count) {
 
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
                                                     LONG* n_selected_cells) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(cells, n_selected_cells);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3320,12 +3305,10 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
 
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedColumns(LONG** columns,
                                                       LONG* n_columns) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   return get_selectedColumns(INT_MAX, columns, n_columns);
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG** rows, LONG* n_rows) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   return get_selectedRows(INT_MAX, rows, n_rows);
 }
 
@@ -3334,7 +3317,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedRows(LONG** rows, LONG* n_rows) {
 //
 
 IFACEMETHODIMP AXPlatformNodeWin::get_columnExtent(LONG* n_columns_spanned) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(n_columns_spanned);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3348,7 +3330,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnExtent(LONG* n_columns_spanned) {
 IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
     IUnknown*** cell_accessibles,
     LONG* n_column_header_cells) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(cell_accessibles, n_column_header_cells);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3375,7 +3356,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_columnIndex(LONG* column_index) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(column_index);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3387,7 +3367,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnIndex(LONG* column_index) {
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_rowExtent(LONG* n_rows_spanned) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(n_rows_spanned);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3401,7 +3380,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowExtent(LONG* n_rows_spanned) {
 IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
     IUnknown*** cell_accessibles,
     LONG* n_row_header_cells) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_2_ARGS(cell_accessibles, n_row_header_cells);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3428,7 +3406,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG* row_index) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(row_index);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3440,7 +3417,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowIndex(LONG* row_index) {
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_isSelected(boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -3454,7 +3430,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtents(LONG* row_index,
                                                        LONG* row_extents,
                                                        LONG* column_extents,
                                                        boolean* is_selected) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_5_ARGS(row_index, column_index, row_extents,
                              column_extents, is_selected);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
@@ -3476,7 +3451,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowColumnExtents(LONG* row_index,
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_table(IUnknown** table) {
-  // TODO(dougt) WIN_ACCESSIBILITY_API_HISTOGRAM?
   COM_OBJECT_VALIDATE_1_ARG(table);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
@@ -7694,7 +7668,7 @@ int AXPlatformNodeWin::MSAAState() const {
   // On Windows, the "focus" bit should be set on certain containers, like
   // menu bars, when visible.
   //
-  // TODO(dmazzoni): this should probably check if focus is actually inside
+  // Note: this should probably check if focus is actually inside
   // the menu bar, but we don't currently track focus inside menu pop-ups,
   // and Chrome only has one menu visible at a time so this works for now.
   if (GetRole() == ax::mojom::Role::kMenuBar && !IsInvisibleOrIgnored())
