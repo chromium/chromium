@@ -13,6 +13,7 @@ namespace os.diagnostics {
     battery_charge,
     battery_discharge,
     battery_health,
+    cpu_cache,
     cpu_stress
   };
 
@@ -47,7 +48,7 @@ namespace os.diagnostics {
     long maximum_discharge_percent_allowed;
   };
 
-  dictionary RunCpuStressRoutineRequest {
+  dictionary RunCpuRoutineRequest {
     long length_seconds;
   };
 
@@ -79,8 +80,12 @@ namespace os.diagnostics {
     // Starts battery health routine.
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
 
+    // Starts CPU cache routine.
+    [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
+                                                      RunRoutineCallback callback);
+
     // Starts CPU stress routine.
-    [supportsPromises] static void runCpuStressRoutine(RunCpuStressRoutineRequest request,
+    [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
                                                        RunRoutineCallback callback);
   };
 };

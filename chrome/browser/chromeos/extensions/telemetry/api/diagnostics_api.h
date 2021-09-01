@@ -144,6 +144,25 @@ class OsDiagnosticsRunBatteryHealthRoutineFunction
   ResponseAction Run() override;
 };
 
+class OsDiagnosticsRunCpuCacheRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuCacheRoutine",
+                             OS_DIAGNOSTICS_RUNCPUCACHEROUTINE)
+
+  OsDiagnosticsRunCpuCacheRoutineFunction();
+  OsDiagnosticsRunCpuCacheRoutineFunction(
+      const OsDiagnosticsRunCpuCacheRoutineFunction&) = delete;
+  OsDiagnosticsRunCpuCacheRoutineFunction& operator=(
+      const OsDiagnosticsRunCpuCacheRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunCpuCacheRoutineFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class OsDiagnosticsRunCpuStressRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

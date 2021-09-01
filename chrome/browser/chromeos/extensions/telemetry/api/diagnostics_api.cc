@@ -41,6 +41,9 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
     case ash::health::mojom::DiagnosticRoutineEnum::kBatteryHealth:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_HEALTH;
       return true;
+    case ash::health::mojom::DiagnosticRoutineEnum::kCpuCache:
+      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_CACHE;
+      return true;
     case ash::health::mojom::DiagnosticRoutineEnum::kCpuStress:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_STRESS;
       return true;
@@ -224,6 +227,30 @@ OsDiagnosticsRunBatteryHealthRoutineFunction::Run() {
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunBatteryHealthRoutine(std::move(cb));
+
+  return RespondLater();
+}
+
+// runCpuCacheRoutine ----------------------------------------------------------
+
+OsDiagnosticsRunCpuCacheRoutineFunction::
+    OsDiagnosticsRunCpuCacheRoutineFunction() = default;
+OsDiagnosticsRunCpuCacheRoutineFunction::
+    ~OsDiagnosticsRunCpuCacheRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction
+OsDiagnosticsRunCpuCacheRoutineFunction::Run() {
+  std::unique_ptr<api::os_diagnostics::RunCpuCacheRoutine::Params> params(
+      api::os_diagnostics::RunCpuCacheRoutine::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunCpuCacheRoutine(
+      params->request.length_seconds, std::move(cb));
 
   return RespondLater();
 }

@@ -29145,6 +29145,7 @@ Called by update_extension_histograms.py.-->
   <int value="1582" label="OS_DIAGNOSTICS_RUNBATTERYDISCHARGEROUTINE"/>
   <int value="1583" label="OS_DIAGNOSTICS_RUNBATTERYCHARGEROUTINE"/>
   <int value="1584" label="OS_DIAGNOSTICS_RUNCPUSTRESSROUTINE"/>
+  <int value="1585" label="OS_DIAGNOSTICS_RUNCPUCACHEROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">
