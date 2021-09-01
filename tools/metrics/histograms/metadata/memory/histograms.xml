@@ -2134,7 +2134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.Latency"
-    units="microseconds" expires_after="M82">
+    units="microseconds" expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time to decompress a ParkableString, in us. Note: This metric drops reports
@@ -2145,7 +2145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.SizeKb" units="KB"
-    expires_after="M82">
+    expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Original size of a compressed ParkableString, recorded at decompression
@@ -2154,7 +2154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.ThroughputMBps"
-    units="MBps" expires_after="M82">
+    units="MBps" expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Original size of a compressed ParkableString, recorded at decompression
@@ -2254,7 +2254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="M87">
+    expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2266,14 +2266,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.SizeKb" units="KB"
-    expires_after="M87">
+    expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Size read from disk for a ParkableString.</summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.ThroughputMBps" units="MBps"
-    expires_after="M87">
+    expires_after="M98">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Read throughput from disk for a ParkableString.</summary>
