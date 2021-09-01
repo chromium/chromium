@@ -32,7 +32,8 @@ class MobileFriendlinessCheckerTest : public testing::Test {
 
   MobileFriendlinessTree CalculateMetricsForHTMLString(
       const std::string& html,
-      float device_scale = 1.0) {
+      float device_scale = 1.0,
+      int scroll_y_offset = 0) {
     frame_test_helpers::WebViewHelper helper;
     helper.Initialize(nullptr, nullptr, ConfigureAndroidSettings);
     helper.GetWebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(
@@ -42,11 +43,12 @@ class MobileFriendlinessCheckerTest : public testing::Test {
                                        html,
                                        url_test_helpers::ToKURL("about:blank"));
     return MobileFriendlinessTree::GetMobileFriendlinessTree(
-        helper.GetWebView()->MainFrameImpl()->GetFrameView());
+        helper.GetWebView()->MainFrameImpl()->GetFrameView(), scroll_y_offset);
   }
 
   MobileFriendlinessTree CalculateMetricsForFile(const std::string& path,
-                                                 float device_scale = 1.0) {
+                                                 float device_scale = 1.0,
+                                                 int scroll_y_offset = 0) {
     frame_test_helpers::WebViewHelper helper;
     helper.Initialize(nullptr, nullptr, ConfigureAndroidSettings);
     helper.GetWebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(
@@ -58,19 +60,21 @@ class MobileFriendlinessCheckerTest : public testing::Test {
     frame_test_helpers::LoadFrame(helper.GetWebView()->MainFrameImpl(),
                                   kBaseUrl + path);
     return MobileFriendlinessTree::GetMobileFriendlinessTree(
-        helper.GetWebView()->MainFrameImpl()->GetFrameView());
+        helper.GetWebView()->MainFrameImpl()->GetFrameView(), scroll_y_offset);
   }
 
   MobileFriendliness CalculateMainFrameMetricsForHTMLString(
       const std::string& html,
-      float device_scale = 1.0) {
-    return CalculateMetricsForHTMLString(html, device_scale).mf;
+      float device_scale = 1.0,
+      int scroll_y_offset = 0) {
+    return CalculateMetricsForHTMLString(html, device_scale, scroll_y_offset)
+        .mf;
   }
 
-  MobileFriendliness CalculateMainFrameMetricsForFile(
-      const std::string& path,
-      float device_scale = 1.0) {
-    return CalculateMetricsForFile(path, device_scale).mf;
+  MobileFriendliness CalculateMainFrameMetricsForFile(const std::string& path,
+                                                      float device_scale = 1.0,
+                                                      int scroll_y_offset = 0) {
+    return CalculateMetricsForFile(path, device_scale, scroll_y_offset).mf;
   }
 
   void SetUseZoomForDSF(bool use_zoom_for_dsf) {
@@ -882,7 +886,7 @@ TEST_F(MobileFriendlinessCheckerTest, BadTapTargetBelowFirstOnePager) {
       b
     </button>
     <!-- below area must be ignored -->
-    <div style="margin-top: 3200px">
+    <div style="margin-top: 800px">
       <a href="about:blank">
         <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
           have
@@ -902,6 +906,52 @@ TEST_F(MobileFriendlinessCheckerTest, BadTapTargetBelowFirstOnePager) {
   </body>";
   )");
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
+TEST_F(MobileFriendlinessCheckerTest,
+       BadTapTargetBelowFirstOnePagerWithScroll) {
+  auto eval_btt_with_scroll = [&](const int scroll_offset) {
+    return CalculateMainFrameMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <button style="position:absolute; width:50px; height:50px">
+      a
+    </button>
+    <button style="position:relative; width:50px; height:50px">
+      b
+    </button>
+    <!-- below area must be ignored -->
+    <div style="margin-top: 800px">
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          have
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          enough
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          spans
+        </div>
+      </a>
+    </div>
+  </body>";
+  )",
+                                                  1.0 /*=device_scale*/,
+                                                  scroll_offset)
+        .bad_tap_targets_ratio;
+  };
+
+  // BadTapTargetResult must not be affected by scrolling offset.
+  EXPECT_EQ(eval_btt_with_scroll(0), 100);
+  EXPECT_EQ(eval_btt_with_scroll(400), 100);
+  EXPECT_EQ(eval_btt_with_scroll(800), 100);
+  EXPECT_EQ(eval_btt_with_scroll(1200), 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, IFrameTest) {

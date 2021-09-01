@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -153,6 +154,7 @@ bool IsTapTargetCandidate(const Node* node) {
 int ExtractAndCountAllTapTargets(
     LayoutObject* const root,
     int finger_radius,
+    int scroll_offset,
     int max_height,
     Vector<int>& x_positions,
     const base::Time& started,
@@ -182,13 +184,14 @@ int ExtractAndCountAllTapTargets(
         object = object->NextInPreOrder();
         continue;
       }
-      const int top = clampTo<int>(rect.Y() - finger_radius);
-      const int bottom = clampTo<int>(rect.MaxY() + finger_radius);
+      const int top = clampTo<int>(rect.Y() - finger_radius + scroll_offset);
+      const int bottom =
+          clampTo<int>(rect.MaxY() + finger_radius + scroll_offset);
       const int left = clampTo<int>(rect.X() - finger_radius);
       const int right = clampTo<int>(rect.MaxX() + finger_radius);
       const int center = right / 2 + left / 2;
       if (top > max_height) {
-        return tap_targets;
+        break;
       }
       vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
       vertices.emplace_back(bottom / 2 + top / 2, EdgeOrCenter::Center(center));
@@ -293,12 +296,18 @@ void MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   Vector<std::pair<int, EdgeOrCenter>> vertices;
   Vector<int> x_positions;
 
+  // This is like DOMWindow::scrollY() but without layout update.
+  const int scroll_y = AdjustForAbsoluteZoom::AdjustScroll(
+      frame_view_->LayoutViewport()->GetScrollOffset().Height(),
+      frame_view_->GetFrame().PageZoomFactor());
+  const int screen_height =
+      frame_view_->LayoutViewport()->GetLayoutBox()->Size().Height().ToInt();
+
   // Scan full DOM tree and extract every corner and center position of tap
   // targets.
-  int all_tap_targets = ExtractAndCountAllTapTargets(
+  const int all_tap_targets = ExtractAndCountAllTapTargets(
       frame_view_->GetFrame().GetDocument()->GetLayoutView(), finger_radius,
-      frame_view_->GetFrame().GetDocument()->domWindow()->innerHeight(),
-      x_positions, started, vertices);
+      scroll_y, screen_height, x_positions, started, vertices);
   if (all_tap_targets == -1) {
     mobile_friendliness_.bad_tap_targets_ratio = kTimeBudgetExceeded;
     return;

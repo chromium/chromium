@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -18,18 +19,25 @@ struct MobileFriendlinessTree {
   MobileFriendliness mf;
   WTF::Vector<MobileFriendlinessTree> children;
 
-  static MobileFriendlinessTree GetMobileFriendlinessTree(
-      LocalFrameView* view) {
+  static MobileFriendlinessTree GetMobileFriendlinessTree(LocalFrameView* view,
+                                                          int scroll_y_offset) {
     mobile_metrics_test_helpers::MobileFriendlinessTree result;
+
     view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kTest);
     view->GetMobileFriendlinessChecker()->NotifyFirstContentfulPaint();
+
+    // Scroll the view to specified offset
+    view->LayoutViewport()->SetScrollOffsetUnconditionally(
+        ScrollOffset(0, scroll_y_offset));
+
+    // Do MobileFriendliness evaluation recursively.
     view->GetMobileFriendlinessChecker()->EvaluateNow();
     result.mf = view->GetMobileFriendlinessChecker()->GetMobileFriendliness();
     for (Frame* child = view->GetFrame().FirstChild(); child;
          child = child->NextSibling()) {
       if (LocalFrame* local_frame = DynamicTo<LocalFrame>(child)) {
         result.children.push_back(
-            GetMobileFriendlinessTree(local_frame->View()));
+            GetMobileFriendlinessTree(local_frame->View(), scroll_y_offset));
       }
     }
     return result;
