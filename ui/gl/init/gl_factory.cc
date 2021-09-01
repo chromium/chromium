@@ -117,7 +117,6 @@ GLImplementationParts GetRequestedGLImplementation(
 
   // The default implementation is always the first one in list.
   GLImplementationParts impl = allowed_impls[0];
-  UMA_HISTOGRAM_ENUMERATION("GPU.PreferredGLImplementation", impl.gl);
 
   *fallback_to_software_gl = false;
   if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless)) {
@@ -145,14 +144,11 @@ GLImplementationParts GetRequestedGLImplementation(
                                       requested_implementation_angle_name);
       if (!impl.IsAllowed(allowed_impls)) {
         LOG(ERROR) << "Requested GL implementation is not available.";
-        UMA_HISTOGRAM_ENUMERATION("GPU.RequestedGLImplementation",
-                                  kGLImplementationNone);
         return GLImplementationParts(kGLImplementationNone);
       }
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION("GPU.RequestedGLImplementation", impl.gl);
   return impl;
 }
 
