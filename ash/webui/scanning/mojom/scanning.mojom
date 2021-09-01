@@ -44,10 +44,18 @@ enum SourceType {
 
 // The page sizes that can be used to perform a scan.
 enum PageSize {
+  // ISO A3 (297 x 420 mm).
+  kIsoA3,
   // ISO A4 (210 x 297 mm).
   kIsoA4,
+  // ISO B4 [JIS] (257 x 364 mm).
+  kIsoB4,
+  // Legal (215.9 x 355.6 mm).
+  kLegal,
   // NA Letter (216 x 279 mm).
   kNaLetter,
+  // Tabloid (279.4 x 431.8 mm).
+  kTabloid,
   // The page size resulting from scanning the scanner's entire scannable area.
   kMax,
 };

@@ -119,10 +119,12 @@ TEST_P(ScannerCapabilitiesTest, LorgnetteCapsToMojom) {
   ASSERT_EQ(mojo_caps->sources.size(), 1u);
   EXPECT_EQ(mojo_caps->sources[0]->type, params().mojom_source_type);
   EXPECT_EQ(mojo_caps->sources[0]->name, kDocumentSourceName);
-  EXPECT_THAT(
-      mojo_caps->sources[0]->page_sizes,
-      ElementsAreArray({mojo_ipc::PageSize::kMax, mojo_ipc::PageSize::kIsoA4,
-                        mojo_ipc::PageSize::kNaLetter}));
+  EXPECT_THAT(mojo_caps->sources[0]->page_sizes,
+              ElementsAreArray(
+                  {mojo_ipc::PageSize::kMax, mojo_ipc::PageSize::kIsoA3,
+                   mojo_ipc::PageSize::kIsoA4, mojo_ipc::PageSize::kIsoB4,
+                   mojo_ipc::PageSize::kLegal, mojo_ipc::PageSize::kNaLetter,
+                   mojo_ipc::PageSize::kTabloid}));
   ASSERT_EQ(mojo_caps->color_modes.size(), 1u);
   EXPECT_EQ(mojo_caps->color_modes[0], params().mojom_color_mode);
   ASSERT_EQ(mojo_caps->resolutions.size(), 2u);

@@ -47,10 +47,12 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"a3OptionText", IDS_SCANNING_APP_A3_OPTION_TEXT},
       {"a4OptionText", IDS_SCANNING_APP_A4_OPTION_TEXT},
       {"actionToolbarPageCountText",
        IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT},
       {"appTitle", IDS_SCANNING_APP_TITLE},
+      {"b4OptionText", IDS_SCANNING_APP_B4_OPTION_TEXT},
       {"blackAndWhiteOptionText", IDS_SCANNING_APP_BLACK_AND_WHITE_OPTION_TEXT},
       {"cancelButtonText", IDS_SCANNING_APP_CANCEL_BUTTON_TEXT},
       {"cancelFailedToastText", IDS_SCANNING_APP_CANCEL_FAILED_TOAST_TEXT},
@@ -69,6 +71,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"grayscaleOptionText", IDS_SCANNING_APP_GRAYSCALE_OPTION_TEXT},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
       {"learnMoreButtonLabel", IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL},
+      {"legalOptionText", IDS_SCANNING_APP_LEGAL_OPTION_TEXT},
       {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
@@ -117,6 +120,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"showInFolderButtonLabel", IDS_SCANNING_APP_SHOW_IN_FOLDER_BUTTON_LABEL},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
       {"startScanFailedToast", IDS_SCANNING_APP_START_SCAN_FAILED_TOAST},
+      {"tabloidOptionText", IDS_SCANNING_APP_TABLOID_OPTION_TEXT},
       {"twoSidedDocFeederOptionText",
        IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT}};
 

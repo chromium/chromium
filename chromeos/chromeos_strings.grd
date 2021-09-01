@@ -552,11 +552,23 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available page sizes.">
         Page size
       </message>
+      <message name="IDS_SCANNING_APP_A3_OPTION_TEXT" desc="The text displayed for the A3 option in the page size dropdown.">
+        A3
+      </message>
       <message name="IDS_SCANNING_APP_A4_OPTION_TEXT" desc="The text displayed for the A4 option in the page size dropdown.">
         A4
       </message>
+      <message name="IDS_SCANNING_APP_B4_OPTION_TEXT" desc="The text displayed for the B4 option in the page size dropdown.">
+        B4
+      </message>
+      <message name="IDS_SCANNING_APP_LEGAL_OPTION_TEXT" desc="The text displayed for the Legal option in the page size dropdown.">
+        Legal
+      </message>
       <message name="IDS_SCANNING_APP_LETTER_OPTION_TEXT" desc="The text displayed for the Letter option in the page size dropdown.">
         Letter
+      </message>
+      <message name="IDS_SCANNING_APP_TABLOID_OPTION_TEXT" desc="The text displayed for the Tabloid option in the page size dropdown.">
+        Tabloid
       </message>
       <message name="IDS_SCANNING_APP_FIT_TO_SCAN_AREA_OPTION_TEXT" desc="The text displayed for the fit to scan area option in the page size dropdown.">
         Fit to scan area
