@@ -65,7 +65,7 @@ class ScoreNormalizerTest : public testing::Test {
   std::vector<double> ConvertResultsToScores(const Results& results) const {
     std::vector<double> scores;
     for (const auto& result : results) {
-      scores.push_back(result->relevance());
+      scores.push_back(result->scoring().normalized_relevance);
     }
     return scores;
   }
@@ -85,14 +85,6 @@ class ScoreNormalizerTest : public testing::Test {
   Profile* profile_;
   content::BrowserTaskEnvironment task_environment_;
 };
-
-// Check the conversion of vector of ChromeSearchResult's to scores.
-TEST_F(ScoreNormalizerTest, DefaultConvertResultsToScores) {
-  ScoreNormalizer::Results results =
-      ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5});
-  std::vector<double> scores = ConvertResultsToScores(results);
-  EXPECT_THAT(scores, ElementsAre(0.9, 1.0, 1.2, 1.5));
-}
 
 // Check when normalizing a score and no data is present we return 1.
 TEST_F(ScoreNormalizerTest, NormalizeScoreEmpty) {

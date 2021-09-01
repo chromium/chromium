@@ -169,3 +169,8 @@ void ChromeSearchResult::GetContextMenuModel(GetMenuModelCallback callback) {
 app_list::AppContextMenu* ChromeSearchResult::GetAppContextMenu() {
   return nullptr;
 }
+
+::std::ostream& operator<<(::std::ostream& os,
+                           const ChromeSearchResult& result) {
+  return os << result.id() << " " << result.scoring();
+}

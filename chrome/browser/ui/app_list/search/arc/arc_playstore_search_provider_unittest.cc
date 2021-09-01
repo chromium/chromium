@@ -36,7 +36,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   void SetUp() override {
     AppListTestBase::SetUp();
     arc_test_.SetUp(profile());
-    controller_ = std::make_unique<test::TestAppListControllerDelegate>();
+    controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
   }
 
   void TearDown() override {
@@ -61,7 +61,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  private:
-  std::unique_ptr<test::TestAppListControllerDelegate> controller_;
+  std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchProviderTest);

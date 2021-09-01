@@ -18,6 +18,9 @@ namespace app_list {
 // state into.
 base::FilePath RankerStateDirectory(Profile* profile);
 
+// Given a search result type, returns the category it should be placed in.
+Category ResultTypeToCategory(ResultType result_type);
+
 // TODO(crbug.com/1199206): Once the UI has support for categories this can be
 // removed.
 

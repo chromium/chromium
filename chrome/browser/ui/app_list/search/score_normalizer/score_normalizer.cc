@@ -48,7 +48,7 @@ double ScoreNormalizer::NormalizeScore(const double score) const {
 void ScoreNormalizer::NormalizeResults(Results* results) {
   for (auto& result : *results) {
     double score = result->relevance();
-    result->set_relevance(NormalizeScore(score));
+    result->scoring().normalized_relevance = NormalizeScore(score);
   }
 }
 

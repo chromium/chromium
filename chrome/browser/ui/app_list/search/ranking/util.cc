@@ -22,6 +22,45 @@ base::FilePath RankerStateDirectory(Profile* profile) {
   return profile->GetPath().AppendASCII(kRankerStateDirectory);
 }
 
+Category ResultTypeToCategory(ResultType result_type) {
+  switch (result_type) {
+    case ResultType::kInstalledApp:
+    case ResultType::kInstantApp:
+    case ResultType::kInternalApp:
+    case ResultType::kArcAppShortcut:
+      return Category::kApp;
+    case ResultType::kOmnibox:
+    case ResultType::kAnswerCard:
+      return Category::kWeb;
+    case ResultType::kZeroStateFile:
+    case ResultType::kZeroStateDrive:
+    case ResultType::kFileChip:
+    case ResultType::kDriveChip:
+    case ResultType::kFileSearch:
+    case ResultType::kDriveSearch:
+      return Category::kFiles;
+    case ResultType::kAssistantChip:
+    case ResultType::kAssistantText:
+      return Category::kAssistant;
+    case ResultType::kOsSettings:
+      return Category::kSettings;
+    case ResultType::kHelpApp:
+      return Category::kHelp;
+    case ResultType::kPlayStoreReinstallApp:
+    case ResultType::kPlayStoreApp:
+      return Category::kPlayStore;
+    // Never used in the search backend.
+    case ResultType::kUnknown:
+    // Suggested content toggle fake result type. Used only in ash, not in the
+    // search backend.
+    case ResultType::kInternalPrivacyInfo:
+    // Deprecated.
+    case ResultType::kLauncher:
+      NOTREACHED();
+      return Category::kApp;
+  }
+}
+
 std::u16string CategoryDebugString(const Category category) {
   switch (category) {
     case Category::kApp:

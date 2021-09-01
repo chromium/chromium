@@ -95,12 +95,10 @@ class SearchControllerImplNew : public SearchController {
   // recording.
   std::string last_launched_app_id_;
 
-  // Top-level result ranker. Replaces the Mixer if the categorical search flag
-  // is enabled.
+  // Top-level result ranker.
   std::unique_ptr<RankerDelegate> ranker_;
 
-  // Storage for all search results for the current query. Only used when
-  // categorical search is enabled.
+  // Storage for all search results for the current query.
   ResultsMap results_;
 
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;

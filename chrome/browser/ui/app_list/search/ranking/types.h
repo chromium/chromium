@@ -24,8 +24,26 @@ enum class Category {
   kMaxValue = kPlayStore,
 };
 
-// Given a search result type, returns the category it should be placed in.
-Category ResultTypeToCategory(ResultType result_type);
+// All score information for a single result. This is stored with a result, and
+// incrementally updated by rankers as needed. Generally, each ranker should
+// control one score.
+struct Scoring {
+  bool filter = false;
+  bool top_match = false;
+  double normalized_relevance = 0.0f;
+  double category_item_score = 0.0f;
+  double category_usage_score = 0.0f;
+  double usage_score = 0.0f;
+
+  Scoring() {}
+
+  Scoring(const Scoring&) = delete;
+  Scoring& operator=(const Scoring&) = delete;
+
+  double FinalScore() const;
+};
+
+::std::ostream& operator<<(::std::ostream& os, const Scoring& result);
 
 }  // namespace app_list
 

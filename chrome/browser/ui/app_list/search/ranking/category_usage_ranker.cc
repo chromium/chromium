@@ -99,13 +99,8 @@ void CategoryUsageRanker::Rank(ResultsMap& results, ProviderType provider) {
   const auto it = results.find(provider);
   DCHECK(it != results.end());
   for (const auto& result : it->second) {
-    const double old_relevance = result->relevance();
-
-    DCHECK(0.0 <= old_relevance && old_relevance <= 1);
     const auto category = ResultTypeToCategory(result->result_type());
-    const double new_relevance =
-        kCategoryScoreFactor * category_ranks_[category] + old_relevance;
-    result->set_relevance(new_relevance);
+    result->scoring().category_usage_score = category_ranks_[category];
 
     // TODO(crbug.com/1199206): This adds some debug information to the result
     // details. Remove once we have explicit categories in the UI.

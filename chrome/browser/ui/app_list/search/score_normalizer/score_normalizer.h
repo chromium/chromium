@@ -48,11 +48,6 @@ namespace app_list {
 // provider's score distribution.
 // - NormalizeResults() should then be called. This changes the relevance scores
 // of the ChromeSearchResult in place with the normalized score.
-//
-// TODO(crbug.com/1199206): Make the NormalizeResults take a
-// std::vector<ChromSearchResult*>& rather than a
-// std::vector<std::unique_ptr<ChromeSearchResult>> to give more flexibility on
-// what it can normalize.
 class ScoreNormalizer {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
@@ -71,6 +66,8 @@ class ScoreNormalizer {
   void RecordScore(const double score);
 
   // Records the results from a provider and updates the distribution.
+  // TODO(crbug.com/1199206): Refactor to take a std::vector<float> or remove
+  // and just use RecordScore.
   void RecordResults(const Results& results);
 
   // Takes the score from the provider and uses the
@@ -80,6 +77,8 @@ class ScoreNormalizer {
 
   // Takes the results vector and updates each ChromeSearchResult relevance
   // score by normalizing the score.
+  // TODO(crbug.com/1199206): Refactor to take a std::vector<float> or remove
+  // and just use RecordScore.
   void NormalizeResults(Results* results);
 
  private:

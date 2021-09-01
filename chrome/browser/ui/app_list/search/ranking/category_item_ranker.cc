@@ -29,23 +29,24 @@ void CategoryItemRanker::Rank(ResultsMap& results, ProviderType provider) {
 
 void CategoryItemRanker::UpdateCategoryScore(ResultsMap& results,
                                              ProviderType provider) {
-  const auto it = results.find(provider);
+  const auto& it = results.find(provider);
   DCHECK(it != results.end());
 
   for (const auto& result : it->second) {
-    const double relevance = result->relevance();
+    Scoring& scoring = result->scoring();
 
     // Ignore top match results for the purposes of deciding category scores,
     // because they're displayed outside their category.
-    if (relevance >= kTopMatchScoreBoost)
+    if (scoring.top_match)
       continue;
 
     const Category category = ResultTypeToCategory(result->result_type());
-    const auto it = category_scores_.find(category);
+    const auto& it = category_scores_.find(category);
     if (it != category_scores_.end()) {
-      category_scores_[category] = std::max(it->second, relevance);
+      category_scores_[category] =
+          std::max(it->second, scoring.normalized_relevance);
     } else {
-      category_scores_[category] = result->relevance();
+      category_scores_[category] = scoring.normalized_relevance;
     }
   }
 }
@@ -59,26 +60,21 @@ void CategoryItemRanker::RescoreResults(ResultsMap& results) {
 
   // Replace the scores with integer rankings, lowest-scoring category gets the
   // lowest rank.
-  for (int i = 0; i < category_scores_vec.size(); ++i) {
+  for (int i = 0; i < category_scores_vec.size(); ++i)
     category_scores_vec[i].second = i;
-  }
   std::map<Category, double> category_scores_map(category_scores_vec.begin(),
                                                  category_scores_vec.end());
 
   // Adjust the score of each result to bring them into category-order.
   for (const auto& provider_results : results) {
     for (const auto& result : provider_results.second) {
-      // Ignore top matches.
-      if (result->relevance() >= kTopMatchScoreBoost)
+      Scoring& scoring = result->scoring();
+
+      if (scoring.top_match)
         continue;
 
       const Category category = ResultTypeToCategory(result->result_type());
-      const double category_score = category_scores_map[category];
-
-      // Undo any previous category scoring by modding the score back into [0,1]
-      // range.
-      const double item_score = std::fmod(result->relevance(), 1.0);
-      result->set_relevance(item_score + category_score * kCategoryScoreFactor);
+      scoring.category_item_score = category_scores_map[category];
 
       // TODO(crbug.com/1199206): This adds some debug information to the result
       // details. Remove once we have explicit categories in the UI.

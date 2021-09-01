@@ -79,6 +79,7 @@ void ScoreNormalizingRanker::Rank(ResultsMap& results, ProviderType provider) {
   // score.
   const auto provider_results = results.find(provider);
   DCHECK(provider_results != results.end());
+
   it->second->RecordResults(provider_results->second);
   it->second->NormalizeResults(&provider_results->second);
 }

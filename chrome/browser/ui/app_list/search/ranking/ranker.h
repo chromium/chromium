@@ -13,6 +13,10 @@
 namespace app_list {
 
 // Interface for a ranker.
+//
+// It's recommended to keep as much Finch experiment logic out of subclasses as
+// possible. Instead, favor creating new rankers and conditionally adding them
+// in SearchController::InitializeRankers.
 class Ranker {
  public:
   Ranker() {}
@@ -32,6 +36,9 @@ class Ranker {
   // The results for a provider can be updated more than once in a search
   // session, which will invalidate pointers to previous results. It is
   // recommended that rankers don't explicitly store any result pointers.
+  //
+  // The goal of a ranker should be to update scores in the Scoring structs
+  // within |results|. Generally, one ranker should map to one score member.
   virtual void Rank(ResultsMap& results, ProviderType provider) {}
 
   // Called each time a user launches a result.

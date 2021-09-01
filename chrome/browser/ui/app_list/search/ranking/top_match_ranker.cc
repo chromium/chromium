@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 
 namespace app_list {
@@ -63,30 +64,27 @@ void TopMatchRanker::Rank(ResultsMap& results, ProviderType provider) {
       continue;
 
     for (const auto& result : type_results.second) {
-      // Reset the score boost on each result, as it might have previously been
+      Scoring& scoring = result->scoring();
+
+      // Reset top match status on each result, as it might have previously been
       // set as a top match.
-      if (result->relevance() >= kTopMatchScoreBoost) {
-        result->set_relevance(result->relevance() - kTopMatchScoreBoost);
+      if (scoring.top_match) {
+        scoring.top_match = false;
         result->SetDetails(RemoveTopMatchPrefix(result->details()));
       }
 
-      // Compute the result's score while ignoring any category boost.
-      const double normalized_score =
-          std::fmod(result->relevance(), kCategoryScoreFactor);
-      if (normalized_score >= kTopMatchThreshold)
-        top_results.push_back({result.get(), normalized_score});
+      if (scoring.normalized_relevance >= kTopMatchThreshold)
+        top_results.push_back({result.get(), scoring.normalized_relevance});
     }
   }
 
-  // Sort |top_results| best-to-worst according to normalized score ignoring
-  // category.
+  // Sort |top_results| best-to-worst according to normalized relevance.
   std::sort(top_results.begin(), top_results.end(),
             [](const auto& a, const auto& b) { return a.second > b.second; });
 
-  // Apply a score boost to at most the top |kNumTopMatches| results.
   for (int i = 0; i < std::min(kNumTopMatches, top_results.size()); ++i) {
     auto* result = top_results[i].first;
-    result->set_relevance(kTopMatchScoreBoost + result->relevance());
+    result->scoring().top_match = true;
 
     // TODO(crbug.com/1199206): This adds some debug information to the result
     // details. Remove once we have explicit categories in the UI.

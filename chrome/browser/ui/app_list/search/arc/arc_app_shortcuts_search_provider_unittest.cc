@@ -43,7 +43,7 @@ class ArcAppShortcutsSearchProviderTest
   void SetUp() override {
     AppListTestBase::SetUp();
     arc_test_.SetUp(profile());
-    controller_ = std::make_unique<test::TestAppListControllerDelegate>();
+    controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
   }
 
   void TearDown() override {
@@ -80,7 +80,7 @@ class ArcAppShortcutsSearchProviderTest
 
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<test::TestAppListControllerDelegate> controller_;
+  std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
 
  private:

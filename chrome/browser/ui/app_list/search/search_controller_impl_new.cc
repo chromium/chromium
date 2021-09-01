@@ -201,16 +201,22 @@ void SearchControllerImplNew::SetResults(
         result->SetDisplayType(ash::SearchResultDisplayType::kList);
       }
 
+      double score = result->scoring().FinalScore();
+
       // Filter out results with negative relevance, which is the rankers'
       // signal that a result should not be displayed at all.
-      if (result->relevance() > 0.0) {
-        all_results.push_back(result.get());
-      }
+      if (score < 0.0)
+        continue;
+
+      // The display score is the result's final score before display. It is
+      // used for sorting below, and may be used directly in ash.
+      result->SetDisplayScore(score);
+      all_results.push_back(result.get());
     }
   }
   std::sort(all_results.begin(), all_results.end(),
             [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
-              return a->relevance() > b->relevance();
+              return a->display_score() > b->display_score();
             });
 
   if (!observer_list_.empty()) {

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -125,6 +126,10 @@ class ChromeSearchResult {
   double relevance() const { return relevance_; }
   void set_relevance(double relevance) { relevance_ = relevance; }
 
+  app_list::Scoring& scoring() { return scoring_; }
+
+  const app_list::Scoring& scoring() const { return scoring_; }
+
   const base::flat_map<std::string, double>& ranker_scores() const {
     return ranker_scores_;
   }
@@ -162,15 +167,25 @@ class ChromeSearchResult {
   virtual app_list::AppContextMenu* GetAppContextMenu();
 
  private:
-  // The relevance of this result to the search, which is determined by the
-  // search query. It's used for sorting when we publish the results to the
-  // SearchModel in Ash. We'll update metadata_->display_score based on the
-  // sorted order, group multiplier and group boost.
+  // The relevance of this result, as decided by the search provider that
+  // created it. This shouldn't be modified by ranking, and is not used by ash.
   double relevance_ = 0;
+
+  // Components of this result's scoring, as decided by the Rankers that mix
+  // together search results. May be updated several times over the lifetime
+  // of a result. Its |FinalScore| should be used to set the display score,
+  // which may be used directly by ash.
+  //
+  // Only used when the categorical search flag is enabled.
+  app_list::Scoring scoring_;
 
   // Relevance scores keyed by a string describing the ranking method it was
   // obtained from. These can include scores from intermediate ranking steps, as
   // well as prototype scores to be inspected for experimentation.
+  //
+  // TODO(crbug.com/1199206): Move this to a map<string, string> of debug info
+  // that contains more than just scores, and display the contents of
+  // |scoring_| in chrome://launcher-internals
   base::flat_map<std::string, double> ranker_scores_;
 
   // More often than not, calling Open() on a ChromeSearchResult will cause the
@@ -186,5 +201,8 @@ class ChromeSearchResult {
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSearchResult);
 };
+
+::std::ostream& operator<<(::std::ostream& os,
+                           const ChromeSearchResult& result);
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_CHROME_SEARCH_RESULT_H_

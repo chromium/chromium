@@ -4,45 +4,31 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+
 namespace app_list {
 
-Category ResultTypeToCategory(ResultType result_type) {
-  switch (result_type) {
-    case ResultType::kInstalledApp:
-    case ResultType::kInstantApp:
-    case ResultType::kInternalApp:
-    case ResultType::kArcAppShortcut:
-      return Category::kApp;
-    case ResultType::kOmnibox:
-    case ResultType::kAnswerCard:
-      return Category::kWeb;
-    case ResultType::kZeroStateFile:
-    case ResultType::kZeroStateDrive:
-    case ResultType::kFileChip:
-    case ResultType::kDriveChip:
-    case ResultType::kFileSearch:
-    case ResultType::kDriveSearch:
-      return Category::kFiles;
-    case ResultType::kAssistantChip:
-    case ResultType::kAssistantText:
-      return Category::kAssistant;
-    case ResultType::kOsSettings:
-      return Category::kSettings;
-    case ResultType::kHelpApp:
-      return Category::kHelp;
-    case ResultType::kPlayStoreReinstallApp:
-    case ResultType::kPlayStoreApp:
-      return Category::kPlayStore;
-    // Never used in the search backend.
-    case ResultType::kUnknown:
-    // Suggested content toggle fake result type. Used only in ash, not in the
-    // search backend.
-    case ResultType::kInternalPrivacyInfo:
-    // Deprecated.
-    case ResultType::kLauncher:
-      NOTREACHED();
-      return Category::kApp;
-  }
+double Scoring::FinalScore() const {
+  // Don't make any calls for Finch parameters in this method. If needed, put
+  // them in an anonymous namespace above.
+  if (filter)
+    return -1.0;
+
+  return normalized_relevance + category_item_score * 10.0 +
+         category_usage_score * 10.0 + usage_score * 10.0 +
+         (top_match ? 1000.0 : 0.0);
+}
+
+::std::ostream& operator<<(::std::ostream& os, const Scoring& scoring) {
+  if (scoring.filter)
+    return os << "{" << scoring.FinalScore() << " | filtered}";
+  return os << base::StringPrintf(
+             "{%.2f | nr:%.2f ci:%.2f cu:%.2f u:%.2f tm:%d}",
+             scoring.FinalScore(), scoring.normalized_relevance,
+             scoring.category_item_score, scoring.category_usage_score,
+             scoring.usage_score, scoring.top_match);
 }
 
 }  // namespace app_list
