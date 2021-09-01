@@ -1656,7 +1656,7 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(-1, got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(-1, got_content_annotations.model_annotations.visibility_score);
   EXPECT_TRUE(got_content_annotations.model_annotations.categories.empty());
   EXPECT_EQ(
       -1, got_content_annotations.model_annotations.page_topics_model_version);
@@ -1669,8 +1669,7 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
-      -1,
-      results[0].content_annotations().model_annotations.floc_protected_score);
+      -1, results[0].content_annotations().model_annotations.visibility_score);
   EXPECT_TRUE(
       results[0].content_annotations().model_annotations.categories.empty());
   EXPECT_EQ(-1, results[0]
@@ -1710,8 +1709,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kNone,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(0.5f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
@@ -1734,7 +1732,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       0.5f,
-      results[0].content_annotations().model_annotations.floc_protected_score);
+      results[0].content_annotations().model_annotations.visibility_score);
   EXPECT_THAT(
       results[0].content_annotations().model_annotations.categories,
       ElementsAre(
@@ -1783,8 +1781,7 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kNone,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(-1.0f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
   ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
   EXPECT_EQ(
       -1, got_content_annotations.model_annotations.page_topics_model_version);
@@ -1801,8 +1798,7 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(VisitContentAnnotationFlag::kNone,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(-1.0f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
   ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
   EXPECT_EQ(
       -1, got_content_annotations.model_annotations.page_topics_model_version);
@@ -1850,8 +1846,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(0.5f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
@@ -1874,7 +1869,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       0.5f,
-      results[0].content_annotations().model_annotations.floc_protected_score);
+      results[0].content_annotations().model_annotations.visibility_score);
   EXPECT_THAT(
       results[0].content_annotations().model_annotations.categories,
       ElementsAre(

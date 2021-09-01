@@ -191,16 +191,16 @@ struct VisitContentModelAnnotations {
   };
 
   VisitContentModelAnnotations();
-  VisitContentModelAnnotations(float floc_protected_score,
+  VisitContentModelAnnotations(float visibility_score,
                                const std::vector<Category>& categories,
                                int64_t page_topics_model_version,
                                const std::vector<Category>& entities);
   VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
   ~VisitContentModelAnnotations();
 
-  // A value from 0 to 1 that represents whether the page content is
-  // FLoC-protected.
-  float floc_protected_score = -1.0;
+  // A value from 0 to 1 that represents how prominent, or visible, the page
+  // might be considered on UI surfaces.
+  float visibility_score = -1.0;
   // A vector that contains category IDs and their weights. It is guaranteed
   // that there will not be duplicates in the category IDs contained in this
   // field.

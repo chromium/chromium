@@ -145,7 +145,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     category_params->set_min_none_weight(0.8);
     category_params->set_min_category_weight(0.0);
     category_params->set_min_normalized_weight_within_top_n(0.1);
-    output_params->mutable_floc_protected_params()->set_category_name(
+    // TODO(crbug.com/1200677): migrate the category name on the test model
+    // itself provided by model owners.
+    output_params->mutable_visibility_params()->set_category_name(
         "FLOC_PROTECTED");
     page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
     base::FilePath source_root_dir;
@@ -275,8 +277,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_NE(-1.0,
-            got_content_annotations->model_annotations.floc_protected_score);
+  EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
   EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
   EXPECT_EQ(
       123,
@@ -450,8 +451,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_NE(-1.0,
-            got_content_annotations->model_annotations.floc_protected_score);
+  EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
   EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
   EXPECT_EQ(
       123,

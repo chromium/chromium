@@ -2093,7 +2093,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   // Check the entries in the content_annotations table.
   {
     sql::Statement s(db.GetUniqueStatement(
-        "SELECT visit_id,floc_protected_score,"
+        "SELECT visit_id,visibility_score,"
         "categories,page_topics_model_version,annotation_flags "
         "FROM content_annotations "
         "ORDER BY visit_id"));
@@ -2108,7 +2108,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
 
     EXPECT_TRUE(s.Step());
     EXPECT_EQ(visit_id2, s.ColumnInt64(0));
-    EXPECT_EQ(0.5, s.ColumnDouble(1));
+    EXPECT_EQ(-1, s.ColumnDouble(1));
     EXPECT_EQ("1:1", s.ColumnString(2));
     EXPECT_EQ(123, s.ColumnInt64(3));
     EXPECT_EQ(VisitContentAnnotationFlag::kNone,

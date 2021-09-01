@@ -107,8 +107,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(0.5f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
@@ -181,7 +180,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
 
   // Mutate that row.
   VisitContentAnnotations modification(original);
-  modification.model_annotations.floc_protected_score = 0.3f;
+  modification.model_annotations.visibility_score = 0.3f;
   modification.related_searches.emplace_back("búsquedas relacionadas");
   UpdateContentAnnotationsForVisit(visit_id, modification);
 
@@ -191,7 +190,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             final.annotation_flags);
-  EXPECT_EQ(0.3f, final.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.3f, final.model_annotations.visibility_score);
   EXPECT_THAT(
       final.model_annotations.categories,
       ElementsAre(

@@ -81,11 +81,11 @@ bool VisitContentModelAnnotations::Category::operator!=(
 }
 
 VisitContentModelAnnotations::VisitContentModelAnnotations(
-    float floc_protected_score,
+    float visibility_score,
     const std::vector<Category>& categories,
     int64_t page_topics_model_version,
     const std::vector<Category>& entities)
-    : floc_protected_score(floc_protected_score),
+    : visibility_score(visibility_score),
       categories(categories),
       page_topics_model_version(page_topics_model_version),
       entities(entities) {}

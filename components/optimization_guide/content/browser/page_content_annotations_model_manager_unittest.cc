@@ -183,7 +183,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_EQ(page_topics_model_metadata->supported_output_size(), 2);
   EXPECT_THAT(
       page_topics_model_metadata->supported_output(),
-      UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED,
+      UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_VISIBILITY,
                            proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES));
 
   // The feature param did not specify page entities, so we expect for it to not
@@ -229,11 +229,11 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentModelAnnotationsFromOutputFlocProtectedOnly) {
+       GetContentModelAnnotationsFromOutputVisibilityOnly) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   model_metadata.mutable_output_postprocessing_params()
-      ->mutable_floc_protected_params()
+      ->mutable_visibility_params()
       ->set_category_name("SOMECATEGORY");
 
   std::vector<tflite::task::core::Category> model_output = {
@@ -243,17 +243,16 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   history::VisitContentModelAnnotations annotations =
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
-  EXPECT_EQ(annotations.floc_protected_score, 0.5);
+  EXPECT_EQ(annotations.visibility_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
-TEST_F(
-    PageContentAnnotationsModelManagerTest,
-    GetContentModelAnnotationsFromOutputFlocProtectedOnlyCategoryNotInOutput) {
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetContentModelAnnotationsFromOutputVisibilityOnlyCategoryNotInOutput) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   model_metadata.mutable_output_postprocessing_params()
-      ->mutable_floc_protected_params()
+      ->mutable_visibility_params()
       ->set_category_name("SOMECATEGORY");
 
   std::vector<tflite::task::core::Category> model_output = {
@@ -262,7 +261,7 @@ TEST_F(
   history::VisitContentModelAnnotations annotations =
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
-  EXPECT_EQ(annotations.floc_protected_score, -1.0);
+  EXPECT_EQ(annotations.visibility_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
   EXPECT_TRUE(annotations.entities.empty());
 }
@@ -289,7 +288,7 @@ TEST_F(
                   history::VisitContentModelAnnotations::Category("1", 10),
                   history::VisitContentModelAnnotations::Category("2", 20),
                   history::VisitContentModelAnnotations::Category("3", 30)));
-  EXPECT_EQ(annotations.floc_protected_score, -1.0);
+  EXPECT_EQ(annotations.visibility_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
   EXPECT_TRUE(annotations.entities.empty());
 }
@@ -313,7 +312,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   history::VisitContentModelAnnotations annotations =
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
-  EXPECT_EQ(annotations.floc_protected_score, -1.0);
+  EXPECT_EQ(annotations.visibility_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
   EXPECT_TRUE(annotations.entities.empty());
 }
@@ -339,7 +338,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                   history::VisitContentModelAnnotations::Category("0", 30),
                   history::VisitContentModelAnnotations::Category("1", 20),
                   history::VisitContentModelAnnotations::Category("2", 40)));
-  EXPECT_EQ(annotations.floc_protected_score, -1.0);
+  EXPECT_EQ(annotations.visibility_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
   EXPECT_TRUE(annotations.entities.empty());
 }
@@ -368,13 +367,13 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                   history::VisitContentModelAnnotations::Category("0", 30),
                   history::VisitContentModelAnnotations::Category("1", 25),
                   history::VisitContentModelAnnotations::Category("2", 40)));
-  EXPECT_EQ(annotations.floc_protected_score, -1.0);
+  EXPECT_EQ(annotations.visibility_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
   EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
-       GetContentModelAnnotationsFromOutputCategoriesAndFlocProtected) {
+       GetContentModelAnnotationsFromOutputCategoriesAndVisibility) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
@@ -384,7 +383,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   category_params->set_min_category_weight(0.01);
   category_params->set_min_normalized_weight_within_top_n(0.25);
   model_metadata.mutable_output_postprocessing_params()
-      ->mutable_floc_protected_params()
+      ->mutable_visibility_params()
       ->set_category_name("SOMECATEGORY");
 
   std::vector<tflite::task::core::Category> model_output = {
@@ -397,7 +396,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                   history::VisitContentModelAnnotations::Category("0", 30),
                   history::VisitContentModelAnnotations::Category("1", 25),
                   history::VisitContentModelAnnotations::Category("2", 40)));
-  EXPECT_EQ(annotations.floc_protected_score, 0.5);
+  EXPECT_EQ(annotations.visibility_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
@@ -473,7 +472,7 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
   // Make sure annotations object is populated correctly.
   ASSERT_TRUE(annotations.has_value());
   EXPECT_TRUE(annotations->categories.empty());
-  EXPECT_EQ(annotations->floc_protected_score, -1.0);
+  EXPECT_EQ(annotations->visibility_score, -1.0);
   EXPECT_THAT(
       annotations->entities,
       UnorderedElementsAre(

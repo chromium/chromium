@@ -21,8 +21,8 @@ namespace history {
 
 namespace {
 
-#define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                           \
-  " visit_id,floc_protected_score,categories,page_topics_model_version," \
+#define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                       \
+  " visit_id,visibility_score,categories,page_topics_model_version," \
   "annotation_flags,entities,related_searches "
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
   " visit_id,context_annotation_flags,duration_since_last_visit," \
@@ -179,6 +179,7 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
   // Content Annotations table.
   if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS content_annotations("
                        "visit_id INTEGER PRIMARY KEY,"
+                       "visibility_score NUMERIC,"
                        "floc_protected_score NUMERIC,"
                        "categories VARCHAR,"
                        "page_topics_model_version INTEGER,"
@@ -244,7 +245,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   statement.BindInt64(0, visit_id);
   statement.BindDouble(
       1, static_cast<double>(
-             visit_content_annotations.model_annotations.floc_protected_score));
+             visit_content_annotations.model_annotations.visibility_score));
   statement.BindString(
       2, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.categories));
@@ -291,14 +292,14 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "UPDATE content_annotations SET "
-                                 "floc_protected_score=?,categories=?,"
+                                 "visibility_score=?,categories=?,"
                                  "page_topics_model_version=?,"
                                  "annotation_flags=?,entities=?,"
                                  "related_searches=? "
                                  "WHERE visit_id=?"));
   statement.BindDouble(
       0, static_cast<double>(
-             visit_content_annotations.model_annotations.floc_protected_score));
+             visit_content_annotations.model_annotations.visibility_score));
   statement.BindString(
       1, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.categories));
@@ -363,7 +364,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   VisitID received_visit_id = statement.ColumnInt64(0);
   DCHECK_EQ(visit_id, received_visit_id);
 
-  out_content_annotations->model_annotations.floc_protected_score =
+  out_content_annotations->model_annotations.visibility_score =
       static_cast<float>(statement.ColumnDouble(1));
   out_content_annotations->model_annotations.categories =
       GetCategoriesFromStringColumn(statement.ColumnString(2));
@@ -641,6 +642,19 @@ bool VisitAnnotationsDatabase::
   return GetDB().Execute(
       "ALTER TABLE content_annotations "
       "ADD COLUMN related_searches VARCHAR");
+}
+
+bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddVisibilityScore() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << " Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "visibility_score"))
+    return true;
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN visibility_score NUMERIC DEFAULT -1");
 }
 
 }  // namespace history
