@@ -210,16 +210,7 @@ template("gcc_toolchain") {
       compiler_prefix = "${toolchain_cc_wrapper} "
     }
 
-    if (defined(toolchain_args.use_rbe_links)) {
-      toolchain_uses_rbe_links = toolchain_args.use_rbe_links
-    } else {
-      toolchain_uses_rbe_links = use_rbe_links
-    }
-
-    if (toolchain_uses_rbe_links) {
-      link_prefix = "${rbe_bin_dir}/rewrapper -cfg=../../buildtools/reclient_cfgs/rewrapper_linux_link.cfg -exec_root=${rbe_exec_root} "
-      not_needed([ "goma_path" ])
-    } else if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
+    if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
       # goma_ld.py uses autoninja in an attempt to set a reasonable
       # number of jobs, but this results in too low a value on
       # Chrome OS builders. So we pass in an explicit value.
@@ -423,9 +414,7 @@ template("gcc_toolchain") {
       sofile = "{{output_dir}}/$soname"  # Possibly including toolchain dir.
       rspfile = sofile + ".rsp"
 
-      if (!use_rbe_links) {
-        pool = "//build/toolchain:link_pool($default_toolchain)"
-      }
+      pool = "//build/toolchain:link_pool($default_toolchain)"
 
       if (defined(invoker.strip)) {
         unstripped_sofile = "{{root_out_dir}}/lib.unstripped/$soname"
@@ -535,9 +524,7 @@ template("gcc_toolchain") {
       sofile = "{{output_dir}}/$soname"
       rspfile = sofile + ".rsp"
 
-      if (!use_rbe_links) {
-        pool = "//build/toolchain:link_pool($default_toolchain)"
-      }
+      pool = "//build/toolchain:link_pool($default_toolchain)"
 
       if (defined(invoker.strip)) {
         unstripped_sofile = "{{root_out_dir}}/lib.unstripped/$soname"
@@ -593,9 +580,7 @@ template("gcc_toolchain") {
       rspfile = "$outfile.rsp"
       unstripped_outfile = outfile
 
-      if (!use_rbe_links) {
-        pool = "//build/toolchain:link_pool($default_toolchain)"
-      }
+      pool = "//build/toolchain:link_pool($default_toolchain)"
 
       # Use this for {{output_extension}} expansions unless a target manually
       # overrides it (in which case {{output_extension}} will be what the target

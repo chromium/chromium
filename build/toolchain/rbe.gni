@@ -13,9 +13,6 @@ declare_args() {
   # Set to true to enable remote compilation using RBE.
   use_rbe = false
 
-  # Set to true to enable remote compilation of links using RBE.
-  use_rbe_links = false
-
   # The directory where the re-client configuration files are.
   rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
 
