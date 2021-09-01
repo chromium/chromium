@@ -548,7 +548,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       return false;
     if (overlay.IsInUseByWindowServer())
       return false;
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if defined(OS_APPLE)
     // Right now, only macOS needs to return maliboxes of released overlays, so
     // SkiaRenderer can unlock resources for them.
     released_overlays.push_back(overlay.mailbox());
