@@ -4,14 +4,18 @@
 
 #include "remoting/host/remote_open_url_client_delegate_win.h"
 
+#include <windows.h>
+
+#include <shlwapi.h>
+
+#include <ios>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/registry.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/user_settings.h"
@@ -20,30 +24,20 @@ namespace remoting {
 
 namespace {
 
-// See: https://docs.microsoft.com/en-us/windows/win32/com/-progid--key
-static constexpr wchar_t kShellOpenCommandPathPattern[] =
-    L"SOFTWARE\\Classes\\%ls\\shell\\open\\command";
-
 std::wstring GetLaunchBrowserCommand(const std::wstring& browser_prog_id,
                                      const GURL& url) {
-  std::wstring shell_open_command_path =
-      base::StringPrintf(kShellOpenCommandPathPattern, browser_prog_id.c_str());
-  base::win::RegKey shell_open_command_key;
-  LONG result = shell_open_command_key.Open(
-      HKEY_LOCAL_MACHINE, shell_open_command_path.c_str(), KEY_READ);
-  if (result != ERROR_SUCCESS) {
-    LOG(ERROR) << "Failed to open registry key HKLM\\"
-               << shell_open_command_path << ", result: " << result;
+  wchar_t open_cmd_buf[MAX_PATH];
+  DWORD open_cmd_buf_len = base::size(open_cmd_buf);
+  HRESULT hr =
+      AssocQueryString(ASSOCF_NONE, ASSOCSTR_COMMAND, browser_prog_id.c_str(),
+                       L"open", open_cmd_buf, &open_cmd_buf_len);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to look up open command for ProgID: "
+               << browser_prog_id << ", result: 0x" << std::hex << hr;
     return std::wstring();
   }
-  std::wstring open_command;
-  // Read the default value.
-  result = shell_open_command_key.ReadValue(nullptr, &open_command);
-  if (result != ERROR_SUCCESS) {
-    LOG(ERROR) << "Failed to get open command for ProgID " << browser_prog_id
-               << ", result: " << result;
-    return std::wstring();
-  }
+
+  std::wstring open_command(open_cmd_buf);
   std::wstring wide_url = base::UTF8ToWide(url.spec().c_str());
   base::ReplaceSubstringsAfterOffset(&open_command, 0, L"%1", wide_url);
   return open_command;
