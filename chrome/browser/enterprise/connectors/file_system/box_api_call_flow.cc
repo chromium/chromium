@@ -437,17 +437,12 @@ void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
     // return a folder_id.
     DCHECK_EQ(network_response_code, net::HTTP_CONFLICT);
     std::string* box_error_code = result.value->FindStringPath("code");
-    base::Value* conflict_folder_info;
-    base::ListValue* conflict_folders_list;
+    base::Value* conflict_folders_list =
+        result.value->FindListPath("context_info.conflicts");
     if (box_error_code && *box_error_code == "item_name_in_use" &&
-        (conflict_folder_info =
-             result.value->FindPath("context_info.conflicts")) &&
-        conflict_folder_info->GetAsList(&conflict_folders_list) &&
-        conflict_folders_list && conflict_folders_list->GetSize() > 0 &&
-        conflict_folders_list->Get(0, &conflict_folder_info) &&
-        conflict_folder_info) {
-      folder_info_dict =
-          absl::make_optional<base::Value>(conflict_folder_info->Clone());
+        conflict_folders_list && conflict_folders_list->GetList().size() > 0) {
+      folder_info_dict = absl::make_optional<base::Value>(
+          conflict_folders_list->GetList()[0].Clone());
     }
   }
 

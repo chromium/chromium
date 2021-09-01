@@ -190,27 +190,23 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
   URLPatternSettings setting;
 
   const base::Value* tags = url_settings_value.FindListKey(kKeyTags);
-  if (tags && tags->is_list()) {
-    for (const base::Value& tag : tags->GetList()) {
-      if (tag.is_string() &&
-          (service_provider_->analysis_tags().count(tag.GetString()) == 1)) {
-        setting.tags.insert(tag.GetString());
-      }
-    }
-  } else {
+  if (!tags)
     return;
+
+  for (const base::Value& tag : tags->GetList()) {
+    if (tag.is_string() &&
+        (service_provider_->analysis_tags().count(tag.GetString()) == 1)) {
+      setting.tags.insert(tag.GetString());
+    }
   }
 
   // Add the URL patterns to the matcher and store the condition set IDs.
   const base::Value* url_list = url_settings_value.FindListKey(kKeyUrlList);
-  if (url_list && url_list->is_list()) {
-    const base::ListValue* url_list_value = nullptr;
-    url_list->GetAsList(&url_list_value);
-    DCHECK(url_list_value);
-    policy::url_util::AddFilters(matcher_.get(), enabled, id, url_list_value);
-  } else {
+  if (!url_list)
     return;
-  }
+
+  policy::url_util::AddFilters(matcher_.get(), enabled, id,
+                               &base::Value::AsListValue(*url_list));
 
   if (enabled)
     enabled_patterns_settings_[*id] = std::move(setting);

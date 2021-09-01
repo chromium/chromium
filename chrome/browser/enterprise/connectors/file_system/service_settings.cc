@@ -201,25 +201,22 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
 
   // Add the URL patterns to the matcher and store the condition set IDs.
   const base::Value* url_list = url_settings_value.FindListKey(kKeyUrlList);
-  if (!url_list || !url_list->is_list()) {
+  if (!url_list) {
     DLOG(ERROR) << "Can't find " << kKeyUrlList << url_settings_value;
     return false;
   }
-  const base::ListValue* url_list_value = nullptr;
-  url_list->GetAsList(&url_list_value);
-  DCHECK(url_list_value);
-  for (size_t i = 0; i < url_list_value->GetSize(); ++i) {
-    std::string url;
-    CHECK(url_list_value->GetString(i, &url));
-  }
+
+  for (const base::Value& url : url_list->GetList())
+    CHECK(url.is_string());
+
   // This pre-increments the id by size of url_list_value.
   URLMatchingID pre_id = *id;
-  policy::url_util::AddFilters(url_matcher_.get(), enabled, id, url_list_value);
+  policy::url_util::AddFilters(url_matcher_.get(), enabled, id,
+                               &base::Value::AsListValue(*url_list));
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
-  if (!mime_types || !mime_types->is_list()) {
+  if (!mime_types)
     return false;
-  }
 
   URLPatternSettings setting;
   bool has_wildcard = false;
