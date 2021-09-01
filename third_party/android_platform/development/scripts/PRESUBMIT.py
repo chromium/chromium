@@ -13,7 +13,8 @@ USE_PYTHON3 = True
 
 def CommonChecks(input_api, output_api):
   output = []
-  output.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+  output.extend(
+    input_api.canned_checks.RunPylint(input_api, output_api, version='2.6'))
 
   py_tests = input_api.canned_checks.GetUnitTestsRecursively(
       input_api,

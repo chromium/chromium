@@ -77,7 +77,7 @@ def _NormalizeName(name):
   return name
 
 
-class MapFileParserGold(object):
+class MapFileParserGold:
   """Parses a linker map file from gold linker."""
   # Map file writer for gold linker:
   # https://github.com/gittup/binutils/blob/HEAD/gold/mapfile.cc
@@ -107,7 +107,7 @@ class MapFileParserGold(object):
         self._common_symbols = self._ParseCommonSymbols()
         logging.debug('.bss common entries: %d', len(self._common_symbols))
         continue
-      elif line.startswith('Memory map'):
+      if line.startswith('Memory map'):
         self._ParseSections()
       break
     return self._section_ranges, self._symbols, {}
@@ -116,6 +116,7 @@ class MapFileParserGold(object):
     for l in self._lines:
       if l.startswith(prefix) or (prefix2 and l.startswith(prefix2)):
         return l
+    return None
 
   def _ParsePossiblyWrappedParts(self, line, count):
     parts = line.split(None, count - 1)
@@ -254,9 +255,9 @@ class MapFileParserGold(object):
                   # using addresses. We do this because fill lines are not
                   # present when compiling with gcc (only for clang).
                   continue
-                elif line.startswith(' **'):
+                if line.startswith(' **'):
                   break
-                elif name is None:
+                if name is None:
                   address_str2, name = self._ParsePossiblyWrappedParts(line, 2)
 
               if address_str == '0xffffffffffffffff':
@@ -327,7 +328,7 @@ class MapFileParserGold(object):
         raise
 
 
-class MapFileParserLld(object):
+class MapFileParserLld:
   """Parses a linker map file from LLD."""
   # Map file writer for LLD linker (for ELF):
   # https://github.com/llvm-mirror/lld/blob/HEAD/ELF/MapFile.cpp
@@ -718,7 +719,7 @@ def DetectLinkerNameFromMapFile(lines):
   raise Exception('Invalid map file: ' + first_line)
 
 
-class MapFileParser(object):
+class MapFileParser:
   """Parses a linker map file generated from a specified linker."""
   def Parse(self, linker_name, lines):
     """Parses a linker map file.

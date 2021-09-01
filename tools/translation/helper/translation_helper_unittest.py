@@ -6,7 +6,6 @@ import unittest
 import os
 import sys
 
-# pylint: disable=relative-import
 import translation_helper
 
 here = os.path.realpath(__file__)

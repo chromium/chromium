@@ -118,6 +118,8 @@ def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
     key_to_names[key] = set(next(it) if _CanDemangle(n) else n for n in names)
   assert(next(it, None) is None)
 
+  return None
+
 
 def DemangleKeysAndMergeLists(name_to_list, tool_prefix):
   """Demangles keys of a dict of lists, and returns the result.

@@ -207,7 +207,7 @@ def ClassifySections(section_names):
   return frozenset(unsummed_sections), frozenset(summed_sections)
 
 
-class BaseContainer(object):
+class BaseContainer:
   """Base class for BaseContainer and DeltaContainer.
 
   Fields:
@@ -239,6 +239,10 @@ class BaseContainer(object):
     for i, c in enumerate(containers):
       c.short_name = str(i) if c.name else ''
 
+  @property
+  def section_sizes(self):
+    pass
+
 
 class Container(BaseContainer):
   """Info for a single SuperSize input file (e.g., APK file).
@@ -253,7 +257,7 @@ class Container(BaseContainer):
   )
 
   def __init__(self, name, metadata, section_sizes):
-    super(Container, self).__init__(name)
+    super().__init__(name)
     self.metadata = metadata or {}
     self.section_sizes = section_sizes  # E.g. {SECTION_TEXT: 0}
 
@@ -276,7 +280,7 @@ class DeltaContainer(BaseContainer):
   )
 
   def __init__(self, name, before, after):
-    super(DeltaContainer, self).__init__(name)
+    super().__init__(name)
     self.before = before
     self.after = after
 
@@ -287,7 +291,7 @@ class DeltaContainer(BaseContainer):
     return dict(ret)
 
 
-class BaseSizeInfo(object):
+class BaseSizeInfo:
   """Base class for SizeInfo and DeltaSizeInfo.
 
   Fields:
@@ -373,10 +377,7 @@ class SizeInfo(BaseSizeInfo):
                raw_symbols,
                symbols=None,
                size_path=None):
-    super(SizeInfo, self).__init__(build_config,
-                                   containers,
-                                   raw_symbols,
-                                   symbols=symbols)
+    super().__init__(build_config, containers, raw_symbols, symbols=symbols)
     self.size_path = size_path
 
   @property
@@ -406,17 +407,53 @@ class DeltaSizeInfo(BaseSizeInfo):
   )
 
   def __init__(self, before, after, containers, raw_symbols):
-    super(DeltaSizeInfo, self).__init__(None, containers, raw_symbols)
+    super().__init__(None, containers, raw_symbols)
     self.before = before
     self.after = after
 
 
-class BaseSymbol(object):
+class BaseSymbol:
   """Base class for Symbol and SymbolGroup.
 
   Refer to module docs for field descriptions.
   """
   __slots__ = ()
+
+  @property
+  def container(self):
+    pass
+
+  @property
+  def section_name(self):
+    pass
+
+  @property
+  def size(self):
+    pass
+
+  @property
+  def padding(self):
+    pass
+
+  @property
+  def address(self):
+    pass
+
+  @property
+  def flags(self):
+    pass
+
+  @property
+  def aliases(self):
+    pass
+
+  @property
+  def full_name(self):
+    pass
+
+  @property
+  def name(self):
+    pass
 
   @property
   def container_name(self):

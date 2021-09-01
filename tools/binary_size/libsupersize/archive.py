@@ -84,7 +84,7 @@ _SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
 
 
 # Tunable constant "knobs" for CreateContainerAndSymbols().
-class SectionSizeKnobs(object):
+class SectionSizeKnobs:
   def __init__(self):
     # A limit on the number of symbols an address can have, before these symbols
     # are compacted into shared symbols. Increasing this value causes more data
@@ -1136,7 +1136,7 @@ def _IsPakContentUncompressed(content):
   return compression_ratio < _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD
 
 
-class _ResourceSourceMapper(object):
+class _ResourceSourceMapper:
   def __init__(self, size_info_prefix, knobs):
     self._knobs = knobs
     self._res_info = self._LoadResInfo(size_info_prefix)
@@ -1253,7 +1253,7 @@ def _ParseApkElfSectionRanges(section_ranges, metadata, apk_elf_result):
   return apk_section_ranges, elf_overhead_size
 
 
-class _ResourcePathDeobfuscator(object):
+class _ResourcePathDeobfuscator:
 
   def __init__(self, pathmap_path):
     self._pathmap = self._LoadResourcesPathmap(pathmap_path)
@@ -2163,7 +2163,7 @@ def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
   if not sub_args.elf_file and not sub_args.map_file:
     opts.analyze_native = False
 
-  container_args = {k: v for k, v in sub_args.__dict__.items()}
+  container_args = sub_args.__dict__.copy()
   container_args.update(opts.__dict__)
   logging.info('Container Params: %r', container_args)
   return (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,

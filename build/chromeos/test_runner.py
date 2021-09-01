@@ -16,13 +16,13 @@ import signal
 import socket
 import sys
 import tempfile
+import six
 
 # The following non-std imports are fetched via vpython. See the list at
 # //.vpython
 import dateutil.parser  # pylint: disable=import-error
 import jsonlines  # pylint: disable=import-error
 import psutil  # pylint: disable=import-error
-import six
 
 CHROMIUM_SRC_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -70,7 +70,7 @@ class TestFormatError(Exception):
   pass
 
 
-class RemoteTest(object):
+class RemoteTest:
 
   # This is a basic shell script that can be appended to in order to invoke the
   # test on the device.
@@ -166,7 +166,7 @@ class RemoteTest(object):
         os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH),
     ]
     logging.info('Running the following command on the device:')
-    logging.info('\n' + '\n'.join(script_contents))
+    logging.info('\n%s', '\n'.join(script_contents))
     fd, tmp_path = tempfile.mkstemp(suffix='.sh', dir=self._path_to_outdir)
     os.fchmod(fd, 0o755)
     with os.fdopen(fd, 'w') as f:
@@ -219,11 +219,9 @@ class RemoteTest(object):
       if test_proc.returncode == 0:
         break
 
-    ret = self.post_run(test_proc.returncode)
+    self.post_run(test_proc.returncode)
     # Allow post_run to override test proc return code. (Useful when the host
     # side Tast bin returns 0 even for failed tests.)
-    if ret is not None:
-      return ret
     return test_proc.returncode
 
   def post_run(self, return_code):
@@ -266,7 +264,7 @@ class RemoteTest(object):
 class TastTest(RemoteTest):
 
   def __init__(self, args, unknown_args):
-    super(TastTest, self).__init__(args, unknown_args)
+    super().__init__(args, unknown_args)
 
     self._suite_name = args.suite_name
     self._tast_vars = args.tast_vars
@@ -404,14 +402,14 @@ class TastTest(RemoteTest):
     # If we don't need to parse the host-side Tast tool's results, fall back to
     # the parent method's default behavior.
     if self._llvm_profile_var:
-      return super(TastTest, self).post_run(return_code)
+      return super().post_run(return_code)
 
     tast_results_path = os.path.join(self._logs_dir, 'streamed_results.jsonl')
     if not os.path.exists(tast_results_path):
       logging.error(
           'Tast results not found at %s. Falling back to generic result '
           'reporting.', tast_results_path)
-      return super(TastTest, self).post_run(return_code)
+      return super().post_run(return_code)
 
     # See the link below for the format of the results:
     # https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/cmd/tast/run#TestResult
@@ -479,7 +477,7 @@ class TastTest(RemoteTest):
 
     if not suite_results.DidRunPass():
       return 1
-    elif return_code:
+    if return_code:
       logging.warning(
           'No failed tests found, but exit code of %d was returned from '
           'cros_run_test.', return_code)
@@ -535,7 +533,7 @@ class GTestTest(RemoteTest):
   ]
 
   def __init__(self, args, unknown_args):
-    super(GTestTest, self).__init__(args, unknown_args)
+    super().__init__(args, unknown_args)
 
     self._test_exe = args.test_exe
     self._runtime_deps_path = args.runtime_deps_path
@@ -729,7 +727,6 @@ def device_test(args, unknown_args):
   # so cd to src/, which should be the root of all data deps.
   os.chdir(CHROMIUM_SRC_PATH)
 
-  # pylint: disable=redefined-variable-type
   # TODO: Remove the above when depot_tool's pylint is updated to include the
   # fix to https://github.com/PyCQA/pylint/issues/710.
   if args.test_type == 'tast':
@@ -747,7 +744,7 @@ def device_test(args, unknown_args):
 def host_cmd(args, cmd_args):
   if not cmd_args:
     raise TestFormatError('Must specify command to run on the host.')
-  elif args.deploy_chrome and not args.path_to_outdir:
+  if args.deploy_chrome and not args.path_to_outdir:
     raise TestFormatError(
         '--path-to-outdir must be specified if --deploy-chrome is passed.')
 

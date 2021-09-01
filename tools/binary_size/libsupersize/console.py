@@ -81,7 +81,7 @@ def _ReadlineSession():
   readline.write_history_file(history_file)
 
 
-class _Session(object):
+class _Session:
 
   def __init__(self, size_infos, output_directory_finder, tool_prefix_finder):
     self._printed_variables = []
@@ -309,9 +309,9 @@ class _Session(object):
 
     paths_to_try = [p for p in paths_to_try if os.path.exists(p)]
 
-    for i, elf_path in enumerate(paths_to_try):
-      if build_id_matches(elf_path):
-        return elf_path
+    for i, path in enumerate(paths_to_try):
+      if build_id_matches(path):
+        return path
 
       # Show an error only once all paths are tried.
       if i + 1 == len(paths_to_try):
@@ -322,12 +322,14 @@ class _Session(object):
         '--output-directory is set. If output directory is unavailable, '
         'ensure {} is located beside {}, or pass its path explicitly using '
         'elf_path=').format(os.path.basename(filename), size_info.size_path)
+    return None
 
   def _SizeInfoForSymbol(self, symbol):
     for size_info in self._size_infos:
       if symbol in size_info.raw_symbols:
         return size_info
     assert False, 'Symbol does not belong to a size_info.'
+    return None
 
   def _DisassembleFunc(self, symbol, elf_path=None, use_pager=None,
                        to_file=None):
@@ -491,7 +493,7 @@ class _Session(object):
       if isinstance(value, types.ModuleType):
         continue
       if key.startswith('size_info'):
-        lines.append('  {}: Loaded from {}'.format(key, value.size_path))
+        lines.append('  {}: Loaded from {}'.format(key, value.size_path))  # pylint: disable=no-member
     lines.append('*' * 80)
     return '\n'.join(lines)
 

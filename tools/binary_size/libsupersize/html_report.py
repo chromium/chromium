@@ -52,7 +52,7 @@ def _GetOrAddFileNode(path, component, file_nodes, components):
   return file_node
 
 
-class IndexedSet(object):
+class IndexedSet:
   """Set-like object where values are unique and indexed.
 
   Values must be immutable.

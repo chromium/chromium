@@ -133,11 +133,11 @@ def UnzipSymbols(symbolfile, symdir=None):
   android_symbols = glob.glob("%s/out/target/product/*/symbols" % symdir)
   if android_symbols:
     return (symdir, android_symbols[0])
-  else:
-    # This is a zip of Chrome symbols, so symbol.CHROME_SYMBOLS_DIR needs to be
-    # updated to point here.
-    symbol.CHROME_SYMBOLS_DIR = symdir
-    return (symdir, symdir)
+
+  # This is a zip of Chrome symbols, so symbol.CHROME_SYMBOLS_DIR needs to be
+  # updated to point here.
+  symbol.CHROME_SYMBOLS_DIR = symdir
+  return (symdir, symdir)
 
 
 def main(argv, test_symbolizer=None):

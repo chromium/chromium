@@ -82,10 +82,9 @@ def query_yes_no(question, default='no'):
     choice = raw_input().lower()
     if default is not None and choice == '':
       return valid[default]
-    elif choice in valid:
+    if choice in valid:
       return valid[choice]
-    else:
-      print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
+    print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
 def find_screenshots(repo_root, translation_expectations):
@@ -156,7 +155,7 @@ def main():
            "screenshot at path/to/file_grd/IDS_HELLO_WORLD.png.\n"
            "- If you added a new, uncommitted .grd file, `git add` it so that "
            "this script can pick up its screenshot directory.")
-    exit(0)
+    sys.exit(0)
 
   print('Found %d updated screenshot(s): ' % len(screenshots))
   for s in screenshots:
@@ -165,7 +164,7 @@ def main():
   if not query_yes_no(
       'Do you want to upload these to Google Cloud Storage?\n\n'
       'FILES WILL BE PUBLIC, DO NOT UPLOAD ANYTHING CONFIDENTIAL.'):
-    exit(0)
+    sys.exit(0)
 
   # Creating a standard gsutil object, assuming there are depot_tools
   # and everything related is set up already.
@@ -184,7 +183,7 @@ def main():
         gzip=None) != 0:
       print ('Error uploading screenshots. Try running '
              '`download_from_google_storage --config`.')
-      exit(1)
+      sys.exit(1)
 
   print()
   print('Images are uploaded and their signatures are calculated:')
@@ -199,7 +198,7 @@ def main():
   # no-op.
   if not query_yes_no('Do you want to add these files to your CL?',
                       default='yes'):
-    exit(0)
+    sys.exit(0)
 
   if not args.dry_run:
     git_helper.git_add(signatures, src_path)

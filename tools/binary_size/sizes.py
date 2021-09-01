@@ -33,7 +33,7 @@ sys.path.append(os.path.join(SRC_DIR, 'third_party', 'catapult', 'tracing'))
 from tracing.value import convert_chart_json
 
 
-class ResultsCollector(object):
+class ResultsCollector:
 
   def __init__(self):
     self.results = {}
@@ -279,7 +279,7 @@ def main_linux(output_directory, results_collector, size_path):
   # TODO(mcgrathr): This should all be refactored so the mac and win flavors
   # also deliver data structures rather than printing, and the logic for
   # the printing and the summing totals is shared across all three flavors.
-  for (identifier, units), value in sorted(totals.iteritems()):
+  for (identifier, units), value in sorted(totals.items()):
     results_collector.add_result('totals-%s' % identifier, identifier, value,
                                  units)
 

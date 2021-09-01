@@ -9,12 +9,12 @@ import shutil
 import sys
 import tempfile
 import unittest
+import six
 
 # The following non-std imports are fetched via vpython. See the list at
 # //.vpython
 import mock  # pylint: disable=import-error
 from parameterized import parameterized  # pylint: disable=import-error
-import six
 
 import test_runner
 
@@ -47,7 +47,7 @@ class TestRunnerTest(unittest.TestCase):
     if six.PY3:
       self.assertSetEqual(set(list1), set(list2))
     else:
-      self.assertItemsEqual(list1, list2)
+      self.assertCountEqual(list1, list2)
 
 
 class TastTests(TestRunnerTest):

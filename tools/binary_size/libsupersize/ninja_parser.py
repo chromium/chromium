@@ -19,7 +19,7 @@ import sys
 _REGEX = re.compile(r'build ([^:]+): \w+ (.*?)(?: *\||\n|$)')
 
 
-class _SourceMapper(object):
+class _SourceMapper:
   def __init__(self, dep_map, parsed_file_count):
     self._dep_map = dep_map
     self.parsed_file_count = parsed_file_count

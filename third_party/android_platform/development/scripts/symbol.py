@@ -156,6 +156,8 @@ def GetCrazyLib(apk_filename):
     if match:
       return match.group(1)
 
+  return None
+
 def GetApkFromLibrary(device_library_path):
   match = re.match(r'.*/([^/]*)-[0-9]+(\/[^/]*)?\.apk$', device_library_path)
   if not match:
@@ -191,6 +193,8 @@ def MapDeviceApkToLibrary(device_apk_name):
     crazy_lib = GetCrazyLib(matching_apk)
     if crazy_lib:
       return crazy_lib
+
+  return None
 
 
 def GetLibrarySearchPaths():
@@ -280,8 +284,7 @@ def SetSecondaryAbiOutputPath(path):
     raise Exception ('SetSecondaryAbiOutputPath() was already called with a ' +
                      'different value, previous: %s new: %s' % (
                        _SECONDARY_ABI_OUTPUT_PATH, path))
-  else:
-    _SECONDARY_ABI_OUTPUT_PATH = path
+  _SECONDARY_ABI_OUTPUT_PATH = path
 
 
 def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
@@ -338,7 +341,7 @@ def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
   return result
 
 
-class _MemoizedForSet(object):
+class _MemoizedForSet:
   """Decorator class used to memoize CallXXXForSet() results."""
   def __init__(self, fn):
     self.fn = fn

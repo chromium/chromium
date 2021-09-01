@@ -119,7 +119,6 @@ def PrintTraceLines(trace_lines):
     normalized = os.path.normpath(location)
     print('  %8s  %s  %s' % (addr, symbol_with_offset.ljust(maxlen),
         normalized))
-  return
 
 
 def PrintValueLines(value_lines):
@@ -132,7 +131,6 @@ def PrintValueLines(value_lines):
     (addr, value, symbol_with_offset, location) = vl
     print('  %8s  %8s  %s  %s' % (addr, value, symbol_with_offset.ljust(maxlen),
                                   location))
-  return
 
 
 def PrintJavaLines(java_lines):
@@ -274,7 +272,7 @@ class PreProcessLog:
     """
     offset_match = _SHARED_LIB_OFFSET_IN_APK.match(symbol_present)
     if not offset_match:
-      return
+      return None
     offset = offset_match.group('offset')
     key = '%s:%s' % (lib, offset)
     if key in self._shared_libraries_mapping:
@@ -453,7 +451,7 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
         pid = -1
       last_frame = frame
 
-      if area == UNKNOWN or area == HEAP or area == STACK:
+      if area in (UNKNOWN, HEAP, STACK):
         trace_lines.append((code_addr, '', area))
       else:
         logging.debug('Identified lib: %s' % area)
@@ -505,11 +503,10 @@ def UpdateLibrarySearchPath(so_dirs):
   so_dir_len = len(so_dir)
   if so_dir_len > 0:
     if so_dir_len > 1:
-      raise Exception("Found different so dirs, they are %s", repr(so_dir))
-    else:
-      search_path = so_dir.pop()
-      logging.info("Search libraries in %s", search_path)
-      symbol.SetSecondaryAbiOutputPath(search_path)
+      raise Exception("Found different so dirs, they are %s" % repr(so_dir))
+    search_path = so_dir.pop()
+    logging.info("Search libraries in %s", search_path)
+    symbol.SetSecondaryAbiOutputPath(search_path)
 
 
 def GetUncompressedSharedLibraryFromAPK(apkname, offset):
@@ -594,7 +591,7 @@ def _FindSharedLibraryFromAPKs(output_directory, apks_directory, offset):
 
   if apks_directory:
     if not os.path.isdir(apks_directory):
-      raise Exception('Explicit APKs directory does not exist: %s',
+      raise Exception('Explicit APKs directory does not exist: %s' %
                       repr(apks_directory))
   else:
     apks_directory = os.path.join(output_directory, 'apks')
@@ -626,7 +623,7 @@ def _FindSharedLibraryFromAPKs(output_directory, apks_directory, offset):
   number_of_library = len(shared_libraries)
   if number_of_library == 1:
     return shared_libraries[0]
-  elif number_of_library > 1:
+  if number_of_library > 1:
     logging.warning("More than one libraries could be loaded from APK.")
   return (None, None)
 
@@ -636,3 +633,4 @@ def _FindAbi(lines):
     match = _ABI_LINE.search(line)
     if match:
       return match.group('abi')
+  return None

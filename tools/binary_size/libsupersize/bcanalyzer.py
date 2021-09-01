@@ -140,7 +140,7 @@ def _UnpackUint32ListToBytes(items):
     yield (item >> 24) & 0xFF
 
 
-class _BcIntArrayType(object):
+class _BcIntArrayType:
   """The specs of an integer array type."""
 
   # Lookup table to map from width to an unpacker that splits ints into bytes.
@@ -177,7 +177,7 @@ class _BcIntArrayType(object):
     return s
 
 
-class _BcTypeInfo(object):
+class _BcTypeInfo:
   """Stateful parser of <TYPE_BLOCK_ID>, specialized for integer arrays."""
 
   # <TYPE_BLOCK_ID NumWords=103 BlockCodeSize=4>
@@ -310,8 +310,11 @@ def _ParseBcAnalyzer(lines):
       if _IsClosingTag(tag_type) and tag == 'CONSTANTS_BLOCK':
         # Skip remaining data, including subsequent <CONSTANTS_BLOCK>s.
         break
-      elif tag == 'SETTYPE':
-        consts_cur_type_id = next(_ParseOpItems(line, attrib_pos))  # op0.
+      if tag == 'SETTYPE':
+        try:
+          consts_cur_type_id = next(_ParseOpItems(line, attrib_pos))  # op0.
+        except StopIteration:
+          return
         consts_cur_type = type_info.GetArrayType(consts_cur_type_id)
       elif consts_cur_type and consts_cur_type.width <= _CHAR_WIDTH_LIMIT:
         if tag in ['CSTRING', 'STRING', 'DATA']:
@@ -322,7 +325,7 @@ def _ParseBcAnalyzer(lines):
           yield (consts_cur_type, s)
 
 
-class _BcAnalyzerRunner(object):
+class _BcAnalyzerRunner:
   """Helper to run bcanalyzer and extract output lines. """
   def __init__(self, tool_prefix, output_directory):
     self._args = [path_util.GetBcAnalyzerPath(tool_prefix), '--dump',

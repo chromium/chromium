@@ -9,7 +9,9 @@ def _CommonChecks(input_api, output_api):
   results = []
 
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    version='2.6')
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run unittests.

@@ -16,7 +16,7 @@ def _ForkTestHelper(arg1, arg2, pickle_me_not, test_instance, parent_pid):
   return arg1 + arg2
 
 
-class Unpicklable(object):
+class Unpicklable:
   """Ensures that pickle() is not called on parameters."""
 
   def __getstate__(self):
