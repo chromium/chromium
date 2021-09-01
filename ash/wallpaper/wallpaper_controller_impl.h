@@ -291,8 +291,7 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsActiveUserWallpaperControlledByPolicy() override;
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
-  void SetDailyRefreshCollectionId(const AccountId& accound_id,
-                                   const std::string& collection_id) override;
+  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId() const override;
   void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) override;
@@ -578,12 +577,8 @@ class ASH_EXPORT WallpaperControllerImpl
                              const WallpaperInfo& info);
   bool GetLocalWallpaperInfo(const AccountId& account_id,
                              WallpaperInfo* info) const;
-  bool SetSyncedWallpaperInfo(const AccountId& account_id,
-                              const WallpaperInfo& info);
-  bool GetSyncedWallpaperInfo(const AccountId& account_id,
-                              WallpaperInfo* info) const;
-  void SyncLocalAndRemotePrefs(const AccountId& account_id);
-  void HandleSyncedCollectionIdChanged(const AccountId& account_id);
+  void SyncLocalAndRemotePrefs();
+  void SyncLocalAndRemotePrefsForAccountId(const AccountId& account_id);
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
@@ -593,6 +588,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
+
+  // The id of the collection to query for new wallpapers when daily refresh is
+  // enabled. Is an empty string when it is not enabled.
+  std::string GetCollectionId() const;
 
   // Callback from the client providing a url to a wallpaper from the user
   // specified collection when daily refresh is enabled. If |image_url| is
@@ -630,11 +629,6 @@ class ASH_EXPORT WallpaperControllerImpl
                                          WallpaperInfo info);
 
   void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
-
-  void SetLocalDailyRefreshCollectionId(const AccountId& account_id,
-                                        const std::string& collection_id);
-
-  PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
 
   bool locked_ = false;
 

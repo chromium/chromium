@@ -50,10 +50,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     fake_files_ids_[account_id] = fake_files_id;
   }
 
-  void set_wallpaper_sync_enabled(bool sync_enabled) {
-    wallpaper_sync_enabled_ = sync_enabled;
-  }
-
   void ResetCounts();
 
   // WallpaperControllerClient:
@@ -61,7 +57,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
-  void MigrateCollectionIdFromChromeApp(const AccountId& account_id) override;
+  void MigrateCollectionIdFromChromeApp() override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
@@ -72,7 +68,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void GetFilesId(const AccountId& account_id,
                   base::OnceCallback<void(const std::string&)>
                       files_id_callback) const override;
-  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
  private:
   size_t open_count_ = 0;
@@ -84,7 +79,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   AccountId get_wallpaper_path_from_drive_fs_account_id_;
   AccountId save_wallpaper_to_drive_fs_account_id_;
   std::unordered_map<AccountId, std::string> fake_files_ids_;
-  bool wallpaper_sync_enabled_ = true;
 };
 
 }  // namespace ash

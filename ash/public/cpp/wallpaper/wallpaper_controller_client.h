@@ -32,8 +32,7 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
 
   // Retrieves the current collection id from the Wallpaper Picker Chrome App
   // for migration.
-  virtual void MigrateCollectionIdFromChromeApp(
-      const AccountId& account_id) = 0;
+  virtual void MigrateCollectionIdFromChromeApp() = 0;
 
   // Downloads and sets a new random wallpaper from the collection of the
   // specified collection_id.
@@ -54,8 +53,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   virtual void GetFilesId(
       const AccountId& account_id,
       base::OnceCallback<void(const std::string&)> files_id_callback) const = 0;
-
-  virtual bool IsWallpaperSyncEnabled(const AccountId& account_id) const = 0;
 };
 
 }  // namespace ash

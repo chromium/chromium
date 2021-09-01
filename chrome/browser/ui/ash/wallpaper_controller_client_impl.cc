@@ -32,9 +32,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -44,9 +42,6 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -518,25 +513,6 @@ void WallpaperControllerClientImpl::GetFilesId(
       &GetFilesIdSaltReady, account_id, std::move(files_id_callback)));
 }
 
-bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
-    const AccountId& account_id) const {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
-    return false;
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    // If in client use profile otherwise use GetUserPrefServiceSyncable.
-    return sync_service->GetUserSettings()->IsOsSyncFeatureEnabled() &&
-           profile->GetPrefs()->GetBoolean(
-               chromeos::settings::prefs::kSyncOsWallpaper);
-  }
-  return sync_service->CanSyncFeatureStart() &&
-         sync_service->GetUserSettings()->IsFirstSetupComplete() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kThemes);
-}
-
 void WallpaperControllerClientImpl::ActiveUserChanged(
     user_manager::User* active_user) {
   volume_manager_observation_.Reset();
@@ -558,10 +534,8 @@ void WallpaperControllerClientImpl::OnVolumeMounted(
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(
-    const AccountId& account_id,
     ValueStore* value_store) {
-  SetDailyRefreshCollectionId(account_id,
-                              GetDailyRefreshCollectionId(value_store));
+  SetDailyRefreshCollectionId(GetDailyRefreshCollectionId(value_store));
 }
 
 void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
@@ -653,9 +627,8 @@ void WallpaperControllerClientImpl::SetDefaultWallpaper(
   wallpaper_controller_->SetDefaultWallpaper(account_id, show_wallpaper);
 }
 
-void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
-    const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* extension =
       extension_registry->GetInstalledExtension(kWallpaperManagerId);
@@ -663,7 +636,7 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
   // Although not now, there will be a day where this application no longer
   // exists.
   if (!extension) {
-    SetDailyRefreshCollectionId(account_id, std::string());
+    SetDailyRefreshCollectionId(std::string());
     return;
   }
 
@@ -677,7 +650,7 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
       extension, extensions::settings_namespace::LOCAL,
       base::BindOnce(
           &WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore,
-          storage_weak_factory_.GetWeakPtr(), task_runner, account_id));
+          storage_weak_factory_.GetWeakPtr(), task_runner));
 }
 
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
@@ -705,7 +678,6 @@ WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
 
 void WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const AccountId& account_id,
     ValueStore* value_store) {
   DCHECK(extensions::IsOnBackendSequence());
   std::string collection_id = GetDailyRefreshCollectionId(value_store);
@@ -714,13 +686,12 @@ void WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore(
       FROM_HERE,
       base::BindOnce(
           &WallpaperControllerClientImpl::SetDailyRefreshCollectionId,
-          weak_factory_.GetWeakPtr(), account_id, collection_id));
+          weak_factory_.GetWeakPtr(), collection_id));
 }
 
 void WallpaperControllerClientImpl::SetDailyRefreshCollectionId(
-    const AccountId& account_id,
     const std::string& collection_id) {
-  wallpaper_controller_->SetDailyRefreshCollectionId(account_id, collection_id);
+  wallpaper_controller_->SetDailyRefreshCollectionId(collection_id);
 }
 
 void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
