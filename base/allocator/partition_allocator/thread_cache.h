@@ -59,8 +59,12 @@ extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 //       base::internal::g_thread_cache
 //   libbase.dylib`base::internal::ThreadCache::Get()
 // where tlv_allocate_and_initialize_for_key performs memory allocation.
+//
+// Finally, we have crashes with component builds on macOS,
+// see crbug.com/1243375.
 #if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && !defined(OS_ANDROID) && \
-    !(defined(OS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+    !(defined(OS_APPLE) &&                                                    \
+      (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(COMPONENT_BUILD)))
 #define PA_THREAD_CACHE_FAST_TLS
 #endif
 
