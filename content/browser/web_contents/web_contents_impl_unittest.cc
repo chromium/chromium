@@ -634,8 +634,8 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   // Going back should switch SiteInstances again.  The first SiteInstance is
   // stored in the NavigationEntry, so it should be the same as at the start.
   // We should use the same RFH as before, swapping it back in.
-  auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
-      -1, contents(), false /* is_renderer_initiated */);
+  auto back_navigation =
+      NavigationSimulator::CreateHistoryNavigation(-1, contents());
   back_navigation->ReadyToCommit();
   TestRenderFrameHost* goback_rfh =
       contents()->GetSpeculativePrimaryMainFrame();
@@ -1220,8 +1220,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
             NavigationEntryImpl::FromNavigationEntry(entry3)->site_instance());
 
   // Go back within the site.
-  auto back_navigation1 = NavigationSimulatorImpl::CreateHistoryNavigation(
-      -1, contents(), false /* is_renderer_initiated */);
+  auto back_navigation1 =
+      NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents());
   back_navigation1->Start();
 
   auto* first_pending_rfh = contents()->GetSpeculativePrimaryMainFrame();
@@ -1238,8 +1238,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
 
   // Before that commits, go back again.
   back_navigation1->ReadyToCommit();
-  auto back_navigation2 = NavigationSimulatorImpl::CreateHistoryNavigation(
-      -1, contents(), false /* is_renderer_initiated */);
+  auto back_navigation2 =
+      NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents());
   back_navigation2->Start();
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
   EXPECT_TRUE(contents()->GetSpeculativePrimaryMainFrame());
@@ -1359,8 +1359,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
             NavigationEntryImpl::FromNavigationEntry(entry3)->site_instance());
 
   // Go back within the site.
-  auto back_navigation1 = NavigationSimulator::CreateHistoryNavigation(
-      -1, contents(), false /* is_renderer_initiated */);
+  auto back_navigation1 =
+      NavigationSimulator::CreateHistoryNavigation(-1, contents());
   back_navigation1->ReadyToCommit();
   if (will_change_site_instance) {
     EXPECT_TRUE(contents()->CrossProcessNavigationPending());
@@ -1370,8 +1370,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(entry2, controller().GetPendingEntry());
 
   // Before that commits, go back again.
-  auto back_navigation2 = NavigationSimulatorImpl::CreateHistoryNavigation(
-      -1, contents(), false /* is_renderer_initiated */);
+  auto back_navigation2 =
+      NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents());
   back_navigation2->set_drop_unload_ack(true);
   back_navigation2->ReadyToCommit();
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());

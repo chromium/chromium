@@ -244,17 +244,18 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
-  // A browser-initiated navigation is always considered trusted, and thus
-  // allowed.
-  if (!navigation_handle()->IsRendererInitiated())
+  // Navigations with no initiator (e.g. browser-initiated requests) are always
+  // considered trusted, and thus allowed.
+  //
+  // Note that GuestView navigations initiated by the embedder also count as a
+  // browser-initiated navigation.
+  if (!navigation_handle()->GetInitiatorOrigin().has_value()) {
+    DCHECK(!navigation_handle()->IsRendererInitiated());
     return content::NavigationThrottle::PROCEED;
+  }
 
-  // A renderer-initiated request without an initiator origin is a history
-  // traversal to an entry that was originally loading in a browser-initiated
-  // navigation. Those are trusted, too.
-  if (!navigation_handle()->GetInitiatorOrigin().has_value())
-    return content::NavigationThrottle::PROCEED;
-
+  // All renderer-initiated navigations must have an initiator.
+  DCHECK(navigation_handle()->GetInitiatorOrigin().has_value());
   const url::Origin& initiator_origin =
       navigation_handle()->GetInitiatorOrigin().value();
 

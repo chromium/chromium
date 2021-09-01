@@ -1684,39 +1684,6 @@ TEST_F(ControllerTest, PromptStateStopsOnGoBack) {
   content::NavigationSimulator::GoBack(web_contents());
 }
 
-TEST_F(ControllerTest, PromptStateStopsOnRendererInitiatedBack) {
-  SupportsScriptResponseProto script_response;
-  AddRunnableScript(&script_response, "runnable")
-      ->mutable_presentation()
-      ->set_autostart(true);
-  ActionsResponseProto runnable_script;
-  auto* prompt = runnable_script.add_actions()->mutable_prompt();
-  prompt->set_browse_mode(false);
-  prompt->add_choices()->mutable_chip()->set_text("continue");
-  SetupActionsForScript("runnable", runnable_script);
-  std::string response_str;
-  script_response.SerializeToString(&response_str);
-  EXPECT_CALL(*mock_service_,
-              OnGetScriptsForUrl(GURL("http://example.com/"), _, _))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, response_str));
-
-  Start("http://example.com/");
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  SimulateNavigateToUrl(GURL("http://b.example.com/"));
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  SimulateNavigateToUrl(GURL("http://c.example.com/"));
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  // Go back, emulating a history navigation initiated from JS.
-  EXPECT_CALL(mock_client_, RecordDropOut(Metrics::DropOutReason::NAVIGATION));
-  SetLastCommittedUrl(GURL("http://b.example.com"));
-  content::NavigationSimulator::CreateHistoryNavigation(
-      -1, web_contents(), true /* is_renderer_initiated */)
-      ->Commit();
-}
-
 TEST_F(ControllerTest, UnexpectedNavigationDuringPromptAction_Tracking) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "runnable");

@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   EXPECT_EQ(controller.GetEntryCount(), kMaxEntryCount);
 
-  // Navigate twice more.
+  // Navigate twice more more.
   for (int url_index = kMaxEntryCount; url_index < kMaxEntryCount + 2;
        ++url_index) {
     GURL url(base::StringPrintf("data:text/html,page%d", url_index));
@@ -1588,54 +1588,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_TRUE(controller.CanGoBack());
   controller.GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  // This should have successfully gone back.
-  EXPECT_EQ(GURL(base::StringPrintf("data:text/html,page%d", kMaxEntryCount)),
-            controller.GetLastCommittedEntry()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       DontIgnoreRendererInitiatedBackAfterNavEntryLimit) {
-  NavigationController& controller = shell()->web_contents()->GetController();
-
-  // The default (50) makes this test too slow and leads to flakes
-  // (https://crbug.com/1167300).
-  NavigationControllerImpl::set_max_entry_count_for_testing(10);
-
-  const int kMaxEntryCount =
-      static_cast<int>(NavigationControllerImpl::max_entry_count());
-
-  // Load up to the max count, all entries should be there.
-  for (int url_index = 0; url_index < kMaxEntryCount; ++url_index) {
-    GURL url(base::StringPrintf("data:text/html,page%d", url_index));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-  }
-
-  EXPECT_EQ(controller.GetEntryCount(), kMaxEntryCount);
-
-  // Navigate twice more.
-  for (int url_index = kMaxEntryCount; url_index < kMaxEntryCount + 2;
-       ++url_index) {
-    GURL url(base::StringPrintf("data:text/html,page%d", url_index));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-  }
-
-  // We expect page0 and page1 to be gone.
-  EXPECT_EQ(kMaxEntryCount, controller.GetEntryCount());
-  EXPECT_EQ(GURL("data:text/html,page2"),
-            controller.GetEntryAtIndex(0)->GetURL());
-
-  // Now try to go back. This should not hang.
-  ASSERT_TRUE(controller.CanGoBack());
-  {
-    // Renderer-initiated-back.
-    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
-    FrameNavigateParamsCapturer capturer(root);
-    EXPECT_TRUE(ExecJs(root, "history.back()"));
-    capturer.Wait();
-  }
 
   // This should have successfully gone back.
   EXPECT_EQ(GURL(base::StringPrintf("data:text/html,page%d", kMaxEntryCount)),
@@ -18423,151 +18375,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
   EXPECT_EQ(data_url, entry->GetURL());
   EXPECT_EQ(base_url, EvalJs(shell(), "document.URL"));
-}
-
-// Checks that a browser-initiated same-document navigation on a page which has
-// a valid base URL preserves the base URL.
-// See https://crbug.com/1082141.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       RendererInitiatedBackToLoadDataWithBaseURL) {
-  // LoadDataWithBaseURL is never subject to --site-per-process policy today
-  // (this API is only used by Android WebView [where OOPIFs have not shipped
-  // yet] and GuestView cases [which always hosts guests inside a renderer
-  // without an origin lock]).  Therefore, skip the test in --site-per-process
-  // mode to avoid renderer kills which won't happen in practice as described
-  // above.
-  //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
-  // Webview or WebView guests support OOPIFs and/or origin locks.
-  if (AreAllSitesIsolatedForTesting())
-    return;
-
-  const GURL base_url("http://baseurl");
-  const GURL history_url("http://history");
-  const std::string data = "<html><title>One</title><body>foo</body></html>";
-  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
-
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-
-  {
-    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-    shell()->LoadDataWithBaseURL(history_url, data, base_url);
-    same_tab_observer.Wait();
-  }
-
-  // Verify the last committed NavigationEntry.
-  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, entry->GetVirtualURL());
-  EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, entry->GetURL());
-
-  {
-    // Make a same-document navigation via history.pushState.
-    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-    EXPECT_TRUE(ExecJs(shell(), "history.pushState('', 'test', '#')"));
-    same_tab_observer.Wait();
-  }
-
-  // Verify the last committed NavigationEntry.
-  entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, entry->GetVirtualURL());
-  EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, entry->GetURL());
-
-  {
-    // Renderer-initiated-back.
-    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
-    FrameNavigateParamsCapturer capturer(root);
-    EXPECT_TRUE(ExecJs(root, "history.back()"));
-    capturer.Wait();
-  }
-
-  // Verify the last committed NavigationEntry.
-  entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, entry->GetVirtualURL());
-  EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, entry->GetURL());
-  EXPECT_EQ(base_url, EvalJs(shell(), "document.URL"));
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       HistoryNavigationInNewSubframe) {
-  // This test specifically observes behavior of creating a new frame during a
-  // history navigation, so disable the back forward cache.
-  DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
-
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-  RenderFrameHostImpl* main_frame =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
-
-  // Navigate to a page with an iframe.
-  GURL url1 =
-      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url1));
-  GURL iframe_url = main_frame->child_at(0)->current_url();
-
-  // Navigate away so the iframe is destroyed.
-  GURL url2(embedded_test_server()->GetURL(
-      "/navigation_controller/simple_page_1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), url2));
-
-  // Go back (browser-initiated).
-  ASSERT_TRUE(controller.CanGoBack());
-  TestNavigationManager observer(shell()->web_contents(), iframe_url);
-  controller.GoBack();
-  EXPECT_TRUE(observer.WaitForRequestStart());
-
-  // Check the initial navigation for the new iframe.
-  NavigationRequest* navigation = main_frame->child_at(0)->navigation_request();
-  ASSERT_TRUE(navigation);
-  EXPECT_TRUE(navigation->IsRendererInitiated());
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       HistoryNavigationInNewSubframeRendererInitiated) {
-  // This test specifically observes behavior of creating a new frame during a
-  // history navigation, so disable the back forward cache.
-  DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
-
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-  RenderFrameHostImpl* main_frame =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
-
-  // Navigate to a page with an iframe.
-  GURL url1 =
-      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url1));
-  GURL iframe_url = main_frame->child_at(0)->current_url();
-
-  // Navigate away so the iframe is destroyed.
-  GURL url2(embedded_test_server()->GetURL(
-      "/navigation_controller/simple_page_1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), url2));
-
-  // Go back (renderer-initiated).
-  ASSERT_TRUE(controller.CanGoBack());
-  TestNavigationManager observer(shell()->web_contents(), iframe_url);
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
-  FrameNavigateParamsCapturer capturer(root);
-  EXPECT_TRUE(ExecJs(root, "history.back()"));
-  EXPECT_TRUE(observer.WaitForRequestStart());
-
-  // Check the initial navigation for the new iframe.
-  NavigationRequest* navigation = main_frame->child_at(0)->navigation_request();
-  ASSERT_TRUE(navigation);
-  EXPECT_TRUE(navigation->IsRendererInitiated());
 }
 
 // Navigate an iframe, then reload it. Check the navigation and the

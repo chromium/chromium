@@ -730,11 +730,8 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
   pending_entry_index_ = current_index;
   pending_entry_->SetTransitionType(ui::PAGE_TRANSITION_RELOAD);
 
-  // location.reload() goes through BeginNavigation, so all reloads triggered
-  // via this codepath are browser initiated.
   NavigateToExistingPendingEntry(reload_type,
-                                 FrameTreeNode::kFrameTreeNodeInvalidId,
-                                 true /* is_browser_initiated */);
+                                 FrameTreeNode::kFrameTreeNodeInvalidId);
 }
 
 void NavigationControllerImpl::CancelPendingReload() {
@@ -966,15 +963,11 @@ void NavigationControllerImpl::GoForward() {
 }
 
 void NavigationControllerImpl::GoToIndex(int index) {
-  GoToIndex(index, FrameTreeNode::kFrameTreeNodeInvalidId,
-            true /* is_browser_initiated */);
+  GoToIndex(index, FrameTreeNode::kFrameTreeNodeInvalidId);
 }
 
 void NavigationControllerImpl::GoToIndex(int index,
-                                         int sandbox_frame_tree_node_id,
-                                         bool is_browser_initiated) {
-  DCHECK(sandbox_frame_tree_node_id == FrameTreeNode::kFrameTreeNodeInvalidId ||
-         !is_browser_initiated);
+                                         int sandbox_frame_tree_node_id) {
   TRACE_EVENT0("browser,navigation,benchmark",
                "NavigationControllerImpl::GoToIndex");
   if (index < 0 || index >= static_cast<int>(entries_.size())) {
@@ -990,8 +983,7 @@ void NavigationControllerImpl::GoToIndex(int index,
   pending_entry_index_ = index;
   pending_entry_->SetTransitionType(ui::PageTransitionFromInt(
       pending_entry_->GetTransitionType() | ui::PAGE_TRANSITION_FORWARD_BACK));
-  NavigateToExistingPendingEntry(ReloadType::NONE, sandbox_frame_tree_node_id,
-                                 is_browser_initiated);
+  NavigateToExistingPendingEntry(ReloadType::NONE, sandbox_frame_tree_node_id);
 }
 
 void NavigationControllerImpl::GoToOffset(int offset) {
@@ -1000,15 +992,6 @@ void NavigationControllerImpl::GoToOffset(int offset) {
     return;
 
   GoToIndex(GetIndexForOffset(offset));
-}
-
-void NavigationControllerImpl::GoToOffsetFromRenderer(int offset) {
-  // Note: This is actually reached in unit tests.
-  if (!CanGoToOffset(offset))
-    return;
-
-  GoToIndex(GetIndexForOffset(offset), FrameTreeNode::kFrameTreeNodeInvalidId,
-            false /* is_browser_initiated */);
 }
 
 #if defined(OS_ANDROID)
@@ -2394,14 +2377,10 @@ bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(
   if (!frame_entry)
     return false;
 
-  // |is_browser_initiated| is false here because a navigation in a new subframe
-  // always begins with renderer action (i.e., an HTML element being inserted
-  // into the DOM), so it is always renderer-initiated.
   std::unique_ptr<NavigationRequest> request = CreateNavigationRequestFromEntry(
       render_frame_host->frame_tree_node(), entry, frame_entry,
       ReloadType::NONE, false /* is_same_document_history_load */,
-      true /* is_history_navigation_in_new_child */,
-      false /* is_browser_initiated */);
+      true /* is_history_navigation_in_new_child */);
 
   if (!request)
     return false;
@@ -2426,8 +2405,7 @@ bool NavigationControllerImpl::ReloadFrame(FrameTreeNode* frame_tree_node) {
   std::unique_ptr<NavigationRequest> request = CreateNavigationRequestFromEntry(
       frame_tree_node, entry, frame_entry, reload_type,
       false /* is_same_document_history_load */,
-      false /* is_history_navigation_in_new_child */,
-      true /* is_browser_initiated */);
+      false /* is_history_navigation_in_new_child */);
   if (!request)
     return false;
   frame_tree_node->navigator().Navigate(std::move(request), reload_type);
@@ -2439,8 +2417,7 @@ void NavigationControllerImpl::GoToOffsetInSandboxedFrame(
     int sandbox_frame_tree_node_id) {
   if (!CanGoToOffset(offset))
     return;
-  GoToIndex(GetIndexForOffset(offset), sandbox_frame_tree_node_id,
-            false /* is_browser_initiated */);
+  GoToIndex(GetIndexForOffset(offset), sandbox_frame_tree_node_id);
 }
 
 void NavigationControllerImpl::NavigateFromFrameProxy(
@@ -2798,8 +2775,7 @@ void NavigationControllerImpl::PruneOldestSkippableEntryIfFull() {
 
 void NavigationControllerImpl::NavigateToExistingPendingEntry(
     ReloadType reload_type,
-    int sandboxed_source_frame_tree_node_id,
-    bool is_browser_initiated) {
+    int sandboxed_source_frame_tree_node_id) {
   TRACE_EVENT0("navigation",
                "NavigationControllerImpl::NavigateToExistingPendingEntry");
   DCHECK(pending_entry_);
@@ -2835,8 +2811,8 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   // navigated.
   std::vector<std::unique_ptr<NavigationRequest>> same_document_loads;
   std::vector<std::unique_ptr<NavigationRequest>> different_document_loads;
-  FindFramesToNavigate(root, reload_type, is_browser_initiated,
-                       &same_document_loads, &different_document_loads);
+  FindFramesToNavigate(root, reload_type, &same_document_loads,
+                       &different_document_loads);
 
   if (same_document_loads.empty() && different_document_loads.empty()) {
     // We were unable to match any frames to navigate.  This can happen if a
@@ -2861,8 +2837,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
             root, pending_entry_, pending_entry_->GetFrameEntry(root),
             ReloadType::NONE /* reload_type */,
             true /* is_same_document_history_load */,
-            false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            false /* is_history_navigation_in_new_child */);
     if (!navigation_request) {
       // If this navigation cannot start, delete the pending NavigationEntry.
       DiscardPendingEntry(false);
@@ -2919,7 +2894,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     auto navigation_request = CreateNavigationRequestFromEntry(
         root, pending_entry_, pending_entry_->GetFrameEntry(root),
         ReloadType::NONE, false /* is_same_document_history_load */,
-        false /* is_history_navigation_in_new_child */, is_browser_initiated);
+        false /* is_history_navigation_in_new_child */);
     root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
 
     return;
@@ -3090,7 +3065,6 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
 void NavigationControllerImpl::FindFramesToNavigate(
     FrameTreeNode* frame,
     ReloadType reload_type,
-    bool is_browser_initiated,
     std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
     std::vector<std::unique_ptr<NavigationRequest>>* different_document_loads) {
   DCHECK(pending_entry_);
@@ -3103,8 +3077,7 @@ void NavigationControllerImpl::FindFramesToNavigate(
         CreateNavigationRequestFromEntry(
             frame, pending_entry_, new_item, reload_type,
             true /* is_same_document_history_load */,
-            false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            false /* is_history_navigation_in_new_child */);
     if (navigation_request) {
       // Only add the request if was properly created. It's possible for the
       // creation to fail in certain cases, e.g. when the URL is invalid.
@@ -3115,8 +3088,7 @@ void NavigationControllerImpl::FindFramesToNavigate(
         CreateNavigationRequestFromEntry(
             frame, pending_entry_, new_item, reload_type,
             false /* is_same_document_history_load */,
-            false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            false /* is_history_navigation_in_new_child */);
     if (navigation_request) {
       // Only add the request if was properly created. It's possible for the
       // creation to fail in certain cases, e.g. when the URL is invalid.
@@ -3130,8 +3102,8 @@ void NavigationControllerImpl::FindFramesToNavigate(
   }
 
   for (size_t i = 0; i < frame->child_count(); i++) {
-    FindFramesToNavigate(frame->child_at(i), reload_type, is_browser_initiated,
-                         same_document_loads, different_document_loads);
+    FindFramesToNavigate(frame->child_at(i), reload_type, same_document_loads,
+                         different_document_loads);
   }
 }
 
@@ -3623,8 +3595,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     FrameNavigationEntry* frame_entry,
     ReloadType reload_type,
     bool is_same_document_history_load,
-    bool is_history_navigation_in_new_child_frame,
-    bool is_browser_initiated) {
+    bool is_history_navigation_in_new_child_frame) {
   DCHECK(frame_entry);
   GURL dest_url = frame_entry->url();
   absl::optional<url::Origin> origin_to_commit =
@@ -3729,7 +3700,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
-      is_browser_initiated, false /* was_opener_suppressed */,
+      !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
       nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, request_body,
@@ -3780,14 +3751,12 @@ void NavigationControllerImpl::LoadIfNecessary() {
   // cached state.
   if (pending_entry_) {
     NavigateToExistingPendingEntry(ReloadType::NONE,
-                                   FrameTreeNode::kFrameTreeNodeInvalidId,
-                                   true /* is_browser_initiated */);
+                                   FrameTreeNode::kFrameTreeNodeInvalidId);
   } else if (last_committed_entry_index_ != -1) {
     pending_entry_ = entries_[last_committed_entry_index_].get();
     pending_entry_index_ = last_committed_entry_index_;
     NavigateToExistingPendingEntry(ReloadType::NONE,
-                                   FrameTreeNode::kFrameTreeNodeInvalidId,
-                                   true /* is_browser_initiated */);
+                                   FrameTreeNode::kFrameTreeNodeInvalidId);
   } else {
     // If there is something to reload, the successful reload will clear the
     // |needs_reload_| flag. Otherwise, just do it here.
