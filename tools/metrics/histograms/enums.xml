@@ -59404,6 +59404,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="SIM_LOCKED"/>
 </enum>
 
+<enum name="NetworkServiceSandboxGrantResult">
+  <int value="0" label="kSuccess">The operation was successful</int>
+  <int value="1" label="kFailedToCreateCacheDirectory">
+    Failed to create cache directory
+  </int>
+  <int value="2" label="kFailedToCreateDataDirectory">
+    Failed to create data directory
+  </int>
+  <int value="3" label="kFailedToCopyData">Failed to copy data</int>
+  <int value="4" label="kFailedToDeleteOldData">Failed to delete old data</int>
+  <int value="5" label="kFailedToGrantSandboxAccessToCache">
+    Failed to grant sandbox access to cache directory
+  </int>
+  <int value="6" label="kFailedToGrantSandboxAccessToData">
+    Failed to grant sandbox access to data directory
+  </int>
+</enum>
+
 <enum name="NetworkStatus">
   <int value="1" label="Offline"/>
   <int value="2" label="OnlineWifi"/>
