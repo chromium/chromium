@@ -24,7 +24,9 @@ const char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:
 
-NativeViewHost::NativeViewHost() = default;
+NativeViewHost::NativeViewHost() {
+  set_suppress_default_focus_handling();
+}
 
 NativeViewHost::~NativeViewHost() {
   // As part of deleting NativeViewHostWrapper the native view is unparented.

@@ -58,6 +58,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
     AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   SetCallback(
       base::BindRepeating(&SearchResultSuggestionChipView::OnButtonPressed,
                           base::Unretained(this)));
@@ -157,6 +158,8 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
 
 void SearchResultSuggestionChipView::OnFocus() {
   SchedulePaint();
+  // TODO(pbos): See if this can be removed along with
+  // set_suppress_default_focus_handling() in the constructor.
   NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
 }
 

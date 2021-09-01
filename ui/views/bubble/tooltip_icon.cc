@@ -27,6 +27,7 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       bubble_(nullptr),
       preferred_width_(0) {
   SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
+  set_suppress_default_focus_handling();
   FocusRing::Install(this);
   SetBorder(CreateEmptyBorder(
       LayoutProvider::Get()->GetInsetsMetric(INSETS_VECTOR_IMAGE_BUTTON)));

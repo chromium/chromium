@@ -141,6 +141,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   focused_layer_owner_ =
       CallbackPainter::CreatePaintedLayer(base::BindRepeating(
           &HoldingSpaceItemView::OnPaintFocus, base::Unretained(this)));

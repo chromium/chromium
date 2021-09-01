@@ -155,6 +155,7 @@ UserConsentView::UserConsentView(const gfx::Rect& anchor_view_bounds,
 
   // Focus should cycle to each of the buttons the view contains and back to it.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   views::FocusRing::Install(this);
 
   // Allow tooltips to be shown despite menu-controller owning capture.

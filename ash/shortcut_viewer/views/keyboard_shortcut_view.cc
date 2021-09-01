@@ -102,6 +102,7 @@ class ShortcutsListScrollView : public views::ScrollView {
  public:
   ShortcutsListScrollView() {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
+    set_suppress_default_focus_handling();
   }
 
   ~ShortcutsListScrollView() override = default;
@@ -109,6 +110,8 @@ class ShortcutsListScrollView : public views::ScrollView {
   // views::View:
   void OnFocus() override {
     SetHasFocusIndicator(true);
+    // TODO(pbos): See if this can be removed along with
+    // set_suppress_default_focus_handling() in the constructor.
     NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
   }
 

@@ -2196,39 +2196,40 @@ View::DragInfo* View::GetDragInfo() {
 
 // Focus -----------------------------------------------------------------------
 
-void View::OnFocus() {
-  // TODO(beng): Investigate whether it's possible for us to move this to
-  //             Focus().
-  // By default, we clear the native focus. This ensures that no visible native
-  // view as the focus and that we still receive keyboard inputs.
-  FocusManager* focus_manager = GetFocusManager();
-  if (focus_manager)
-    focus_manager->ClearNativeFocus();
-
-  // TODO(beng): Investigate whether it's possible for us to move this to
-  //             Focus().
-  // Notify assistive technologies of the focus change.
-  AXVirtualView* focused_virtual_child =
-      view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
-                          : nullptr;
-  if (focused_virtual_child)
-    focused_virtual_child->NotifyAccessibilityEvent(ax::mojom::Event::kFocus);
-  else
-    NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
-}
+void View::OnFocus() {}
 
 void View::OnBlur() {}
 
 void View::Focus() {
   OnFocus();
 
+  // TODO(pbos): Investigate if parts of this can run unconditionally.
+  if (!suppress_default_focus_handling_) {
+    // Clear the native focus. This ensures that no visible native view has the
+    // focus and that we still receive keyboard inputs.
+    FocusManager* focus_manager = GetFocusManager();
+    if (focus_manager)
+      focus_manager->ClearNativeFocus();
+
+    // Notify assistive technologies of the focus change.
+    AXVirtualView* const focused_virtual_child =
+        view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
+                            : nullptr;
+    if (focused_virtual_child) {
+      focused_virtual_child->NotifyAccessibilityEvent(ax::mojom::Event::kFocus);
+    } else {
+      NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    }
+  }
+
   // If this is the contents root of a |ScrollView|, focus should bring the
   // |ScrollView| to visible rather than resetting its content scroll position.
-  ScrollView* scroll_view = ScrollView::GetScrollViewForContents(this);
-  if (scroll_view)
+  ScrollView* const scroll_view = ScrollView::GetScrollViewForContents(this);
+  if (scroll_view) {
     scroll_view->ScrollViewToVisible();
-  else
+  } else {
     ScrollViewToVisible();
+  }
 
   for (ViewObserver& observer : observers_)
     observer.OnViewFocused(this);

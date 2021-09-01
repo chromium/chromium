@@ -25,6 +25,7 @@
 namespace native_app_window {
 
 NativeAppWindowViews::NativeAppWindowViews() {
+  set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
@@ -51,7 +52,6 @@ void NativeAppWindowViews::Init(
         dialog->app_window_->OnNativeClose();
       },
       this));
-
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
 

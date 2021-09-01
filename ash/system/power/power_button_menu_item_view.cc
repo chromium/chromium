@@ -43,6 +43,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
     const std::u16string& title_text)
     : views::ImageButton(std::move(callback)), icon_(icon) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   SetFocusPainter(nullptr);
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());

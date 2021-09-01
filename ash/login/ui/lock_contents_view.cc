@@ -595,6 +595,7 @@ LockContentsView::LockContentsView(
   // switch to the system tray. LockContentsView should otherwise not be
   // focusable.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

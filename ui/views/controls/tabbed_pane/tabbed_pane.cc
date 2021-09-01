@@ -42,6 +42,7 @@ namespace views {
 
 Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
     : tabbed_pane_(tabbed_pane), contents_(contents) {
+  set_suppress_default_focus_handling();
   // Calculate the size while the font list is bold.
   auto title_label = std::make_unique<Label>(title, style::CONTEXT_LABEL,
                                              style::STYLE_TAB_ACTIVE);

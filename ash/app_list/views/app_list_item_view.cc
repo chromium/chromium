@@ -272,6 +272,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
   DCHECK(grid_delegate_);
   DCHECK(view_delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
 
   auto title = std::make_unique<views::Label>();
   title->SetBackgroundColor(SK_ColorTRANSPARENT);

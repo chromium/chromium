@@ -166,6 +166,7 @@ LocationBarView::LocationBarView(Browser* browser,
       profile_(profile),
       delegate_(delegate),
       is_popup_mode_(is_popup_mode) {
+  set_suppress_default_focus_handling();
   if (!is_popup_mode_) {
     views::FocusRing::Install(this);
     views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {

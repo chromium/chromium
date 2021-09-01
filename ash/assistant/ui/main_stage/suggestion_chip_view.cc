@@ -82,6 +82,7 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
   // Note that we don't install the default focus ring as we use custom
   // highlighting instead.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   SetInstallFocusRingOnFocus(false);
 
   // Layout.

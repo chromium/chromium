@@ -15,7 +15,7 @@ namespace {
 
 class OverlayNativeViewHost final : public views::NativeViewHost {
  public:
-  OverlayNativeViewHost() = default;
+  OverlayNativeViewHost() { set_suppress_default_focus_handling(); }
   OverlayNativeViewHost(const OverlayNativeViewHost&) = delete;
   OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
   ~OverlayNativeViewHost() override = default;

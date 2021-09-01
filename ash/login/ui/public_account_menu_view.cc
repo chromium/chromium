@@ -39,6 +39,7 @@ class MenuItemView : public views::Button {
         item_(item),
         on_highlight_(on_highlight) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
+    set_suppress_default_focus_handling();
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     SetPreferredSize(gfx::Size(kMenuItemWidthDp, kMenuItemHeightDp));
@@ -131,6 +132,7 @@ PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
                                              const OnSelect& on_select)
     : LoginBaseBubbleView(anchor_view), opener_(opener), on_select_(on_select) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
 
   scroller_ = new views::ScrollView();
   scroller_->SetBackgroundColor(absl::nullopt);

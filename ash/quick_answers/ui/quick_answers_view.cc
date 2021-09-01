@@ -153,6 +153,7 @@ class MainView : public views::Button {
 
   MainView(PressedCallback callback) : Button(std::move(callback)) {
     SetInstallFocusRingOnFocus(false);
+    set_suppress_default_focus_handling();
 
     // This is because waiting for mouse-release to fire buttons would be too
     // late, since mouse-press dismisses the menu.
@@ -270,6 +271,7 @@ QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
 
   // Focus.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
 
   // Allow tooltips to be shown despite menu-controller owning capture.
   GetWidget()->SetNativeWindowProperty(
