@@ -58,7 +58,7 @@ import './os_apps_page/app_management_page/icons.m.js';
 import './os_apps_page/app_management_page/main_view.m.js';
 import './os_apps_page/app_management_page/permission_item.m.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.m.js';
-import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js';
+import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.m.js';
 import './os_apps_page/app_management_page/pwa_detail_view.m.js';
 import './os_apps_page/app_management_page/shared_style.m.js';
@@ -133,7 +133,7 @@ export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.m.js';
 export {ArcPermissionType, Bool, BorealisPermissionType, PageType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState, WindowMode} from './os_apps_page/app_management_page/constants.m.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.m.js';
-export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js';
+export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.m.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.m.js';
 export {convertOptionalBoolToBool, createEmptyState, createInitialState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.m.js';
