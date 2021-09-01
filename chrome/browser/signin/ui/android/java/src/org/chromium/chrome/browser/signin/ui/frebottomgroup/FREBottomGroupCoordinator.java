@@ -52,4 +52,9 @@ public class FREBottomGroupCoordinator {
     public void destroy() {
         mMediator.destroy();
     }
+
+    @MainThread
+    public void onAccountSelected(String accountName) {
+        mMediator.onAccountSelected(accountName, false);
+    }
 }

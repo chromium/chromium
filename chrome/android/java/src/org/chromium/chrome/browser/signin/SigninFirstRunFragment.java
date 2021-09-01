@@ -4,17 +4,24 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
+import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -23,6 +30,9 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  */
 public class SigninFirstRunFragment
         extends Fragment implements FirstRunFragment, FREBottomGroupCoordinator.Listener {
+    @VisibleForTesting
+    static final int ADD_ACCOUNT_REQUEST_CODE = 1;
+
     private ModalDialogManager mModalDialogManager;
     private FREBottomGroupCoordinator mFREBottomGroupCoordinator;
 
@@ -57,10 +67,32 @@ public class SigninFirstRunFragment
 
     /**
      * Implements {@link FREBottomGroupCoordinator.Listener}.
-     * TODO(crbug/1227319): Implement account addition.
      */
     @Override
-    public void addAccount() {}
+    public void addAccount() {
+        AccountManagerFacadeProvider.getInstance().createAddAccountIntent(
+                (@Nullable Intent intent) -> {
+                    if (intent != null) {
+                        startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
+                        return;
+                    }
+
+                    // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
+                    // instead.
+                    SigninUtils.openSettingsForAllAccounts(getActivity());
+                });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
+                && data != null) {
+            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (addedAccountName != null) {
+                mFREBottomGroupCoordinator.onAccountSelected(addedAccountName);
+            }
+        }
+    }
 
     /**
      * Implements {@link FREBottomGroupCoordinator.Listener}.
