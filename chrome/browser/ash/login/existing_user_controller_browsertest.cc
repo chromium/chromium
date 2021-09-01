@@ -254,6 +254,11 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     ASSERT_EQ(existing_user_controller(), existing_user_controller_.get());
 
     existing_user_controller_->Init(user_manager::UserList());
+
+    // Prevent browser start in user session so that we do not need to wait
+    // for its initialization.
+    ash::test::UserSessionManagerTestApi(ash::UserSessionManager::GetInstance())
+        .SetShouldLaunchBrowserInTests(false);
   }
 
   void TearDownOnMainThread() override {
