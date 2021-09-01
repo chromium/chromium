@@ -133,6 +133,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
           LanConnectivityCallback);
 
+  // Returns the last created routine by any Run*Routine method.
+  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
+
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
   absl::optional<FakeCrosHealthdService::RoutineUpdateParams>

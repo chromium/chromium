@@ -199,6 +199,11 @@ void FakeCrosHealthdClient::RunLanConnectivityRoutineForTesting(
   fake_service_.RunLanConnectivityRoutineForTesting(std::move(callback));
 }
 
+absl::optional<mojom::DiagnosticRoutineEnum>
+FakeCrosHealthdClient::GetLastRunRoutine() const {
+  return fake_service_.GetLastRunRoutine();
+}
+
 absl::optional<FakeCrosHealthdService::RoutineUpdateParams>
 FakeCrosHealthdClient::GetRoutineUpdateParams() {
   return fake_service_.GetRoutineUpdateParams();
