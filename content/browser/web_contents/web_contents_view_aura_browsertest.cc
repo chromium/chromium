@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <tuple>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -49,6 +50,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -944,6 +946,71 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     else
       EXPECT_GT(10, ExecuteScriptAndExtractInt("touchmoveCount"));
   }
+}
+
+// Tests that running the drop callback will perform drop.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsViewAura* view =
+      static_cast<WebContentsViewAura*>(contents->GetView());
+
+  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+
+  std::unique_ptr<ui::OSExchangeData> data =
+      std::make_unique<ui::OSExchangeData>();
+  view->RegisterDropCallbackForTesting(base::BindOnce(
+      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(*data.get(), point, point,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
+  auto drop_cb = view->GetDropCallback(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
+  EXPECT_EQ(drop_target_widget_,
+            RenderWidgetHostImpl::From(contents->GetFrameTree()
+                                           ->root()
+                                           ->current_frame_host()
+                                           ->GetRenderWidgetHost()));
+}
+
+// Tests that resetting the drop callback won't complete the drop and will exit
+// the drag insead.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsViewAura* view =
+      static_cast<WebContentsViewAura*>(contents->GetView());
+
+  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+
+  std::unique_ptr<ui::OSExchangeData> data =
+      std::make_unique<ui::OSExchangeData>();
+  view->RegisterDropCallbackForTesting(base::BindOnce(
+      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
+
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(*data.get(), point, point,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
+  auto drop_cb = view->GetDropCallback(event);
+  drop_cb.Reset();
+
+  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 
 }  // namespace content

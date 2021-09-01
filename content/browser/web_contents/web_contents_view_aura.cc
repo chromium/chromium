@@ -1530,9 +1530,12 @@ DragOperation WebContentsViewAura::OnPerformDrop(
 
 aura::client::DragDropDelegate::DropCallback
 WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
-  // TODO(crbug.com/1197522): Return drop callback.
-  NOTIMPLEMENTED();
-  return base::NullCallback();
+  if (web_contents_->ShouldIgnoreInputEvents())
+    return base::DoNothing();
+  base::ScopedClosureRunner drag_exit(base::BindOnce(
+      &WebContentsViewAura::CompleteDragExit, weak_ptr_factory_.GetWeakPtr()));
+  return base::BindOnce(&WebContentsViewAura::PerformDropOrExitDrag,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(drag_exit));
 }
 
 void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,
@@ -1552,6 +1555,22 @@ void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,
         .Run(target_rwh, drop_data, client_pt, screen_pt, key_modifiers,
              /*drop_allowed=*/true);
   }
+}
+
+void WebContentsViewAura::PerformDropOrExitDrag(
+    base::ScopedClosureRunner exit_drag,
+    const ui::DropTargetEvent& event,
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op) {
+  web_contents_->GetInputEventRouter()
+      ->GetRenderWidgetHostAtPointAsynchronously(
+          web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
+          event.location_f(),
+          base::BindOnce(&WebContentsViewAura::PerformDropCallback,
+                         weak_ptr_factory_.GetWeakPtr(), event,
+                         std::move(data)));
+  output_drag_op = current_drag_op_;
+  exit_drag.ReplaceClosure(base::DoNothing());
 }
 
 void WebContentsViewAura::RegisterDropCallbackForTesting(

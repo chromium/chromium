@@ -105,6 +105,8 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
 
   class WindowObserver;
 
@@ -253,6 +255,13 @@ class CONTENT_EXPORT WebContentsViewAura
                     const gfx::PointF& client_pt,
                     const gfx::PointF& screen_pt,
                     int key_modifiers);
+
+  // Performs drop if it's run. Otherwise, it exits the drag. Returned by
+  // GetDropCallback.
+  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
+                             const ui::DropTargetEvent& event,
+                             std::unique_ptr<ui::OSExchangeData> data,
+                             ui::mojom::DragOperation& output_drag_op);
 
   // For unit testing, registers a callback for when a drop operation
   // completes.
