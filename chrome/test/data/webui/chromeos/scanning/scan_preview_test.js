@@ -10,7 +10,7 @@ import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks, isVisible, waitAfterNextRender} from '../../test_util.m.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
@@ -275,12 +275,13 @@ export function scanPreviewTest() {
     });
   });
 
-  // Tests that the scan preview viewport is force scrolled to the bottom for
-  // new images during multi-page scans.
-  test('scrollToBottomForMultiPageScans', () => {
+  // Tests that the scan preview viewport is force scrolled to the expected page
+  // for new and rescanned images during multi-page scans.
+  test('scrollToExpectedPageForMultiPageScans', () => {
+    let imageHeight;
     const previewDiv = scanPreview.$$('#previewDiv');
+
     scanPreview.multiPageScanChecked = true;
-    scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
         .then(() => {
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
@@ -288,25 +289,50 @@ export function scanPreviewTest() {
           return flushTasks();
         })
         .then(() => {
-          scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
+          scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
           return flushTasks();
         })
         .then(() => {
-          // With two scanned images the viewport should be scrolled to the
-          // bottom.
-          assertEquals(
-              previewDiv.scrollHeight - previewDiv.offsetHeight,
-              previewDiv.scrollTop);
+          scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+          return flushTasks();
+        })
+        .then(() => {
+          imageHeight = scanPreview.$$('#scannedImages')
+                            .getElementsByClassName('scanned-image')[0]
+                            .height;
 
+          // With two scanned images the viewport should be scrolled so the
+          // second image is at the top.
+          assertEquals(imageHeight, previewDiv.scrollTop);
+        })
+        .then(() => {
+          scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
+          return flushTasks();
+        })
+        .then(() => {
           // Scroll to the top again before adding a third page.
           previewDiv.scrollTop = 0;
           scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
           return flushTasks();
         })
         .then(() => {
-          assertEquals(
-              previewDiv.scrollHeight - previewDiv.offsetHeight,
-              previewDiv.scrollTop);
+          // Verify it scrolls down to the third page.
+          assertEquals(imageHeight * 2, previewDiv.scrollTop);
+
+          scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
+          return flushTasks();
+        })
+        .then(() => {
+          // Simulate rescanning and replacing the second page.
+          scanPreview.splice('objectUrls', 1, 1, 'svg/no_scanners.svg');
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+          return flushTasks();
+        })
+        .then(() => {
+          // Verify it scrolls back to the second page.
+          assertEquals(imageHeight, previewDiv.scrollTop);
         });
   });
 

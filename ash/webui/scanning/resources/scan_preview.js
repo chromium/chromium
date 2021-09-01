@@ -348,29 +348,30 @@ Polymer({
   },
 
   /**
-   * Once the scanned images load, set the action toolbar position.
+   * Runs when a new scanned image is loaded.
+   * @param {!Event} e
    * @private
    */
-  onScannedImagesLoaded_() {
+  onScannedImageLoaded_(e) {
     if (!this.multiPageScanChecked) {
       return;
     }
-
-    this.forceScrollToBottom_();
-
-    // If the position was already set after the first scanned image loaded,
-    // there's no need to position it again.
-    if (this.scannedImagesLoaded_) {
-      return;
-    }
-
-    this.scannedImagesLoaded_ = true;
-    this.setActionToolbarPosition_();
 
     const scannedImages =
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
     this.setFocusedScannedImage_(
         scannedImages, this.getCurrentPageInView_(scannedImages));
+
+    // The below actions only needed for the first scanned image load.
+    if (this.scannedImagesLoaded_) {
+      return;
+    }
+
+    this.scannedImagesLoaded_ = true;
+
+    // |e.model| is populated by the dom-repeat element.
+    this.scrollToPage_(e.model.index);
+    this.setActionToolbarPosition_();
   },
 
   /**
@@ -477,14 +478,26 @@ Polymer({
   },
 
   /**
-   * Scrolls down to the last scanned image in the viewport.
+   * Scrolls down until the page at |pageIndex| is at the top of the viewport.
+   * @param {number} pageIndex
    * @private
    */
-  forceScrollToBottom_() {
+  scrollToPage_(pageIndex) {
     assert(this.multiPageScanChecked);
 
-    const previewDiv = this.$$('#previewDiv');
-    previewDiv.scrollTop = previewDiv.scrollHeight;
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    if (scannedImages.length === 0) {
+      return;
+    }
+
+    assert(pageIndex >= 0 && pageIndex < scannedImages.length);
+    const imageHeight = scannedImages[0].height;
+
+    // Use |pageIndex| to calculate the number of pages needed to scroll by to
+    // get to our desired page. Ex: If we want to scroll to the page with
+    // |pageIndex| = 3, we should scroll past 3 pages.
+    this.$$('#previewDiv').scrollTop = imageHeight * pageIndex;
   },
 
   /** @private */
