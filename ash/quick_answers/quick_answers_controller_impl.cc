@@ -57,6 +57,18 @@ bool IsProcessedRequest(const QuickAnswersRequest& request) {
           chromeos::quick_answers::IntentType::kUnknown);
 }
 
+bool ShouldShowQuickAnswers() {
+  if (!ash::QuickAnswersState::Get()->is_eligible())
+    return false;
+
+  bool should_show_consent =
+      ash::QuickAnswersState::Get()->consent_status() ==
+      chromeos::quick_answers::prefs::ConsentStatus::kUnknown;
+  bool settings_enabled = ash::QuickAnswersState::Get()->settings_enabled();
+
+  return should_show_consent || settings_enabled;
+}
+
 }  // namespace
 
 namespace ash {
@@ -79,9 +91,8 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
     const gfx::Rect& anchor_bounds,
     const std::string& title,
     const Context& context) {
-  if (!QuickAnswersState::Get()->is_eligible()) {
+  if (!ShouldShowQuickAnswers())
     return;
-  }
 
   if (visibility_ == QuickAnswersVisibility::kClosed)
     return;
