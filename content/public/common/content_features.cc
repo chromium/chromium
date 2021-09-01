@@ -556,7 +556,7 @@ const base::Feature kPepperCrossOriginRedirectRestriction{
 // All ProcessHost objects live on UI thread.
 // https://crbug.com/904556
 const base::Feature kProcessHostOnUI{"ProcessHostOnUI",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable in-browser script loading for a brand new service worker.
 const base::Feature kPlzServiceWorker{"PlzServiceWorker",
