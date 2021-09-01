@@ -21,12 +21,10 @@
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
-#include "chrome/browser/web_applications/test/test_app_registry_controller.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -254,43 +252,27 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    auto* provider = TestWebAppProvider::Get(profile());
-
-    auto test_app_registrar =
-        std::make_unique<WebAppRegistrarMutable>(profile());
-    test_app_registrar_ = test_app_registrar.get();
-    provider->SetRegistrar(std::move(test_app_registrar));
-
+    test_registry_controller_ =
+        std::make_unique<TestWebAppRegistryController>();
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
-
-    auto test_externally_managed_app_manager =
-        std::make_unique<TestExternallyManagedAppManager>(profile());
     test_externally_managed_app_manager_ =
-        test_externally_managed_app_manager.get();
-    provider->SetExternallyManagedAppManager(
-        std::move(test_externally_managed_app_manager));
+        std::make_unique<TestExternallyManagedAppManager>(profile());
+    test_system_app_manager_ =
+        std::make_unique<web_app::TestSystemWebAppManager>(profile());
+    web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
-    auto test_registry_controller =
-        std::make_unique<TestAppRegistryController>(profile());
-    provider->SetSyncBridge(std::move(test_registry_controller));
+    controller().SetUp(profile());
 
-    auto test_os_integration_manager =
-        std::make_unique<TestOsIntegrationManager>(profile(), nullptr, nullptr,
-                                                   nullptr, nullptr);
-    provider->SetOsIntegrationManager(std::move(test_os_integration_manager));
-
-    auto web_app_policy_manager =
-        std::make_unique<WebAppPolicyManager>(profile());
-    web_app_policy_manager_ = web_app_policy_manager.get();
-    provider->SetWebAppPolicyManager(std::move(web_app_policy_manager));
-
-    externally_managed_app_manager()->SetHandleInstallRequestCallback(
+    externally_managed_app_manager().SetSubsystems(
+        &app_registrar(), &controller().os_integration_manager(), nullptr,
+        nullptr, nullptr);
+    externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options)
                 -> ExternallyManagedAppManager::InstallResult {
               const GURL& install_url = install_options.install_url;
-              if (!app_registrar()->GetAppById(GenerateAppId(
+              if (!app_registrar().GetAppById(GenerateAppId(
                       /*manifest_id=*/absl::nullopt, install_url))) {
                 const auto install_source = install_options.install_source;
                 std::unique_ptr<WebApp> web_app = CreateWebApp(
@@ -305,19 +287,34 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
               }
               return {.code = install_result_code_};
             }));
-    externally_managed_app_manager()->SetHandleUninstallRequestCallback(
+    externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const GURL& app_url,
                    ExternalInstallSource install_source) -> bool {
               absl::optional<AppId> app_id =
-                  app_registrar()->LookupExternalAppId(app_url);
+                  app_registrar().LookupExternalAppId(app_url);
               if (app_id) {
                 UnregisterApp(*app_id);
               }
               return true;
             }));
 
-    provider->Start();
+    policy_manager().SetSubsystems(
+        &externally_managed_app_manager(), &app_registrar(),
+        &controller().sync_bridge(), &system_app_manager(),
+        &controller().os_integration_manager());
+
+    controller().Init();
+  }
+
+  void TearDown() override {
+    web_app_policy_manager_.reset();
+    test_system_app_manager_.reset();
+    test_externally_managed_app_manager_.reset();
+    externally_installed_app_prefs_.reset();
+    test_registry_controller_.reset();
+
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void SimulatePreviouslyInstalledApp(GURL url,
@@ -332,30 +329,37 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
   void AwaitPolicyManagerAppsSynchronized() {
     base::RunLoop loop;
-    policy_manager()->SetOnAppsSynchronizedCompletedCallbackForTesting(
+    policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
         loop.QuitClosure());
     loop.Run();
   }
 
   void AwaitPolicyManagerRefreshPolicySettings() {
     base::RunLoop loop;
-    policy_manager()->SetRefreshPolicySettingsCompletedCallbackForTesting(
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
         loop.QuitClosure());
     loop.Run();
   }
 
  protected:
-  TestExternallyManagedAppManager* externally_managed_app_manager() {
-    return test_externally_managed_app_manager_;
+  TestExternallyManagedAppManager& externally_managed_app_manager() {
+    return *test_externally_managed_app_manager_;
   }
 
-  WebAppRegistrar* app_registrar() { return test_app_registrar_; }
+  TestSystemWebAppManager& system_app_manager() {
+    return *test_system_app_manager_;
+  }
 
-  WebAppPolicyManager* policy_manager() { return web_app_policy_manager_; }
+  WebAppRegistrar& app_registrar() { return controller().registrar(); }
+  WebAppPolicyManager& policy_manager() { return *web_app_policy_manager_; }
   ScopedTestingLocalState testing_local_state_;
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;
+  }
+
+  TestWebAppRegistryController& controller() {
+    return *test_registry_controller_;
   }
 
   void SetWebAppSettingsDictPref(const base::StringPiece pref) {
@@ -369,26 +373,20 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ValidateEmptyWebAppSettingsPolicy() {
-    EXPECT_TRUE(policy_manager()->settings_by_url_.empty());
-    ASSERT_TRUE(policy_manager()->default_settings_);
+    EXPECT_TRUE(policy_manager().settings_by_url_.empty());
+    ASSERT_TRUE(policy_manager().default_settings_);
 
     WebAppPolicyManager::WebAppSetting expected_default;
-    EXPECT_EQ(policy_manager()->default_settings_->run_on_os_login_policy,
+    EXPECT_EQ(policy_manager().default_settings_->run_on_os_login_policy,
               expected_default.run_on_os_login_policy);
   }
 
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
-    web_app::AppId app_id = web_app->app_id();
-    DCHECK(!test_app_registrar_->GetAppById(app_id));
-    test_app_registrar_->registry().emplace(std::move(app_id),
-                                            std::move(web_app));
+    controller().RegisterApp(std::move(web_app));
   }
 
   void UnregisterApp(const AppId& app_id) {
-    auto it = test_app_registrar_->registry().find(app_id);
-    DCHECK(it != test_app_registrar_->registry().end());
-
-    test_app_registrar_->registry().erase(it);
+    controller().UnregisterApp(app_id);
   }
 
   void SetInstallResultCode(InstallResultCode result_code) {
@@ -399,21 +397,22 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   InstallResultCode install_result_code_ =
       InstallResultCode::kSuccessNewInstall;
 
-  WebAppRegistrarMutable* test_app_registrar_ = nullptr;
+  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  TestExternallyManagedAppManager* test_externally_managed_app_manager_ =
-      nullptr;
-  WebAppPolicyManager* web_app_policy_manager_ = nullptr;
+  std::unique_ptr<TestExternallyManagedAppManager>
+      test_externally_managed_app_manager_;
+  std::unique_ptr<TestSystemWebAppManager> test_system_app_manager_;
+  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
 };
 
 TEST_F(WebAppPolicyManagerTest, NoPrefValues) {
-  policy_manager()->Start();
+  policy_manager().Start();
 
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_TRUE(install_requests.empty());
   ValidateEmptyWebAppSettingsPolicy();
 }
@@ -422,11 +421,11 @@ TEST_F(WebAppPolicyManagerTest, NoForceInstalledApps) {
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
                              base::Value(base::Value::Type::LIST));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_TRUE(install_requests.empty());
 }
 
@@ -434,7 +433,7 @@ TEST_F(WebAppPolicyManagerTest, NoWebAppSettings) {
   profile()->GetPrefs()->Set(prefs::kWebAppSettings,
                              base::Value(base::Value::Type::DICTIONARY));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
   ValidateEmptyWebAppSettingsPolicy();
 }
@@ -447,7 +446,7 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsInvalidDefaultConfiguration) {
   })";
 
   SetWebAppSettingsDictPref(kWebAppSettingInvalidDefaultConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
   ValidateEmptyWebAppSettingsPolicy();
 }
@@ -464,16 +463,16 @@ TEST_F(WebAppPolicyManagerTest,
   })";
 
   SetWebAppSettingsDictPref(kWebAppSettingInvalidDefaultConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kAllowed);
 }
 
@@ -494,33 +493,33 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
   })";
 
   SetWebAppSettingsDictPref(kWebAppSettingNoDefaultConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kAllowed);
 }
 
 TEST_F(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kBlocked);
 }
 
@@ -531,11 +530,11 @@ TEST_F(WebAppPolicyManagerTest, TwoForceInstalledApps) {
   list.Append(GetTabbedItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -549,11 +548,11 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithNoDefaultLaunchContainer) {
   list.Append(GetNoContainerItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetNoContainerInstallOptions());
@@ -567,11 +566,11 @@ TEST_F(WebAppPolicyManagerTest,
   list.Append(GetCreateDesktopShortcutDefaultItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
@@ -586,11 +585,11 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   list.Append(GetCreateDesktopShortcutTrueItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
@@ -606,11 +605,11 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   list.Append(GetFallbackAppNameItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetFallbackAppNameInstallOptions());
@@ -624,11 +623,11 @@ TEST_F(WebAppPolicyManagerTest, DynamicRefresh) {
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
                              std::move(first_list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -663,24 +662,24 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
                              std::move(first_list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   // We should only try to install the app in the policy.
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
-  EXPECT_EQ(externally_managed_app_manager()->install_requests(),
+  EXPECT_EQ(externally_managed_app_manager().install_requests(),
             expected_install_options_list);
 
   // We should try to uninstall the app that is no longer in the policy.
   EXPECT_EQ(std::vector<GURL>({GURL(kTabbedUrl)}),
-            externally_managed_app_manager()->uninstall_requests());
+            externally_managed_app_manager().uninstall_requests());
 }
 
 // Tests that we correctly uninstall an app that we installed in the same
 // session.
 TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   // Add two sites, one that opens in a window and one that opens in a tab.
@@ -692,7 +691,7 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -714,7 +713,7 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   EXPECT_EQ(install_requests, expected_install_options_list);
 
   EXPECT_EQ(std::vector<GURL>({GURL(kTabbedUrl)}),
-            externally_managed_app_manager()->uninstall_requests());
+            externally_managed_app_manager().uninstall_requests());
 }
 
 // Tests that we correctly reinstall a placeholder app.
@@ -723,17 +722,17 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
   list.Append(GetWindowedItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
 
   const auto& install_options_list =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 
   auto reinstall_options = GetWindowedInstallOptions();
@@ -752,17 +751,17 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   list.Append(GetFallbackAppNameItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetFallbackAppNameInstallOptions());
 
   const auto& install_options_list =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 
   auto reinstall_options = GetFallbackAppNameInstallOptions();
@@ -779,25 +778,25 @@ TEST_F(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
   list.Append(GetWindowedItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
 
   const auto& install_options_list =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
   // Try to reinstall for app not installed by policy.
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kTabbedUrl));
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kTabbedUrl));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(expected_options_list, install_options_list);
 }
 
 TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
   // Add an app.
   {
@@ -819,16 +818,14 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   expected_options_list.push_back(GetTabbedInstallOptions());
 
   const auto& install_options_list =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
   EXPECT_EQ(std::vector<GURL>({GURL(kWindowedUrl)}),
-            externally_managed_app_manager()->uninstall_requests());
+            externally_managed_app_manager().uninstall_requests());
 
   // There should be exactly 1 app remaining.
-  std::map<AppId, GURL> apps =
-      WebAppProvider::GetForTest(profile())
-          ->registrar()
-          .GetExternallyInstalledApps(ExternalInstallSource::kExternalPolicy);
+  std::map<AppId, GURL> apps = app_registrar().GetExternallyInstalledApps(
+      ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
   for (auto& it : apps)
     EXPECT_EQ(it.second, GURL(kTabbedUrl));
@@ -836,7 +833,7 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
 
 TEST_F(WebAppPolicyManagerTest, InstallResultHistogram) {
   base::HistogramTester histograms;
-  policy_manager()->Start();
+  policy_manager().Start();
   {
     base::Value list(base::Value::Type::LIST);
     list.Append(GetWindowedItem());
@@ -873,10 +870,10 @@ TEST_F(WebAppPolicyManagerTest, InstallResultHistogram) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebAppPolicyManagerTest, DisableWebApps) {
-  policy_manager()->Start();
+  policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
-  auto disabled_apps = policy_manager()->GetDisabledSystemWebApps();
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.empty());
 
   // Add camera to system features disable list policy.
@@ -891,17 +888,17 @@ TEST_F(WebAppPolicyManagerTest, DisableWebApps) {
   std::set<SystemAppType> expected_disabled_apps;
   expected_disabled_apps.insert(SystemAppType::CAMERA);
 
-  disabled_apps = policy_manager()->GetDisabledSystemWebApps();
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);
 
   // Default disable mode is blocked.
-  EXPECT_FALSE(policy_manager()->IsDisabledAppsModeHidden());
+  EXPECT_FALSE(policy_manager().IsDisabledAppsModeHidden());
   // Set disable mode to hidden.
   testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableMode,
       std::make_unique<base::Value>(policy::kHiddenDisableMode));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(policy_manager()->IsDisabledAppsModeHidden());
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -913,30 +910,30 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   })";
 
   MockWebAppPolicyManagerObserver mock_observer;
-  policy_manager()->AddObserver(&mock_observer);
+  policy_manager().AddObserver(&mock_observer);
   SetWebAppSettingsDictPref(kWebAppSettingInitialConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
 
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(2, mock_observer.GetOnPolicyChangedCalledCount());
-  policy_manager()->RemoveObserver(&mock_observer);
+  policy_manager().RemoveObserver(&mock_observer);
 }
 
 TEST_F(WebAppPolicyManagerTest,
@@ -947,11 +944,11 @@ TEST_F(WebAppPolicyManagerTest,
   list.Append(GetTabbedItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerAppsSynchronized();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -959,46 +956,46 @@ TEST_F(WebAppPolicyManagerTest,
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
 
   // Now apply WebSettings policy
   MockWebAppPolicyManagerObserver mock_observer;
-  policy_manager()->AddObserver(&mock_observer);
+  policy_manager().AddObserver(&mock_observer);
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kBlocked);
-  policy_manager()->RemoveObserver(&mock_observer);
+  policy_manager().RemoveObserver(&mock_observer);
 }
 
 TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   // Apply WebAppSettings Policy
   MockWebAppPolicyManagerObserver mock_observer;
-  policy_manager()->AddObserver(&mock_observer);
+  policy_manager().AddObserver(&mock_observer);
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
-  policy_manager()->Start();
+  policy_manager().Start();
   AwaitPolicyManagerAppsSynchronized();
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
-      policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
+      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
       RunOnOsLoginPolicy::kBlocked);
 
   // Now add two sites, one that opens in a window and one that opens in a tab.
@@ -1010,7 +1007,7 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   AwaitPolicyManagerAppsSynchronized();
 
   const auto& install_requests =
-      externally_managed_app_manager()->install_requests();
+      externally_managed_app_manager().install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -1020,7 +1017,7 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
 
   EXPECT_EQ(install_requests, expected_install_options_list);
   EXPECT_EQ(2, mock_observer.GetOnPolicyChangedCalledCount());
-  policy_manager()->RemoveObserver(&mock_observer);
+  policy_manager().RemoveObserver(&mock_observer);
 }
 
 }  // namespace web_app
