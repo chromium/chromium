@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/test/bind.h"
 #include "content/browser/conversions/storable_conversion.h"
@@ -373,8 +374,8 @@ bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
   return tie(a) == tie(b);
 }
 
-std::ostream& operator<<(std::ostream& out, CreateReportStatus result) {
-  switch (result) {
+std::ostream& operator<<(std::ostream& out, CreateReportStatus status) {
+  switch (status) {
     case CreateReportStatus::kSuccess:
       out << "kSuccess";
       break;
@@ -419,6 +420,92 @@ std::ostream& operator<<(std::ostream& out, AttributionAllowedStatus status) {
       break;
   }
   return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         StorableImpression::SourceType source_type) {
+  switch (source_type) {
+    case StorableImpression::SourceType::kNavigation:
+      out << "kNavigation";
+      break;
+    case StorableImpression::SourceType::kEvent:
+      out << "kEvent";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const StorableConversion& conversion) {
+  return out << "{conversion_data=" << conversion.conversion_data()
+             << ",conversion_destination="
+             << conversion.conversion_destination().Serialize()
+             << ",reporting_origin=" << conversion.reporting_origin()
+             << ",event_source_trigger_data="
+             << conversion.event_source_trigger_data()
+             << ",priority=" << conversion.priority() << ",dedup_key="
+             << (conversion.dedup_key()
+                     ? base::NumberToString(*conversion.dedup_key())
+                     : "null")
+             << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const StorableImpression& impression) {
+  out << "{impression_data=" << impression.impression_data()
+      << ",impression_origin=" << impression.impression_origin()
+      << ",conversion_origin=" << impression.conversion_origin()
+      << ",reporting_origin=" << impression.reporting_origin()
+      << ",impression_time=" << impression.impression_time()
+      << ",expiry_time=" << impression.expiry_time()
+      << ",source_type=" << impression.source_type()
+      << ",priority=" << impression.priority() << ",impression_id="
+      << (impression.impression_id()
+              ? base::NumberToString(**impression.impression_id())
+              : "null")
+      << ",dedup_keys=[";
+
+  const char* separator = "";
+  for (int64_t dedup_key : impression.dedup_keys()) {
+    out << separator << dedup_key;
+    separator = ", ";
+  }
+
+  return out << "]}";
+}
+
+std::ostream& operator<<(std::ostream& out, const ConversionReport& report) {
+  return out << "{impression=" << report.impression
+             << ",conversion_data=" << report.conversion_data
+             << ",conversion_time=" << report.conversion_time
+             << ",report_time=" << report.report_time
+             << ",priority=" << report.priority
+             << ",original_report_time=" << report.original_report_time
+             << ",conversion_id="
+             << (report.conversion_id
+                     ? base::NumberToString(**report.conversion_id)
+                     : "null")
+             << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
+  switch (status) {
+    case SentReportInfo::Status::kSent:
+      out << "kSent";
+      break;
+    case SentReportInfo::Status::kShouldRetry:
+      out << "kShouldRetry";
+      break;
+    case SentReportInfo::Status::kDropped:
+      out << "kDropped";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const SentReportInfo& info) {
+  return out << "{report=" << info.report << ",status=" << info.status
+             << ",http_response_code=" << info.http_response_code << "}";
 }
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(

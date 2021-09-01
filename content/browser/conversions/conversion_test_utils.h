@@ -330,10 +330,25 @@ bool operator==(const ConversionReport& a, const ConversionReport& b);
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::ostream& operator<<(std::ostream& out,
-                         ConversionStorage::CreateReportStatus result);
+                         ConversionStorage::CreateReportStatus status);
 
 std::ostream& operator<<(std::ostream& out,
-                         RateLimitTable::AttributionAllowedStatus result);
+                         RateLimitTable::AttributionAllowedStatus status);
+
+std::ostream& operator<<(std::ostream& out,
+                         StorableImpression::SourceType source_type);
+
+std::ostream& operator<<(std::ostream& out,
+                         const StorableConversion& conversion);
+
+std::ostream& operator<<(std::ostream& out,
+                         const StorableImpression& impression);
+
+std::ostream& operator<<(std::ostream& out, const ConversionReport& report);
+
+std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status);
+
+std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
