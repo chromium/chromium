@@ -213,7 +213,7 @@ void ShelfSpinnerController::CloseSpinner(const std::string& app_id) {
   if (!RemoveSpinnerFromControllerMap(app_id))
     return;
 
-  owner_->CloseItem(ash::ShelfID(app_id));
+  owner_->ReplaceWithAppShortcutOrRemove(ash::ShelfID(app_id));
   UpdateShelfItemIcon(app_id);
 }
 

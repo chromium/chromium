@@ -42,7 +42,7 @@ class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
                       int32_t event_flags,
                       int64_t display_id) override {}
   void Close() override {
-    ChromeShelfController::instance()->CloseItem(
+    ChromeShelfController::instance()->ReplaceWithAppShortcutOrRemove(
         ash::ShelfID(kPluginVmShelfAppId));
   }
 };

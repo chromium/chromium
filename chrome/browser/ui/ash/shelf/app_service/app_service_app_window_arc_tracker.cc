@@ -99,7 +99,8 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
     // Some controllers might have no windows attached, for example background
     // task when foreground tasks is in full screen.
     for (const auto& it : app_shelf_group_to_controller_map_)
-      app_service_controller_->owner()->CloseItem(it.second->shelf_id());
+      app_service_controller_->owner()->ReplaceWithAppShortcutOrRemove(
+          it.second->shelf_id());
     app_shelf_group_to_controller_map_.clear();
   }
 }
@@ -297,7 +298,7 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
     it_controller->second->RemoveTaskId(task_id);
     if (!it_controller->second->HasAnyTasks() &&
         !it_controller->second->HasAnySessions()) {
-      app_service_controller_->owner()->CloseItem(
+      app_service_controller_->owner()->ReplaceWithAppShortcutOrRemove(
           it_controller->second->shelf_id());
       app_shelf_group_to_controller_map_.erase(app_shelf_id);
     }
@@ -683,7 +684,7 @@ void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
     it_controller->second->RemoveSessionId(session_id);
     if (!it_controller->second->HasAnyTasks() &&
         !it_controller->second->HasAnySessions()) {
-      app_service_controller_->owner()->CloseItem(
+      app_service_controller_->owner()->ReplaceWithAppShortcutOrRemove(
           it_controller->second->shelf_id());
       app_shelf_group_to_controller_map_.erase(app_shelf_id);
     }

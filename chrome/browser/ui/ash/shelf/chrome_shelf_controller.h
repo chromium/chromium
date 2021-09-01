@@ -111,8 +111,10 @@ class ChromeShelfController
   // Updates the shelf item title (displayed in the tooltip).
   void SetItemTitle(const ash::ShelfID& id, const std::u16string& title);
 
-  // Closes or unpins the shelf item.
-  void CloseItem(const ash::ShelfID& id);
+  // If the shelf-item is pinned, its state is set to CLOSED and its delegate is
+  // replaced with an AppShortcutShelfItemController.
+  // If the shelf-item is unpinned, then it's removed from the shelf.
+  void ReplaceWithAppShortcutOrRemove(const ash::ShelfID& id);
 
   // Returns true if the item identified by |id| is pinned.
   bool IsPinned(const ash::ShelfID& id);

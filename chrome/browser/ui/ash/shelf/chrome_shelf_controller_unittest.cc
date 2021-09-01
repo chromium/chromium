@@ -2163,7 +2163,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Closing the app should leave a pinned but closed shelf item shortcut.
-  shelf_controller_->CloseItem(shelf_id);
+  shelf_controller_->ReplaceWithAppShortcutOrRemove(shelf_id);
   item = shelf_controller_->GetItem(shelf_id);
   ASSERT_NE(nullptr, item);
   EXPECT_EQ(ash::STATUS_CLOSED, item->status);
@@ -4078,19 +4078,19 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseItem(shelf_id1);
+  shelf_controller_->ReplaceWithAppShortcutOrRemove(shelf_id1);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseItem(shelf_id2);
+  shelf_controller_->ReplaceWithAppShortcutOrRemove(shelf_id2);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(1, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseItem(shelf_id3);
+  shelf_controller_->ReplaceWithAppShortcutOrRemove(shelf_id3);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());

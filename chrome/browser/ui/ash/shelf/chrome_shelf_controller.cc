@@ -345,13 +345,14 @@ void ChromeShelfController::SetItemTitle(const ash::ShelfID& id,
   }
 }
 
-void ChromeShelfController::CloseItem(const ash::ShelfID& id) {
+void ChromeShelfController::ReplaceWithAppShortcutOrRemove(
+    const ash::ShelfID& id) {
   CHECK(!id.IsNull());
   if (IsPinned(id)) {
     // Create a new shortcut delegate.
     SetItemStatus(id, ash::STATUS_CLOSED);
     model_->ReplaceShelfItemDelegate(
-        id, AppShortcutShelfItemController::Create(id));
+        id, std::make_unique<AppShortcutShelfItemController>(id));
   } else {
     RemoveShelfItem(id);
   }

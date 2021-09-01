@@ -614,7 +614,7 @@ void AppServiceAppWindowShelfController::RemoveAppWindowFromShelf(
           app_window->shelf_id());
 
   if (item_controller && item_controller->window_count() == 0)
-    owner()->CloseItem(item_controller->shelf_id());
+    owner()->ReplaceWithAppShortcutOrRemove(item_controller->shelf_id());
 }
 
 void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
