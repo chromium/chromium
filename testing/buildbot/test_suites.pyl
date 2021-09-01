@@ -342,10 +342,6 @@
       'trichrome_chrome_bundle_smoke_test': {},
     },
 
-    'android_webapk_launch_tests': {
-      'chrome_java_test_webapk_launch_tests': {},
-    },
-
     'android_webview_gpu_telemetry_tests': {
       'pixel_skia': {
         'name': 'android_webview_pixel_skia_gold_test',
@@ -526,6 +522,7 @@
           'skia_gold_test',
         ],
       },
+      'chrome_webapk_integration_tests': {},
     },
 
     'chrome_public_wpt': {
@@ -5911,7 +5908,6 @@
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'android_webapk_launch_tests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chrome_public_tests',
@@ -5937,7 +5933,6 @@
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
-      'android_webapk_launch_tests',
       'chromium_tracing_gtests',
       # No standard tests due to capacity, no Vega tests since it's currently
       # O only.
@@ -5951,7 +5946,6 @@
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
-      'android_webapk_launch_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -5971,7 +5965,6 @@
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
-      'android_webapk_launch_tests',
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
     #   'chromium_gtests_for_devices_with_graphical_output',

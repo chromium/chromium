@@ -123,8 +123,9 @@ instrumentation_test_apk("chrome_java_test_wpr_tests") {
   }
 }
 
-instrumentation_test_apk("chrome_java_test_webapk_launch_tests") {
-  apk_name = "ChromeWebapkLaunchTests"
+# WebAPK tests which require additional_apks should be in this test suite.
+instrumentation_test_apk("chrome_webapk_integration_tests") {
+  apk_name = "ChromeWebApkIntegrationTests"
   apk_under_test = "//chrome/android:chrome_public_apk"
   android_manifest = "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/AndroidManifest.xml"
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/MapsGoFirstRunTest.java" ]
@@ -134,6 +135,8 @@ instrumentation_test_apk("chrome_java_test_webapk_launch_tests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android/webapk/libs/client:client_java",
+    "//chrome/android/webapk/libs/runtime_library:runtime_library_javatests",
+    "//chrome/android/webapk/shell_apk:shell_apk_javatests",
     "//chrome/browser/first_run/android:java",
     "//components/webapk/android/libs/client:java",
     "//content/public/test/android:content_java_test_support",
@@ -142,8 +145,12 @@ instrumentation_test_apk("chrome_java_test_webapk_launch_tests") {
     "//third_party/junit",
   ]
 
-  additional_apks =
-      [ "//chrome/android/webapk/shell_apk:uiautomator_maps_go_webapk" ]
+  additional_apks = [
+    "//chrome/android/webapk/libs/runtime_library/javatests/apk_with_webapk_service:apk_with_webapk_service",
+    "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
+    "//chrome/android/webapk/shell_apk:javatests_webapk",
+    "//chrome/android/webapk/shell_apk:uiautomator_maps_go_webapk",
+  ]
 
   if (!is_java_debug) {
     proguard_enabled = true

@@ -441,10 +441,6 @@
     "label": "//chrome/test/android:chrome_java_test_pagecontroller_tests",
     "type": "console_test_launcher"
   },
-  "chrome_java_test_webapk_launch_tests": {
-    "label": "//chrome/test/android:chrome_java_test_webapk_launch_tests",
-    "type": "console_test_launcher",
-  },
   "chrome_java_test_wpr_tests": {
     "label": "//chrome/test/android:chrome_java_test_wpr_tests",
     "type": "console_test_launcher",
@@ -505,6 +501,10 @@
   "chrome_sizes": {
     "label": "//chrome/test:chrome_sizes",
     "type": "generated_script",
+  },
+  "chrome_webapk_integration_tests": {
+    "label": "//chrome/test/android:chrome_webapk_integration_tests",
+    "type": "console_test_launcher",
   },
   "chromedriver": {
     "label": "//chrome/test/chromedriver:chromedriver",

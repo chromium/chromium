@@ -2984,8 +2984,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     ":chrome_test_java",
     "//chrome/android/features/autofill_assistant:test_java",
     "//chrome/android/features/keyboard_accessory:test_java",
-    "//chrome/android/webapk/libs/runtime_library:runtime_library_javatests",
-    "//chrome/android/webapk/shell_apk:shell_apk_javatests",
     "//chrome/browser/banners/android:javatests",
     "//chrome/browser/download/android:download_java_tests",
     "//chrome/browser/engagement/android:javatests",
@@ -3011,9 +3009,7 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
   enforce_resource_overlays_in_tests = true
 
   additional_apks = [
-    "//chrome/android/webapk/libs/runtime_library/javatests/apk_with_webapk_service:apk_with_webapk_service",
     "//chrome/android/webapk/shell_apk:javatests_webapk",
-    "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
     "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
     "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
   ]
