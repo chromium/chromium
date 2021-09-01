@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/web_bundle_url_loader_factory.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -21,8 +21,8 @@
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/web_bundle_chunked_buffer.h"
-#include "services/network/web_bundle_memory_quota_consumer.h"
+#include "services/network/web_bundle/web_bundle_chunked_buffer.h"
+#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {

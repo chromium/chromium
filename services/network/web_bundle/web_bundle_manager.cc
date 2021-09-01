@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/web_bundle_manager.h"
+#include "services/network/web_bundle/web_bundle_manager.h"
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,8 +11,8 @@
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
-#include "services/network/web_bundle_memory_quota_consumer.h"
-#include "services/network/web_bundle_url_loader_factory.h"
+#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 namespace network {
 

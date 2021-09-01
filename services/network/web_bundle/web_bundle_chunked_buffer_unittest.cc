@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/web_bundle_chunked_buffer.h"
+#include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"

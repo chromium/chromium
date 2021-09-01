@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
-#define SERVICES_NETWORK_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#ifndef SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
 
 #include "base/component_export.h"
 
@@ -19,4 +19,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleMemoryQuotaConsumer {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#endif  // SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
