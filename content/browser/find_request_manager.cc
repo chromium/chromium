@@ -71,11 +71,6 @@ FrameTreeNode* GetDeepestLastChild(FrameTreeNode* node) {
     node = last_child;
   return node;
 }
-RenderFrameHost* GetDeepestLastChild(RenderFrameHost* rfh) {
-  FrameTreeNode* node =
-      static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
-  return GetDeepestLastChild(node)->current_frame_host();
-}
 
 // Returns the parent FrameTreeNode of |node|, if |node| has a parent, or
 // nullptr otherwise.
@@ -663,10 +658,10 @@ void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
 }
 
 RenderFrameHost* FindRequestManager::GetInitialFrame(bool forward) const {
-  RenderFrameHost* rfh = contents_->GetMainFrame();
-
+  FrameTreeNode* ftn = contents_->GetFrameTree()->root();
+  RenderFrameHost* rfh = ftn->current_frame_host();
   if (!forward)
-    rfh = GetDeepestLastChild(rfh);
+    rfh = GetDeepestLastChild(ftn)->current_frame_host();
 
   return rfh;
 }

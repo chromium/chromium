@@ -113,7 +113,6 @@ FrameTreeNode::FrameTreeNode(
     : frame_tree_(frame_tree),
       frame_tree_node_id_(next_frame_tree_node_id_++),
       parent_(parent),
-      depth_(parent ? parent->frame_tree_node()->depth_ + 1 : 0u),
       frame_owner_element_type_(owner_type),
       tree_scope_type_(tree_scope_type),
       replication_state_(blink::mojom::FrameReplicationState::New(

@@ -1404,6 +1404,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
       parent_(frame_tree_node_->parent()),
+      depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
       routing_id_(routing_id),
       beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
@@ -1521,7 +1522,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
     if (is_main_frame())
       GetLocalRenderWidgetHost()->SetIntersectsViewport(true);
-    GetLocalRenderWidgetHost()->SetFrameDepth(frame_tree_node_->depth());
+    GetLocalRenderWidgetHost()->SetFrameDepth(depth_);
   }
   // Verify is_local_root() now indicates whether this frame is a local root or
   // not. It is safe to use this method anywhere beyond this point.
@@ -2092,7 +2093,7 @@ const absl::optional<gfx::Size>& RenderFrameHostImpl::GetFrameSize() {
 }
 
 size_t RenderFrameHostImpl::GetFrameDepth() {
-  return frame_tree_node()->depth();
+  return depth_;
 }
 
 bool RenderFrameHostImpl::IsCrossProcessSubframe() {

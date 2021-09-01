@@ -483,7 +483,7 @@ blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesNone(
 
 // Check frame depth on node, widget, and process all match expected depth.
 void CheckFrameDepth(unsigned int expected_depth, FrameTreeNode* node) {
-  EXPECT_EQ(expected_depth, node->depth());
+  EXPECT_EQ(expected_depth, node->current_frame_host()->GetFrameDepth());
   RenderProcessHost::Priority priority =
       node->current_frame_host()->GetRenderWidgetHost()->GetPriority();
   EXPECT_EQ(expected_depth, priority.frame_depth);
@@ -11631,7 +11631,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
 
   FrameTreeNode* child0 = root->child_at(0);
   {
-    EXPECT_EQ(1u, child0->depth());
+    EXPECT_EQ(1u, child0->current_frame_host()->GetFrameDepth());
     RenderProcessHost::Priority priority =
         child0->current_frame_host()->GetRenderWidgetHost()->GetPriority();
     // Same site instance as root.
@@ -11652,7 +11652,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
 
   FrameTreeNode* grand_child = root->child_at(1)->child_at(0);
   {
-    EXPECT_EQ(2u, grand_child->depth());
+    EXPECT_EQ(2u, grand_child->current_frame_host()->GetFrameDepth());
     RenderProcessHost::Priority priority =
         grand_child->current_frame_host()->GetRenderWidgetHost()->GetPriority();
     EXPECT_EQ(2u, priority.frame_depth);

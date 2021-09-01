@@ -3187,6 +3187,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // FrameTreeNode has changed its current RenderFrameHost.
   RenderFrameHostImpl* const parent_;
 
+  // Number of times we need to iterate from a RenderFrameHost to its parent
+  // until we reach main RenderFrameHost (i.e. one which doesn't have a parent).
+  // Note that that means this value is scoped to a given FrameTree and the
+  // cases when a FrameTree embeds another FrameTree are not reflected here.
+  const unsigned int depth_ = 0u;
+
   // Tracks this frame's last committed navigation's URL. Note that this will be
   // empty before the first commit in this *RenderFrameHost*, even if the
   // FrameTreeNode has committed before with a different RenderFrameHost.

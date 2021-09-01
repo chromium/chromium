@@ -122,8 +122,6 @@ class CONTENT_EXPORT FrameTreeNode {
 
   size_t child_count() const { return current_frame_host()->child_count(); }
 
-  unsigned int depth() const { return depth_; }
-
   RenderFrameHostImpl* parent() const { return parent_; }
 
   FrameTreeNode* opener() const { return opener_; }
@@ -551,9 +549,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // The RenderFrameHost owning this FrameTreeNode, which cannot change for the
   // life of this FrameTreeNode. |nullptr| if this node is the root.
   RenderFrameHostImpl* const parent_;
-
-  // Number of edges from this node to the root. 0 if this is the root.
-  const unsigned int depth_;
 
   // The frame that opened this frame, if any.  Will be set to null if the
   // opener is closed, or if this frame disowns its opener by setting its
