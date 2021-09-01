@@ -264,12 +264,12 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
       l10n_util::GetStringUTF8(reading_list::switches::IsReadingListEnabled()
                                    ? IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST
                                    : IDS_NEW_TAB_OTR_SUBTITLE);
-  replacements["incognitoTabHeading"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
 
   bool use_revamped_ui =
       base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
   if (use_revamped_ui) {
+    replacements["incognitoTabHeading"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_TITLE);
     replacements["incognitoDoesHeader"] =
         l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER);
     replacements["incognitoDoesDescription"] =
@@ -281,6 +281,8 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
   } else {
+    replacements["incognitoTabHeading"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
     replacements["incognitoTabWarning"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
     replacements["incognitoTabFeatures"] =
@@ -418,7 +420,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   substitutions["themeId"] =
       profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
 
-  // Colors
+  // Colors.
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
       GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND));
   substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);

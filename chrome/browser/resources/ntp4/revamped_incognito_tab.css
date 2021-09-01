@@ -26,7 +26,7 @@
 
 h1 {
   font-size: calc(100% + 8px);
-  font-weight: 400;
+  font-weight: 700;
   line-height: calc(100% + 8px);
 }
 
@@ -63,8 +63,8 @@ em {
 
 .icon {
   content: url(../../../../ui/webui/resources/images/incognito_splash.svg);
-  height: 120px;
-  width: 120px;
+  height: 96px;
+  width: 96px;
 }
 
 /* Medium-sized icon on medium-sized screens. */
