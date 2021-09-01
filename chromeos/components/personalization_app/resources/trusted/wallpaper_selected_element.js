@@ -370,12 +370,15 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   onClickLayoutIcon_(event) {
-    const layout = event.currentTarget.dataset.layout;
-    assert(layout === 'CENTER' || layout === 'FILL');
-    setCustomWallpaperLayout(
-        layout === 'CENTER' ? WallpaperLayout.kCenter :
-                              WallpaperLayout.kCenterCropped,
-        this.wallpaperProvider_, this.getStore());
+    const image = this.getState().currentSelected;
+    const layout =
+        this.getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
+    if (image.layout === layout)
+      return;
+    assert(
+        layout === WallpaperLayout.kCenter ||
+        layout === WallpaperLayout.kCenterCropped);
+    setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
   }
 
   /**
@@ -521,6 +524,21 @@ export class WallpaperSelected extends WithPersonalizationStore {
       console.warn('Unable to get attribution from local storage.', key);
     }
     return attribution;
+  }
+
+  /**
+   * @param {string} layout
+   * @return {chromeos.personalizationApp.mojom.WallpaperLayout}
+   */
+  getWallpaperLayoutEnum(layout) {
+    switch (layout) {
+      case 'CENTER':
+        return WallpaperLayout.kCenter;
+      case 'FILL':
+        return WallpaperLayout.kCenterCropped;
+      default:
+        return WallpaperLayout.kCenter;
+    }
   }
 }
 
