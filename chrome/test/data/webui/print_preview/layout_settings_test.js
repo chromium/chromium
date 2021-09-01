@@ -7,7 +7,7 @@ import {PrintPreviewLayoutSettingsElement, PrintPreviewModelElement} from 'chrom
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, fakeDataBind} from '../test_util.m.js';
+import {eventToPromise, fakeDataBind} from '../test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 

@@ -6,7 +6,7 @@ import 'chrome://diagnostics/cellular_info.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 import {assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 

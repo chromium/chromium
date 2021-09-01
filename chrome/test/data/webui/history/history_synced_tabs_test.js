@@ -6,7 +6,7 @@ import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createSession, createWindow, polymerSelectAll} from 'chrome://test/history/test_util.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitBeforeNextRender} from 'chrome://test/test_util.js';
 
 function getCards(manager) {
   return polymerSelectAll(manager, 'history-synced-device-card');

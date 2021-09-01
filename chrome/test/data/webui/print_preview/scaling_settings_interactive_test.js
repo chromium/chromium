@@ -6,7 +6,7 @@ import {PrintPreviewModelElement, ScalingType} from 'chrome://print/print_previe
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.m.js';
+import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.js';
 
 window.scaling_settings_interactive_test = {};
 scaling_settings_interactive_test.suiteName = 'ScalingSettingsInteractiveTest';

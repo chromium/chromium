@@ -47,7 +47,6 @@ if (include_js_tests) {
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
-      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -62,15 +61,9 @@ if (include_js_tests) {
       "polymer_interactive_ui_test.js",
     ]
 
-    deps = [
-      ":modulize",
-      "//chrome/browser/ui",
-    ]
+    deps = [ "//chrome/browser/ui" ]
 
-    data = [
-      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
-      "mojo_webui_test_support.js",
-    ]
+    data = [ "mojo_webui_test_support.js" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -215,7 +208,6 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_card_menu_test.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_picker_app_test.js",
-      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
 
@@ -313,7 +305,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/toggle_row_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/managed_apps_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_plugin_vm_browser_proxy.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_util.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/uninstall_button_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/bluetooth_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/cellular_networks_list_test.m.js",
@@ -496,12 +487,7 @@ if (include_js_tests) {
       "polymer_interactive_ui_test.js",
     ]
 
-    deps = [
-      ":modulize",
-      "//chrome/browser/ui",
-    ]
-
-    data = [ "$root_gen_dir/chrome/test/data/webui/test_util.m.js" ]
+    deps = [ "//chrome/browser/ui" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -585,7 +571,7 @@ js_type_check("closure_compile_local") {
     ":mock_timer.m",
     ":test_browser_proxy",
     ":test_plural_string_proxy",
-    ":test_util.m",
+    ":test_util",
   ]
 }
 
@@ -605,13 +591,11 @@ js_library("mock_timer.m") {
   extra_deps = [ ":modulize_local" ]
 }
 
-js_library("test_util.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/test_util.m.js" ]
+js_library("test_util") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("chai_assert") {

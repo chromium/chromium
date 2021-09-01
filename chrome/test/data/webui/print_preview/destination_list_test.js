@@ -8,7 +8,7 @@ import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 window.destination_list_test = {};
 const destination_list_test = window.destination_list_test;

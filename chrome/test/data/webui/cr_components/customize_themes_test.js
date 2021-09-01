@@ -12,7 +12,7 @@ import {ThemeIconElement} from 'chrome://resources/cr_components/customize_theme
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 
 /**
  * Asserts the computed style value for an element.

@@ -12,7 +12,7 @@ import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, kControlledB
 import {CrSettingsPrefs,Router} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, waitBeforeNextRender} from '../test_util.m.js';
+import {eventToPromise, waitBeforeNextRender} from '../test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';

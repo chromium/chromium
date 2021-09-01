@@ -49,7 +49,7 @@ js_type_check("closure_compile") {
 js_library("battery_status_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
@@ -62,7 +62,7 @@ js_library("battery_status_card_test") {
 js_library("cellular_info_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:cellular_info",
   ]
 }
@@ -70,7 +70,7 @@ js_library("cellular_info_test") {
 js_library("connectivity_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:connectivity_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
@@ -82,7 +82,7 @@ js_library("connectivity_card_test") {
 js_library("cpu_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:cpu_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:routine_section",
@@ -94,7 +94,7 @@ js_library("cpu_card_test") {
 js_library("data_point_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:data_point",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -104,7 +104,7 @@ js_library("diagnostics_app_test") {
   deps = [
     ":test_diagnostics_browser_proxy",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_app",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
@@ -121,7 +121,7 @@ js_library("diagnostics_app_unified_test") {
 js_library("diagnostics_test_utils") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:cpu_card",
     "//ash/webui/diagnostics_ui/resources:data_point",
@@ -146,7 +146,7 @@ js_library("diagnostics_utils_test") {
 js_library("ethernet_info_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:ethernet_info",
   ]
 }
@@ -187,7 +187,7 @@ js_library("frequency_channel_utils_test") {
 js_library("input_list_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:input_list",
   ]
@@ -198,7 +198,7 @@ js_library("ip_config_info_drawer_test") {
   deps = [
     ":test_diagnostics_browser_proxy",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:ip_config_info_drawer",
   ]
@@ -208,7 +208,7 @@ js_library("ip_config_info_drawer_test") {
 js_library("memory_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:diagnostics_utils",
     "//ash/webui/diagnostics_ui/resources:fake_data",
@@ -231,7 +231,7 @@ js_library("mojo_interface_provider_test") {
 js_library("network_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:network_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -240,7 +240,7 @@ js_library("network_card_test") {
 js_library("network_info_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:network_info",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -249,7 +249,7 @@ js_library("network_info_test") {
 js_library("network_list_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_network_health_provider",
@@ -262,7 +262,7 @@ js_library("network_list_test") {
 js_library("network_troubleshooting_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:network_troubleshooting",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -271,7 +271,7 @@ js_library("network_troubleshooting_test") {
 js_library("overview_card_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
@@ -283,7 +283,7 @@ js_library("percent_bar_chart_test") {
   deps = [
     ":diagnostics_test_utils",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:percent_bar_chart",
   ]
 }
@@ -292,7 +292,7 @@ js_library("realtime_cpu_chart_test") {
   deps = [
     ":diagnostics_test_utils",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:realtime_cpu_chart",
   ]
 }
@@ -300,7 +300,7 @@ js_library("realtime_cpu_chart_test") {
 js_library("routine_list_executor_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
@@ -310,7 +310,7 @@ js_library("routine_list_executor_test") {
 js_library("routine_result_entry_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
@@ -322,7 +322,7 @@ js_library("routine_result_list_test") {
   deps = [
     ":diagnostics_test_utils",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
@@ -335,7 +335,7 @@ js_library("routine_section_test") {
   deps = [
     ":diagnostics_test_utils",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:mojo_interface_provider",
@@ -352,7 +352,7 @@ js_library("system_page_test") {
   deps = [
     ":test_diagnostics_browser_proxy",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
@@ -371,7 +371,7 @@ js_library("test_diagnostics_browser_proxy") {
 js_library("text_badge_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:text_badge",
   ]
 }
@@ -379,7 +379,7 @@ js_library("text_badge_test") {
 js_library("wifi_info_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:wifi_info",
   ]
 }

@@ -9,7 +9,7 @@ import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsCookie
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {flushTasks, isChildVisible, isVisible} from '../test_util.m.js';
+import {flushTasks, isChildVisible, isVisible} from '../test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';

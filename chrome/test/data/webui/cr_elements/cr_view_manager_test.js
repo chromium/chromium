@@ -8,7 +8,7 @@ import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manag
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-view-manager. */

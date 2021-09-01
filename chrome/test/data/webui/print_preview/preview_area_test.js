@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
-import {fakeDataBind} from 'chrome://test/test_util.m.js';
+import {fakeDataBind} from 'chrome://test/test_util.js';
 
 window.preview_area_test = {};
 preview_area_test.suiteName = 'PreviewAreaTest';

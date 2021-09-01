@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$} from 'chrome://resources/js/util.m.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 /**
  * Find the first tree item (in the certificate fields tree) with a value.

@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 import {getPage, getSection} from 'chrome://test/settings/settings_page_test_util.js';
-import {waitBeforeNextRender} from 'chrome://test/test_util.m.js';
+import {waitBeforeNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 // Register mocha tests.

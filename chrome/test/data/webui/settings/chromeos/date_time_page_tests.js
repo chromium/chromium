@@ -11,7 +11,7 @@
 // #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // #import {TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 /** @implements {settings.TimeZoneBrowserProxy} */

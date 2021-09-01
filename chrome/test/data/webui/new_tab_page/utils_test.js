@@ -6,7 +6,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {createScrollBorders, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('scroll borders', () => {
   /** @type {!HTMLElement} */

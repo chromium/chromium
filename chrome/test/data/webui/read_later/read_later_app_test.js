@@ -7,7 +7,7 @@ import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 
 import {TestReadLaterApiProxy} from './test_read_later_api_proxy.js';
 

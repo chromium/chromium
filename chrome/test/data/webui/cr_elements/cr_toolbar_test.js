@@ -7,7 +7,7 @@
 // clang-format off
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {assertFalse, assertTrue} from '../chai_assert.js';
-import {isVisible} from '../test_util.m.js';
+import {isVisible} from '../test_util.js';
 // clang-format on
 
 suite('cr-toolbar', function() {

@@ -7,7 +7,7 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {assertNotStyle, assertStyle, keydown} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 /**
  * @param {!Element} element

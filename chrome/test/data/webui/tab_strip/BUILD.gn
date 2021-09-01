@@ -88,7 +88,7 @@ js_library("tab_list_test") {
   deps = [
     ":test_tabs_api_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/tab_strip:tab",
     "//chrome/browser/resources/tab_strip:tab_group",
     "//chrome/browser/resources/tab_strip:tab_list",
@@ -107,7 +107,7 @@ js_library("tab_swiper_test") {
   deps = [
     ":test_tabs_api_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/tab_strip:tab_swiper",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

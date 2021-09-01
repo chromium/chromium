@@ -4,7 +4,7 @@
 
 import {dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {isVisible} from 'chrome://test/test_util.m.js';
+import {isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
   let testProxy;

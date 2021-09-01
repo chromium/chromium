@@ -6,7 +6,7 @@ import {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement, PrintPreviewModel
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {fakeDataBind} from '../test_util.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
 

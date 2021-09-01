@@ -5,7 +5,7 @@
 import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
 import {PersonalizationToastElement} from 'chrome://personalization/trusted/personalization_toast_element.js';
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 

@@ -11,7 +11,7 @@
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy, createFakePageContentData, HOST_DEVICE} from './test_multidevice_browser_proxy.m.js';
-// #import {isChildVisible, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {isChildVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 // import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on

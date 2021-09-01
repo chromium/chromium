@@ -9,7 +9,7 @@ import {ReimagingCalibrationPageElement} from 'chrome://shimless-rma/reimaging_c
 import {ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationPageTest() {
   /** @type {?ReimagingCalibrationPageElement} */

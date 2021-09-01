@@ -8,7 +8,7 @@ import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_pi
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {waitBeforeNextRender} from '../test_util.m.js';
+import {waitBeforeNextRender} from '../test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 

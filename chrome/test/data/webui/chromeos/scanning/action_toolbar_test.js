@@ -5,7 +5,7 @@
 import 'chrome://scanning/action_toolbar.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 export function actionToolbarTest() {
   /** @type {?ActionToolbarElement} */

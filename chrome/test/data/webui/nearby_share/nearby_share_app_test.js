@@ -10,7 +10,7 @@ import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {waitAfterNextRender} from '../test_util.m.js';
+import {waitAfterNextRender} from '../test_util.js';
 
 import {FakeContactManager} from './shared/fake_nearby_contact_manager.m.js';
 import {FakeNearbyShareSettings} from './shared/fake_nearby_share_settings.m.js';

@@ -9,7 +9,7 @@ import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {fakeDataBind} from '../test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';

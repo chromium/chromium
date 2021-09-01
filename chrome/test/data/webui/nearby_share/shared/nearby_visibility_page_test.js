@@ -7,7 +7,7 @@
 // #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {waitAfterNextRender, isChildVisible} from '../../test_util.m.js';
+// #import {waitAfterNextRender, isChildVisible} from '../../test_util.js';
 // clang-format on
 
 suite('nearby-visibility-page', function() {

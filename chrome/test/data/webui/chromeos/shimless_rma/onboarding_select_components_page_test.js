@@ -10,7 +10,7 @@ import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboa
 import {Component, ComponentRepairStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 export function onboardingSelectComponentsPageTest() {
   /** @type {?OnboardingSelectComponentsPageElement} */

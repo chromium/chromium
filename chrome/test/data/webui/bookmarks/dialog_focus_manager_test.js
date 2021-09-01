@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 suite('DialogFocusManager', function() {
   let list;

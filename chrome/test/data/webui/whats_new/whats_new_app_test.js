@@ -7,7 +7,7 @@ import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 
 class TestWhatsNewProxy extends TestBrowserProxy {
   /**

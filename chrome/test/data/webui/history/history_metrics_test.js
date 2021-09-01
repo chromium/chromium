@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, polymerSelectAll} from 'chrome://test/history/test_util.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('Metrics', function() {
   let testService;

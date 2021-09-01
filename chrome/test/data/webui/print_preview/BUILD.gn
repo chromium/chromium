@@ -114,7 +114,7 @@ js_library("advanced_dialog_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -125,7 +125,7 @@ js_library("advanced_item_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -135,7 +135,7 @@ js_library("advanced_item_test") {
 js_library("button_strip_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -145,7 +145,7 @@ js_library("button_strip_test") {
 js_library("button_strip_interactive_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -156,7 +156,7 @@ js_library("color_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -167,7 +167,7 @@ js_library("copies_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -177,7 +177,7 @@ js_library("copies_settings_test") {
 js_library("custom_margins_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -186,7 +186,7 @@ js_library("custom_margins_test") {
 
 js_library("print_preview_test_utils") {
   deps = [
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -219,7 +219,7 @@ js_library("destination_settings_test") {
     ":cloud_print_interface_stub",
     ":native_layer_stub",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -234,7 +234,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -247,7 +247,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -262,7 +262,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -275,7 +275,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -286,7 +286,7 @@ if (is_chromeos) {
 js_library("destination_list_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -319,7 +319,7 @@ if (is_chromeos) {
       ":native_layer_cros_stub",
       ":native_layer_stub",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
       "//ui/webui/resources/js:cr.m",
@@ -342,7 +342,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -354,7 +354,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -386,7 +386,7 @@ if (is_chromeos) {
       ":native_layer_stub",
       ":print_preview_test_utils",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
     ]
@@ -400,7 +400,7 @@ js_library("destination_store_test") {
     ":native_layer_stub",
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -413,7 +413,7 @@ js_library("dpi_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -424,7 +424,7 @@ js_library("duplex_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -436,7 +436,7 @@ js_library("header_test") {
   deps = [
     "..:chai_assert",
     "..:test_plural_string_proxy",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -459,7 +459,7 @@ js_library("invalid_settings_browsertest") {
     ":print_preview_test_utils",
     ":test_plugin_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -474,7 +474,7 @@ js_library("key_event_test") {
     ":print_preview_test_utils",
     ":test_plugin_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -486,7 +486,7 @@ js_library("layout_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -497,7 +497,7 @@ js_library("link_container_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -509,7 +509,7 @@ js_library("margins_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -520,7 +520,7 @@ js_library("media_size_settings_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -554,7 +554,7 @@ js_library("model_test") {
   deps = [
     ":print_preview_test_utils",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -568,7 +568,7 @@ if (is_chromeos) {
     deps = [
       ":native_layer_cros_stub",
       "..:chai_assert",
-      "..:test_util.m",
+      "..:test_util",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
       "//ui/webui/resources/js:cr.m",

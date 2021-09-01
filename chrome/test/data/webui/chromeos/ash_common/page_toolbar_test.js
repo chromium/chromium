@@ -6,7 +6,7 @@ import {PageToolbarElement} from 'chrome://resources/ash/common/page_toolbar.js'
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function pageToolbarTestSuite() {
   /** @type {?PageToolbarElement} */

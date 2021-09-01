@@ -5,7 +5,7 @@
 import {AccountSelectionLacrosElement} from 'chrome://profile-picker/lazy_load.js';
 
 import {assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 suite('ProfileTypeChoiceTest', function() {
   /** @type {!AccountSelectionLacrosElement} */

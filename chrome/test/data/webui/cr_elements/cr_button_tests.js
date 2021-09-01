@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 // clang-format on
 

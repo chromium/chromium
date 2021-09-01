@@ -9,7 +9,7 @@ import {emptyState} from 'chrome://personalization/trusted/personalization_reduc
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

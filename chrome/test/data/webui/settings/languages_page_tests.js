@@ -10,7 +10,7 @@ import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {getFakeLanguagePrefs} from 'chrome://test/settings/fake_language_settings_private.js';
 import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
 import {TestLanguagesBrowserProxy} from 'chrome://test/settings/test_languages_browser_proxy.js';
-import {fakeDataBind, isChildVisible} from 'chrome://test/test_util.m.js';
+import {fakeDataBind, isChildVisible} from 'chrome://test/test_util.js';
 
 // clang-format on
 

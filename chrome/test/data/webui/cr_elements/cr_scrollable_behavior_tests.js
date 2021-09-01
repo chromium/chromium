@@ -7,7 +7,7 @@ import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable
 import { Base, flush, html,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {waitBeforeNextRender} from '../test_util.m.js';
+import {waitBeforeNextRender} from '../test_util.js';
 // clang-format on
 
 suite('cr-scrollable-behavior', function() {

@@ -191,7 +191,7 @@ js_library("advanced_page_test") {
 js_library("collapse_radio_button_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
   ]
@@ -204,7 +204,7 @@ js_library("cookies_page_test") {
     ":test_site_settings_prefs_browser_proxy",
     ":test_util",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -215,7 +215,7 @@ js_library("do_not_track_toggle_test") {
   deps = [
     ":test_metrics_browser_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -247,7 +247,7 @@ js_library("languages_page_metrics_test_browser") {
     ":fake_settings_private",
     ":test_languages_browser_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
   ]
@@ -276,7 +276,7 @@ js_library("privacy_page_test") {
     ":test_site_settings_prefs_browser_proxy",
     ":test_sync_browser_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:cr.m",
@@ -288,7 +288,7 @@ js_library("privacy_page_test") {
 js_library("privacy_review_page_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
   ]
@@ -301,7 +301,7 @@ js_library("privacy_sandbox_test") {
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:settings",
     "//chrome/browser/resources/settings/privacy_sandbox:app",
   ]
@@ -312,7 +312,7 @@ js_library("recent_site_permissions_test") {
   deps = [
     ":test_site_settings_prefs_browser_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:cr.m",
@@ -377,7 +377,7 @@ js_library("settings_category_default_radio_group_tests") {
     ":test_site_settings_prefs_browser_proxy",
     ":test_util",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -398,7 +398,7 @@ js_library("security_page_test") {
     ":test_privacy_page_browser_proxy",
     ":test_sync_browser_proxy",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:load_time_data.m",
@@ -413,7 +413,7 @@ js_library("settings_page_test_util") {
 js_library("settings_ui_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:settings",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -425,7 +425,7 @@ js_library("site_list_tests") {
     ":test_site_settings_prefs_browser_proxy",
     ":test_util",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:cr.m",
   ]

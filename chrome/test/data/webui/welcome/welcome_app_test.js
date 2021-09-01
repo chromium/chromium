@@ -10,7 +10,7 @@ import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
-import {waitBeforeNextRender} from '../test_util.m.js';
+import {waitBeforeNextRender} from '../test_util.js';
 
 import {TestBookmarkProxy} from './test_bookmark_proxy.js';
 import {TestLandingViewProxy} from './test_landing_view_proxy.js';

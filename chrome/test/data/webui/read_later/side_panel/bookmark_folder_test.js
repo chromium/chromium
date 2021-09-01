@@ -11,7 +11,7 @@ import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookm
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 

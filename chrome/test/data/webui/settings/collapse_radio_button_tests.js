@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
 
 import {assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 // clang-format on
 

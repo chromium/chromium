@@ -10,7 +10,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 /** @implements {settings.GuestOsBrowserProxy} */

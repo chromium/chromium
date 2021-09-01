@@ -8,7 +8,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {down, keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
 import {createFolder, normalizeIterable, replaceBody} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('<bookmarks-app>', function() {
   let app;

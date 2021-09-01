@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 import {$$, assertFocus, keydown} from './most_visited_test_support.js';
 

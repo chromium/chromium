@@ -7,7 +7,7 @@ import {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-interce
 import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible, waitAfterNextRender} from '../test_util.m.js';
+import {isChildVisible, waitAfterNextRender} from '../test_util.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 

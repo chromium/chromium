@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {FingerprintBrowserProxyImpl, FingerprintSetupStep, FingerprintResultType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';

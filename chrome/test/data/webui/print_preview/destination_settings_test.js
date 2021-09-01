@@ -8,7 +8,7 @@ import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, fakeDataBind, waitBeforeNextRender} from '../test_util.m.js';
+import {eventToPromise, fakeDataBind, waitBeforeNextRender} from '../test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 // <if expr="chromeos or lacros">

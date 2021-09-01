@@ -7,7 +7,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import { CrToastManagerElement,getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 // clang-format on
 

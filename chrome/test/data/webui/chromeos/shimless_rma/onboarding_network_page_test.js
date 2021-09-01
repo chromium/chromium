@@ -8,7 +8,7 @@ import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from
 import {OnboardingNetworkPage} from 'chrome://shimless-rma/onboarding_network_page.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 import {FakeNetworkConfig} from '../fake_network_config_mojom.m.js';
 
 export function onboardingNetworkPageTest() {

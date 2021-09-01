@@ -6,7 +6,7 @@ import {PrintPreviewDpiSettingsElement, PrintPreviewModelElement, SelectOption} 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {fakeDataBind} from '../test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 

@@ -5,7 +5,7 @@
 import {MenuSelectorItem, NavigationSelectorElement, SelectorItem, SelectorProperties} from 'chrome://resources/ash/common/navigation_selector.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.m.js';
+import {waitAfterNextRender} from '../../test_util.js';
 
 export function navigationSelectorTestSuite() {
   /** @type {?NavigationSelectorElement} */

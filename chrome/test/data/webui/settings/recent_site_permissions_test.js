@@ -8,7 +8,7 @@ import {ContentSetting, ContentSettingsTypes, SettingsRecentSitePermissionsEleme
 import {Router, routes} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {flushTasks, isChildVisible, isVisible} from '../test_util.m.js';
+import {flushTasks, isChildVisible, isVisible} from '../test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 

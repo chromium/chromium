@@ -8,7 +8,7 @@ import {EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-prof
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible, waitAfterNextRender} from '../test_util.m.js';
+import {isChildVisible, waitAfterNextRender} from '../test_util.js';
 
 import {TestEnterpriseProfileWelcomeBrowserProxy} from './test_enterprise_profile_welcome_browser_proxy.js';
 

@@ -9,7 +9,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.m.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
 // clang-format on
 
 suite('cr_tabs_test', function() {

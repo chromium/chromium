@@ -15,7 +15,7 @@ import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {eventToPromise, flushTasks} from '../test_util.m.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
 
 import {$$, assertNotStyle, assertStyle, keydown} from './most_visited_test_support.js';
 

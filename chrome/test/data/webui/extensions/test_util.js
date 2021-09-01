@@ -4,7 +4,7 @@
 
 /** @fileoverview Common utilities for extension ui tests. */
 import {MockController, MockMethod} from '../mock_controller.m.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 

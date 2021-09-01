@@ -14,7 +14,7 @@
 // #import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
 // #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {eventToPromise, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.m.js';
+// #import {eventToPromise, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.js';
 // clang-format on
 
 cr.define('settings_people_page_quick_unlock', function() {

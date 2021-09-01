@@ -4,7 +4,7 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 suite('extensions-toggle-row', function() {
   let row;

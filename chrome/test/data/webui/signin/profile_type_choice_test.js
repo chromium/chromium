@@ -8,7 +8,7 @@ import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_pi
 import {isLacros} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 

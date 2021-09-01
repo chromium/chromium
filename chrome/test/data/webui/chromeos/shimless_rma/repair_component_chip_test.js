@@ -5,7 +5,7 @@
 import {RepairComponentChipElement} from 'chrome://shimless-rma/repair_component_chip.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function repairComponentChipElementTest() {
   /** @type {?RepairComponentChipElement} */

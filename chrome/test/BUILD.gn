@@ -1393,7 +1393,6 @@ if (!is_android && !is_fuchsia) {
       "//third_party/simplejson/",
       "//third_party/tlslite/",
       "//ui/webui/resources/",
-      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
     data += js2gtest_js_libraries
     data += metric_integration_jsdeps

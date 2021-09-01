@@ -10,7 +10,7 @@ import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.m.js';
+import {waitAfterNextRender} from '../../test_util.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 

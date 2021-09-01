@@ -35,7 +35,7 @@ js_library("most_visited_focus_test") {
   deps = [
     ":most_visited_test_support",
     "..:test_browser_proxy",
-    "..:test_util.m",
+    "..:test_util",
     "//ui/webui/resources/cr_components/most_visited",
     "//ui/webui/resources/cr_components/most_visited:browser_proxy",
     "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",
@@ -49,7 +49,7 @@ js_library("most_visited_test") {
     ":most_visited_test_support",
     "..:chai_assert",
     "..:test_browser_proxy",
-    "..:test_util.m",
+    "..:test_util",
     "//ui/webui/resources/cr_components/most_visited",
     "//ui/webui/resources/cr_components/most_visited:browser_proxy",
     "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",

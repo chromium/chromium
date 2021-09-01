@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {TestBookmarksBrowserProxy} from 'chrome://test/bookmarks/test_browser_proxy.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
 import {createFolder, createItem, customClick, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('<bookmarks-list>', function() {
   let list;

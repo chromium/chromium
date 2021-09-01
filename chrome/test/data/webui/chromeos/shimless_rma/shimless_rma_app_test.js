@@ -10,7 +10,7 @@ import {ButtonState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rm
 import {RmadErrorCode, RmaState, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRmaElement} */
