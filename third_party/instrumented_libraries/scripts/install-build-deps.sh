@@ -87,7 +87,8 @@ librtmp0 \
 libsecret"
 
 xenial_specific_packages="
-gnome-common"
+gnome-common
+libgraphite2-dev"
 
 ubuntu_release=$(lsb_release -cs)
 

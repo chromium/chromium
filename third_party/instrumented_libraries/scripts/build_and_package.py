@@ -57,6 +57,7 @@ def build_libraries(build_type, ubuntu_release, jobs, use_goma):
       'is_debug = false',
       'use_goma = %s' % str(use_goma).lower(),
       'use_locally_built_instrumented_libraries = true',
+      'instrumented_libraries_platform = "%s"' % ubuntu_release
   ] + BUILD_TYPES[build_type]
   with open(os.path.join(build_dir, 'args.gn'), 'w') as f:
     f.write('\n'.join(gn_args) + '\n')

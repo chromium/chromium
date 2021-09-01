@@ -77,8 +77,9 @@ if (prebuilt_instrumented_libraries_available) {
 }
 
 if (use_locally_built_instrumented_libraries) {
-  assert(instrumented_libraries_platform == "trusty",
-         "Currently, the only supported platform is Trusty.")
+  assert(instrumented_libraries_platform == "trusty" ||
+             instrumented_libraries_platform == "xenial",
+         "Currently, the only supported platforms are Trusty and Xenial.")
   group("locally_built") {
     visibility = [ ":deps" ]
     deps = [
@@ -507,7 +508,10 @@ if (use_locally_built_instrumented_libraries) {
       # From debian/rules.
       "--with-add-fonts=/usr/X11R6/lib/X11/fonts,/usr/local/share/fonts",
     ]
-    patch = "patches/libfontconfig.${instrumented_libraries_platform}.diff"
+    if (instrumented_libraries_platform == "trusty") {
+      # This patch is in upstream Xenial and later.
+      patch = "patches/libfontconfig.trusty.diff"
+    }
   }
 
   instrumented_library("libgcrypt11") {
@@ -807,7 +811,9 @@ if (use_locally_built_instrumented_libraries) {
     msan_blacklist = "blacklists/msan/libx11-6.txt"
 
     # Required on Trusty due to autoconf version mismatch.
-    pre_build = "scripts/pre-build/autoreconf.sh"
+    if (instrumented_libraries_platform == "trusty") {
+      pre_build = "scripts/pre-build/autoreconf.sh"
+    }
   }
 
   instrumented_library("libxau6") {
