@@ -71,7 +71,13 @@ void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TooltipIcon::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTooltip;
+  // The tooltip icon, despite visually being an icon with no text, actually
+  // opens a bubble whenever the user mouses over it or focuses it, so it's
+  // essentially a text control that hides itself when not in view without
+  // altering the bubble's layout when shown. As such, have it behave like
+  // static text for screenreader users, since that's the role it serves here
+  // anyway.
+  node_data->role = ax::mojom::Role::kStaticText;
   node_data->SetName(tooltip_);
 }
 
