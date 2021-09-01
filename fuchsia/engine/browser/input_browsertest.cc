@@ -179,6 +179,13 @@ class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
         context_impl()->GetFrameImplForTest(frame_ptr)->web_contents());
   }
 
+  // The tests expect to have input processed immediately, even if the
+  // content has not been displayed yet. That's fine for the test, but
+  // we need to explicitly allow it.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch("allow-pre-commit-input");
+  }
+
   template <typename... Args>
   void ExpectKeyEventsEqual(Args... events) {
     std::vector<base::Value> expected;

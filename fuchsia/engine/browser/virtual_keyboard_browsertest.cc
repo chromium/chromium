@@ -96,6 +96,13 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
         base::GetKoid(scenic_test_helper_.CloneViewRef().reference).value());
   }
 
+  // The tests expect to have input processed immediately, even if the
+  // content has not been displayed yet. That's fine for the test, but
+  // we need to explicitly allow it.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch("allow-pre-commit-input");
+  }
+
   gfx::Point GetCoordinatesOfInputField(base::StringPiece id) {
     // Distance to click from the top/left extents of an input field.
     constexpr int kInputFieldClickInset = 8;
