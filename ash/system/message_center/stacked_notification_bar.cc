@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/stacked_notification_bar.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_style.h"
@@ -73,6 +74,11 @@ class StackingBarLabelButton : public views::LabelButton {
               message_center_style::kInkRippleOpacity);
         },
         this));
+    if (features::IsNotificationsRefreshEnabled()) {
+      // Need a textured layer here since the parent uses a solid color layer.
+      SetPaintToLayer();
+      layer()->SetFillsBoundsOpaquely(false);
+    }
   }
 
   ~StackingBarLabelButton() override = default;
@@ -293,7 +299,8 @@ StackedNotificationBar::StackedNotificationBar(
   expand_all_button_->SetVisible(false);
   AddChildView(expand_all_button_);
 
-  SetPaintToLayer();
+  if (!features::IsNotificationsRefreshEnabled())
+    SetPaintToLayer();
 }
 
 StackedNotificationBar::~StackedNotificationBar() {
@@ -468,7 +475,8 @@ void StackedNotificationBar::UpdateStackedNotifications(
 
 void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
-  flags.setColor(message_center_style::kNotificationBackgroundColor);
+  if (!features::IsNotificationsRefreshEnabled())
+    flags.setColor(message_center_style::kNotificationBackgroundColor);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
 

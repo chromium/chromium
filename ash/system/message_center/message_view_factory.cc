@@ -37,7 +37,8 @@ std::unique_ptr<message_center::MessageView> GetCustomNotificationView(
 
 // static
 std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup) {
   switch (notification.type()) {
     case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
     case message_center::NOTIFICATION_TYPE_IMAGE:
@@ -60,9 +61,8 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
       break;
   }
   if (ash::features::IsNotificationsRefreshEnabled())
-    return std::make_unique<AshNotificationView>(notification);
-  else
-    return std::make_unique<message_center::NotificationView>(notification);
+    return std::make_unique<AshNotificationView>(notification, shown_in_popup);
+  return std::make_unique<message_center::NotificationView>(notification);
 }
 
 // static

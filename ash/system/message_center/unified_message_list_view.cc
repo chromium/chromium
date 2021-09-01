@@ -86,6 +86,10 @@ class UnifiedMessageListView::MessageViewContainer
         list_view_(list_view),
         control_view_(new NotificationSwipeControlView(message_view)) {
     message_view_->AddObserver(this);
+    if (!features::IsNotificationsRefreshEnabled()) {
+      message_view_->SetBackground(
+          views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    }
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(control_view_);
@@ -249,8 +253,9 @@ UnifiedMessageListView::UnifiedMessageListView(
       animation_(std::make_unique<gfx::LinearAnimation>(this)) {
   message_center_observation_.Observe(MessageCenter::Get());
   animation_->SetCurrentValue(1.0);
-  SetBackground(views::CreateSolidBackground(
-      message_center_style::kSwipeControlBackgroundColor));
+  if (!features::IsNotificationsRefreshEnabled())
+    SetBackground(views::CreateSolidBackground(
+        message_center_style::kSwipeControlBackgroundColor));
 }
 
 UnifiedMessageListView::~UnifiedMessageListView() {
@@ -572,7 +577,9 @@ void UnifiedMessageListView::AnimationCanceled(
 
 MessageView* UnifiedMessageListView::CreateMessageView(
     const Notification& notification) {
-  auto* view = MessageViewFactory::Create(notification).release();
+  auto* view =
+      MessageViewFactory::Create(notification, /*shown_in_popup=*/false)
+          .release();
   view->SetIsNested();
   view->AddObserver(this);
   message_center_view_->ConfigureMessageView(view);

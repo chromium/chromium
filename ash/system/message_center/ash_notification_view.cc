@@ -14,10 +14,13 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -86,8 +89,9 @@ void AshNotificationView::ExpandButton::OnThemeChanged() {
 }
 
 AshNotificationView::AshNotificationView(
-    const message_center::Notification& notification)
-    : NotificationViewBase(notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup)
+    : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
   // Instantiate view instances and define layout and view hierarchy.
   using Orientation = views::BoxLayout::Orientation;
 
@@ -146,6 +150,11 @@ AshNotificationView::AshNotificationView(
   UpdateControlButtonsVisibilityWithNotification(notification);
 
   expand_button_->SetVisible(IsExpandable());
+
+  if (shown_in_popup_) {
+    layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 AshNotificationView::~AshNotificationView() = default;
@@ -167,6 +176,43 @@ void AshNotificationView::SetExpanded(bool expanded) {
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
   expand_button_->SetVisible(enabled);
+}
+
+void AshNotificationView::UpdateCornerRadius(int top_radius,
+                                             int bottom_radius) {
+  // Call parent's SetCornerRadius to update radius used for highlight path.
+  NotificationViewBase::SetCornerRadius(top_radius, bottom_radius);
+  UpdateBackground(top_radius, bottom_radius);
+}
+
+void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
+
+void AshNotificationView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateBackground(top_radius_, bottom_radius_);
+}
+
+void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
+  SkColor background_color;
+  if (shown_in_popup_) {
+    background_color = AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80);
+  } else {
+    background_color = AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  }
+
+  if (background_color == background_color_ && top_radius_ == top_radius &&
+      bottom_radius_ == bottom_radius) {
+    return;
+  }
+  background_color_ = background_color;
+  top_radius_ = top_radius;
+  bottom_radius_ = bottom_radius;
+
+  SetBackground(views::CreateBackgroundFromPainter(
+      std::make_unique<message_center::NotificationBackgroundPainter>(
+          top_radius_, bottom_radius_, background_color_)));
 }
 
 }  // namespace ash

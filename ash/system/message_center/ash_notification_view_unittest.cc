@@ -60,7 +60,8 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   void SetUp() override {
     AshTestBase::SetUp();
     auto notification = CreateTestNotification();
-    notification_view_ = std::make_unique<AshNotificationView>(*notification);
+    notification_view_ = std::make_unique<AshNotificationView>(
+        *notification, /*is_popup=*/false);
   }
 
   void TearDown() override {

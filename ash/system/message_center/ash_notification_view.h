@@ -22,8 +22,8 @@ class ASH_EXPORT AshNotificationView
     : public message_center::NotificationViewBase {
  public:
   // TODO(crbug/1241983): Add metadata and builder support to this view.
-  explicit AshNotificationView(
-      const message_center::Notification& notification);
+  explicit AshNotificationView(const message_center::Notification& notification,
+                               bool shown_in_popup);
   AshNotificationView(const AshNotificationView&) = delete;
   AshNotificationView& operator=(const AshNotificationView&) = delete;
   ~AshNotificationView() override;
@@ -36,6 +36,9 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void SetExpanded(bool expanded) override;
   void SetExpandButtonEnabled(bool enabled) override;
+  void UpdateCornerRadius(int top_radius, int bottom_radius) override;
+  void SetDrawBackgroundAsActive(bool active) override;
+  void OnThemeChanged() override;
 
  private:
   friend class AshNotificationViewTest;
@@ -62,7 +65,20 @@ class ASH_EXPORT AshNotificationView
     bool expanded_ = false;
   };
 
+  // Update the background color with rounded corner.
+  void UpdateBackground(int top_radius, int bottom_radius);
+
   ExpandButton* expand_button_ = nullptr;
+
+  // Corner radius of the notification view.
+  int top_radius_ = 0;
+  int bottom_radius_ = 0;
+
+  // Cached background color to avoid unnecessary update.
+  SkColor background_color_ = SK_ColorTRANSPARENT;
+
+  // Whether this view is shown in a notification popup.
+  bool shown_in_popup_ = false;
 };
 
 }  // namespace ash
