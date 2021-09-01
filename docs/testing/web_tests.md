@@ -47,15 +47,15 @@ examined by the OS crash reporter. This may cause other failures like timeouts
 where they normally don't occur.
 
 ```bash
-strip ./xcodebuild/{Debug,Release}/content_shell.app/Contents/MacOS/content_shell
+strip ./out/Default/content_shell.app/Contents/MacOS/content_shell
 ```
 
 ### Running the Tests
 
 The test runner script is in `third_party/blink/tools/run_web_tests.py`.
 
-To specify which build directory to use (e.g. out/Default, out/Release,
-out/Debug) you should pass the `-t` or `--target` parameter. For example, to
+To specify which build directory to use (e.g. out/Default, etc.)
+you should pass the `-t` or `--target` parameter. For example, to
 use the build in `out/Default`, use:
 
 ```bash
@@ -242,13 +242,13 @@ the name is too long or when we need to match multiple additional args:
   "args": ["--blocking-repaint", "--another-flag"]
 }
 ```
-  
+
 `web_tests/FlagSpecificConfig` is preferred when you need multiple flags,
 or the flag is long.
 
 With the config, you can use `--flag-specific=short-name` as a shortcut
 of `--additional-driver-flag=--blocking-repaint --additional-driver-flag=--another-flag`.
-  
+
 `--additional-driver-flags` still works with `web_tests/FlagSpecificConfig`.
 For example, when at least `--additional-driver-flag=--blocking-repaint` and
 `--additional-driver-flag=--another-flag` are specified, `short-name` will
