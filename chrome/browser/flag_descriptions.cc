@@ -3920,6 +3920,11 @@ extern const char kAppDiscoveryForOobeName[] =
 extern const char kAppDiscoveryForOobeDescription[] =
     "Use the App Discovery Service to request recommended apps for OOBE.";
 
+extern const char kAppDiscoveryRemoteUrlSearchName[] =
+    "Remote URL app discovery results";
+extern const char kAppDiscoveryRemoteUrlSearchDescription[] =
+    "Surface results from a URL in the app discovery service.";
+
 extern const char kAppListBubbleName[] =
     "Productivity experiment: App Launcher";
 extern const char kAppListBubbleDescription[] =

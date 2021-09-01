@@ -2246,6 +2246,9 @@ extern const char kAllowScrollSettingsDescription[];
 extern const char kAppDiscoveryForOobeName[];
 extern const char kAppDiscoveryForOobeDescription[];
 
+extern const char kAppDiscoveryRemoteUrlSearchName[];
+extern const char kAppDiscoveryRemoteUrlSearchDescription[];
+
 extern const char kAppListBubbleName[];
 extern const char kAppListBubbleDescription[];
 

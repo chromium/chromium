@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_switches.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
@@ -6658,6 +6659,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,
                                     kCategoricalSearchVariations,
                                     "LauncherCategoricalSearch")},
+
+    {"app-discovery-remote-url-search",
+     flag_descriptions::kAppDiscoveryRemoteUrlSearchName,
+     flag_descriptions::kAppDiscoveryRemoteUrlSearchDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::kAppDiscoveryRemoteUrlSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-offers-in-downstream",
