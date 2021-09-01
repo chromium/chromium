@@ -61,7 +61,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;
-  friend class RenderWidgetHostViewAndroidRotationTest;
+  friend class RenderWidgetHostViewAndroidTest;
 
   // Paired with the mojom::RenderFrameMetadataObserverClient overrides, these
   // methods are enqueued in |frame_token_message_queue_|. They are invoked when
