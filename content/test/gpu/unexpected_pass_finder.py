@@ -217,7 +217,7 @@ def main():
 
   if args.modify_semi_stale_expectations:
     affected_urls |= expectations_instance.ModifySemiStaleExpectations(
-        semi_stale, args.expectation_file)
+        semi_stale)
     stale_message += ('Semi-stale expectations modified in %s. Stale '
                       'comments, etc. may still need to be removed.\n' %
                       args.expectation_file)

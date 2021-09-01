@@ -17,7 +17,7 @@ EXPECTATIONS_DIR = os.path.realpath(
 
 
 class GpuExpectations(expectations.Expectations):
-  def _GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self):
     filepaths = []
     for f in os.listdir(EXPECTATIONS_DIR):
       if f.endswith('_expectations.txt'):

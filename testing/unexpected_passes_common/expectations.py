@@ -19,12 +19,12 @@ FINDER_ENABLE_COMMENT = 'finder:enable'
 
 
 class Expectations(object):
-  def CreateTestExpectationMap(self, expectation_file, tests):
+  def CreateTestExpectationMap(self, expectation_files, tests):
     """Creates an expectation map based off a file or list of tests.
 
     Args:
-      expectation_file: A filepath to an expectation file to read from, or None.
-          If a filepath is specified, |tests| must be None.
+      expectation_files: A filepath or list of filepaths to expectation files to
+          read from, or None. If a filepath is specified, |tests| must be None.
       tests: An iterable of strings containing test names to check. If
           specified, |expectation_file| must be None.
 
@@ -32,35 +32,40 @@ class Expectations(object):
       A data_types.TestExpectationMap, although all its BuilderStepMap contents
       will be empty.
     """
+
+    def AddContentToMap(content, ex_map, expectation_file_name):
+      list_parser = expectations_parser.TaggedTestListParser(content)
+      expectations_for_file = ex_map.setdefault(
+          expectation_file_name, data_types.ExpectationBuilderMap())
+      logging.debug('Parsed %d expectations', len(list_parser.expectations))
+      for e in list_parser.expectations:
+        if 'Skip' in e.raw_results:
+          continue
+        expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
+                                             e.reason)
+        assert expectation not in expectations_for_file
+        expectations_for_file[expectation] = data_types.BuilderStepMap()
+
     logging.info('Creating test expectation map')
-    assert expectation_file or tests
-    assert not (expectation_file and tests)
+    assert expectation_files or tests
+    assert not (expectation_files and tests)
 
-    # TODO(crbug.com/1222827): Handle multiple expectation files.
-    expectation_file_name = None
+    expectation_map = data_types.TestExpectationMap()
 
-    if expectation_file:
-      expectation_file_name = os.path.basename(expectation_file)
-      with open(expectation_file) as f:
-        content = f.read()
+    if expectation_files:
+      if not isinstance(expectation_files, list):
+        expectation_files = [expectation_files]
+      for ef in expectation_files:
+        expectation_file_name = os.path.normpath(ef)
+        with open(ef) as f:
+          content = f.read()
+        AddContentToMap(content, expectation_map, expectation_file_name)
     else:
       expectation_file_name = ''
       content = '# results: [ RetryOnFailure ]\n'
       for t in tests:
         content += '%s [ RetryOnFailure ]\n' % t
-
-    list_parser = expectations_parser.TaggedTestListParser(content)
-    expectation_map = data_types.TestExpectationMap()
-    expectations_for_file = expectation_map.setdefault(
-        expectation_file_name, data_types.ExpectationBuilderMap())
-    logging.debug('Parsed %d expectations', len(list_parser.expectations))
-    for e in list_parser.expectations:
-      if 'Skip' in e.raw_results:
-        continue
-      expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                           e.reason)
-      assert expectation not in expectations_for_file
-      expectations_for_file[expectation] = data_types.BuilderStepMap()
+      AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
 
@@ -169,8 +174,7 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
-  def ModifySemiStaleExpectations(self, stale_expectation_map,
-                                  expectation_file):
+  def ModifySemiStaleExpectations(self, stale_expectation_map):
     """Modifies lines from |stale_expectation_map| in |expectation_file|.
 
     Prompts the user for each modification and provides debug information since
@@ -179,8 +183,6 @@ class Expectations(object):
     Args:
       stale_expectation_map: A data_types.TestExpectationMap containing stale
           expectations.
-      expectation_file: A filepath pointing to an expectation file to remove
-          lines from.
       file_handle: An optional open file-like object to output to. If not
           specified, stdout will be used.
 
@@ -188,18 +190,19 @@ class Expectations(object):
       A set of strings containing URLs of bugs associated with the modified
       (manually modified by the user or removed by the script) expectations.
     """
-    with open(expectation_file) as infile:
-      file_contents = infile.read()
-
     expectations_to_remove = []
     expectations_to_modify = []
-    for _, e, builder_map in stale_expectation_map.IterBuilderStepMaps():
+    modified_urls = set()
+    for expectation_file, e, builder_map in (
+        stale_expectation_map.IterBuilderStepMaps()):
+      with open(expectation_file) as infile:
+        file_contents = infile.read()
       line, line_number = self._GetExpectationLine(e, file_contents)
       expectation_str = None
       if not line:
         logging.error(
             'Could not find line corresponding to semi-stale expectation for '
-            '%s with tags %s and expected results %s' % e.test, e.tags,
+            '%s with tags %s and expected results %s', e.test, e.tags,
             e.expected_results)
         expectation_str = '[ %s ] %s [ %s ]' % (' '.join(
             e.tags), e.test, ' '.join(e.expected_results))
@@ -217,24 +220,24 @@ class Expectations(object):
       elif response == 'm':
         expectations_to_modify.append(e)
 
-    # It's possible that the user will introduce a typo while manually modifying
-    # an expectation, which will cause a parser error. Catch that now and give
-    # them chances to fix it so that they don't lose all of their work due to an
-    # early exit.
-    while True:
-      try:
-        with open(expectation_file) as infile:
-          file_contents = infile.read()
-        _ = expectations_parser.TaggedTestListParser(file_contents)
-        break
-      except expectations_parser.ParseError as error:
-        logging.error('Got parser error: %s', error)
-        logging.error(
-            'This probably means you introduced a typo, please fix it.')
-        _WaitForAnyUserInput()
+      # It's possible that the user will introduce a typo while manually
+      # modifying an expectation, which will cause a parser error. Catch that
+      # now and give them chances to fix it so that they don't lose all of their
+      # work due to an early exit.
+      while True:
+        try:
+          with open(expectation_file) as infile:
+            file_contents = infile.read()
+          _ = expectations_parser.TaggedTestListParser(file_contents)
+          break
+        except expectations_parser.ParseError as error:
+          logging.error('Got parser error: %s', error)
+          logging.error(
+              'This probably means you introduced a typo, please fix it.')
+          _WaitForAnyUserInput()
 
-    modified_urls = self.RemoveExpectationsFromFile(expectations_to_remove,
-                                                    expectation_file)
+      modified_urls |= self.RemoveExpectationsFromFile(expectations_to_remove,
+                                                       expectation_file)
     for e in expectations_to_modify:
       modified_urls.add(e.bug)
     return modified_urls
@@ -283,7 +286,7 @@ class Expectations(object):
     """
     seen_bugs = set()
 
-    expectation_files = self._GetExpectationFilepaths()
+    expectation_files = self.GetExpectationFilepaths()
 
     for ef in expectation_files:
       with open(ef) as infile:
@@ -295,7 +298,7 @@ class Expectations(object):
           seen_bugs.add(url)
     return set(affected_urls) - seen_bugs
 
-  def _GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self):
     """Gets all the filepaths to expectation files of interest.
 
     Returns:

@@ -32,6 +32,13 @@ crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
 
+SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS = """\
+# tags: [ mac ]
+# results: [ Failure ]
+
+crbug.com/4567 [ mac ] foo/test [ Failure ]
+"""
+
 FAKE_EXPECTATION_FILE_CONTENTS_WITH_TYPO = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip ]
@@ -61,19 +68,50 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
       filename = f.name
       f.write(FAKE_EXPECTATION_FILE_CONTENTS)
-    basename = os.path.basename(filename)
     expectation_map = self.instance.CreateTestExpectationMap(filename, None)
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
     expected_expectation_map = {
-        basename: {
+        filename: {
             data_types.Expectation(
                 'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
             data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
             data_types.Expectation(
                 'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
         },
+    }
+    # yapf: enable
+    self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+  def testMultipleExpectationFiles(self):
+    """Tests reading expectations from multiple files."""
+    expectation_files = []
+    with tempfile.NamedTemporaryFile(delete=False, mode='w',
+                                     suffix='var1') as f:
+      expectation_files.append(f.name)
+      f.write(FAKE_EXPECTATION_FILE_CONTENTS)
+    with tempfile.NamedTemporaryFile(delete=False, mode='w',
+                                     suffix='var2') as f:
+      expectation_files.append(f.name)
+      f.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
+
+    expectation_map = self.instance.CreateTestExpectationMap(
+        expectation_files, None)
+    # yapf: disable
+    expected_expectation_map = {
+      expectation_files[0]: {
+        data_types.Expectation(
+            'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+        data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
+        data_types.Expectation(
+            'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
+      },
+      expectation_files[1]: {
+        data_types.Expectation(
+            'foo/test', ['mac'], ['Failure'], 'crbug.com/4567'): {},
+      }
     }
     # yapf: enable
     self.assertEqual(expectation_map, expected_expectation_map)
@@ -267,11 +305,14 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
       f.write(FAKE_EXPECTATION_FILE_CONTENTS)
       self.filename = f.name
+    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
+      f.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
+      self.secondary_filename = f.name
 
   def testEmptyExpectationMap(self):
     """Tests that an empty expectation map results in a no-op."""
     modified_urls = self.instance.ModifySemiStaleExpectations(
-        data_types.TestExpectationMap(), self.filename)
+        data_types.TestExpectationMap())
     self.assertEqual(modified_urls, set())
     self._input_mock.assert_not_called()
     with open(self.filename) as f:
@@ -282,17 +323,23 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     self._input_mock.return_value = 'r'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'expectation_file':
+        self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
             data_types.BuilderStepMap(),
         }),
+        self.secondary_filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['mac'], 'Failure', 'crbug.com/4567'):
+            data_types.BuilderStepMap(),
+        }),
     })
     # yapf: enable
     modified_urls = self.instance.ModifySemiStaleExpectations(
-        test_expectation_map, self.filename)
-    self.assertEqual(modified_urls, set(['crbug.com/1234']))
+        test_expectation_map)
+    self.assertEqual(modified_urls, set(['crbug.com/1234', 'crbug.com/4567']))
     expected_file_contents = """\
 # tags: [ win linux ]
 # results: [ Failure RetryOnFailure Skip ]
@@ -304,44 +351,67 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_file_contents)
+    expected_file_contents = """\
+# tags: [ mac ]
+# results: [ Failure ]
+
+"""
+    with open(self.secondary_filename) as f:
+      self.assertEqual(f.read(), expected_file_contents)
 
   def testModifyExpectation(self):
     """Tests that specifying to modify an expectation does not remove it."""
     self._input_mock.return_value = 'm'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'expectation_file':
+        self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
             data_types.BuilderStepMap(),
         }),
+        self.secondary_filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['mac'], 'Failure', 'crbug.com/4567',
+            ): data_types.BuilderStepMap()
+        }),
     })
     # yapf: enable
     modified_urls = self.instance.ModifySemiStaleExpectations(
-        test_expectation_map, self.filename)
-    self.assertEqual(modified_urls, set(['crbug.com/1234']))
+        test_expectation_map)
+    self.assertEqual(modified_urls, set(['crbug.com/1234', 'crbug.com/4567']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+    with open(self.secondary_filename) as f:
+      self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
   def testIgnoreExpectation(self):
     """Tests that specifying to ignore an expectation does nothing."""
     self._input_mock.return_value = 'i'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'expectation_file':
+        self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
             data_types.BuilderStepMap(),
         }),
+        self.secondary_filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['mac'], 'Failure', 'crbug.com/4567',
+            ): data_types.BuilderStepMap()
+        }),
     })
     # yapf: enable
     modified_urls = self.instance.ModifySemiStaleExpectations(
-        test_expectation_map, self.filename)
+        test_expectation_map)
     self.assertEqual(modified_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+    with open(self.secondary_filename) as f:
+      self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
   def testParserErrorCorrection(self):
     """Tests that parser errors are caught and users can fix them."""
@@ -361,7 +431,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
       any_input_mock.side_effect = CorrectionSideEffect
       # yapf: disable
       test_expectation_map = data_types.TestExpectationMap({
-          'expectation_file':
+          self.filename:
           data_types.ExpectationBuilderMap({
               data_types.Expectation(
                   'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
@@ -369,8 +439,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
           }),
       })
       # yapf: enable
-      self.instance.ModifySemiStaleExpectations(test_expectation_map,
-                                                self.filename)
+      self.instance.ModifySemiStaleExpectations(test_expectation_map)
       any_input_mock.assert_called_once()
       with open(self.filename) as infile:
         self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS)
@@ -392,7 +461,7 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
     self.instance = expectations.Expectations()
     self.filepath_patcher = mock.patch.object(
         self.instance,
-        '_GetExpectationFilepaths',
+        'GetExpectationFilepaths',
         return_value=[os.path.join(expectations_dir, 'real_expectations.txt')])
     self.filepath_mock = self.filepath_patcher.start()
     self.addCleanup(self.filepath_patcher.stop)

@@ -154,7 +154,7 @@ def RegisterGenericBuildersImplementation():
 
 
 class GenericExpectations(expectations.Expectations):
-  def _GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self):
     return []
 
   def _GetExpectationFileTagHeader(self):
