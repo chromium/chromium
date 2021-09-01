@@ -1035,6 +1035,7 @@ if (!is_android && !is_fuchsia) {
       "//base/test:test_support",
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
+      "//build:os_buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

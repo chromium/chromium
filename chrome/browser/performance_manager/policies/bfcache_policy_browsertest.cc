@@ -11,6 +11,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/os_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -24,6 +25,10 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/ui_base_features.h"
+#endif
 
 namespace performance_manager {
 namespace policies {
@@ -47,7 +52,12 @@ class BFCachePolicyBrowserTest
                   {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
                    {"ignore_outstanding_network_request_for_testing", "true"}});
     DisableFeature(::features::kBackForwardCacheMemoryControls);
-
+    // Occlusion can cause the web_contents to be marked visible between the
+    // time the test calls WasHidden and BFCachePolicy::MaybeFlushBFCache is
+    // called, which kills the timer set by BFCachePolicy::OnIsVisibleChanged.
+#if BUILDFLAG(IS_WIN)
+    DisableFeature(::features::kCalculateNativeWinOcclusion);
+#endif
     if (GetParam().enable_policy) {
       EnableFeature(
           performance_manager::features::kBFCachePerformanceManagerPolicy,
