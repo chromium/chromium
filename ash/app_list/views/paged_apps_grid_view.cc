@@ -638,17 +638,6 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   items_container()->layer()->SetTransform(gfx::Transform());
   if (IsDragging()) {
-    // Sets the transform to locate the scrolled content.
-    gfx::Size grid_size = GetTileGridSize();
-    gfx::Vector2d update;
-    if (pagination_controller_->scroll_axis() ==
-        PaginationController::SCROLL_AXIS_HORIZONTAL) {
-      const int page_width = grid_size.width() + GetPaddingBetweenPages();
-      update.set_x(page_width * (new_selected - old_selected));
-    } else {
-      const int page_height = grid_size.height() + GetPaddingBetweenPages();
-      update.set_y(page_height * (new_selected - old_selected));
-    }
     Layout();
     UpdateDropTargetRegion();
     MaybeStartPageFlipTimer(last_drag_point());
